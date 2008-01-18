@@ -1,0 +1,79 @@
+<html>
+    <head>
+        <title>HyperNumbers</title>
+
+        <script src="/javascript/jquery.js" language="javascript"></script>
+        <script src="/javascript/jquery.contextmenu.js" language="javascript"></script>
+        <script src="/javascript/jquery.simplemodal.js" language="javascript"></script>
+        <script src="/javascript/ajaxfileupload.js" language="javascript"></script>
+        <script src="/javascript/swfobject.js" language="javascript"></script>
+        <script src="/javascript/script.js" language="javascript"></script>
+
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+        <style type="text/css">
+            @import "/css/style.css";
+        </style>
+
+    </head>
+
+    <body>
+    
+    <div id="header">
+        <img src="/images/logo.jpg" />
+    </div>
+
+    <ul id="filemenu">
+        <li><a class="file">File</a>
+            <ul>
+                <li><a id="m_import">Import SpreadSheet</a>
+            </ul>
+        </li>
+    </ul>
+
+    <div id="toolbar" class="clearfix">
+
+        <textarea id="texttocopy" readonly="readonly" onclick="this.select()">
+        </textarea>
+
+        <div id="functions">
+            <ul id="menu">
+                <li><a>Functions</a>
+                    <ul></ul>
+                </li>
+            </ul>
+        </div>
+
+        <input type="text" id="formula" value="=" /> 
+        <input type="button" id="send" value="send" />  
+
+    </div>
+
+    <table id="hn" cellspacing="0"></table> 
+
+    <div id="jssocket">
+      This text is replaced by the Flash movie.
+    </div>
+
+    <div id="debug">
+        <img src="/images/disconnect.png" alt="Socket Connection" title="Socket Connection" />
+        <input type="checkbox" id="toggle_dbg" checked="false" /> 
+        <span>Show Debug</span>
+        <textarea id="dbg" readonly="true"></textarea>
+    </div>
+
+   <div class="contextMenu" id="myMenu1">
+      <ul>
+        <li id="hnumber">Copy as Hypernumber</li>
+      </ul>
+    </div>
+
+    <div id="import" style='display:none'>
+        <h2>Import File</h2>
+        <hr />
+        <p>Import a file to this websheet (currently xls files are supported)</p>
+        <input type="file" name="Filedata" id="Filedata" value="Upload Spreadsheet" />
+    </div>
+
+</body>
+</html>

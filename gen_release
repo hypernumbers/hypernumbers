@@ -1,0 +1,72 @@
+#!/bin/bash
+
+if [ $# -ne 2 ]; then
+    echo Usage: gen_release /stagingdir/ /binariessvn/
+    exit
+fi
+
+relhome=`pwd`
+
+rm -rf $1
+
+mkdir $1
+mkdir $1/doc
+mkdir $1/priv
+mkdir $1/conf
+mkdir $1/include
+mkdir $1/include/docroot
+mkdir $1/lib
+mkdir $1/lib/engine-1.0
+mkdir $1/lib/engine-1.0/src
+
+echo "first copy over the application beams"
+find . -type f -name '*.beam' | xargs tar cvf - | (cd $1; tar xf -)
+cd $relhome
+find . -type f -name '*.app' | xargs tar cvf - | (cd $1; tar xf -)
+cd $relhome
+cp -R lib/yaws-1.73/priv $1/lib/yaws-1.73/
+
+# remove any files you dont want distributed here
+rm -rf $1/testroot/
+
+echo "bring over the userdefined source code"
+cp lib/engine-1.0/src/userdef.erl $1/lib/engine-1.0/src/
+
+echo "copy over the toolbar buttons"
+cp priv/*.gif $1/priv
+cp priv/*.tool $1/priv
+
+echo "copy over the start batch file"
+cp start_hypernumbers $1
+cp stop_hypernumbers $1
+cp start_hypernumbers.interactive $1
+cp compile_userdef $1
+cp compile_flex $1
+
+echo "copy over the yaws.conf"
+cp conf/hypernumbers.xml $1/conf/
+cp conf/hosts.SDK $1/conf/
+
+echo "copy over the flex source code"
+cp -R priv/flex $1/priv
+
+echo "copy over the docroot"
+cp -R include/docroot $1/include
+
+echo "copy over the documentation"
+cp -R doc/SDK\ \(Alpha\)/*.doc $1/doc
+
+echo "Remove Developer SVN files"
+cd $1
+find . -name '.svn' -exec rm -rf '{}' \;
+
+echo "Clean out the release repository of the release files"
+cd $relhome
+find $2 -name .svn -prune -o -type f -exec rm -rf {} \;
+
+cp -R $1/* $2
+
+cd $2
+svn status -u
+
+echo "Done!"

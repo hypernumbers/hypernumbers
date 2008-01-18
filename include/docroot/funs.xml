@@ -1,0 +1,200 @@
+<menuitem label="Functions">
+    <menuitem label="Maths" data="Maths">
+        <menuitem label="Arithmetic">
+            <menuitem label="sum" data="sum()"/>
+            <menuitem label="product" data="product()"/>
+            <menuitem label="abs" data="abs()"/>
+            <menuitem label="sqrt" data="sqrt()"/>
+            <menuitem label="power" data="power(,)"/>
+            <menuitem label="sign" data="sign()"/>
+            <menuitem label="exp" data="exp()"/>
+            <menuitem label="fact" data="fact()"/>
+            <menuitem label="mod" data="mod(,)"/>
+        </menuitem>
+        <menuitem label="Arrays/Matrices">
+            <menuitem label="mdeterm" data="mdeterm()"/>
+            <menuitem label="minverse" data="minverse(,)"/>
+            <menuitem label="mmult" data="mmult(,,,)"/>
+        </menuitem>
+        <menuitem label="Logarithms">
+            <menuitem label="ln" data="ln()"/>
+            <menuitem label="log/1" data="log()"/>
+            <menuitem label="log/2" data="log(,)"/>
+            <menuitem label="log10" data="log10()"/>
+        </menuitem>
+        <menuitem label="Trigonometry">
+            <menuitem label="acos" data="acos()"/>
+            <menuitem label="acosh" data="acosh()"/>
+            <menuitem label="sin" data="sin()"/>
+            <menuitem label="sinh" data="sinh()"/>
+            <menuitem label="tan" data="tan()"/>
+            <menuitem label="tanh" data="tanh()"/>
+            <menuitem label="cos" data="cos()"/>
+            <menuitem label="cosh" data="cosh()"/>
+            <menuitem label="asin" data="asin()"/>
+            <menuitem label="asinh" data="asinh()"/>
+            <menuitem label="atan" data="atan()"/>
+            <menuitem label="atan2" data="atan2()"/>
+            <menuitem label="atanh" data="atanh()"/>
+            <menuitem label="radians" data="radians()"/>
+        </menuitem>
+        <menuitem label="Rounding">
+            <menuitem label="round" data="round(,)"/>
+            <menuitem label="rounddown" data="rounddown(,)"/>
+            <menuitem label="roundup" data="roundup(,)"/>
+            <menuitem label="ceiling" data="ceiling(,)"/>
+            <menuitem label="floor" data="floor(,)"/>
+            <menuitem label="even" data="even()"/>
+            <menuitem label="odd" data="odd()"/>
+            <menuitem label="combin" data="combin(,)"/>
+            <menuitem label="int" data="int()"/>
+            <menuitem label="trunc/1" data="trunc()"/>
+            <menuitem label="trunc/2" data="trunc(,)"/>
+        </menuitem>
+        <menuitem label="Pi/0"  data="pi()"/>
+        <menuitem label="Summation">
+            <menuitem label="sumsq" data="sumsq()"/>
+            <menuitem label="sumx2my2" data="sumx2my2(,)"/>
+            <menuitem label="sumx2py2" data="sumx2py2(,)"/>
+            <menuitem label="sumxmy2" data="sumxmy2(,)"/>
+            <menuitem label="subtotal" data="subtotal(,)"/>
+            <menuitem label="sumif/2" data="sumif(,)"/>
+            <menuitem label="sumif/3" data="sumif(,,)"/>
+            <menuitem label="sumproduct" data="sumproduct(,)"/>
+        </menuitem>
+    </menuitem>
+    <menuitem label="Information" data="Information">
+        <menuitem label="error_type" data="error_type()"/>
+        <menuitem label="iserr" data="iserr()"/>
+        <menuitem label="iserror" data="iserror()"/>
+        <menuitem label="islogical" data="islogical()"/>
+        <menuitem label="isna" data="isna()"/>
+        <menuitem label="isnontext" data="isnontext()"/>
+        <menuitem label="isnumber" data="isnumber()"/>
+        <menuitem label="istext" data="istext()"/>
+        <menuitem label="n" data="n()"/>
+        <menuitem label="na/0" data="na()"/>
+        <menuitem label="type" data="type()"/>
+    </menuitem>
+    <menuitem label="Logical" data="Logical">
+        <menuitem label="if" data="if()"/>
+        <menuitem label="false/0" data="false()"/>
+        <menuitem label="if" data="if(,,)"/>
+        <menuitem label="not" data="not()"/>
+        <menuitem label="of" data="or()"/>
+        <menuitem label="true/0" data="true()"/>
+    </menuitem>
+    <menuitem label="Text" data="Text">
+        <menuitem label="Comparing">
+            <menuitem label="exact" data="exact(,)"/>
+            <menuitem label="len" data="len()"/>
+            <menuitem label="mid" data="mid(,,)"/>
+        </menuitem>
+        <menuitem label="Conversion">
+            <menuitem label="clean" data="clean()"/>
+            <menuitem label="pound/1" data="pound()"/>
+            <menuitem label="pound/2" data="pound(,)"/>
+            <menuitem label="fixed/1" data="fixed()"/>
+            <menuitem label="fixed/2" data="fixed(,)"/>
+            <menuitem label="fixed/3" data="fixed(,,)"/>
+            <menuitem label="lower" data="lower()"/>
+            <menuitem label="proper" data="proper()"/>
+            <menuitem label="trim" data="trim()"/>
+            <menuitem label="upper" data="upper()"/>
+            <menuitem label="value" data="value()"/>
+        </menuitem>
+        <menuitem label="Locating">
+            <menuitem label="char" data="char()"/>
+            <menuitem label="code" data="code()"/>
+            <menuitem label="find/2" data="find(,)"/>
+            <menuitem label="find/3" data="find(,,)"/>
+            <menuitem label="left/1" data="left()"/>
+            <menuitem label="left" data="left(,)"/>
+            <menuitem label="right/1" data="right()"/>
+            <menuitem label="right/2" data="right(,)"/>
+            <menuitem label="search/2" data="search(,)"/>
+            <menuitem label="search/3" data="search(,,)"/>
+        </menuitem>
+        <menuitem label="Replace/Combine">
+            <menuitem label="concatenate" data="concatenate()"/>
+            <menuitem label="replace" data="replace(,,,)"/>
+            <menuitem label="rept" data="rept()"/>
+            <menuitem label="substitute/3" data="substitute(,,)"/>
+            <menuitem label="substitute/4" data="substitute(,,,)"/>
+        </menuitem>
+    </menuitem>
+    <menuitem label="Statistical" data="Statistical">
+        <menuitem label="Count/Average">
+            <menuitem label="average" data="average()"/>
+            <menuitem label="averagea" data="averagea()"/>
+            <menuitem label="count" data="count()"/>
+            <menuitem label="kurt" data="kurt()"/>
+            <menuitem label="large" data="large(,)"/>
+            <menuitem label="max" data="max()"/>
+            <menuitem label="maxa" data="maxa()"/>
+            <menuitem label="min" data="min()"/>
+            <menuitem label="mina" data="mina()"/>
+            <menuitem label="mode" data="mode()"/>
+            <menuitem label="percentile" data="percentile(,)"/>
+            <menuitem label="permut" data="permut(,)"/>
+            <menuitem label="quartile" data="quartile(,)"/>
+            <menuitem label="rank/2" data="rank(,)"/>
+            <menuitem label="rank/3" data="rank(,,)"/>
+            <menuitem label="small" data="small(,)"/>
+        </menuitem>
+        <menuitem label="Mean/Deviation">
+            <menuitem label="avedev" data="avedev()"/>
+            <menuitem label="confidence" data="confidence(,,)"/>
+            <menuitem label="covar" data="covar(,)"/>
+            <menuitem label="devsq" data="devsq()"/>
+            <menuitem label="geomean" data="geomean()"/>
+            <menuitem label="harmean" data="harmean()"/>
+            <menuitem label="median" data="median()"/>
+            <menuitem label="stdev" data="stdev()"/>
+            <menuitem label="stdevp" data="stdevp()"/>
+            <menuitem label="stdeva" data="stdeva()"/>
+            <menuitem label="trimean" data="trimean()"/>
+        </menuitem>
+        <menuitem label="Probability/Distribution">
+            <menuitem label="betadist" data="betadist(,,,,)"/>
+            <menuitem label="betainv" data="betainv(,,,,)"/>
+            <menuitem label="binomdist" data="binomdist(,,,)"/>
+            <menuitem label="chidist" data="chidist(,)"/>
+            <menuitem label="chiinv" data="chiinv(,)"/>
+            <menuitem label="critbinom" data="critbinom(,,)"/>
+            <menuitem label="expondist" data="expondist(,,)"/>
+            <menuitem label="fdist" data="fdist(,,)"/>
+            <menuitem label="finv" data="finv(,,)"/>
+            <menuitem label="frequency" data="frequency(,)"/>
+            <menuitem label="ftest" data="ftest(,)"/>
+            <menuitem label="gammdist" data="gammdist(,,,)"/>
+            <menuitem label="gammaln" data="gammaln()"/>
+            <menuitem label="hypgeomdist" data="hypgeomdist(,,,)"/>
+            <menuitem label="normdist" data="normdist(,,,)"/>
+            <menuitem label="skew" data="skew()"/>
+            <menuitem label="weibull" data="weibull(,,,)"/>
+        </menuitem>
+        <menuitem label="Regression">
+            <menuitem label="intercept" data="intercept(,)"/>
+            <menuitem label="slope" data="slope(,)"/>
+            <menuitem label="steyx" data="steyx(,)"/>
+        </menuitem>
+        <menuitem label="Transformation/Correlation">
+            <menuitem label="correl" data="correl(,)"/>
+            <menuitem label="fisher" data="fisher()"/>
+            <menuitem label="fisherinv" data="fisherinv()"/>
+            <menuitem label="pearson" data="pearson(,)"/>
+            <menuitem label="standardise" data="standardise(,,)"/>
+        </menuitem>
+        <menuitem label="Trends">
+            <menuitem label="forecast" data="forecast(,,)"/>
+            <menuitem label="growth" data="growth(,,,)"/>
+        </menuitem>
+        <menuitem label="Variance">
+            <menuitem label="var" data="var()"/>
+            <menuitem label="varp" data="varp()"/>
+            <menuitem label="vara" data="vara()"/>
+            <menuitem label="varpa" data="varpa()"/>
+        </menuitem>
+    </menuitem>
+</menuitem>

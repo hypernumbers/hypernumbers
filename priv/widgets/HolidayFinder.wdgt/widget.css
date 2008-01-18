@@ -1,0 +1,38 @@
+body {
+  background-image: url("Default.png");
+  font: 15px "Lucida Grande";
+  color: #333;
+}
+
+#logo {
+  top: 10px;
+  left: 15px;
+  position: absolute;
+}
+
+#powered-by {
+  color: #777;
+  font: bold 12px Consolas;
+  
+  top: 43px;
+  left: 22px;
+  position: absolute;
+}
+
+#form-element {
+  
+  left: 22px;
+  position: absolute;
+}
+
+label {
+  color: #111;
+  display: block;
+  font: bold 14px "Fontin Sans";
+  text-transform: uppercase;
+}
+
+input[type="text"] {
+  font: 15px "Lucida Grande";
+  color: #333;
+}

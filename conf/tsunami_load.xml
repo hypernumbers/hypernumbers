@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE idx-tsunami SYSTEM "/usr/local/share/idx-tsunami/idx-tsunami-1.0.dtd" [] >
+<idx-tsunami loglevel="debug" dumptraffic="true">
+
+<!-- Declare The Clients -->
+
+<clients>
+    <client host="localhost" weight="1" maxusers="100">
+        <ip value="127.0.0.1"></ip>
+    </client>
+</clients>
+
+<!-- Declare The Server -->
+
+<server host="localhost" port="9001" type="tcp"></server>
+
+<!-- Declare The Arrival Phases -->
+
+<arrivalphase phase="1" duration="120" unit="minute">
+     <users interarrival="0.1" unit="second"></users>
+</arrivalphase>
+
+<!-- Declare The Sessions -->
+
+<session name="change_cell" popularity="100" type="ts_http">
+	<transaction name="run_load">
+    <request subst="true">
+        <http url="%%tsunami_helper:get_url%%" version="1.1" contents="%%tsunami_helper:get_val%%" content_type="application/x-www-form-urlencoded" method="POST">
+        </http>
+    </request>
+	</transaction>
+</session>
+
+<!-- End Of Declarations -->
+
+</idx-tsunami>

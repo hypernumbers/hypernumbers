@@ -1,0 +1,194 @@
+<?xml version="1.0"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+    creationComplete="init()">
+  <mx:Script><![CDATA[
+    
+    import mx.collections.XMLListCollection;   
+    import mx.rpc.http.HTTPService;
+    import mx.charts.series.LineSeries;
+    import mx.rpc.events.ResultEvent;
+    import hypernumbers.remoting.*;
+    import mx.controls.Alert;
+
+    [Bindable] private var _chartdata:XMLList = new XMLList(<range></range>);    
+    private var _request:Array = new Array();
+    private var _sources:Array = new Array();
+    private var _sockets:Object = new Object();
+    private var llabels:Array;
+    private var rlabels:Array;
+    private var _service:HTTPService;
+
+    private function init():void
+    {
+        _service = new HTTPService();
+        _service.method = "GET";
+        _service.resultFormat = "e4x";
+        _service.addEventListener("result", httpResult);
+
+        var _getvars:String = "function(){return window.location.href.toString();}";
+        var o:String = ExternalInterface.call(_getvars).split("?")[1];
+
+        llabels = [l1,l2,l3,l4];
+        rlabels = [r1,r2,r3,r4];
+        
+        if(o != null)
+        {
+            for each (var v:String in o.split(","))
+            {
+                if(v != "")
+                {
+                    var tmp:Array = v.split("=");
+                    var source:Object = new Object();
+        
+                    source.url = tmp[0];
+                    source.label = (tmp[1] == null) ? "one" : tmp[1];
+
+                    _sources.push(source);
+                }
+            }
+        }
+
+        var currentSeries:Array = _chart.series;
+        var i:int = 0;
+        for each (var source2:Object in _sources)
+        {
+            var localSeries:LineSeries = new LineSeries();
+            localSeries.yField = source2.label;
+            localSeries.xField="index"
+            localSeries.displayName=source2.label;
+            currentSeries.push(localSeries);
+
+            var tmp3:Array = source2.url.replace("http://","").split("/");
+            var domain:String = tmp3[0];
+            tmp3.shift();
+            var hackurl:String = "http://"+domain+"/"+escape(tmp3.join("/"))+"?format=xml";
+            domain = domain.split(":")[0];
+
+            if(_sockets[domain] == undefined)
+ 	        {
+ 	          _sockets[domain] = new RemotingSocket(domain,1935);
+              _sockets[domain].addEventListener("newRemotingMsg",remotingSocketHandler);
+            }
+            _sockets[domain].write("register "+source2.url);
+
+            llabels[i].text = source2.label;
+            rlabels[i].text = source2.url;
+
+            i++;
+        }
+        _chart.series = currentSeries;
+        refresh();
+    }
+
+    public function httpResult(event:ResultEvent):void
+    {
+        var children:Array = new Array();
+        var xlabel:String = _request[event.token.message.messageId];
+        
+        if(event.result.row.length() == 1)
+        {
+            for each (var col:XML in event.result.row.children())
+                children.push({key: xlabel,val:col.text()});
+        }
+        else
+        {
+            for each (var row:XML in event.result.row)
+                children.push({key: xlabel,val:row.column.text()});
+        }
+
+        var i:int = 0;
+        for each (var child:Object in children)
+        {
+            if(_chartdata.row == null || _chartdata.row[i] == null)
+                _chartdata.appendChild(<row></row>)
+            if(_chartdata.row[i].index == undefined)
+                _chartdata.row[i].appendChild(<index>{i}</index>);
+                
+            // if the xml exists, update definition, if not
+            // append it to this row
+            var child_xml:XML = <{child.key}>{child.val}</{child.key}>;
+
+            if(_chartdata.row[i].child(child.key) == undefined)            
+                _chartdata.row[i].appendChild(child_xml);
+            else
+                _chartdata.row[i].replace(child.key,child_xml);
+
+            i++;
+        }
+        
+        _chart.dataProvider = new XMLListCollection(_chartdata.row);
+    }
+
+	private function remotingSocketHandler(event:RemotingEvent):void
+    {
+        if (event.message.search(/^change/) == 0)
+            refresh();
+    }
+
+    // This will refresh the data sources of the graph
+    private function refresh():void
+    {
+        for each (var source:Object in _sources)
+        {
+            var tmp:Array = source.url.replace("http://","").split("/");
+            var domain:String = tmp[0];
+            tmp.shift();
+            var hackurl:String = "http://"+domain+"/"+escape(tmp.join("/"))+"?format=xml";
+
+            _service.url = hackurl;
+            _request[(_service.send()).message.messageId] = source.label;
+        }
+    }
+
+    private function send():void
+    {
+        var newurl:String = "?";
+        var i:int = 0;
+        for each (var tmp:Object in rlabels)
+        {
+            if(rlabels[i].text != "")
+            {
+                newurl += rlabels[i].text;
+                if(llabels[i].text != "")
+                {
+                    newurl += "="+llabels[i].text;
+                }
+                newurl += ",";
+            }
+            i++;
+        }
+        navigateToURL(new URLRequest(newurl), '_self');
+    }
+
+  ]]></mx:Script>
+
+  <mx:Panel title="Line Chart" width="810">
+      <mx:HBox>
+          <mx:LineChart id="_chart" width="600">
+             <mx:horizontalAxis>
+                <mx:CategoryAxis categoryField="index" />
+            </mx:horizontalAxis>
+        </mx:LineChart>
+        <mx:Legend dataProvider="{_chart}" />
+      </mx:HBox>
+  </mx:Panel>
+  <mx:Spacer height="5" />
+  <mx:Panel title="Ranges">
+    <mx:Form>
+        <mx:HBox>
+            <mx:Label text="Range :" width="70" />
+                <mx:TextInput id="r1" width="165" /><mx:TextInput id="r2" width="165" />
+                <mx:TextInput id="r3" width="165" /><mx:TextInput id="r4" width="165" />
+        </mx:HBox>     
+        <mx:HBox>
+            <mx:Label text="Label :" width="70" />
+                <mx:TextInput id="l1" width="165" /><mx:TextInput id="l2" width="165" />
+                <mx:TextInput id="l3" width="165" /><mx:TextInput id="l4" width="165" />
+        </mx:HBox>   
+        <mx:Button label="Fill Chart" click="send();" />  
+    </mx:Form>
+  </mx:Panel>
+
+  <mx:TextArea id="output" width="500" height="200" visible="false"   includeInLayout="false" />
+  
+</mx:Application>

@@ -1,0 +1,20 @@
+%% Add the following line to your ~/.erlang:
+%%   file:eval("/opt/SVN/spriki/trunk/priv/dot.erlang").
+%%
+%% This will make sure that all of Hypernumbers modules are loaded when
+%% you start Erlang.
+
+lists:map(
+  fun(X) -> code:add_patha("/opt/SVN/spriki/trunk/" ++ X) end,
+  [ % Directories from which to auto-load beams.
+   "ebin",
+   "lib/utilities-1.0/ebin",
+   "lib/db_access-1.0/ebin",
+   "lib/formula_engine-1.0/ebin",
+   "lib/pp_man-1.0/ebin",
+   "lib/remoting-1.0/ebin",
+   "lib/read_excel-1.0/ebin",
+   "lib/engine-1.0/ebin",
+   "lib/ejson-1/ebin"
+   "lib/yaws-1.73/ebin"
+  ]).

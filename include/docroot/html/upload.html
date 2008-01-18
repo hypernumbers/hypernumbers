@@ -1,0 +1,21 @@
+<html>
+    <head>
+        <title>HyperNumbers</title>
+        <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+        <style>
+        </style>
+    </head>
+
+    <body>
+
+    <p>
+        For now we have to use a html form to upload the xls, since this is an api call
+        then next page will just have a text response, just remove ?import from the url
+        and you will go back to your websheet
+    </p>
+    <form action="?import" enctype="multipart/form-data" method="POST">
+        <input type="file" name="Filedata" value="Upload Spreadsheet" /><br />
+        <input type="submit" value="Upload Spreadsheet"  />
+    </form>
+</body>
+</html>

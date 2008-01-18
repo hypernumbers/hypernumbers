@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <!-- widget display name -->
+	<key>CFBundleDisplayName</key>
+	<string>Holiday Finder</string>
+	
+  <!-- widget identifier -->
+	<key>CFBundleIdentifier</key>
+	<string>HolidayFinder</string>
+	
+  <!-- widget name -->
+	<key>CFBundleName</key>
+	<string>HolidayFinder</string>
+	
+	
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	
+  <!-- widget's version -->
+	<key>CFBundleVersion</key>
+	<string>1.0</string>
+	
+  <!-- link to the main HTML file -->
+	<key>MainHTML</key>
+	<string>index.html</string>
+</dict>
+</plist>

@@ -1,0 +1,16 @@
+DataGrid
+{
+    backgroundColor:        #ffffff;
+    horizontalGridLines:    true;
+    letterSpacing:          0;
+    horizontalGridLineColor:#666666;
+    useRollOver:            true;
+    rollOverColor:          #ffffff;
+    fontFamily:             Tahoma;
+    fontSize:               11;
+}
+
+DataGridColumn
+{
+    text-align:             left;
+}

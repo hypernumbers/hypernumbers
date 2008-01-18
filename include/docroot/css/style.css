@@ -1,0 +1,404 @@
+* 
+{ 
+    font:   13px "Helvetica Neue", Palatino, sans-serif; 
+    margin: 0px; 
+    padding:0px; 
+}
+
+body, html 
+{
+    height: 100%;
+}
+
+ul 
+{
+    list-style:none;
+}
+
+input, textarea
+{
+    font: 11px Consolas, Monaco, Courier, monospace;
+    padding:2px;
+    border: 1px solid #999;
+}
+
+h2 
+{
+    font: bold 18px "Helvetica Neue", Palatino, sans-serif;  
+}
+
+p
+{
+    padding: 5px 0px;
+}
+
+hr 
+{
+    margin-bottom:5px;
+}
+
+#header
+{
+    margin:10px;
+}
+
+#toolbar 
+{
+    margin: 5px 0px 0px 0px;
+    padding:5px;
+    background: #f6f6f6;
+    height:25px;
+}
+
+#debug 
+{
+    width:100%;
+    border-top:1px solid #999;
+    position:fixed; 
+    bottom:0px; 
+    background:#fff; 
+}
+
+#debug img 
+{
+    margin: 6px 6px 3px 6px;
+}
+
+#debug span 
+{
+    position:relative;
+    bottom:6px;
+    padding: 0px 0px 6px 0px;
+}
+
+#debug input
+{
+    border:1px solid #999;
+    margin: 0px 0px 8px 0px;
+}
+
+#dbg   
+{
+    font:   10px "Helvetica Neue",Palatino,sans-serif;  
+    height: 100px;
+    display:none; 
+    width:100%; 
+}
+
+#hn
+{
+    width:  100%;
+    overflow:hidden;
+    border-top:1px solid #aaa;
+    border-left:1px solid #aaa;
+    padding: 0;
+    margin: 0;
+}
+
+#hn td.rowindex 
+{
+    font:   11px "Helvetica Neue",Palatino,sans-serif; 
+    padding: 3px; 
+    text-align:center;
+    width:30px;
+    background: #ddd !important;
+}
+
+#hn td,#hn td input
+{
+    background: #fefefe;
+}
+
+#hn .odd td,#hn .odd td input
+{
+    background: #f6f6f6;
+}
+
+#hn th
+{
+    font: 11px bold "Helvetica Neue",Palatino,sans-serif;  
+    padding: 0; 
+    border-bottom:1px solid #aaa;
+    border-right:1px solid #aaa;
+    text-align:center;
+    background:#ddd;
+}
+
+#hn td
+{
+    border-bottom:1px solid #aaa;
+    border-right:1px solid #aaa;
+}
+
+#hn input.sel
+{
+    border: 1px solid blue;
+
+    margin-top: 0;
+    padding-top: 0;
+}
+
+#hn input
+{
+    margin-top: 0;
+    padding-top: 0;
+
+    font: 12px Consolas, Courier, Monaco, monospace;
+	line-height: 1.4em;
+    padding:2px;
+    height:100%;
+    width:100%;
+    border:1px solid transparent;
+}
+
+#hn th.highlight,#hn td.highlight
+{
+    background:#666 !important;
+}
+
+#jssocket
+{
+    position:absolute;
+    visibility:hidden;
+}
+
+.contextMenu
+{
+    width: 150px;
+}
+
+#menu, #menu ul 
+{
+    border-top: 1px solid #CCC;
+    border-left: 1px solid #CCC;
+    width:90px;
+}
+
+#menu li {
+    float:left;
+    border-bottom: 1px solid #CCC;
+    border-right: 1px solid #CCC;
+    background:#FFF;
+    width:90px;
+}
+#menu li ul {
+    position:absolute;
+    margin-top:-2em;
+    margin-left:6em; /* for IE */
+    display:none;
+}
+#menu ul li ul {
+    margin-top:-3em;
+    margin-left:6em;
+}
+
+#menu ul li ul li,#menu ul li ul
+{
+    width: 170px;
+}
+#menu ul li ul li ul
+{
+    margin-left:9em;
+}
+
+#menu ul li ul li ul li,#menu ul li ul li ul
+{
+    width: 90px;
+}
+
+
+/* ******************************************************************* */
+/* SHOW SUBMENU  1 */
+#menu li:hover ul, #menu li.over ul {
+    display:block;
+}
+#menu li:hover ul ul, #menu li.over ul ul {
+    display:none;
+}
+/* SHOW SUBMENU  2 */
+#menu ul li:hover > ul, #menu ul li.over > ul {
+    display:block;
+}
+/* ******************************************************************* */
+/* STYLING UP THE LINKS */
+#menu a {
+    font:   11px "Helvetica Neue",Palatino,sans-serif; 
+    cursor: pointer;
+    display:block;
+    background:#fff;
+    color:#3B3B3B;
+    text-decoration:none;
+    padding:4px;
+}
+#menu a:hover {
+    background-color:#5798B4;
+    color:#fff;
+}
+
+#menu ul a {
+    background:#fff;
+}
+
+/* ******************************************************************* */
+
+#menu {
+    z-index:1;
+}
+#menu ul {
+    z-index:2;
+}
+#menu ul ul {
+    z-index:3;
+}
+
+/* ******************************************************************* */
+
+/* Fix IE. Hide from IE Mac \*/
+* html ul li { float: left; height: 1%; }
+* html ul li a { height: 1%; }
+/* End */
+
+#menu a.menuparent 
+{ 
+    background: #FFF url('/images/arrow.png') center right no-repeat;
+}
+
+#menu a.menuparent:hover
+{ 
+    color:  #666;
+    background: #EEE url('/images/arrow.png') center right no-repeat;
+}
+
+#functions
+{
+    margin-left:10px;
+    height:20px;
+    width:100px;
+    float:left;
+}
+
+#toolbar input
+{
+    display:block;
+    float:left;
+}
+
+#send
+{
+    margin: 1px 0px 0px 0px;
+}
+
+#formula 
+{
+    margin: 2px 4px 0px 0px;
+    width:250px;
+}
+
+.clearfix:after {
+    content: "."; 
+    display: block; 
+    height: 0; 
+    clear: both; 
+    visibility: hidden;
+}
+
+.clearfix {display: inline-block;}
+
+/* Hides from IE-mac \*/
+* html .clearfix {height: 1%;}
+.clearfix {display: block;}
+/* End hide from IE-mac */
+
+#filemenu ul
+{
+    position:absolute;
+    left:16px;
+    display:none;
+    background:#FFF;
+    border:1px outset #666;
+}
+
+a.file 
+{
+    display:block;
+    margin:0px 15px;
+    border:1px solid #CCC;
+    padding:4px 8px;
+    width:40px;
+    background: #FFF url('/images/arrowd.png') center right no-repeat;
+}
+
+#filemenu a.file:hover 
+{
+    border:1px solid #666;
+    background: #FFF url('/images/arrowd.png') center right no-repeat;
+}
+
+#filemenu a
+{
+    font:   12px Palatino,sans-serif;
+    padding:4px 8px;
+    cursor:pointer;
+    display:block;
+}
+
+#filemenu a:hover
+{
+    background:#d4edff;
+}
+
+#import 
+{
+    display:none;
+}
+
+/* Overlay */
+#modalOverlay {background-color:#000; cursor:wait;}
+
+#modalContainer
+{
+    position:absolute;
+    height:100%;
+    width:100%; 
+    top:0px;
+    left:0px;    
+}
+
+/* Container */
+#import 
+{
+    position:absolute;
+    height:100px;
+    width:400px; 
+    left: 50%;
+    top: 50%;
+    margin-left:-200px;
+    margin-top: -50px;
+    background-color:#fff; 
+    border:3px solid #ccc;
+    padding:5px;
+}
+
+#modalContainer a.modalCloseImg 
+{
+    display:block;
+    position:absolute;
+    width:11px; 
+    height:11px; 
+    left: 50%;
+    top: 50%;
+    margin-left:185px;
+    margin-top: -39px;
+    background: #FFF url('/images/close_icon.gif') no-repeat; 
+    z-index:3200; 
+    cursor:pointer;
+}
+
+#texttocopy
+{
+    font:   11px Palatino,sans-serif;
+    float:left;
+    margin: 2px 4px 0px 0px;
+    height:20px;
+    width:200px;
+}

@@ -1,0 +1,204 @@
+
+<html>
+  <head>
+    <title>Project Playfair</title>
+  </head>
+  <body>
+    <h1>
+      <font color=blue>Project Playfair - The (Alpha) Spriki 0.2 Help</font>
+    </h1>
+     <font color=red><b>Caveat</b></font>: this is a very early prototype of the system. The purpose is to demonstrate the system - consequently the functionality and GUI are both very primitive. A third release with more extensive functionality is currently in preparation.
+    <br>
+	<h2><font color=blue>What Is A HyperNumber</font></h2>
+	A hypernumber is just a URL that returns a number, for instance:<br>
+	<a href="https://vixo.com:9000/spriki/page1/?value/a1">https://vixo.com:9000/spriki/page1/?value/a1</a><br><br>
+	In this instance a syntax that indicates a 'raw' number is being used - ie the number is not the product
+	of a calculation. To make the spriki work 'cooked' number are used, that is to say numbers that are the products of calculations and which 'know' the numbers that have gone into them, for instance:
+	<a href="https://vixo.com:9000/spriki/page1/?calc/a1">https://vixo.com:9000/spriki/page1/?calc/a1</a><br>
+	<a href="https://vixo.com:9000/spriki/page1/?calc/b1">https://vixo.com:9000/spriki/page1/?calc/b1</a><br>
+	<a href="https://vixo.com:9000/spriki/page1/?calc/c1">https://vixo.com:9000/spriki/page1/?calc/c1</a><br>
+	<a href="https://vixo.com:9000/spriki/page1/?calc/d1">https://vixo.com:9000/spriki/page1/?calc/d1</a><br><br>
+	In these instances the numbers carry a flattened list of all their antecedants as well as information about errors - if a particular URL denotes a number produced by the division of one number by another and the divisor is 0 the value of the number is an error.<br>
+	From these basic components a complex global matrix of numbers and calculations can be constructed.<br><br>
+	In the future a hypernumber will also 'know' what other hypernumber uses it and will be able to tell those numbers when it has changed.<br>
+    <h2>
+      <font color=blue>What Is A Spriki</font>
+    </h2>
+	The name spriki is short for spreadsheet wiki and is just a page containing a 2-d grid of cells like a spreadsheet. Each page has a URL, as does each cell on each page. Each page is infinitely bounded. Each cell on a particular page can use the values from any cell on any other page by invoking the URL of that cell.<br><br>
+	The hypernumbers shown in the previous section are all cells on a particular page:<br>
+	cell <a href="https://vixo.com:9000/spriki/page1/?calc/a1">a1</a><br>
+	on page <a href="https://vixo.com:9000/spriki/page1/">https://vixo.com:9000/spriki/page1/</a><br>	
+
+    <h2>
+      <font color=blue>Using The Spriki</font>
+    </h2>
+     Spriki is a Microsoft Excel clone on the web. It aims to be Excel 2003 compatible but with 2 critical pieces of additional functionality:
+    <ul><li>each cell has its own URL and you can refer to a cell on another site from within one</li>
+    <li>every client looking at a page gets real-time updates</li></ul>      
+     
+     The screenshot shows the way in which this prototype can be used. <img src="/images/screenshot.jpg">
+    <br>
+    <br>
+     Cells can only take numbers and not text yet. Numbers can take a variety of different formats:
+    <ul>
+      <li>
+         as integers like <code>12345</code>
+      </li>
+      <li>
+         as floating numbers like <code>1.23</code>
+      </li>
+      <li>
+         as exponentials like <code>1.2e-3</code>
+      </li>
+    </ul>
+     Formulas are entered by starting with an = sign for instance <code>=3+4*5</code>
+    <br>
+    <br>
+     Cells can be referenced in six ways: 
+    <br>
+     Firstly, they can be referenced individually: 
+    <br>
+    <ul>
+      <li>
+         as local references <code>a1</code>
+      </li>
+      <li>
+         as references to cells on other the pages on the same site like <code>/spriki/page2/a1</code> or you can use the Microsoft Excel format if you like with exclamation marks <code>!spriki!page2!a1</code>
+      </li>
+      <li>
+         as remote references to pages on other sites like <code>http(othersite.com/spriki/page2/b3)</code>
+      </li>
+    </ul>
+    Secondly cells can be referenced in ranges: 
+    <br>
+    <ul>
+      <li>
+         as local ranges <code>a3-d7</code>
+      </li>
+      <li>
+         as ranges on other pages on the same site <code>/spriki/page2/b4-ff33</code>
+      </li>
+      <li>
+         as ranges on other sites <code>http(othersite.com/spriki/mypage/dd3-ee33)</code>
+      </li>
+    </ul>
+     <font color=red><b>Note</b></font>: Ranges are 2 dimensional by default, and are evaluated from top left to bottom right 
+     <br>
+    <br>
+     There are only a limited number of operators implemented as yet. These are: 
+    <ul>
+      <li>
+        <code>+</code>
+      </li>
+      <li>
+        <code>-</code>
+      </li>
+      <li>
+        <code>*</code>
+      </li>
+      <li>
+        <code>/</code>
+      </li>
+      <li>
+        <code>(</code>
+      </li>
+      <li>
+        <code>)</code>
+      </li>
+    </ul>
+     In addition to the operators there are 100 functions implemented here with another 140 developed but not integrated yet via the input language component yet (the target is all 247 functions that come as standard in Microsoft Excel 2003). See the <a href="./@funcref">Function Reference</a>.
+    <h2>
+      <font color=blue>State Of The Project</font>
+    </h2>
+    <h3>
+       Overview 
+    </h3>
+     There are 6 seperate development phases running at the moment:
+    <ul>
+      <li>
+         the calculation engine 
+      </li>
+      <li>
+         the user-input formula processing system 
+      </li>
+      <li>
+         the functions for the formulae 
+      </li>
+      <li>
+         the GUI 
+      </li>
+	<li>Excel file importing</li>
+      <li>
+          charting functionality
+      </li>      
+    </ul>
+    <h3>
+       The Calculation Engine 
+    </h3>
+     The calculation engine is the most critical part of the system and has had the greatest amount of work on it. Unless the calculation engine can be shown to scale and be stable under load there would be little or no point in continuing with the rest of the work.
+    <h3>
+       The User-Input Formula Processing System 
+    </h3>
+     The intention is make the input-formulae as close in format as possible to that of Excel 2003 as is possible. The current parsing engine is very basic and will be replaced with a more sophisticated one soon. The format of formulae will be nearly identical with Microsoft Excel 2003.
+    <h3>
+       The Functions For The Formulae 
+    </h3>
+     The functions have run ahead of the input processing system. For instance the <code>char</code> function has been implemented but strings are valid inputs for Spriki yet :( 
+    <br>
+    <h3>
+       The GUI 
+    </h3>
+     The GUI is being developed in Flash/Actionscript is the current development focus at the design stage at the moment.<br><br>
+     <font color=red>Note</font>: the full page throw is slow because the Actionscript functions are statically bound in at the moment, they will be done as libraries with much less reloading.
+	<h3>Excel File Import</h3>
+	Excel is the 'specification' and the focus on file import and export at the moment is on driving the test cases with it. The 'perfect' test cycle is to:
+	<ul><LI>create an excel file</LI>
+	<li>import it into the spriki</li>
+	<li>check that the cells in the spriki have the same values as those in the Excel file</li></ul>
+    <h3>
+        Other Activities
+    </h3>
+	In addition to what is visible here some work has been done on implementing charting functionality and
+	a considerable amount of work has been done on file import of Excel files.
+     <h2>
+      <font color=blue>What's On The Server?</font>
+    </h2>
+    This server is serving 10 spriki web sites and each site has 25 pages. Each page has 100 values from <code>x1:y1</code> to <code>x10:y10</code>. Of the values loaded all values in the first row are loaded with formulas containing references. Each formula contains between 1 and 5 references and of these references 1 in 5 is a remote reference.
+     The 10 web sites are: 
+    <ul>
+      <li>
+        <code><a href="https://vixo.com:9010/spriki/page1/">https://vixo.com:9010</a></code>
+      </li>
+      <li>
+        <code><a href="https://vixo.com:9009/spriki/page1/">https://vixo.com:9009</a></code>
+      </li>
+      <li>
+        <code><a href="https://vixo.com:9008/spriki/page1/">https://vixo.com:9008</a></code>
+      </li>
+      <li>
+        <code><a href="https://vixo.com:9007/spriki/page1/">https://vixo.com:9007</a></code>
+      </li>
+      <li>
+        <code><a href="https://vixo.com:9006/spriki/page1/">https://vixo.com:9006</a></code>
+      </li>
+      <li>
+        <code><a href="https://vixo.com:9005/spriki/page1/">https://vixo.com:9005</a></code>
+      </li>
+      <li>
+        <code><a href="https://vixo.com:9004/spriki/page1/">https://vixo.com:9004</a></code>
+      </li>
+      <li>
+        <code><a href="https://vixo.com:9003/spriki/page1/">https://vixo.com:9003</a></code>
+      </li>
+      <li>
+        <code><a href="https://vixo.com:9002/spriki/page1/">https://vixo.com:9002</a></code>
+      </li>
+      <li>
+        <code><a href="https://vixo.com:9001/spriki/page1/">https://vixo.com:9001</a></code>
+      </li>
+    </ul>
+     The pages run from <code>/spriki/page1/</code> to <code>/spriki/page25/</code> but you can create your own pages just by adding your own path after spriki, for instance: <code>
+	<a href="https://vixo.com:9001/spriki/your/new/page/">https://vixo.com:9001/spriki/your/new/page/</a></code>
+    <br>
+  </body>
+  </hmtl>

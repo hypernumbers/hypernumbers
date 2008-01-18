@@ -1,0 +1,3 @@
+#! /bin/bash
+cd ebin
+erl -detached -s production_boot remote_stop arrian -sname lily

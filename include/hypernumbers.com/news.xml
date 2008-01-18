@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<news>
+    <post><title>Developers Meetup</title>
+        <date>18th November, 07</date>
+        <user>Dale Harvey</user>
+        <text><p>During the alpha developers release of hypernumbers
+                we are looking for discussion with developers that are interested in the new
+                platform.<br /><br />
+                On tuesday the 20th(this week) we will be hosting a developers meetup at the 
+                erlang training and consulting offices (<a
+                                                          href="http://maps.google.co.uk/maps?f=q&amp;hl=en&amp;q=E1+6EL,+London&amp;ie=UTF8&amp;om=1&amp;ll=51.516915,-0.077248&amp;spn=0.040005,0.080338&amp;z=14">map
+                    here</a>) at 6:30pm.<br /><br />
+                We will do a quick presentation of the work so far, then it will be open
+                discussion on what developers would expect from the platform, and applications
+                they would like to write using it. Afterwards Im sure a few people will be
+                along for a few drinks and more discussion.<br /><br />
+                If you are interested in attending, give Gordon a quick email at
+                gordon@hypernumbers.com, and this is an open invitation so invite anyone who
+                might be interested, its not erlang specific so if you are into any flavour of
+                development come along.<br /><br />See you on Tuesday!</p></text></post>
+    
+    <post>
+        <title>...Something Completely Different</title>
+        <date>16 November, 07</date>
+        <user>Gordon Guthrie</user>
+        <text><p>As if being in <a href="http://seedcamp.com">Seedcamp</a> wasn't bad enough, I have just released my book <a href="http://computerisationofadministrativelegislation.com">No Skirl Without The Drone - The Computerisation Of Administrative Legislation</a> in draft form. A must for all fans of public sector transformation</p>
+            
+        </text>
+    </post>
+    <post>
+        <title>Erlang User Conference</title>
+        <date>16 November, 07</date>
+        <user>Gordon Guthrie</user>
+        <text><p>Our presentation at EUC is now available online with the rest of the <a href="http://www.erlang.se/euc/07/">conference proceedings</a>. As always it was a pleasure to be in Stockholm and the conference was great. See you next year!</p>
+            
+        </text>
+    </post>
+    <post>
+        <title>Welcome to HyperNumbers</title>
+        <date>7 November, 07</date>
+        <user>Dale Harvey</user>
+        <text>
+            
+            <p>Welcome to the launch of hypernumbers.com! The site will mainly
+                be used to keep people up to date with the progress of Hypernumbers
+                and keep in touch with 3rd party developers, if you feel anything is
+                missing, you can <a href="/contact/">contact us here</a>.
+                <br /><br /> We are
+                currently looking forward to the <a href="http://www.erlang.se/euc/07/">erlang users conference</a>
+                in Stockholm tommorrow, particularly the talk on <i>Integrating OTP
+                    with the Enterprise Service Bus</i> by Leslaw Lopacki. We will also be
+                presenting a talk title <i>Developing RESTful Platforms with Erlang
+                    and Adobe Flex</i>.</p>
+        </text>
+        
+    </post>
+</news>
