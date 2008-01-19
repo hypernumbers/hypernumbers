@@ -7,6 +7,7 @@
 
 -include("spriki.hrl").
 -include("builtins.hrl").
+-include("handy_macros.hrl").
 
 -import(muin_util, [expand_cellrange/2, fdbg/1, fdbg/2, get_frontend/0, getxy/1,
                     init/1, join/1, join/2, just_path/1, just_ref/1, to_i/1,
@@ -14,20 +15,12 @@
 -import(lists, [any/2, append/2, flatten/1, foldl/3, foreach/2, keysearch/3,
                 last/1, map/2, member/2, seq/2]).
 
-%% Ternary if.
--define(COND(Test, TrueVal, FalseVal),
-        case (Test) of true -> TrueVal; false -> FalseVal end).
-
-%% Simpler lists:keysearch().
--define(LOOKUP(Key, List),
-        element(2, element(2, keysearch(Key, 1, List)))).
-
 %% Bind values from Bindings to names in current scope.
 -define(CREATE_BINDINGS_VARS,
-        MSite = ?LOOKUP(site, Bindings), MSite,
-        MPath = ?LOOKUP(path, Bindings), MPath,
-        MX = ?LOOKUP(x, Bindings), MX,
-        MY = ?LOOKUP(y, Bindings), MY).
+        MSite = ?KEYLOOKUP(site, Bindings), MSite,
+        MPath = ?KEYLOOKUP(path, Bindings), MPath,
+        MX = ?KEYLOOKUP(x, Bindings), MX,
+        MY = ?KEYLOOKUP(y, Bindings), MY).
 
 %%%--------------------%%%
 %%%  Public functions  %%%
@@ -54,7 +47,7 @@ run(Ast, Bindings) ->
 
 %%% @doc Updates formula for structural change.
 %%% @spec update(Formula::string(), UpdateMsg::tuple()) ->
-%%            {ok, {NewFormula :: string(), Ast :: list()}}
+%%%            {ok, {NewFormula :: string(), Ast :: list()}}
 update(Formula, UpdateMsg) ->
     {ok, NewFormula} = muin_supd:do(Formula, UpdateMsg),
     {ok, Ast} = parse(NewFormula),

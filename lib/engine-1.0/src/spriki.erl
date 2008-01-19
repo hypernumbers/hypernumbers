@@ -153,9 +153,10 @@ show_ref(#page{site=Site,path=Path,ref={cell,{X,Y}},vars=Vars}) ->
     {Val,RefTree,Form,_Src,Errors,Refs} = 
         case db:read_spriki(Site,Path,X,Y) of
         [] -> {0,[],[],[],[],[]};
-        [#spriki{value=Value,status=#status{formula=Formula,
-         src=Source,reftree=RT,errors=Errs,refs=Refns}}] -> 
-            {Value,RT,Formula,Source,Errs,Refns}
+        [#spriki{value=Value,status=
+                 #status{formula=Formula, reftree=RT,
+                         errors=Errs, refs=Refns}}] -> 
+            {Value,RT,Formula,Errs,Refns}
 	end,
 
     FValue = case Errors of
@@ -574,8 +575,8 @@ write_cell(Formula, Value, Type, Bindings, Dependencies, Spec) ->
     {RefTree, Errors, References} = Dependencies,
     {Site, Path, X, Y} = Bindings,
     db:write(Site, Path, X, Y, Value, Type, make_bind_list(Site, Path, Spec),
-             #status{formula = Formula, src = "", absform = "", reftree = RefTree,
-                     errors = Errors, refs = References}).
+             #status{formula = Formula,
+                     reftree = RefTree, errors = Errors, refs = References}).
 
 %% OLD VERSION
 %%write_cell(Site,Path,X,Y,Val,Type,Formula,Fun,Abs,Tree,Spec,Err,Refs) ->
@@ -603,7 +604,9 @@ calc(Site,Path,X,Y)->
  	    {Val,NewRefTree,Err,NewRefs}
     end.
 
-recalc(#index{site=Site,path=Path,column=X,row=Y})->
+recalc(#index{site=Site,path=Path,column=X,row=Y}) ->
+    ?F("spriki:recalc~n"),
+    
     case db:read_spriki(Site,Path,X,Y) of
         []   -> ok;
         [#spriki{status=#status{formula=Formula}}] ->

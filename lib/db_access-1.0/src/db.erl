@@ -12,6 +12,7 @@
 %%--------------------------------------------------------------------
 
 -include("spriki.hrl").
+-include("handy_macros.hrl").
 
 %%--------------------------------------------------------------------
 %% External exports
@@ -80,46 +81,33 @@ update_hypnum(HNumber)->
             index=HNumber#hypernumbers.ref_from})
 	end).
 
-%%--------------------------------------------------------------------
-%% Function    : trigger_recalcs
-%%
-%% Description : Gets called from the dirty ref table
-%%
-%%--------------------------------------------------------------------
-trigger_recalcs(Type,Ref)->
 
-    %% A Dirty Ref has been written to the table, update the
-    %% value of any hypernumbers that use that reference
-	{atomic,List} = mnesia:transaction((fun() ->
-		mnesia:match_object(hypernumbers, #hypernumbers{
-			ref_from = Ref, _='_'}, read) end)),
+%% Gets called from dirty_srv:process() whenever a cell is updated.
+trigger_recalcs(Type, Ref) ->
+    %% Update the value of hypernumbers from the changed cell.
+    List = call(fun() ->
+                        mnesia:match_object(hypernumbers,
+                                            #hypernumbers{
+                                              ref_from = Ref, _ = '_'},
+                                            read)
+                end),
 
-	
-    lists:foreach(
-        fun(Num) -> 
-            [Rec] = read_spriki(Num#hypernumbers.ref_from),
-            update_hypnum(Num#hypernumbers{value=Rec#spriki.value})
-        end,List),
+    lists:foreach(fun(Num) -> 
+                          [Rec] = read_spriki(Num#hypernumbers.ref_from),
+                          update_hypnum(Num#hypernumbers{value=Rec#spriki.value})
+                  end,
+                  List),
 
-    call(fun()-> 
-        case read_ref(from,Ref) of
-        [] ->
-            mnesia:delete({dirty_refs,Ref});
-        List ->
-            lists:foreach(
-                fun({ref,_,To,_,Det}) -> 
-                    trigger_update(Type,Ref,To,Det)
-                end,List), 
-            mnesia:delete({dirty_refs,Ref})
-        end,
-	
-       case Type of
-        dirty_hypernumbers -> 
-            mnesia:delete({dirty_hypernumbers,Ref});
-	   _ -> ok
-	   end
-	end).
-
+    %% Trigger updates on local cells that depended on the changed cell.
+    lists:foreach(fun({ref, _, RefTo, _, DetTo}) ->
+                          trigger_update(Type, Ref, RefTo, DetTo)
+                  end,
+                  read_ref(from, Ref)), % Dependent refs, may be empty. 
+    
+    %% And delete the dirty ref.
+    call(fun() ->
+                 mnesia:delete({Type, Ref})
+         end).
 
 %%--------------------------------------------------------------------
 %% Function    : get_first_dirty/1
@@ -252,45 +240,38 @@ read_range(Site,Path,{X1,Y1,X2,Y2}) ->
     call(fun() -> mnesia:foldl(F, [], spriki) end).
 
 %%--------------------------------------------------------------------
-%% Function    : read_ref/5
+%% Function    : read_ref/2
 %%
 %% Description : ref is a two way table it joins cells that refer to
 %%               each other together (it is a pigs ear on the table
 %%               spriki effectively)
-%%
-%%               read_ref/4 with first param of 'from' reads the pigs
-%%               ear up (go from me to who refers to me) whilst a
-%%               first param of 'to' reads it down (go from me to
-%%               who refers to me)
 %%
 %%               references are fully qualified domain names and can
 %%               be used to refer to both local and remote cells
-%%
 %%--------------------------------------------------------------------
-read_ref(Type,Index) when Type == from ; Type == to ->
 
-    call(case Type of
-        from -> fun() -> mnesia:read({ref,Index}) end;
-        to   -> fun() -> mnesia:index_read(ref,Index,#ref.ref_to) end
-    end);
-
-%%--------------------------------------------------------------------
-%% Function    : read_ref/8
-%%
-%% Description : ref is a two way table it joins cells that refer to
-%%               each other together (it is a pigs ear on the table
-%%               spriki effectively)
-%%
-%%               read_ref/9 finds a particular ref that connects
-%%               two particular cells (both local and remote)
-%%
-%%--------------------------------------------------------------------
-read_ref(From,To) ->
-
+%% Reads the pigs ear up (go from me to who refers to me).
+read_ref(from, Index) ->
     call(fun() ->
-        mnesia:select(ref,[{#ref{ref_from = From,
-            ref_to = To,_='_'},[],['$_']}])
-    end).
+                 mnesia:read({ref, Index})
+         end);
+
+%% Reads the pigs ear down (go from me to who refers to me).
+read_ref(to, Index) ->
+    call(fun() ->
+                 mnesia:index_read(ref, Index, #ref.ref_to)
+         end);
+
+%% Finds a particular ref that connects two particular cells (both local
+%% and remote).
+read_ref(From, To) ->
+    call(fun() ->
+                 mnesia:select(ref, [{#ref{ref_from = From,
+                                           ref_to = To,
+                                           _ = '_'},
+                                      [],
+                                      ['$_']}])
+         end).
 
 %%--------------------------------------------------------------------
 %% Function    : read_spriki/4
@@ -467,34 +448,27 @@ del_spriki(Site,Path,X,Y) ->
     end.
 
 %%--------------------------------------------------------------------
-%%
 %% Internal Functions
-%%
 %%--------------------------------------------------------------------
+
+%% Wrapper around mnesia:transaction().
 call(Fun) ->
     case mnesia:transaction(Fun) of
         {aborted, Reason} -> {error, Reason};
-        {atomic,  Return} -> Return
+        {atomic,  List}   -> List
     end.
 
-trigger_update(Type,From,To,Details) ->
 
-    Recalc = case Type of
-        dirty_refs -> 
-            case From#index.site == To#index.site of
-            true  -> local;
-            false -> remote
-            end;
-        dirty_hypernumbers -> local
-    end,
-    
-    case Recalc of
-    local  -> spriki:recalc(To);
-    remote -> remote_recalc(Details,From)
-    end.
+trigger_update(dirty_refs, From, To, Details) ->
+    ?COND(From#index.site == To#index.site,
+          spriki:recalc(To),
+          remote_recalc(Details, From));
+
+trigger_update(dirty_hypernumbers, _From, To, _Details) ->
+    spriki:recalc(To).
+
 
 remote_recalc(Details,From) ->
-
     [#spriki{value=Value}] = mnesia:read({spriki,From}),
     #details_to{proxy_URL=Proxy,reg_URL=Reg,biccie=Bic} = Details,
 

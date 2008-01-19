@@ -2,6 +2,9 @@
 # Test library for Spriki system testing.
 # <hasan@hypernumbers.com>
 
+$LOAD_PATH << File.join(ENV["HYPERNUMBERS_SVNROOT"], "priv", "ruby")
+require "hypernumbers"
+
 # I want to colorize my output. (Using ANSI escape codes.)
 class String
   def ansi_red

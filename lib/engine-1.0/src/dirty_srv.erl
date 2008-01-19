@@ -220,11 +220,14 @@ code_change(_OldVsn, StateName, State, _Extra) ->
 %%------------------------------------------------------------------------------
 %%% Internal functions
 %%------------------------------------------------------------------------------
-process(Record,dirty_refs)->
-    ?F("calling~n"),
-    db:trigger_recalcs(dirty_refs,Record#dirty_refs.index);
-process(Record,dirty_hypernumbers) ->
-    ?F("calling~n"),
+
+%% Record is the record for the cell that's been changed. See dirty_refs in
+%% spriki.hrl. Example:
+%% {dirty_refs,{index,"http://127.0.0.1:9000","/",1,1},1966112354}
+%% for A1 on /.
+process(Record, dirty_refs)->
+    db:trigger_recalcs(dirty_refs, Record#dirty_refs.index);
+process(Record, dirty_hypernumbers) ->
     db:trigger_recalcs(dirty_hypernumbers,Record#dirty_hypernumbers.index).
 
 

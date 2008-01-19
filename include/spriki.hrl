@@ -38,16 +38,15 @@
 %%      format={xml}},
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                             %
-%% Thes records are sub-records                %
+%% These records are sub-records               %
 %%                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 -record(status, {
-	  formula=[],
-	  src=[],
-	  absform=[],
-	  reftree=[],
-	  errors=[],
-	  refs=[]
+          formula = [],
+          reftree = [],
+          errors  = [],
+          refs    = []
 	 }).
 
 %% the details_from record is used by the site that has an outstanding request
@@ -109,13 +108,20 @@
 	 }).
 
 -record(ref, {
-	  ref_from=#index{},
-	  ref_to=#index{},
-	  details_from=#details_from{},
-	  details_to=#details_to{}
-	 }).
+          ref_from     = #index{},
+          ref_to       = #index{},
+          details_from = #details_from{},
+          details_to   = #details_to{}
+         }).
 
--record(spriki, { index=#index{}, value, val_type, status=#status{}, num_format=[], disp_format=[] }).
+-record(spriki, {
+          index       = #index{},
+          value,
+          val_type,
+          status      = #status{},
+          num_format  = [],
+          disp_format = []
+         }).
 
 -record(hypernumbers, {
 	  ref_from=#index{},
@@ -139,4 +145,3 @@
 
 %% Cookie Record for logged in users
 -record(user, {name, loggedin=false,state = #users{}}).
-

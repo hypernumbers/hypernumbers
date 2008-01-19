@@ -31,9 +31,7 @@
 
 -compile(export_all).
 
-%% Ternary if.
--define(COND(Test, TrueVal, FalseVal),
-        case (Test) of true -> TrueVal; false -> FalseVal end).
+-include("handy_macros.hrl").
 
 %% Takes a same-site reference, returns path to the page it's on.
 just_path(Ssref) when is_list(Ssref) ->
@@ -91,23 +89,25 @@ expand_cellrange(Start_, End_) ->
           Cells).
 
 
-fdbg(Vals) when is_tuple(Vals) ->
-    foreach(fun(X) -> fdbg(X) end, tuple_to_list(Vals));
-
 fdbg(Val) ->
     fdbg(Val, "").
+
+
+fdbg(Vals, Labels) when is_tuple(Vals) andalso is_tuple(Labels) ->
+    foreach(fun({Val, Label}) ->
+                    fdbg(Val, Label)
+            end,
+            lists:zip(tuple_to_list(Vals), tuple_to_list(Labels)));
 
 fdbg(Val, Name) ->
     MakeLine = fun(Char, Length) ->
                        flatten(map(fun(_X) -> [Char] end, seq(1, Length)))
                end,
      
-    StartLine = MakeLine($=, 5) ++ Name ++ MakeLine($=, 5),
-    EndLine = MakeLine($=, length(StartLine)),	
+    StartLine = MakeLine($-, 7) ++ " " ++ Name,
     
     io:format("~s~n", [StartLine]),
-    erlang:display(Val),
-    io:format("~s~n", [EndLine]).
+    erlang:display(Val).
 
 
 puts(Str) ->
