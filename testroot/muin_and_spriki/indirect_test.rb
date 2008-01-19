@@ -3,9 +3,6 @@
 # Tests for INDIRECT().
 # <hasan@hypernumbers.com>
 
-$LOAD_PATH << File.expand_path(File.dirname(__FILE__), "../../priv/ruby")
-
-require "hypernumbers"
 load "mytestlib.rb"
 
 data = [
@@ -15,7 +12,6 @@ data = [
           }}
        ]
 
-# Columns, ranges...
 formulas = [
             { :sheet => "/", :data =>
               { :c1 => "=indirect(\"a1\")",
