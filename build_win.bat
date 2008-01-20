@@ -1,5 +1,5 @@
 @echo off 
-set erldir=C:\Program Files\erl5.5.5
+set erldir=C:\Program Files\erl5.6
 
 echo "COMPILING LEXER AND PARSER"
 cd ./priv/muin/

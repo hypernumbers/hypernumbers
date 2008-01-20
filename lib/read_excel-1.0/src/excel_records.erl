@@ -687,6 +687,8 @@ parse_rec(?ARRAY2,Bin,Tables,FileOut)->
       Formula="{"++parse_FRM_Results(formula,Tokens,Tables,FileOut)++"}",
       io:format("in excel_records:parse_rec for ARRAY~n-Formula are ~p~n",[Formula]),
       excel_util:write(Tables,arrayformula,[{{row_index,Row},{col_index,Col}},{formula,Formula}]),
+      filefilters:dump(Tables),
+      exit("goodbye"),
     excel_util:put_log(FileOut,"[/ARRAY2]"),
     {ok,ok};
 parse_rec(?DEFAULTROWHEIGHT2,_Bin,_Tables,FileOut)->

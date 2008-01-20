@@ -82,9 +82,11 @@ reverse_compile([{intersect,_Token}|T],TokenArray,Stack,Residuum,Tables,FileOut)
 %%	tList   
 reverse_compile([{list,{tList,[{op_type,binary}],{return,reference}}}|T],TokenArray,Stack,Residuum,Tables,FileOut)  ->
     io:format("~nin excel_rev_comp:reverse_compile for tList Stack is ~p~n",[Stack]),
-    %%NewStack = push(Stack,{string,","}),
+    {First,NewStack}=pop(Stack),
+    {Second,Rest2}=pop(NewStack),
+    Formula = push(Rest2,{Second,comma,First}),
     io:format("in excel_rev_comp:reverse_compile for tList - dinnae understand!~n"),
-    reverse_compile(T,TokenArray,Stack,Residuum,Tables,FileOut);
+    reverse_compile(T,TokenArray,Formula,Residuum,Tables,FileOut);
 	
 %%	tRange  
 	
@@ -321,6 +323,7 @@ reverse_compile([{memory_area,{tMemArea,[{value,MemArea},{type,Type}],
 %% This will catch missed out stuff...
 reverse_compile([Head|T],TokenArray,Stack,Residuum,Tables,FileOut) ->
     io:format("~nin excel_rev_comp:reverse_compile for What's This? Head is ~p~n",[Head]),
+    excel_util:put_log(FileOut++".rev_comp",io_lib:fwrite("Missing Token is ~p",[Head])),
     reverse_compile(T,TokenArray,Stack,Residuum,Tables,FileOut);
 
 %% Clean up?
@@ -446,7 +449,8 @@ operator_to_string(equals)                 -> "=";
 operator_to_string(greater_than_or_equals) -> ">=";
 operator_to_string(greater_than)           -> ">";
 operator_to_string(not_equals)             -> "!=";
-operator_to_string(intersect)             -> " ".
+operator_to_string(intersect)              -> " ";
+operator_to_string(comma)                  -> ",".
 
 to_str({func,Var,Args})    ->
 R = fun(Item) -> 
@@ -977,4 +981,15 @@ macro_no_of_args(350) -> 4;
 macro_no_of_args(351) -> 3;
 macro_no_of_args(352) -> 1;
 macro_no_of_args(353) -> 2;
+%% I am forcing GETPIVOTDATA to have a fixed 2 argument list even
+%% though I know it doesn't
+%% it **OUGHT** to appear in a tFuncVar token only, but I
+%% suspect it is a tFunc when there are 2 attributes
+%% Don't know enought about Pivot Tables to test this so wil
+%% bodge for now
+%%
+%% GG 2007_01_18
+macro_no_of_args(358) -> 
+    io:format("in excel_rev_comp:macro_no_of_args for GETPIVOTDATA this is a cludge!~n"),
+    2;
 macro_no_of_args(360) -> 1.

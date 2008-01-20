@@ -12,6 +12,7 @@
 
 %%% Debugging exports - not for proper use
 -export([test_DEBUG/0]).
+-export([dump/1]).
 
 -include("spriki.hrl").
 -include("microsoftcompoundfileformat.hrl").
@@ -392,7 +393,8 @@ test_DEBUG()->
     %%File="sum_with_one_arg.xls",
     %%File="block_of_numbers.xls",
     %%File="gnumeric_db.xls",
-    FileRoot="c:/Users/Gordon Guthrie/Documents/SVN/trunk/testroot/"++
+    %%File="gnumeric_lookup.xls",
+    FileRoot="c:/Users/Gordon Guthrie/Documents/SVN/testroot/"++
      	"excel_import_test/files/Win Excel 2007 (as 97)",
     io:format("in filefilters:test_DEBUG FileRoot is ~p and File is ~p~n",
               [FileRoot,File]),
