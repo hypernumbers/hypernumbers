@@ -27,6 +27,9 @@ integer float boolean string date
 cellref sscellref sscolref ssrowref
 intersection
 
+%% Errors
+error
+
 %% Punctuation.
 open_paren close_paren comma
 open_curly close_curly semicolon
@@ -96,7 +99,9 @@ Literal -> date       : lit('$1').
 Literal -> cellref    : lit('$1').
 Literal -> sscellref  : lit('$1').
 Literal -> var        : lit('$1').
+Literal -> error      : lit('$1').
 Literal -> Array      : '$1'.
+
 
 %% Arrays: lists of rows, which are lists of values of certain allowed types.
 Array -> open_curly ArrayRows close_curly : to_native_list('$2').
@@ -176,6 +181,9 @@ lit({cellref, Data}) ->
 
 lit({sscellref, Data}) ->
     [sscellref, Data];
+
+lit({error, Data}) ->
+    [error, Data];
 
 lit({var, Data}) ->
     [var, Data];

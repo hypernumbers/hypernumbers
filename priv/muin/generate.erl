@@ -5,73 +5,30 @@
 
 -module(generate).
 -export([gen/0]).
+-import(fileutil, [cp/2, mv/2, rm/1]).
+-import(io, [format/1]).
 
 gen() ->
-    %% ===== Compile Leex.
+    DestDir = "../../lib/formula_engine-1.0/src/",
+
+    %% Compile Leex.
     {ok, leex} = compile:file("leex.erl"),
+    format("Compiled Leex~n"),
 
-    %% ===== Generate main lexer and parser.
+    %% Generate main lexers & parser.
     leex:gen(lexer_desc, muin_lexer),
-    %%leex:gen(num_format_lex,num_format_lexer),
+    format("Compiled main lexer.~n"),
     yecc:yecc(parser_desc, muin_parser),
-
-    %% ===== Generate Lisp frontend.
-    %% When extending this to solaris os:type will return {unix,sunos}
-    %% but the linux commands should work just fine.
-    OS = case os:type() of
-             {unix, linux}  -> linux;
-             {unix, darwin} -> linux;
-             {win32, _} -> windows
-         end,
-    %% First, copy Leex  and Yecc files to current directory.
-    %%copy("./lisp_frontend/lisp_lexer_desc.xrl",".",OS),
-    %%copy("./lisp_frontend/lisp_parser_desc.yrl",".",OS),
-    %% Second, generate the lexer and the parser.
-    %%leex:gen(lisp_lexer_desc, lisp_lexer),
-    %%yecc:yecc(lisp_parser_desc, lisp_parser),
-    %% Finally, delete copied files.
-    %%delete("lisp_lexer_desc.xrl",OS),
-    %%delete("lisp_parser_desc.yrl",OS),
-
-    %% ===== Move the generated files to the right directory.
-    %% The main lexer and parser first.
-    delete("../../lib/formula_engine-1.0/src/muin_lexer.erl",OS),
-    %%delete("../../lib/formula_engine-1.0/src/num_format_lexer.erl",OS),
-    delete("../../lib/formula_engine-1.0/src/muin_parser.erl",OS),
-    move("muin_lexer.erl","../../lib/formula_engine-1.0/src/",OS),
-    %%move("num_format_lexer.erl","../../lib/formula_engine-1.0/src/",OS),
-    move("muin_parser.erl","../../lib/formula_engine-1.0/src/",OS),
-
-    %% Create directory for frontend code.
-    %%os:cmd("mkdir ../../lib/formula_engine-1.0/src/frontends"),
-
-    %% Lisp lexer and parser.
-    %%delete("../../lib/formula_engine-1.0/src/lisp_lexer.erl",OS),
-    %%delete("../../lib/formula_engine-1.0/src/lisp_parser.erl",OS),
-    %%move("lisp_lexer.erl","../../lib/formula_engine-1.0/src/",OS),
-    %%move("lisp_parser.erl","../../lib/formula_engine-1.0/src/",OS),
+    format("Compiled main parser.~n"),
+    leex:gen(supd_lexer, muin_supd_lexer),
+    format("Compiled structural updates lexer.~n"),
+    
+    %% Move the generated files to the right directory.
+    rm(DestDir ++ "muin_lexer.erl"),
+    rm(DestDir ++ "muin_parser.erl"),
+    rm(DestDir ++ "muin_supd_lexer.erl"),
+    mv("muin_lexer.erl", DestDir),
+    mv("muin_parser.erl", DestDir),
+    mv("muin_supd_lexer.erl", DestDir),
 
     io:format("OK~n"). % Cheeky, cos one or more commands above could've failed.
-
-copy(From,To,OS)->
-   case OS of
-    linux      -> os:cmd("cp "++From++" "++To);
-    windows -> From2=filename:nativename(From),
-                    To2=filename:nativename(To),
-                    os:cmd("copy "++(From2)++" "++To2)
-  end.
-  
-move(From,To,OS)->
-   case OS of
-    linux      -> os:cmd("mv "++From++" "++To);
-    windows ->  From2=filename:nativename(From),
-                    To2=filename:nativename(To),
-                    os:cmd("move "++From2++" "++To2)
-  end.
-  
-delete(File,OS)->
-   case OS of
-    linux      -> os:cmd("rm "++File);
-    windows ->  File2=filename:nativename(File),
-                    os:cmd("del "++File2)
-  end.

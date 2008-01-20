@@ -24,6 +24,7 @@ ID = [a-zA-Z][a-zA-Z0-9_]*
 %% Variables ("names" in Excel-speak).
 VAR = _{ID}
 
+ERROR = \#NULL\!|\#DIV\/0\!|\#VALUE\!|\#REF\!|\#NAME\?|\#NUM\!|\#N\/A\!
 
 %%% ----- References
 
@@ -68,6 +69,8 @@ Rules.
                                   _      -> false
                               end}}.
 {STRING}  : {token, {string, muin_util:mid(YYtext)}}.
+
+{ERROR}   : {token, {error, list_to_atom(YYtext)}}.
 
 %% Stuff.
 {VAR}     : {token, {var, string:to_lower(YYtext)}}.
