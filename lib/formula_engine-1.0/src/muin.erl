@@ -12,15 +12,14 @@
 -import(muin_util, [expand_cellrange/2, fdbg/1, fdbg/2, get_frontend/0, getxy/1,
                     init/1, join/1, join/2, just_path/1, just_ref/1, to_i/1,
                     to_i/2, to_s/1, puts/1, walk_path/2]).
--import(lists, [any/2, append/2, flatten/1, foldl/3, foreach/2, keysearch/3,
-                last/1, map/2, member/2, seq/2]).
 
-%% Bind values from Bindings to names in current scope.
+%% Bind values from Bindings to vars in current scope. Vars repeated after
+%% creation to remove "Unused variable" warnings.
 -define(CREATE_BINDINGS_VARS,
-        MSite = ?KEYLOOKUP(site, Bindings), MSite,
-        MPath = ?KEYLOOKUP(path, Bindings), MPath,
-        MX = ?KEYLOOKUP(x, Bindings), MX,
-        MY = ?KEYLOOKUP(y, Bindings), MY).
+        MSite = ?KEYSEARCH(site, Bindings), MSite,
+        MPath = ?KEYSEARCH(path, Bindings), MPath,
+        MX    = ?KEYSEARCH(x, Bindings), MX,
+        MY    = ?KEYSEARCH(y, Bindings), MY).
 
 %%%--------------------%%%
 %%%  Public functions  %%%
@@ -35,9 +34,10 @@ parse(Formula) ->
     {ok, Ast}.
 
 
-%%% @doc Runs the s-expression.
-%%% TODO: Move the interpreter to muin_interpreter, which will also be spawnable?
-%%% Otherwise, I can haz problems with concurrency?
+%% @doc Runs the s-expression.
+%% TODO: Move the interpreter to muin_interpreter, which will also be
+%% spawnable?
+%% Otherwise, I can haz problems with concurrency?
 run(Ast, Bindings) ->
     put(retvals, {[], [], []}),
     Value = eval(Ast, Bindings),
@@ -124,12 +124,10 @@ preproc(Sexp, Bindings) ->
 
 %% @doc Same as eval() but doesn't pre-process.
 plain_eval([Fun | Args], Bindings) when is_atom(Fun) ->
-    %% Eval any funcalls in args first if needed.
     CallArgs = ?COND(any_funcalls(Args),
                      map(fun(X) -> plain_eval(X, Bindings) end, Args),
                      Args),
     
-    %% Some functions need access to bindings, some don't...
     ?COND(member(Fun, [sscellref, ':', hn, hypernumber]),
           funcall(Fun, CallArgs, Bindings),
           funcall(Fun, CallArgs));
