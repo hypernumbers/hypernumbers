@@ -1,0 +1,497 @@
+=== Suite started at 2008-01-20 22:40:53
+=== Starting test, 36 test cases
+=cases        36
+=user         dale
+=host         dale-desktop
+=hosts        dale-desktop 
+=emulator_vsn 5.6
+=emulator     beam
+=otp_release  R12B
+=started      2008-01-20 22:40:53
+=case    cell_test_SUITE:init_per_suite
+=logfile cell_test_suite.init_per_suite.html
+=started 2008-01-20 22:40:53
+=ended   2008-01-20 22:40:53
+=result    ok
+=elapsed   0.494514
+=case    cell_test_SUITE:cell1
+=logfile cell_test_suite.cell1.html
+=started 2008-01-20 22:40:53
+=ended   2008-01-20 22:40:53
+=result    ok
+=elapsed   5.79040e-2
+=case    cell_test_SUITE:cell2
+=logfile cell_test_suite.cell2.html
+=started 2008-01-20 22:40:53
+=ended   2008-01-20 22:40:53
+=result    ok
+=elapsed   2.58470e-2
+=case    cell_test_SUITE:cell3
+=logfile cell_test_suite.cell3.html
+=started 2008-01-20 22:40:53
+=ended   2008-01-20 22:40:53
+=result    failed:{{badmatch,{error,{bad_char,60}}},
+                   [{util2,flatten_data,2},
+                    {cell_test_SUITE,post_data,2},
+                    {cell_test_SUITE,cell3,1},
+                    {test_server,my_apply,3},
+                    {test_server,ts_tc,3},
+                    {test_server,run_test_case_eval1,4},
+                    {test_server,run_test_case_eval,6}]}, [{cell_test_SUITE,
+                                                            post_data,110},
+                                                           {cell_test_SUITE,
+                                                            cell3,48}]
+=== *** FAILED *** test case 3 of 36
+=case    cell_test_SUITE:cell4
+=logfile cell_test_suite.cell4.html
+=started 2008-01-20 22:40:53
+=ended   2008-01-20 22:40:53
+=result    failed:{{badmatch,{error,{bad_char,60}}},
+                   [{util2,flatten_data,2},
+                    {cell_test_SUITE,post_data,2},
+                    {cell_test_SUITE,cell4,1},
+                    {test_server,my_apply,3},
+                    {test_server,ts_tc,3},
+                    {test_server,run_test_case_eval1,4},
+                    {test_server,run_test_case_eval,6}]}, [{cell_test_SUITE,
+                                                            post_data,110},
+                                                           {cell_test_SUITE,
+                                                            cell4,55}]
+=== *** FAILED *** test case 4 of 36
+=case    cell_test_SUITE:cell5
+=logfile cell_test_suite.cell5.html
+=started 2008-01-20 22:40:53
+=ended   2008-01-20 22:40:54
+=result    failed:{{badmatch,{error,{bad_char,60}}},
+                   [{util2,flatten_data,2},
+                    {cell_test_SUITE,post_data,2},
+                    {cell_test_SUITE,cell5,1},
+                    {test_server,my_apply,3},
+                    {test_server,ts_tc,3},
+                    {test_server,run_test_case_eval1,4},
+                    {test_server,run_test_case_eval,6}]}, [{cell_test_SUITE,
+                                                            post_data,110},
+                                                           {cell_test_SUITE,
+                                                            cell5,60}]
+=== *** FAILED *** test case 5 of 36
+=case    cell_test_SUITE:cell6
+=logfile cell_test_suite.cell6.html
+=started 2008-01-20 22:40:54
+=ended   2008-01-20 22:40:54
+=result    failed:{{badmatch,{error,{bad_char,60}}},
+                   [{util2,flatten_data,2},
+                    {cell_test_SUITE,post_data,2},
+                    {cell_test_SUITE,cell6,1},
+                    {test_server,my_apply,3},
+                    {test_server,ts_tc,3},
+                    {test_server,run_test_case_eval1,4},
+                    {test_server,run_test_case_eval,6}]}, [{cell_test_SUITE,
+                                                            post_data,110},
+                                                           {cell_test_SUITE,
+                                                            cell6,67}]
+=== *** FAILED *** test case 6 of 36
+=case    cell_test_SUITE:cell7
+=logfile cell_test_suite.cell7.html
+=started 2008-01-20 22:40:54
+=ended   2008-01-20 22:40:54
+=result    failed:{{badmatch,{error,{bad_char,60}}},
+                   [{util2,flatten_data,2},
+                    {cell_test_SUITE,post_data,2},
+                    {cell_test_SUITE,cell7,1},
+                    {test_server,my_apply,3},
+                    {test_server,ts_tc,3},
+                    {test_server,run_test_case_eval1,4},
+                    {test_server,run_test_case_eval,6}]}, [{cell_test_SUITE,
+                                                            post_data,110},
+                                                           {cell_test_SUITE,
+                                                            cell7,72}]
+=== *** FAILED *** test case 7 of 36
+=case    cell_test_SUITE:cell8
+=logfile cell_test_suite.cell8.html
+=started 2008-01-20 22:40:54
+=ended   2008-01-20 22:40:54
+=result    ok
+=elapsed   3.74900e-3
+=case    cell_test_SUITE:cell9
+=logfile cell_test_suite.cell9.html
+=started 2008-01-20 22:40:54
+=ended   2008-01-20 22:40:54
+=result    failed:{fail,expected,"50",got,"5"}, [{cell_test_SUITE,cell9,88}]
+=== *** FAILED *** test case 9 of 36
+=case    cell_test_SUITE:end_per_suite
+=logfile cell_test_suite.end_per_suite.html
+=started 2008-01-20 22:40:54
+=ended   2008-01-20 22:40:54
+=result    ok
+=elapsed   1.11430e-2
+=case    column_test_SUITE:init_per_suite
+=logfile column_test_suite.init_per_suite.html
+=started 2008-01-20 22:40:54
+=ended   2008-01-20 22:40:54
+=result    ok
+=elapsed   0.148534
+=case    column_test_SUITE:column1
+=logfile column_test_suite.column1.html
+=started 2008-01-20 22:40:54
+=ended   2008-01-20 22:40:54
+=result    ok
+=elapsed   2.85280e-2
+=case    column_test_SUITE:column2
+=logfile column_test_suite.column2.html
+=started 2008-01-20 22:40:54
+=ended   2008-01-20 22:40:54
+=result    failed:{{badmatch,{error,{bad_char,60}}},
+                   [{util2,flatten_data,2},
+                    {column_test_SUITE,post_data,3},
+                    {column_test_SUITE,column2,1},
+                    {test_server,my_apply,3},
+                    {test_server,ts_tc,3},
+                    {test_server,run_test_case_eval1,4},
+                    {test_server,run_test_case_eval,6}]}, [{column_test_SUITE,
+                                                            post_data,86},
+                                                           {column_test_SUITE,
+                                                            column2,45}]
+=== *** FAILED *** test case 11 of 36
+=case    column_test_SUITE:columnlast
+=logfile column_test_suite.columnlast.html
+=started 2008-01-20 22:40:54
+=ended   2008-01-20 22:40:54
+=result    ok
+=elapsed   4.55740e-2
+=case    column_test_SUITE:columnlast2
+=logfile column_test_suite.columnlast2.html
+=started 2008-01-20 22:40:54
+=ended   2008-01-20 22:40:55
+=result    ok
+=elapsed   4.01680e-2
+=case    column_test_SUITE:end_per_suite
+=logfile column_test_suite.end_per_suite.html
+=started 2008-01-20 22:40:55
+=ended   2008-01-20 22:40:55
+=result    ok
+=elapsed   7.45300e-3
+=case    hypernumbers_test_SUITE:init_per_suite
+=logfile hypernumbers_test_suite.init_per_suite.html
+=started 2008-01-20 22:40:55
+=ended   2008-01-20 22:40:55
+=result    ok
+=elapsed   6.77060e-2
+=case    hypernumbers_test_SUITE:hn1
+=logfile hypernumbers_test_suite.hn1.html
+=started 2008-01-20 22:40:55
+=ended   2008-01-20 22:40:55
+=result    failed:{{badmatch,{error,session_remotly_closed}},
+                   [{hn_util,post,2},
+                    {hypernumbers_test_SUITE,hn1,1},
+                    {test_server,my_apply,3},
+                    {test_server,ts_tc,3},
+                    {test_server,run_test_case_eval1,4},
+                    {test_server,run_test_case_eval,6}]}, [{hypernumbers_test_SUITE,
+                                                            hn1,38}]
+=== *** FAILED *** test case 14 of 36
+=case    hypernumbers_test_SUITE:hn2
+=logfile hypernumbers_test_suite.hn2.html
+=started 2008-01-20 22:40:55
+=ended   2008-01-20 22:40:55
+=result    failed:{{badmatch,{error,session_remotly_closed}},
+                   [{hn_util,post,2},
+                    {hypernumbers_test_SUITE,hn2,1},
+                    {test_server,my_apply,3},
+                    {test_server,ts_tc,3},
+                    {test_server,run_test_case_eval1,4},
+                    {test_server,run_test_case_eval,6}]}, [{hypernumbers_test_SUITE,
+                                                            hn2,46}]
+=== *** FAILED *** test case 15 of 36
+=case    hypernumbers_test_SUITE:hn3
+=logfile hypernumbers_test_suite.hn3.html
+=started 2008-01-20 22:40:55
+=ended   2008-01-20 22:40:55
+=result    failed:{{badmatch,{error,session_remotly_closed}},
+                   [{hn_util,post,2},
+                    {hypernumbers_test_SUITE,hn3,1},
+                    {test_server,my_apply,3},
+                    {test_server,ts_tc,3},
+                    {test_server,run_test_case_eval1,4},
+                    {test_server,run_test_case_eval,6}]}, [{hypernumbers_test_SUITE,
+                                                            hn3,60}]
+=== *** FAILED *** test case 16 of 36
+=case    hypernumbers_test_SUITE:hn4
+=logfile hypernumbers_test_suite.hn4.html
+=started 2008-01-20 22:40:55
+=ended   2008-01-20 22:40:55
+=result    failed:{{badmatch,{error,session_remotly_closed}},
+                   [{hn_util,post,2},
+                    {hypernumbers_test_SUITE,hn4,1},
+                    {test_server,my_apply,3},
+                    {test_server,ts_tc,3},
+                    {test_server,run_test_case_eval1,4},
+                    {test_server,run_test_case_eval,6}]}, [{hypernumbers_test_SUITE,
+                                                            hn4,75}]
+=== *** FAILED *** test case 17 of 36
+=case    hypernumbers_test_SUITE:hn5
+=logfile hypernumbers_test_suite.hn5.html
+=started 2008-01-20 22:40:55
+=ended   2008-01-20 22:40:55
+=result    failed:{{badmatch,{error,session_remotly_closed}},
+                   [{hn_util,post,2},
+                    {hypernumbers_test_SUITE,hn5,1},
+                    {test_server,my_apply,3},
+                    {test_server,ts_tc,3},
+                    {test_server,run_test_case_eval1,4},
+                    {test_server,run_test_case_eval,6}]}, [{hypernumbers_test_SUITE,
+                                                            hn5,93}]
+=== *** FAILED *** test case 18 of 36
+=case    hypernumbers_test_SUITE:end_per_suite
+=logfile hypernumbers_test_suite.end_per_suite.html
+=started 2008-01-20 22:40:55
+=ended   2008-01-20 22:40:55
+=result    ok
+=elapsed   7.37100e-3
+=case    incoming_test_SUITE:init_per_suite
+=logfile incoming_test_suite.init_per_suite.html
+=started 2008-01-20 22:40:55
+=ended   2008-01-20 22:40:56
+=result    ok
+=elapsed   0.160983
+=case    incoming_test_SUITE:test_incoming1
+=logfile incoming_test_suite.test_incoming1.html
+=started 2008-01-20 22:40:56
+=ended   2008-01-20 22:40:56
+=result    failed:{fail,expected,
+                        ["http://127.0.0.1:9000\n/mypage/\n1\n1\nhttp://127.0.0.1:9000\n/from1/\n1\n1",
+                         "http://127.0.0.1:9000\n/mypage/\n1\n1\nhttp://127.0.0.1:9000\n/from1/\n1\n1",
+                         "http://127.0.0.1:9000\n/mypage/\n1\n1\nhttp://127.0.0.1:9000\n/from1/\n1\n1"],
+                        got,
+                        ["empty","empty","empty"]}, [{incoming_test_SUITE,
+                                                      get_data,97},
+                                                     {incoming_test_SUITE,
+                                                      test_incoming1,55}]
+=== *** FAILED *** test case 19 of 36
+=case    incoming_test_SUITE:test_incoming2
+=logfile incoming_test_suite.test_incoming2.html
+=started 2008-01-20 22:40:56
+=ended   2008-01-20 22:40:56
+=result    failed:{fail,expected,
+                        ["http://127.0.0.1:9000\n/mypage/\n2\n1\nhttp://127.0.0.1:9000\n/from3/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n2\n1\nhttp://127.0.0.1:9000\n/from2/\n1\n1",
+                         "http://127.0.0.1:9000\n/mypage/\n2\n1\nhttp://127.0.0.1:9000\n/from3/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n2\n1\nhttp://127.0.0.1:9000\n/from2/\n1\n1",
+                         "http://127.0.0.1:9000\n/mypage/\n2\n1\nhttp://127.0.0.1:9000\n/from3/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n2\n1\nhttp://127.0.0.1:9000\n/from2/\n1\n1"],
+                        got,
+                        ["empty","empty","empty"]}, [{incoming_test_SUITE,
+                                                      get_data,97},
+                                                     {incoming_test_SUITE,
+                                                      test_incoming2,67}]
+=== *** FAILED *** test case 20 of 36
+=case    incoming_test_SUITE:test_incoming3
+=logfile incoming_test_suite.test_incoming3.html
+=started 2008-01-20 22:40:56
+=ended   2008-01-20 22:40:56
+=result    failed:{fail,expected,
+                        ["http://127.0.0.1:9000\n/mypage/\n2\n1\nhttp://127.0.0.1:9000\n/from2/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n2\n1\nhttp://127.0.0.1:9000\n/from3/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n1\n1\nhttp://127.0.0.1:9000\n/from1/\n1\n1",
+                         "http://127.0.0.1:9000\n/mypage/\n2\n1\nhttp://127.0.0.1:9000\n/from2/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n2\n1\nhttp://127.0.0.1:9000\n/from3/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n1\n1\nhttp://127.0.0.1:9000\n/from1/\n1\n1",
+                         "http://127.0.0.1:9000\n/mypage/\n2\n1\nhttp://127.0.0.1:9000\n/from2/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n2\n1\nhttp://127.0.0.1:9000\n/from3/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n1\n1\nhttp://127.0.0.1:9000\n/from1/\n1\n1"],
+                        got,
+                        ["empty","empty","empty"]}, [{incoming_test_SUITE,
+                                                      get_data,97},
+                                                     {incoming_test_SUITE,
+                                                      test_incoming3,79}]
+=== *** FAILED *** test case 21 of 36
+=case    incoming_test_SUITE:test_incoming4
+=logfile incoming_test_suite.test_incoming4.html
+=started 2008-01-20 22:40:56
+=ended   2008-01-20 22:40:56
+=result    ok
+=elapsed   3.43900e-3
+=case    incoming_test_SUITE:end_per_suite
+=logfile incoming_test_suite.end_per_suite.html
+=started 2008-01-20 22:40:56
+=ended   2008-01-20 22:40:56
+=result    ok
+=elapsed   8.42700e-3
+=case    outgoing_test_SUITE:init_per_suite
+=logfile outgoing_test_suite.init_per_suite.html
+=started 2008-01-20 22:40:56
+=ended   2008-01-20 22:40:56
+=result    ok
+=elapsed   0.171494
+=case    outgoing_test_SUITE:test_outgoing1
+=logfile outgoing_test_suite.test_outgoing1.html
+=started 2008-01-20 22:40:56
+=ended   2008-01-20 22:40:56
+=result    failed:{fail,expected,
+                        ["http://127.0.0.1:9000\n/to1/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n1\n1",
+                         "http://127.0.0.1:9000\n/to1/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n1\n1",
+                         "http://127.0.0.1:9000\n/to1/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n1\n1"],
+                        got,
+                        ["empty","empty","empty"]}, [{outgoing_test_SUITE,
+                                                      get_data,143},
+                                                     {outgoing_test_SUITE,
+                                                      test_outgoing1,101}]
+=== *** FAILED *** test case 23 of 36
+=case    outgoing_test_SUITE:test_outgoing2
+=logfile outgoing_test_suite.test_outgoing2.html
+=started 2008-01-20 22:40:56
+=ended   2008-01-20 22:40:56
+=result    failed:{fail,expected,
+                        ["http://127.0.0.1:9000\n/to2/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n2\n1\nhttp://127.0.0.1:9000\n/to3/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n2\n1",
+                         "http://127.0.0.1:9000\n/to2/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n2\n1\nhttp://127.0.0.1:9000\n/to3/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n2\n1",
+                         "http://127.0.0.1:9000\n/to2/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n2\n1\nhttp://127.0.0.1:9000\n/to3/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n2\n1"],
+                        got,
+                        ["empty","empty","empty"]}, [{outgoing_test_SUITE,
+                                                      get_data,143},
+                                                     {outgoing_test_SUITE,
+                                                      test_outgoing2,113}]
+=== *** FAILED *** test case 24 of 36
+=case    outgoing_test_SUITE:test_outgoing3
+=logfile outgoing_test_suite.test_outgoing3.html
+=started 2008-01-20 22:40:56
+=ended   2008-01-20 22:40:56
+=result    failed:{fail,expected,
+                        ["http://127.0.0.1:9000\n/to3/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n2\n1\nhttp://127.0.0.1:9000\n/to2/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n2\n1\nhttp://127.0.0.1:9000\n/to1/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n1\n1",
+                         "http://127.0.0.1:9000\n/to3/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n2\n1\nhttp://127.0.0.1:9000\n/to2/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n2\n1\nhttp://127.0.0.1:9000\n/to1/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n1\n1",
+                         "http://127.0.0.1:9000\n/to3/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n2\n1\nhttp://127.0.0.1:9000\n/to2/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n2\n1\nhttp://127.0.0.1:9000\n/to1/\n1\n1\nhttp://127.0.0.1:9000\n/mypage/\n1\n1"],
+                        got,
+                        ["empty","empty","empty"]}, [{outgoing_test_SUITE,
+                                                      get_data,143},
+                                                     {outgoing_test_SUITE,
+                                                      test_outgoing3,125}]
+=== *** FAILED *** test case 25 of 36
+=case    outgoing_test_SUITE:test_outgoing4
+=logfile outgoing_test_suite.test_outgoing4.html
+=started 2008-01-20 22:40:56
+=ended   2008-01-20 22:40:56
+=result    ok
+=elapsed   4.49100e-3
+=case    outgoing_test_SUITE:end_per_suite
+=logfile outgoing_test_suite.end_per_suite.html
+=started 2008-01-20 22:40:56
+=ended   2008-01-20 22:40:56
+=result    ok
+=elapsed   7.02500e-3
+=case    permission_test_SUITE:init_per_suite
+=logfile permission_test_suite.init_per_suite.html
+=started 2008-01-20 22:40:56
+=ended   2008-01-20 22:40:56
+=result    ok
+=elapsed   6.59840e-2
+=case    permission_test_SUITE:write_perm
+=logfile permission_test_suite.write_perm.html
+=started 2008-01-20 22:40:56
+=ended   2008-01-20 22:40:56
+=result    failed:{fail,expected,"Error: unauthorised",got,"success"}, [{permission_test_SUITE,
+                                                                         write_perm,
+                                                                         38}]
+=== *** FAILED *** test case 27 of 36
+=case    permission_test_SUITE:get_perm
+=logfile permission_test_suite.get_perm.html
+=started 2008-01-20 22:40:56
+=ended   2008-01-20 22:40:56
+=result    failed:{fail,expected,"Error: unauthorised",got,"0"}, [{permission_test_SUITE,
+                                                                   get_perm,
+                                                                   47}]
+=== *** FAILED *** test case 28 of 36
+=case    permission_test_SUITE:get_perm2
+=logfile permission_test_suite.get_perm2.html
+=started 2008-01-20 22:40:56
+=ended   2008-01-20 22:40:57
+=result    failed:{fail,expected,"Error: unauthorised",got,"0"}, [{permission_test_SUITE,
+                                                                   get_perm2,
+                                                                   55}]
+=== *** FAILED *** test case 29 of 36
+=case    permission_test_SUITE:get_perm3
+=logfile permission_test_suite.get_perm3.html
+=started 2008-01-20 22:40:57
+=ended   2008-01-20 22:40:57
+=result    ok
+=elapsed   3.71900e-3
+=case    permission_test_SUITE:end_per_suite
+=logfile permission_test_suite.end_per_suite.html
+=started 2008-01-20 22:40:57
+=ended   2008-01-20 22:40:57
+=result    ok
+=elapsed   7.78200e-3
+=case    range_test_SUITE:init_per_suite
+=logfile range_test_suite.init_per_suite.html
+=started 2008-01-20 22:40:57
+=ended   2008-01-20 22:40:57
+=result    ok
+=elapsed   0.181070
+=case    range_test_SUITE:range1
+=logfile range_test_suite.range1.html
+=started 2008-01-20 22:40:57
+=ended   2008-01-20 22:40:57
+=result    ok
+=elapsed   5.02110e-2
+=case    range_test_SUITE:range2
+=logfile range_test_suite.range2.html
+=started 2008-01-20 22:40:57
+=ended   2008-01-20 22:40:57
+=result    failed:{{badmatch,{error,{bad_char,60}}},
+                   [{util2,flatten_data,2},
+                    {range_test_SUITE,post_data,2},
+                    {range_test_SUITE,range2,1},
+                    {test_server,my_apply,3},
+                    {test_server,ts_tc,3},
+                    {test_server,run_test_case_eval1,4},
+                    {test_server,run_test_case_eval,6}]}, [{range_test_SUITE,
+                                                            post_data,65},
+                                                           {range_test_SUITE,
+                                                            range2,44}]
+=== *** FAILED *** test case 32 of 36
+=case    range_test_SUITE:end_per_suite
+=logfile range_test_suite.end_per_suite.html
+=started 2008-01-20 22:40:57
+=ended   2008-01-20 22:40:57
+=result    ok
+=elapsed   7.60300e-3
+=case    row_test_SUITE:init_per_suite
+=logfile row_test_suite.init_per_suite.html
+=started 2008-01-20 22:40:57
+=ended   2008-01-20 22:40:57
+=result    ok
+=elapsed   0.150140
+=case    row_test_SUITE:row1
+=logfile row_test_suite.row1.html
+=started 2008-01-20 22:40:57
+=ended   2008-01-20 22:40:58
+=result    ok
+=elapsed   4.33450e-2
+=case    row_test_SUITE:row2
+=logfile row_test_suite.row2.html
+=started 2008-01-20 22:40:58
+=ended   2008-01-20 22:40:58
+=result    failed:{{badmatch,{error,{bad_char,60}}},
+                   [{util2,flatten_data,2},
+                    {row_test_SUITE,post_data,3},
+                    {row_test_SUITE,row2,1},
+                    {test_server,my_apply,3},
+                    {test_server,ts_tc,3},
+                    {test_server,run_test_case_eval1,4},
+                    {test_server,run_test_case_eval,6}]}, [{row_test_SUITE,
+                                                            post_data,81},
+                                                           {row_test_SUITE,
+                                                            row2,44}]
+=== *** FAILED *** test case 34 of 36
+=case    row_test_SUITE:rowlast
+=logfile row_test_suite.rowlast.html
+=started 2008-01-20 22:40:58
+=ended   2008-01-20 22:40:59
+=result    ok
+=elapsed   0.221031
+=case    row_test_SUITE:rowlast2
+=logfile row_test_suite.rowlast2.html
+=started 2008-01-20 22:40:59
+=ended   2008-01-20 22:40:59
+=result    ok
+=elapsed   7.99870e-2
+=case    row_test_SUITE:end_per_suite
+=logfile row_test_suite.end_per_suite.html
+=started 2008-01-20 22:40:59
+=ended   2008-01-20 22:40:59
+=result    ok
+=elapsed   2.44020e-2
+=== TEST COMPLETE, 13 ok, 23 failed of 36 test cases
+
+=finished   2008-01-20 22:40:59
+=failed     23
+=successful 13
+=skipped    0

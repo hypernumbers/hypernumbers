@@ -157,9 +157,9 @@ function setupRange(range)
             $(this).unbind('blur');
 
             //$(".sel").removeClass("sel");
-            //$(this).addClass("sel");
+            $(this).addClass("sel");
 
-            //var _val = $(this).text();
+            var _val = $(this).text();
             var _col = this.parentNode.cellIndex;
             var _row = this.parentNode.parentNode.rowIndex;
             var _url = document.location.href+to_b26(_col)+_row;
