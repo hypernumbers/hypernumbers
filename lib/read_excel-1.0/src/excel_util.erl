@@ -189,13 +189,12 @@ write(Tables,Name,[H|T])->
 
 %% read values fromt the tables
 read(Tables,Name,Key)->
-  io:format("in excel_util:read Tables is ~p~n-Name is ~p~n-Key is ~p~n",[Tables,Name,Key]),
-  filefilters:dump(Tables),
   {value,{TabName,Tid}}=lists:keysearch(Name,1,Tables),
-  io:format("in excel_util:read TabName is ~p and Tid is ~p~n",[TabName,Tid]),
   Return=ets:lookup(Tid,Key),
-  io:format("in excel_util:read Return is ~p~n",[Return]),
-  Return.
+  case {Name,Return} of
+    {arrayformula,[]} -> "fix me up in excel_util:read, ya wank!";
+    _                 -> Return
+    end.
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%

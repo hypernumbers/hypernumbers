@@ -27,8 +27,8 @@ parse_tokens(<<>>,TokenArray,Residuum,Tables,FileOut)->
     excel_rev_comp:reverse_compile(Return,TokenArray,Tables,FileOut);
 parse_tokens(Bin,TokenArray,Residuum,Tables,FileOut)->
     <<BaseTokenID:8/little-unsigned-integer,_Rest/binary>>=Bin,
-    %% io:format("in excel_tokens:parse_tokens BaseTokenID is ~p~n"++
-    %% "-Bin  is ~p~n",[BaseTokenID,Bin]),
+    io:format("in excel_tokens:parse_tokens BaseTokenID is ~p~n"++
+     "-Bin  is ~p~n",[BaseTokenID,Bin]),
     parse_tokens(BaseTokenID,Bin,TokenArray,Residuum,Tables,FileOut).
 
 %% Parsing base tokens
@@ -231,14 +231,14 @@ parse_tokens(?tNlr,Bin,TokenArray,Residuum,Tables,FileOut)->
     parse_tokens(R2,TokenArray,[Tk|Residuum],Tables,FileOut);
 %% tAttr
 parse_tokens(?tAttr,Bin,TokenArray,Residuum,Tables,FileOut)->
-    %%io:format("in excel_tokens:parse_tokens for tAttr Bin is ~p~n",[Bin]),
+    io:format("in excel_tokens:parse_tokens for tAttr Bin is ~p~n",[Bin]),
     <<Tk:8/little-unsigned-integer,R2/binary>>=Bin,
     excel_util:put_log(FileOut,io_lib:fwrite("parsing token tAttr: ~p",[Tk])),
     Return=parse_attr(R2,FileOut),
-    %%io:format("in excel_tokens:parse_tokens tAttr Return is ~p~n",[Return]),
+    io:format("in excel_tokens:parse_tokens tAttr Return is ~p~n",[Return]),
     {Token,R3}=Return,
     excel_util:put_log(FileOut,io_lib:fwrite("~p",[Token])),
-    %%io:format("in excel_tokens:parse_tokens Token is ~p~n",[Token]),
+    io:format("in excel_tokens:parse_tokens Token is ~p~n",[Token]),
     parse_tokens(R3,TokenArray,[Token|Residuum],Tables,FileOut);
 %% tErr
 parse_tokens(?tErr,Bin,TokenArray,Residuum,Tables,FileOut)->

@@ -849,8 +849,8 @@ parse_FRM_Results(formula,Bin,Tables,FileOut) ->
 			      [];
 	       RPN_Size -> 
             <<RPN:RPN_Size/binary,TokenArray/binary>>=Rest,
-            io:format("in excel_records:parse_FRM_Results RPN_Size is ~p~n"++
-                            "-TokenArray is ~p~n",[RPN_Size,TokenArray]),
+            io:format("in excel_records:parse_FRM_Results RPN is ~p~n-RPN_Size is ~p~n"++
+                            "-TokenArray is ~p~n",[RPN,RPN_Size,TokenArray]),
             excel_tokens:parse_tokens(RPN,TokenArray,[],Tables,FileOut)
     end,
     excel_util:put_log(FileOut,io_lib:fwrite("in parse_FRM_Results the "++
