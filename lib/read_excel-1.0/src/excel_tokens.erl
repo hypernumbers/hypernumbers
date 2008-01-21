@@ -705,11 +705,12 @@ parse_tokens(tRef3d,Bin,TokenArray,Type,Residuum,Tables,FileOut)->
     %% io:format("in excel_tokens:parse_tokens for tRef3d~n"),
     <<_Tk:8/little-unsigned-integer,
      RefIndex:16/little-unsigned-integer,
-     Cell:16/little-unsigned-integer,
+     Cell:4/binary,
      R2/binary>>=Bin,
     %% io:format("***WARNING*** excel_tokens:parse_tokens for tRef3d is fucked"++
     %%          "it flattens the Array to 1D!~n"),
     excel_util:put_log(FileOut,io_lib:fwrite("*DONE* parsing token tRef3d ~p",[Type])),
+    io:format("in excel_tokens:parse_tokens for tRef3d Cell is ~p~n",[Cell]),
     ParsedAddy=parse_cell_addy(Cell),
     parse_tokens(R2,TokenArray,[{three_dee_reference,
 		      {tRef3d,[{reference_index,RefIndex},ParsedAddy,{type,Type}],

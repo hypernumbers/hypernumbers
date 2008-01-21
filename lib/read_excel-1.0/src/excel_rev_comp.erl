@@ -260,7 +260,7 @@ reverse_compile([{abs_ref,{tRef,[{value,{Row,Col,RowType,ColType}}|{type,Type}],
 %%	tArea   
 reverse_compile([{absolute_area,{tArea,[[{start_cell,StartCell}|
     {end_cell,EndCell}]|R1],R2}}|T],TokenArray,Stack,Residuum,Tables,FileOut) ->
-    io:format("in excel_rev_comp:reverse_compile for ~n"),
+    io:format("in excel_rev_comp:reverse_compile for tArea~n"),
     Range=make_range(StartCell,EndCell),
     NewStack=push(Stack,{string,Range}),
     reverse_compile(T,TokenArray,NewStack,Residuum,Tables,FileOut);
@@ -310,8 +310,15 @@ reverse_compile([{memory_area,{tMemArea,[{value,MemArea},{type,Type}],
 	
 %%	tNameX  
 	
-%%	tRef3d  
-	
+%%	tRef3d  	
+reverse_compile([{three_dee_reference,{tRef3d,[{reference_index,RefIdx},
+      {Row,Col,RowType,ColType},{type,Type}],{return,ReturnType}}}|T],
+      TokenArray,Stack,Residuum,Tables,FileOut) ->
+    io:format("in excel_rev_comp:reverse_compile for tRef3d~n"++
+        "-Row is ~p Col is ~p RowType is ~p ColType is ~p"++
+        "-RefIdx is ~p and Type is ~p~n",[Row,Col,RowType,ColType,RefIdx,Type]),
+    reverse_compile(T,TokenArray,Stack,Residuum,Tables,FileOut);
+  
 %%	tArea3d 
 		
 %%	tRefErr3d

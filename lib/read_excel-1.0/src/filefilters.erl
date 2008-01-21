@@ -354,7 +354,9 @@ create_ets()->
     [{cell,ets:new(cell,[ordered_set,private])},
      {strings,ets:new(strings,[ordered_set,private])},
      {names,ets:new(names,[ordered_set,private])},
-     {arrayformula,ets:new(names,[ordered_set,private])}].
+     {arrayformula,ets:new(names,[ordered_set,private])},
+     {externsheets,ets:new(names,[ordered_set,private])},
+     {misc,ets:new(names,[ordered_set,private])}].
 
 %% Bodge string attempts to take a list in some class of unicode encoding and
 %% make it 'readable' - it is for logging/debugging only and not to be used
@@ -385,8 +387,8 @@ bodge_string(<<Char:16/little-signed-integer,Rest/binary>>,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 test_DEBUG()-> 
-    File = "Minitest.xls",
-    %%File = "booleans_and_errors.xls",
+    File="minitest.xls",
+    %%File="booleans_and_errors.xls",
     %%File="basic_functions_tests_ii.xls",
     %%File="arithmetic_and_precedence.xls",
     %%File="simple_arrays_and_ranges.xls",
@@ -394,7 +396,7 @@ test_DEBUG()->
     %%File="block_of_numbers.xls",
     %%File="gnumeric_db.xls",
     %%File="gnumeric_lookup.xls",
-    FileRoot="c:/Users/Gordon Guthrie/Documents/SVN/testroot/"++
+    FileRoot="c:/Users/Gordon Guthrie/Documents/SVN/code/trunk/testroot/"++
      	"excel_import_test/files/Win Excel 2007 (as 97)",
     io:format("in filefilters:test_DEBUG FileRoot is ~p and File is ~p~n",
               [FileRoot,File]),

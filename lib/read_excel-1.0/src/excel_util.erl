@@ -7,11 +7,11 @@
 %%%-------------------------------------------------------------------
 -module(excel_util).
 
--export([put_log/2,get_bound_sheet/2,
-          write/3,parse_CRS_RK/2,
+-export([put_log/2,parse_CRS_RK/2,
           parse_CRS_Uni16/2,parse_CRS_Uni16/3,
           lookup_string/2,read_cell_range_add_list/2,
-          read_cell_range_addies/3,read/3]).
+          read_cell_range_addies/3,
+          write/3,read/3]).
 
 %%% Debugging exports
 -export([parse_CRS_RK_TESTING/2,shift_left2_TESTING/1]).
@@ -23,15 +23,6 @@
 -include("microsoftcompoundfileformat.hrl").
 -include("microsoftbiff.hrl").
 -include("excel_com_rec_subs.hrl").
-
-get_bound_sheet(Bin,FileOut)->
-    <<SheetBOF:32/little-unsigned-integer,
-     Visibility:8/little-unsigned-integer,
-     SheetType:8/little-unsigned-integer,
-     Name/binary>>=Bin,
-    SheetName=parse_CRS_Uni16(Name,FileOut),
-    {SheetBOF,Visibility,SheetType,Name,SheetName}.
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%

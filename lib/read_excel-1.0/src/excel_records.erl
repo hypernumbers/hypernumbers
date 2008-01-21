@@ -11,6 +11,7 @@
 -include("microsoftbiff.hrl").
 -include("excel_records.hrl").
 -include("excel_errors.hrl").
+-include("excel_supbook.hrl").
 
 -export([parse_rec/4]).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -98,9 +99,13 @@ parse_rec(?FOOTER,_Bin,_Tables,FileOut)->
     excel_util:put_log(FileOut,"FOOTER is not being processed at the moment"),
     excel_util:put_log(FileOut,"[]"),
     {ok,ok};
-parse_rec(?EXTERNSHEET,_Bin,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[EXTERNSHEET]"),
-    excel_util:put_log(FileOut,"EXTERNSHEET is not being processed at the moment"),
+parse_rec(?EXTERNSHEET,Bin,Tables,FileOut)->
+    excel_util:put_log(FileOut,"[EXTERNSHEET *Done*]"),
+    <<NumRefs:16/little-unsigned-integer,
+      R2/binary>>=Bin,
+      io:format("in excel_records:parse_rec for Externsheet NumRefs is ~p~n",
+        [NumRefs]),
+        {ok,ok}=parse_externsheet(R2,0,Tables,FileOut),
     excel_util:put_log(FileOut,"[/EXTERNSHEET]"),
     {ok,ok};
 parse_rec(?NAME,Bin,Tables,FileOut)->
@@ -491,9 +496,19 @@ parse_rec(?DSF,_Bin,_Tables,FileOut)->
     excel_util:put_log(FileOut,"DSF is not being processed at the moment"),
     excel_util:put_log(FileOut,"[/DSF]"),
     {ok,ok};
-parse_rec(?SUPBOOK,_Bin,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[SUPBOOK]"),
-    excel_util:put_log(FileOut,"SUPBOOK is not being processed at the moment"),
+parse_rec(?SUPBOOK,Bin,Tables,FileOut)->
+    excel_util:put_log(FileOut,"[SUPBOOK *Done]"),
+    io:format("in excel_records:parse_rec for SUPBOOK Bin is ~p~n",[Bin]),
+    case Bin of
+        <<NoSheets:16/little-unsigned-integer,
+        ?SheetsInBook:16/little-unsigned-integer>> ->
+          excel_util:put_log(FileOut,
+            io_lib:fwrite("SupBook No of sheets in workbook is ~p~n",[NoSheets])),
+          excel_util:write(Tables,misc,[{noofsheets,NoSheets}]);
+        _ ->
+          excel_util:put_log(FileOut,
+            io_lib:fwrite("This type of SUPBOOK not being processed!~n",[]))
+    end,
     excel_util:put_log(FileOut,"[/SUPBOOK]"),
     {ok,ok};
 parse_rec(?CONDFMT,_Bin,_Tables,FileOut)->
@@ -973,9 +988,25 @@ parse_SST(StringNo,NoOfStrings,Tables,[BinHead|BinTail],FileOut)->
     excel_util:write(Tables,strings,[{index,StringNo},{string,binary_to_list(String)}]),
     parse_SST(StringNo+1,NoOfStrings,Tables,[Rest|NewBinTail],FileOut).
 
-write_row([],RowIndex,FirstColIndex,Tables)->
+write_row([],RowIndex,FirstColIndex,TablSUPBOOKes)->
   {ok,ok};
 write_row([{{xf_index,XFIndex},{value,number,Number}}|T],RowIndex,FirstColIndex,Tables)->
     excel_util:write(Tables,cell,[{{row_index,RowIndex},{col_index,FirstColIndex}},
 		       {xf_index,XFIndex},{value,number,Number}]),
     write_row(T,RowIndex,FirstColIndex+1,Tables).
+
+ 
+parse_externsheet(<<>>,N,Tables,FileOut)->
+  {ok,ok};
+parse_externsheet(Bin,N,Tables,FileOut)->
+  <<SubRec:16/little-unsigned-integer,
+    FirstSheet:16/little-unsigned-integer,
+    LastSheet:16/little-unsigned-integer,
+    Rest/binary>>=Bin,
+    Record=[{sheet_no,N},{subrec,SubRec},{firstsheet,FirstSheet},
+                 {lastsheet,LastSheet}],
+    excel_util:write(Tables,externsheets,Record),
+    excel_util:put_log(FileOut,
+        io_lib:fwrite("Externsheet record is ~p~n",[Record])),
+    parse_externsheet(Rest,N+1,Tables,FileOut).
+    

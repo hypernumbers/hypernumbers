@@ -206,8 +206,10 @@ get_bound_list(Bin,Residuum,FileOut)->
  	    Residuum;
 	?BOUNDSHEET ->
  	    <<Record:RecordSize/binary,Rest2/binary>>=Rest,
- 	    Return=excel_util:get_bound_sheet(<<Record:RecordSize/binary>>,FileOut),
-	    {SheetBOF,_Visibility,_SheetType,_Name,SheetName}=Return,
+ 	    Return=get_bound_sheet(<<Record:RecordSize/binary>>,FileOut),
+	    {SheetBOF,Visibility,SheetType,Name,SheetName}=Return,
+       io:format("in excel:get_bound_list Visbility is ~p~n-SheetType is ~p~n-Name is ~p~n"++
+         "-SheetName is ~p~n",[Visibility,SheetType,Name,SheetName]),
 	    NewResiduum=[{SheetName,SheetBOF}|Residuum],
  	    get_bound_list(Rest2,NewResiduum,FileOut);
 	_Other ->
@@ -247,6 +249,14 @@ get_short_bin(Bin,[H|T],SectorSize,Residuum) ->
     %% remember - you are not cutting down the binary!
     %% which is why we dont pass 'Rest' on but send 'Bin' on again
     get_short_bin(Bin,T,SectorSize,[<<Seg:Size>>|Residuum]).
+
+get_bound_sheet(Bin,FileOut)->
+    <<SheetBOF:32/little-unsigned-integer,
+     Visibility:8/little-unsigned-integer,
+     SheetType:8/little-unsigned-integer,
+     Name/binary>>=Bin,
+    SheetName=excel_util:parse_CRS_Uni16(Name,FileOut),
+    {SheetBOF,Visibility,SheetType,Name,SheetName}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                     %%%
