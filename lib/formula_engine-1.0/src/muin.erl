@@ -94,7 +94,8 @@ preproc([':', StartExpr, EndExpr], Bindings) ->
 
 preproc([indirect, Arg], Bindings) ->
     RefStr = plain_eval(Arg, Bindings),
-    {ok, Tokens, _} = muin_lexer:string(RefStr), % Yeh, screw the frontends. FIXME:
+    {ok, Tokens, _} = muin_lexer:string(RefStr),% Yeh, screw the frontends.
+                                                % FIXME: ^^^
 
     case Tokens of
         [{cellref, Ref}] -> % A1
@@ -118,7 +119,7 @@ preproc([indirect, Arg], Bindings) ->
     end;
 
 %% Anything else -- don't need to transform.
-preproc(Sexp, Bindings) ->
+preproc(Sexp, _Bindings) ->
     Sexp.
 
 
@@ -174,7 +175,8 @@ funcall(':', [{cellref, Ref1}, {cellref, Ref2}], Bindings) ->
 funcall(':', [{sscellref, Ref1}, {sscellref, Ref2}], Bindings) ->
     funcall(':', [{sscellref, Ref1}, {cellref, just_ref(Ref2)}], Bindings);
 
-%% Column ranges. FIXME: will break on cells containing strings becase of flatten().
+%% Column ranges. FIXME: will break on cells containing strings becase of
+%% flatten().
 funcall(':', [{sscolref, Ref1}, {col, Ref2}], Bindings) ->
     ?CREATE_BINDINGS_VARS,
 
@@ -183,7 +185,8 @@ funcall(':', [{sscolref, Ref1}, {col, Ref2}], Bindings) ->
                   map(fun(CellRec) ->
                               #spriki{index = _, value = Value,
                                       val_type = _, status = _,
-                                      num_format = _, disp_format = _} = CellRec,
+                                      num_format = _,
+                                      disp_format = _} = CellRec,
                               Value
                       end,
                       db:read_column(MSite, walk_path(MPath, just_path(Ref1)),
@@ -200,25 +203,26 @@ funcall(':', [{ssrowref, Ref1}, {row, Ref2}], Bindings) ->
                   map(fun(CellRec) ->
                               #spriki{index = _, value = Value,
                                       val_type = _, status = _,
-                                      num_format = _, disp_format = _} = CellRec,
+                                      num_format = _,
+                                      disp_format = _} = CellRec,
                               Value
                       end,
                       db:read_row(MSite, walk_path(MPath, just_path(Ref1)), X))
           end,
           seq(to_i(just_ref(Ref1)), to_i(Ref2))));
 
-funcall(hypernumber, [Url], Bindings) ->
+funcall(hypernumber, [Url_], Bindings) ->
     ?CREATE_BINDINGS_VARS,
 
-    %% Append ?hypernumber if needed.
-    {match, Matches} = regexp:matches(Url, "\\?hypernumber$"),
-    Url2 = ?COND(Matches == [], Url ++ "?hypernumber", Url),
+    %% Remove trailing ?hypernumber if needed.
+    {ok, Url, _} = regexp:gsub(Url_, "\\?hypernumber$", ""),
     
     #page{site = RSite, path = RPath, ref = {cell, {RX, RY}}} =
-        hn_util:parse_url(Url2),
+        hn_util:parse_url(Url),
 
     fetch_update_return(fun() ->
-                                spriki:get_hypernumber(MSite, MPath, MX, MY, Url,
+                                spriki:get_hypernumber(MSite, MPath, MX, MY,
+                                                       Url,
                                                        RSite, RPath, RX, RY)
                         end);
 
