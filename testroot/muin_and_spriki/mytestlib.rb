@@ -5,6 +5,8 @@
 $LOAD_PATH << File.join(ENV["HYPERNUMBERS_SVNROOT"], "priv", "ruby")
 require "hypernumbers"
 
+NAP_TIME = 3 # in seconds
+
 # I want to colorize my output. (Using ANSI escape codes.)
 class String
   def ansi_red
@@ -45,4 +47,11 @@ def compare(answers)
       end
     end
   end
+end
+
+def sleep_for_updates
+  print "Going for a nap (#{NAP_TIME} seconds)... "
+  $stdout.flush
+  Kernel.sleep(NAP_TIME)
+  puts "done."
 end
