@@ -10,8 +10,10 @@
 -include("handy_macros.hrl").
 
 -import(muin_util, [expand_cellrange/2, fdbg/1, fdbg/2, get_frontend/0, getxy/1,
-                    init/1, join/1, join/2, just_path/1, just_ref/1, to_i/1,
-                    to_i/2, to_s/1, puts/1, walk_path/2]).
+                    init/1, join/1, join/2, just_path/1, just_ref/1, puts/1,
+                    walk_path/2]).
+
+-import(tconv, [to_i/1, to_i/2, to_s/1]).
 
 %% Bind values from Bindings to vars in current scope. Vars repeated after
 %% creation to remove "Unused variable" warnings.

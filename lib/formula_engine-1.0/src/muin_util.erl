@@ -16,11 +16,7 @@
          normalize_ssref/1,
          walk_path/2,
          is_alpha/1,
-         get_frontend/0,
-         to_i/1,
-         to_i/2,
-         to_f/1,
-         to_s/1]).
+         get_frontend/0]).
 
 -import(string, [rchr/2, tokens/2]).
 
@@ -190,25 +186,6 @@ get_frontend() ->
           {list_to_atom(R ++ "_lexer"), list_to_atom(R ++ "_parser")},
           {muin_lexer, muin_parser}).
 
-
-%% Convert string to integer.
-to_i(Str) ->
-    {ok, [Val], []} = io_lib:fread("~d", Str),
-    Val.
-
-to_i(Str, b26) ->
-    util2:mk_int_frm_b26(Str).
-
-
-%% Convert string to float.
-to_f(Str) ->
-    {ok, [Val], []} = io_lib:fread("~f", Str),
-    Val.
-
-
-%% Integer to string.
-to_s(Int) ->
-    integer_to_list(Int).
 
 %%% =====================
 %%% = Private functions =

@@ -11,10 +11,10 @@
 %% http://ewbi.blogs.com/develops/2007/11/some-simple-val.html
 %% http://support.microsoft.com/kb/291047
 text2num(Str) when is_list(Str) ->
-    try muin_util:to_i(Str)
+    try tconv:to_i(Str)
     catch
         error:_ ->
-            try muin_util:to_f(Str)
+            try tconv:to_f(Str)
             catch
                 error:_ ->
                     {error, value}
