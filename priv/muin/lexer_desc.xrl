@@ -60,9 +60,9 @@ Rules.
 {SSROWREF}      : {token, {ssrowref,     muin_util:normalize_ssref(YYtext)}}.
                         
 %% Basic data types.
-{INTEGER}          : {token, {integer, muin_util:to_i(YYtext)}}.
-{FLOAT_DECIMAL}    : {token, {float,   muin_util:to_f(YYtext)}}.
-{FLOAT_SCIENTIFIC} : {token, {float,   muin_util:to_f(string:to_lower(YYtext))}}.
+{INTEGER}          : {token, {integer, tconv:to_i(YYtext)}}.
+{FLOAT_DECIMAL}    : {token, {float,   tconv:to_f(YYtext)}}.
+{FLOAT_SCIENTIFIC} : {token, {float,   tconv:to_f(string:to_lower(YYtext))}}.
 {BOOLEAN}          : {token, {boolean,
                               case string:to_lower(YYtext) of
                                   "true" -> true;
