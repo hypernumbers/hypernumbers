@@ -7,16 +7,25 @@ load "mytestlib.rb"
 
 data = [
         { :sheet => "/foo/", :data =>
-          { :a1 => 1, :a2 => 2, :a3 => "=a1 + a2"
+          { :a1 => 1, :a2 => 2, :a3 => "=a1 + a2",
+            :b1 => 7, :b2 => 14,
+            :c1 => 21
           }},
 
         { :sheet => "/", :data =>
           {
-            :a1 => "=./foo/a1 + ./foo/a2"
+            :a1 => "=./foo/a1 + ./foo/a2",
+            :b1 => "=sum(./foo/a1:b2)",
+            :c1 => "=sum(./foo/a:b)",
+            :d1 => "=sum(./foo/1:2)"
+            
           }},
 
         { :sheet => "/foo/bar/", :data =>
-          { :a1 => "=../a1 + ../a2"
+          { :a1 => "=../a1 + ../a2",
+            :b1 => "=sum(../a1:b2)",
+            :c1 => "=sum(../a:b)",
+            :d1 => "=sum(../1:2)"
           }}
        ]
 
@@ -32,14 +41,22 @@ answers = [
              }},
 
            { :sheet => "/", :data =>
-             { :a1 => 579
+             { :a1 => 579,
+               :b1 => 600,
+               :c1 => 1179,
+               :d1 => 621
              }},
 
            { :sheet => "/foo/bar/", :data =>
-             { :a1 => 579
+             { :a1 => 579,
+               :b1 => 600,
+               :c1 => 1179,
+               :d1 => 621
              }}
           ]
 
 batch_post(data)
+nap_for_updates
 batch_post(updates)
+nap_for_updates
 compare(answers)

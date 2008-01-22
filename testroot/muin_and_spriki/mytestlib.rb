@@ -16,10 +16,17 @@ class String
   def ansi_green
     "\e[32m#{self}\e[0m"
   end
+
+  def ansi_blue
+    "\e[34m#{self}\e[0m"
+  end
 end
 
 
 def batch_post(data)
+  print "Posting data... ".ansi_blue
+  $stdout.flush
+  
   hn = Hypernumbers::Connection.new("127.0.0.1", 9000)
   
   data.each do |d|
@@ -29,6 +36,8 @@ def batch_post(data)
       hn.post(cv[0], cv[1])
     end
   end
+
+  puts "done.".ansi_blue
 end
 
 
@@ -49,9 +58,9 @@ def compare(answers)
   end
 end
 
-def sleep_for_updates
-  print "Going for a nap (#{NAP_TIME} seconds)... "
+def nap_for_updates
+  print "Going for a nap (#{NAP_TIME} seconds)... ".ansi_blue
   $stdout.flush
   Kernel.sleep(NAP_TIME)
-  puts "done."
+  puts "done.".ansi_blue
 end
