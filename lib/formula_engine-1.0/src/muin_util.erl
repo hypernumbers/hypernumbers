@@ -2,8 +2,7 @@
 %%% TODO: Some of these might be useful outside Muin too...
 
 -module(muin_util).
--export([
-         just_path/1,
+-export([just_path/1,
          just_ref/1,
          expand_cellrange/2,
          getxy/1,
@@ -21,8 +20,7 @@
          to_i/1,
          to_i/2,
          to_f/1,
-         to_s/1
-        ]).
+         to_s/1]).
 
 -import(string, [rchr/2, tokens/2]).
 

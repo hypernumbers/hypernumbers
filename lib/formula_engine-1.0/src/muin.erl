@@ -59,39 +59,39 @@ update(Formula, UpdateMsg) ->
 %%%---------------------%%%
 
 %% @doc Evaluates an s-expression, pre-processing subexps as needed.
-eval([Fun_ | Args_], Bindings) when is_atom(Fun_) ->
-    [Fun | Args] = preproc([Fun_ | Args_], Bindings),
+eval([Fun__ | Args__], Bindings) when is_atom(Fun__) ->
+    %% Transform s-exp if needed.
+    [Fun | Args] = preproc([Fun__ | Args__], Bindings),
 
-    %% Eval any funcalls in args first if needed.
-    CallArgs = ?COND(any_funcalls(Args),
-                     map(fun(X) -> eval(X, Bindings) end, Args),
-                     Args),
-    
+    %% Evaluate args first.
+    CallArgs = [eval(X, Bindings) || X <- Args],
+
+    %% And then evaluate the whole s-exp.
     %% Some functions need access to bindings, some don't...
     ?COND(member(Fun, [sscellref, ':', hn, hypernumber]),
           funcall(Fun, CallArgs, Bindings),
           funcall(Fun, CallArgs));
 
-eval(Value, Bindings) ->
+eval(Value, _Bindings) ->
     Value.
 
 
-%% @doc Transforms certain types of s-exps.
-%% StartExpr and EndExpr may be tuples or indirect s-exps *only*.
+%% @doc Transforms certain types of s-exps. @end
+
+%% Arguments to ':' calls are either tuples (literals) or lists (funcalls).
+%% Not checking if funcalls are to INDIRECT as it'll fail later if they aren't.
 preproc([':', StartExpr, EndExpr], Bindings) ->
-    Start = ?COND(is_list(StartExpr), % An INDIRECT node?
-                  hd(plain_eval(tl(StartExpr), Bindings)), % Eval args.
-                  StartExpr),
-    End   = ?COND(is_list(EndExpr),
-                  hd(plain_eval(tl(EndExpr), Bindings)),
-                  EndExpr),
+    Eval = fun(Arg) when is_list(Arg) ->
+                   Cellref = hd(plain_eval(tl(Arg), Bindings)),
+                   {sscellref, "./" ++ Cellref};
+              (Arg) when is_tuple(Arg) ->
+                   Arg
+           end,
 
-    TryParse = fun(S) when is_list(S)  -> {sscellref, "./" ++ S};
-                  (T) when is_tuple(T) -> T
-               end,
-    
-    [':', TryParse(Start), TryParse(End)];
+    [':', Eval(StartExpr), Eval(EndExpr)];
 
+%% This clause is for standalone calls to INDIRECT. Ones that are part of
+%% a range construction expression will be caught by the clause above.
 preproc([indirect, Arg], Bindings) ->
     RefStr = plain_eval(Arg, Bindings),
     {ok, Tokens, _} = muin_lexer:string(RefStr),% Yeh, screw the frontends.
@@ -125,15 +125,13 @@ preproc(Sexp, _Bindings) ->
 
 %% @doc Same as eval() but doesn't pre-process.
 plain_eval([Fun | Args], Bindings) when is_atom(Fun) ->
-    CallArgs = ?COND(any_funcalls(Args),
-                     map(fun(X) -> plain_eval(X, Bindings) end, Args),
-                     Args),
+    CallArgs = [plain_eval(X, Bindings) || X <- Args],
     
     ?COND(member(Fun, [sscellref, ':', hn, hypernumber]),
           funcall(Fun, CallArgs, Bindings),
           funcall(Fun, CallArgs));
 
-plain_eval(Value, Bindings) ->
+plain_eval(Value, _Bindings) ->
     Value.
 
 
@@ -153,63 +151,43 @@ funcall(Fun, Args) ->
 
 funcall(sscellref, [Ssref], Bindings) ->
     ?CREATE_BINDINGS_VARS,
-    DestPath = walk_path(MPath, just_path(Ssref)),
-    Cellref = just_ref(Ssref),
-    {X, Y} = getxy(Cellref),
-    FetchFun = fun() -> spriki:calc(MSite, DestPath, X, Y) end,
-    fetch_update_return(FetchFun);
+    Path = walk_path(MPath, just_path(Ssref)),
+    Ref = just_ref(Ssref),
+    do_cell(Path, Ref, Bindings);
 
 %% -- Range functions.
 
 %% Cellranges, e.g. A1:B10, ../page/A1:B10 etc.
 funcall(':', [{sscellref, Ref1}, {cellref, Ref2}], Bindings) ->
-    Path = just_path(Ref1),
-    Ref  = just_ref(Ref1),
-    DoCell = fun(X) -> funcall(sscellref, [Path ++ X], Bindings) end,
-    map(DoCell, expand_cellrange(Ref, Ref2));
+    RefPart  = just_ref(Ref1),
+    [do_cell(X, just_path(Ref1), RefPart) ||
+        X <- expand_cellrange(RefPart, Ref2)];
 
 %% These two clauses are for preproc'd ranges. Redirect to the one above.
+%% TODO: Cut if possible.
 funcall(':', [{cellref, Ref1}, {cellref, Ref2}], Bindings) ->
     funcall(':', [{sscellref, "./" ++ Ref1}, {cellref, Ref2}], Bindings);
 
 funcall(':', [{sscellref, Ref1}, {sscellref, Ref2}], Bindings) ->
     funcall(':', [{sscellref, Ref1}, {cellref, just_ref(Ref2)}], Bindings);
 
-%% Column ranges. FIXME: will break on cells containing strings becase of
-%% flatten().
+%% Column ranges.
 funcall(':', [{sscolref, Ref1}, {col, Ref2}], Bindings) ->
     ?CREATE_BINDINGS_VARS,
+    FullPath = walk_path(MPath, just_path(Ref1)),
+    Cols = seq(to_i(just_ref(Ref1), b26), to_i(Ref2, b26)),
+    Funs = [fun() -> db:read_col(MSite, FullPath, X) end || X <- Cols],
+    do_cells(Funs, Bindings);
 
-    flatten(
-      map(fun(X) ->
-                  map(fun(CellRec) ->
-                              #spriki{index = _, value = Value,
-                                      val_type = _, status = _,
-                                      num_format = _,
-                                      disp_format = _} = CellRec,
-                              Value
-                      end,
-                      db:read_column(MSite, walk_path(MPath, just_path(Ref1)),
-                                     X))
-          end,
-          seq(to_i(just_ref(Ref1), b26), to_i(Ref2, b26))));
-
-%% Row ranges. FIXME: as above.
+%% Row ranges.
 funcall(':', [{ssrowref, Ref1}, {row, Ref2}], Bindings) ->
     ?CREATE_BINDINGS_VARS,
+    FullPath = walk_path(MPath, just_path(Ref1)),
+    Rows = seq(to_i(just_ref(Ref1)), to_i(Ref2)),
+    Funs = [fun() -> db:read_row(MSite, FullPath, X) end || X <- Rows],
+    do_cells(Funs, Bindings);
 
-    flatten(
-      map(fun(X) ->
-                  map(fun(CellRec) ->
-                              #spriki{index = _, value = Value,
-                                      val_type = _, status = _,
-                                      num_format = _,
-                                      disp_format = _} = CellRec,
-                              Value
-                      end,
-                      db:read_row(MSite, walk_path(MPath, just_path(Ref1)), X))
-          end,
-          seq(to_i(just_ref(Ref1)), to_i(Ref2))));
+%% -- Hypernumber function and its shorthand.
 
 funcall(hypernumber, [Url_], Bindings) ->
     ?CREATE_BINDINGS_VARS,
@@ -245,6 +223,29 @@ any_funcalls(Sexp) when is_list(Sexp) ->
 %% For formulas like "=1".
 any_funcalls(_) ->
     false.
+
+
+%% Returns value in the cell + fetch_update_return() is called behind the
+%% scenes.
+do_cell(Path, Ref, Bindings) ->
+    MSite = ?KEYSEARCH(site, Bindings),
+    {X, Y} = getxy(Ref),
+    FetchFun = fun() -> spriki:calc(MSite, Path, X, Y) end,
+    fetch_update_return(FetchFun);
+
+do_cell(Path, Row, Col, Bindings) ->
+    do_cell(Path, util2:make_b26(Col) ++ to_s(Row), Bindings).
+
+
+do_cells(Funs, Bindings) ->
+    map(fun(GetCellRecFun) ->
+                CellRec = GetCellRecFun(),
+                do_cell((CellRec#spriki.index)#index.path,
+                        (CellRec#spriki.index)#index.row,
+                        (CellRec#spriki.index)#index.column,
+                        Bindings)
+        end,
+        Funs).
 
 
 %% Call fun to get value and deps, stash deps away, return value.
