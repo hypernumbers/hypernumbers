@@ -63,4 +63,5 @@ answers = [
 
 batch_post(data)
 batch_post(formulas)
+nap_for_updates
 compare(answers)

@@ -32,5 +32,5 @@ answers = [
 
 batch_post(data)
 batch_post(updates)
-sleep_for_updates
+nap_for_updates
 compare(answers)

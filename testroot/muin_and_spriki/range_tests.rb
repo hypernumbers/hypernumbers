@@ -5,7 +5,6 @@
 
 $LOAD_PATH << File.expand_path(File.dirname(__FILE__), "../../priv/ruby")
 
-require "hypernumbers"
 load "mytestlib.rb"
 
 
@@ -60,4 +59,5 @@ answers = [ {:sheet => "/",     :data =>
 
 batch_post(data)
 batch_post(formulas)
+nap_for_updates
 compare(answers)
