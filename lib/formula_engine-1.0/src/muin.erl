@@ -213,22 +213,6 @@ funcall(hn, [Url], Bindings) ->
 
 %%% ----- Utility functions.
 
-%% Checks if any elements of an s-exp are funcalls.
-%% TODO: This might not be needed anymore.
-any_funcalls(Sexp) when is_list(Sexp) ->
-    any(fun(Elt) ->
-                %% List where head is an atom, which isn't true/false? Bingo!
-                ?COND(is_list(Elt) andalso is_atom(hd(Elt)),
-                      (hd(Elt) =/= true) and (hd(Elt) =/= false),
-                      false)
-        end,
-        Sexp);
-
-%% For formulas like "=1".
-any_funcalls(_) ->
-    false.
-
-
 %% Returns value in the cell + fetch_update_return() is called behind the
 %% scenes.
 do_cell(RelPath, Ref, Bindings) ->
