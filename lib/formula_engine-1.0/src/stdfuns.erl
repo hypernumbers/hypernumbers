@@ -1267,7 +1267,7 @@ sum(X1, X2) ->
     sum([X1, X2]).
 
 sum(Values) when is_list(Values) ->
-    lists:sum(lists:flatten(Values));
+    lists:sum([X || X <- flatten(Values), is_number(X)]);
 
 sum(X) ->
     sum([X]).

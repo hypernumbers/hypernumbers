@@ -19,6 +19,7 @@
          get_frontend/0]).
 
 -import(string, [rchr/2, tokens/2]).
+-import(tconv, [to_i/1]).
 
 -compile(export_all).
 

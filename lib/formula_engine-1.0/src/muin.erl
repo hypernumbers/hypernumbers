@@ -13,7 +13,7 @@
                     init/1, join/1, join/2, just_path/1, just_ref/1, puts/1,
                     walk_path/2]).
 
--import(tconv, [to_i/1, to_i/2, to_s/1]).
+-import(tconv, [to_b26/1, to_i/1, to_i/2, to_s/1]).
 
 %% Bind values from Bindings to vars in current scope. Vars repeated after
 %% creation to remove "Unused variable" warnings.
@@ -22,6 +22,10 @@
         MPath = ?KEYSEARCH(path, Bindings), MPath,
         MX    = ?KEYSEARCH(x, Bindings), MX,
         MY    = ?KEYSEARCH(y, Bindings), MY).
+
+%% Guard for eval() and plain_eval().
+-define(IS_FUNCALL(X),
+        is_atom(X) andalso X =/= true andalso X =/= false).
 
 %%%--------------------%%%
 %%%  Public functions  %%%
@@ -61,7 +65,7 @@ update(Formula, UpdateMsg) ->
 %%%---------------------%%%
 
 %% @doc Evaluates an s-expression, pre-processing subexps as needed.
-eval([Fun__ | Args__], Bindings) when is_atom(Fun__) ->
+eval([Fun__ | Args__], Bindings) when ?IS_FUNCALL(Fun__) ->
     %% Transform s-exp if needed.
     [Fun | Args] = preproc([Fun__ | Args__], Bindings),
 
@@ -126,7 +130,7 @@ preproc(Sexp, _Bindings) ->
 
 
 %% @doc Same as eval() but doesn't pre-process.
-plain_eval([Fun | Args], Bindings) when is_atom(Fun) ->
+plain_eval([Fun | Args], Bindings) when ?IS_FUNCALL(Fun) ->
     CallArgs = [plain_eval(X, Bindings) || X <- Args],
     
     ?COND(member(Fun, [sscellref, ':', hn, hypernumber]),
@@ -161,9 +165,8 @@ funcall(sscellref, [Ssref], Bindings) ->
 
 %% Cellranges, e.g. A1:B10, ../page/A1:B10 etc.
 funcall(':', [{sscellref, Ref1}, {cellref, Ref2}], Bindings) ->
-    RefPart  = just_ref(Ref1),
-    [do_cell(X, just_path(Ref1), RefPart) ||
-        X <- expand_cellrange(RefPart, Ref2)];
+    [do_cell(just_path(Ref1), X, Bindings) ||
+        X <- expand_cellrange(just_ref(Ref1), Ref2)];
 
 %% These two clauses are for preproc'd ranges. Redirect to the one above.
 %% TODO: Cut if possible.
@@ -176,9 +179,9 @@ funcall(':', [{sscellref, Ref1}, {sscellref, Ref2}], Bindings) ->
 %% Column ranges.
 funcall(':', [{sscolref, Ref1}, {col, Ref2}], Bindings) ->
     ?CREATE_BINDINGS_VARS,
-    FullPath = walk_path(MPath, just_path(Ref1)),
+    Path = walk_path(MPath, just_path(Ref1)),
     Cols = seq(to_i(just_ref(Ref1), b26), to_i(Ref2, b26)),
-    Funs = [fun() -> db:read_col(MSite, FullPath, X) end || X <- Cols],
+    Funs = [?FUN(db:read_column(MSite, Path, X)) || X <- Cols],
     do_cells(Funs, Bindings);
 
 %% Row ranges.
@@ -186,7 +189,7 @@ funcall(':', [{ssrowref, Ref1}, {row, Ref2}], Bindings) ->
     ?CREATE_BINDINGS_VARS,
     FullPath = walk_path(MPath, just_path(Ref1)),
     Rows = seq(to_i(just_ref(Ref1)), to_i(Ref2)),
-    Funs = [fun() -> db:read_row(MSite, FullPath, X) end || X <- Rows],
+    Funs = [?FUN(db:read_row(MSite, FullPath, X)) || X <- Rows],
     do_cells(Funs, Bindings);
 
 %% -- Hypernumber function and its shorthand.
@@ -200,11 +203,9 @@ funcall(hypernumber, [Url_], Bindings) ->
     #page{site = RSite, path = RPath, ref = {cell, {RX, RY}}} =
         hn_util:parse_url(Url),
 
-    fetch_update_return(fun() ->
-                                spriki:get_hypernumber(MSite, MPath, MX, MY,
-                                                       Url,
-                                                       RSite, RPath, RX, RY)
-                        end);
+    fetch_update_return(?FUN(spriki:get_hypernumber(MSite, MPath, MX, MY, Url,
+                                                    RSite, RPath, RX, RY)));
+
 
 funcall(hn, [Url], Bindings) ->
     funcall(hypernumber, [Url], Bindings).
@@ -213,6 +214,7 @@ funcall(hn, [Url], Bindings) ->
 %%% ----- Utility functions.
 
 %% Checks if any elements of an s-exp are funcalls.
+%% TODO: This might not be needed anymore.
 any_funcalls(Sexp) when is_list(Sexp) ->
     any(fun(Elt) ->
                 %% List where head is an atom, which isn't true/false? Bingo!
@@ -229,35 +231,37 @@ any_funcalls(_) ->
 
 %% Returns value in the cell + fetch_update_return() is called behind the
 %% scenes.
-do_cell(Path, Ref, Bindings) ->
-    MSite = ?KEYSEARCH(site, Bindings),
+do_cell(RelPath, Ref, Bindings) ->
+    ?CREATE_BINDINGS_VARS,
     {X, Y} = getxy(Ref),
-    FetchFun = fun() -> spriki:calc(MSite, Path, X, Y) end,
-    fetch_update_return(FetchFun);
+    Path = walk_path(MPath, RelPath),
+    FetchFun = ?FUN(spriki:calc(MSite, Path, X, Y)),
+    fetch_update_return(FetchFun).
 
 do_cell(Path, Row, Col, Bindings) ->
-    do_cell(Path, util2:make_b26(Col) ++ to_s(Row), Bindings).
+    do_cell(Path, to_b26(Col) ++ to_s(Row), Bindings).
 
 
 do_cells(Funs, Bindings) ->
     map(fun(GetCellRecFun) ->
-                CellRec = GetCellRecFun(),
-                do_cell((CellRec#spriki.index)#index.path,
-                        (CellRec#spriki.index)#index.row,
-                        (CellRec#spriki.index)#index.column,
-                        Bindings)
+                map(fun(Rec) ->
+                            do_cell((Rec#spriki.index)#index.path,
+                                    (Rec#spriki.index)#index.row,
+                                    (Rec#spriki.index)#index.column,
+                                    Bindings)
+                    end,
+                    GetCellRecFun())
         end,
         Funs).
 
 
-%% Call fun to get value and deps, stash deps away, return value.
+%% @doc Calls supplied fun to get value and dependencies, stashes dependencies
+%% away, and returns the value.
 fetch_update_return(FetchFun) ->
     {Value, RefTree, Errors, References} = FetchFun(),
 
-    {RefTreeLst, ErrorsLst, ReferencesLst} = get(retvals),
+    {RefTree0, Errors0, References0} = get(retvals),
     put(retvals,
-        {RefTreeLst ++ RefTree,
-         ErrorsLst  ++ Errors,
-         ReferencesLst ++ References}),
+        {RefTree0 ++ RefTree, Errors0 ++ Errors, References0 ++ References}),
 
     Value.
