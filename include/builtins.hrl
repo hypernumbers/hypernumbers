@@ -14,7 +14,7 @@
          gammadist, gammainv, gammaln, geomean, gestep, growth, harmean, hour,
          hypgeomdist, 'if', index, indirect, int, intercept, ipmt, irr,
          iserr, iserror, islogical, isna, isnontext, isnumber, ispmt, istext,
-         is_list_number, jis, kurt, large, left, leftb, len, lenb, linest, linest,
+         jis, kurt, large, left, leftb, len, lenb, linest, linest,
          ln, log, log10, lower, max, maxa, mdeterm, median, mid, midb, min, mina,
          minus, minute, minverse, mmult, mod, mode, moment, month, n, na, normdist,
          normsdist, 'not', now, odd, 'or', pearson, percentile, permut, pi, plus,

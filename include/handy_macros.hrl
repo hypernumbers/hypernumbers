@@ -31,3 +31,7 @@
 %% Less typing. Handy for debugging.
 -define(PUTS(Str),
         io:format(Str ++ "~n")).
+
+%% A fun that takes no arguments.
+-define(FUN(BODY),
+        fun() -> BODY end). 
