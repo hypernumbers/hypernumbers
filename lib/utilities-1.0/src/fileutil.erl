@@ -6,15 +6,16 @@
 -export([cp/2,
          ls/1,
          mv/2,
+         pwd/0,
          rm/1]).
 
 -import(filename, [nativename/1]).
 
 -define(OS,
-        case os:type() of
-            {unix, _}  -> unix;
-            {win32, _} -> windows
-        end).
+        (case os:type() of
+             {unix, _}  -> unix;
+             {win32, _} -> windows
+         end)).
 
 
 %%%------------------%%%
@@ -31,6 +32,10 @@ ls(Src) ->
 
 mv(Src, Dst) ->
     mv(Src, Dst, ?OS).
+
+
+pwd() ->
+    pwd(?OS).
 
 
 rm(Src) ->
@@ -61,6 +66,13 @@ mv(From, To, unix) ->
 mv(From, To, windows) ->
     os:cmd("move " ++ nativename(From) ++ " " ++ nativename(To)).
 
+
+pwd(unix) ->
+    lists:reverse(tl(lists:reverse(os:cmd("pwd")))); % Remove trailing \n.
+
+pwd(windows) ->
+    lists:reverse(tl(lists:reverse(os:cmd("cd")))). % UNTESTED!
+    
 
 rm(File, unix) ->
     os:cmd("rm " ++ File);

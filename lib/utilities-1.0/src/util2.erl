@@ -22,7 +22,6 @@
 	 parse_range/1,
 	 strip_ref/1,
 	 get_page_path/1,
-	 duff_AbsForm/0,
 	 make_text/1,
 	 get_ref/2,
 	 get_cell_ref/4,
@@ -164,11 +163,6 @@ get_page_path(Path) ->
 	[_ValRef,"?flextoolbar"|Rest] -> repath(Rest)
     end.
 
-duff_AbsForm() ->
-    Src="Return={0,[],[{\"Circular Reference\"}],[]}.",
-    {ok,ErlTokens,_}=erl_scan:string(Src),
-    {ok,ErlAbsForm}=erl_parse:parse_exprs(ErlTokens),
-    ErlAbsForm.
 
 make_text(Item) ->
     case Item of
@@ -255,30 +249,15 @@ make_paths(List) when is_list(List) ->
     %% Now strip the last ',' off
     string:strip(NewList2,right,$,).
 
+%% TODO: Remove and fix all code that uses this function to use tconv:to_b26().
 make_b26(Int) when is_integer(Int) ->
-    make_b26(Int,[]).
-
-make_b26(0,Value) ->
-    Value;
-make_b26(Int,Value)->
-    Div=Int/26,
-    DivInt=trunc(Div),
-    Alpha=Int-26*DivInt+96,
-    make_b26(DivInt,[Alpha|Value]).
+    tconv:to_b26(Int). 
 
 %% this function takes an alpha string and thinks
 %% it is a base 26 integer
+%% TODO: Remove and fix all code that uses this function to use tconv:to_i/2.
 mk_int_frm_b26(X) when is_list(X)->
-    mk_int_frm_b26(string:to_lower(lists:reverse(X)),0,0).
-
-mk_int_frm_b26([],_Power,Value)->
-    Value;
-mk_int_frm_b26([H|T],Power,Value)->
-    NewValue= case (H > 96) andalso (H < 123) of
-		  true -> round((H-96)*math:pow(26,Power));
-		  _    -> exit([H|T]++" is not a valid base 26 number")
-	      end,
-    mk_int_frm_b26(T,Power+1,NewValue+Value).
+    tconv:to_i(X, b26).
 
 %% This function computes relative error, which provides a way
 %% to compare two floats regardless of their range.
