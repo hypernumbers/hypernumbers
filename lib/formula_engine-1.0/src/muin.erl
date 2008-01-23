@@ -27,6 +27,9 @@
 -define(IS_FUNCALL(X),
         is_atom(X) andalso X =/= true andalso X =/= false).
 
+-define(NEED_BINDINGS,
+        [sscellref, ssrcref, ':', hn, hypernumber]).
+
 %%%--------------------%%%
 %%%  Public functions  %%%
 %%%--------------------%%%
@@ -74,7 +77,7 @@ eval([Fun__ | Args__], Bindings) when ?IS_FUNCALL(Fun__) ->
 
     %% And then evaluate the whole s-exp.
     %% Some functions need access to bindings, some don't...
-    ?COND(member(Fun, [sscellref, ':', hn, hypernumber]),
+    ?COND(member(Fun, ?NEED_BINDINGS),
           funcall(Fun, CallArgs, Bindings),
           funcall(Fun, CallArgs));
 
@@ -133,7 +136,7 @@ preproc(Sexp, _Bindings) ->
 plain_eval([Fun | Args], Bindings) when ?IS_FUNCALL(Fun) ->
     CallArgs = [plain_eval(X, Bindings) || X <- Args],
     
-    ?COND(member(Fun, [sscellref, ':', hn, hypernumber]),
+    ?COND(member(Fun, ?NEED_BINDINGS),
           funcall(Fun, CallArgs, Bindings),
           funcall(Fun, CallArgs));
 
@@ -160,6 +163,11 @@ funcall(sscellref, [Ssref], Bindings) ->
     Path = walk_path(MPath, just_path(Ssref)),
     Ref = just_ref(Ssref),
     do_cell(Path, Ref, Bindings);
+
+funcall(ssrcref, [{RelPath, Row, Col}], Bindings) ->
+    ?CREATE_BINDINGS_VARS,
+    Path = walk_path(MPath, RelPath),
+    do_cell(Path, Row, Col, Bindings);
 
 %% -- Range functions.
 
@@ -240,6 +248,7 @@ do_cells(Funs, Bindings) ->
                     GetCellRecFun())
         end,
         Funs).
+
 
 
 %% @doc Calls supplied fun to get value and dependencies, stashes dependencies

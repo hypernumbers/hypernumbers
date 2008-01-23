@@ -27,6 +27,7 @@
 
 
 %% Takes a same-site reference, returns path to the page it's on.
+%% FIXME: /a1 => //
 just_path(Ssref) when is_list(Ssref) ->
     append([?COND(hd(Ssref) == $/, "/", ""),
             join(init(string:tokens(Ssref, "/")), "/"),

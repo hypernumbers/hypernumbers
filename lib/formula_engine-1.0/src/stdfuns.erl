@@ -588,34 +588,34 @@ devsq(Values) ->
 dget(Database, RowWidth, Field, Criteria) ->
     hd(db_generic(Database, RowWidth, Field, Criteria)).
 
-error('#NULL!') ->
-    throw({error, null});
-error('#DIV/0!') ->
-    throw({error, div_by_zero});
-error('#VALUE!') ->
-    throw({error, value});
-error('#REF!') ->
-    throw({error, ref});
-error('#NAME?') ->
-    throw({error, name});
-error('#NUM!') ->
-    throw({error, num});
-error('#N/A!') ->
-    throw({error, na}).
 
-error_type({error, null})        -> 1;
-error_type({error, div_by_zero}) -> 2;
-error_type({error, value})       -> 3;
+error('#NULL!')  -> throw({error, null});
+error('#DIV/0!') -> throw({error, div0});
+error('#VALUE!') -> throw({error, value});
+error('#REF!')   -> throw({error, ref});
+error('#NAME?')  -> throw({error, name});
+error('#NUM!')   -> throw({error, num});
+error('#N/A!')   -> throw({error, na}).
+
+
+error_type({error, null})  -> 1;
+error_type({error, div0})  -> 2;
+error_type({error, value}) -> 3;
 error_type({error, ref})   -> 4;
-error_type({error, name})        -> 5;
-error_type({error, num})      -> 6;
-error_type({error, na})          -> 7;
-error_type(_)                    -> {error, na}.
+error_type({error, name})  -> 5;
+error_type({error, num})   -> 6;
+error_type({error, na})    -> 7;
+error_type(_)              -> {error, na}.
+
 
 %% Rounds up to the nearest multiple of 2 *away from zero*.
-even(X) when ?is_multiple(X, 2) -> X; % Also handles the case when X is 0.
-even(X) when (X > 0) -> ceiling(X, 2);
-even(X) when (X < 0) -> ceiling(X, -2).
+even(X) when ?is_multiple(X, 2) ->
+    X; % Also handles the case when X is 0.
+even(X) when (X > 0) ->
+    ceiling(X, 2);
+even(X) when (X < 0) ->
+    ceiling(X, -2).
+
 
 exact(X, X)   ->
     true;
@@ -981,7 +981,7 @@ mmult(Matrix1, RowWidth1, Matrix2, RowWidth2) ->
     M2 = matrix:list_to_matrix(Matrix2, RowWidth2),
     matrix:multiply(M1, M2).
 
-mod(_Num, Divisor) when (Divisor == 0) -> {error, div_by_zero};
+mod(_Num, Divisor) when (Divisor == 0) -> {error, div0};
 mod(Num, Divisor) -> Num - Divisor * int(Num / Divisor).
 
 mode(List) ->
