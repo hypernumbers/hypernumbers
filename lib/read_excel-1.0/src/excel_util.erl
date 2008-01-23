@@ -7,11 +7,13 @@
 %%%-------------------------------------------------------------------
 -module(excel_util).
 
--export([put_log/2,parse_CRS_RK/2,
+-export([get_bound_sheet/3,
+          put_log/2,parse_CRS_RK/2,
           parse_CRS_Uni16/2,parse_CRS_Uni16/3,
+          get_len_CRS_Uni16/5,
           lookup_string/2,read_cell_range_add_list/2,
           read_cell_range_addies/3,
-          write/3,read/3]).
+          write/3,read/3,append_sheet_name/2]).
 
 %%% Debugging exports
 -export([parse_CRS_RK_TESTING/2,shift_left2_TESTING/1]).
@@ -23,6 +25,18 @@
 -include("microsoftcompoundfileformat.hrl").
 -include("microsoftbiff.hrl").
 -include("excel_com_rec_subs.hrl").
+
+get_bound_sheet(Bin,Tables,FileOut)->
+    <<SheetBOF:32/little-unsigned-integer,
+     Visibility:8/little-unsigned-integer,
+     SheetType:8/little-unsigned-integer,
+     Name/binary>>=Bin,
+    SheetName=excel_util:parse_CRS_Uni16(Name,FileOut),
+    %% The Sheetnames are the names of all the worksheets in the workbook
+    %% The order in which the Sheetnames appear in this function is determined
+    %% by the zero-ordered Sheetindex. In other words the names appear here
+    %% in the order of the sheets left to right in the tab bar of Excel
+    {SheetBOF,Visibility,SheetType,Name,SheetName}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -71,13 +85,13 @@ parse_CRS_Uni16(Bin,FileOut)->
     catch
 	exit:_Reason ->
 	    %% Try again with an index of 2
-	    %%io:format("in parse_CRS_Uni16 "++
-		  %%    "trying an index length of 2~n"),
+	    io:format("in parse_CRS_Uni16 "++
+		      "trying an index length of 2~n"),
 	    parse_CRS_Uni16(Bin,2,FileOut);
 	  error:_Message ->
 	    %% Try again with an index of 2
-	    %%io:format("in parse_CRS_Uni16 "++
-		  %%    "trying an index length of 2~n"),
+	    io:format("in parse_CRS_Uni16 "++
+		      "trying an index length of 2~n"),
 	    parse_CRS_Uni16(Bin,2,FileOut);
 	  throw:Term ->
 	    io:format("in parse_CRS_Uni16 "++
@@ -99,73 +113,104 @@ parse_CRS_Uni16_intermediate(Bin,FileOut)->
     end.
 
 parse_CRS_Uni16(Bin,IndexSize,FileOut)->
-    %%  put_log(FileOut,io_lib:fwrite("Bin is ~p~nIndexSize is ~p",
-    %% 	        [Bin,IndexSize])),
+    %% put_log(FileOut,io_lib:fwrite("Bin is ~p~nIndexSize is ~p",
+    %%        [Bin,IndexSize])),
     LenSize=IndexSize*8,
+    %% io:format("in excel_util:parse_CRS_Uni16 Bin is ~p IndexSize is ~p LenSize is ~p~n",
+    %%   [Bin,IndexSize,LenSize]),
     <<Len:LenSize/little-unsigned-integer,
      NFlags:8/little-unsigned-integer,
      Rest/binary>>=Bin,
+    %% io:format("in excel_util:parse_CRS_Uni16 NFlags is ~p~n",[NFlags]),
+    {LenStr,Encoding,BinLen1,
+      {RICH_TEXT,LenRichText,LenRichTextIdx},
+      {ASIAN,LenAsian,LenAsianIdx},Rest3}=get_bits_CRS_Uni16(Len,IndexSize,Rest,NFlags,FileOut),
+    BinLen2=erlang:size(Bin),
+    put_log(FileOut,io_lib:fwrite("In excel_util:parse_CRS_Uni16~n  "++
+				  "BinLen1 is ~p~n  BinLen2 is ~p~n",
+				  [BinLen1,BinLen2])),
+    %% io:format("In excel_util:parse_CRS_Uni16~n  "++
+		%% 		  "-Bin is ~p~n-BinLen1 is ~p~n-BinLen2 is ~p~n",
+		%% 		  [Bin,BinLen1,BinLen2]),
+    %% Now we need to parse the rest of the binary
+    %% io:format("In excel_util:parse_CRS_Uni16 Rest3 is ~p and LenStr is ~p~n",
+    %%     [Rest3,LenStr]),
+    <<String:LenStr/binary,Rest4/binary>>=Rest3,
+    List1=[{Encoding,String}],
+    case RICH_TEXT of
+      match    -> 
+		    <<RichText:LenRichText/binary,Rest5/binary>>=Rest4,
+		    List2=[{richtext,RichText}|List1];
+      no_match -> 
+        Rest5=Rest4,
+		    List2=List1
+    end,
+    case ASIAN of
+      match    ->
+		    <<Asian:LenAsian/binary>>=Rest5,
+		    List3=[{asian,Asian}|List2];
+      no_match -> List3=List2
+    end,
+    put_log(FileOut,io_lib:fwrite("in excel_util:parse_CRS_Uni16 List3 is ~p~n",[List3])),
+    {List3,BinLen1,BinLen2}.
+
+get_len_CRS_Uni16(Len,IndexSize,Bin,Flags,FileOut)->
+    {LenStr,Encoding,BinLen,
+      {RICH_TEXT,LenRichText,LenRichTextIdx},
+      {ASIAN,LenAsian,LenAsianIdx},Rest3}=get_bits_CRS_Uni16(Len,IndexSize,Bin,Flags,FileOut),
+    BinLen.
+
+get_bits_CRS_Uni16(Len,IndexSize,Bin,NFlags,FileOut)->
     {ok,UNCOMP}   =check_flags(NFlags,?CRS_UNI16_UNCOMPRESSED),
     {ok,ASIAN}    =check_flags(NFlags,?CRS_UNI16_ASIAN),
     {ok,RICH_TEXT}=check_flags(NFlags,?CRS_UNI16_RICH_TEXT),
     put_log(FileOut,io_lib:fwrite("Len is ~p~nNFlags is ~p~nUNCOMP is ~p~n"++
 				  "ASIAN is ~p~nRICH_TEXT is ~p",
 				  [Len,NFlags,UNCOMP,ASIAN,RICH_TEXT])),
+    %% io:format("in get_len_CRS_Uni16 Len is ~p~nNFlags is ~p~nUNCOMP is ~p~n"++
+		%% 		  "ASIAN is ~p~nRICH_TEXT is ~p~n",
+		%% 		  [Len,NFlags,UNCOMP,ASIAN,RICH_TEXT]),
     case RICH_TEXT of
-	match ->
-	    <<LenRichText:16/little-unsigned-integer,Rest2/binary>>=Rest,
-	    LenRichTextIdx=2;
-	no_match ->
-	    Rest2=Rest,
-	    LenRichText=0,
-	    LenRichTextIdx=0
-    end,
+      match ->
+        <<LenRichText:16/little-unsigned-integer,Rest2/binary>>=Bin,
+        LenRichTextIdx=2;
+      no_match ->
+        Rest2=Bin,
+        LenRichText=0,
+        LenRichTextIdx=0
+      end,
+    %% io:format("in excel_util:get_len_CRS_Uni16 Bin is ~p~n-Rest2 is ~p~n",[Bin,Rest2]),
     case ASIAN of
-	match ->
-	    <<LenAsian:16/little-unsigned-integer,Rest3/binary>>=Rest2,
-	    LenAsianIdx=4;
-	no_match ->
-	    Rest3=Rest2,
-	    LenAsian=0,
-	    LenAsianIdx=0
+      match ->
+         <<LenAsian:16/little-unsigned-integer,Rest3/binary>>=Rest2,
+         LenAsianIdx=4;
+      no_match ->
+        Rest3=Rest2,
+        LenAsian=0,
+        LenAsianIdx=0
     end,
+    %% io:format("in excel_util:get_len_CRS_Uni16 Rest2 is ~p~n-Rest3 is ~p~n",[Rest2,Rest3]),
     %% We now have info to calculate the length of the binary
-    case UNCOMP of
-	match    -> LenStr=Len*2,
-		    Encoding='uni16-16';
-	no_match -> LenStr=Len,
-		    Encoding='uni16-8'
+    {LenStr,Encoding} = case UNCOMP of
+      match    -> {Len*2,'uni16-16'};
+      no_match -> {Len,  'uni16-8'}
     end,
-    %%put_log(FileOut,io_lib:fwrite("In excel_util:parse_CRS_Uni16~n  "++
+    %%put_log(FileOut,io_lib:fwrite("In excel_util:get_len_CRS_Uni16~n  "++
 		%%		  "LenRichTextIdx is ~p~n  "++
 		%%		  "LenAsianIdx is ~p~n  "++
 		%%		  "LenStr is ~p~n  LenRichText is ~p~n  "++
 		%%		  "LenAsian is ~p~n",
 		%%		  [LenRichTextIdx,LenAsianIdx,LenStr,
 		%%		   LenRichText,LenAsian])),
-    BinLen1=1+1+LenRichTextIdx+LenAsianIdx+LenStr+LenRichText*4+LenAsian,
-    BinLen2=erlang:size(Bin),
-    put_log(FileOut,io_lib:fwrite("In excel_util:parse_CRS_Uni16~n  "++
-				  "BinLen1 is ~p~n  BinLen2 is ~p~n",
-				  [BinLen1,BinLen2])),
-    %% Now we need to parse the rest of the binary
-    <<String:LenStr/binary,Rest4/binary>>=Rest3,
-    List1=[{Encoding,String}],
-    case RICH_TEXT of
-	match    -> io:format("in excel_util:parse_CRS_Uni16 RICH_TEXT matches~n"),
-		    <<RichText:LenRichText/binary,Rest5/binary>>=Rest4,
-		    List2=[{richtext,RichText}|List1];
-	no_match -> Rest5=Rest4,
-		    List2=List1
-    end,
-    case ASIAN of
-	match    -> io:format("in excel_util:parse_CRS_Uni16 ASIAN matches~n"),
-		    <<Asian:LenAsian/binary>>=Rest5,
-		    List3=[{asian,Asian}|List2];
-	no_match -> List3=List2
-    end,
-    put_log(FileOut,io_lib:fwrite("in excel_util:parse_CRS_Uni16 List3 is ~p~n",[List3])),
-    {List3,BinLen1,BinLen2}.
+    %% io:format("In excel_util:get_len_CRS_Uni16~n "++
+		%% 		  "LenRichTextIdx is ~p~n  "++
+		%% 		  "LenAsianIdx is ~p~n  "++
+		%% 		  "LenStr is ~p~n  LenRichText is ~p~n  "++
+		%% 		  "LenAsian is ~p~n",
+		%% 		  [LenRichTextIdx,LenAsianIdx,LenStr,
+		%% 		   LenRichText,LenAsian]),
+    BinLen=1+IndexSize+LenRichTextIdx+LenAsianIdx+LenStr+LenRichText*4+LenAsian,
+    {LenStr,Encoding,BinLen,{RICH_TEXT,LenRichText,LenRichTextIdx},{ASIAN,LenAsian,LenAsianIdx},Rest3}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -186,7 +231,15 @@ read(Tables,Name,Key)->
     {arrayformula,[]} -> "fix me up in excel_util:read, ya wank!";
     _                 -> Return
     end.
-    
+
+%% append a sheet name to the sheetname table with a zero-based
+%% index value
+append_sheet_name(Tables,SheetName)->
+    {value,{Name,Tid}}=lists:keysearch(sheetnames,1,Tables),
+    Size=ets:info(Tid,size),
+    Record={{index,Size},[{name,SheetName}]},
+    ets:insert(Tid,Record).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% Eunit test functions                                                     %%%

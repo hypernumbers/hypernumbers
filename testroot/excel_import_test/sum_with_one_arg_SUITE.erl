@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: sum_with_one_arg.xls
-% Generated on: Thu Jan 17 19:34:57 +0000 2008
+% Generated on: Wed Jan 23 09:59:03 +0000 2008
 
 -module(sum_with_one_arg_SUITE).
 -compile(export_all).

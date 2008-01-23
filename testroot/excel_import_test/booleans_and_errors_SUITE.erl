@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: booleans_and_errors.xls
-% Generated on: Thu Jan 17 19:34:56 +0000 2008
+% Generated on: Wed Jan 23 09:59:02 +0000 2008
 
 -module(booleans_and_errors_SUITE).
 -compile(export_all).

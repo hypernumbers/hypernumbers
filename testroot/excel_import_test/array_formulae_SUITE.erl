@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: array_formulae.xls
-% Generated on: Fri Jan 18 00:25:22 +0000 2008
+% Generated on: Wed Jan 23 09:59:09 +0000 2008
 
 -module(array_formulae_SUITE).
 -compile(export_all).
@@ -39,11 +39,29 @@ read_from_excel_data(Config, {Row,Col}) ->
         Other                   -> io:format("(in generatetest.rb - fix me Other is ~p~n",[Other])
     end.
 
+a5_test(doc) -> [""];
+a5_test(suite) -> [];
+a5_test(Config) -> 
+  io:format("Expected : ~p~nGot      : ~p~n",["Functions with arrays",read_from_excel_data(Config,{4,0})]),
+  test_util:expected(true, test_util:excel_equal({string,"Functions with arrays"}, read_from_excel_data(Config,{4,0}))).
+  
+a6_test(doc) -> [""];
+a6_test(suite) -> [];
+a6_test(Config) -> 
+  io:format("Expected : ~p~nGot      : ~p~n",["1D Sum",read_from_excel_data(Config,{5,0})]),
+  test_util:expected(true, test_util:excel_equal({string,"1D Sum"}, read_from_excel_data(Config,{5,0}))).
+  
 a1_test(doc) -> [""];
 a1_test(suite) -> [];
 a1_test(Config) -> 
   io:format("Expected : ~p~nGot      : ~p~n",["Array Formulae",read_from_excel_data(Config,{0,0})]),
   test_util:expected(true, test_util:excel_equal({string,"Array Formulae"}, read_from_excel_data(Config,{0,0}))).
+  
+a7_test(doc) -> [""];
+a7_test(suite) -> [];
+a7_test(Config) -> 
+  io:format("Expected : ~p~nGot      : ~p~n",["2D Sum",read_from_excel_data(Config,{6,0})]),
+  test_util:expected(true, test_util:excel_equal({string,"2D Sum"}, read_from_excel_data(Config,{6,0}))).
   
 a2_test(doc) -> [""];
 a2_test(suite) -> [];
@@ -56,6 +74,18 @@ a3_test(suite) -> [];
 a3_test(Config) -> 
   io:format("Expected : ~p~nGot      : ~p~n",[3.0,read_from_excel_data(Config,{2,0})]),
   test_util:expected(true, test_util:excel_equal({number,3.0}, read_from_excel_data(Config,{2,0}))).
+  
+b6_test(doc) -> [""];
+b6_test(suite) -> [];
+b6_test(Config) -> 
+  io:format("Expected : ~p~nGot      : ~p~n",["=SUM({1,2,3})",read_from_excel_data(Config,{5,1})]),
+  test_util:expected(true, test_util:excel_equal({formula,"=SUM({1,2,3})"}, read_from_excel_data(Config,{5,1}))).
+  
+b7_test(doc) -> [""];
+b7_test(suite) -> [];
+b7_test(Config) -> 
+  io:format("Expected : ~p~nGot      : ~p~n",["=SUM({1,2,3;4,5,6;7,8,9})",read_from_excel_data(Config,{6,1})]),
+  test_util:expected(true, test_util:excel_equal({formula,"=SUM({1,2,3;4,5,6;7,8,9})"}, read_from_excel_data(Config,{6,1}))).
   
 b2_test(doc) -> [""];
 b2_test(suite) -> [];
@@ -83,9 +113,14 @@ c3_test(Config) ->
   
 all(doc) -> [""];
 all(suite) -> 
-    [a1_test,
+    [a5_test,
+   a6_test,
+   a1_test,
+   a7_test,
    a2_test,
    a3_test,
+   b6_test,
+   b7_test,
    b2_test,
    b3_test,
    c2_test,

@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: gnumeric_engineering.xls
-% Generated on: Thu Jan 17 19:35:02 +0000 2008
+% Generated on: Wed Jan 23 09:59:19 +0000 2008
 
 -module(gnumeric_engineering_SUITE).
 -compile(export_all).

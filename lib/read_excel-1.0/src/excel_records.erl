@@ -103,8 +103,8 @@ parse_rec(?EXTERNSHEET,Bin,Tables,FileOut)->
     excel_util:put_log(FileOut,"[EXTERNSHEET *Done*]"),
     <<NumRefs:16/little-unsigned-integer,
       R2/binary>>=Bin,
-      io:format("in excel_records:parse_rec for Externsheet NumRefs is ~p~n",
-        [NumRefs]),
+      %% io:format("in excel_records:parse_rec for Externsheet NumRefs is ~p~n",
+      %%  [NumRefs]),
         {ok,ok}=parse_externsheet(R2,0,Tables,FileOut),
     excel_util:put_log(FileOut,"[/EXTERNSHEET]"),
     {ok,ok};
@@ -319,9 +319,11 @@ parse_rec(?VCENTRE,_Bin,_Tables,FileOut)->
     excel_util:put_log(FileOut,"VCENTRE is not being processed at the moment"),
     excel_util:put_log(FileOut,"[/VCENTRE]"),
     {ok,ok};
-parse_rec(?BOUNDSHEET,Bin,_Tables,FileOut)->
+parse_rec(?BOUNDSHEET,Bin,Tables,FileOut)->
     excel_util:put_log(FileOut,"[BOUNDSHEET *DONE*]"),
-    {SheetBOF,Visibility,SheetType,Name,SheetName}=excel_util:get_bound_sheet(Bin,FileOut),
+    {SheetBOF,Visibility,SheetType,Name,SheetName}=excel_util:get_bound_sheet(Bin,Tables,FileOut),
+    [{Type,NameBin}]=SheetName,
+    excel_util:append_sheet_name(Tables,binary_to_list(NameBin)),
     excel_util:put_log(FileOut,io_lib:fwrite("SheetBOF is ~p~n"++
 				  "Visibility is ~p~n"++
 				  "SheetType is ~p~n"++
@@ -498,7 +500,7 @@ parse_rec(?DSF,_Bin,_Tables,FileOut)->
     {ok,ok};
 parse_rec(?SUPBOOK,Bin,Tables,FileOut)->
     excel_util:put_log(FileOut,"[SUPBOOK *Done]"),
-    io:format("in excel_records:parse_rec for SUPBOOK Bin is ~p~n",[Bin]),
+    %% io:format("in excel_records:parse_rec for SUPBOOK Bin is ~p~n",[Bin]),
     case Bin of
         <<NoSheets:16/little-unsigned-integer,
         ?SheetsInBook:16/little-unsigned-integer>> ->
@@ -702,8 +704,8 @@ parse_rec(?ARRAY2,Bin,Tables,FileOut)->
       Formula="{"++parse_FRM_Results(formula,Tokens,Tables,FileOut)++"}",
       io:format("in excel_records:parse_rec for ARRAY~n-Formula are ~p~n",[Formula]),
       excel_util:write(Tables,arrayformula,[{{row_index,Row},{col_index,Col}},{formula,Formula}]),
-      filefilters:dump(Tables),
-      exit("goodbye"),
+      %% filefilters:dump(Tables),
+      %% exit("goodbye from within excel_records - fix arrays"),
     excel_util:put_log(FileOut,"[/ARRAY2]"),
     {ok,ok};
 parse_rec(?DEFAULTROWHEIGHT2,_Bin,_Tables,FileOut)->

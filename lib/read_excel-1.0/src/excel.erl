@@ -7,7 +7,7 @@
 %%%-------------------------------------------------------------------
 -module(excel).
 
--export([read_excel/10,get_file_structure/8]).
+-export([read_excel/10,get_file_structure/9]).
 
 %%% Suspect this should be in a util file of some sort...
 -export([get_named_SID/3]).
@@ -132,7 +132,7 @@ get_single_SST(Bin,FileOut,Residuum)->
 %%%                                                                     %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 get_file_structure(ParsedDirectory,SAT,SSAT,SectorSize,ShortSectorSize,
-		   _MinStreamSize,FileIn,FileOut)->
+		   _MinStreamSize,Tables,FileIn,FileOut)->
     %% Remember that if the stream is a short stream the SID in the directory
     %% is actually an SSID!
     {Location,SID}=excel:get_named_SID(ParsedDirectory,?EXCEL_WORKBOOK,FileOut),
@@ -150,7 +150,7 @@ get_file_structure(ParsedDirectory,SAT,SSAT,SectorSize,ShortSectorSize,
 		SSIDs=filefilters:get_SIDs(SSAT,SID,FileOut),
 		get_short_bin(Bin2,SSIDs,ShortSectorSize)
 	end,
-    {{Location,SID},get_bound_list(Bin,FileOut)}.
+  {{Location,SID},get_bound_list(Bin,Tables,FileOut)}.
 
 get_named_SID(Directory,Name,FileOut)->
     SIDList=[{lists:keysearch(name,1,X),lists:keysearch(sid,1,X),
@@ -193,10 +193,10 @@ get_stream(_SAT,SIDs,SectorSize,FileIn,FileOut)->
 					     [erlang:size(Bin)])),
     Bin.
 
-get_bound_list(Bin,FileOut)->
-    get_bound_list(Bin,[],FileOut).
+get_bound_list(Bin,Tables,FileOut)->
+    get_bound_list(Bin,[],Tables,FileOut).
 
-get_bound_list(Bin,Residuum,FileOut)->
+get_bound_list(Bin,Residuum,Tables,FileOut)->
     <<Identifier:16/little-unsigned-integer,
      RecordSize:16/little-unsigned-integer,Rest/binary>>=Bin,
     case Identifier of
@@ -206,15 +206,13 @@ get_bound_list(Bin,Residuum,FileOut)->
  	    Residuum;
 	?BOUNDSHEET ->
  	    <<Record:RecordSize/binary,Rest2/binary>>=Rest,
- 	    Return=get_bound_sheet(<<Record:RecordSize/binary>>,FileOut),
+ 	    Return=excel_util:get_bound_sheet(<<Record:RecordSize/binary>>,Tables,FileOut),
 	    {SheetBOF,Visibility,SheetType,Name,SheetName}=Return,
-       io:format("in excel:get_bound_list Visbility is ~p~n-SheetType is ~p~n-Name is ~p~n"++
-         "-SheetName is ~p~n",[Visibility,SheetType,Name,SheetName]),
 	    NewResiduum=[{SheetName,SheetBOF}|Residuum],
- 	    get_bound_list(Rest2,NewResiduum,FileOut);
+ 	    get_bound_list(Rest2,NewResiduum,Tables,FileOut);
 	_Other ->
  	    <<_Record:RecordSize/binary,Rest2/binary>>=Rest,
- 	    get_bound_list(Rest2,Residuum,FileOut)
+ 	    get_bound_list(Rest2,Residuum,Tables,FileOut)
     end.
 
 get_storage(FileHandle,Position,SIDs,SectorSize,FileOut)->
@@ -249,14 +247,6 @@ get_short_bin(Bin,[H|T],SectorSize,Residuum) ->
     %% remember - you are not cutting down the binary!
     %% which is why we dont pass 'Rest' on but send 'Bin' on again
     get_short_bin(Bin,T,SectorSize,[<<Seg:Size>>|Residuum]).
-
-get_bound_sheet(Bin,FileOut)->
-    <<SheetBOF:32/little-unsigned-integer,
-     Visibility:8/little-unsigned-integer,
-     SheetType:8/little-unsigned-integer,
-     Name/binary>>=Bin,
-    SheetName=excel_util:parse_CRS_Uni16(Name,FileOut),
-    {SheetBOF,Visibility,SheetType,Name,SheetName}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                     %%%

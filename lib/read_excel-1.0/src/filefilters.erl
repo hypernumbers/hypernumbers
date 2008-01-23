@@ -45,14 +45,13 @@ read_excel(excel,FileIn,FileOut,Fun)->
     %%io:format("in filefilters:read ParsedDirectory is ~p~n",[ParsedDirectory]),
     SubStreams=excel:get_file_structure(ParsedDirectory,ParsedSAT,ParsedSSAT,
 					SectorSize,ShortSectorSize,
-					MinStreamSize,FileIn,FileOut),
+					MinStreamSize,Tables,FileIn,FileOut),
     print_structure(FileIn,ParsedDirectory,SubStreams),
     excel:read_excel(ParsedDirectory,ParsedSAT,ParsedSSAT,
 		     SectorSize,ShortSectorSize,
 		     MinStreamSize,SubStreams,FileIn,Tables,FileOut),
     Fun(Tables);
 read_excel(Other,_,_,_) ->
-    io:format("in filefilters:read File Type ~p is not supported~n",[Other]),
     {error, file_type_not_supported}.
 
 filter_file(FileIn,FileOut)->
@@ -356,6 +355,7 @@ create_ets()->
      {names,ets:new(names,[ordered_set,private])},
      {arrayformula,ets:new(names,[ordered_set,private])},
      {externsheets,ets:new(names,[ordered_set,private])},
+     {sheetnames,ets:new(names,[ordered_set,private])},
      {misc,ets:new(names,[ordered_set,private])}].
 
 %% Bodge string attempts to take a list in some class of unicode encoding and
@@ -387,7 +387,7 @@ bodge_string(<<Char:16/little-signed-integer,Rest/binary>>,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 test_DEBUG()-> 
-    File="minitest.xls",
+    %%File="minitest.xls",
     %%File="booleans_and_errors.xls",
     %%File="basic_functions_tests_ii.xls",
     %%File="arithmetic_and_precedence.xls",
@@ -396,6 +396,9 @@ test_DEBUG()->
     %%File="block_of_numbers.xls",
     %%File="gnumeric_db.xls",
     %%File="gnumeric_lookup.xls",
+    %%File="gnumeric_engineering.xls",
+    File="z_basic_functions_tests.xls",
+    %%File="basic_unicode_strings.xls",
     FileRoot="c:/Users/Gordon Guthrie/Documents/SVN/code/trunk/testroot/"++
      	"excel_import_test/files/Win Excel 2007 (as 97)",
     io:format("in filefilters:test_DEBUG FileRoot is ~p and File is ~p~n",
