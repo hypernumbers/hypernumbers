@@ -28,10 +28,14 @@ ERROR = \#NULL\!|\#DIV\/0\!|\#VALUE\!|\#REF\!|\#NAME\?|\#NUM\!|\#N\/A\!
 
 %%% ----- References
 
+%% --- A1-style.
 %% Single same-page cell reference, e.g. A1, B22, $A$5 etc.
 CELLREF = ((\$)?[a-zA-Z]+(\$)?[0-9]+)
 %% Same-page range reference, e.g. A1:B10
 RANGEREF = ({CELLREF}:{CELLREF})
+
+%% --- RC-style.
+RCREF = ((R|r)\[{INTEGER}\](C|c)\[{INTEGER}\])
 
 %% Range intersection operator (whitespace). Doing in the lexer for now.
 INTERSECTION = (({RANGEREF})(\s+)({RANGEREF}))((\s+)({RANGEREF}))*
@@ -46,6 +50,8 @@ SSCELLREF = {START_OF_SSREF}{MAYBE_PATH}{CELLREF}
 SSCOLREF  = {START_OF_SSREF}{MAYBE_PATH}{ID}
 SSROWREF  = {START_OF_SSREF}{MAYBE_PATH}{INTEGER}
 
+SSRCREF   = {START_OF_SSREF}{MAYBE_PATH}{RCREF}
+
 %% Whitespace, duh.
 WHITESPACE = ([\000-\s]*)
 
@@ -58,7 +64,9 @@ Rules.
 {SSCELLREF}     : {token, {sscellref,    muin_util:normalize_ssref(YYtext)}}.
 {SSCOLREF}      : {token, {sscolref,     muin_util:normalize_ssref(YYtext)}}.
 {SSROWREF}      : {token, {ssrowref,     muin_util:normalize_ssref(YYtext)}}.
-                        
+{RCREF}         : {token, {rcref,        string:to_lower(YYtext)}}.
+{SSRCREF}       : {token, {ssrcref,      muin_util:normalize_ssref(YYtext)}}.
+
 %% Basic data types.
 {INTEGER}          : {token, {integer, tconv:to_i(YYtext)}}.
 {FLOAT_DECIMAL}    : {token, {float,   tconv:to_f(YYtext)}}.

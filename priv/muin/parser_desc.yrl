@@ -26,6 +26,7 @@ integer float boolean string date
 %% References.
 cellref sscellref sscolref ssrowref
 intersection
+rcref ssrcref
 
 %% Errors
 error
@@ -98,6 +99,8 @@ Literal -> string     : lit('$1').
 Literal -> date       : lit('$1').
 Literal -> cellref    : lit('$1').
 Literal -> sscellref  : lit('$1').
+Literal -> rcref      : lit('$1').
+Literal -> ssrcref    : lit('$1').
 Literal -> var        : lit('$1').
 Literal -> error      : lit('$1').
 Literal -> Array      : '$1'.
@@ -165,10 +168,11 @@ RowRange -> ssrowref colon Funcall : [':', '$1', '$3'].
 
 
 %% ----- Helper functions.
+%% TODO: Some of the code below could be cleaned up a bit.
 
 Erlang code.
 
--import(lists, [all/2, filter/2, foldl/3, map/2, member/2]).
+-import(lists, [all/2, filter/2, foldl/3, last/1, map/2, member/2]).
 
 %% Make a function name for the AST from lexer tokens.
 func_name({id, NameAsStr}) ->
@@ -188,8 +192,20 @@ lit({error, Data}) ->
 lit({var, Data}) ->
     [var, Data];
 
-lit({date, Data}) ->
-    [date, Data]; %% Not sure what to do here yet.
+%% For fixed RC refs we can get the row/col straightaway and just pass it on to
+%% the interpreter.
+lit({rcref, Data}) ->
+    lit({ssrcref, "./" ++ Data});
+
+lit({ssrcref, Data}) ->
+    Path = muin_util:just_path(Data),
+    Ref = last(string:tokens(Data, "/")),
+
+    {match, [{St1, Len1}, {St2, Len2}]} = regexp:matches(Ref, "([0-9]+)"),
+    Row = tconv:to_i(string:substr(Ref, St1, Len1)),
+    Col = tconv:to_i(string:substr(Ref, St2, Len2)),
+
+    [ssrcref, {Path, Row, Col}];
 
 lit({_Type, Data}) ->
     Data.
