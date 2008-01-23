@@ -2,6 +2,9 @@
 # Test library for Spriki system testing.
 # <hasan@hypernumbers.com>
 
+# TODO:
+#   * Read data/formula/updates/other hashes from YAML.
+
 $LOAD_PATH << File.join(ENV["HYPERNUMBERS_SVNROOT"], "priv", "ruby")
 require "hypernumbers"
 
@@ -22,10 +25,24 @@ class String
   end
 end
 
+def with_flush(&block)
+  block.call
+  $stdout.flush
+end
+
+def nap_for_updates
+  with_flush { print "Going for a nap (#{NAP_TIME} seconds)... ".ansi_blue }
+  Kernel.sleep(NAP_TIME)
+  puts "done.".ansi_blue
+end
+
+def with_nap(&block)
+  block.call
+  nap_for_updates
+end
 
 def batch_post(data)
-  print "Posting data... ".ansi_blue
-  $stdout.flush
+  with_flush { print "Posting data... ".ansi_blue }
   
   hn = Hypernumbers::Connection.new("127.0.0.1", 9000)
   
@@ -56,11 +73,4 @@ def compare(answers)
       end
     end
   end
-end
-
-def nap_for_updates
-  print "Going for a nap (#{NAP_TIME} seconds)... ".ansi_blue
-  $stdout.flush
-  Kernel.sleep(NAP_TIME)
-  puts "done.".ansi_blue
 end

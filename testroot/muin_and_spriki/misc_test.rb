@@ -9,7 +9,7 @@ load "mytestlib.rb"
 
 data = [
         { :sheet => "/arrays/", :data =>
-          { :a1 => "={1, 2, 3, true}"
+          { :a1 => "={true, 1, 2, 3, true}"
           }}
        ]
 
