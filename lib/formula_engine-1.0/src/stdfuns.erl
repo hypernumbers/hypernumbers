@@ -90,6 +90,7 @@
          dget/4,
          dydx/2,
          days360/2,
+         error/1,
          error_type/1,
          even/1,
          exact/2,
@@ -587,12 +588,27 @@ devsq(Values) ->
 dget(Database, RowWidth, Field, Criteria) ->
     hd(db_generic(Database, RowWidth, Field, Criteria)).
 
+error('#NULL!') ->
+    throw({error, null});
+error('#DIV/0!') ->
+    throw({error, div_by_zero});
+error('#VALUE!') ->
+    throw({error, value});
+error('#REF!') ->
+    throw({error, ref});
+error('#NAME?') ->
+    throw({error, name});
+error('#NUM!') ->
+    throw({error, num});
+error('#N/A!') ->
+    throw({error, na}).
+
 error_type({error, null})        -> 1;
 error_type({error, div_by_zero}) -> 2;
 error_type({error, value})       -> 3;
-error_type({error, reference})   -> 4;
+error_type({error, ref})   -> 4;
 error_type({error, name})        -> 5;
-error_type({error, number})      -> 6;
+error_type({error, num})      -> 6;
 error_type({error, na})          -> 7;
 error_type(_)                    -> {error, na}.
 
@@ -615,7 +631,7 @@ expondist(X, Lamda, true) when not (X < 0)  ->
     1 - exp(-1 * X / Lamda).
 
 fact(X) when X < 0 ->
-    {error, number};
+    {error, num};
 fact(0)            ->
     1;
 fact(X)            ->

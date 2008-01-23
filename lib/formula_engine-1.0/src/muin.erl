@@ -225,7 +225,10 @@ do_cell(RelPath, Ref, Bindings) ->
 do_cell(Path, Row, Col, Bindings) ->
     do_cell(Path, to_b26(Col) ++ to_s(Row), Bindings).
 
-
+%% @doc Takes a list of funs that fetch a list of cell records each.
+%% Calls do_cell() on each of those cells.
+%% TODO: The records already contain all required information, don't really
+%% need to call do_cell().
 do_cells(Funs, Bindings) ->
     map(fun(GetCellRecFun) ->
                 map(fun(Rec) ->
