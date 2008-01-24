@@ -56,7 +56,7 @@ init_per_suite(Config) ->
     code:add_patha("../../ebin"),
     production_boot:setup_paths(),
     Data = test_util:read_excel_file("/Win Excel 2007 (as 97)/#{source_file}"),
-    io:format("in init_per_suite Data is ~p~n",[Data]),
+    %%io:format("in init_per_suite Data is ~p~n",[Data]),
     lists:merge([Config, [{#{mod_name}, Data}]]).
   
 eos
@@ -92,7 +92,7 @@ read_from_excel_data(Config, {Row,Col}) ->
     Key={{row_index,Row},{col_index,Col}},
     {value, Result2} = lists:keysearch(Key, 1, Data),
     El=element(2, Result2),
-    io:format("El is ~p~n",[El]),
+    %%io:format("El is ~p~n",[El]),
     case El of
         {value, number, Number} -> {number,Number};
         {string,String}         -> {string,String};

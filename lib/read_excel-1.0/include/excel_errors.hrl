@@ -26,3 +26,13 @@
 -define(NumError,36).
 %% 2AH #N/A
 -define(NAError,42).
+
+%% Excel stores errors as negative integers
+%% here is the def of them
+-define(ErrDiv0Int,-2146826281).
+-define(ErrNAInt,-2146826246).
+-define(ErrNameInt,-2146826259).
+-define(ErrNullInt,-2146826288).
+-define(ErrNumInt,-2146826252).
+-define(ErrRefInt,-2146826265).
+-define(ErrValueInt,-2146826273).

@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: gnumeric_engineering.xls
-% Generated on: Wed Jan 23 09:59:19 +0000 2008
+% Generated on: Wed Jan 23 21:09:57 +0000 2008
 
 -module(gnumeric_engineering_SUITE).
 -compile(export_all).
@@ -13,7 +13,7 @@ init_per_suite(Config) ->
     code:add_patha("../../ebin"),
     production_boot:setup_paths(),
     Data = test_util:read_excel_file("/Win Excel 2007 (as 97)/gnumeric_engineering.xls"),
-    io:format("in init_per_suite Data is ~p~n",[Data]),
+    %%io:format("in init_per_suite Data is ~p~n",[Data]),
     lists:merge([Config, [{gnumeric_engineering_SUITE, Data}]]).
   
 end_per_suite(_Config) ->
@@ -29,7 +29,7 @@ read_from_excel_data(Config, {Row,Col}) ->
     Key={{row_index,Row},{col_index,Col}},
     {value, Result2} = lists:keysearch(Key, 1, Data),
     El=element(2, Result2),
-    io:format("El is ~p~n",[El]),
+    %%io:format("El is ~p~n",[El]),
     case El of
         {value, number, Number} -> {number,Number};
         {string,String}         -> {string,String};

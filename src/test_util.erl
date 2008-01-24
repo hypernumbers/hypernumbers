@@ -18,6 +18,8 @@
 	 wait/1
 	]).
 
+-include("excel_errors.hrl").
+
 %% scratch utility for running from the shell
 -export([scratch_Arg/0]).
 
@@ -45,9 +47,11 @@ excel_equal({boolean,Boolean1},{boolean,Boolean2}) ->
         _        -> false
     end;
 excel_equal({error,Error1},{error,Error2}) ->
-    case Error1 of
-        Error2 -> true;
-        _        -> false
+    Err1=make_err_val(Error1),
+    Err2=make_err_val(Error2),
+    case Err1 of
+        Err2 -> true;
+        _    -> false
     end;
 excel_equal({string,String1},{string,String2}) ->
     case String1 of
@@ -55,10 +59,19 @@ excel_equal({string,String1},{string,String2}) ->
         _       -> false
     end.
 
+make_err_val(?ErrDiv0Int)  -> "#DIV/0!";
+make_err_val(?ErrNAInt)    -> "#N/A";
+make_err_val(?ErrNameInt)  -> "#NAME?";
+make_err_val(?ErrNullInt)  -> "#NULL!";
+make_err_val(?ErrNumInt)   -> "#NUM!";
+make_err_val(?ErrRefInt)   -> "#REF!";
+make_err_val(?ErrValueInt) -> "#VALUE!";
+make_err_val(X)            -> X.
+
 expected(Expected, Got) ->
     case Got of
         Expected ->
-	    io:format("SUCESS~nExpected: ~p~nGot:~p~n",[Expected,Got]),
+            io:format("SUCESS~nExpected: ~p~nGot:~p~n",[Expected,Got]),
             {test, ok};
         _Else ->
             exit({fail, expected, Expected, got, Got})
