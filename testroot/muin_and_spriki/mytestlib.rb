@@ -5,7 +5,7 @@
 # TODO:
 #   * Read data/formula/updates/other hashes from YAML.
 
-$LOAD_PATH << File.join(ENV["HYPERNUMBERS_SVNROOT"], "priv", "ruby")
+$LOAD_PATH << File.join(__FILE__, "..", "..",  "priv", "ruby")
 require "hypernumbers"
 
 NAP_TIME = 3 # in seconds
@@ -25,10 +25,12 @@ class String
   end
 end
 
+
 def with_flush(&block)
   block.call
   $stdout.flush
 end
+
 
 def nap_for_updates
   with_flush { print "Going for a nap (#{NAP_TIME} seconds)... ".ansi_blue }
@@ -36,10 +38,12 @@ def nap_for_updates
   puts "done.".ansi_blue
 end
 
+
 def with_nap(&block)
   block.call
   nap_for_updates
 end
+
 
 def batch_post(data)
   with_flush { print "Posting data... ".ansi_blue }
