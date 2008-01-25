@@ -112,7 +112,7 @@ preproc([indirect, Arg], Bindings) ->
         [{sscellref, Ref}] -> % ../A1
             [sscellref, Ref];
         [{cellref, Ref1}, {colon}, {cellref, Ref2}] -> % A1:B2
-            [':', {cellref, Ref1}, {cellref, Ref2}];
+            [':', {sscellref, "./" ++ Ref1}, {cellref, Ref2}];
         [{sscellref, Ref1}, {colon}, {cellref, Ref2}] -> % ../A1:B2
             [':', {sscellref, Ref1}, {cellref, Ref2}];
         [{integer, Row1}, {colon}, {integer, Row2}] -> % 1:2
@@ -180,14 +180,6 @@ funcall(rcrelref, [{RelPath, RowOffset, ColOffset}], Bindings) ->
 funcall(':', [{sscellref, Ref1}, {cellref, Ref2}], Bindings) ->
     [do_cell(just_path(Ref1), X, Bindings) ||
         X <- expand_cellrange(just_ref(Ref1), Ref2)];
-
-%% These two clauses are for preproc'd ranges. Redirect to the one above.
-%% TODO: Cut if possible.
-funcall(':', [{cellref, Ref1}, {cellref, Ref2}], Bindings) ->
-    funcall(':', [{sscellref, "./" ++ Ref1}, {cellref, Ref2}], Bindings);
-
-funcall(':', [{sscellref, Ref1}, {sscellref, Ref2}], Bindings) ->
-    funcall(':', [{sscellref, Ref1}, {cellref, just_ref(Ref2)}], Bindings);
 
 %% Column ranges.
 funcall(':', [{sscolref, Ref1}, {col, Ref2}], Bindings) ->
