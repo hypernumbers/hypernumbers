@@ -3,11 +3,6 @@
 echo "============================="
 echo "GENERATING LEXERS AND PARSERS"
 echo "============================="
-# Compile fileutil first because generate.erl depends on it.
-cd ./lib/utilities-1.0/src/
-erlc fileutil.erl
-mv fileutil.beam ../ebin/
-cd ../../../
 # Generate lexers and parsers.
 cd ./priv/muin/
 erlc generate.erl
