@@ -36,6 +36,7 @@ RANGEREF = ({CELLREF}:{CELLREF})
 
 %% --- RC-style.
 RCREF = ((R|r)\[{INTEGER}\](C|c)\[{INTEGER}\])
+RCRELREF = ((R|r)\[(\+|\-){INTEGER}\](C|c)\[(\+|\-){INTEGER}\])
 
 %% Range intersection operator (whitespace). Doing in the lexer for now.
 INTERSECTION = (({RANGEREF})(\s+)({RANGEREF}))((\s+)({RANGEREF}))*
@@ -50,9 +51,10 @@ SSCELLREF = {START_OF_SSREF}{MAYBE_PATH}{CELLREF}
 SSCOLREF  = {START_OF_SSREF}{MAYBE_PATH}{ID}
 SSROWREF  = {START_OF_SSREF}{MAYBE_PATH}{INTEGER}
 
-SSRCREF   = {START_OF_SSREF}{MAYBE_PATH}{RCREF}
+SSRCREF    = {START_OF_SSREF}{MAYBE_PATH}{RCREF}
+SSRCRELREF = {START_OF_SSREF}{MAYBE_PATH}{RCRELREF}
 
-%% Whitespace, duh.
+%% Whitespace.
 WHITESPACE = ([\000-\s]*)
 
 
@@ -65,7 +67,9 @@ Rules.
 {SSCOLREF}      : {token, {sscolref,     muin_util:normalize_ssref(YYtext)}}.
 {SSROWREF}      : {token, {ssrowref,     muin_util:normalize_ssref(YYtext)}}.
 {RCREF}         : {token, {rcref,        string:to_lower(YYtext)}}.
+{RCRELREF}      : {token, {rcrelref,     string:to_lower(YYtext)}}.
 {SSRCREF}       : {token, {ssrcref,      muin_util:normalize_ssref(YYtext)}}.
+{SSRCRELREF}    : {token, {ssrcrelref,   muin_util:normalize_ssref(YYtext)}}.
 
 %% Basic data types.
 {INTEGER}          : {token, {integer, tconv:to_i(YYtext)}}.

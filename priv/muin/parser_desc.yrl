@@ -26,7 +26,7 @@ integer float boolean string date
 %% References.
 cellref sscellref sscolref ssrowref
 intersection
-rcref ssrcref
+rcref rcrelref ssrcref ssrcrelref
 
 %% Errors
 error
@@ -100,7 +100,9 @@ Literal -> date       : lit('$1').
 Literal -> cellref    : lit('$1').
 Literal -> sscellref  : lit('$1').
 Literal -> rcref      : lit('$1').
+Literal -> rcrelref   : lit('$1').
 Literal -> ssrcref    : lit('$1').
+Literal -> ssrcrelref : lit('$1').
 Literal -> var        : lit('$1').
 Literal -> error      : lit('$1').
 Literal -> Array      : '$1'.
@@ -179,7 +181,6 @@ func_name({id, NameAsStr}) ->
     list_to_atom(NameAsStr).
 
 
-%% TODO: Worth keeping?
 lit({cellref, Data}) ->
     [sscellref, "./" ++ Data];
 
@@ -192,14 +193,25 @@ lit({error, Data}) ->
 lit({var, Data}) ->
     [var, Data];
 
-%% For fixed RC refs we can get the row/col straightaway and just pass it on to
-%% the interpreter.
 lit({rcref, Data}) ->
     lit({ssrcref, "./" ++ Data});
 
+lit({rcrelref, Data}) ->
+    lit({ssrcrelref, "./" ++ Data});
+
+lit({ssrcrelref, Data}) ->
+    {Path, Ref} = muin_util:split_ssref(Data),
+
+    {match, [{St1, Len1}, {St2, Len2}]} = regexp:matches(Ref, "(\\+|\\-)([0-9]+)"),
+    RowOffset = tconv:to_i(string:substr(Ref, St1, Len1)),
+    ColOffset = tconv:to_i(string:substr(Ref, St2, Len2)),
+
+    [rcrelref, {Path, RowOffset, ColOffset}];
+
+%% For fixed RC refs we can get the row/col straightaway and just pass it on to
+%% the interpreter.
 lit({ssrcref, Data}) ->
-    Path = muin_util:just_path(Data),
-    Ref = last(string:tokens(Data, "/")),
+    {Path, Ref} = muin_util:split_ssref(Data),
 
     {match, [{St1, Len1}, {St2, Len2}]} = regexp:matches(Ref, "([0-9]+)"),
     Row = tconv:to_i(string:substr(Ref, St1, Len1)),
