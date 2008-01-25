@@ -23,7 +23,7 @@
 %% scratch utility for running from the shell
 -export([scratch_Arg/0]).
 
--define(FILEDIR, "../excel_import_test/files/").
+-define(FILEDIR, "../../../../excel_import_test/files/").
 -define(EXCEL_IMPORT_FLOAT_PRECISION, 15).
 -define(DEFAULT,1000000).
 

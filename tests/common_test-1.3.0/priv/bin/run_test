@@ -28,31 +28,31 @@ done
 
 if [ $vts ]; then
     erl -sname ct \
-	-pa /home/dale/Desktop/hypernumbers/tests//common_test-1.3.0/ebin \
-	-pa /home/dale/Desktop/hypernumbers/tests//test_server-3.2.0/ebin \
+	-pa /cygdrive/c/opt/code/trunk/tests/common_test-1.3.0/ebin \
+	-pa /cygdrive/c/opt/code/trunk/tests/test_server-3.2.0/ebin \
 	-s webtool script_start vts $browser \
 	-s ct_run script_start \
 	$args;
 elif [ $shell ]; then
     erl -sname ct \
-	-pa /home/dale/Desktop/hypernumbers/tests//common_test-1.3.0/ebin \
-	-pa /home/dale/Desktop/hypernumbers/tests//test_server-3.2.0/ebin \
+	-pa /cygdrive/c/opt/code/trunk/tests/common_test-1.3.0/ebin \
+	-pa /cygdrive/c/opt/code/trunk/tests/test_server-3.2.0/ebin \
 	-s ct_run script_start \
 	$args;
 elif [ $ctname ]; then
     erl -sname $ctname \
-	-pa /home/dale/Desktop/hypernumbers/tests//common_test-1.3.0/ebin \
-	-pa /home/dale/Desktop/hypernumbers/tests//test_server-3.2.0/ebin \
+	-pa /cygdrive/c/opt/code/trunk/tests/common_test-1.3.0/ebin \
+	-pa /cygdrive/c/opt/code/trunk/tests/test_server-3.2.0/ebin \
 	$args;
 elif [ $master ]; then
     erl -sname ct_master \
-	-pa /home/dale/Desktop/hypernumbers/tests//common_test-1.3.0/ebin \
-	-pa /home/dale/Desktop/hypernumbers/tests//test_server-3.2.0/ebin \
+	-pa /cygdrive/c/opt/code/trunk/tests/common_test-1.3.0/ebin \
+	-pa /cygdrive/c/opt/code/trunk/tests/test_server-3.2.0/ebin \
 	$args;
 else
     erl -sname ct \
-	-pa /home/dale/Desktop/hypernumbers/tests//common_test-1.3.0/ebin \
-	-pa /home/dale/Desktop/hypernumbers/tests//test_server-3.2.0/ebin \
+	-pa /cygdrive/c/opt/code/trunk/tests/common_test-1.3.0/ebin \
+	-pa /cygdrive/c/opt/code/trunk/tests/test_server-3.2.0/ebin \
 	-s ct_run script_start \
 	-s erlang halt \
 	$args
