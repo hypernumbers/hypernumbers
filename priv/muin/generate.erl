@@ -5,8 +5,8 @@
 
 -module(generate).
 -export([gen/0]).
--import(fileutil, [cp/2, mv/2, rm/1]).
 -import(io, [format/1]).
+-import(file, [delete/1, rename/2]).
 
 gen() ->
     DestDir = "../../lib/formula_engine-1.0/src/",
@@ -22,13 +22,13 @@ gen() ->
     format("Compiled main parser.~n"),
     leex:gen(supd_lexer, muin_supd_lexer),
     format("Compiled structural updates lexer.~n"),
-    
+
     %% Move the generated files to the right directory.
-    rm(DestDir ++ "muin_lexer.erl"),
-    rm(DestDir ++ "muin_parser.erl"),
-    rm(DestDir ++ "muin_supd_lexer.erl"),
-    mv("muin_lexer.erl", DestDir),
-    mv("muin_parser.erl", DestDir),
-    mv("muin_supd_lexer.erl", DestDir),
+    delete(DestDir ++ "muin_lexer.erl"),
+    delete(DestDir ++ "muin_parser.erl"),
+    delete(DestDir ++ "muin_supd_lexer.erl"),
+    rename("muin_lexer.erl", DestDir ++ "muin_lexer.erl"),
+    rename("muin_parser.erl", DestDir ++ "muin_parser.erl"),
+    rename("muin_supd_lexer.erl", DestDir ++ "muin_supd_lexer.erl"),
 
     io:format("OK~n"). % Cheeky, cos one or more commands above could've failed.
