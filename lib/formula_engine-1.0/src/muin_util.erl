@@ -2,7 +2,8 @@
 %%% TODO: Some of these might be useful outside Muin too...
 
 -module(muin_util).
--export([just_path/1,
+-export([split_ssref/1,
+         just_path/1,
          just_ref/1,
          expand_cellrange/2,
          getxy/1,
@@ -26,13 +27,21 @@
 -include("handy_macros.hrl").
 
 
-%% Takes a same-site reference, returns path to the page it's on.
-%% FIXME: /a1 => //
-just_path(Ssref) when is_list(Ssref) ->
-    append([?COND(hd(Ssref) == $/, "/", ""),
-            join(init(string:tokens(Ssref, "/")), "/"),
-            "/"]).
+%% Splits ssref to [Path, Ref]
+split_ssref(Ssref) ->
+    {just_path(Ssref), just_ref(Ssref)}.
 
+%% Takes a same-site reference, returns path to the page it's on.
+just_path(Ssref) when is_list(Ssref) ->
+    MbR = append([?COND(hd(Ssref) == $/,
+                        "/",
+                        ""),
+                  join(init(string:tokens(Ssref, "/")), "/"),
+                  "/"]),
+
+    %% For Ssref like /a1.
+    ?COND(MbR == "//", "/", MbR).
+          
 just_ref(Ssref) ->
     last(tokens(Ssref, "/")).
 

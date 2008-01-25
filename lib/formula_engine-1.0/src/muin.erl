@@ -11,7 +11,7 @@
 
 -import(muin_util, [expand_cellrange/2, fdbg/1, fdbg/2, get_frontend/0, getxy/1,
                     init/1, join/1, join/2, just_path/1, just_ref/1, puts/1,
-                    walk_path/2]).
+                    split_ssref/1, walk_path/2]).
 
 -import(tconv, [to_b26/1, to_i/1, to_i/2, to_s/1]).
 
@@ -28,7 +28,7 @@
         is_atom(X) andalso X =/= true andalso X =/= false).
 
 -define(NEED_BINDINGS,
-        [sscellref, ssrcref, ':', hn, hypernumber]).
+        [sscellref, ssrcref, rcrelref, ':', hn, hypernumber]).
 
 %%%--------------------%%%
 %%%  Public functions  %%%
@@ -160,14 +160,19 @@ funcall(Fun, Args) ->
 
 funcall(sscellref, [Ssref], Bindings) ->
     ?CREATE_BINDINGS_VARS,
-    Path = walk_path(MPath, just_path(Ssref)),
-    Ref = just_ref(Ssref),
+    {Path_, Ref} = split_ssref(Ssref),
+    Path = walk_path(MPath, Path_),
     do_cell(Path, Ref, Bindings);
 
 funcall(ssrcref, [{RelPath, Row, Col}], Bindings) ->
     ?CREATE_BINDINGS_VARS,
     Path = walk_path(MPath, RelPath),
     do_cell(Path, Row, Col, Bindings);
+
+funcall(rcrelref, [{RelPath, RowOffset, ColOffset}], Bindings) ->
+    ?CREATE_BINDINGS_VARS,
+    Path = walk_path(MPath, RelPath),
+    do_cell(Path, MY + RowOffset, MX + ColOffset, Bindings);
 
 %% -- Range functions.
 
