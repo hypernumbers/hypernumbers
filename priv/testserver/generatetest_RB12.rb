@@ -28,7 +28,7 @@ def erl_testcase(name, expected, got, output, doc = "")
 #{name}(doc) -> [{userdata,[{"#{doc}"}]}];
 #{name}(Config) -> 
   #{output}
-  test_util:expected(#{expected}, #{got}).
+  test_util:expected2(#{expected}, #{got}).
   
 eos
 end
@@ -151,28 +151,25 @@ File.open("#{modname}.erl", "w") do |suite|
         name = "#{col_cells[0].downcase}#{row_data[0]}_test"
         test_names << name
         # puts "get_type(row_data[1]) is #{get_type(row_data[1])}"
-        expected, got_param, type =  case get_type(row_data[1])
+        got, type =  case get_type(row_data[1])
                                      when :formula
-                                       ["true", "\"#{row_data[1]["formula"]}\"", :formula]
+                                       ["\"#{row_data[1]["formula"]}\"", :formula]
                                      when :number
-                                       ["true", "#{row_data[1]["value"]}", :number]
+                                       ["#{row_data[1]["value"]}", :number]
                                      when :boolean
-                                       ["true", "#{row_data[1]["value"]}", :boolean]
+                                       ["#{row_data[1]["value"]}", :boolean]
                                      when :string
-                                       ["true", "\"#{row_data[1]["value"]}\"", :string]
+                                       ["\"#{row_data[1]["value"]}\"", :string]
                                      when :date
-                                       ["true", "\"#{row_data[1]["value"]}\"", :date]
+                                       ["\"#{row_data[1]["value"]}\"", :date]
                                      else
                                        ["\"not tested (type not supported by generatetest.rb yet)\"", 0, :not_supported]
                                      end
 
-        got = "test_util:excel_equal({#{type.to_s},#{got_param}}, " + 
-              "read_from_excel_data(Config,{#{row_data[0]-1},#{col_cells[0][-1]-65}}))"
-        
-        output = "io:format(\"Expected : ~p~nGot      : ~p~n\"," + 
-          "[#{got_param},read_from_excel_data(Config,{#{row_data[0]-1},#{col_cells[0][-1]-65}})]),"
-        
-        suite << erl_testcase(name, expected, got, output)
+        got2 = "{#{type.to_s},#{got}}"
+        expected = "read_from_excel_data(Config,{#{row_data[0]-1},#{col_cells[0][-1]-65}})"
+        output = "io:format(\"Expected : ~p~nGot      : ~p~n\",[#{got2},#{expected}]),"
+      suite << erl_testcase(name, expected, got2, output)
       end
     end
   end

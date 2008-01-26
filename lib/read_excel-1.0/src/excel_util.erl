@@ -228,7 +228,7 @@ read(Tables,Name,Key)->
   {value,{TabName,Tid}}=lists:keysearch(Name,1,Tables),
   Return=ets:lookup(Tid,Key),
   case {Name,Return} of
-    {arrayformula,[]} -> "fix me up in excel_util:read, ya wank!";
+    {arrayformula,[]} -> "fix me up in excel_util:read, ya wank - arrayformula record not read yet!";
     _                 -> Return
     end.
 
@@ -276,7 +276,6 @@ put_log(File,String) ->
         {ok, Id} ->
             io:fwrite(Id, "~s~n", [String]),
             file:close(Id);
-
         _ ->
             error
     end.

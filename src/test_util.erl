@@ -10,6 +10,7 @@
 %% public exports
 -export([
 	 expected/2,
+   expected2/2,
 	 get_Arg/4,
 	 read_excel_file/1,
 	 equal_to_digit/3,
@@ -30,8 +31,12 @@
 %% Checks that two floats are exactly the same up to
 %% a certain number of decimal places.
 equal_to_digit(F1,F2,DigitIdx) ->
-    [As0,Bs0]=io_lib:fwrite("~.*f~.*f",[DigitIdx+1,F1-erlang:trunc(F1), 
-                                        DigitIdx+1,F2-erlang:trunc(F2)]),
+  %% io:format("in test_util:equal_to_digit F1 is ~p and F2 is ~p~n",[F1,F2]),
+  %% force any rogue integers to floats
+  F1a=float(F1),
+  F2a=float(F2),
+  [As0,Bs0]=io_lib:fwrite("~.*f~.*f",[DigitIdx+1,F1a-erlang:trunc(F1a), 
+                                        DigitIdx+1,F2a-erlang:trunc(F2a)]),
     As=string:substr(As0,1,DigitIdx+2), 
     Bs=string:substr(Bs0,1,DigitIdx+2),
     As==Bs.
@@ -46,11 +51,15 @@ excel_equal({boolean,Boolean1},{boolean,Boolean2}) ->
         Boolean2 -> true;
         _        -> false
     end;
+excel_equal({error,Error1},{number,ErrorVal}) ->
+    Error2=make_err_val(ErrorVal),
+    case Error1 of
+        Error2 -> true;
+        _    -> false
+    end;
 excel_equal({error,Error1},{error,Error2}) ->
-    Err1=make_err_val(Error1),
-    Err2=make_err_val(Error2),
-    case Err1 of
-        Err2 -> true;
+    case Error1 of
+        Error2 -> true;
         _    -> false
     end;
 excel_equal({string,String1},{string,String2}) ->
@@ -71,9 +80,27 @@ make_err_val(X)            -> X.
 expected(Expected, Got) ->
     case Got of
         Expected ->
-            io:format("SUCESS~nExpected: ~p~nGot:~p~n",[Expected,Got]),
+            io:format("SUCCESS~nExpected: ~p~nGot:     ~p~n",[Expected,Got]),
             {test, ok};
         _Else ->
+            exit({"E:", Expected, "G:", Got})
+    end.
+
+expected2(Expected, Got) ->
+    Result=excel_equal(Expected,Got),
+    case Result of
+        true ->
+            io:format("SUCCESS~nExpected: ~p~nGot:     ~p~n",[Expected,Got]),
+            {test, ok};
+        false ->
+                %%case file:open("C:/tmp/fails.txt", [append]) of
+                %%  {ok, Id} ->
+                %%    io:fwrite(Id, "E:~p G:~p~n", [Expected,Got]),
+                %%    file:close(Id);
+                %%_ ->
+                %%  exit("file open error"),
+                %%  error
+                %%end,
             exit({fail, expected, Expected, got, Got})
     end.
 

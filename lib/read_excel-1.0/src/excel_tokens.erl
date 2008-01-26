@@ -1,4 +1,5 @@
 %%%-------------------------------------------------------------------
+%%%-------------------------------------------------------------------
 %%% File        : excel_tokens.erl
 %%% Author      : Gordon Guthrie <gordon@hypernumberftAs.com>
 %%% Description : parses the RPN tokens what Excel uses to store
@@ -216,8 +217,17 @@ parse_tokens(?tStr,Bin,TokenArray,Residuum,Tables,FileOut)->
     %% (who knows!)
     <<StrBin:BinLen/binary,R4/binary>>=Rest,
     {[{_,String2}],_,_}=excel_util:parse_CRS_Uni16(StrBin,1,FileOut),
+    io:format("**********************************************"),
+    io:format("*                                            *"),
+    io:format("* excel_util:parse_CRS_Uni16 returns a       *"),
+    io:format("* string in utf8 or utf16 format and this    *"),
+    io:format("* function needs to process them differently *"),
+    io:format("*                                            *"),
+    io:format("**********************************************"),
+    String3=binary_to_list(String2),
+    String4=list_to_binary(lists:flatten([$",String3,$"])),
     excel_util:put_log(FileOut,io_lib:fwrite("string String2 is ~p",[String2])),
-    parse_tokens(R4,TokenArray,[{string,{tStr,[{value,String2}],{return,value}}}|Residuum],
+    parse_tokens(R4,TokenArray,[{string,{tStr,[{value,String4}],{return,value}}}|Residuum],
 		  Tables,FileOut);
 %% parse_tokens(?tStr,Bin,TokenArray,Residuum,Tables,FileOut)->
     %%io:format("in excel_tokens:parse_tokens for tStr~n"),

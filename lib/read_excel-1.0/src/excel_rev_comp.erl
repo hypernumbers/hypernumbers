@@ -156,7 +156,8 @@ reverse_compile([{attributes,Attributes}|T],TokenArray,Stack,Residuum,Tables,Fil
               {error_jump,ErrorJump}],{return,none}}         -> Stack; % do nothing, don't care
       {tAttrSkip,skip_attribute,[{skip,Skip}],{return,none}} -> Stack; % do nothing, don't care
       {tAttrSum,sum_attribute,[],{return,none}}              -> 
-            {FunArgs,Rest} = lists:split(1,Stack), % this is an attribute of SUM with 1 arg...
+            SplitLen=length(Stack)-1,
+            {Rest,FunArgs} = lists:split(SplitLen,Stack), % this is an attribute of SUM with 1 arg...
             io:format("in excel_rev_comp:reverse_compile for tAttr Rest is ~p~n-"++
                       "FunArgs is ~p~n",[Rest,FunArgs]),
             push(Rest,{func,4,FunArgs}); % 4 if the index to the func SUM
@@ -232,10 +233,12 @@ reverse_compile([{number,{tNum,[{value,Val}],{return,value}}}|T],
 %%	tArray
 reverse_compile([{array_type,{tArray,[{type,Type}],{return,_Reference}}}|T],
         TokenArray,Stack,Residuum,Tables,FileOut)  ->
-        {Array,ArrayTail}=read_const_val_array(TokenArray,FileOut),
+        {{NoCols,NoRows,Array},ArrayTail}=read_const_val_array(TokenArray,FileOut),
     io:format("~nin excel_rev_comp:reverse_compile for tArray Stack is ~p~n"++
         "-Array is ~p~n",[Stack,Array]),
-    NewStack=push(Stack,{array1D,Array}),
+    ArrayString=array_to_str(Array,NoCols,NoRows),
+    io:format("~nin excel_rev_comp:reverse_compile for tArray ArrayString is ~p~n",[ArrayString]),
+    NewStack=push(Stack,{string,ArrayString}),
     reverse_compile(T,ArrayTail,NewStack,Residuum,Tables,FileOut);
 	
 %%	tFunc   
@@ -249,7 +252,8 @@ reverse_compile([{functional_index,{Function,[{value,FuncVar},
         [FuncVar,Function,TokenArray,Stack]),
     NumArgs=macro_no_of_args(FuncVar),
     io:format("NumArgs is ~p Stack is ~p~n",[NumArgs,Stack]),
-    {FunArgs,Rest} = lists:split(NumArgs,Stack),
+    SplitLen=length(Stack)-NumArgs,
+    {Rest,FunArgs} = lists:split(SplitLen,Stack),
     io:format("FunArgs is ~p and Rest is ~p~n",[FunArgs,Rest]),
     NewStack = push(Rest,{func,FuncVar,FunArgs}),
     io:format("NewStack is ~p~n",[NewStack]),
@@ -262,7 +266,9 @@ reverse_compile([{var_func_idx,{Function,[{value,FuncVar},
         Function =:= tFuncVarV ;Function =:= tFuncVarR ; Function =:= tFuncVarA ->
     io:format("~nin excel_rev_comp:reverse_compile for Functions II FuncVar is ~p "++
        "NumArgs is ~p Stack is ~p~n",[FuncVar,NumArgs,Stack]),
-    {FunArgs,Rest} = lists:split(NumArgs,Stack),
+    %% {FunArgs,Rest} = lists:split(NumArgs,Stack),
+    SplitLen=length(Stack)-NumArgs,
+    {Rest,FunArgs} = lists:split(SplitLen,Stack),
     NewStack = push(Rest,{func,FuncVar,FunArgs}),
     reverse_compile(T,TokenArray,NewStack,Residuum,Tables,FileOut);
 
@@ -419,10 +425,11 @@ read_const_val_array(Bin,FileOut)->
   <<NoCols:8/little-unsigned-integer,
     NoRows:16/little-unsigned-integer,
     Rest/binary>>=Bin,
-    Sz=NoCols+1*NoRows+1,
-    %%io:format("in excel_rev_comp:read_const_val_array NoCols is ~p~n"++
-    %%  "NoRows is ~p~nSz is ~p~n",[NoCols,NoRows,Sz]),
-    read_token_array(Sz,Rest,FileOut).
+    Sz=(NoCols+1)*(NoRows+1),
+    io:format("in excel_rev_comp:read_const_val_array NoCols is ~p~n"++
+      "NoRows is ~p~nSz is ~p~n",[NoCols,NoRows,Sz]),
+    {Array,ArrayTail}= read_token_array(Sz,Rest,FileOut),
+    {{NoCols+1,NoRows+1,Array},ArrayTail}.
 
 %% This function parses the token array
 %% defined in Section 2.5.7 of excelfileformatV1-40.pdf
@@ -527,7 +534,7 @@ operator_to_string(subtraction)            -> "-";
 operator_to_string(multiply)               -> "*";
 operator_to_string(divide)                 -> "/";
 operator_to_string(power)                  -> "^";
-operator_to_string(concatenate)            -> "++"; %?
+operator_to_string(concatenate)            -> "&";
 operator_to_string(less_than)              -> "<";
 operator_to_string(less_than_or_equal)    -> "=<";
 operator_to_string(equals)                 -> "=";
@@ -558,23 +565,33 @@ to_str({float,Val}) ->
     _   -> float_to_list(Val)
   end;
 to_str({abs_ref,Y,X,rel_row,rel_col}) -> util2:make_b26(X)++integer_to_list(Y);
-to_str({abs_ref,Y,X,abs_row,rel_col}) -> util2:make_b26(X)++integer_to_list(Y)++"$";
-to_str({abs_ref,Y,X,rel_row,abs_col}) -> util2:make_b26(X)++"$"++integer_to_list(Y);
-to_str({abs_ref,Y,X,abs_row,abs_col}) -> util2:make_b26(X)++"$"++integer_to_list(Y)++"$";
-to_str({array1D,Array}) -> array_to_str(Array,["{"]).
+to_str({abs_ref,Y,X,abs_row,rel_col}) -> util2:make_b26(X)++"$"++integer_to_list(Y);
+to_str({abs_ref,Y,X,rel_row,abs_col}) -> "$"++util2:make_b26(X)++integer_to_list(Y);
+to_str({abs_ref,Y,X,abs_row,abs_col}) -> "$"++util2:make_b26(X)++"$"++integer_to_list(Y).
+%%to_str({array1D,Array}) -> array_to_str(Array,["{"]).
 
-array_to_str([],[Comma|Tail]) -> % cut off the additional ","
+%% builds up 2D arrays - 1st dimension is given by "," and second by ";"
+array_to_str(Array,NoCols,NoRows) -> array_to_str(Array,NoCols,1,["{"]).
+
+array_to_str([],_NoCols,_N,[Comma|Tail]) -> % cut off the additional ","
   TokenArray=lists:reverse(["}"|Tail]),
   io:format("in excel_rev_comp:array_to_str TokenArray is ~p~n",[TokenArray]),
-  io:format("in excel_rev_comp:array_to_str TokenArray is ~p~n",[TokenArray]),
   lists:flatten(TokenArray);
-array_to_str([H|T],Residuum)-> 
+array_to_str([H|T],NoCols,NoCols,Residuum)-> % list seperator is a semi-colon
   io:format("in excel_rev_comp:array_to_str H is ~p T is ~p~n-Residuuum is ~p~n",
       [H,T,Residuum]),
   NewResiduum=[to_str(H)|Residuum],
+  NewResiduum2=[";"|NewResiduum],
+  io:format("in excel_rev_comp:array_to_str NewResiduuum2 is ~p~n",[NewResiduum2]),
+  array_to_str(T,NoCols,1,NewResiduum2);
+array_to_str([H|T],NoCols,N,Residuum)-> % list seperator is a comma
+  io:format("in excel_rev_comp:array_to_str H is ~p T is ~p~n-Residuuum is ~p~n",
+      [H,T,Residuum]),
+  io:format("in excel_rev_comp:array_to_str NoCols is ~p N is ~p~n",[NoCols,N]),
+  NewResiduum=[to_str(H)|Residuum],
   NewResiduum2=[","|NewResiduum],
   io:format("in excel_rev_comp:array_to_str NewResiduuum2 is ~p~n",[NewResiduum2]),
-  array_to_str(T,NewResiduum2).
+  array_to_str(T,NoCols,N+1,NewResiduum2).
 
 push([],Val)    -> [lists:append([],Val)];
 push(List,Val)  -> 
@@ -705,8 +722,8 @@ macro_to_string(105) -> "ISREF";
 macro_to_string(109) -> "LOG";
 %%  110=EXEC,CHAR,LOWER,UPPER,PROPER,LEFT,RIGHT,EXACT,TRIM,REPLACE
 macro_to_string(111) -> "CHAR";
-macro_to_string(112) -> "UPPER";
-macro_to_string(113) -> "LOWER";
+macro_to_string(112) -> "LOWER";
+macro_to_string(113) -> "UPPER";
 macro_to_string(114) -> "PROPER";
 macro_to_string(115) -> "LEFT";
 macro_to_string(116) -> "RIGHT";

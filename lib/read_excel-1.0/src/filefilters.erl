@@ -387,7 +387,7 @@ bodge_string(<<Char:16/little-signed-integer,Rest/binary>>,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 test_DEBUG()-> 
-    %%File="minitest.xls",
+    File="minitest.xls",
     %%File="booleans_and_errors.xls",
     %%File="basic_functions_tests_ii.xls",
     %%File="arithmetic_and_precedence.xls",
@@ -397,9 +397,9 @@ test_DEBUG()->
     %%File="gnumeric_db.xls",
     %%File="gnumeric_lookup.xls",
     %%File="gnumeric_engineering.xls",
-    File="z_basic_functions_tests.xls",
+    %%File="z_basic_functions_tests.xls",
     %%File="basic_unicode_strings.xls",
-    FileRoot="c:/Users/Gordon Guthrie/Documents/SVN/code/trunk/testroot/"++
+    FileRoot="C:/opt/code/trunk/tests/"++
      	"excel_import_test/files/Win Excel 2007 (as 97)",
     io:format("in filefilters:test_DEBUG FileRoot is ~p and File is ~p~n",
               [FileRoot,File]),
