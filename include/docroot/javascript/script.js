@@ -1,10 +1,17 @@
-var _view = "A1:J30";
-
-var selectedRow = 0;
-var selectedCol = 0;
+    var _view = "A1:J30";
+    
+    var selectedRow = 0;
+    var selectedCol = 0;
+    
+    var views = { INIT:0, VIEW:1, SELECT:2, DRAG:3 };
+    
+    var selection  = new Object();
+    var dragselection = new Object();
 
 $(function()
 {
+    var currentview = views.INIT;
+
     var so = new SWFObject("/swf/JsSocket.swf", "jssocket","400", "50", "8");
     so.addParam("allowScriptAccess", "always");
     so.write("jssocket");
@@ -68,6 +75,8 @@ $(function()
         border: 'none'
       }
     });
+
+
 });
 
 function addMenuTree(el,root)
@@ -113,6 +122,26 @@ function loadRange(range)
             });
         });
 
+    currentview = views.VIEW;
+}
+
+function resetSelection()
+{
+    $(".dragselected").removeClass("dragselected");  
+
+    dragselection.startx = null;
+    dragselection.starty = null;
+    dragselection.endx = null;
+    dragselection.endy = null;
+    dragselection.initx = null;
+    dragselection.inity = null;
+
+    selection.startx = null;
+    selection.starty = null;
+    selection.endx = null;
+    selection.endy = null;
+    selection.initx = null;
+    selection.inity = null;
 }
 
 function setupRange(range)
@@ -130,13 +159,14 @@ function setupRange(range)
 
             if(z == 0)
             {
-                row.append("<th>"+ ((n ==0 ) ? "" : col)+"</th>");
+               row.append("<th "+((n ==0 ) ? "class='rowindex'" : "")+
+                    ">"+ ((n ==0 ) ? "&nbsp;" : col)+"</th>");
             }
             else
             {
                 row.append(((n ==0 ) 
                     ? "<td class='rowindex'>"+z+"</td>" 
-                    : "<td><div class='"+(col+z)+"' /></td>"));
+                    : "<td><div class='"+(col+z)+" cell'></div></td>"));
             }
         }
     }
@@ -144,70 +174,206 @@ function setupRange(range)
     $("#hn tr:nth-child(odd)").addClass("odd");
 
 
-    $("#hn tr > td > div").each(function() 
+    $("#hn tr > td > div.cell").each(function() 
     {
+        $(this).mousedown(function() 
+        { 
+            if(currentview != views.DRAG)
+            {
+                resetSelection();
+                startSelection(this.parentNode.cellIndex,
+                    this.parentNode.parentNode.rowIndex);
+            }
+        });
 
-        $(this).mousedown(function()
-        {
-            
+        $(this).mouseover(function() 
+        { 
+            if(currentview == views.SELECT)
+            {
+                addSelection(this.parentNode.cellIndex,
+                    this.parentNode.parentNode.rowIndex);
+            }
+            else if(currentview == views.DRAG)
+            {
+                addDrag(this.parentNode.cellIndex,
+                    this.parentNode.parentNode.rowIndex);
+            }
         });
 
         $(this).mouseup(function() 
-        { 
-            $(this).unbind('blur');
-
-            //$(".sel").removeClass("sel");
-            $(this).addClass("sel");
-
-            var _val = $(this).text();
-            var _col = this.parentNode.cellIndex;
-            var _row = this.parentNode.parentNode.rowIndex;
-            var _url = document.location.href+to_b26(_col)+_row;
-
-            $(this).empty();
-            $(this).append("<input type='text' value='"+_val+"' />")
-
-            $("#texttocopy").text("=hn(\""+_url+"\"?hypernumber)");
-
-            selectedCol = _col+1;
-            selectedRow = _row+1;
-
-            highlight(selectedRow,selectedCol);
-    
-            $.get(_url+"?toolbar&format=xml",function(data) {
-                $("#formula").val("="+$(data).find("formula").text());
-            });
-
-            $(this).children("input").blur(function()  
+        {
+            if(currentview != views.DRAG)
             {
-                var newval = $(this).children("input").val();
-
-                $(this).empty();
-                $(this).text(newval);
-
-                if(_val != newval)
-                    $.post(_url,{action:"create",value:newval});
-            });
-        });
-
-        $(this).keypress(function (e) 
-        { 
-            if (e.keyCode == 13 || e.keyCode == 40)
-                moveSelection('DOWN');
-            else if(e.keyCode == 39)
-                moveSelection('RIGHT');
-            else if (e.keyCode == 38)
-                moveSelection('UP');
-            else if (e.keyCode == 37)
-                moveSelection('LEFT');
+                selectCell(this);
+            }
+            currentview = views.VIEW;
         });
     });
+}
+
+function startDragSelection(x,y)
+{
+    $(".dragselected").removeClass("dragselected");   
+    currentview = views.DRAG;
+     
+    dragselection.initx = x;
+    dragselection.inity = y;
+
+    highlightDragSelection();
+}
+
+function addDrag(x,y)
+{
+    $(".dragselected").removeClass("dragselected"); 
+
+    if(x >= selection.startx && x <= selection.endx && y > dragselection.inity)
+    {
+        dragselection.startx = selection.startx; 
+        dragselection.starty = selection.endy + 1;
+        dragselection.endx = selection.endx; 
+        dragselection.endy = y;
+    }
+    else if(x >= selection.startx && x <= selection.endx && y < dragselection.inity)
+    {
+        dragselection.endx = selection.endx; 
+        dragselection.endy = selection.starty - 1;
+        dragselection.startx = selection.startx; 
+        dragselection.starty = y;
+    }
+    else if(y >= selection.starty && y <= selection.endy && x < dragselection.initx)
+    {
+        dragselection.endy = selection.endy; 
+        dragselection.endx = selection.startx - 1;
+        dragselection.starty = selection.starty; 
+        dragselection.startx = x;
+    }
+    else if(y >= selection.starty && y <= selection.endy && x > dragselection.initx)
+    {
+        dragselection.starty = selection.starty; 
+        dragselection.startx = selection.endx + 1;
+        dragselection.endy = selection.endy; 
+        dragselection.endx = x;
+    }
+
+
+    highlightDragSelection();
+}
+
+function highlightDragSelection()
+{
+    $("table tr:lt("+(dragselection.endy+1)+"):gt("+(dragselection.starty-1)+")"
+        ).find("td:lt("+(dragselection.endx+1)+"):gt("+(dragselection.startx-1)+") div").addClass("dragselected");
+}
+
+function startSelection(x,y)
+{
+    $(".selected").removeClass("selected");   
+    currentview = views.SELECT;
+     
+    selection.initx = selection.startx = selection.endx = x;
+    selection.inity = selection.starty = selection.endy = y;
+
+    highlightSelection();
+}
+
+function addSelection(x,y)
+{
+    $(".selected").removeClass("selected");
+    $(".singleselected").removeClass("singleselected");
+
+    if(x >= selection.initx && y >= selection.inity)
+    {
+        selection.startx = selection.initx;
+        selection.starty = selection.inity;
+        selection.endx = x;
+        selection.endy = y;
+    }
+    else if(x >= selection.initx && y <= selection.inity)
+    {
+        selection.endx = x;  
+        selection.endy = selection.inity;
+        selection.starty = y;
+    }
+    else if(x <= selection.initx && y >= selection.inity)
+    {
+        selection.endy = y;  
+        selection.endx = selection.initx;
+        selection.startx = x;
+    }
+    else if(x <= selection.initx && y <= selection.inity)
+    {
+        selection.endy = selection.inity;
+        selection.starty = y;
+        selection.endx = selection.initx;
+        selection.startx = x;
+    }
+
+    highlightSelection();
+}
+
+function selectCell(cell)
+{
+    currentview = views.VIEW;
+    //resetSelection();
+
+    $(cell).addClass("singleselected");
+
+    var _val = $(cell).text();
+    var _col = cell.parentNode.cellIndex;
+    var _row = cell.parentNode.parentNode.rowIndex;
+    var _url = document.location.href+to_b26(_col)+_row;
+
+    $(cell).empty();
+    selectedCol = _col+1;
+    selectedRow = _row+1;
+
+    highlight();
+
+    $("<input type='text' value='"+_val+"' />").keypress(function (e) { 
+        if (e.keyCode == 13 || e.keyCode == 40)
+                    moveSelection('DOWN');
+        else if(e.keyCode == 39)
+                   moveSelection('RIGHT');
+        else if (e.keyCode == 38)
+                    moveSelection('UP');
+        else if (e.keyCode == 37)
+                    moveSelection('LEFT'); }).blur(function()  
+        {
+            var newval = $(this).val();
+
+            $(this).parent().empty().text(newval);
+
+            if(_val != newval)
+                $.post(_url,{action:"create",value:newval});
+
+        }).appendTo(cell).focus();
+
+    $("<div class='drag' />").css("left",$(cell).width()-5
+        ).css("bottom",4).mousedown(function() 
+    {
+        startDragSelection(cell.parentNode.cellIndex,
+            cell.parentNode.parentNode.rowIndex);
+
+    }).appendTo(cell);
+            
+
+    $("#texttocopy").text("=hn(\""+_url+"\"?hypernumber)");
+
+    $.get(_url+"?toolbar&format=xml",function(data) {
+        $("#formula").val("="+$(data).find("formula").text());
+    });
+}
+
+function highlightSelection()
+{
+    $("table tr:lt("+(selection.endy+1)+"):gt("+(selection.starty-1)+")"
+        ).find("td:lt("+(selection.endx+1)+"):gt("+(selection.startx-1)+") div").addClass("selected");
 }
 
 function setCell(x,y,val)
 {
     $("#hn tr:nth-child("+x+") "
-        +"td:nth-child("+y+") div").text(val);
+        +"td:nth-child("+y+") div").html(val);
 }
 
 // Parses a cell reference(a1) into x y indexes
@@ -234,11 +400,11 @@ function dbg(msg)
     $("#dbg").append(msg+"\n");
 }
 
-function highlight(row,col)
+function highlight()
 {
-    $("#hn tr .rowindex, #hn tr th").removeClass("highlight");
-    $("#hn tr:nth-child("+row+") .rowindex").addClass("highlight");
-    $("#hn tr th:nth-child("+col+")").addClass("highlight");
+    $(".highlight").removeClass("highlight");
+    $("table tr td.rowindex:lt("+(selection.endy)+"):gt("+(selection.starty-2)+")").addClass("highlight");
+    $("table tr th:lt("+(selection.endx+1)+"):gt("+(selection.startx-1)+")").addClass("highlight");
 }
 
 function moveSelection(direction)
@@ -251,8 +417,9 @@ function moveSelection(direction)
         $("#hn tr:nth-child("+selectedRow+") "
             +"td:nth-child("+selectedCol+") input").blur();
     
-        $("#hn tr:nth-child("+(ind[0])+") "
-            +"td:nth-child("+ind[1]+") input").focus();
+        selectCell(
+            $("#hn tr:nth-child("+(ind[0])+") "
+                +"td:nth-child("+ind[1]+") div")[0]);
     }
 }
 
@@ -331,6 +498,7 @@ function soc_msg(msg)
         setCell(cell[1]+1,cell[0]+1,arr[2]);
     }
 }
+
 
 function copy(inElement) {
 

@@ -53,7 +53,7 @@ cell4(Config) when is_list(Config) ->
     hn_util:post("http://127.0.0.1:9000/mypage/a1?format=xml",
         "<post><action>create</action><value>10</value></post>","text/xml"),
     test_util:expected(["10","10","10"],post_data("a1",{"post",
-        [{"action","create"},{"value","=/mypage/a1"}]})).
+        [{"action","create"},{"value","=/mypage/a1bas"}]})).
 
 cell5() ->  [{userdata,[{doc,"Set /private to be private"}]}].
 cell5(Config) when is_list(Config) ->
