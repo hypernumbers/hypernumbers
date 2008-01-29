@@ -7,7 +7,7 @@
         <reldir>lib/utilities-1.0/ebin</reldir>
         <reldir>lib/yaws-1.74/ebin</reldir>
         <reldir>lib/hypernumbers.com-1.0/ebin</reldir>
-        <reldir>lib/pp_man-1.0/ebin</reldir>
+        <reldir>lib/formula_engine-1.0/ebin</reldir>
         <reldir>lib/parser-1.0/ebin</reldir>
         <reldir>lib/engine-1.0/ebin</reldir>
     </includes>

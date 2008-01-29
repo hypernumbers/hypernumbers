@@ -161,6 +161,26 @@ table { table-layout:fixed; }
     z-index:9999;
 }
 
+.dragstart
+{
+    border-left:1px solid #000;
+}
+
+.dragend
+{
+    border-right:1px solid #000 !important;
+}
+
+.dragtop
+{
+    border-top:1px solid #000 !important;
+}
+
+.dragbottom
+{
+    border-bottom:2px solid #000 !important;
+}
+
 .dragselected
 {
     background: grey;
