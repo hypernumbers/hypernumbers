@@ -44,3 +44,26 @@ all() ->
                          <%= testcase.path %>, 
                          <%= testcase.cell %>)).
 <% } %>
+
+%%% Helper functions.
+
+hn_post(Site, Path, Cell, Data__) ->
+    Url = Site ++ Path ++ atom_to_list(Cell),
+    PostData = "action=create&value=" ++ tconv:to_s(Data__), % FIXME: CGI escape?
+    Data = {Url, [], "text/plain", PostData},
+    {ok, {{V, 200, R}, H, Body}} = http:request(post, Data, [], []).
+
+
+hn_get(Site, Path, Cell) ->
+    Url = Site ++ Path ++ atom_to_list(Cell),
+    {ok, {{V, 200, R}, H, Body}} = http:request(get, {Url, []}, [], []),
+    stdext:text2num(Body). %% Assume it's all numbers for now.
+
+
+assert_eql(X, Y) when is_integer(X) andalso is_float(Y) ->
+    X * 1.0 == Y;
+assert_eql(X, Y) when is_float(X) andalso is_integer(Y) ->
+    X == Y * 1.0;
+assert_eql(X, Y) ->
+    X == Y.
+    
