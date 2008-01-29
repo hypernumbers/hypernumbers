@@ -27,7 +27,11 @@ to_f(Str) when is_list(Str) ->
 
 %% Integer -> string.
 to_s(Int) when is_integer(Int) ->
-    integer_to_list(Int).
+    integer_to_list(Int);
+to_s(Flt) when is_float(Flt) ->
+    float_to_list(Flt);
+to_s(Str) when is_list(Str) ->
+    Str.
 
 %% Integer -> base 26 number as string.
 to_b26(Int) when is_integer(Int) ->
