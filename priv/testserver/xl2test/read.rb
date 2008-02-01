@@ -5,13 +5,12 @@
 
 require "workbook"
 require "yaml"
-
+require "win32ole"
 
 filename = ARGV[0]
 ranges = ARGV[1..ARGV.length - 1]
 
 w = Workbook.new(ARGV[0])
-range_data = ranges.map { |r| w.range(r) }
 
 hash = {}
 hash["data"] = {}
@@ -20,7 +19,7 @@ hash["data"] = {}
   sheet_idx = pair[0]
   range = pair[1]
 
-  hash["data"][sheet_idx] = w.range(range, sheet_idx)
+  hash["data"] = w.range(range, sheet_idx)
 }
 
 hash["source-file"] = filename

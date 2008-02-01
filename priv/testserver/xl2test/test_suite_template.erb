@@ -1,4 +1,4 @@
--module(<%= @module_name  %>).
+-module(<%= @module_name  %>_SUITE).
 -compile(export_all).
 
 -include("ct.hrl").
@@ -39,7 +39,7 @@ all() ->
               <%= testcase.cell %>, 
               <%= testcase.post_data %>),
 
-        ?ASSERT_EQL(<%= testcase.expected_value %>, 
+        ?ASSERT_EQL("<%= testcase.expected_value %>", 
                     ?GET("http://127.0.0.1:9000", 
                          <%= testcase.path %>, 
                          <%= testcase.cell %>)).

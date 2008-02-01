@@ -34,8 +34,10 @@ end
 
 # This *MUST* be a fully qualified name.
 xlsfile = ARGV[0].dup
-#xlsfile="C:/Users/Gordon Guthrie/Documents/SVN/trunk/priv/testserver/test.xls"
-puts "xlsfile is #{xlsfile}"
+ranges = ARGV[1..ARGV.length - 1]
+puts "ranges(0) is #{ranges[0]}"
+puts "ranges(1) is #{ranges[1]}"
+puts "ranges(2) is #{ranges[2]}"
 
 application= WIN32OLE.new('Excel.Application')
 application.visible=TRUE
@@ -43,6 +45,13 @@ application.visible=TRUE
 #Open the excel file passed in from the commandline
 #workbook = application.Workbooks.open("C:/Users/Gordon Guthrie/Documents/SVN/trunk/priv/testserver/test.xls")
 workbook = application.Workbooks.open(xlsfile)
+
+
+ranges.map { |r| puts "r is #{r}"}
+
+#xlsfile="C:/Users/Gordon Guthrie/Documents/SVN/trunk/priv/testserver/test.xls"
+puts "xlsfile is #{xlsfile}"
+
 
 #Get the first worksheet
 worksheet = workbook.Worksheets(1)
