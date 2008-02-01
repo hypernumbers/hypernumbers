@@ -23,3 +23,7 @@ text2num(Str) when is_list(Str) ->
 
 text2num(_) ->
     {error, value}.
+
+%% http://ejohn.org/blog/javascript-pretty-date/
+pretty_date(Date) ->
+    Date.

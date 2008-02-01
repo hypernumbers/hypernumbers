@@ -36,7 +36,11 @@
 
 %%% @doc Parses formula, and returns AST as an s-expression.
 %%% @spec parse(Formula :: string()) -> {ok, {Ast :: list()}}
-parse(Formula) ->
+parse(Formula__) ->
+    io:format("[MUIN] Given ~s~n", [Formula__]),
+    %% Translate the formula to English if needed.
+    Formula = translator:do(Formula__),
+    io:format("[MUIN] Translated to: ~s~n", [Formula]),
     {LexMod, ParseMod} = get_frontend(),
     {ok, Tokens, _} = erlang:apply(LexMod, string, [Formula]),
     {ok, Ast} = erlang:apply(ParseMod, parse, [Tokens]),
