@@ -204,7 +204,7 @@ $(function()
         }).appendTo(cell);
                 
     
-        $("#texttocopy").text("=hn(\""+_url+"\"?hypernumber)");
+        $("#texttocopy").text("=hn(\"" + _url + "?hypernumber\")");
     
         $.get(_url+"?toolbar&format=xml",function(data) {
             $("#formula").val("="+$(data).find("formula").text());
