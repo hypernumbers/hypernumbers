@@ -55,7 +55,7 @@ $(function()
 
     setupRange(_view);
     loadRange(_view);
-
+    
     $('#hn tr > td > div').contextMenu('myMenu1', {
       bindings: {
         'hnumber': function(t) {
@@ -408,86 +408,7 @@ $(function()
     {
         $("#hn tr:nth-child("+x+") "
             +"td:nth-child("+y+") div").html(val);
-    }
-    
-    // Parses a cell reference(a1) into x y indexes
-    function cellRef(cell)
-    {
-        var x = from_b26((cell.match(/[a-z]+/i)[0]).toLowerCase());
-        var y = parseInt(cell.match(/[0-9]+/)[0]);
-    
-        return [x,y];
-    }
-    
-    function to_b26(cell)
-    {
-        return String.fromCharCode(cell+96);
-    }
-    
-    function from_b26(cell)
-    {
-        return cell.charCodeAt(0)-96;
-    }
-    
-    function dbg(msg)
-    {
-        $("#dbg").append(msg+"\n");
-    }
-    
-    /////////////////////////////////////////////////////////////////////////////
-    // JsSocket - flash bridge to open a socket connection
-    /////////////////////////////////////////////////////////////////////////////
-    var _jssocket = null;
-    
-    // Called from the swf once it has loaded
-    function jssocket_init()
-    {
-        dbg("Socket Init");
-    
-        // This is the id/name of the flash object
-        _jssocket = $("#jssocket")[0];
-    
-        // Set callbacks for flash to call
-        _jssocket.setCallBack("connect","soc_connect");
-        _jssocket.setCallBack("disconnect","soc_closed");
-        _jssocket.setCallBack("recieve","soc_msg");
-    
-        // Connect
-        _jssocket.connect(document.location.hostname,1935);
-        $("#debug img").attr("src","/images/loading.gif");
-    }
-    
-    // Called when socket connects
-    function soc_connect()
-    {
-        dbg("Socket Connected");
-    
-        $("#debug img").attr("src","/images/connect.png");
-        _jssocket.write("register "+document.location.href+_view);
-    }
-    
-    // Called when socket is closed
-    function soc_closed()
-    {
-        $("#debug img").attr("src","/images/disconnect.png");
-        dbg("Socket Closed");
-    }
-    
-    // Called when socket receives message
-    function soc_msg(msg)
-    {
-        dbg("Receieved: "+msg);
-    
-        var arr = msg.split(" ");
-    
-        if(arr[0] == "change")
-        {
-            var urlarr = arr[1].split("/");
-            var cell = cellRef(urlarr[urlarr.length-1]);
-    
-            setCell(cell[1]+1,cell[0]+1,arr[2]);
-        }
-    }
+    }  
 });
 
 function addMenuTree(el,root)
@@ -513,6 +434,24 @@ function addMenuTree(el,root)
         }
     });
 }
+    function to_b26(cell)
+    {
+        return String.fromCharCode(cell+96);
+    }
+    
+    function from_b26(cell)
+    {
+        return cell.charCodeAt(0)-96;
+    } 
+
+    // Parses a cell reference(a1) into x y indexes
+    function cellRef(cell)
+    {
+        var x = from_b26((cell.match(/[a-z]+/i)[0]).toLowerCase());
+        var y = parseInt(cell.match(/[0-9]+/)[0]);
+    
+        return [x,y];
+    }
 
 $.fn.hoverClass = function(c) {
     return this.each(function(){
@@ -551,3 +490,53 @@ function copy(inElement) {
     document.getElementById(flashcopier).innerHTML = divinfo;
   }
 }
+
+
+    /////////////////////////////////////////////////////////////////////////////
+    // JsSocket - flash bridge to open a socket connection
+    /////////////////////////////////////////////////////////////////////////////
+    var _jssocket = null;
+    
+    // Called from the swf once it has loaded
+    function jssocket_init()
+    {
+        // This is the id/name of the flash object
+        _jssocket = $("#jssocket")[0];
+    
+        // Set callbacks for flash to call
+        _jssocket.setCallBack("connect","soc_connect");
+        _jssocket.setCallBack("disconnect","soc_closed");
+        _jssocket.setCallBack("recieve","soc_msg");
+    
+        // Connect
+        _jssocket.connect(document.location.hostname,1935);
+        $("#debug img").attr("src","/images/loading.gif");
+   }
+    
+    // Called when socket connects
+    function soc_connect()
+    {
+        $("#debug img").attr("src","/images/connect.png");
+        _jssocket.write("register "+document.location.href+"A1:J30");
+    }
+    
+    // Called when socket is closed
+    function soc_closed()
+    {
+        $("#debug img").attr("src","/images/disconnect.png");
+    }
+    
+    // Called when socket receives message
+    function soc_msg(msg)
+    {
+        var arr = msg.split(" ");
+    
+        if(arr[0] == "change")
+        {
+            var urlarr = arr[1].split("/");
+            var cell = cellRef(urlarr[urlarr.length-1]);
+
+            $("#hn tr:nth-child("+(cell[1]+1)+") "
+                +"td:nth-child("+(cell[0]+1)+") div").html(arr[2]);
+        }
+    }
