@@ -52,7 +52,7 @@ ODD = ({R_N}{R_E}{R_CH}{R_E}{R_T})
 Rules.
 
 %% Preserve strings as-is.
-{STRING} : {token, {string, muin_util:mid(YYtext)}}.
+{STRING} : {token, {string, YYtext}}.
 %% Kill whitespace.
 {WHITESPACE} : .
 
