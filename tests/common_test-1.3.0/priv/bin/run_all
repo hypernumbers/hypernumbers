@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./run_test -dir ../../../../tests/system_test/ ../../../../tests/unit_test/ ../../../../tests/excel_import_test 
+./run_test -dir ../../../../tests/system_test/ ../../../../tests/unit_test/ ../../../../tests/excel_import_1a_test ../../../../tests/excel_import_1b_test ../../../../tests/excel_import_1c_test 

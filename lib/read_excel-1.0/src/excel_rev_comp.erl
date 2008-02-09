@@ -461,7 +461,7 @@ read_token_array(N,<<?StringArrayEl:8/little-unsigned-integer,
       NFlags:8/little-unsigned-integer,
       R3/binary>>=Rest,
     BinLen=excel_util:get_len_CRS_Uni16(Len,2,R3,NFlags,FileOut),
-    %%io:format("in excel_tokens:parse_tokens for tStr BinLen is ~p~n",[BinLen]),
+    %%io:format("in excel_tokens:read_token_array for tStr BinLen is ~p~n",[BinLen]),
     %% The 2nd byte which contains the encoding flags needs to be included...
     %% if the String is Rich Text or Asian this next bit might blow up
     %% (who knows!)
@@ -613,9 +613,9 @@ make_range(StartCell,EndCell)->
 %% make a cell from 0-Indexed Row and Column indices
 %% - this means adding a 1 to the Indices
 make_cell({Row,Col,rel_row,rel_col}) -> string:to_upper(util2:make_b26(Col+1)++integer_to_list(Row+1));
-make_cell({Row,Col,abs_row,rel_col}) -> string:to_upper(util2:make_b26(Col+1)++integer_to_list(Row+1)++"$");
-make_cell({Row,Col,rel_row,abs_col}) -> string:to_upper(util2:make_b26(Col+1)++"$"++integer_to_list(Row+1));
-make_cell({Row,Col,abs_row,abs_col}) -> string:to_upper(util2:make_b26(Col+1)++"$"++integer_to_list(Row+1)++"$").
+make_cell({Row,Col,abs_row,rel_col}) -> string:to_upper(util2:make_b26(Col+1)++"$"++integer_to_list(Row+1));
+make_cell({Row,Col,rel_row,abs_col}) -> string:to_upper("$"++util2:make_b26(Col+1)++integer_to_list(Row+1));
+make_cell({Row,Col,abs_row,abs_col}) -> string:to_upper("$"++util2:make_b26(Col+1)++"$"++integer_to_list(Row+1)).
 
 %% this function looks up the Func ID and converts it to a name
 %%

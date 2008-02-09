@@ -13,18 +13,18 @@
 -record(upload, {fd,filename, last}).
 
 %% HyperNumbers Utils
--export([ index_to_url/1 ]).
+-export([index_to_url/1 ]).
 %% HTTP Utils
--export([req/1,post/2, post/3,parse_url/1]).
+-export([req/1,post/2,post/3,parse_url/1]).
 %% XML Utils
--export([ xml_to_string/1, readxml_string/1, readxml_file/1,
-          xmlsearch/3, values/2 ]).
+-export([xml_to_string/1,readxml_string/1,readxml_file/1,
+          xmlsearch/3,values/2]).
 %% File Utils
 -export([read/1]).
 %% List Utils
--export([ implode/2, is_alpha/1, is_numeric/1, str_replace/2, text/1 ]).
+-export([implode/2,is_alpha/1,is_numeric/1,str_replace/2,text/1]).
 %% Yaws Utils
--export([ create_conf/1, upload/3, get_cookie/1 ]).
+-export([create_conf/1,upload/3,get_cookie/1]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%

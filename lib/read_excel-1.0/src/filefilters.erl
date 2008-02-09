@@ -339,7 +339,7 @@ print_structure(FileIn,Directory,{SubLocation,SubStreams})->
     %% output that is internal to Excel I think it will still continue
     %% to come in unicode16-8 format (suck'n'see fella)
     {SubLoc,_SID}=SubLocation,
-    io:format("~nThe structure of ~p is:~n",[FileIn]),
+    io:format("~nThe structure of the Microsoft Coumpound Document Object ~p is:~n",[FileIn]),
     List=[{lists:keysearch('bodge_name',1,X),lists:keysearch(location,1,X)} 
 	  || {_,X} <- Directory],
     [io:format("* stream ~p is in ~p~n",

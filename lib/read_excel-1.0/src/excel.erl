@@ -46,6 +46,7 @@ read_excel(Directory,SAT,SSAT,SectorSize,ShortSectorSize,
 	   _MinStreamSize,{{SubLoc,SubSID},SubStreams},FileIn,Tables,FileOut)->
     %% Bear in mind that if the location is short stream the 'SID' returned
     %% is actually an SSID!
+    io:format("~n~nNow going to parse the Excel Workbook only!~n"),
     {Location,SID}=get_named_SID(Directory,?EXCEL_WORKBOOK,FileOut),
     Bin=case Location of
 	    normal_stream -> get_normal_stream(SID,Directory,SAT,SectorSize,
@@ -53,7 +54,27 @@ read_excel(Directory,SAT,SSAT,SectorSize,ShortSectorSize,
 	    short_stream  -> get_short_stream(SID,Directory,SAT,SSAT,SectorSize,
 					      ShortSectorSize,FileIn,FileOut)
 	end,
-    parse_bin(Bin,Tables,FileOut),
+    %% Now parsing the Excel components of the file
+    %%
+    %% To understand what is going on here you need to read Section 4.1.2 of excelfileformatV1-40.pdf
+    %% Basically we first read the 'Workbook Globals SubStream' and the all the 'Sheet SubStreams'
+    %%
+    %% The 'Workbook Globals Substream' contains things that are 'file wide':
+    %% * string
+    %% * tables
+    %% * formats
+    %% * fonts
+    %% * styles
+    %% * etc, etc
+    %% as described in Section 4.2.5 of excelfileformatV1-40.pdf
+    %%
+    %% The 'Sheet Substreams' constist of things on a particular Excel tab as describe in 
+    %% Section 4.2.5 of excelfileformatV1-40.pdf
+    %%
+
+    %% First parse the 'Workbook Globals SubStream' 
+    parse_bin(Bin,{'utf-8',list_to_binary("Workbook Globals SubStream")},Tables,FileOut),
+    %% Now parse all the 'Sheet Substeams'
     [parse_substream(SubSID,SubLoc,X,Directory,SAT,SSAT,SectorSize,
 		     ShortSectorSize,FileIn,Tables,FileOut) || X <- SubStreams].
 
@@ -63,6 +84,8 @@ parse_substream(SubSID,Location,SubStream,Directory,SAT,SSAT,SectorSize,
 					     [SubStream])),
     io:format("Now parsing substream ~p~n",[SubStream]),
     {_,Offset}=SubStream,
+    {[{_,NameBin}],_}=SubStream,
+    Name=binary_to_list(NameBin),
     Bin=case Location of 
 	    normal_stream -> get_normal_stream(SubSID,Directory,SAT,SectorSize,
 					       FileIn,FileOut);
@@ -72,31 +95,34 @@ parse_substream(SubSID,Location,SubStream,Directory,SAT,SSAT,SectorSize,
     %% Because we are reading a substream we want to chop off the 
     %% binary up to the offset
     <<_Discard:Offset/binary,Rest/binary>>=Bin,
-    parse_bin(Rest,Tables,FileOut).
+    %% pass in the actual name of the substream
+    parse_bin(Rest,Name,Tables,FileOut).
 
 %% parse_bin(Bin,Tables,FileOut)->
 %%     parse_bin(Bin,[],Tables,FileOut).
 
-parse_bin(Bin,Tables,FileOut)->
+parse_bin(Bin,Name,Tables,FileOut)->
     <<Identifier:16/little-unsigned-integer,
      RecordSize:16/little-unsigned-integer,Rest/binary>>=Bin,
     case Identifier of
  	?EOF ->	    
- 	    excel_util:put_log(FileOut,"In excel:parse_bin - Workstream read!"),
- 	    io:format("workstream read!~n"),
+ 	    excel_util:put_log(FileOut,io_lib:fwrite("In excel:parse_bin - Workstream ~p read!",
+                              [Name])),
+ 	    io:format("workstream ~p read!~n",[Name]),
  	    ok;
 	?SST ->
 	    %%io:format("In excel:parse_bin Identifier is SST~n"),
 	    {ok,BinList,Rest2}=get_single_SST(Bin,FileOut),
 	    %% io:format("in excel:parse_bin SST_bin is ~p~n",[SST_bin]),
-	    {ok,ok}=excel_records:parse_rec(Identifier,BinList,Tables,FileOut),
- 	    parse_bin(Rest2,Tables,FileOut);
+	    {ok,ok}=excel_records:parse_rec(Identifier,BinList,Name,Tables,FileOut),
+ 	    parse_bin(Rest2,Name,Tables,FileOut);
 	_Other ->
  	    <<Record:RecordSize/binary,Rest3/binary>>=Rest,
-	    {ok,ok}=excel_records:parse_rec(Identifier,Record,Tables,FileOut),
- 	    parse_bin(Rest3,Tables,FileOut)
+	    {ok,ok}=excel_records:parse_rec(Identifier,Record,Name,Tables,FileOut),
+ 	    parse_bin(Rest3,Name,Tables,FileOut)
     end.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                     %%%
 %%% Functions to get a concatenated SST record                          %%%

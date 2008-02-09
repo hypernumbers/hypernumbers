@@ -10,9 +10,10 @@
 %% public exports
 -export([
 	 expected/2,
-   expected2/2,
+         expected2/2,
 	 get_Arg/4,
 	 read_excel_file/1,
+         read_from_excel_data/3,
 	 equal_to_digit/3,
 	 excel_equal/2,
 	 wait/0,
@@ -24,9 +25,34 @@
 %% scratch utility for running from the shell
 -export([scratch_Arg/0]).
 
--define(FILEDIR, "../../../../excel_import_test/files/").
+-define(FILEDIR, "../../../../excel_files/").
 -define(EXCEL_IMPORT_FLOAT_PRECISION, 15).
 -define(DEFAULT,1000000).
+
+
+read_from_excel_data(Config,Suite,{Sheet,Row,Col})->
+  io:format("Got to 1 Sheet is ~p Row is ~p and Col is ~p~n",[Sheet,Row,Col]),
+  {value, Result} = lists:keysearch(Suite, 1, Config),
+  %% io:format("Got to 2~n"),
+  Data = element(2, Result),
+  %% io:format("Got to 3~n"),
+  Key={{sheet,Sheet},{row_index,Row},{col_index,Col}},
+  %% io:format("Got to 4~n"),
+  Return=lists:keysearch(Key, 1, Data),
+  %% io:format("Got to 5 Key is ~p~n-Return is ~p~n",[Key,Return]),
+  {value, Result2}=Return,
+  El=element(2, Result2),
+  %% io:format("El is ~p~n",[El]),
+  %% io:format("Got to 6~n"),
+  case El of
+      {value, number, Number} -> {number,Number};
+      {string,String}         -> {string,String};
+      {formula,Formula}       -> {formula,Formula};
+      {value,boolean,Boolean} -> {boolean,Boolean};
+      {value,error,Error}     -> {error, Error};
+      Other                   -> io:format("(in generatetest.rb - fix me Other is ~p~n",[Other])
+end.
+
 
 %% Checks that two floats are exactly the same up to
 %% a certain number of decimal places.

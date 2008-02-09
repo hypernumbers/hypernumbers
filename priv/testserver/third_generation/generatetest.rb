@@ -106,7 +106,8 @@ end
 
 hash = File.open(ARGV[0]) { |f| YAML::load(f) }
 
-modname = "#{File.basename(ARGV[0], ".xls.yaml").downcase}_SUITE"
+modname = "#{File.basename(ARGV[0], ".yaml").downcase}_SUITE"
+puts "modname is #{modname}"
 
 File.open("#{modname}.erl", "w") do |suite|
   suite << module_header(hash["source-file"], Time.now.to_s, modname) +

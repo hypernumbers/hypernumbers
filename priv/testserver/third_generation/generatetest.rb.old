@@ -25,10 +25,11 @@ end
 # ====================================
 def erl_testcase(name, expected, got, output, doc = "")
 <<-eos
-#{name}(doc) -> [{userdata,[{"#{doc}"}]}];
+#{name}(doc) -> ["#{doc}"];
+#{name}(suite) -> [];
 #{name}(Config) -> 
   #{output}
-  test_util:expected2(#{expected}, #{got}).
+  test_util:expected(#{expected}, #{got}).
   
 eos
 end
@@ -43,7 +44,7 @@ def module_header(source_file, timestamp, modname)
 
 -module(#{modname}).
 -compile(export_all).
--include("ct.hrl").
+-include("test_server.hrl").
 
 
 eos
@@ -52,10 +53,10 @@ end
 def init_per_suite(source_file,mod_name)
 <<-eos
 init_per_suite(Config) ->
-    code:add_patha("../../../../../ebin"),
+    code:add_patha("../../ebin"),
     production_boot:setup_paths(),
     Data = test_util:read_excel_file("/Win Excel 2007 (as 97)/#{source_file}"),
-    %% io:format("in init_per_suite Data is ~p~n",[Data]),
+    %%io:format("in init_per_suite Data is ~p~n",[Data]),
     lists:merge([Config, [{#{mod_name}, Data}]]).
   
 eos
@@ -85,15 +86,29 @@ end
 
 def read_from_excel_data(mod_name)
 <<-eos
-read_from_excel_data(Config,{Sheet,Row,Col}) ->
-  test_util:read_from_excel_data(Config,#{mod_name},{Sheet,Row,Col}).
+read_from_excel_data(Config, {Row,Col}) ->
+    {value, Result} = lists:keysearch(#{mod_name}, 1, Config),
+    Data = element(2, Result),
+    Key={{row_index,Row},{col_index,Col}},
+    {value, Result2} = lists:keysearch(Key, 1, Data),
+    El=element(2, Result2),
+    %%io:format("El is ~p~n",[El]),
+    case El of
+        {value, number, Number} -> {number,Number};
+        {string,String}         -> {string,String};
+        {formula,Formula}       -> {formula,Formula};
+        {value,boolean,Boolean} -> {boolean,Boolean};
+        {value,error,Error}     -> {error, Error};
+        Other                   -> io:format("(in generatetest.rb - fix me Other is ~p~n",[Other])
+    end.
 
 eos
 end
 
 def all(test_cases)
 <<-eos
-all() -> 
+all(doc) -> [""];
+all(suite) -> 
     [#{test_cases}
     ].
   
@@ -106,7 +121,8 @@ end
 
 hash = File.open(ARGV[0]) { |f| YAML::load(f) }
 
-modname = "#{File.basename(ARGV[0], ".xls.yaml").downcase}_SUITE"
+modname = "#{File.basename(ARGV[0], ".yaml").downcase}_SUITE"
+puts "modname is #{modname}"
 
 File.open("#{modname}.erl", "w") do |suite|
   suite << module_header(hash["source-file"], Time.now.to_s, modname) +
@@ -120,48 +136,46 @@ File.open("#{modname}.erl", "w") do |suite|
   test_names = []
   
   # Write test cases.
-  hash.each do |sheet|
-    #puts "sheet is #{sheet}"
-     if sheet[0] != "source-file" && sheet[0] != "generated-on"
-      sheet[1].each do |col_cells|
-      #puts "col_cells are #{col_cells}"
-      # col_cells will contain something like:
-      # ["B", 
-      #   { 5 => {"formula"=>"=UPPER(\"hello\")", "value"=>"HELLO"}, 
-      #     3 => {"formula"=>"=1>0", "value"=>true},
-      #     4 => {"formula"=>"zhopa", "value"=>"zhopa"}}]
-      # Where "B" is, of course, the name of the column, and the elements in the
-      # hash are { row_number => value } pairs.
+  hash.each do |col_cells|
+    # col_cells will contain something like:
+    # ["B", 
+    #   { 5 => {"formula"=>"=UPPER(\"hello\")", "value"=>"HELLO"}, 
+    #     3 => {"formula"=>"=1>0", "value"=>true},
+    #     4 => {"formula"=>"zhopa", "value"=>"zhopa"}}]
+    # Where "B" is, of course, the name of the column, and the elements in the
+    # hash are { row_number => value } pairs.
     
-        col_cells[1].each do |row_data|
-          #puts "row data is #{row_data}"
-          # row_data data will contain something like:
-          # [1, {"formula" => "=2 * 2.5", "value" => 5}]
+    if col_cells[0] != "source-file" && col_cells[0] != "generated-on"
+      col_cells[1].each do |row_data|
+        # row_data data will contain something like:
+        # [1, {"formula" => "=2 * 2.5", "value" => 5}]
         
-          # This will give us a name like sheet1_c15_test
-          name = "#{sheet[0].downcase}_#{col_cells[0].downcase}#{row_data[0]}_test"
-          test_names << name
-          #puts "get_type(row_data[1]) is #{get_type(row_data[1])}"
-          got, type =  case get_type(row_data[1])
+        # This will give us a name like c15_test
+        name = "#{col_cells[0].downcase}#{row_data[0]}_test"
+        test_names << name
+        # puts "get_type(row_data[1]) is #{get_type(row_data[1])}"
+        expected, got_param, type =  case get_type(row_data[1])
                                      when :formula
-                                       ["\"#{row_data[1]["formula"]}\"", :formula]
+                                       ["true", "\"#{row_data[1]["formula"]}\"", :formula]
                                      when :number
-                                       ["#{row_data[1]["value"]}", :number]
+                                       ["true", "#{row_data[1]["value"]}", :number]
                                      when :boolean
-                                       ["#{row_data[1]["value"]}", :boolean]
+                                       ["true", "#{row_data[1]["value"]}", :boolean]
                                      when :string
-                                       ["\"#{row_data[1]["value"]}\"", :string]
+                                       ["true", "\"#{row_data[1]["value"]}\"", :string]
                                      when :date
-                                       ["\"#{row_data[1]["value"]}\"", :date]
+                                       ["true", "\"#{row_data[1]["value"]}\"", :date]
                                      else
                                        ["\"not tested (type not supported by generatetest.rb yet)\"", 0, :not_supported]
                                      end
 
-          got2 = "{#{type.to_s},#{got}}"
-          expected="read_from_excel_data(Config,{\"#{sheet[0]}\",#{row_data[0]-1},#{col_cells[0][-1]-65}})"
-          output = "io:format(\"Expected : ~p~nGot      : ~p~n\",[#{got2},#{expected}]),"
-        suite << erl_testcase(name, expected, got2, output)
-        end
+        got = "test_util:excel_equal({#{type.to_s},#{got_param}}, " + 
+              "read_from_excel_data(Config,{#{row_data[0]-1},#{col_cells[0][-1]-65}}))"
+        
+        output = "io:format(\"Expected : ~p~nGot      : ~p~n\"," + 
+          "[#{got_param},read_from_excel_data(Config,{#{row_data[0]-1},#{col_cells[0][-1]-65}})]),"
+        
+        suite << erl_testcase(name, expected, got, output)
       end
     end
   end
