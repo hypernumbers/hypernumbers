@@ -229,7 +229,8 @@ read(Tables,Name,Key)->
   Return=ets:lookup(Tid,Key),
   case {Name,Return} of
     {arrayformula,[]} -> "fix me up in excel_util:read, ya wank - arrayformula record not read yet!";
-    _                 -> Return
+    {sheetnames,[]}  -> [{{blah,blah},[{blah,"fix me up in excel_util:read, ya bam - sheetnames record not read yet!"}]}];
+    _                       -> Return
     end.
 
 %% append a sheet name to the sheetname table with a zero-based

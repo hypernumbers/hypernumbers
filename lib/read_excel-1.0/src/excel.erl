@@ -76,7 +76,10 @@ read_excel(Directory,SAT,SSAT,SectorSize,ShortSectorSize,
     parse_bin(Bin,{'utf-8',list_to_binary("Workbook Globals SubStream")},Tables,FileOut),
     %% Now parse all the 'Sheet Substeams'
     [parse_substream(SubSID,SubLoc,X,Directory,SAT,SSAT,SectorSize,
-		     ShortSectorSize,FileIn,Tables,FileOut) || X <- SubStreams].
+		     ShortSectorSize,FileIn,Tables,FileOut) || X <- SubStreams],
+    %% Now that the complete file is read reverse_compile the token stream
+    %%    
+    make_formulae(Tables,FileOut).
 
 parse_substream(SubSID,Location,SubStream,Directory,SAT,SSAT,SectorSize,
 		ShortSectorSize,FileIn,Tables,FileOut)->
@@ -304,3 +307,16 @@ read_storage_stream(FileHandle,SIDList,SectorSize,Position,Size)->
 	    {ok,Bin}=file:read(FileHandle,Size)
     end,
     Bin.
+    
+make_formulae(Tables,FileOut)->
+  io:format("Tables are ~p~n",[Tables]),
+  {value,{cell_tokens,Cell_TokensId}}=lists:keysearch(cell_tokens,1,Tables),
+  {value,{cell,CellId}}              =lists:keysearch(cell,1,Tables),
+  Fun=fun(X,Residuum)->
+    {Index,[XF,{tokens,Tokens},{tokenarrays,TokenArray}]}=X,
+    Formula=excel_rev_comp:reverse_compile(Tokens,TokenArray,Tables,FileOut),
+    ets:insert(CellId,[{Index,[XF,{formula,Formula}]}])
+  end,
+  CellList=ets:foldl(Fun,[],Cell_TokensId),
+  io:format("Tokens to cells transformation gives:~n~p~n",[CellList]).
+  

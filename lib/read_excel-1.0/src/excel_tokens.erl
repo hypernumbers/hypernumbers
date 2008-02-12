@@ -23,13 +23,14 @@
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 parse_tokens(<<>>,TokenArray,Residuum,Tables,FileOut)->
-    Return=lists:reverse(Residuum),
-    %%io:format("in excel_tokens:parse_tokens Return is ~p~n",[Return]),
-    excel_rev_comp:reverse_compile(Return,TokenArray,Tables,FileOut);
+    Tokens=lists:reverse(Residuum),
+    %%io:format("in excel_tokens:parse_tokens Return is ~p TokenArray is ~p~n",[Return,TokenArray]),
+    {Tokens,TokenArray};
+    %%excel_rev_comp:reverse_compile(Return,TokenArray,Tables,FileOut);
 parse_tokens(Bin,TokenArray,Residuum,Tables,FileOut)->
     <<BaseTokenID:8/little-unsigned-integer,_Rest/binary>>=Bin,
-    io:format("in excel_tokens:parse_tokens BaseTokenID is ~p~n"++
-     "-Bin  is ~p~n",[BaseTokenID,Bin]),
+    %%io:format("in excel_tokens:parse_tokens BaseTokenID is ~p~n"++
+    %% "-Bin  is ~p~n",[BaseTokenID,Bin]),
     parse_tokens(BaseTokenID,Bin,TokenArray,Residuum,Tables,FileOut).
 
 %% Parsing base tokens
@@ -217,13 +218,15 @@ parse_tokens(?tStr,Bin,TokenArray,Residuum,Tables,FileOut)->
     %% (who knows!)
     <<StrBin:BinLen/binary,R4/binary>>=Rest,
     {[{_,String2}],_,_}=excel_util:parse_CRS_Uni16(StrBin,1,FileOut),
-    io:format("**********************************************"),
-    io:format("*                                            *"),
-    io:format("* excel_util:parse_CRS_Uni16 returns a       *"),
-    io:format("* string in utf8 or utf16 format and this    *"),
-    io:format("* function needs to process them differently *"),
-    io:format("*                                            *"),
-    io:format("**********************************************"),
+    io:format("**********************************************~n"),
+    io:format("*                                            *~n"),
+    io:format("* in excel_tokns:parse_tokens for tStr       *~n"),
+    io:format("*                                            *~n"),
+    io:format("* excel_util:parse_CRS_Uni16 returns a       *~n"),
+    io:format("* string in utf8 or utf16 format and this    *~n"),
+    io:format("* function needs to process them differently *~n"),
+    io:format("*                                            *~n"),
+    io:format("**********************************************~n"),
     String3=binary_to_list(String2),
     String4=list_to_binary(lists:flatten([$",String3,$"])),
     excel_util:put_log(FileOut,io_lib:fwrite("string String2 is ~p",[String2])),
@@ -263,10 +266,10 @@ parse_tokens(?tAttr,Bin,TokenArray,Residuum,Tables,FileOut)->
     <<Tk:8/little-unsigned-integer,R2/binary>>=Bin,
     excel_util:put_log(FileOut,io_lib:fwrite("parsing token tAttr: ~p",[Tk])),
     Return=parse_attr(R2,FileOut),
-    io:format("in excel_tokens:parse_tokens tAttr Return is ~p~n",[Return]),
+    %%io:format("in excel_tokens:parse_tokens tAttr Return is ~p~n",[Return]),
     {Token,R3}=Return,
     excel_util:put_log(FileOut,io_lib:fwrite("~p",[Token])),
-    io:format("in excel_tokens:parse_tokens Token is ~p~n",[Token]),
+    %%io:format("in excel_tokens:parse_tokens Token is ~p~n",[Token]),
     parse_tokens(R3,TokenArray,[Token|Residuum],Tables,FileOut);
 %% tErr
 parse_tokens(?tErr,Bin,TokenArray,Residuum,Tables,FileOut)->
@@ -738,7 +741,7 @@ parse_tokens(tRef3d,Bin,TokenArray,Type,Residuum,Tables,FileOut)->
     %% io:format("***WARNING*** excel_tokens:parse_tokens for tRef3d is fucked"++
     %%          "it flattens the Array to 1D!~n"),
     excel_util:put_log(FileOut,io_lib:fwrite("*DONE* parsing token tRef3d ~p",[Type])),
-    io:format("in excel_tokens:parse_tokens for tRef3d Cell is ~p~n",[Cell]),
+    %%io:format("in excel_tokens:parse_tokens for tRef3d Cell is ~p~n",[Cell]),
     ParsedAddy=parse_cell_addy(Cell),
     parse_tokens(R2,TokenArray,[{three_dee_reference,
 		      {tRef3d,[{reference_index,RefIndex},ParsedAddy,{type,Type}],
@@ -785,7 +788,7 @@ parse_tokens(tAreaErr3d,Bin,TokenArray,Type,Residuum,Tables,FileOut)->
 		      {tAreaErr3d,[{reference_index,RefIndex},{type,Type}],
 		      {return,reference}}}|Residuum],Tables,FileOut);
 parse_tokens(Other,Bin,TokenArray,Type,Residuum,Tables,FileOut)->
-    io:format("in parse_tokens Other is ~p~n",[Other]).
+    io:format("******************~nin parse_tokens Other is ~p~n*******************~n",[Other]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -825,20 +828,20 @@ parse_attr(<<?tAttrVolatile:8/little-unsigned-integer,
 	    _NotUsed:16/little-unsigned-integer,
 	    R/binary>>,
 	   _FileOut)->
-  io:format("in excel_tokens:parse_attr for tAttrVolatile~n"),
+  %%io:format("in excel_tokens:parse_attr for tAttrVolatile~n"),
   {{attributes,{tAttrVolatile,volatile_attribute,[],{return,none}}},R};
 parse_attr(<<?tAttrIf:8/little-unsigned-integer,
 	    Jump:16/little-unsigned-integer,
 	    R/binary>>,
 	   _FileOut)->
-  io:format("in excel_tokens:parse_attr for tAttrIf~n"),
+  %%io:format("in excel_tokens:parse_attr for tAttrIf~n"),
   {{attributes,{tAttrIf,if_attribute,[{jump,Jump}],{return,none}}},R};
 parse_attr(<<?tAttrChoose:8/little-unsigned-integer,
 	    NumberOfChoices:16/little-unsigned-integer,
 	    R/binary>>,
 	   _FileOut)->
-    io:format("in excel_tokens:parse_attr for tAttrChoose NumberOfChoices is ~p~n",
-    [NumberOfChoices]),
+    %%io:format("in excel_tokens:parse_attr for tAttrChoose NumberOfChoices is ~p~n",
+    %%[NumberOfChoices]),
     JumpTableSize=NumberOfChoices*2,
     <<JumpTable:JumpTableSize/binary,
      ErrorJump:16/little-unsigned-integer,
@@ -849,23 +852,23 @@ parse_attr(<<?tAttrChoose:8/little-unsigned-integer,
 parse_attr(<<?tAttrSkip:8/little-unsigned-integer,
 	    Skip:16/little-unsigned-integer,
 	    R/binary>>,_FileOut)->
-  io:format("in excel_tokens:parse_attr for tAttrSkip~n"),
+  %%io:format("in excel_tokens:parse_attr for tAttrSkip~n"),
   {{attributes,{tAttrSkip,skip_attribute,[{skip,Skip+1}],{return,none}}},R};
 parse_attr(<<?tAttrSum:8/little-unsigned-integer,
 	    _NotUsed:16/little-unsigned-integer,
 	    R/binary>>,_FileOut)->
-  io:format("in excel_tokens:parse_attr for tAttrSum~n"),
+  %%io:format("in excel_tokens:parse_attr for tAttrSum~n"),
   {{attributes,{tAttrSum,sum_attribute,[],{return,none}}},R};
 parse_attr(<<?tAttrAssign:8/little-unsigned-integer,
 	    _NotUsed:16/little-unsigned-integer,
 	    R/binary>>,_FileOut)->
-  io:format("in excel_tokens:parse_attr for tAttrAssign~n"),
+  %%io:format("in excel_tokens:parse_attr for tAttrAssign~n"),
   {{attributes,{tAttrAssign,assign_attribute,[],{return,none}}},R};
 parse_attr(<<?tAttrSpace:8/little-unsigned-integer,
 	    SpecCharType:8/little-unsigned-integer,
 	    NoOfSpecChars:8/little-unsigned-integer,
 	    R/binary>>,_FileOut)->
-    io:format("in excel_tokens:parse_attr for tAttrSpace~n"),
+    %%io:format("in excel_tokens:parse_attr for tAttrSpace~n"),
     Type=case SpecCharType of
 	     ?attr_SC_SPACES1   -> space;
 	     ?attr_SC_CARRIAGE1 -> carriage_return;
@@ -878,7 +881,7 @@ parse_attr(<<?tAttrSpace:8/little-unsigned-integer,
   {{attributes,{tAttrSpace,special_character,[{char,Type},{no_of_chars,NoOfSpecChars}],
       {return,none}}},R};
 parse_attr(<<?tAttrSpaceVolatile:8/little-unsigned-integer,R/binary>>,FileOut)->
-  io:format("in excel_tokens:parse_attr for tAttrSpaceVolatile~n"),
+  %%io:format("in excel_tokens:parse_attr for tAttrSpaceVolatile~n"),
   {Tk,R2}=parse_attr(<<?tAttrSpace:8/little-unsigned-integer,
               R/binary>>,FileOut),
   {{attributes,[{tAttrSpaceVolatile,volatile_attribute,[],{return,none}}|Tk]},R2};

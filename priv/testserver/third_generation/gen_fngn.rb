@@ -8,13 +8,14 @@ require "erb"
 TestCase = Struct.new(:name, :path, :cell, :post_data, :expected_value)
 
 hash = File.open(ARGV[0]) { |f| YAML::load(f) }
+puts "hash is #{hash}"
 
 @module_name = File.basename(hash["source-file"], ".xls").gsub(/\s+/, "")
-#puts "module_name is #{@module_name}"
+puts "module_name is #{@module_name}"
 subpage = @module_name
 
 
-@suite = hash["data"].inject([]) { |acc, sheet_data|
+@suite = hash.inject([]) { |acc, sheet_data|
   #puts "acc is #{acc} and sheet_data is #{sheet_data}"
   sheet_name = sheet_data[0]
   lc_sheet_name=sheet_name.downcase

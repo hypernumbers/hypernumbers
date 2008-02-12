@@ -40,9 +40,11 @@ parse_rec(?FORMULA,Bin,Name,Tables,FileOut)->
 				   XFIndex,
 				   Result,
 				   CalcFlag])),
-    Formula=parse_FRM_Results(formula,Rest,Tables,FileOut),
-    excel_util:write(Tables,cell,[{{sheet,Name},{row_index,RowIndex},{col_index,ColIndex}},
-		       {xf_index,XFIndex},{formula,Formula}]),
+    {Tokens,TokenArrays}=parse_FRM_Results(formula,Rest,Tables,FileOut),
+    %% io:format("in excel_records:parse_rec for ARRAY~n-Tokens are ~p-TokenArrays are ~p~n",
+    %%      [Tokens,TokenArrays]),
+    excel_util:write(Tables,cell_tokens,[{{sheet,Name},{row_index,RowIndex},{col_index,ColIndex}},
+		       {xf_index,XFIndex},{tokens,Tokens},{tokenarrays,TokenArrays}]),
     excel_util:put_log(FileOut,"[/FORMULA]"),
     {ok,ok};
 parse_rec(?EOF,_Bin,_Name,_Tables,FileOut)->
@@ -393,11 +395,10 @@ parse_rec(?MULRK,Bin,Name,Tables,FileOut)->
 				  "FirstColIndex is ~p",
 				  [RowIndex,
 				   FirstColIndex])),
-    %5io:format("in excel_records:parse_rec for MULRK RowIndex is ~p and FirstColIndex is ~p~n",
-    %%    [RowIndex,FirstColIndex]),
+    io:format("in excel_records:parse_rec for MULRK RowIndex is ~p and FirstColIndex is ~p~n",
+        [RowIndex,FirstColIndex]),
     Tokens=parse_XF_RK(Rest,Tables,FileOut),
     write_row(Tokens,RowIndex,FirstColIndex,Name,Tables),
-    %%io:format("in excel_records:parse_rec for MULRK Tokens are:~n ~p~n",[Tokens]),
     excel_util:put_log(FileOut,"[/MULRK]"),
     {ok,ok};
 parse_rec(?MULBLANK,_Bin,_Name,_Tables,FileOut)->
@@ -599,8 +600,8 @@ parse_rec(?BOOLERR2,Bin,Name,Tables,FileOut)->
               ?NAError      -> {error,"#N/A"}
           end
     end,
-    io:format("in excel_records:parse_rec ValType is ~p and Value is ~p~n",
-        [ValType,Value]),
+    %%io:format("in excel_records:parse_rec ValType is ~p and Value is ~p~n",
+    %%    [ValType,Value]),
     excel_util:write(Tables,cell,[{{sheet,Name},{row_index,RowIndex},{col_index,ColIndex}},
 		       {xf_index,XFIndex},{value,ValType,Value}]),
     excel_util:put_log(FileOut,"[/BOOLERR2]"),
@@ -696,14 +697,18 @@ parse_rec(?ARRAY2,Bin,_Name,Tables,FileOut)->
     excel_util:put_log(FileOut,"[ARRAY2 *DONE*]"),
     <<Range:8/binary, % 6 + 2 bits
       _NotUsed:4/binary,
-      Tokens/binary>>=Bin,
-      io:format("in excel_records:parse_rec for ARRAY~n-Range is ~p~n",[Range]),
+      RawTokens/binary>>=Bin,
+      %% io:format("in excel_records:parse_rec for ARRAY2~n-Range is ~p~n",[Range]),
       {[{Row,Col,_,_}],_Bin}=excel_util:read_cell_range_addies(1,Range,FileOut),
-      io:format("in excel_records:parse_rec for ARRAY~n-Row is ~p~n-Col is ~p~n"++
-          "-TokenArray is ~p~n",[Row,Col,Tokens]),
-      Formula="{"++parse_FRM_Results(formula,Tokens,Tables,FileOut)++"}",
-      io:format("in excel_records:parse_rec for ARRAY~n-Formula are ~p~n",[Formula]),
-      excel_util:write(Tables,arrayformula,[{{row_index,Row},{col_index,Col}},{formula,Formula}]),
+      %% io:format("in excel_records:parse_rec for ARRAY2~n-Row is ~p~n-Col is ~p~n"++
+      %%    "-RawTokens is ~p~n",[Row,Col,RawTokens]),
+      Return=parse_FRM_Results(formula,RawTokens,Tables,FileOut),
+      %% io:format("in excel_records:parse_rec for ARRAY2 Return is ~p~n",[Return]),
+      {Tokens,TokenArrays}=Return,
+      %% io:format("in excel_records:parse_rec for ARRAY~n-Tokens are ~p-TokenArrays are ~p~n",
+      %%    [Tokens,TokenArrays]),
+      excel_util:write(Tables,arrayformula,[{{row_index,Row},{col_index,Col}},{tokens,Tokens},
+              {tokenarray,TokenArrays}]),
       %% filefilters:dump(Tables),
       %% exit("goodbye from within excel_records - fix arrays"),
     excel_util:put_log(FileOut,"[/ARRAY2]"),
@@ -831,26 +836,14 @@ parse_rec(Other,_Bin,_Name,_Tables,FileOut)->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% This function entry is described in Section 5.47 of
 %% excelfileformat.pdf (V1.40)
-%%
-%% Don't think this entry point is used anywhere...
-%%
-%% COMMENTED OUT 2008_01_13
-%%
-%% If still commented out after a good time then just delete it...
-%%
-%%parse_FRM_Results(type,Bin,Tables,_FileOut)->
-%%    <<Type:8/integer,_Rest:56/integer>>=Bin,
-%%    io:format("in excel_records:parse_FRM_Results Type is ~p~n",[Type]),
-%%    _Type2=case Type of
-%%	      ?rc_FORMULA_STRING     -> string;
-%%	      ?rc_FORMULA_BOOLEAN    -> boolean;
-%%	      ?rc_FORMULA_ERROR      -> error;
-%%	      ?rc_FORMULA_EMPTY_CELL -> empty_cell;
-%%	      _Other                 -> number
-%%	  end;
 
 %% This function entry is described in Section 3.1 of
 %% excelfileformat.pdf (V1.40)
+
+%% this parses the formulae tokens but doens't reverse compile them
+%% that happens later. When we are reading a formula right now it will
+%% make reference to things like names and arrayformulae that we haven't
+%% read yet
 parse_FRM_Results(formula,<<>>,Tables,FileOut)->
     excel_util:put_log(FileOut,io_lib:fwrite("in parse_FRM_Results - "++
 				  "finished parsing results",[])),
@@ -860,19 +853,19 @@ parse_FRM_Results(formula,Bin,Tables,FileOut) ->
     excel_util:put_log(FileOut,io_lib:fwrite("in parse_FRM_Results the "++
 				  "record size is ~p~nbinary is ~p",
 				  [Size,Bin])),
-    Tokens=case Size of
+    {Tokens,TokenArray2}=case Size of
 	       0     -> 
             io:format("in excel_records:parse_FRM_Results - zero length formula!"),
-			      [];
+			      {[],[]};
 	       RPN_Size -> 
             <<RPN:RPN_Size/binary,TokenArray/binary>>=Rest,
-            io:format("in excel_records:parse_FRM_Results RPN is ~p~n-RPN_Size is ~p~n"++
-                            "-TokenArray is ~p~n",[RPN,RPN_Size,TokenArray]),
+            %%io:format("in excel_records:parse_FRM_Results RPN is ~p~n-RPN_Size is ~p~n"++
+            %%                "-TokenArray is ~p~n",[RPN,RPN_Size,TokenArray]),
             excel_tokens:parse_tokens(RPN,TokenArray,[],Tables,FileOut)
     end,
     excel_util:put_log(FileOut,io_lib:fwrite("in parse_FRM_Results the "++
 				  "tokens are ~p",[Tokens])),
-    Tokens.
+    {Tokens,TokenArray2}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%

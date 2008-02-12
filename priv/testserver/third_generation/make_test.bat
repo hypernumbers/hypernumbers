@@ -1,5 +1,6 @@
 #!/bin/bash Batch file to generate test files
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\a_alignment.xls" A1:H12 A1:H12
+readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\a_should_be_10_tests.xls" A1:B5 
 
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_abs_and_rel_addressing.xls" B4:D19
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_arithmetic_and_precedence.xls" A1:B36
@@ -7,16 +8,17 @@ readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_array_fo
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_basic_unicode_strings.xls" B2:B43
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_block_of_numbers.xls" A1:I5
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_booleans_and_errors.xls" A1:B9
+readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_equals.xls" A2:A2
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_just_numbers.xls" A1:G11
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_made_up_fn_names.xls" A3:A5
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_multiple_sheets.xls" A1:A1 A1:A1 A1:A1
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_nested_functions.xls" B4:B1
-readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_nested_functions_spaces_crs.xls" B2:B16
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_quadratic_equations.xls" A1:F8
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_simple.xls" A1:B6
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_simple_arrays_and_ranges.xls" A1:I11
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_sum_with_one_arg.xls" A1:I11
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_three_dee_ref.xls" A1:B8
+readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_wierd_failures.xls" A1:B8
 
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\c_basic_functions_tests_a_e.xls" B3:B1130
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\c_basic_functions_tests_f_k.xls" B3:B1219
@@ -54,63 +56,71 @@ readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\e_gnumeric
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\e_gnumeric_operators_mult.xls" A1:V66
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\e_gnumeric_operators_ne.xls" A1:V66
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\e_gnumeric_operators_sub.xls" A1:V66
-readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\e_gnumeric_trig.xls" A1:E6 A1:AQ49 A1:AQ120 
+readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\e_gnumeric_trig.xls" A1:E6
+readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\e_gnumeric_trig_trig.xls" A1:AQ49
+readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\e_gnumeric_trig_atan2.xls" A1:AQ120 
 
-generatetest "a_alignment_test.yaml"
+readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\x_nested_functions_spaces_crs.xls" B2:B16
 
-generatetest "b_abs_and_rel_addressing_test.yaml"
-generatetest "b_arithmetic_and_precedence_test.yaml"
-generatetest "b_array_formulae_test.yaml"
-generatetest "b_basic_unicode_strings_test.yaml"
-generatetest "b_block_of_numbers_test.yaml"
-generatetest "b_booleans_and_errors_test.yaml"
-generatetest "b_just_numbers_test.yaml"
-generatetest "b_made_up_fn_names_test.yaml"
-generatetest "b_multiple_sheets_test.yaml"
-generatetest "b_nested_functions_test.yaml"
-generatetest "b_nested_functions_spaces_crs_test.yaml"
-generatetest "b_quadratic_equations_test.yaml"
-generatetest "b_simple_arrays_and_ranges_test.yaml"
-generatetest "b_sum_with_one_arg_test.yaml"
-generatetest "b_three_dee_ref_test.yaml"
+gen_rev_comp_test "a_alignment_test.yaml"
+gen_rev_comp_test "a_should_be_10_tests_test.yaml"
 
-generatetest "c_basic_functions_tests_a_e_test.yaml"
-generatetest "c_basic_functions_tests_f_k_test.yaml"
-generatetest "c_basic_functions_tests_l_t_test.yaml"
-generatetest "c_basic_functions_tests_u_z_test.yaml"
+gen_rev_comp_test "b_abs_and_rel_addressing_test.yaml"
+gen_rev_comp_test "b_arithmetic_and_precedence_test.yaml"
+gen_rev_comp_test "b_array_formulae_test.yaml"
+gen_rev_comp_test "b_basic_unicode_strings_test.yaml"
+gen_rev_comp_test "b_block_of_numbers_test.yaml"
+gen_rev_comp_test "b_booleans_and_errors_test.yaml"
+gen_rev_comp_test "b_equals.yaml"
+gen_rev_comp_test "b_just_numbers_test.yaml"
+gen_rev_comp_test "b_made_up_fn_names_test.yaml"
+gen_rev_comp_test "b_multiple_sheets_test.yaml"
+gen_rev_comp_test "b_nested_functions_test.yaml"
+gen_rev_comp_test "b_quadratic_equations_test.yaml"
+gen_rev_comp_test "b_simple_arrays_and_ranges_test.yaml"
+gen_rev_comp_test "b_sum_with_one_arg_test.yaml"
+gen_rev_comp_test "b_three_dee_ref_test.yaml"
+gen_rev_comp_test "b_wierd_failures_test.yaml"
 
-generatetest "d_gnumeric_address_test.yaml"
-generatetest "d_gnumeric_date_and_time_test.yaml"
-generatetest "d_gnumeric_db_test.yaml"
-generatetest "d_gnumeric_engineering_test.yaml"
-generatetest "d_gnumeric_financial_test.yaml"
-generatetest "d_gnumeric_information_test.yaml"
-generatetest "d_gnumeric_logical_test.yaml"
-generatetest "d_gnumeric_lookup_test.yaml"
-generatetest "d_gnumeric_maths_test.yaml"
-generatetest "d_gnumeric_stats_test.yaml"
-generatetest "d_gnumeric_text_test.yaml"
+gen_rev_comp_test "c_basic_functions_tests_a_e_test.yaml"
+gen_rev_comp_test "c_basic_functions_tests_f_k_test.yaml"
+gen_rev_comp_test "c_basic_functions_tests_l_t_test.yaml"
+gen_rev_comp_test "c_basic_functions_tests_u_z_test.yaml"
 
-generatetest "e_gnumeric_bitwise_test.yaml"
-generatetest "e_gnumeric_bitwise_bitand_test.yaml"
-generatetest "e_gnumeric_bitwise_bitor_test.yaml"
-generatetest "e_gnumeric_bitwise_bitxor_test.yaml"
-generatetest "e_gnumeric_bitwise_bitrshift_test.yaml"
-generatetest "e_gnumeric_bitwise_bitlshift_test.yaml"
-generatetest "e_gnumeric_operators_test.yaml"
-generatetest "e_gnumeric_operators_add_test.yaml"
-generatetest "e_gnumeric_operators_concat_test.yaml"
-generatetest "e_gnumeric_operators_div_test.yaml"
-generatetest "e_gnumeric_operators_eq_test.yaml"
-generatetest "e_gnumeric_operators_exp_test.yaml"
-generatetest "e_gnumeric_operators_gt_test.yaml"
-generatetest "e_gnumeric_operators_gte_test.yaml"
-generatetest "e_gnumeric_operators_lt_test.yaml"
-generatetest "e_gnumeric_operators_lte_test.yaml"
-generatetest "e_gnumeric_operators_mult_test.yaml"
-generatetest "e_gnumeric_operators_ne_test.yaml"
-generatetest "e_gnumeric_operators_sub_test.yaml"
-generatetest "e_gnumeric_trig_test.yaml"
+gen_rev_comp_test "d_gnumeric_address_test.yaml"
+gen_rev_comp_test "d_gnumeric_date_and_time_test.yaml"
+gen_rev_comp_test "d_gnumeric_db_test.yaml"
+gen_rev_comp_test "d_gnumeric_engineering_test.yaml"
+gen_rev_comp_test "d_gnumeric_financial_test.yaml"
+gen_rev_comp_test "d_gnumeric_information_test.yaml"
+gen_rev_comp_test "d_gnumeric_logical_test.yaml"
+gen_rev_comp_test "d_gnumeric_lookup_test.yaml"
+gen_rev_comp_test "d_gnumeric_maths_test.yaml"
+gen_rev_comp_test "d_gnumeric_stats_test.yaml"
+gen_rev_comp_test "d_gnumeric_text_test.yaml"
+
+gen_rev_comp_test "e_gnumeric_bitwise_test.yaml"
+gen_rev_comp_test "e_gnumeric_bitwise_bitand_test.yaml"
+gen_rev_comp_test "e_gnumeric_bitwise_bitor_test.yaml"
+gen_rev_comp_test "e_gnumeric_bitwise_bitxor_test.yaml"
+gen_rev_comp_test "e_gnumeric_bitwise_bitrshift_test.yaml"
+gen_rev_comp_test "e_gnumeric_bitwise_bitlshift_test.yaml"
+gen_rev_comp_test "e_gnumeric_operators_test.yaml"
+gen_rev_comp_test "e_gnumeric_operators_add_test.yaml"
+gen_rev_comp_test "e_gnumeric_operators_concat_test.yaml"
+gen_rev_comp_test "e_gnumeric_operators_div_test.yaml"
+gen_rev_comp_test "e_gnumeric_operators_eq_test.yaml"
+gen_rev_comp_test "e_gnumeric_operators_exp_test.yaml"
+gen_rev_comp_test "e_gnumeric_operators_gt_test.yaml"
+gen_rev_comp_test "e_gnumeric_operators_gte_test.yaml"
+gen_rev_comp_test "e_gnumeric_operators_lt_test.yaml"
+gen_rev_comp_test "e_gnumeric_operators_lte_test.yaml"
+gen_rev_comp_test "e_gnumeric_operators_mult_test.yaml"
+gen_rev_comp_test "e_gnumeric_operators_ne_test.yaml"
+gen_rev_comp_test "e_gnumeric_operators_sub_test.yaml"
+gen_rev_comp_test "e_gnumeric_trig_test.yaml"
+gen_rev_comp_test "e_gnumeric_trig_trig_test.yaml"
+gen_rev_comp_test "e_gnumeric_trig_atan2_test.yaml"
 
 move "a_*SUITE.erl" "c:\opt\code\trunk\tests\excel_import_1a_test\"
 move "b_*SUITE.erl" "c:\opt\code\trunk\tests\excel_import_1b_test\"
@@ -118,4 +128,72 @@ move "c_*SUITE.erl" "c:\opt\code\trunk\tests\excel_import_1c_test\"
 move "d_*SUITE.erl" "c:\opt\code\trunk\tests\excel_import_1d_test\"
 move "e_*SUITE.erl" "c:\opt\code\trunk\tests\excel_import_1e_test\"
 
-rm *.yaml
+gen_full_test "a_alignment_test.yaml"                   "a_alignment_load.yaml"
+gen_full_test "a_should_be_10_tests_test.yaml"          "a_should_be_10_tests_load.yaml"
+
+gen_full_test "b_abs_and_rel_addressing_test.yaml"      "b_abs_and_rel_addressing_load.yaml"
+gen_full_test "b_arithmetic_and_precedence_test.yaml"   "b_arithmetic_and_precedence_load.yaml"
+gen_full_test "b_array_formulae_test.yaml"              "b_array_formulae_load.yaml"
+gen_full_test "b_basic_unicode_strings_test.yaml"       "b_basic_unicode_strings_load.yaml"
+gen_full_test "b_block_of_numbers_test.yaml"            "b_block_of_numbers_load.yaml"
+gen_full_test "b_booleans_and_errors_test.yaml"         "b_booleans_and_errors_load.yaml"
+gen_full_test "b_equals_test.yaml"                      "b_equals_load.yaml"
+gen_full_test "b_just_numbers_test.yaml"                "b_just_numbers_load.yaml"
+gen_full_test "b_made_up_fn_names_test.yaml"            "b_made_up_fn_names_load.yaml"
+gen_full_test "b_multiple_sheets_test.yaml"             "b_multiple_sheets_load.yaml"
+gen_full_test "b_nested_functions_test.yaml"            "b_nested_functions_load.yaml" 
+gen_full_test "b_nested_functions_spaces_crs_test.yaml" "b_nested_functions_spaces_crs_load.yaml"
+gen_full_test "b_quadratic_equations_test.yaml"         "b_quadratic_equations_load.yaml"
+gen_full_test "b_simple_arrays_and_ranges_test.yaml"    "b_simple_arrays_and_ranges_load.yaml"
+gen_full_test "b_sum_with_one_arg_test.yaml"            "b_sum_with_one_arg_load.yaml"
+gen_full_test "b_three_dee_ref_test.yaml"               "b_three_dee_ref_load.yaml"
+gen_full_test "b_wierd_failures_test.yaml"              "b_wierd_failures_load.yaml"
+
+gen_full_test "c_basic_functions_tests_a_e_test.yaml"   "c_basic_functions_tests_a_e_load.yaml"
+gen_full_test "c_basic_functions_tests_f_k_test.yaml"   "c_basic_functions_tests_f_k_load.yaml"
+gen_full_test "c_basic_functions_tests_l_t_test.yaml"   "c_basic_functions_tests_l_t_load.yaml"
+gen_full_test "c_basic_functions_tests_u_z_test.yaml"   "c_basic_functions_tests_u_z_load.yaml"
+
+gen_full_test "d_gnumeric_address_test.yaml"            "d_gnumeric_address_load.yaml"
+gen_full_test "d_gnumeric_date_and_time_test.yaml"      "d_gnumeric_date_and_time_load.yaml"
+gen_full_test "d_gnumeric_db_test.yaml"                 "d_gnumeric_db_load.yaml"
+gen_full_test "d_gnumeric_engineering_test.yaml"        "d_gnumeric_engineering_load.yaml"
+gen_full_test "d_gnumeric_financial_test.yaml"          "d_gnumeric_financial_load.yaml"
+gen_full_test "d_gnumeric_information_test.yaml"        "d_gnumeric_information_load.yaml"
+gen_full_test "d_gnumeric_logical_test.yaml"            "d_gnumeric_logical_load.yaml"
+gen_full_test "d_gnumeric_lookup_test.yaml"             "d_gnumeric_lookup_load.yaml"
+gen_full_test "d_gnumeric_maths_test.yaml"              "d_gnumeric_maths_load.yaml"
+gen_full_test "d_gnumeric_stats_test.yaml"              "d_gnumeric_stats_load.yaml"
+gen_full_test "d_gnumeric_text_test.yaml"               "d_gnumeric_text_load.yaml"
+
+gen_full_test "e_gnumeric_bitwise_test.yaml"            "e_gnumeric_bitwise_load.yaml"
+gen_full_test "e_gnumeric_bitwise_bitand_test.yaml"     "e_gnumeric_bitwise_bitand_load.yaml"
+gen_full_test "e_gnumeric_bitwise_bitor_test.yaml"      "e_gnumeric_bitwise_bitor_load.yaml"
+gen_full_test "e_gnumeric_bitwise_bitxor_test.yaml"     "e_gnumeric_bitwise_bitxor_load.yaml"
+gen_full_test "e_gnumeric_bitwise_bitrshift_test.yaml"  "e_gnumeric_bitwise_bitrshift_load.yaml"
+gen_full_test "e_gnumeric_bitwise_bitlshift_test.yaml"  "e_gnumeric_bitwise_bitlshift_load.yaml"
+gen_full_test "e_gnumeric_operators_test.yaml"          "e_gnumeric_operators_load.yaml"
+gen_full_test "e_gnumeric_operators_add_test.yaml"      "e_gnumeric_operators_add_load.yaml"
+gen_full_test "e_gnumeric_operators_concat_test.yaml"   "e_gnumeric_operators_concat_load.yaml"
+gen_full_test "e_gnumeric_operators_div_test.yaml"      "e_gnumeric_operators_div_load.yaml"
+gen_full_test "e_gnumeric_operators_eq_test.yaml"       "e_gnumeric_operators_eq_load.yaml"
+gen_full_test "e_gnumeric_operators_exp_test.yaml"      "e_gnumeric_operators_exp_load.yaml"
+gen_full_test "e_gnumeric_operators_gt_test.yaml"       "e_gnumeric_operators_gt_load.yaml"
+gen_full_test "e_gnumeric_operators_gte_test.yaml"      "e_gnumeric_operators_gte_load.yaml"
+gen_full_test "e_gnumeric_operators_lt_test.yaml"       "e_gnumeric_operators_lt_load.yaml"
+gen_full_test "e_gnumeric_operators_lte_test.yaml"      "e_gnumeric_operators_lte_load.yaml"
+gen_full_test "e_gnumeric_operators_mult_test.yaml"     "e_gnumeric_operators_mult_load.yaml"
+gen_full_test "e_gnumeric_operators_ne_test.yaml"       "e_gnumeric_operators_ne_load.yaml"
+gen_full_test "e_gnumeric_operators_sub_test.yaml"      "e_gnumeric_operators_sub_load.yaml"
+gen_full_test "e_gnumeric_trig_test.yaml"               "e_gnumeric_trig_load.yaml"
+gen_full_test "e_gnumeric_trig_trig_test.yaml"          "e_gnumeric_trig_trig_load.yaml"
+gen_full_test "e_gnumeric_trig_atan2_test.yaml"         "e_gnumeric_trig_atan2_load.yaml"
+
+gen_full_test "x_nested_functions_spaces_crs_test.yaml" "x_nested_functions_spaces_crs_load.yaml" 
+
+move "a_*SUITE.erl" "c:\opt\code\trunk\tests\excel_import_2a_test\"
+move "b_*SUITE.erl" "c:\opt\code\trunk\tests\excel_import_2b_test\"
+move "c_*SUITE.erl" "c:\opt\code\trunk\tests\excel_import_2c_test\"
+move "d_*SUITE.erl" "c:\opt\code\trunk\tests\excel_import_2d_test\"
+move "e_*SUITE.erl" "c:\opt\code\trunk\tests\excel_import_2e_test\"
+move "x_*SUITE.erl" "c:\opt\code\trunk\tests\excel_import_2x_test\"

@@ -7,8 +7,8 @@
 %%%-------------------------------------------------------------------
 -module(production_boot).
 
--export([get_root/0,setup_paths/0,start/0,start/1,stop/0
-    ,stop_halt/0,remote_stop/1]).
+-export([get_root/0,setup_paths/0,start/0,start/1,stop/0,
+    stop_halt/0,remote_stop/1]).
 
 get_root() ->
     [_File,_Ebin|Rest] = lists:reverse(

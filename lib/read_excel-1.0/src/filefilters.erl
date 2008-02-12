@@ -350,13 +350,14 @@ print_structure(FileIn,Directory,{SubLocation,SubStreams})->
     ok.
 
 create_ets()->
-    [{cell,ets:new(cell,[ordered_set,private])},
-     {strings,ets:new(strings,[ordered_set,private])},
-     {names,ets:new(names,[ordered_set,private])},
-     {arrayformula,ets:new(names,[ordered_set,private])},
-     {externsheets,ets:new(names,[ordered_set,private])},
-     {sheetnames,ets:new(names,[ordered_set,private])},
-     {misc,ets:new(names,[ordered_set,private])}].
+    [{cell,         ets:new(cell,         [ordered_set,private])},
+     {cell_tokens,  ets:new(cell_tokens,  [ordered_set,private])},
+     {strings,      ets:new(strings,      [ordered_set,private])},
+     {names,        ets:new(names,        [ordered_set,private])},
+     {arrayformula, ets:new(arrayformula, [ordered_set,private])},
+     {externsheets, ets:new(externsheets, [ordered_set,private])},
+     {sheetnames,   ets:new(sheetnames,   [ordered_set,private])},
+     {misc,         ets:new(misc,         [ordered_set,private])}].
 
 %% Bodge string attempts to take a list in some class of unicode encoding and
 %% make it 'readable' - it is for logging/debugging only and not to be used
@@ -387,20 +388,11 @@ bodge_string(<<Char:16/little-signed-integer,Rest/binary>>,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 test_DEBUG()-> 
-    File="minitest.xls",
-    %%File="booleans_and_errors.xls",
-    %%File="basic_functions_tests_ii.xls",
-    %%File="arithmetic_and_precedence.xls",
-    %%File="simple_arrays_and_ranges.xls",
-    %%File="sum_with_one_arg.xls",
-    %%File="block_of_numbers.xls",
-    %%File="gnumeric_db.xls",
-    %%File="gnumeric_lookup.xls",
-    %%File="gnumeric_engineering.xls",
-    %%File="z_basic_functions_tests.xls",
-    %%File="basic_unicode_strings.xls",
+    %%File="minitest.xls",
+    %%File="e_gnumeric_operators_add.xls",
+    File="b_array_formulae.xls",
     FileRoot="C:/opt/code/trunk/tests/"++
-     	"excel_import_test/files/Win Excel 2007 (as 97)",
+     	"excel_files/Win Excel 2007 (as 97)",
     io:format("in filefilters:test_DEBUG FileRoot is ~p and File is ~p~n",
               [FileRoot,File]),
     read(excel,FileRoot++"/"++File,

@@ -33,17 +33,11 @@
 read_from_excel_data(Config,Suite,{Sheet,Row,Col})->
   io:format("Got to 1 Sheet is ~p Row is ~p and Col is ~p~n",[Sheet,Row,Col]),
   {value, Result} = lists:keysearch(Suite, 1, Config),
-  %% io:format("Got to 2~n"),
   Data = element(2, Result),
-  %% io:format("Got to 3~n"),
   Key={{sheet,Sheet},{row_index,Row},{col_index,Col}},
-  %% io:format("Got to 4~n"),
   Return=lists:keysearch(Key, 1, Data),
-  %% io:format("Got to 5 Key is ~p~n-Return is ~p~n",[Key,Return]),
   {value, Result2}=Return,
   El=element(2, Result2),
-  %% io:format("El is ~p~n",[El]),
-  %% io:format("Got to 6~n"),
   case El of
       {value, number, Number} -> {number,Number};
       {string,String}         -> {string,String};
@@ -57,7 +51,6 @@ end.
 %% Checks that two floats are exactly the same up to
 %% a certain number of decimal places.
 equal_to_digit(F1,F2,DigitIdx) ->
-  %% io:format("in test_util:equal_to_digit F1 is ~p and F2 is ~p~n",[F1,F2]),
   %% force any rogue integers to floats
   F1a=float(F1),
   F2a=float(F2),
@@ -235,28 +228,7 @@ dump_cells(Tables) ->
     Fun=fun(X,Y)->[X|Y] end,
     Cells=ets:foldl(Fun,[],Tid),
     Transform=fun({Index,[_,Body]}) -> {Index,Body}
-%%                       io:format("in test_util:dump got to 2a X is ~p~n",[X]),
-%%                       {value,{{_R,Row},{_C,Col}}=lists:keysearch(row_index,1,X),
-%%                        io:format("in test_util:dump got to 2c~n"),
-%%                        V1=lists:keysearch(value,1,X),
-%%                        io:format("in test_util:dump got to 2d~n"),
-%%                        V2=lists:keysearch(formula,1,X),
-%%                        io:format("in test_util:dump got to 2e~n"),
-%%                        SVal=case {V1,V2} of
-%%                                 {{value,{value,number,Val}},_}->
-%%                                     io:format("in test_util:dump got to 3a~n"),
-%%                                     {number,Val};
-%%                                 {false,{value,{formula,F}}}   ->
-%%                                     io:format("in test_util:dump got to 3b~n"),
-%%                                     {formula,F};
-%%                                 Else                              ->
-%%                                     io:format("in test_util:dump got to 3c~n"),
-%%                                     io:format("ELSE: ~p~n",[Else]),
-%%                                     {number,"0"}
-%%                             end,
-%%                        {{Row,Col},SVal}
                end,
-     io:format("in test_util:dump_cells got to 3~n"),
      lists:map(Transform,Cells).
 
 internal_wait(0) ->
