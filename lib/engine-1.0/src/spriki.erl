@@ -150,9 +150,9 @@ show_ref(#page{site=Site,path=Path,ref={cell,{X,Y}},vars=Vars}) ->
     Ref = #index{site=Site,path=Path,column=X,row=Y},
 
     %% first read the cell
-    {Val,RefTree,Form,_Src,Errors,Refs} = 
+    {Val,RefTree,Form,Errors,Refs} = 
         case db:read_spriki(Site,Path,X,Y) of
-        [] -> {0,[],[],[],[],[]};
+        [] -> {0,[],[],[],[]};
         [#spriki{value=Value,status=
                  #status{formula=Formula, reftree=RT,
                          errors=Errs, refs=Refns}}] -> 
@@ -643,11 +643,6 @@ get_last_val(Site,Path,{column,Ref}) ->
             ((lists:last(Tmp))#spriki.index)#index.row
     end.
 
-bind([],Binding)->
-    Binding;
-bind([{_,{_,{_Type,Var,Value}}}|T],Binding) ->
-    NewBinding=erl_eval:add_binding(list_to_atom(Var),Value,Binding),
-    bind(T,NewBinding).
 
 make_bind_list(Site,Path,SpecBindings)->
     make_bind_list(Site,Path,SpecBindings,[]).

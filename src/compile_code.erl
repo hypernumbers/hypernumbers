@@ -72,7 +72,7 @@ comp_lists([{File, Opt}|T], OldStatus) ->
 
     %% leex generated files that generate a lot
     %% of warnings, disable report_warnings for them
-    Gen = ["muin_lexer.erl","muin_parser.erl","num_format_lexer.erl", "lisp_lexer.erl", "lisp_parser.erl"],    
+    Gen = ["ru_fe.erl","muin_supd_lexer.erl","muin_lexer.erl"],    
     Append = case lists:member(filename:basename(File),Gen) of
         true -> [return_errors];
         false -> [return_errors,report_warnings]

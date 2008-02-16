@@ -22,7 +22,7 @@
 %%% excelfileformat.pdf (V1.40)                                              %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-parse_tokens(<<>>,TokenArray,Residuum,Tables,FileOut)->
+parse_tokens(<<>>,TokenArray,Residuum,_Tables,_FileOut)->
     Tokens=lists:reverse(Residuum),
     %%io:format("in excel_tokens:parse_tokens Return is ~p TokenArray is ~p~n",[Return,TokenArray]),
     {Tokens,TokenArray};
@@ -522,11 +522,11 @@ parse_tokens(?tAreaErr3dA,Bin,TokenArray,Residuum,Tables,FileOut)->
 parse_tokens(0,Bin,TokenArray,Residuum,Tables,FileOut)->
     %% io:format("in excel_tokens:parse_tokens Token is 0~n"),
     excel_util:put_log(FileOut++zero,io_lib:fwrite("0 Token parsed~n",[])),
-    <<_Skip:8/little-unsigned-integer,R/binary>>=Bin,
+    <<_Skip:8/little-unsigned-integer,_R/binary>>=Bin,
     %%parse_tokens(R,TokenArray,Residuum,FileOut);
     parse_tokens(<<>>,TokenArray,Residuum,Tables,FileOut);
 %% catch and terminate unexpected tokens
-parse_tokens(Duff,Bin,TokenArray,Residuum,Tables,FileOut)->
+parse_tokens(Duff,Bin,_TokenArray,Residuum,_Tables,FileOut)->
     io:format("duff token parsed~p~n"++
 				      "binary is ~p~n"++
 				      "residuum is ~p~n",
@@ -787,7 +787,7 @@ parse_tokens(tAreaErr3d,Bin,TokenArray,Type,Residuum,Tables,FileOut)->
     parse_tokens(R2,TokenArray,[{three_dee_area_error,
 		      {tAreaErr3d,[{reference_index,RefIndex},{type,Type}],
 		      {return,reference}}}|Residuum],Tables,FileOut);
-parse_tokens(Other,Bin,TokenArray,Type,Residuum,Tables,FileOut)->
+parse_tokens(Other,_Bin,_TokenArray,_Type,_Residuum,_Tables,_FileOut)->
     io:format("******************~nin parse_tokens Other is ~p~n*******************~n",[Other]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -885,7 +885,7 @@ parse_attr(<<?tAttrSpaceVolatile:8/little-unsigned-integer,R/binary>>,FileOut)->
   {Tk,R2}=parse_attr(<<?tAttrSpace:8/little-unsigned-integer,
               R/binary>>,FileOut),
   {{attributes,[{tAttrSpaceVolatile,volatile_attribute,[],{return,none}}|Tk]},R2};
-parse_attr(Other,FileOut)->
+parse_attr(_Other,_FileOut)->
   io:format("in parse_attr for Other gonnae die!~n"),
   exit("goodbye cruel world from excel_tokens:parse_atrr").
   

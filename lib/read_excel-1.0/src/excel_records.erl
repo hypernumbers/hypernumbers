@@ -103,7 +103,7 @@ parse_rec(?FOOTER,_Bin,_Name,_Tables,FileOut)->
     {ok,ok};
 parse_rec(?EXTERNSHEET,Bin,_Name,Tables,FileOut)->
     excel_util:put_log(FileOut,"[EXTERNSHEET *Done*]"),
-    <<NumRefs:16/little-unsigned-integer,
+    <<_NumRefs:16/little-unsigned-integer,
       R2/binary>>=Bin,
       %% io:format("in excel_records:parse_rec for Externsheet NumRefs is ~p~n",
       %%  [NumRefs]),
@@ -324,7 +324,7 @@ parse_rec(?VCENTRE,_Bin,_Name,_Tables,FileOut)->
 parse_rec(?BOUNDSHEET,Bin,_Name,Tables,FileOut)->
     excel_util:put_log(FileOut,"[BOUNDSHEET *DONE*]"),
     {SheetBOF,Visibility,SheetType,Name,SheetName}=excel_util:get_bound_sheet(Bin,Tables,FileOut),
-    [{Type,NameBin}]=SheetName,
+    [{_Type,NameBin}]=SheetName,
     excel_util:append_sheet_name(Tables,binary_to_list(NameBin)),
     excel_util:put_log(FileOut,io_lib:fwrite("SheetBOF is ~p~n"++
 				  "Visibility is ~p~n"++
@@ -446,7 +446,7 @@ parse_rec(?PHONETIC,_Bin,_Name,_Tables,FileOut)->
     excel_util:put_log(FileOut,"PHONETIC is not being processed at the moment"),
     excel_util:put_log(FileOut,"[/PHONETIC]"),
     {ok,ok};
-parse_rec(?SST,[H|T],Name,Tables,FileOut)->
+parse_rec(?SST,[H|T],_Name,Tables,FileOut)->
     %%io:format("in excel_records:parse_rec for SST~n"),
     excel_util:put_log(FileOut,"[SST *DONE*]"),
     <<NoStringsUsed:32/little-unsigned-integer,
@@ -464,7 +464,7 @@ parse_rec(?LABELSST,Bin,Name,Tables,FileOut)->
         ColIndex:16/little-unsigned-integer,
         XFIndex:16/little-unsigned-integer,
         SSTIndex:32/little-unsigned-integer,
-        Rest/binary>>=Bin,
+        _Rest/binary>>=Bin,
     excel_util:put_log(FileOut,io_lib:fwrite("RowIndex is ~p~n"++
 				  "ColIndex is ~p~n"++
 				  "XFIndex is ~p~n"++
@@ -844,7 +844,7 @@ parse_rec(Other,_Bin,_Name,_Tables,FileOut)->
 %% that happens later. When we are reading a formula right now it will
 %% make reference to things like names and arrayformulae that we haven't
 %% read yet
-parse_FRM_Results(formula,<<>>,Tables,FileOut)->
+parse_FRM_Results(formula,<<>>,_Tables,FileOut)->
     excel_util:put_log(FileOut,io_lib:fwrite("in parse_FRM_Results - "++
 				  "finished parsing results",[])),
     ok;
@@ -873,8 +873,8 @@ parse_FRM_Results(formula,Bin,Tables,FileOut) ->
 %%% excelfileformat.pdf (V1.40) and extracts the name table                  %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-parse_Name(OptionFlag,KybdShortCut,NameLength,Size,SheetIndex,
-  MenuTxtLen,DescTxtLen,HelpTxtLen,StatusTxtLen,Bin,Tables,FileOut)->
+parse_Name(OptionFlag,_KybdShortCut,NameLength,_Size,SheetIndex,
+  _MenuTxtLen,_DescTxtLen,_HelpTxtLen,_StatusTxtLen,Bin,Tables,FileOut)->
   <<Hidden:1/integer,Func:1/integer,VBasic:1/integer,Macro:1/integer,
     Complex:1/integer,BuiltIn:1/integer,FuncGroup1:1/integer,
     FuncGroup2:1/integer,FuncGroup3:1/integer,FuncGroup4:1/integer,
@@ -901,7 +901,7 @@ parse_Name(OptionFlag,KybdShortCut,NameLength,Size,SheetIndex,
      FuncGroup5,
      FuncGroup6,
      Binary])),
-  <<Options:1/binary,Name:NameLength/binary,Rest/binary>>=Bin,
+  <<_Options:1/binary,Name:NameLength/binary,_Rest/binary>>=Bin,
   excel_util:put_log(FileOut,io_lib:fwrite("Just ignoring the compression options for "++
     "Unicode names at the moment - will wig when not using Latin-1~n",[])),
   excel_util:put_log(FileOut,io_lib:fwrite("Name is ~p~n",[Name])),
@@ -923,7 +923,7 @@ parse_XF_RK(Bin,Tables,FileOut)->
 %%parse_XF_RK(<<>>,Residuum,Tables,FileOut)->
 %%    excel_util:put_log(FileOut,"**ERROR** There ought to be a LastColIndex fragment"),
 %%    excel_util:put_log(FileOut++".error","ERROR There should be a LastColIndex fragment"),
-parse_XF_RK(<<LastColIndex:16/little-unsigned-integer>>,Residuum,Tables,FileOut)->
+parse_XF_RK(<<LastColIndex:16/little-unsigned-integer>>,Residuum,_Tables,FileOut)->
     excel_util:put_log(FileOut,io_lib:fwrite("LastColIndex is ~p",[LastColIndex])),
     lists:reverse(Residuum);
 parse_XF_RK(<<XFIndex:16/little-unsigned-integer,
@@ -961,7 +961,7 @@ parse_SST(StringNo,NoOfStrings,Tables,[BinHead|BinTail],FileOut)->
 	(BinLen1 == BinLen2+3)->case BinTail of
                                     []    -> H1 = [],
                                              T1 = [];
-                                    Other -> [H1|T1]=BinTail
+                                    _Other -> [H1|T1]=BinTail
                                 end,
                                 NewBinTail=T1,
                                 ParseBin=BinHead,
@@ -969,7 +969,7 @@ parse_SST(StringNo,NoOfStrings,Tables,[BinHead|BinTail],FileOut)->
 	true                  ->ExtLen=BinLen2+3-BinLen1,
                                 [H2|T2] = BinTail,
                                 %% remember to discard the 8 byte unicode flag
-                                <<Bits:1/binary,Ext:ExtLen/binary,
+                                <<_Bits:1/binary,Ext:ExtLen/binary,
                                  NewBinHeadPart/binary>>=H2,
                                 NewBinTail=T2,
                                 ParseBin=list_to_binary([BinHead,Ext]),
@@ -979,11 +979,11 @@ parse_SST(StringNo,NoOfStrings,Tables,[BinHead|BinTail],FileOut)->
     {[{_Type,String}],_,_}=excel_util:parse_CRS_Uni16(ParseBin,2,FileOut),
     Len=string:len(binary_to_list(String)),
     BinLen=8*(Len+3), % add an offset for the 2 byte index and 1 byte flags
-    <<String2:BinLen/little-unsigned-integer,Rest/binary>>=NewBinHead,
+    <<_String2:BinLen/little-unsigned-integer,Rest/binary>>=NewBinHead,
     excel_util:write(Tables,strings,[{index,StringNo},{string,binary_to_list(String)}]),
     parse_SST(StringNo+1,NoOfStrings,Tables,[Rest|NewBinTail],FileOut).
 
-write_row([],RowIndex,FirstColIndex,Name,TablSUPBOOKes)->
+write_row([],_RowIndex,_FirstColIndex,_Name,_TablSUPBOOKes)->
   {ok,ok};
 write_row([{{xf_index,XFIndex},{value,number,Number}}|T],RowIndex,FirstColIndex,Name,Tables)->
     excel_util:write(Tables,cell,[{{sheet,Name},{row_index,RowIndex},{col_index,FirstColIndex}},
@@ -991,7 +991,7 @@ write_row([{{xf_index,XFIndex},{value,number,Number}}|T],RowIndex,FirstColIndex,
     write_row(T,RowIndex,FirstColIndex+1,Name,Tables).
 
  
-parse_externsheet(<<>>,N,Tables,FileOut)->
+parse_externsheet(<<>>,_N,_Tables,_FileOut)->
   {ok,ok};
 parse_externsheet(Bin,N,Tables,FileOut)->
   <<SubRec:16/little-unsigned-integer,

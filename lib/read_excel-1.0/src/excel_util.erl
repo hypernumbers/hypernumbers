@@ -26,7 +26,7 @@
 -include("microsoftbiff.hrl").
 -include("excel_com_rec_subs.hrl").
 
-get_bound_sheet(Bin,Tables,FileOut)->
+get_bound_sheet(Bin,_Tables,FileOut)->
     <<SheetBOF:32/little-unsigned-integer,
      Visibility:8/little-unsigned-integer,
      SheetType:8/little-unsigned-integer,
@@ -123,8 +123,8 @@ parse_CRS_Uni16(Bin,IndexSize,FileOut)->
      Rest/binary>>=Bin,
     %% io:format("in excel_util:parse_CRS_Uni16 NFlags is ~p~n",[NFlags]),
     {LenStr,Encoding,BinLen1,
-      {RICH_TEXT,LenRichText,LenRichTextIdx},
-      {ASIAN,LenAsian,LenAsianIdx},Rest3}=get_bits_CRS_Uni16(Len,IndexSize,Rest,NFlags,FileOut),
+      {RICH_TEXT,LenRichText,_LenRichTextIdx},
+      {ASIAN,LenAsian,_LenAsianIdx},Rest3}=get_bits_CRS_Uni16(Len,IndexSize,Rest,NFlags,FileOut),
     BinLen2=erlang:size(Bin),
     put_log(FileOut,io_lib:fwrite("In excel_util:parse_CRS_Uni16~n  "++
 				  "BinLen1 is ~p~n  BinLen2 is ~p~n",
@@ -155,9 +155,9 @@ parse_CRS_Uni16(Bin,IndexSize,FileOut)->
     {List3,BinLen1,BinLen2}.
 
 get_len_CRS_Uni16(Len,IndexSize,Bin,Flags,FileOut)->
-    {LenStr,Encoding,BinLen,
-      {RICH_TEXT,LenRichText,LenRichTextIdx},
-      {ASIAN,LenAsian,LenAsianIdx},Rest3}=get_bits_CRS_Uni16(Len,IndexSize,Bin,Flags,FileOut),
+    {_LenStr,_Encoding,BinLen,
+      {_RICH_TEXT,_LenRichText,_LenRichTextIdx},
+      {_ASIAN,_LenAsian,_LenAsianIdx},_Rest3}=get_bits_CRS_Uni16(Len,IndexSize,Bin,Flags,FileOut),
     BinLen.
 
 get_bits_CRS_Uni16(Len,IndexSize,Bin,NFlags,FileOut)->
@@ -225,7 +225,7 @@ write(Tables,Name,[H|T])->
 
 %% read values fromt the tables
 read(Tables,Name,Key)->
-  {value,{TabName,Tid}}=lists:keysearch(Name,1,Tables),
+  {value,{_TabName,Tid}}=lists:keysearch(Name,1,Tables),
   Return=ets:lookup(Tid,Key),
   case {Name,Return} of
     {arrayformula,[]} -> "fix me up in excel_util:read, ya wank - arrayformula record not read yet!";
@@ -236,7 +236,7 @@ read(Tables,Name,Key)->
 %% append a sheet name to the sheetname table with a zero-based
 %% index value
 append_sheet_name(Tables,SheetName)->
-    {value,{Name,Tid}}=lists:keysearch(sheetnames,1,Tables),
+    {value,{_Name,Tid}}=lists:keysearch(sheetnames,1,Tables),
     Size=ets:info(Tid,size),
     Record={{index,Size},[{name,SheetName}]},
     ets:insert(Tid,Record).
@@ -320,7 +320,7 @@ read_cell_range_addies(N,Array,FileOut)->
   %%io:format("in excel_rev_comp:read_cell_range_addies"),
   read_cell_range_addies(N,Array,[],FileOut).
 
-read_cell_range_addies(0,Bin,Residuum,FileOut)->
+read_cell_range_addies(0,Bin,Residuum,_FileOut)->
   %%io:format("**********Ending Cell Range List Parsing**********************************~n"),
   {lists:reverse(Residuum),Bin};
 read_cell_range_addies(N,Bin,Residuum,FileOut)->

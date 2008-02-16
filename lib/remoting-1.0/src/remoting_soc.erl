@@ -37,9 +37,9 @@ loop(Socket)->
         self() ! gen_server:call(remoting_reg,{unregister}),
         loop(Socket);
 
-    {tcp, Socket, [$<,$p,$o,$l,$i,$c,$y|Rest]} ->
+    {tcp, Socket, [$<,$p,$o,$l,$i,$c,$y|_Rest]} ->
         {ok,Msg} = hn_util:read("../include/docroot/crossdomain.xml"),
-        self() ! {msg,Msg},
+        self() ! {msg,Msg++"\0"},
         loop(Socket);
 
     {tcp, Socket, Msg} ->

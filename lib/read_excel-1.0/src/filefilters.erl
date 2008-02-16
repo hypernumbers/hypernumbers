@@ -51,7 +51,7 @@ read_excel(excel,FileIn,FileOut,Fun)->
 		     SectorSize,ShortSectorSize,
 		     MinStreamSize,SubStreams,FileIn,Tables,FileOut),
     Fun(Tables);
-read_excel(Other,_,_,_) ->
+read_excel(_Other,_,_,_) ->
     {error, file_type_not_supported}.
 
 filter_file(FileIn,FileOut)->
@@ -70,16 +70,16 @@ filter_file(FileIn,FileOut)->
 read_compound_file_header(<<?BIFF8_MAGIC_NUMBER:64/little-signed-integer,
 			   _UID:16/binary,
 			   _Version:4/binary,
-			   ByteOrder:2/binary,
+			   _ByteOrder:2/binary,
 			   RawSectorSize:16/little-signed-integer,
 			   RawShortSectorSize:16/little-signed-integer,
 			   _Blank:10/binary,
-			   NoOfSectorsInSAT:32/little-signed-integer,
+			   _NoOfSectorsInSAT:32/little-signed-integer,
 			   DirectoryFirstSID:32/little-signed-integer,
 			   _Blank2:4/binary,
 			   MinStreamSize:32/little-signed-integer,
 			   SSAT_StartSID:32/little-signed-integer,
-			   NoOfSSATSectors:32/little-signed-integer,
+			   _NoOfSSATSectors:32/little-signed-integer,
 			   FirstSectorMSAT_SID:32/little-signed-integer,
 			   NoOfMSATSectors:32/little-signed-integer,
 			   BulkMSAT:436/binary>>,
@@ -187,7 +187,7 @@ read_compound_file_header(_Other,_FileIn,_FileOut) ->
 %% It can be found at http://sc.openoffice.org/compdocfileformat.pdf
 
 %% This patterns matches a non-extended MSAT as per Section 4.1
-read_MSAT(0,?END_OF_CHAIN_SID,BulkMSAT,FileOut)->
+read_MSAT(0,?END_OF_CHAIN_SID,BulkMSAT,_FileOut)->
     %%excel_util:put_log(FileOut,io_lib:fwrite("~nMASTER SECTOR ALLOCATION "++
 		%%			     "TABLE DESCRIPTION~n~n",[])),
     %%excel_util:put_log(FileOut,io_lib:fwrite("The Master Sector Allocation "++
@@ -197,7 +197,7 @@ read_MSAT(0,?END_OF_CHAIN_SID,BulkMSAT,FileOut)->
 		%%			     "Master Sector Allocation Table~n",
 		%%			     [])),
     get_sectors(BulkMSAT);
-read_MSAT(_FirstSectorMSAT_SID,_NoOfMSATSectors,_BulkMSAT,FileOut)->
+read_MSAT(_FirstSectorMSAT_SID,_NoOfMSATSectors,_BulkMSAT,_FileOut)->
     %%excel_util:put_log(FileOut,io_lib:fwrite("~nMASTER SECTOR ALLOCATION "++
 		%%			     "TABLE DESCRIPTION~n~n",[])),
     %%excel_util:put_log(FileOut,io_lib:fwrite("The Master Sector Allocation "++

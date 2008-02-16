@@ -33,7 +33,7 @@ delete(Name) ->
 
 exists(Name) ->
 	
-	List = mnesia:transaction((fun() ->
+	_List = mnesia:transaction((fun() ->
 		mnesia:match_object(users, #users{name = Name,_='_'}, read)
 	end)),
 	

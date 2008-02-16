@@ -37,6 +37,12 @@ hr
     margin-bottom:5px;
 }
 
+#texttocopy {
+    width: 260px !important;
+    height: 14px  !important;
+    overflow:hidden;    
+}
+
 #header
 {
     margin:10px;
@@ -44,6 +50,8 @@ hr
 
 #toolbar 
 {
+    min-width:800px;
+    overflow:hidden;
     margin: 5px 0px 0px 0px;
     padding:5px;
     background: #f6f6f6;
@@ -136,10 +144,11 @@ table { table-layout:fixed; }
 {
     border:1px solid blue;
     display:block;
-    height:22px;
-    width:100%;
+    height:16px;
+    width:99%;
     position:relative;
     top:-1px;
+    left: -2px;
 }
 
 #hn div.cell

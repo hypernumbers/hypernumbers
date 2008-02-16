@@ -52,7 +52,7 @@ delete_websheet(Page) ->
         Else        -> Else
     end.
 
-get_websheet(Page) ->
+get_websheet(_Page) ->
 	{ok,#websheet{}}.
 	
 save_websheet(Record) ->
@@ -213,8 +213,8 @@ write_ref(From,To,Details_from,Details_to)->
 %%               the gui
 %%
 %%--------------------------------------------------------------------
-read_link_to(Page)-> 	[].
-read_link_from(Page)->	[].
+read_link_to(_Page)-> 	[].
+read_link_from(_Page)->	[].
 
 %%--------------------------------------------------------------------
 %% Function    : read_range/4
@@ -358,7 +358,7 @@ read_spriki_and_bindings(Site,Path,X,Y) ->
 %%
 %% Description :
 %%--------------------------------------------------------------------
-read_websheets_from_page(Page) ->
+read_websheets_from_page(_Page) ->
 	[].
 
 %%--------------------------------------------------------------------

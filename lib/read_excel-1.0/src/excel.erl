@@ -149,7 +149,7 @@ get_single_SST(Bin,FileOut,Residuum)->
 		     %% the EXTSST record is simply an index for fast lookup
 		     %% on the SST record so we just chuck it...
 		     <<RecordSize:16/little-unsigned-integer,Rest2/binary>>=Rest,
-		     <<Record:RecordSize/binary,Rest3/binary>>=Rest2,
+		     <<_Record:RecordSize/binary,Rest3/binary>>=Rest2,
 		     {ok,lists:reverse(Residuum),Rest3}
 		     %% Other -> io:format("in excel_get_single_SST for Other of ~p~n",[Other]),
 		     %% 	 exit("oh, shit!")
@@ -236,7 +236,7 @@ get_bound_list(Bin,Residuum,Tables,FileOut)->
 	?BOUNDSHEET ->
  	    <<Record:RecordSize/binary,Rest2/binary>>=Rest,
  	    Return=excel_util:get_bound_sheet(<<Record:RecordSize/binary>>,Tables,FileOut),
-	    {SheetBOF,Visibility,SheetType,Name,SheetName}=Return,
+	    {SheetBOF,_Visibility,_SheetType,_Name,SheetName}=Return,
 	    NewResiduum=[{SheetName,SheetBOF}|Residuum],
  	    get_bound_list(Rest2,NewResiduum,Tables,FileOut);
 	_Other ->
@@ -312,7 +312,7 @@ make_formulae(Tables,FileOut)->
   io:format("Tables are ~p~n",[Tables]),
   {value,{cell_tokens,Cell_TokensId}}=lists:keysearch(cell_tokens,1,Tables),
   {value,{cell,CellId}}              =lists:keysearch(cell,1,Tables),
-  Fun=fun(X,Residuum)->
+  Fun=fun(X,_Residuum)->
     {Index,[XF,{tokens,Tokens},{tokenarrays,TokenArray}]}=X,
     Formula=excel_rev_comp:reverse_compile(Tokens,TokenArray,Tables,FileOut),
     ets:insert(CellId,[{Index,[XF,{formula,Formula}]}])

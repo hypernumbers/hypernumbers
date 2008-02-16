@@ -119,7 +119,6 @@ $(function()
     
         $("#hn tr:nth-child(odd)").addClass("odd");
     
-    
         $("#hn tr > td > div.cell").each(function() 
         {
             $(this).mousedown(function() 
@@ -391,6 +390,7 @@ $(function()
     
     function highlightDragSelection()
     {
+        /*
         $("table tr:lt("+(dragselection.endy+1)+"):gt("+(dragselection.starty-1)+")"
             ).find("td:eq("+(dragselection.endx)+")").addClass("dragend");
     
@@ -402,6 +402,13 @@ $(function()
     
         $("table tr:eq("+(dragselection.endy)+")"
             ).find("td:lt("+(dragselection.endx+1)+"):gt("+(dragselection.startx-1)+")").addClass("dragbottom");
+        */
+        $(".dragselected").removeClass("dragselected");   
+
+        $("table tr:lt("+(dragselection.endy+1)+"):gt("+(dragselection.starty-1)+")"
+            ).find("td:lt("+(dragselection.endx+1)+"):gt("+(dragselection.startx-1)+") div"
+            ).addClass("dragselected");
+        
     }
 
     function setCell(x,y,val)
