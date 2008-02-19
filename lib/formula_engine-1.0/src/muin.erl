@@ -151,7 +151,11 @@ plain_eval(Value, _Bindings) ->
 %%% ----- Functions defined in spriki_funs or userdef.
 
 funcall(Fun, Args) ->
-    Modname = ?COND(member(Fun, ?BUILT_IN_FUNCTIONS), stdfuns, userdef),
+    Modname = ?COND(member(Fun, ?STDFUNS_MATH), stdfuns_math,
+                    ?COND(member(Fun, ?STDFUNS_STATS), stdfuns_stats,
+                          ?COND(member(Fun, ?STDFUNS_TEXT), stdfuns_text,
+                                userdef))),
+                           
     erlang:apply(Modname, Fun, (case length(Args) of
                                     0 -> [];
                                     1 -> [hd(Args)];
@@ -190,7 +194,7 @@ funcall(':', [{sscolref, Ref1}, {col, Ref2}], Bindings) ->
     ?CREATE_BINDINGS_VARS,
     Path = walk_path(MPath, just_path(Ref1)),
     Cols = seq(to_i(just_ref(Ref1), b26), to_i(Ref2, b26)),
-    Funs = [?FUN(db:read_column(MSite, Path, X)) || X <- Cols],
+    Funs = [?fun0(db:read_column(MSite, Path, X)) || X <- Cols],
     do_cells(Funs, Bindings);
 
 %% Row ranges.
@@ -198,7 +202,7 @@ funcall(':', [{ssrowref, Ref1}, {row, Ref2}], Bindings) ->
     ?CREATE_BINDINGS_VARS,
     FullPath = walk_path(MPath, just_path(Ref1)),
     Rows = seq(to_i(just_ref(Ref1)), to_i(Ref2)),
-    Funs = [?FUN(db:read_row(MSite, FullPath, X)) || X <- Rows],
+    Funs = [?fun0(db:read_row(MSite, FullPath, X)) || X <- Rows],
     do_cells(Funs, Bindings);
 
 %% -- Hypernumber function and its shorthand.
@@ -212,7 +216,7 @@ funcall(hypernumber, [Url_], Bindings) ->
     #page{site = RSite, path = RPath, ref = {cell, {RX, RY}}} =
         hn_util:parse_url(Url),
 
-    fetch_update_return(?FUN(spriki:get_hypernumber(MSite, MPath, MX, MY, Url,
+    fetch_update_return(?fun0(spriki:get_hypernumber(MSite, MPath, MX, MY, Url,
                                                     RSite, RPath, RX, RY)));
 
 
@@ -227,8 +231,9 @@ funcall(hn, [Url], Bindings) ->
 do_cell(RelPath, Ref, Bindings) ->
     ?CREATE_BINDINGS_VARS,
     {X, Y} = getxy(Ref),
+    ?COND(X == MX andalso Y == MY, throw(self_ref), '_'),
     Path = walk_path(MPath, RelPath),
-    FetchFun = ?FUN(spriki:calc(MSite, Path, X, Y)),
+    FetchFun = ?fun0(spriki:calc(MSite, Path, X, Y)),
     fetch_update_return(FetchFun).
 
 do_cell(Path, Row, Col, Bindings) ->
@@ -239,14 +244,15 @@ do_cell(Path, Row, Col, Bindings) ->
 %% TODO: The records already contain all required information, don't really
 %% need to call do_cell().
 do_cells(Funs, Bindings) ->
+    DoRec = fun(CellRec) ->
+                    do_cell((CellRec#spriki.index)#index.path,
+                            (CellRec#spriki.index)#index.row,
+                            (CellRec#spriki.index)#index.column,
+                            Bindings)
+            end,
+    
     map(fun(GetCellRecFun) ->
-                map(fun(Rec) ->
-                            do_cell((Rec#spriki.index)#index.path,
-                                    (Rec#spriki.index)#index.row,
-                                    (Rec#spriki.index)#index.column,
-                                    Bindings)
-                    end,
-                    GetCellRecFun())
+                map(DoRec, GetCellRecFun())
         end,
         Funs).
 
