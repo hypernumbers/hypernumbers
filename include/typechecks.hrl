@@ -25,7 +25,7 @@
 %% is returned.
 -define(maybe_throw_up(Values_x),
         lists:foreach(fun(X_x) ->
-                              ?IF(is_error(X_x), stdfuns:error(X_x))
+                              ?IF(stdfuns_info:is_error(X_x),
+                                  muin_util:error(X_x))
                       end,
                       Values_x)).
- 
