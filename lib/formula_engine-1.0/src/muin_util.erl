@@ -2,7 +2,9 @@
 %%% TODO: Some of these might be useful outside Muin too...
 
 -module(muin_util).
--export([split_ssref/1,
+-export([
+         error/1,
+         split_ssref/1,
          just_path/1,
          just_ref/1,
          expand_cellrange/2,
@@ -26,6 +28,14 @@
 
 -include("handy_macros.hrl").
 
+
+error('#NULL!')  -> throw({error, null});
+error('#DIV/0!') -> throw({error, div0});
+error('#VALUE!') -> throw({error, value});
+error('#REF!')   -> throw({error, ref});
+error('#NAME?')  -> throw({error, name});
+error('#NUM!')   -> throw({error, num});
+error('#N/A!')   -> throw({error, na}).
 
 %% Splits ssref to [Path, Ref]
 split_ssref(Ssref) ->
