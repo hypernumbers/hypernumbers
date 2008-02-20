@@ -12,6 +12,7 @@
 -include("yaws_api.hrl").
 -include("spriki.hrl").
 -include("regexp.hrl").
+-include("handy_macros.hrl").
 
 -define(NOCACHE, {header,"Cache-control: no-cache"}).
 
@@ -19,6 +20,8 @@
 
 %% Exported until we refactor db.erl which is a mess
 -export([ to_list/1, to_xml/1, to_post/1, to_json/1 ]).
+
+-compile(export_all).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%
@@ -136,7 +139,7 @@ show_ref(#page{site=Site,path=Path,ref={column,Y}}) ->
 show_ref(#page{site=Site,path=Path,ref={row,X}}) ->
     {"row",[{"label","a"}],
         lists:map(fun(A) -> 
-            {"column",[{"label",i((A#spriki.index)#index.column)}],
+            {"column",[{"label",tconv:to_l((A#spriki.index)#index.column)}],
                 A#spriki.value} 
         end,
         db:read_row(Site,Path,X))};
@@ -543,8 +546,13 @@ process_value(Site, Path, X, Y, Value) ->
         end,
 
     {Type, Val} = case regexp:match(V, ?RG_num) of
-                      {match, _, _} -> {number, util2:make_num(V)};
-                      nomatch -> {string, V}
+                      {match, _, _} ->
+                          io:format("got a number~n"),
+                          {number, util2:make_num(V)};
+                      nomatch ->
+                          io:format("got a string~n"),
+                          muin_util:fdbg(V, "V"),
+                          {string, V}
                   end,
 
     write_cell("", Val, Type, {Site, Path, X, Y}, {[], [], []}, []),
@@ -556,7 +564,7 @@ process_formula(Site, Path, X, Y, Formula) ->
     {ok, Ast} = muin:parse("=" ++ Formula),
     {ok, {Value, RefTree, Errors, References}} =
         muin:run(Ast, [{site, Site}, {path, Path}, {x, X}, {y, Y}]),
-    
+    muin_util:fdbg(Value, "Value"),
     %% Got any circular references?
     case lists:member({Site, Path, X, Y}, RefTree) of
         false ->
@@ -613,15 +621,17 @@ recalc(#index{site=Site,path=Path,column=X,row=Y}) ->
             process_formula(Site,Path,X,Y,Formula)
     end.
 
-get_value(Site,Path,X,Y)->
-
-    case db:read_spriki(Site,Path,X,Y) of
-    [] -> 0;
-    [#spriki{value=Value,status=Stat}] ->
-        case Stat#status.errors of
-        []   -> Value;
-        Else -> Else
-        end
+get_value(Site,Path,X,Y) ->
+    case db:read_spriki(Site, Path, X, Y) of
+        [] ->
+            blank;
+        [#spriki{value = Value, status = Stat}] ->
+            case Stat#status.errors of
+                []   ->
+                    ?COND(Value == [], blank, Value);
+                Else ->
+                    Else
+            end
     end.
 
 get_last_val(Site,Path,{row,Ref}) ->
@@ -669,8 +679,6 @@ make_bind_list(Site,Path,[{_,{{Site2,Path2},{Type,VarName,Value}}}|T],
     Binding={Site2,Path2,Type,VarName,Value},
     make_bind_list(Site,Path,T,[Binding|Residuum]).
 
-i(Int) -> integer_to_list(Int).
-
 flatten_post(List) when is_list(List) ->
     case io_lib:deep_char_list(List) of
     true -> yaws_api:url_encode(lists:flatten(List))++"\n";
@@ -710,7 +718,9 @@ to_xml({Tag,X}) -> "<"++Tag++">"++to_xml(X)++"</"++Tag++">";
 to_xml({Tag,Attributes,X}) ->
     F = fun({K,V}) -> K++"=\""++V++"\" " end,
     lists:flatten("<"++Tag++" "++lists:map(F,Attributes)++">"++to_xml(X)++"</"++Tag++">");
-to_xml(X) when is_integer(X) -> integer_to_list(X).
+to_xml(X) when is_integer(X) -> integer_to_list(X);
+to_xml(X) when is_tuple(X) -> to_xml(tuple_to_list(X)).
+
 
 to_list(Data) ->
     string:strip(lists:flatten(to_xlist(Data)),both,$\n).
