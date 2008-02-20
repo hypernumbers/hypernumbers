@@ -28,7 +28,7 @@
         is_atom(X) andalso X =/= true andalso X =/= false).
 
 -define(NEED_BINDINGS,
-        [sscellref, ssrcref, rcrelref, ':', hn, hypernumber]).
+        [sscellref, ssrcref, rcrelref, ':', hn, hypernumber, isref, cell]).
 
 %%%--------------------%%%
 %%%  Public functions  %%%
@@ -156,13 +156,9 @@ funcall(Fun, Args) ->
                           ?COND(member(Fun, ?STDFUNS_TEXT), stdfuns_text,
                                 userdef))),
                            
-    erlang:apply(Modname, Fun, (case length(Args) of
-                                    0 -> [];
-                                    1 -> [hd(Args)];
-                                    2 -> [hd(Args), last(Args)];
-                                    _ -> [Args]
-                                end)).
-
+    erlang:apply(Modname, Fun, (?COND(length(Args) == 0,
+                                      [],
+                                      [Args]))).
 
 %%% ----- Reference functions.
 
@@ -221,7 +217,38 @@ funcall(hypernumber, [Url_], Bindings) ->
 
 
 funcall(hn, [Url], Bindings) ->
-    funcall(hypernumber, [Url], Bindings).
+    funcall(hypernumber, [Url], Bindings);
+
+%%% -- Information functions
+
+%% Unsupported info types: color, filename, parentheses (WTF?), prefix, width.
+
+funcall(cell, ["address", Ref], Bindings) ->
+    Ref;
+funcall(cell, ["col", Ref], Bindings) ->
+    {_Row, Col} = getxy(Ref),
+    Col;
+funcall(cell, ["contents", Ref], Bindings) ->
+    Val = do_cell(".", Ref, Bindings),
+    ?COND(Val == blank, 0, Val);
+funcall(cell, ["format", Ref], Bindings) ->
+    throw(tantrum); %% TODO: Implement me.
+funcall(cell, ["protect", Ref], Bindings) ->
+    throw(tantrum); %% TODO: Implement me.
+funcall(cell, ["row", Ref], Bindings) ->
+    {Row, _Col} = getxy(Ref),
+    Row;
+funcall(cell, ["type", Ref], Bindings) ->
+    Val = do_cell(".", Ref, Bindings),
+    ?COND(Val == blank, "b",
+          ?COND(is_binary(Val), "l",
+                "v"));
+
+funcall(info, _, Bindings) ->
+    throw({error, unsupported}); %% TODO: What to do with this?
+
+funcall(isref, [MaybeRef], Bindings) ->
+    throw(tantrum). %% TODO: Implement me. With cellref, range, and name support.
 
 
 %%% ----- Utility functions.

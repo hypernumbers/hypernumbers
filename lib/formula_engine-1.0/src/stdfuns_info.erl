@@ -16,9 +16,12 @@
          isodd/1,
          istext/1,
          n/1,
-         na/1,
+         na/0,
          type/1
         ]).
+
+-include("handy_macros.hrl").
+-include("typechecks.hrl").
 
 error_type([{error, null}]) ->
     1;
@@ -59,7 +62,7 @@ iseven([Num]) ->
     (trunc(Num) div 2) * 2 == trunc(Num).
 
 isodd([Num]) ->
-    not(iseven([Num]).
+    not(iseven([Num])).
 
 %% Returns the result TRUE if value refers to a logical value; otherwise returns
 %% FALSE.
@@ -120,7 +123,7 @@ type([Ustr]) when is_binary(Ustr) ->
     2;
 type([Bool]) when is_boolean(Bool) ->
     4;
-type([{error, X}]) ->
+type([{error, _X}]) ->
     16;
 type([List]) when is_list(List) ->
     64;

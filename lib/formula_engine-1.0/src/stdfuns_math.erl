@@ -221,10 +221,9 @@ log10([Num]) ->
 %%% -------------- %%%
 
 rand() ->
-    {X, Y, Z} = erlang:now(),
-    random:seed(X, Y, Z),
     random:uniform().
 
+%% This SUCKS for generating several values in a short amount of times.
 randbetween([First, Last]) ->
     ?ensure_numbers([First, Last]),
     rand() * (Last - First) + First.
