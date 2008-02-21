@@ -8,7 +8,7 @@
 -module(filefilters).
 
 %%% Exports
--export([read/4,read/3,filter_file/2,get_SIDs/3]).
+-export([read/3,read/2,filter_file/1,get_SIDs/2]).
 
 %%% Debugging exports - not for proper use
 -export([test_DEBUG/0]).
@@ -23,45 +23,41 @@
 %%% Functions for filtering the files                                        %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-read(excel,FileIn,FileOut,Fun)->
-    io:format("in filefilters:read/4 FileIn is ~p~nFileOut is ~p~n",
-	      [FileIn,FileOut]),
+read(excel,FileIn,Fun)->
+    io:format("in filefilters:read/4 FileIn is ~p~n",[FileIn]),
     
-read_excel(excel,FileIn,FileOut,Fun).
+read_excel(excel,FileIn,Fun).
 
-read(excel,FileIn,FileOut)->
+read(excel,FileIn)->
     Fun= fun(X) ->     
 		 io:format("About to dump tables~n"),
 		 dump(X)
 	 end,
-    read_excel(excel,FileIn,FileOut,Fun).
+    read_excel(excel,FileIn,Fun).
     
-read_excel(excel,FileIn,FileOut,Fun)->
+read_excel(excel,FileIn,Fun)->
     Tables=create_ets(),
-    io:format("Tables created: ~p~n",[Tables]),
-    {ok,Response}=filter_file(FileIn,FileOut),
+    %% io:format("Tables created: ~p~n",[Tables]),
+    {ok,Response}=filter_file(FileIn),
     {ParsedDirectory,ParsedSAT,ParsedSSAT,_SSAT_StartSID,
      SectorSize,ShortSectorSize,MinStreamSize}=Response,
     %%io:format("in filefilters:read ParsedDirectory is ~p~n",[ParsedDirectory]),
     SubStreams=excel:get_file_structure(ParsedDirectory,ParsedSAT,ParsedSSAT,
 					SectorSize,ShortSectorSize,
-					MinStreamSize,Tables,FileIn,FileOut),
+					MinStreamSize,Tables,FileIn),
     print_structure(FileIn,ParsedDirectory,SubStreams),
     excel:read_excel(ParsedDirectory,ParsedSAT,ParsedSSAT,
 		     SectorSize,ShortSectorSize,
-		     MinStreamSize,SubStreams,FileIn,Tables,FileOut),
+		     MinStreamSize,SubStreams,FileIn,Tables),
     Fun(Tables);
-read_excel(_Other,_,_,_) ->
+read_excel(_Other,_,_) ->
     {error, file_type_not_supported}.
 
-filter_file(FileIn,FileOut)->
+filter_file(FileIn)->
     {ok,FileHandle}=file:open(FileIn,[raw,binary]),
     {ok,Bin}=file:read(FileHandle,?HEADER_SIZE),
     file:close(FileHandle),
-    %%excel_util:put_log(FileOut,io_lib:fwrite("First 512 bytes (Compound "++
-		%%			     "File Header) of File ~p read~n",
-		%%			     [FileIn])),
-    read_compound_file_header(Bin,FileIn,FileOut).
+    read_compound_file_header(Bin,FileIn).
 
 %% This section is based on Section 8 of the Open Office description of the
 %% Microsoft compound file format.
@@ -83,98 +79,47 @@ read_compound_file_header(<<?BIFF8_MAGIC_NUMBER:64/little-signed-integer,
 			   FirstSectorMSAT_SID:32/little-signed-integer,
 			   NoOfMSATSectors:32/little-signed-integer,
 			   BulkMSAT:436/binary>>,
-			  FileIn,FileOut)->
-    %%excel_util:put_log(FileOut,io_lib:fwrite("VALID BIFF8 MICROSOFT "++
-		%%			     "COMPOUND FILE FORMAT~n~n",[])),
-    %% util2:print_as_hex("UID",UID),
-    %% util2:print_as_hex("Version",Version),
-    %% util2:print_as_hex("ByteOrder",ByteOrder),
-    %%excel_util:put_log(FileOut,io_lib:fwrite("ByteOrder is ~p~n",[ByteOrder])),
-    %%excel_util:put_log(FileOut,io_lib:fwrite("RawSectorSize: ~p~n",
-		%%			     [RawSectorSize])),
-
+			  FileIn)->
     %% SectorSize is calculated via power of 2 ssz as per Section 4.1 of
     %% http://sc.openoffice.org/compdocfileformat.pdf
     SectorSize=trunc(math:pow(2,RawSectorSize)),
-    %%excel_util:put_log(FileOut,io_lib:fwrite("SectorSize (bytes): ~p~n",
-		%%			     [SectorSize])),
-    %%excel_util:put_log(FileOut,io_lib:fwrite("RawShortSectorSize: ~p~n",
-		%%			     [RawShortSectorSize])),
 
     %% As per SectorSize
     ShortSectorSize=trunc(math:pow(2,RawShortSectorSize)),
-    %%excel_util:put_log(FileOut,io_lib:fwrite("ShortSectorSize (bytes): ~p~n",
-		%%     [ShortSectorSize])),
-    %%util2:print_as_hex("_Blank",_Blank),
-    %%excel_util:put_log(FileOut,io_lib:fwrite("NoOfSectors: ~p~n",
-		%%			     [NoOfSectorsInSAT])),
-    %%excel_util:put_log(FileOut,io_lib:fwrite("DirectoryFirstSID: ~p~n",
-		%%			     [DirectoryFirstSID])),
-    %%util2:print_as_hex("_Blank2",_Blank2),
-    %%excel_util:put_log(FileOut,io_lib:fwrite("MinStreamSize: ~p~n",
-		%%			     [MinStreamSize])),
-    %%excel_util:put_log(FileOut,io_lib:fwrite("SSAT_StartSID: ~p~n",
-		%%			     [SSAT_StartSID])),
-    %%excel_util:put_log(FileOut,io_lib:fwrite("NoOfSSATSectors: ~p~n",
-		%%			     [NoOfSSATSectors])),
-    %%excel_util:put_log(FileOut,io_lib:fwrite("FirstSectorMSAT_SID: ~p~n",
-		%%			     [FirstSectorMSAT_SID])),
-    %%excel_util:put_log(FileOut,io_lib:fwrite("NoOfMSATSectors: ~p~n",
-		%%			     [NoOfMSATSectors])),
-    %%util2:print_as_hex("BulkMSAT",BulkMSAT),
 
     %% Now lets process the header
     %% First up read the master Sector Allocation Table
     %% Described in Section 5.1 of
     %% http://sc.openoffice.org/compdocfileformat.pdf
-    MSAT=read_MSAT(NoOfMSATSectors,FirstSectorMSAT_SID,BulkMSAT,FileOut),
-    %%excel_util:put_log(FileOut,io_lib:fwrite("The Master Sector Allocation "++
-		%%			     "Table is:~n~p~n",[MSAT])),
+    MSAT=read_MSAT(NoOfMSATSectors,FirstSectorMSAT_SID,BulkMSAT),
 
     %% Now lets process the Sector Allocation Table
     %% as per Section 5.2 of
     %% http://sc.openoffice.org/compdocfileformat.pdf
     RawSAT=read_sectors(MSAT,SectorSize,FileIn),
-    %%excel_util:put_log(FileOut,io_lib:fwrite("The Raw SAT is:~n~p~n",[RawSAT])),
     ParsedSAT=parse_SAT(RawSAT),
-    %%excel_util:put_log(FileOut,io_lib:fwrite("The Sector Allocation Table "++
-		%%			     "is:~n~p~n",[ParsedSAT])),
 
     %% Now lets process the Short-Sector Allocation Table
     %% as per Section 6.2 of
     %% http://sc.openoffice.org/compdocfileformat.pdf
     if 
 	SSAT_StartSID > 0 ->
-	    %%excel_util:put_log(FileOut,io_lib:fwrite("There is a short sector "++
-			%%			     "allocation table~n",[])),
 	    RawSSAT=read_sectors([SSAT_StartSID],SectorSize,FileIn),
-	    %%excel_util:put_log(FileOut,io_lib:fwrite("RawSSAT is:~n~p~n",
-			%%			     [RawSSAT])),
 	    ParsedSSAT=parse_SAT(RawSSAT);
-	    %%excel_util:put_log(FileOut,io_lib:fwrite("ParsedSSAT is:~n~p~n",
-			%%			     [ParsedSSAT]));
 	true ->
-	    %%excel_util:put_log(FileOut,io_lib:fwrite("NO a short sector "++
-			%%			     "allocation table~n",[])),
 	    _RawSSAT=[],
 	    ParsedSSAT=[]
     end,
 
     %% Moving onto the Directory as per Section 7.1 of
     %% http://sc.openoffice.org/compdocfileformat.pdf
-    DirectorySIDs=get_SIDs(ParsedSAT,DirectoryFirstSID,FileOut),
-    %%excel_util:put_log(FileOut,io_lib:fwrite("The SIDs for the Directory "++
-		%%			     "are:~n~p~n",[DirectorySIDs])),
+    DirectorySIDs=get_SIDs(ParsedSAT,DirectoryFirstSID),
     RawDirectory=read_sectors(DirectorySIDs,SectorSize,FileIn),
-    %%excel_util:put_log(FileOut,io_lib:fwrite("The raw Directory is:~n~p~n",
-		%%		  	     [RawDirectory])),
     ParsedDirectory=parse_Directory(list_to_binary(RawDirectory),
-				    MinStreamSize,FileOut),
-    %%excel_util:put_log(FileOut,io_lib:fwrite("The Directory is:~n~p~n",
-		%%			     [ParsedDirectory])),
+				    MinStreamSize),
     {ok,{ParsedDirectory,ParsedSAT,ParsedSSAT,SSAT_StartSID,
 	 SectorSize,ShortSectorSize,MinStreamSize}};
-read_compound_file_header(_Other,_FileIn,_FileOut) ->
+read_compound_file_header(_Other,_FileIn) ->
     io:format("This is not a valid Biff8 Microsoft Compound Document~n"++
 	      "In other words it is not written by Microsoft Excel 97, "++
 	      "2000 or 2003~n"),
@@ -187,40 +132,20 @@ read_compound_file_header(_Other,_FileIn,_FileOut) ->
 %% It can be found at http://sc.openoffice.org/compdocfileformat.pdf
 
 %% This patterns matches a non-extended MSAT as per Section 4.1
-read_MSAT(0,?END_OF_CHAIN_SID,BulkMSAT,_FileOut)->
-    %%excel_util:put_log(FileOut,io_lib:fwrite("~nMASTER SECTOR ALLOCATION "++
-		%%			     "TABLE DESCRIPTION~n~n",[])),
-    %%excel_util:put_log(FileOut,io_lib:fwrite("The Master Sector Allocation "++
-		%%			     "Table is fully specified "++
-		%%			     "in the header. No futher "++
-		%%			     "sectors used for the "++
-		%%			     "Master Sector Allocation Table~n",
-		%%			     [])),
+read_MSAT(0,?END_OF_CHAIN_SID,BulkMSAT)->
     get_sectors(BulkMSAT);
-read_MSAT(_FirstSectorMSAT_SID,_NoOfMSATSectors,_BulkMSAT,_FileOut)->
-    %%excel_util:put_log(FileOut,io_lib:fwrite("~nMASTER SECTOR ALLOCATION "++
-		%%			     "TABLE DESCRIPTION~n~n",[])),
-    %%excel_util:put_log(FileOut,io_lib:fwrite("The Master Sector Allocation "++
-		%%			     "Table is NOT fully specified "++
-		%%			     "in the header. Further "++
-		%%			     "sectors are used, but I don't"++
-		%%			     "know how to parse 'em~n"++
-		%%			     "It's gonna be a sector read "++
-		%%			     "from the SID somehow...",[])),
+read_MSAT(_FirstSectorMSAT_SID,_NoOfMSATSectors,_BulkMSAT)->
     ok.
 
-get_SIDs(ParsedSAT,SID,FileOut)->
-    %%excel_util:put_log(FileOut,io_lib:fwrite("in filefilters:get_SIDs "++
-		%%			     "ParsedSAT is ~p and SID is ~p~n",
-		%%			     [ParsedSAT,SID])),
-    get_SIDs(ParsedSAT,SID,[],FileOut).
+get_SIDs(ParsedSAT,SID)->
+    get_SIDs(ParsedSAT,SID,[]).
 
-get_SIDs(_ParsedSAT,?END_OF_CHAIN_SID,Residuum,_FileOut)->
+get_SIDs(_ParsedSAT,?END_OF_CHAIN_SID,Residuum)->
     lists:reverse(Residuum);
-get_SIDs(ParsedSAT,SID,Residuum,FileOut)->
+get_SIDs(ParsedSAT,SID,Residuum)->
     {value,{SID,Value}} = lists:keysearch(SID,1,ParsedSAT),
     NewResiduum=[SID|Residuum],
-    get_SIDs(ParsedSAT,Value,NewResiduum,FileOut).
+    get_SIDs(ParsedSAT,Value,NewResiduum).
 
 get_sectors(BulkMSAT)->
     get_sectors(BulkMSAT,[]).
@@ -275,10 +200,10 @@ make_index_hash([],_,Residuum)->
 make_index_hash([H|T],Index,Residuum)->
     make_index_hash(T,Index+1,[{Index,H}|Residuum]).
 
-parse_Directory(RawDirectory,MinStreamSize,FileOut)->
-    parse_Directory(RawDirectory,MinStreamSize,[],FileOut).
+parse_Directory(RawDirectory,MinStreamSize)->
+    parse_Directory(RawDirectory,MinStreamSize,[]).
 
-parse_Directory(<<>>,_MinStreamSize,Residuum,_FileOut)->
+parse_Directory(<<>>,_MinStreamSize,Residuum)->
     make_index_hash(lists:reverse(Residuum));
 parse_Directory(<<Name:64/binary,
 		 NameSize:16/little-signed-integer,
@@ -294,18 +219,7 @@ parse_Directory(<<Name:64/binary,
 		 SID:32/little-signed-integer,
 		 StreamSize:32/little-signed-integer,
 		 _Blank:4/binary,
-		 Rest/binary>>,MinStreamSize,Residuum,FileOut) ->
-    excel_util:put_log(FileOut,io_lib:fwrite("~nPARSING DIRECTORY ENTRY~n~n",[])),
-    excel_util:put_log(FileOut,io_lib:fwrite("NameSize: ~p~n",[NameSize])),
-    excel_util:put_log(FileOut,io_lib:fwrite("Guessing Name: ~p~n",
-					     [bodge_string(Name,NameSize)])),
-    excel_util:put_log(FileOut,io_lib:fwrite("Type: ~p~n",[Type])),
-    excel_util:put_log(FileOut,io_lib:fwrite("Colour: ~p~n",[Colour])),
-    excel_util:put_log(FileOut,io_lib:fwrite("LeftDID: ~p~n",[LeftDID])),
-    excel_util:put_log(FileOut,io_lib:fwrite("RightDID: ~p~n",[RightDID])),
-    excel_util:put_log(FileOut,io_lib:fwrite("RootDID: ~p~n",[RootDID])),
-    excel_util:put_log(FileOut,io_lib:fwrite("SID: ~p~n",[SID])),
-    excel_util:put_log(FileOut,io_lib:fwrite("StreamSize: ~p~n",[StreamSize])),
+		 Rest/binary>>,MinStreamSize,Residuum) ->
     %% If the Sector Size is bigger than the stream size then the stream
     %% will be in the short sector table - otherwise it will be in a normal one
     Location=if (StreamSize >= MinStreamSize) -> normal_stream;
@@ -327,8 +241,8 @@ parse_Directory(<<Name:64/binary,
 		     {sid,SID},
 		     {stream_size,StreamSize}],
     parse_Directory(Rest,MinStreamSize,
-		    [DirectoryEntry|Residuum],FileOut);
-parse_Directory(Other,_MinStreamSize,Other2,_FileOut)->
+		    [DirectoryEntry|Residuum]);
+parse_Directory(Other,_MinStreamSize,Other2)->
     io:format(" in filefilters:parse_Directory Other "++
 	      "is ~p Other2 is ~p "++
 	      "Oh, shit!~n",[Other,Other2]).
@@ -350,14 +264,16 @@ print_structure(FileIn,Directory,{SubLocation,SubStreams})->
     ok.
 
 create_ets()->
-    [{cell,         ets:new(cell,         [ordered_set,private])},
-     {cell_tokens,  ets:new(cell_tokens,  [ordered_set,private])},
-     {strings,      ets:new(strings,      [ordered_set,private])},
-     {names,        ets:new(names,        [ordered_set,private])},
-     {arrayformula, ets:new(arrayformula, [ordered_set,private])},
-     {externsheets, ets:new(externsheets, [ordered_set,private])},
-     {sheetnames,   ets:new(sheetnames,   [ordered_set,private])},
-     {misc,         ets:new(misc,         [ordered_set,private])}].
+    [{cell,           ets:new(cell,           [ordered_set,private])},
+     {cell_tokens,    ets:new(cell_tokens,    [ordered_set,private])},
+     {strings,        ets:new(strings,        [ordered_set,private])},
+     {names,          ets:new(names,          [ordered_set,private])},
+     {sh_arr_formula, ets:new(sh_arr_formula, [ordered_set,private])},
+     {externsheets,   ets:new(externsheets,   [ordered_set,private])},
+     {sheetnames,     ets:new(sheetnames,     [ordered_set,private])},
+     {externalrefs,   ets:new(externalrefs,   [ordered_set,private])},
+     {lacunae,        ets:new(lacunae,        [ordered_set,private])},
+     {misc,           ets:new(misc,           [ordered_set,private])}].
 
 %% Bodge string attempts to take a list in some class of unicode encoding and
 %% make it 'readable' - it is for logging/debugging only and not to be used
@@ -387,34 +303,34 @@ bodge_string(<<Char:16/little-signed-integer,Rest/binary>>,
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-test_DEBUG()-> 
-    %%File="minitest.xls",
+test_DEBUG()->
+    File="minitest.xls",
     %%File="e_gnumeric_operators_add.xls",
-    File="b_array_formulae.xls",
+    %%File="b_array_formulae.xls",
+    %%File="c_basic_functions_tests_a_e.xls",
+    %%File="b_abs_and_rel_addressing.xls",
+    %%File="d_gnumeric_date_and_time.xls",
+    %%File="b_ping.xls",
+    %%File="b_basic_unicode_strings.xls",
+    %%File="b_three_dee_ref.xls",
+    %%File="b_floats.xls",
+    %%File="b_simple_arrays_and_ranges.xls",
     FileRoot="C:/opt/code/trunk/tests/"++
      	"excel_files/Win Excel 2007 (as 97)",
     io:format("in filefilters:test_DEBUG FileRoot is ~p and File is ~p~n",
               [FileRoot,File]),
-    read(excel,FileRoot++"/"++File,
-    	 FileRoot++"/scratch/string_test.log"),
+    read(excel,FileRoot++"/"++File),
     io:format("~s processed~n",[File]).
-%%     read(excel,FileRoot++"/mediumfile4.xls",
-%%     	 FileRoot++"/scratch/mediumfile4.log"),
-%%     io:format("mediumfile4.xls processed~n").
-%%   read(excel,FileRoot++"/cellformat_import_biff8.xls",FileRoot++
-%%    	 "/scratch/cell_format_import_biff8.log"),
-%%   io:format("cellformat_import_biff8.xls processed~n"),
-%%   read(excel,FileRoot++"/cells_import_biff8.xls",FileRoot++
-%%    	 "/scratch/cells_import_biff8.log"),
-%%   io:format("cells_import_biff8.xls processed~n"),
-%%   read(excel,FileRoot++"/test1.xls",FileRoot++"/scratch/test1.log"),
-%%   io:format("test1.xls processed~n"),
-%%   read(excel,FileRoot++"/10eii1.xls",FileRoot++"/scratch/10eii1.log"),
-%%   io:format("10eii1.xls processed~n").
 
 dump([])-> io:format("All tables dumped~n");
+%% dump([{cell_tokens,_}|T])->
+%%  io:format("~nSkipping out cell_tokens in dump~n"),
+%% dump(T);
+dump([{lacunae,_}|T])->
+  io:format("~nSkipping out lacunae in dump~n"),
+  dump(T);
 dump([{Name,Tid}|T])->
-    io:format("Dumping table: ~p~n",[Name]),
-    Fun = fun(X,_Y) -> io:format("~p~n",[X]) end,
-    ets:foldl(Fun,[],Tid),
-    dump(T).
+  io:format("~nDumping table: ~p~n",[Name]),
+  Fun = fun(X,_Y) -> io:format("~p~n",[X]) end,
+  ets:foldl(Fun,[],Tid),
+  dump(T).

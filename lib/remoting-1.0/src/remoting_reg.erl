@@ -25,13 +25,13 @@ start_link() ->
 init([]) ->
     {ok, []}.
 
-%% Register a new Range, From will now recieve updates
+%% Register a new Range, From will now receive updates
 %% when a number in Page -> Range changes
 handle_call({register,#page{site=Site,path=Path,ref=Ref}},{Pid,_},State) ->
     {reply,{msg,"range registered"},lists:append(State,[{Site,Path,Ref,Pid}])};
 
 %% Unregisters a range, From will no longer
-%% Recieve updates
+%% Receive updates
 handle_call({unregister},From,State) ->
     N = lists:filter(
         fun(X) ->

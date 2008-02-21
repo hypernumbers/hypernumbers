@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: d_gnumeric_date_and_time.xls
-% Generated on: Mon Feb 11 06:24:00 +0000 2008
+% Generated on: Sun Feb 17 21:42:44 +0000 2008
 
 -module(d_gnumeric_date_and_time_SUITE).
 -compile(export_all).
@@ -380,7 +380,7 @@ sheet1_b24_test(_Config) ->
 sheet1_b35_test(doc) -> [{userdata,[{""}]}];
 sheet1_b35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","b35"),
-  Expected="2008/02/11 00:00:00",
+  Expected="2008/02/17 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
@@ -429,7 +429,7 @@ sheet1_b20_test(_Config) ->
 sheet1_b31_test(doc) -> [{userdata,[{""}]}];
 sheet1_b31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","b31"),
-  Expected="2008/02/11 00:15:10",
+  Expected="2008/02/17 21:37:18",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   

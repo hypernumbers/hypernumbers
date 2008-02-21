@@ -1,6 +1,7 @@
-#!/bin/bash Batch file to generate test files
+del *.erl
+
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\a_alignment.xls" A1:H12 A1:H12
-readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\a_should_be_10_tests.xls" A1:B5 
+readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\a_should_be_10_tests.xls" A1:E2
 
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_abs_and_rel_addressing.xls" B4:D19
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_arithmetic_and_precedence.xls" A1:B36
@@ -8,15 +9,19 @@ readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_array_fo
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_basic_unicode_strings.xls" B2:B43
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_block_of_numbers.xls" A1:I5
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_booleans_and_errors.xls" A1:B9
-readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_equals.xls" A2:A2
+#readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_equals.xls" A2:A2
+readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_floats.xls" A2:A14
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_just_numbers.xls" A1:G11
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_made_up_fn_names.xls" A3:A5
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_multiple_sheets.xls" A1:A1 A1:A1 A1:A1
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_nested_functions.xls" B4:B1
+#readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_ping.xls" B2:B12
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_quadratic_equations.xls" A1:F8
+readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_rel_references.xls" B3:B5
+readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_shared_formulae.xls" A2:F11
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_simple.xls" A1:B6
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_simple_arrays_and_ranges.xls" A1:I11
-readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_sum_with_one_arg.xls" A1:I11
+readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_sum_with_one_arg.xls" A1:I12
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_three_dee_ref.xls" A1:B8
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_wierd_failures.xls" A1:B8
 
@@ -71,12 +76,17 @@ gen_rev_comp_test "b_array_formulae_test.yaml"
 gen_rev_comp_test "b_basic_unicode_strings_test.yaml"
 gen_rev_comp_test "b_block_of_numbers_test.yaml"
 gen_rev_comp_test "b_booleans_and_errors_test.yaml"
-gen_rev_comp_test "b_equals.yaml"
+#gen_rev_comp_test "b_equals_test.yaml"
+gen_rev_comp_test "b_floats_test.yaml"
 gen_rev_comp_test "b_just_numbers_test.yaml"
 gen_rev_comp_test "b_made_up_fn_names_test.yaml"
 gen_rev_comp_test "b_multiple_sheets_test.yaml"
 gen_rev_comp_test "b_nested_functions_test.yaml"
 gen_rev_comp_test "b_quadratic_equations_test.yaml"
+gen_rev_comp_test "b_rel_references_test.yaml"
+#gen_rev_comp_test "b_ping_test.yaml"
+gen_rev_comp_test "b_shared_formulae_test.yaml"
+gen_rev_comp_test "b_simple_test.yaml"
 gen_rev_comp_test "b_simple_arrays_and_ranges_test.yaml"
 gen_rev_comp_test "b_sum_with_one_arg_test.yaml"
 gen_rev_comp_test "b_three_dee_ref_test.yaml"
@@ -137,13 +147,18 @@ gen_full_test "b_array_formulae_test.yaml"              "b_array_formulae_load.y
 gen_full_test "b_basic_unicode_strings_test.yaml"       "b_basic_unicode_strings_load.yaml"
 gen_full_test "b_block_of_numbers_test.yaml"            "b_block_of_numbers_load.yaml"
 gen_full_test "b_booleans_and_errors_test.yaml"         "b_booleans_and_errors_load.yaml"
-gen_full_test "b_equals_test.yaml"                      "b_equals_load.yaml"
+#gen_full_test "b_equals_test.yaml"                      "b_equals_load.yaml"
+gen_full_test "b_floats_test.yaml"                           "b_floats_load.yaml"
 gen_full_test "b_just_numbers_test.yaml"                "b_just_numbers_load.yaml"
 gen_full_test "b_made_up_fn_names_test.yaml"            "b_made_up_fn_names_load.yaml"
 gen_full_test "b_multiple_sheets_test.yaml"             "b_multiple_sheets_load.yaml"
 gen_full_test "b_nested_functions_test.yaml"            "b_nested_functions_load.yaml" 
 gen_full_test "b_nested_functions_spaces_crs_test.yaml" "b_nested_functions_spaces_crs_load.yaml"
 gen_full_test "b_quadratic_equations_test.yaml"         "b_quadratic_equations_load.yaml"
+gen_full_test "b_rel_references_test.yaml"              "b_rel_references_load.yaml"
+#gen_full_test "b_ping_test.yaml"                        "b_ping_load.yaml"
+gen_full_test "b_shared_formulae_test.yaml"             "b_shared_formulae_load.yaml"
+gen_full_test "b_simple_test.yaml"                      "b_simple_load.yaml"
 gen_full_test "b_simple_arrays_and_ranges_test.yaml"    "b_simple_arrays_and_ranges_load.yaml"
 gen_full_test "b_sum_with_one_arg_test.yaml"            "b_sum_with_one_arg_load.yaml"
 gen_full_test "b_three_dee_ref_test.yaml"               "b_three_dee_ref_load.yaml"

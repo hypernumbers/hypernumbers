@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_just_numbers.xls
-% Generated on: Mon Feb 11 06:23:52 +0000 2008
+% Generated on: Sun Feb 17 21:42:33 +0000 2008
 
 -module(b_just_numbers_SUITE).
 -compile(export_all).

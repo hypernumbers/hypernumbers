@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_nested_functions.xls
-% Generated on: Mon Feb 11 06:23:53 +0000 2008
+% Generated on: Sun Feb 17 21:42:35 +0000 2008
 
 -module(b_nested_functions_SUITE).
 -compile(export_all).

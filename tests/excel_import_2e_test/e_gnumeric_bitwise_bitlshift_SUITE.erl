@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_bitwise_bitlshift.xls
-% Generated on: Mon Feb 11 16:54:33 +0000 2008
+% Generated on: Sun Feb 17 21:42:54 +0000 2008
 
 -module(e_gnumeric_bitwise_bitlshift_SUITE).
 -compile(export_all).

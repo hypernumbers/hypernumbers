@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: a_alignment.xls
-% Generated on: Mon Feb 11 06:23:48 +0000 2008
+% Generated on: Sun Feb 17 21:42:26 +0000 2008
 
 -module(a_alignment_SUITE).
 -compile(export_all).

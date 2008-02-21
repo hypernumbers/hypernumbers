@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_bitwise.xls
-% Generated on: Mon Feb 11 16:57:41 +0000 2008
+% Generated on: Sun Feb 17 21:42:04 +0000 2008
 
 -module(e_gnumeric_bitwise_test_SUITE).
 -compile(export_all).
@@ -14,7 +14,9 @@ init_per_suite(Config) ->
     production_boot:setup_paths(),
     Data = test_util:read_excel_file("/Win Excel 2007 (as 97)/e_gnumeric_bitwise.xls"),
     %% io:format("in init_per_suite Data is ~p~n",[Data]),
-    lists:merge([Config, [{e_gnumeric_bitwise_test_SUITE, Data}]]).
+    Pid=spawn(test_util,test_state,[Data]),
+    io:format("in init_per_suite Pid is ~p~n",[Pid]),
+    [{?MODULE,Pid}|Config].
   
 end_per_suite(_Config) ->
     ok.
@@ -28,68 +30,185 @@ read_from_excel_data(Config,{Sheet,Row,Col}) ->
 
 summary_a5_test(doc) -> [{userdata,[{""}]}];
 summary_a5_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Bitxor"},read_from_excel_data(Config,{"Summary",4,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Summary",4,0}), {string,"Bitxor"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Summary",4,0}]),
+  Pid ! {msg,self(),?MODULE,{"Summary",4,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Bitxor"}]),
+      test_util:expected2(Msg, {string,"Bitxor"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 summary_a6_test(doc) -> [{userdata,[{""}]}];
 summary_a6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Bitrshift"},read_from_excel_data(Config,{"Summary",5,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Summary",5,0}), {string,"Bitrshift"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Summary",5,0}]),
+  Pid ! {msg,self(),?MODULE,{"Summary",5,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Bitrshift"}]),
+      test_util:expected2(Msg, {string,"Bitrshift"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 summary_a1_test(doc) -> [{userdata,[{""}]}];
 summary_a1_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Bitwise"},read_from_excel_data(Config,{"Summary",0,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Summary",0,0}), {string,"Bitwise"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Summary",0,0}]),
+  Pid ! {msg,self(),?MODULE,{"Summary",0,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Bitwise"}]),
+      test_util:expected2(Msg, {string,"Bitwise"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 summary_a7_test(doc) -> [{userdata,[{""}]}];
 summary_a7_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Bitlshift"},read_from_excel_data(Config,{"Summary",6,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Summary",6,0}), {string,"Bitlshift"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Summary",6,0}]),
+  Pid ! {msg,self(),?MODULE,{"Summary",6,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Bitlshift"}]),
+      test_util:expected2(Msg, {string,"Bitlshift"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 summary_a3_test(doc) -> [{userdata,[{""}]}];
 summary_a3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Bitor"},read_from_excel_data(Config,{"Summary",2,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Summary",2,0}), {string,"Bitor"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Summary",2,0}]),
+  Pid ! {msg,self(),?MODULE,{"Summary",2,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Bitor"}]),
+      test_util:expected2(Msg, {string,"Bitor"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 summary_a4_test(doc) -> [{userdata,[{""}]}];
 summary_a4_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Bitand"},read_from_excel_data(Config,{"Summary",3,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Summary",3,0}), {string,"Bitand"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Summary",3,0}]),
+  Pid ! {msg,self(),?MODULE,{"Summary",3,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Bitand"}]),
+      test_util:expected2(Msg, {string,"Bitand"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 summary_b5_test(doc) -> [{userdata,[{""}]}];
 summary_b5_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(Bitxor!A$49=Bitxor!A$50,\"Success\",\"Fail\")"},read_from_excel_data(Config,{"Summary",4,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Summary",4,1}), {formula,"=IF(Bitxor!A$49=Bitxor!A$50,\"Success\",\"Fail\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Summary",4,1}]),
+  Pid ! {msg,self(),?MODULE,{"Summary",4,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(Bitxor!A$49=Bitxor!A$50,\"Success\",\"Fail\")"}]),
+      test_util:expected2(Msg, {formula,"=IF(Bitxor!A$49=Bitxor!A$50,\"Success\",\"Fail\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 summary_b6_test(doc) -> [{userdata,[{""}]}];
 summary_b6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(Bitrshift!A$49=Bitrshift!A$50,\"Success\",\"Fail\")"},read_from_excel_data(Config,{"Summary",5,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Summary",5,1}), {formula,"=IF(Bitrshift!A$49=Bitrshift!A$50,\"Success\",\"Fail\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Summary",5,1}]),
+  Pid ! {msg,self(),?MODULE,{"Summary",5,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(Bitrshift!A$49=Bitrshift!A$50,\"Success\",\"Fail\")"}]),
+      test_util:expected2(Msg, {formula,"=IF(Bitrshift!A$49=Bitrshift!A$50,\"Success\",\"Fail\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 summary_b7_test(doc) -> [{userdata,[{""}]}];
 summary_b7_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(Bitlshift!A$49=Bitlshift!A$50,\"Success\",\"Fail\")"},read_from_excel_data(Config,{"Summary",6,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Summary",6,1}), {formula,"=IF(Bitlshift!A$49=Bitlshift!A$50,\"Success\",\"Fail\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Summary",6,1}]),
+  Pid ! {msg,self(),?MODULE,{"Summary",6,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(Bitlshift!A$49=Bitlshift!A$50,\"Success\",\"Fail\")"}]),
+      test_util:expected2(Msg, {formula,"=IF(Bitlshift!A$49=Bitlshift!A$50,\"Success\",\"Fail\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 summary_b3_test(doc) -> [{userdata,[{""}]}];
 summary_b3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(Bitor!A$49=Bitor!A$50,\"Success\",\"Fail\")"},read_from_excel_data(Config,{"Summary",2,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Summary",2,1}), {formula,"=IF(Bitor!A$49=Bitor!A$50,\"Success\",\"Fail\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Summary",2,1}]),
+  Pid ! {msg,self(),?MODULE,{"Summary",2,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(Bitor!A$49=Bitor!A$50,\"Success\",\"Fail\")"}]),
+      test_util:expected2(Msg, {formula,"=IF(Bitor!A$49=Bitor!A$50,\"Success\",\"Fail\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 summary_b4_test(doc) -> [{userdata,[{""}]}];
 summary_b4_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(Bitor!A$49=Bitor!A$50,\"Success\",\"Fail\")"},read_from_excel_data(Config,{"Summary",3,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Summary",3,1}), {formula,"=IF(Bitor!A$49=Bitor!A$50,\"Success\",\"Fail\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Summary",3,1}]),
+  Pid ! {msg,self(),?MODULE,{"Summary",3,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(Bitor!A$49=Bitor!A$50,\"Success\",\"Fail\")"}]),
+      test_util:expected2(Msg, {formula,"=IF(Bitor!A$49=Bitor!A$50,\"Success\",\"Fail\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 summary_d2_test(doc) -> [{userdata,[{""}]}];
 summary_d2_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Tolerance"},read_from_excel_data(Config,{"Summary",1,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Summary",1,3}), {string,"Tolerance"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Summary",1,3}]),
+  Pid ! {msg,self(),?MODULE,{"Summary",1,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Tolerance"}]),
+      test_util:expected2(Msg, {string,"Tolerance"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 summary_e2_test(doc) -> [{userdata,[{""}]}];
 summary_e2_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1.0e-006},read_from_excel_data(Config,{"Summary",1,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Summary",1,4}), {number,1.0e-006}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Summary",1,4}]),
+  Pid ! {msg,self(),?MODULE,{"Summary",1,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.0e-006}]),
+      test_util:expected2(Msg, {number,1.0e-006})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 all() -> 
     [summary_a5_test,

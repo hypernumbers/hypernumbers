@@ -13,11 +13,11 @@
          expected2/2,
 	 get_Arg/4,
 	 read_excel_file/1,
-         read_from_excel_data/3,
 	 equal_to_digit/3,
 	 excel_equal/2,
 	 wait/0,
-	 wait/1
+	 wait/1,
+         test_state/1
 	]).
 
 -include("excel_errors.hrl").
@@ -26,16 +26,21 @@
 -export([scratch_Arg/0]).
 
 -define(FILEDIR, "../../../../excel_files/").
--define(EXCEL_IMPORT_FLOAT_PRECISION, 15).
+-define(EXCEL_IMPORT_FLOAT_PRECISION, 13).
 -define(DEFAULT,1000000).
 
-
-read_from_excel_data(Config,Suite,{Sheet,Row,Col})->
-  io:format("Got to 1 Sheet is ~p Row is ~p and Col is ~p~n",[Sheet,Row,Col]),
-  {value, Result} = lists:keysearch(Suite, 1, Config),
-  Data = element(2, Result),
+test_state(State)->
+  receive
+    {msg,Pid,_Suite,{Sheet,Row,Col}} -> Pid ! read_from_excel_data(State,{Sheet,Row,Col});
+    {die}                            -> exit(die);
+    Other                            -> io:format("message means nothing in test_util:state ~p~n",
+                                           [Other])
+  end,
+  test_state(State).
+  
+read_from_excel_data(State,{Sheet,Row,Col})->
   Key={{sheet,Sheet},{row_index,Row},{col_index,Col}},
-  Return=lists:keysearch(Key, 1, Data),
+  Return=lists:keysearch(Key, 1, State),
   {value, Result2}=Return,
   El=element(2, Result2),
   case El of
@@ -50,12 +55,20 @@ end.
 
 %% Checks that two floats are exactly the same up to
 %% a certain number of decimal places.
+%%
+%% uses the mochinum library to do so
+%%equal_to_digit(F1,F2,DigitIdx) ->
+%%  A=mochinum:digits(F1),
+%%  B=mochinum:digits(F2),
+%%  io:format("in test_util:equal_to_digit A is ~p and B is ~p~n",[A,B]),
+%%  A==B.
+
 equal_to_digit(F1,F2,DigitIdx) ->
-  %% force any rogue integers to floats
+  %% force any rogue integers to floats  
   F1a=float(F1),
   F2a=float(F2),
   [As0,Bs0]=io_lib:fwrite("~.*f~.*f",[DigitIdx+1,F1a-erlang:trunc(F1a), 
-                                        DigitIdx+1,F2a-erlang:trunc(F2a)]),
+                                       DigitIdx+1,F2a-erlang:trunc(F2a)]),
     As=string:substr(As0,1,DigitIdx+2), 
     Bs=string:substr(Bs0,1,DigitIdx+2),
     As==Bs.
@@ -99,7 +112,7 @@ make_err_val(X)            -> X.
 expected(Expected, Got) ->
     case Got of
         Expected ->
-            io:format("SUCCESS~nExpected: ~p~nGot:     ~p~n",[Expected,Got]),
+            io:format("SUCCESS~nExpected: ~p~nGot:      ~p~n",[Expected,Got]),
             {test, ok};
         _Else ->
             exit({"E:", Expected, "G:", Got})
@@ -125,8 +138,7 @@ expected2(Expected, Got) ->
 
 %% Reads an Excel file under SVNROOT/testroot/excel_import_test/files
 read_excel_file(Filename) ->
-    filefilters:read(excel,?FILEDIR++Filename,"test-read_file.log", 
-                     fun dump_cells/1).
+    filefilters:read(excel,?FILEDIR++Filename,fun dump_cells/1).
 
 get_Arg(IP,DomainAndPort,PathAndRef,FormatAndDecos)->
     Port=open_port({spawn,bash},[]),% get a spoof port

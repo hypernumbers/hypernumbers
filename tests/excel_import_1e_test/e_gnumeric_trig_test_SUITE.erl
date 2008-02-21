@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_trig.xls
-% Generated on: Mon Feb 11 16:57:51 +0000 2008
+% Generated on: Sun Feb 17 21:42:23 +0000 2008
 
 -module(e_gnumeric_trig_test_SUITE).
 -compile(export_all).
@@ -14,7 +14,9 @@ init_per_suite(Config) ->
     production_boot:setup_paths(),
     Data = test_util:read_excel_file("/Win Excel 2007 (as 97)/e_gnumeric_trig.xls"),
     %% io:format("in init_per_suite Data is ~p~n",[Data]),
-    lists:merge([Config, [{e_gnumeric_trig_test_SUITE, Data}]]).
+    Pid=spawn(test_util,test_state,[Data]),
+    io:format("in init_per_suite Pid is ~p~n",[Pid]),
+    [{?MODULE,Pid}|Config].
   
 end_per_suite(_Config) ->
     ok.
@@ -28,58 +30,157 @@ read_from_excel_data(Config,{Sheet,Row,Col}) ->
 
 summary_a5_test(doc) -> [{userdata,[{""}]}];
 summary_a5_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"ATan2"},read_from_excel_data(Config,{"Summary",4,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Summary",4,0}), {string,"ATan2"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Summary",4,0}]),
+  Pid ! {msg,self(),?MODULE,{"Summary",4,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"ATan2"}]),
+      test_util:expected2(Msg, {string,"ATan2"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 summary_a6_test(doc) -> [{userdata,[{""}]}];
 summary_a6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"PI"},read_from_excel_data(Config,{"Summary",5,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Summary",5,0}), {string,"PI"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Summary",5,0}]),
+  Pid ! {msg,self(),?MODULE,{"Summary",5,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"PI"}]),
+      test_util:expected2(Msg, {string,"PI"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 summary_a4_test(doc) -> [{userdata,[{""}]}];
 summary_a4_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Trigonometry"},read_from_excel_data(Config,{"Summary",3,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Summary",3,0}), {string,"Trigonometry"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Summary",3,0}]),
+  Pid ! {msg,self(),?MODULE,{"Summary",3,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Trigonometry"}]),
+      test_util:expected2(Msg, {string,"Trigonometry"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 summary_b5_test(doc) -> [{userdata,[{""}]}];
 summary_b5_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF('c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig_atan2.xls]ATan2'!$A$38='c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig_atan2.xls]ATan2'!$A$39,\"Success\",\"Fail\")"},read_from_excel_data(Config,{"Summary",4,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Summary",4,1}), {formula,"=IF('c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig_atan2.xls]ATan2'!$A$38='c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig_atan2.xls]ATan2'!$A$39,\"Success\",\"Fail\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Summary",4,1}]),
+  Pid ! {msg,self(),?MODULE,{"Summary",4,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF('c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig_atan2.xls]ATan2'!$A$38='c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig_atan2.xls]ATan2'!$A$39,\"Success\",\"Fail\")"}]),
+      test_util:expected2(Msg, {formula,"=IF('c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig_atan2.xls]ATan2'!$A$38='c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig_atan2.xls]ATan2'!$A$39,\"Success\",\"Fail\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 summary_b6_test(doc) -> [{userdata,[{""}]}];
 summary_b6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=PI()"},read_from_excel_data(Config,{"Summary",5,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Summary",5,1}), {formula,"=PI()"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Summary",5,1}]),
+  Pid ! {msg,self(),?MODULE,{"Summary",5,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=PI()"}]),
+      test_util:expected2(Msg, {formula,"=PI()"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 summary_b4_test(doc) -> [{userdata,[{""}]}];
 summary_b4_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF('c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig_trig.xls]Trigonometry'!$A$36='c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig_trig.xls]Trigonometry'!$A$37,\"Success\",\"Fail\")"},read_from_excel_data(Config,{"Summary",3,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Summary",3,1}), {formula,"=IF('c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig_trig.xls]Trigonometry'!$A$36='c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig_trig.xls]Trigonometry'!$A$37,\"Success\",\"Fail\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Summary",3,1}]),
+  Pid ! {msg,self(),?MODULE,{"Summary",3,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF('c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig_trig.xls]Trigonometry'!$A$36='c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig_trig.xls]Trigonometry'!$A$37,\"Success\",\"Fail\")"}]),
+      test_util:expected2(Msg, {formula,"=IF('c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig_trig.xls]Trigonometry'!$A$36='c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig_trig.xls]Trigonometry'!$A$37,\"Success\",\"Fail\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 summary_c6_test(doc) -> [{userdata,[{""}]}];
 summary_c6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"PI"},read_from_excel_data(Config,{"Summary",5,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Summary",5,2}), {string,"PI"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Summary",5,2}]),
+  Pid ! {msg,self(),?MODULE,{"Summary",5,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"PI"}]),
+      test_util:expected2(Msg, {string,"PI"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 summary_d6_test(doc) -> [{userdata,[{""}]}];
 summary_d6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,3.14159265358979},read_from_excel_data(Config,{"Summary",5,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Summary",5,3}), {number,3.14159265358979}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Summary",5,3}]),
+  Pid ! {msg,self(),?MODULE,{"Summary",5,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,3.14159265358979}]),
+      test_util:expected2(Msg, {number,3.14159265358979})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 summary_d2_test(doc) -> [{userdata,[{""}]}];
 summary_d2_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Tolerance"},read_from_excel_data(Config,{"Summary",1,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Summary",1,3}), {string,"Tolerance"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Summary",1,3}]),
+  Pid ! {msg,self(),?MODULE,{"Summary",1,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Tolerance"}]),
+      test_util:expected2(Msg, {string,"Tolerance"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 summary_e6_test(doc) -> [{userdata,[{""}]}];
 summary_e6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(B6=D6, \"Success\", \"Failed\")"},read_from_excel_data(Config,{"Summary",5,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Summary",5,4}), {formula,"=IF(B6=D6, \"Success\", \"Failed\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Summary",5,4}]),
+  Pid ! {msg,self(),?MODULE,{"Summary",5,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(B6=D6, \"Success\", \"Failed\")"}]),
+      test_util:expected2(Msg, {formula,"=IF(B6=D6, \"Success\", \"Failed\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 summary_e2_test(doc) -> [{userdata,[{""}]}];
 summary_e2_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1.0e-006},read_from_excel_data(Config,{"Summary",1,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Summary",1,4}), {number,1.0e-006}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Summary",1,4}]),
+  Pid ! {msg,self(),?MODULE,{"Summary",1,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.0e-006}]),
+      test_util:expected2(Msg, {number,1.0e-006})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 all() -> 
     [summary_a5_test,

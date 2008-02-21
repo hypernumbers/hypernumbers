@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_made_up_fn_names.xls
-% Generated on: Mon Feb 11 00:19:28 +0000 2008
+% Generated on: Sun Feb 17 21:41:51 +0000 2008
 
 -module(b_made_up_fn_names_test_SUITE).
 -compile(export_all).
@@ -14,7 +14,9 @@ init_per_suite(Config) ->
     production_boot:setup_paths(),
     Data = test_util:read_excel_file("/Win Excel 2007 (as 97)/b_made_up_fn_names.xls"),
     %% io:format("in init_per_suite Data is ~p~n",[Data]),
-    lists:merge([Config, [{b_made_up_fn_names_test_SUITE, Data}]]).
+    Pid=spawn(test_util,test_state,[Data]),
+    io:format("in init_per_suite Pid is ~p~n",[Pid]),
+    [{?MODULE,Pid}|Config].
   
 end_per_suite(_Config) ->
     ok.
@@ -28,18 +30,45 @@ read_from_excel_data(Config,{Sheet,Row,Col}) ->
 
 tom_a5_test(doc) -> [{userdata,[{""}]}];
 tom_a5_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=duhnuh()"},read_from_excel_data(Config,{"Tom",4,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Tom",4,0}), {formula,"=duhnuh()"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Tom",4,0}]),
+  Pid ! {msg,self(),?MODULE,{"Tom",4,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=duhnuh()"}]),
+      test_util:expected2(Msg, {formula,"=duhnuh()"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 tom_a3_test(doc) -> [{userdata,[{""}]}];
 tom_a3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=doesntexist(1,2)"},read_from_excel_data(Config,{"Tom",2,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Tom",2,0}), {formula,"=doesntexist(1,2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Tom",2,0}]),
+  Pid ! {msg,self(),?MODULE,{"Tom",2,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=doesntexist(1,2)"}]),
+      test_util:expected2(Msg, {formula,"=doesntexist(1,2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 tom_a4_test(doc) -> [{userdata,[{""}]}];
 tom_a4_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=nowayjose(4,5,6)"},read_from_excel_data(Config,{"Tom",3,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Tom",3,0}), {formula,"=nowayjose(4,5,6)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Tom",3,0}]),
+  Pid ! {msg,self(),?MODULE,{"Tom",3,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=nowayjose(4,5,6)"}]),
+      test_util:expected2(Msg, {formula,"=nowayjose(4,5,6)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 all() -> 
     [tom_a5_test,

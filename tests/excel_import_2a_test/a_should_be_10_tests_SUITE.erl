@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: a_should_be_10_tests.xls
-% Generated on: Mon Feb 11 06:23:48 +0000 2008
+% Generated on: Sun Feb 17 21:42:27 +0000 2008
 
 -module(a_should_be_10_tests_SUITE).
 -compile(export_all).
@@ -97,10 +97,58 @@ sheet1_b2_test(_Config) ->
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
+sheet1_c1_test(doc) -> [{userdata,[{""}]}];
+sheet1_c1_test(_Config) -> 
+  Got=hn_get("http://127.0.0.1:9000","/Sheet1/","c1"),
+  Expected="3.0",
+  io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
+  test_util:expected(Expected,Got).
+  
+sheet1_c2_test(doc) -> [{userdata,[{""}]}];
+sheet1_c2_test(_Config) -> 
+  Got=hn_get("http://127.0.0.1:9000","/Sheet1/","c2"),
+  Expected="8.0",
+  io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
+  test_util:expected(Expected,Got).
+  
+sheet1_d1_test(doc) -> [{userdata,[{""}]}];
+sheet1_d1_test(_Config) -> 
+  Got=hn_get("http://127.0.0.1:9000","/Sheet1/","d1"),
+  Expected="4.0",
+  io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
+  test_util:expected(Expected,Got).
+  
+sheet1_d2_test(doc) -> [{userdata,[{""}]}];
+sheet1_d2_test(_Config) -> 
+  Got=hn_get("http://127.0.0.1:9000","/Sheet1/","d2"),
+  Expected="9.0",
+  io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
+  test_util:expected(Expected,Got).
+  
+sheet1_e1_test(doc) -> [{userdata,[{""}]}];
+sheet1_e1_test(_Config) -> 
+  Got=hn_get("http://127.0.0.1:9000","/Sheet1/","e1"),
+  Expected="9.0",
+  io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
+  test_util:expected(Expected,Got).
+  
+sheet1_e2_test(doc) -> [{userdata,[{""}]}];
+sheet1_e2_test(_Config) -> 
+  Got=hn_get("http://127.0.0.1:9000","/Sheet1/","e2"),
+  Expected="33.0",
+  io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
+  test_util:expected(Expected,Got).
+  
 all() -> 
     [sheet1_a1_test,
    sheet1_a2_test,
    sheet1_b1_test,
-   sheet1_b2_test
+   sheet1_b2_test,
+   sheet1_c1_test,
+   sheet1_c2_test,
+   sheet1_d1_test,
+   sheet1_d2_test,
+   sheet1_e1_test,
+   sheet1_e2_test
     ].
   

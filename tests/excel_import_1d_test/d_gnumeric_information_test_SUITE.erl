@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: d_gnumeric_information.xls
-% Generated on: Mon Feb 11 00:19:38 +0000 2008
+% Generated on: Sun Feb 17 21:42:00 +0000 2008
 
 -module(d_gnumeric_information_test_SUITE).
 -compile(export_all).
@@ -14,7 +14,9 @@ init_per_suite(Config) ->
     production_boot:setup_paths(),
     Data = test_util:read_excel_file("/Win Excel 2007 (as 97)/d_gnumeric_information.xls"),
     %% io:format("in init_per_suite Data is ~p~n",[Data]),
-    lists:merge([Config, [{d_gnumeric_information_test_SUITE, Data}]]).
+    Pid=spawn(test_util,test_state,[Data]),
+    io:format("in init_per_suite Pid is ~p~n",[Pid]),
+    [{?MODULE,Pid}|Config].
   
 end_per_suite(_Config) ->
     ok.
@@ -28,958 +30,2677 @@ read_from_excel_data(Config,{Sheet,Row,Col}) ->
 
 sheet1_a16_test(doc) -> [{userdata,[{""}]}];
 sheet1_a16_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,22.0},read_from_excel_data(Config,{"Sheet1",15,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",15,0}), {number,22.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",15,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",15,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,22.0}]),
+      test_util:expected2(Msg, {number,22.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a27_test(doc) -> [{userdata,[{""}]}];
 sheet1_a27_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"COUNTBLANK"},read_from_excel_data(Config,{"Sheet1",26,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",26,0}), {string,"COUNTBLANK"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",26,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",26,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"COUNTBLANK"}]),
+      test_util:expected2(Msg, {string,"COUNTBLANK"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a38_test(doc) -> [{userdata,[{""}]}];
 sheet1_a38_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"ISODD"},read_from_excel_data(Config,{"Sheet1",37,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",37,0}), {string,"ISODD"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",37,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",37,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"ISODD"}]),
+      test_util:expected2(Msg, {string,"ISODD"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a22_test(doc) -> [{userdata,[{""}]}];
 sheet1_a22_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Sheet1",21,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",21,0}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",21,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",21,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a33_test(doc) -> [{userdata,[{""}]}];
 sheet1_a33_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"ISEVEN"},read_from_excel_data(Config,{"Sheet1",32,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",32,0}), {string,"ISEVEN"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",32,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",32,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"ISEVEN"}]),
+      test_util:expected2(Msg, {string,"ISEVEN"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a44_test(doc) -> [{userdata,[{""}]}];
 sheet1_a44_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Total"},read_from_excel_data(Config,{"Sheet1",43,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",43,0}), {string,"Total"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",43,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",43,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Total"}]),
+      test_util:expected2(Msg, {string,"Total"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a28_test(doc) -> [{userdata,[{""}]}];
 sheet1_a28_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"ERROR.TYPE"},read_from_excel_data(Config,{"Sheet1",27,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",27,0}), {string,"ERROR.TYPE"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",27,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",27,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"ERROR.TYPE"}]),
+      test_util:expected2(Msg, {string,"ERROR.TYPE"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a39_test(doc) -> [{userdata,[{""}]}];
 sheet1_a39_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"ISREF"},read_from_excel_data(Config,{"Sheet1",38,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",38,0}), {string,"ISREF"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",38,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",38,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"ISREF"}]),
+      test_util:expected2(Msg, {string,"ISREF"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a1_test(doc) -> [{userdata,[{""}]}];
 sheet1_a1_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"INFORMATION FUNCTIONS"},read_from_excel_data(Config,{"Sheet1",0,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",0,0}), {string,"INFORMATION FUNCTIONS"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",0,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",0,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"INFORMATION FUNCTIONS"}]),
+      test_util:expected2(Msg, {string,"INFORMATION FUNCTIONS"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a12_test(doc) -> [{userdata,[{""}]}];
 sheet1_a12_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0225},read_from_excel_data(Config,{"Sheet1",11,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",11,0}), {number,0.0225}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",11,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",11,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0225}]),
+      test_util:expected2(Msg, {number,0.0225})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a34_test(doc) -> [{userdata,[{""}]}];
 sheet1_a34_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"ISLOGICAL"},read_from_excel_data(Config,{"Sheet1",33,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",33,0}), {string,"ISLOGICAL"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",33,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",33,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"ISLOGICAL"}]),
+      test_util:expected2(Msg, {string,"ISLOGICAL"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a7_test(doc) -> [{userdata,[{""}]}];
 sheet1_a7_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"#Succeded"},read_from_excel_data(Config,{"Sheet1",6,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",6,0}), {string,"#Succeded"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",6,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",6,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"#Succeded"}]),
+      test_util:expected2(Msg, {string,"#Succeded"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a18_test(doc) -> [{userdata,[{""}]}];
 sheet1_a18_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,12.8},read_from_excel_data(Config,{"Sheet1",17,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",17,0}), {number,12.8}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",17,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",17,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,12.8}]),
+      test_util:expected2(Msg, {number,12.8})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a29_test(doc) -> [{userdata,[{""}]}];
 sheet1_a29_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"INFO"},read_from_excel_data(Config,{"Sheet1",28,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",28,0}), {string,"INFO"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",28,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",28,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"INFO"}]),
+      test_util:expected2(Msg, {string,"INFO"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a40_test(doc) -> [{userdata,[{""}]}];
 sheet1_a40_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"ISTEXT"},read_from_excel_data(Config,{"Sheet1",39,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",39,0}), {string,"ISTEXT"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",39,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",39,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"ISTEXT"}]),
+      test_util:expected2(Msg, {string,"ISTEXT"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a13_test(doc) -> [{userdata,[{""}]}];
 sheet1_a13_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"1999/11/11 00:00:00"},read_from_excel_data(Config,{"Sheet1",12,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",12,0}), {string,"1999/11/11 00:00:00"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",12,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",12,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"1999/11/11 00:00:00"}]),
+      test_util:expected2(Msg, {string,"1999/11/11 00:00:00"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a35_test(doc) -> [{userdata,[{""}]}];
 sheet1_a35_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"ISNA"},read_from_excel_data(Config,{"Sheet1",34,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",34,0}), {string,"ISNA"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",34,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",34,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"ISNA"}]),
+      test_util:expected2(Msg, {string,"ISNA"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a8_test(doc) -> [{userdata,[{""}]}];
 sheet1_a8_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SUM(H26:H43)"},read_from_excel_data(Config,{"Sheet1",7,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",7,0}), {formula,"=SUM(H26:H43)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",7,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",7,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SUM(H26:H43)"}]),
+      test_util:expected2(Msg, {formula,"=SUM(H26:H43)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a19_test(doc) -> [{userdata,[{""}]}];
 sheet1_a19_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=233/0"},read_from_excel_data(Config,{"Sheet1",18,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",18,0}), {formula,"=233/0"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",18,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",18,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=233/0"}]),
+      test_util:expected2(Msg, {formula,"=233/0"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a30_test(doc) -> [{userdata,[{""}]}];
 sheet1_a30_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"ISBLANK"},read_from_excel_data(Config,{"Sheet1",29,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",29,0}), {string,"ISBLANK"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",29,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",29,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"ISBLANK"}]),
+      test_util:expected2(Msg, {string,"ISBLANK"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a41_test(doc) -> [{userdata,[{""}]}];
 sheet1_a41_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"N"},read_from_excel_data(Config,{"Sheet1",40,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",40,0}), {string,"N"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",40,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",40,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"N"}]),
+      test_util:expected2(Msg, {string,"N"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a3_test(doc) -> [{userdata,[{""}]}];
 sheet1_a3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Test Status"},read_from_excel_data(Config,{"Sheet1",2,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",2,0}), {string,"Test Status"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",2,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",2,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Test Status"}]),
+      test_util:expected2(Msg, {string,"Test Status"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a14_test(doc) -> [{userdata,[{""}]}];
 sheet1_a14_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,232323.0},read_from_excel_data(Config,{"Sheet1",13,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",13,0}), {number,232323.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",13,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",13,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,232323.0}]),
+      test_util:expected2(Msg, {number,232323.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a25_test(doc) -> [{userdata,[{""}]}];
 sheet1_a25_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Function"},read_from_excel_data(Config,{"Sheet1",24,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",24,0}), {string,"Function"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",24,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",24,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Function"}]),
+      test_util:expected2(Msg, {string,"Function"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a36_test(doc) -> [{userdata,[{""}]}];
 sheet1_a36_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"ISNONTEXT"},read_from_excel_data(Config,{"Sheet1",35,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",35,0}), {string,"ISNONTEXT"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",35,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",35,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"ISNONTEXT"}]),
+      test_util:expected2(Msg, {string,"ISNONTEXT"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a20_test(doc) -> [{userdata,[{""}]}];
 sheet1_a20_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=NORMSINV(1.2)"},read_from_excel_data(Config,{"Sheet1",19,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",19,0}), {formula,"=NORMSINV(1.2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",19,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",19,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=NORMSINV(1.2)"}]),
+      test_util:expected2(Msg, {formula,"=NORMSINV(1.2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a31_test(doc) -> [{userdata,[{""}]}];
 sheet1_a31_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"ISERR"},read_from_excel_data(Config,{"Sheet1",30,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",30,0}), {string,"ISERR"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",30,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",30,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"ISERR"}]),
+      test_util:expected2(Msg, {string,"ISERR"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a42_test(doc) -> [{userdata,[{""}]}];
 sheet1_a42_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"NA"},read_from_excel_data(Config,{"Sheet1",41,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",41,0}), {string,"NA"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",41,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",41,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"NA"}]),
+      test_util:expected2(Msg, {string,"NA"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a4_test(doc) -> [{userdata,[{""}]}];
 sheet1_a4_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(A8=B8,\"All ok.\",\"FAILED!!\")"},read_from_excel_data(Config,{"Sheet1",3,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",3,0}), {formula,"=IF(A8=B8,\"All ok.\",\"FAILED!!\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",3,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",3,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(A8=B8,\"All ok.\",\"FAILED!!\")"}]),
+      test_util:expected2(Msg, {formula,"=IF(A8=B8,\"All ok.\",\"FAILED!!\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a26_test(doc) -> [{userdata,[{""}]}];
 sheet1_a26_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"CELL"},read_from_excel_data(Config,{"Sheet1",25,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",25,0}), {string,"CELL"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",25,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",25,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"CELL"}]),
+      test_util:expected2(Msg, {string,"CELL"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a37_test(doc) -> [{userdata,[{""}]}];
 sheet1_a37_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"ISNUMBER"},read_from_excel_data(Config,{"Sheet1",36,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",36,0}), {string,"ISNUMBER"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",36,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",36,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"ISNUMBER"}]),
+      test_util:expected2(Msg, {string,"ISNUMBER"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a10_test(doc) -> [{userdata,[{""}]}];
 sheet1_a10_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Test data"},read_from_excel_data(Config,{"Sheet1",9,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",9,0}), {string,"Test data"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",9,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",9,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Test data"}]),
+      test_util:expected2(Msg, {string,"Test data"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a21_test(doc) -> [{userdata,[{""}]}];
 sheet1_a21_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=FACT(\"jack\")"},read_from_excel_data(Config,{"Sheet1",20,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",20,0}), {formula,"=FACT(\"jack\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",20,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",20,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=FACT(\"jack\")"}]),
+      test_util:expected2(Msg, {formula,"=FACT(\"jack\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a32_test(doc) -> [{userdata,[{""}]}];
 sheet1_a32_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"ISERROR"},read_from_excel_data(Config,{"Sheet1",31,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",31,0}), {string,"ISERROR"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",31,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",31,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"ISERROR"}]),
+      test_util:expected2(Msg, {string,"ISERROR"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a43_test(doc) -> [{userdata,[{""}]}];
 sheet1_a43_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"TYPE"},read_from_excel_data(Config,{"Sheet1",42,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",42,0}), {string,"TYPE"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",42,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",42,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"TYPE"}]),
+      test_util:expected2(Msg, {string,"TYPE"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b27_test(doc) -> [{userdata,[{""}]}];
 sheet1_b27_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COUNTBLANK(A12:A18)"},read_from_excel_data(Config,{"Sheet1",26,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",26,1}), {formula,"=COUNTBLANK(A12:A18)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",26,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",26,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COUNTBLANK(A12:A18)"}]),
+      test_util:expected2(Msg, {formula,"=COUNTBLANK(A12:A18)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b38_test(doc) -> [{userdata,[{""}]}];
 sheet1_b38_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISODD(3)"},read_from_excel_data(Config,{"Sheet1",37,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",37,1}), {formula,"=ISODD(3)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",37,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",37,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISODD(3)"}]),
+      test_util:expected2(Msg, {formula,"=ISODD(3)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b33_test(doc) -> [{userdata,[{""}]}];
 sheet1_b33_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISEVEN(3)"},read_from_excel_data(Config,{"Sheet1",32,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",32,1}), {formula,"=ISEVEN(3)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",32,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",32,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISEVEN(3)"}]),
+      test_util:expected2(Msg, {formula,"=ISEVEN(3)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b28_test(doc) -> [{userdata,[{""}]}];
 sheet1_b28_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ERROR.TYPE(A19)"},read_from_excel_data(Config,{"Sheet1",27,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",27,1}), {formula,"=ERROR.TYPE(A19)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",27,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",27,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ERROR.TYPE(A19)"}]),
+      test_util:expected2(Msg, {formula,"=ERROR.TYPE(A19)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b39_test(doc) -> [{userdata,[{""}]}];
 sheet1_b39_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISREF(4)"},read_from_excel_data(Config,{"Sheet1",38,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",38,1}), {formula,"=ISREF(4)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",38,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",38,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISREF(4)"}]),
+      test_util:expected2(Msg, {formula,"=ISREF(4)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b12_test(doc) -> [{userdata,[{""}]}];
 sheet1_b12_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1.0},read_from_excel_data(Config,{"Sheet1",11,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",11,1}), {number,1.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",11,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",11,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.0}]),
+      test_util:expected2(Msg, {number,1.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b34_test(doc) -> [{userdata,[{""}]}];
 sheet1_b34_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISLOGICAL(B12)"},read_from_excel_data(Config,{"Sheet1",33,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",33,1}), {formula,"=ISLOGICAL(B12)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",33,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",33,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISLOGICAL(B12)"}]),
+      test_util:expected2(Msg, {formula,"=ISLOGICAL(B12)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b7_test(doc) -> [{userdata,[{""}]}];
 sheet1_b7_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"#Total"},read_from_excel_data(Config,{"Sheet1",6,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",6,1}), {string,"#Total"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",6,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",6,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"#Total"}]),
+      test_util:expected2(Msg, {string,"#Total"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b29_test(doc) -> [{userdata,[{""}]}];
 sheet1_b29_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=INFO(\"system\")"},read_from_excel_data(Config,{"Sheet1",28,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",28,1}), {formula,"=INFO(\"system\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",28,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",28,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=INFO(\"system\")"}]),
+      test_util:expected2(Msg, {formula,"=INFO(\"system\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b40_test(doc) -> [{userdata,[{""}]}];
 sheet1_b40_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISTEXT(B13)"},read_from_excel_data(Config,{"Sheet1",39,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",39,1}), {formula,"=ISTEXT(B13)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",39,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",39,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISTEXT(B13)"}]),
+      test_util:expected2(Msg, {formula,"=ISTEXT(B13)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b13_test(doc) -> [{userdata,[{""}]}];
 sheet1_b13_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"koe"},read_from_excel_data(Config,{"Sheet1",12,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",12,1}), {string,"koe"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",12,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",12,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"koe"}]),
+      test_util:expected2(Msg, {string,"koe"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b35_test(doc) -> [{userdata,[{""}]}];
 sheet1_b35_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISNA(B19)"},read_from_excel_data(Config,{"Sheet1",34,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",34,1}), {formula,"=ISNA(B19)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",34,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",34,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISNA(B19)"}]),
+      test_util:expected2(Msg, {formula,"=ISNA(B19)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b8_test(doc) -> [{userdata,[{""}]}];
 sheet1_b8_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,18.0},read_from_excel_data(Config,{"Sheet1",7,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",7,1}), {number,18.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",7,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",7,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,18.0}]),
+      test_util:expected2(Msg, {number,18.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b30_test(doc) -> [{userdata,[{""}]}];
 sheet1_b30_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISBLANK(A12)"},read_from_excel_data(Config,{"Sheet1",29,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",29,1}), {formula,"=ISBLANK(A12)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",29,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",29,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISBLANK(A12)"}]),
+      test_util:expected2(Msg, {formula,"=ISBLANK(A12)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b41_test(doc) -> [{userdata,[{""}]}];
 sheet1_b41_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=N(A18)"},read_from_excel_data(Config,{"Sheet1",40,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",40,1}), {formula,"=N(A18)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",40,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",40,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=N(A18)"}]),
+      test_util:expected2(Msg, {formula,"=N(A18)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b25_test(doc) -> [{userdata,[{""}]}];
 sheet1_b25_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"1st test"},read_from_excel_data(Config,{"Sheet1",24,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",24,1}), {string,"1st test"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",24,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",24,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"1st test"}]),
+      test_util:expected2(Msg, {string,"1st test"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b36_test(doc) -> [{userdata,[{""}]}];
 sheet1_b36_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISNONTEXT(B13)"},read_from_excel_data(Config,{"Sheet1",35,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",35,1}), {formula,"=ISNONTEXT(B13)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",35,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",35,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISNONTEXT(B13)"}]),
+      test_util:expected2(Msg, {formula,"=ISNONTEXT(B13)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b31_test(doc) -> [{userdata,[{""}]}];
 sheet1_b31_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISERR(A22)"},read_from_excel_data(Config,{"Sheet1",30,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",30,1}), {formula,"=ISERR(A22)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",30,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",30,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISERR(A22)"}]),
+      test_util:expected2(Msg, {formula,"=ISERR(A22)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b42_test(doc) -> [{userdata,[{""}]}];
 sheet1_b42_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=NA()"},read_from_excel_data(Config,{"Sheet1",41,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",41,1}), {formula,"=NA()"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",41,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",41,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=NA()"}]),
+      test_util:expected2(Msg, {formula,"=NA()"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b26_test(doc) -> [{userdata,[{""}]}];
 sheet1_b26_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=CELL(\"format\",A12)"},read_from_excel_data(Config,{"Sheet1",25,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",25,1}), {formula,"=CELL(\"format\",A12)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",25,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",25,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=CELL(\"format\",A12)"}]),
+      test_util:expected2(Msg, {formula,"=CELL(\"format\",A12)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b37_test(doc) -> [{userdata,[{""}]}];
 sheet1_b37_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISNUMBER(A16)"},read_from_excel_data(Config,{"Sheet1",36,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",36,1}), {formula,"=ISNUMBER(A16)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",36,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",36,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISNUMBER(A16)"}]),
+      test_util:expected2(Msg, {formula,"=ISNUMBER(A16)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b32_test(doc) -> [{userdata,[{""}]}];
 sheet1_b32_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISERROR(A19)"},read_from_excel_data(Config,{"Sheet1",31,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",31,1}), {formula,"=ISERROR(A19)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",31,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",31,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISERROR(A19)"}]),
+      test_util:expected2(Msg, {formula,"=ISERROR(A19)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b43_test(doc) -> [{userdata,[{""}]}];
 sheet1_b43_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TYPE(A22)"},read_from_excel_data(Config,{"Sheet1",42,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",42,1}), {formula,"=TYPE(A22)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",42,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",42,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TYPE(A22)"}]),
+      test_util:expected2(Msg, {formula,"=TYPE(A22)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_c27_test(doc) -> [{userdata,[{""}]}];
 sheet1_c27_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,2.0},read_from_excel_data(Config,{"Sheet1",26,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",26,2}), {number,2.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",26,2}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",26,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,2.0}]),
+      test_util:expected2(Msg, {number,2.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_c38_test(doc) -> [{userdata,[{""}]}];
 sheet1_c38_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,true},read_from_excel_data(Config,{"Sheet1",37,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",37,2}), {boolean,true}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",37,2}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",37,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,true}]),
+      test_util:expected2(Msg, {boolean,true})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_c33_test(doc) -> [{userdata,[{""}]}];
 sheet1_c33_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,false},read_from_excel_data(Config,{"Sheet1",32,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",32,2}), {boolean,false}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",32,2}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",32,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,false}]),
+      test_util:expected2(Msg, {boolean,false})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_c28_test(doc) -> [{userdata,[{""}]}];
 sheet1_c28_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,2.0},read_from_excel_data(Config,{"Sheet1",27,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",27,2}), {number,2.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",27,2}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",27,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,2.0}]),
+      test_util:expected2(Msg, {number,2.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_c39_test(doc) -> [{userdata,[{""}]}];
 sheet1_c39_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,false},read_from_excel_data(Config,{"Sheet1",38,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",38,2}), {boolean,false}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",38,2}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",38,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,false}]),
+      test_util:expected2(Msg, {boolean,false})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_c34_test(doc) -> [{userdata,[{""}]}];
 sheet1_c34_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,false},read_from_excel_data(Config,{"Sheet1",33,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",33,2}), {boolean,false}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",33,2}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",33,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,false}]),
+      test_util:expected2(Msg, {boolean,false})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_c29_test(doc) -> [{userdata,[{""}]}];
 sheet1_c29_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"pcdos"},read_from_excel_data(Config,{"Sheet1",28,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",28,2}), {string,"pcdos"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",28,2}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",28,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"pcdos"}]),
+      test_util:expected2(Msg, {string,"pcdos"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_c40_test(doc) -> [{userdata,[{""}]}];
 sheet1_c40_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,true},read_from_excel_data(Config,{"Sheet1",39,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",39,2}), {boolean,true}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",39,2}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",39,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,true}]),
+      test_util:expected2(Msg, {boolean,true})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_c35_test(doc) -> [{userdata,[{""}]}];
 sheet1_c35_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,false},read_from_excel_data(Config,{"Sheet1",34,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",34,2}), {boolean,false}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",34,2}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",34,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,false}]),
+      test_util:expected2(Msg, {boolean,false})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_c30_test(doc) -> [{userdata,[{""}]}];
 sheet1_c30_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,false},read_from_excel_data(Config,{"Sheet1",29,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",29,2}), {boolean,false}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",29,2}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",29,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,false}]),
+      test_util:expected2(Msg, {boolean,false})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_c41_test(doc) -> [{userdata,[{""}]}];
 sheet1_c41_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,12.8},read_from_excel_data(Config,{"Sheet1",40,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",40,2}), {number,12.8}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",40,2}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",40,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,12.8}]),
+      test_util:expected2(Msg, {number,12.8})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_c25_test(doc) -> [{userdata,[{""}]}];
 sheet1_c25_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Correct"},read_from_excel_data(Config,{"Sheet1",24,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",24,2}), {string,"Correct"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",24,2}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",24,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Correct"}]),
+      test_util:expected2(Msg, {string,"Correct"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_c36_test(doc) -> [{userdata,[{""}]}];
 sheet1_c36_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,false},read_from_excel_data(Config,{"Sheet1",35,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",35,2}), {boolean,false}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",35,2}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",35,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,false}]),
+      test_util:expected2(Msg, {boolean,false})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_c31_test(doc) -> [{userdata,[{""}]}];
 sheet1_c31_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,false},read_from_excel_data(Config,{"Sheet1",30,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",30,2}), {boolean,false}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",30,2}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",30,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,false}]),
+      test_util:expected2(Msg, {boolean,false})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_c42_test(doc) -> [{userdata,[{""}]}];
 sheet1_c42_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Sheet1",41,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",41,2}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",41,2}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",41,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_c26_test(doc) -> [{userdata,[{""}]}];
 sheet1_c26_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"P2"},read_from_excel_data(Config,{"Sheet1",25,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",25,2}), {string,"P2"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",25,2}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",25,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"P2"}]),
+      test_util:expected2(Msg, {string,"P2"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_c37_test(doc) -> [{userdata,[{""}]}];
 sheet1_c37_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,true},read_from_excel_data(Config,{"Sheet1",36,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",36,2}), {boolean,true}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",36,2}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",36,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,true}]),
+      test_util:expected2(Msg, {boolean,true})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_c32_test(doc) -> [{userdata,[{""}]}];
 sheet1_c32_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,true},read_from_excel_data(Config,{"Sheet1",31,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",31,2}), {boolean,true}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",31,2}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",31,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,true}]),
+      test_util:expected2(Msg, {boolean,true})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_c43_test(doc) -> [{userdata,[{""}]}];
 sheet1_c43_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,16.0},read_from_excel_data(Config,{"Sheet1",42,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",42,2}), {number,16.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",42,2}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",42,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,16.0}]),
+      test_util:expected2(Msg, {number,16.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_d27_test(doc) -> [{userdata,[{""}]}];
 sheet1_d27_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COUNTBLANK(A12:A19)"},read_from_excel_data(Config,{"Sheet1",26,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",26,3}), {formula,"=COUNTBLANK(A12:A19)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",26,3}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",26,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COUNTBLANK(A12:A19)"}]),
+      test_util:expected2(Msg, {formula,"=COUNTBLANK(A12:A19)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_d38_test(doc) -> [{userdata,[{""}]}];
 sheet1_d38_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISODD(-2)"},read_from_excel_data(Config,{"Sheet1",37,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",37,3}), {formula,"=ISODD(-2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",37,3}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",37,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISODD(-2)"}]),
+      test_util:expected2(Msg, {formula,"=ISODD(-2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_d33_test(doc) -> [{userdata,[{""}]}];
 sheet1_d33_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISEVEN(2)"},read_from_excel_data(Config,{"Sheet1",32,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",32,3}), {formula,"=ISEVEN(2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",32,3}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",32,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISEVEN(2)"}]),
+      test_util:expected2(Msg, {formula,"=ISEVEN(2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_d28_test(doc) -> [{userdata,[{""}]}];
 sheet1_d28_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ERROR.TYPE(A20)"},read_from_excel_data(Config,{"Sheet1",27,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",27,3}), {formula,"=ERROR.TYPE(A20)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",27,3}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",27,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ERROR.TYPE(A20)"}]),
+      test_util:expected2(Msg, {formula,"=ERROR.TYPE(A20)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_d39_test(doc) -> [{userdata,[{""}]}];
 sheet1_d39_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISREF(A2)"},read_from_excel_data(Config,{"Sheet1",38,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",38,3}), {formula,"=ISREF(A2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",38,3}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",38,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISREF(A2)"}]),
+      test_util:expected2(Msg, {formula,"=ISREF(A2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_d34_test(doc) -> [{userdata,[{""}]}];
 sheet1_d34_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISLOGICAL(A19)"},read_from_excel_data(Config,{"Sheet1",33,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",33,3}), {formula,"=ISLOGICAL(A19)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",33,3}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",33,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISLOGICAL(A19)"}]),
+      test_util:expected2(Msg, {formula,"=ISLOGICAL(A19)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_d29_test(doc) -> [{userdata,[{""}]}];
 sheet1_d29_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=INFO(\"release\")"},read_from_excel_data(Config,{"Sheet1",28,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",28,3}), {formula,"=INFO(\"release\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",28,3}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",28,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=INFO(\"release\")"}]),
+      test_util:expected2(Msg, {formula,"=INFO(\"release\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_d40_test(doc) -> [{userdata,[{""}]}];
 sheet1_d40_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISTEXT(A19)"},read_from_excel_data(Config,{"Sheet1",39,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",39,3}), {formula,"=ISTEXT(A19)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",39,3}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",39,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISTEXT(A19)"}]),
+      test_util:expected2(Msg, {formula,"=ISTEXT(A19)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_d35_test(doc) -> [{userdata,[{""}]}];
 sheet1_d35_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISNA(A21)"},read_from_excel_data(Config,{"Sheet1",34,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",34,3}), {formula,"=ISNA(A21)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",34,3}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",34,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISNA(A21)"}]),
+      test_util:expected2(Msg, {formula,"=ISNA(A21)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_d30_test(doc) -> [{userdata,[{""}]}];
 sheet1_d30_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISBLANK(A15)"},read_from_excel_data(Config,{"Sheet1",29,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",29,3}), {formula,"=ISBLANK(A15)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",29,3}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",29,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISBLANK(A15)"}]),
+      test_util:expected2(Msg, {formula,"=ISBLANK(A15)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_d41_test(doc) -> [{userdata,[{""}]}];
 sheet1_d41_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=N(B13)"},read_from_excel_data(Config,{"Sheet1",40,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",40,3}), {formula,"=N(B13)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",40,3}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",40,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=N(B13)"}]),
+      test_util:expected2(Msg, {formula,"=N(B13)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_d25_test(doc) -> [{userdata,[{""}]}];
 sheet1_d25_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"2nd test"},read_from_excel_data(Config,{"Sheet1",24,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",24,3}), {string,"2nd test"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",24,3}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",24,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"2nd test"}]),
+      test_util:expected2(Msg, {string,"2nd test"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_d36_test(doc) -> [{userdata,[{""}]}];
 sheet1_d36_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISNONTEXT(A14)"},read_from_excel_data(Config,{"Sheet1",35,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",35,3}), {formula,"=ISNONTEXT(A14)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",35,3}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",35,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISNONTEXT(A14)"}]),
+      test_util:expected2(Msg, {formula,"=ISNONTEXT(A14)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_d31_test(doc) -> [{userdata,[{""}]}];
 sheet1_d31_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISERR(A21)"},read_from_excel_data(Config,{"Sheet1",30,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",30,3}), {formula,"=ISERR(A21)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",30,3}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",30,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISERR(A21)"}]),
+      test_util:expected2(Msg, {formula,"=ISERR(A21)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_d42_test(doc) -> [{userdata,[{""}]}];
 sheet1_d42_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Sheet1",41,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",41,3}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",41,3}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",41,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_d26_test(doc) -> [{userdata,[{""}]}];
 sheet1_d26_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=CELL(\"format\",A13)"},read_from_excel_data(Config,{"Sheet1",25,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",25,3}), {formula,"=CELL(\"format\",A13)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",25,3}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",25,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=CELL(\"format\",A13)"}]),
+      test_util:expected2(Msg, {formula,"=CELL(\"format\",A13)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_d37_test(doc) -> [{userdata,[{""}]}];
 sheet1_d37_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISNUMBER(A14)"},read_from_excel_data(Config,{"Sheet1",36,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",36,3}), {formula,"=ISNUMBER(A14)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",36,3}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",36,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISNUMBER(A14)"}]),
+      test_util:expected2(Msg, {formula,"=ISNUMBER(A14)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_d32_test(doc) -> [{userdata,[{""}]}];
 sheet1_d32_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISERROR(A22)"},read_from_excel_data(Config,{"Sheet1",31,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",31,3}), {formula,"=ISERROR(A22)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",31,3}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",31,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISERROR(A22)"}]),
+      test_util:expected2(Msg, {formula,"=ISERROR(A22)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_d43_test(doc) -> [{userdata,[{""}]}];
 sheet1_d43_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TYPE(B13)"},read_from_excel_data(Config,{"Sheet1",42,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",42,3}), {formula,"=TYPE(B13)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",42,3}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",42,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TYPE(B13)"}]),
+      test_util:expected2(Msg, {formula,"=TYPE(B13)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_e27_test(doc) -> [{userdata,[{""}]}];
 sheet1_e27_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,2.0},read_from_excel_data(Config,{"Sheet1",26,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",26,4}), {number,2.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",26,4}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",26,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,2.0}]),
+      test_util:expected2(Msg, {number,2.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_e38_test(doc) -> [{userdata,[{""}]}];
 sheet1_e38_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,false},read_from_excel_data(Config,{"Sheet1",37,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",37,4}), {boolean,false}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",37,4}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",37,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,false}]),
+      test_util:expected2(Msg, {boolean,false})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_e33_test(doc) -> [{userdata,[{""}]}];
 sheet1_e33_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,true},read_from_excel_data(Config,{"Sheet1",32,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",32,4}), {boolean,true}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",32,4}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",32,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,true}]),
+      test_util:expected2(Msg, {boolean,true})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_e28_test(doc) -> [{userdata,[{""}]}];
 sheet1_e28_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,6.0},read_from_excel_data(Config,{"Sheet1",27,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",27,4}), {number,6.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",27,4}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",27,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,6.0}]),
+      test_util:expected2(Msg, {number,6.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_e39_test(doc) -> [{userdata,[{""}]}];
 sheet1_e39_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,true},read_from_excel_data(Config,{"Sheet1",38,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",38,4}), {boolean,true}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",38,4}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",38,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,true}]),
+      test_util:expected2(Msg, {boolean,true})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_e34_test(doc) -> [{userdata,[{""}]}];
 sheet1_e34_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,false},read_from_excel_data(Config,{"Sheet1",33,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",33,4}), {boolean,false}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",33,4}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",33,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,false}]),
+      test_util:expected2(Msg, {boolean,false})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_e29_test(doc) -> [{userdata,[{""}]}];
 sheet1_e29_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"9.0"},read_from_excel_data(Config,{"Sheet1",28,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",28,4}), {string,"9.0"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",28,4}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",28,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"9.0"}]),
+      test_util:expected2(Msg, {string,"9.0"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_e40_test(doc) -> [{userdata,[{""}]}];
 sheet1_e40_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,false},read_from_excel_data(Config,{"Sheet1",39,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",39,4}), {boolean,false}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",39,4}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",39,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,false}]),
+      test_util:expected2(Msg, {boolean,false})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_e35_test(doc) -> [{userdata,[{""}]}];
 sheet1_e35_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,false},read_from_excel_data(Config,{"Sheet1",34,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",34,4}), {boolean,false}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",34,4}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",34,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,false}]),
+      test_util:expected2(Msg, {boolean,false})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_e30_test(doc) -> [{userdata,[{""}]}];
 sheet1_e30_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,true},read_from_excel_data(Config,{"Sheet1",29,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",29,4}), {boolean,true}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",29,4}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",29,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,true}]),
+      test_util:expected2(Msg, {boolean,true})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_e41_test(doc) -> [{userdata,[{""}]}];
 sheet1_e41_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Sheet1",40,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",40,4}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",40,4}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",40,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_e25_test(doc) -> [{userdata,[{""}]}];
 sheet1_e25_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Correct"},read_from_excel_data(Config,{"Sheet1",24,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",24,4}), {string,"Correct"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",24,4}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",24,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Correct"}]),
+      test_util:expected2(Msg, {string,"Correct"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_e36_test(doc) -> [{userdata,[{""}]}];
 sheet1_e36_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,true},read_from_excel_data(Config,{"Sheet1",35,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",35,4}), {boolean,true}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",35,4}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",35,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,true}]),
+      test_util:expected2(Msg, {boolean,true})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_e31_test(doc) -> [{userdata,[{""}]}];
 sheet1_e31_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,true},read_from_excel_data(Config,{"Sheet1",30,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",30,4}), {boolean,true}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",30,4}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",30,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,true}]),
+      test_util:expected2(Msg, {boolean,true})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_e42_test(doc) -> [{userdata,[{""}]}];
 sheet1_e42_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Sheet1",41,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",41,4}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",41,4}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",41,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_e26_test(doc) -> [{userdata,[{""}]}];
 sheet1_e26_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"D2"},read_from_excel_data(Config,{"Sheet1",25,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",25,4}), {string,"D2"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",25,4}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",25,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"D2"}]),
+      test_util:expected2(Msg, {string,"D2"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_e37_test(doc) -> [{userdata,[{""}]}];
 sheet1_e37_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,true},read_from_excel_data(Config,{"Sheet1",36,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",36,4}), {boolean,true}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",36,4}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",36,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,true}]),
+      test_util:expected2(Msg, {boolean,true})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_e32_test(doc) -> [{userdata,[{""}]}];
 sheet1_e32_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,true},read_from_excel_data(Config,{"Sheet1",31,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",31,4}), {boolean,true}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",31,4}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",31,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,true}]),
+      test_util:expected2(Msg, {boolean,true})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_e43_test(doc) -> [{userdata,[{""}]}];
 sheet1_e43_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,2.0},read_from_excel_data(Config,{"Sheet1",42,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",42,4}), {number,2.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",42,4}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",42,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,2.0}]),
+      test_util:expected2(Msg, {number,2.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_f27_test(doc) -> [{userdata,[{""}]}];
 sheet1_f27_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COUNTBLANK(A14)"},read_from_excel_data(Config,{"Sheet1",26,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",26,5}), {formula,"=COUNTBLANK(A14)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",26,5}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",26,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COUNTBLANK(A14)"}]),
+      test_util:expected2(Msg, {formula,"=COUNTBLANK(A14)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_f38_test(doc) -> [{userdata,[{""}]}];
 sheet1_f38_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISODD(5)"},read_from_excel_data(Config,{"Sheet1",37,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",37,5}), {formula,"=ISODD(5)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",37,5}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",37,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISODD(5)"}]),
+      test_util:expected2(Msg, {formula,"=ISODD(5)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_f33_test(doc) -> [{userdata,[{""}]}];
 sheet1_f33_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISEVEN(2.2)"},read_from_excel_data(Config,{"Sheet1",32,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",32,5}), {formula,"=ISEVEN(2.2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",32,5}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",32,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISEVEN(2.2)"}]),
+      test_util:expected2(Msg, {formula,"=ISEVEN(2.2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_f28_test(doc) -> [{userdata,[{""}]}];
 sheet1_f28_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ERROR.TYPE(A21)"},read_from_excel_data(Config,{"Sheet1",27,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",27,5}), {formula,"=ERROR.TYPE(A21)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",27,5}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",27,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ERROR.TYPE(A21)"}]),
+      test_util:expected2(Msg, {formula,"=ERROR.TYPE(A21)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_f39_test(doc) -> [{userdata,[{""}]}];
 sheet1_f39_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISREF(A20)"},read_from_excel_data(Config,{"Sheet1",38,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",38,5}), {formula,"=ISREF(A20)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",38,5}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",38,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISREF(A20)"}]),
+      test_util:expected2(Msg, {formula,"=ISREF(A20)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_f34_test(doc) -> [{userdata,[{""}]}];
 sheet1_f34_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISLOGICAL(C30)"},read_from_excel_data(Config,{"Sheet1",33,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",33,5}), {formula,"=ISLOGICAL(C30)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",33,5}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",33,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISLOGICAL(C30)"}]),
+      test_util:expected2(Msg, {formula,"=ISLOGICAL(C30)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_f29_test(doc) -> [{userdata,[{""}]}];
 sheet1_f29_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=INFO(\"osversion\")"},read_from_excel_data(Config,{"Sheet1",28,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",28,5}), {formula,"=INFO(\"osversion\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",28,5}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",28,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=INFO(\"osversion\")"}]),
+      test_util:expected2(Msg, {formula,"=INFO(\"osversion\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_f40_test(doc) -> [{userdata,[{""}]}];
 sheet1_f40_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISTEXT(A18)"},read_from_excel_data(Config,{"Sheet1",39,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",39,5}), {formula,"=ISTEXT(A18)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",39,5}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",39,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISTEXT(A18)"}]),
+      test_util:expected2(Msg, {formula,"=ISTEXT(A18)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_f35_test(doc) -> [{userdata,[{""}]}];
 sheet1_f35_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISNA(A22)"},read_from_excel_data(Config,{"Sheet1",34,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",34,5}), {formula,"=ISNA(A22)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",34,5}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",34,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISNA(A22)"}]),
+      test_util:expected2(Msg, {formula,"=ISNA(A22)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_f30_test(doc) -> [{userdata,[{""}]}];
 sheet1_f30_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISBLANK(A19)"},read_from_excel_data(Config,{"Sheet1",29,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",29,5}), {formula,"=ISBLANK(A19)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",29,5}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",29,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISBLANK(A19)"}]),
+      test_util:expected2(Msg, {formula,"=ISBLANK(A19)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_f41_test(doc) -> [{userdata,[{""}]}];
 sheet1_f41_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=N(B32)"},read_from_excel_data(Config,{"Sheet1",40,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",40,5}), {formula,"=N(B32)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",40,5}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",40,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=N(B32)"}]),
+      test_util:expected2(Msg, {formula,"=N(B32)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_f25_test(doc) -> [{userdata,[{""}]}];
 sheet1_f25_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"3rd test"},read_from_excel_data(Config,{"Sheet1",24,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",24,5}), {string,"3rd test"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",24,5}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",24,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"3rd test"}]),
+      test_util:expected2(Msg, {string,"3rd test"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_f36_test(doc) -> [{userdata,[{""}]}];
 sheet1_f36_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISNONTEXT(A19)"},read_from_excel_data(Config,{"Sheet1",35,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",35,5}), {formula,"=ISNONTEXT(A19)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",35,5}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",35,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISNONTEXT(A19)"}]),
+      test_util:expected2(Msg, {formula,"=ISNONTEXT(A19)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_f31_test(doc) -> [{userdata,[{""}]}];
 sheet1_f31_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISERR(A14)"},read_from_excel_data(Config,{"Sheet1",30,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",30,5}), {formula,"=ISERR(A14)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",30,5}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",30,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISERR(A14)"}]),
+      test_util:expected2(Msg, {formula,"=ISERR(A14)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_f42_test(doc) -> [{userdata,[{""}]}];
 sheet1_f42_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Sheet1",41,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",41,5}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",41,5}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",41,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_f26_test(doc) -> [{userdata,[{""}]}];
 sheet1_f26_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=CELL(\"format\",A14)"},read_from_excel_data(Config,{"Sheet1",25,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",25,5}), {formula,"=CELL(\"format\",A14)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",25,5}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",25,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=CELL(\"format\",A14)"}]),
+      test_util:expected2(Msg, {formula,"=CELL(\"format\",A14)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_f37_test(doc) -> [{userdata,[{""}]}];
 sheet1_f37_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISNUMBER(B13)"},read_from_excel_data(Config,{"Sheet1",36,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",36,5}), {formula,"=ISNUMBER(B13)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",36,5}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",36,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISNUMBER(B13)"}]),
+      test_util:expected2(Msg, {formula,"=ISNUMBER(B13)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_f32_test(doc) -> [{userdata,[{""}]}];
 sheet1_f32_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ISERROR(A13)"},read_from_excel_data(Config,{"Sheet1",31,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",31,5}), {formula,"=ISERROR(A13)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",31,5}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",31,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ISERROR(A13)"}]),
+      test_util:expected2(Msg, {formula,"=ISERROR(A13)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_f43_test(doc) -> [{userdata,[{""}]}];
 sheet1_f43_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TYPE(A14)"},read_from_excel_data(Config,{"Sheet1",42,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",42,5}), {formula,"=TYPE(A14)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",42,5}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",42,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TYPE(A14)"}]),
+      test_util:expected2(Msg, {formula,"=TYPE(A14)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_g27_test(doc) -> [{userdata,[{""}]}];
 sheet1_g27_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Sheet1",26,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",26,6}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",26,6}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",26,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_g38_test(doc) -> [{userdata,[{""}]}];
 sheet1_g38_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,true},read_from_excel_data(Config,{"Sheet1",37,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",37,6}), {boolean,true}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",37,6}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",37,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,true}]),
+      test_util:expected2(Msg, {boolean,true})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_g33_test(doc) -> [{userdata,[{""}]}];
 sheet1_g33_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,true},read_from_excel_data(Config,{"Sheet1",32,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",32,6}), {boolean,true}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",32,6}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",32,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,true}]),
+      test_util:expected2(Msg, {boolean,true})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_g28_test(doc) -> [{userdata,[{""}]}];
 sheet1_g28_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,3.0},read_from_excel_data(Config,{"Sheet1",27,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",27,6}), {number,3.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",27,6}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",27,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,3.0}]),
+      test_util:expected2(Msg, {number,3.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_g39_test(doc) -> [{userdata,[{""}]}];
 sheet1_g39_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,true},read_from_excel_data(Config,{"Sheet1",38,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",38,6}), {boolean,true}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",38,6}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",38,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,true}]),
+      test_util:expected2(Msg, {boolean,true})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_g34_test(doc) -> [{userdata,[{""}]}];
 sheet1_g34_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,true},read_from_excel_data(Config,{"Sheet1",33,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",33,6}), {boolean,true}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",33,6}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",33,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,true}]),
+      test_util:expected2(Msg, {boolean,true})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_g29_test(doc) -> [{userdata,[{""}]}];
 sheet1_g29_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Windows (32-bit) 4.00"},read_from_excel_data(Config,{"Sheet1",28,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",28,6}), {string,"Windows (32-bit) 4.00"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",28,6}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",28,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Windows (32-bit) 4.00"}]),
+      test_util:expected2(Msg, {string,"Windows (32-bit) 4.00"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_g40_test(doc) -> [{userdata,[{""}]}];
 sheet1_g40_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,false},read_from_excel_data(Config,{"Sheet1",39,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",39,6}), {boolean,false}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",39,6}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",39,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,false}]),
+      test_util:expected2(Msg, {boolean,false})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_g35_test(doc) -> [{userdata,[{""}]}];
 sheet1_g35_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,true},read_from_excel_data(Config,{"Sheet1",34,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",34,6}), {boolean,true}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",34,6}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",34,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,true}]),
+      test_util:expected2(Msg, {boolean,true})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_g30_test(doc) -> [{userdata,[{""}]}];
 sheet1_g30_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,false},read_from_excel_data(Config,{"Sheet1",29,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",29,6}), {boolean,false}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",29,6}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",29,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,false}]),
+      test_util:expected2(Msg, {boolean,false})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_g41_test(doc) -> [{userdata,[{""}]}];
 sheet1_g41_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1.0},read_from_excel_data(Config,{"Sheet1",40,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",40,6}), {number,1.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",40,6}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",40,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.0}]),
+      test_util:expected2(Msg, {number,1.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_g25_test(doc) -> [{userdata,[{""}]}];
 sheet1_g25_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Correct"},read_from_excel_data(Config,{"Sheet1",24,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",24,6}), {string,"Correct"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",24,6}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",24,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Correct"}]),
+      test_util:expected2(Msg, {string,"Correct"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_g36_test(doc) -> [{userdata,[{""}]}];
 sheet1_g36_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,true},read_from_excel_data(Config,{"Sheet1",35,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",35,6}), {boolean,true}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",35,6}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",35,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,true}]),
+      test_util:expected2(Msg, {boolean,true})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_g31_test(doc) -> [{userdata,[{""}]}];
 sheet1_g31_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,false},read_from_excel_data(Config,{"Sheet1",30,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",30,6}), {boolean,false}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",30,6}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",30,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,false}]),
+      test_util:expected2(Msg, {boolean,false})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_g42_test(doc) -> [{userdata,[{""}]}];
 sheet1_g42_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Sheet1",41,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",41,6}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",41,6}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",41,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_g26_test(doc) -> [{userdata,[{""}]}];
 sheet1_g26_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"C0-"},read_from_excel_data(Config,{"Sheet1",25,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",25,6}), {string,"C0-"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",25,6}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",25,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"C0-"}]),
+      test_util:expected2(Msg, {string,"C0-"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_g37_test(doc) -> [{userdata,[{""}]}];
 sheet1_g37_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,false},read_from_excel_data(Config,{"Sheet1",36,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",36,6}), {boolean,false}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",36,6}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",36,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,false}]),
+      test_util:expected2(Msg, {boolean,false})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_g32_test(doc) -> [{userdata,[{""}]}];
 sheet1_g32_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,false},read_from_excel_data(Config,{"Sheet1",31,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",31,6}), {boolean,false}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",31,6}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",31,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,false}]),
+      test_util:expected2(Msg, {boolean,false})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_g43_test(doc) -> [{userdata,[{""}]}];
 sheet1_g43_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1.0},read_from_excel_data(Config,{"Sheet1",42,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",42,6}), {number,1.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",42,6}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",42,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.0}]),
+      test_util:expected2(Msg, {number,1.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_h27_test(doc) -> [{userdata,[{""}]}];
 sheet1_h27_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(AND(B27=C27,D27=E27,F27=G27),1,0)"},read_from_excel_data(Config,{"Sheet1",26,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",26,7}), {formula,"=IF(AND(B27=C27,D27=E27,F27=G27),1,0)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",26,7}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",26,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(AND(B27=C27,D27=E27,F27=G27),1,0)"}]),
+      test_util:expected2(Msg, {formula,"=IF(AND(B27=C27,D27=E27,F27=G27),1,0)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_h38_test(doc) -> [{userdata,[{""}]}];
 sheet1_h38_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(AND(B38=C38,D38=E38,F38=G38),1,0)"},read_from_excel_data(Config,{"Sheet1",37,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",37,7}), {formula,"=IF(AND(B38=C38,D38=E38,F38=G38),1,0)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",37,7}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",37,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(AND(B38=C38,D38=E38,F38=G38),1,0)"}]),
+      test_util:expected2(Msg, {formula,"=IF(AND(B38=C38,D38=E38,F38=G38),1,0)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_h33_test(doc) -> [{userdata,[{""}]}];
 sheet1_h33_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(AND(B33=C33,D33=E33,F33=G33),1,0)"},read_from_excel_data(Config,{"Sheet1",32,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",32,7}), {formula,"=IF(AND(B33=C33,D33=E33,F33=G33),1,0)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",32,7}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",32,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(AND(B33=C33,D33=E33,F33=G33),1,0)"}]),
+      test_util:expected2(Msg, {formula,"=IF(AND(B33=C33,D33=E33,F33=G33),1,0)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_h28_test(doc) -> [{userdata,[{""}]}];
 sheet1_h28_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(AND(B28=C28,D28=E28,F28=G28),1,0)"},read_from_excel_data(Config,{"Sheet1",27,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",27,7}), {formula,"=IF(AND(B28=C28,D28=E28,F28=G28),1,0)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",27,7}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",27,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(AND(B28=C28,D28=E28,F28=G28),1,0)"}]),
+      test_util:expected2(Msg, {formula,"=IF(AND(B28=C28,D28=E28,F28=G28),1,0)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_h39_test(doc) -> [{userdata,[{""}]}];
 sheet1_h39_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(AND(B39=C39,D39=E39,F39=G39),1,0)"},read_from_excel_data(Config,{"Sheet1",38,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",38,7}), {formula,"=IF(AND(B39=C39,D39=E39,F39=G39),1,0)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",38,7}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",38,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(AND(B39=C39,D39=E39,F39=G39),1,0)"}]),
+      test_util:expected2(Msg, {formula,"=IF(AND(B39=C39,D39=E39,F39=G39),1,0)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_h34_test(doc) -> [{userdata,[{""}]}];
 sheet1_h34_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(AND(B34=C34,D34=E34,F34=G34),1,0)"},read_from_excel_data(Config,{"Sheet1",33,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",33,7}), {formula,"=IF(AND(B34=C34,D34=E34,F34=G34),1,0)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",33,7}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",33,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(AND(B34=C34,D34=E34,F34=G34),1,0)"}]),
+      test_util:expected2(Msg, {formula,"=IF(AND(B34=C34,D34=E34,F34=G34),1,0)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_h29_test(doc) -> [{userdata,[{""}]}];
 sheet1_h29_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1.0},read_from_excel_data(Config,{"Sheet1",28,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",28,7}), {number,1.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",28,7}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",28,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.0}]),
+      test_util:expected2(Msg, {number,1.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_h40_test(doc) -> [{userdata,[{""}]}];
 sheet1_h40_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(AND(B40=C40,D40=E40,F40=G40),1,0)"},read_from_excel_data(Config,{"Sheet1",39,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",39,7}), {formula,"=IF(AND(B40=C40,D40=E40,F40=G40),1,0)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",39,7}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",39,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(AND(B40=C40,D40=E40,F40=G40),1,0)"}]),
+      test_util:expected2(Msg, {formula,"=IF(AND(B40=C40,D40=E40,F40=G40),1,0)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_h35_test(doc) -> [{userdata,[{""}]}];
 sheet1_h35_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(AND(B35=C35,D35=E35,F35=G35),1,0)"},read_from_excel_data(Config,{"Sheet1",34,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",34,7}), {formula,"=IF(AND(B35=C35,D35=E35,F35=G35),1,0)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",34,7}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",34,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(AND(B35=C35,D35=E35,F35=G35),1,0)"}]),
+      test_util:expected2(Msg, {formula,"=IF(AND(B35=C35,D35=E35,F35=G35),1,0)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_h30_test(doc) -> [{userdata,[{""}]}];
 sheet1_h30_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(AND(B30=C30,D30=E30,F30=G30),1,0)"},read_from_excel_data(Config,{"Sheet1",29,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",29,7}), {formula,"=IF(AND(B30=C30,D30=E30,F30=G30),1,0)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",29,7}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",29,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(AND(B30=C30,D30=E30,F30=G30),1,0)"}]),
+      test_util:expected2(Msg, {formula,"=IF(AND(B30=C30,D30=E30,F30=G30),1,0)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_h41_test(doc) -> [{userdata,[{""}]}];
 sheet1_h41_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(AND(B41=C41,D41=E41,F41=G41),1,0)"},read_from_excel_data(Config,{"Sheet1",40,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",40,7}), {formula,"=IF(AND(B41=C41,D41=E41,F41=G41),1,0)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",40,7}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",40,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(AND(B41=C41,D41=E41,F41=G41),1,0)"}]),
+      test_util:expected2(Msg, {formula,"=IF(AND(B41=C41,D41=E41,F41=G41),1,0)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_h25_test(doc) -> [{userdata,[{""}]}];
 sheet1_h25_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Status"},read_from_excel_data(Config,{"Sheet1",24,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",24,7}), {string,"Status"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",24,7}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",24,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Status"}]),
+      test_util:expected2(Msg, {string,"Status"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_h36_test(doc) -> [{userdata,[{""}]}];
 sheet1_h36_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(AND(B36=C36,D36=E36,F36=G36),1,0)"},read_from_excel_data(Config,{"Sheet1",35,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",35,7}), {formula,"=IF(AND(B36=C36,D36=E36,F36=G36),1,0)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",35,7}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",35,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(AND(B36=C36,D36=E36,F36=G36),1,0)"}]),
+      test_util:expected2(Msg, {formula,"=IF(AND(B36=C36,D36=E36,F36=G36),1,0)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_h31_test(doc) -> [{userdata,[{""}]}];
 sheet1_h31_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(AND(B31=C31,D31=E31,F31=G31),1,0)"},read_from_excel_data(Config,{"Sheet1",30,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",30,7}), {formula,"=IF(AND(B31=C31,D31=E31,F31=G31),1,0)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",30,7}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",30,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(AND(B31=C31,D31=E31,F31=G31),1,0)"}]),
+      test_util:expected2(Msg, {formula,"=IF(AND(B31=C31,D31=E31,F31=G31),1,0)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_h42_test(doc) -> [{userdata,[{""}]}];
 sheet1_h42_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ERROR.TYPE(B42)=7,1,0)"},read_from_excel_data(Config,{"Sheet1",41,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",41,7}), {formula,"=IF(ERROR.TYPE(B42)=7,1,0)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",41,7}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",41,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ERROR.TYPE(B42)=7,1,0)"}]),
+      test_util:expected2(Msg, {formula,"=IF(ERROR.TYPE(B42)=7,1,0)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_h26_test(doc) -> [{userdata,[{""}]}];
 sheet1_h26_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(AND(B26=C26,D26=E26,F26=G26),1,0)"},read_from_excel_data(Config,{"Sheet1",25,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",25,7}), {formula,"=IF(AND(B26=C26,D26=E26,F26=G26),1,0)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",25,7}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",25,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(AND(B26=C26,D26=E26,F26=G26),1,0)"}]),
+      test_util:expected2(Msg, {formula,"=IF(AND(B26=C26,D26=E26,F26=G26),1,0)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_h37_test(doc) -> [{userdata,[{""}]}];
 sheet1_h37_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(AND(B37=C37,D37=E37,F37=G37),1,0)"},read_from_excel_data(Config,{"Sheet1",36,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",36,7}), {formula,"=IF(AND(B37=C37,D37=E37,F37=G37),1,0)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",36,7}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",36,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(AND(B37=C37,D37=E37,F37=G37),1,0)"}]),
+      test_util:expected2(Msg, {formula,"=IF(AND(B37=C37,D37=E37,F37=G37),1,0)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_h32_test(doc) -> [{userdata,[{""}]}];
 sheet1_h32_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(AND(B32=C32,D32=E32,F32=G32),1,0)"},read_from_excel_data(Config,{"Sheet1",31,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",31,7}), {formula,"=IF(AND(B32=C32,D32=E32,F32=G32),1,0)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",31,7}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",31,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(AND(B32=C32,D32=E32,F32=G32),1,0)"}]),
+      test_util:expected2(Msg, {formula,"=IF(AND(B32=C32,D32=E32,F32=G32),1,0)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_h43_test(doc) -> [{userdata,[{""}]}];
 sheet1_h43_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(AND(B43=C43,D43=E43,F43=G43),1,0)"},read_from_excel_data(Config,{"Sheet1",42,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",42,7}), {formula,"=IF(AND(B43=C43,D43=E43,F43=G43),1,0)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",42,7}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",42,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(AND(B43=C43,D43=E43,F43=G43),1,0)"}]),
+      test_util:expected2(Msg, {formula,"=IF(AND(B43=C43,D43=E43,F43=G43),1,0)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_i27_test(doc) -> [{userdata,[{""}]}];
 sheet1_i27_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(H27,\"Ok.\",\"FAILED!!\")"},read_from_excel_data(Config,{"Sheet1",26,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",26,8}), {formula,"=IF(H27,\"Ok.\",\"FAILED!!\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",26,8}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",26,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(H27,\"Ok.\",\"FAILED!!\")"}]),
+      test_util:expected2(Msg, {formula,"=IF(H27,\"Ok.\",\"FAILED!!\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_i38_test(doc) -> [{userdata,[{""}]}];
 sheet1_i38_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(H38,\"Ok.\",\"FAILED!!\")"},read_from_excel_data(Config,{"Sheet1",37,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",37,8}), {formula,"=IF(H38,\"Ok.\",\"FAILED!!\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",37,8}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",37,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(H38,\"Ok.\",\"FAILED!!\")"}]),
+      test_util:expected2(Msg, {formula,"=IF(H38,\"Ok.\",\"FAILED!!\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_i33_test(doc) -> [{userdata,[{""}]}];
 sheet1_i33_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(H33,\"Ok.\",\"FAILED!!\")"},read_from_excel_data(Config,{"Sheet1",32,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",32,8}), {formula,"=IF(H33,\"Ok.\",\"FAILED!!\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",32,8}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",32,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(H33,\"Ok.\",\"FAILED!!\")"}]),
+      test_util:expected2(Msg, {formula,"=IF(H33,\"Ok.\",\"FAILED!!\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_i28_test(doc) -> [{userdata,[{""}]}];
 sheet1_i28_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(H28,\"Ok.\",\"FAILED!!\")"},read_from_excel_data(Config,{"Sheet1",27,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",27,8}), {formula,"=IF(H28,\"Ok.\",\"FAILED!!\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",27,8}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",27,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(H28,\"Ok.\",\"FAILED!!\")"}]),
+      test_util:expected2(Msg, {formula,"=IF(H28,\"Ok.\",\"FAILED!!\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_i39_test(doc) -> [{userdata,[{""}]}];
 sheet1_i39_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(H39,\"Ok.\",\"FAILED!!\")"},read_from_excel_data(Config,{"Sheet1",38,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",38,8}), {formula,"=IF(H39,\"Ok.\",\"FAILED!!\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",38,8}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",38,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(H39,\"Ok.\",\"FAILED!!\")"}]),
+      test_util:expected2(Msg, {formula,"=IF(H39,\"Ok.\",\"FAILED!!\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_i34_test(doc) -> [{userdata,[{""}]}];
 sheet1_i34_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(H34,\"Ok.\",\"FAILED!!\")"},read_from_excel_data(Config,{"Sheet1",33,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",33,8}), {formula,"=IF(H34,\"Ok.\",\"FAILED!!\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",33,8}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",33,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(H34,\"Ok.\",\"FAILED!!\")"}]),
+      test_util:expected2(Msg, {formula,"=IF(H34,\"Ok.\",\"FAILED!!\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_i29_test(doc) -> [{userdata,[{""}]}];
 sheet1_i29_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(H29,\"Ok.\",\"FAILED!!\")"},read_from_excel_data(Config,{"Sheet1",28,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",28,8}), {formula,"=IF(H29,\"Ok.\",\"FAILED!!\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",28,8}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",28,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(H29,\"Ok.\",\"FAILED!!\")"}]),
+      test_util:expected2(Msg, {formula,"=IF(H29,\"Ok.\",\"FAILED!!\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_i40_test(doc) -> [{userdata,[{""}]}];
 sheet1_i40_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(H40,\"Ok.\",\"FAILED!!\")"},read_from_excel_data(Config,{"Sheet1",39,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",39,8}), {formula,"=IF(H40,\"Ok.\",\"FAILED!!\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",39,8}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",39,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(H40,\"Ok.\",\"FAILED!!\")"}]),
+      test_util:expected2(Msg, {formula,"=IF(H40,\"Ok.\",\"FAILED!!\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_i35_test(doc) -> [{userdata,[{""}]}];
 sheet1_i35_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(H35,\"Ok.\",\"FAILED!!\")"},read_from_excel_data(Config,{"Sheet1",34,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",34,8}), {formula,"=IF(H35,\"Ok.\",\"FAILED!!\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",34,8}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",34,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(H35,\"Ok.\",\"FAILED!!\")"}]),
+      test_util:expected2(Msg, {formula,"=IF(H35,\"Ok.\",\"FAILED!!\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_i30_test(doc) -> [{userdata,[{""}]}];
 sheet1_i30_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(H30,\"Ok.\",\"FAILED!!\")"},read_from_excel_data(Config,{"Sheet1",29,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",29,8}), {formula,"=IF(H30,\"Ok.\",\"FAILED!!\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",29,8}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",29,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(H30,\"Ok.\",\"FAILED!!\")"}]),
+      test_util:expected2(Msg, {formula,"=IF(H30,\"Ok.\",\"FAILED!!\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_i41_test(doc) -> [{userdata,[{""}]}];
 sheet1_i41_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(H41,\"Ok.\",\"FAILED!!\")"},read_from_excel_data(Config,{"Sheet1",40,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",40,8}), {formula,"=IF(H41,\"Ok.\",\"FAILED!!\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",40,8}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",40,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(H41,\"Ok.\",\"FAILED!!\")"}]),
+      test_util:expected2(Msg, {formula,"=IF(H41,\"Ok.\",\"FAILED!!\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_i25_test(doc) -> [{userdata,[{""}]}];
 sheet1_i25_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Status message"},read_from_excel_data(Config,{"Sheet1",24,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",24,8}), {string,"Status message"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",24,8}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",24,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Status message"}]),
+      test_util:expected2(Msg, {string,"Status message"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_i36_test(doc) -> [{userdata,[{""}]}];
 sheet1_i36_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(H36,\"Ok.\",\"FAILED!!\")"},read_from_excel_data(Config,{"Sheet1",35,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",35,8}), {formula,"=IF(H36,\"Ok.\",\"FAILED!!\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",35,8}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",35,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(H36,\"Ok.\",\"FAILED!!\")"}]),
+      test_util:expected2(Msg, {formula,"=IF(H36,\"Ok.\",\"FAILED!!\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_i31_test(doc) -> [{userdata,[{""}]}];
 sheet1_i31_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(H31,\"Ok.\",\"FAILED!!\")"},read_from_excel_data(Config,{"Sheet1",30,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",30,8}), {formula,"=IF(H31,\"Ok.\",\"FAILED!!\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",30,8}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",30,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(H31,\"Ok.\",\"FAILED!!\")"}]),
+      test_util:expected2(Msg, {formula,"=IF(H31,\"Ok.\",\"FAILED!!\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_i42_test(doc) -> [{userdata,[{""}]}];
 sheet1_i42_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(H42,\"Ok.\",\"FAILED!!\")"},read_from_excel_data(Config,{"Sheet1",41,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",41,8}), {formula,"=IF(H42,\"Ok.\",\"FAILED!!\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",41,8}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",41,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(H42,\"Ok.\",\"FAILED!!\")"}]),
+      test_util:expected2(Msg, {formula,"=IF(H42,\"Ok.\",\"FAILED!!\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_i26_test(doc) -> [{userdata,[{""}]}];
 sheet1_i26_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(H26,\"Ok.\",\"FAILED!!\")"},read_from_excel_data(Config,{"Sheet1",25,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",25,8}), {formula,"=IF(H26,\"Ok.\",\"FAILED!!\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",25,8}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",25,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(H26,\"Ok.\",\"FAILED!!\")"}]),
+      test_util:expected2(Msg, {formula,"=IF(H26,\"Ok.\",\"FAILED!!\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_i37_test(doc) -> [{userdata,[{""}]}];
 sheet1_i37_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(H37,\"Ok.\",\"FAILED!!\")"},read_from_excel_data(Config,{"Sheet1",36,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",36,8}), {formula,"=IF(H37,\"Ok.\",\"FAILED!!\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",36,8}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",36,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(H37,\"Ok.\",\"FAILED!!\")"}]),
+      test_util:expected2(Msg, {formula,"=IF(H37,\"Ok.\",\"FAILED!!\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_i32_test(doc) -> [{userdata,[{""}]}];
 sheet1_i32_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(H32,\"Ok.\",\"FAILED!!\")"},read_from_excel_data(Config,{"Sheet1",31,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",31,8}), {formula,"=IF(H32,\"Ok.\",\"FAILED!!\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",31,8}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",31,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(H32,\"Ok.\",\"FAILED!!\")"}]),
+      test_util:expected2(Msg, {formula,"=IF(H32,\"Ok.\",\"FAILED!!\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_i43_test(doc) -> [{userdata,[{""}]}];
 sheet1_i43_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(H43,\"Ok.\",\"FAILED!!\")"},read_from_excel_data(Config,{"Sheet1",42,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",42,8}), {formula,"=IF(H43,\"Ok.\",\"FAILED!!\")"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",42,8}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",42,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(H43,\"Ok.\",\"FAILED!!\")"}]),
+      test_util:expected2(Msg, {formula,"=IF(H43,\"Ok.\",\"FAILED!!\")"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 all() -> 
     [sheet1_a16_test,

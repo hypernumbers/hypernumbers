@@ -51,7 +51,8 @@ compile() ->
                          App_rt_dir++"/lib/formula_engine-1.0/",
                          App_rt_dir++"/lib/read_excel-1.0/",
                          App_rt_dir++"/lib/remoting-1.0/",
-                         App_rt_dir++"/lib/utilities-1.0/"])),
+                         App_rt_dir++"/lib/utilities-1.0/",
+                         App_rt_dir++"/lib/mochi-1.0/"])),
     
     Extra = [
              {App_rt_dir++"priv/muin/leex.erl",App_rt_dir++"ebin"},

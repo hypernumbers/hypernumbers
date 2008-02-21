@@ -15,7 +15,7 @@ accept(Listen) ->
 
     {ok, Soc} = gen_tcp:accept(Listen),
 
-    %% TODO : Fix possible? race condition, recieves message
+    %% TODO : Fix possible? race condition, receives message
     %% before controlling process activates
     gen_tcp:controlling_process(Soc,
         spawn(fun() -> loop(Soc) end)),

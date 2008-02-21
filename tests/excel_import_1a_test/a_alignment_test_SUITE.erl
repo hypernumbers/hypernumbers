@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: a_alignment.xls
-% Generated on: Tue Feb 12 08:59:03 +0000 2008
+% Generated on: Sun Feb 17 21:41:45 +0000 2008
 
 -module(a_alignment_test_SUITE).
 -compile(export_all).
@@ -14,7 +14,9 @@ init_per_suite(Config) ->
     production_boot:setup_paths(),
     Data = test_util:read_excel_file("/Win Excel 2007 (as 97)/a_alignment.xls"),
     %% io:format("in init_per_suite Data is ~p~n",[Data]),
-    lists:merge([Config, [{a_alignment_test_SUITE, Data}]]).
+    Pid=spawn(test_util,test_state,[Data]),
+    io:format("in init_per_suite Pid is ~p~n",[Pid]),
+    [{?MODULE,Pid}|Config].
   
 end_per_suite(_Config) ->
     ok.
@@ -28,83 +30,227 @@ read_from_excel_data(Config,{Sheet,Row,Col}) ->
 
 sheet1_a1_test(doc) -> [{userdata,[{""}]}];
 sheet1_a1_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"This tests that the various test generated have got their columns and rows right with all fence post errors fixed for good measure"},read_from_excel_data(Config,{"Sheet1",0,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",0,0}), {string,"This tests that the various test generated have got their columns and rows right with all fence post errors fixed for good measure"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",0,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",0,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"This tests that the various test generated have got their columns and rows right with all fence post errors fixed for good measure"}]),
+      test_util:expected2(Msg, {string,"This tests that the various test generated have got their columns and rows right with all fence post errors fixed for good measure"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a2_test(doc) -> [{userdata,[{""}]}];
 sheet1_a2_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"This is a cell A2 on Sheet1"},read_from_excel_data(Config,{"Sheet1",1,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",1,0}), {string,"This is a cell A2 on Sheet1"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",1,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",1,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"This is a cell A2 on Sheet1"}]),
+      test_util:expected2(Msg, {string,"This is a cell A2 on Sheet1"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a3_test(doc) -> [{userdata,[{""}]}];
 sheet1_a3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"This is cell A3 on Sheet1"},read_from_excel_data(Config,{"Sheet1",2,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",2,0}), {string,"This is cell A3 on Sheet1"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",2,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",2,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"This is cell A3 on Sheet1"}]),
+      test_util:expected2(Msg, {string,"This is cell A3 on Sheet1"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b2_test(doc) -> [{userdata,[{""}]}];
 sheet1_b2_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"This is cell B2 on Sheet1"},read_from_excel_data(Config,{"Sheet1",1,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",1,1}), {string,"This is cell B2 on Sheet1"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",1,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",1,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"This is cell B2 on Sheet1"}]),
+      test_util:expected2(Msg, {string,"This is cell B2 on Sheet1"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b3_test(doc) -> [{userdata,[{""}]}];
 sheet1_b3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"This is cell B3 on Sheet1"},read_from_excel_data(Config,{"Sheet1",2,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",2,1}), {string,"This is cell B3 on Sheet1"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",2,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",2,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"This is cell B3 on Sheet1"}]),
+      test_util:expected2(Msg, {string,"This is cell B3 on Sheet1"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b4_test(doc) -> [{userdata,[{""}]}];
 sheet1_b4_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"This is cell B4 on Sheet1"},read_from_excel_data(Config,{"Sheet1",3,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",3,1}), {string,"This is cell B4 on Sheet1"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",3,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",3,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"This is cell B4 on Sheet1"}]),
+      test_util:expected2(Msg, {string,"This is cell B4 on Sheet1"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_d6_test(doc) -> [{userdata,[{""}]}];
 sheet1_d6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"This is cell D6 on Sheet1"},read_from_excel_data(Config,{"Sheet1",5,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",5,3}), {string,"This is cell D6 on Sheet1"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",5,3}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",5,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"This is cell D6 on Sheet1"}]),
+      test_util:expected2(Msg, {string,"This is cell D6 on Sheet1"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_h12_test(doc) -> [{userdata,[{""}]}];
 sheet1_h12_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"This is cell H12 on Sheet1"},read_from_excel_data(Config,{"Sheet1",11,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",11,7}), {string,"This is cell H12 on Sheet1"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",11,7}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",11,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"This is cell H12 on Sheet1"}]),
+      test_util:expected2(Msg, {string,"This is cell H12 on Sheet1"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet2_a1_test(doc) -> [{userdata,[{""}]}];
 sheet2_a1_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"This tests that the various test generates have got their columns and rows right with all fence post errors fixed for good measure"},read_from_excel_data(Config,{"Sheet2",0,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet2",0,0}), {string,"This tests that the various test generates have got their columns and rows right with all fence post errors fixed for good measure"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet2",0,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet2",0,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"This tests that the various test generates have got their columns and rows right with all fence post errors fixed for good measure"}]),
+      test_util:expected2(Msg, {string,"This tests that the various test generates have got their columns and rows right with all fence post errors fixed for good measure"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet2_a2_test(doc) -> [{userdata,[{""}]}];
 sheet2_a2_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"This is a cell A2 on Sheet2"},read_from_excel_data(Config,{"Sheet2",1,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet2",1,0}), {string,"This is a cell A2 on Sheet2"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet2",1,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet2",1,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"This is a cell A2 on Sheet2"}]),
+      test_util:expected2(Msg, {string,"This is a cell A2 on Sheet2"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet2_a3_test(doc) -> [{userdata,[{""}]}];
 sheet2_a3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"This is cell A3 on Sheet2"},read_from_excel_data(Config,{"Sheet2",2,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet2",2,0}), {string,"This is cell A3 on Sheet2"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet2",2,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet2",2,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"This is cell A3 on Sheet2"}]),
+      test_util:expected2(Msg, {string,"This is cell A3 on Sheet2"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet2_b2_test(doc) -> [{userdata,[{""}]}];
 sheet2_b2_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"This is cell B2 on Sheet2"},read_from_excel_data(Config,{"Sheet2",1,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet2",1,1}), {string,"This is cell B2 on Sheet2"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet2",1,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet2",1,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"This is cell B2 on Sheet2"}]),
+      test_util:expected2(Msg, {string,"This is cell B2 on Sheet2"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet2_b3_test(doc) -> [{userdata,[{""}]}];
 sheet2_b3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"This is cell B3 on Sheet2"},read_from_excel_data(Config,{"Sheet2",2,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet2",2,1}), {string,"This is cell B3 on Sheet2"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet2",2,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet2",2,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"This is cell B3 on Sheet2"}]),
+      test_util:expected2(Msg, {string,"This is cell B3 on Sheet2"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet2_b4_test(doc) -> [{userdata,[{""}]}];
 sheet2_b4_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"This is cell B4 on Sheet2"},read_from_excel_data(Config,{"Sheet2",3,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet2",3,1}), {string,"This is cell B4 on Sheet2"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet2",3,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet2",3,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"This is cell B4 on Sheet2"}]),
+      test_util:expected2(Msg, {string,"This is cell B4 on Sheet2"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet2_d6_test(doc) -> [{userdata,[{""}]}];
 sheet2_d6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"This is cell D6 on Sheet2"},read_from_excel_data(Config,{"Sheet2",5,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet2",5,3}), {string,"This is cell D6 on Sheet2"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet2",5,3}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet2",5,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"This is cell D6 on Sheet2"}]),
+      test_util:expected2(Msg, {string,"This is cell D6 on Sheet2"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet2_h12_test(doc) -> [{userdata,[{""}]}];
 sheet2_h12_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"This is cell H12 on Sheet2"},read_from_excel_data(Config,{"Sheet2",11,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet2",11,7}), {string,"This is cell H12 on Sheet2"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet2",11,7}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet2",11,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"This is cell H12 on Sheet2"}]),
+      test_util:expected2(Msg, {string,"This is cell H12 on Sheet2"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 all() -> 
     [sheet1_a1_test,

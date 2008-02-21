@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_trig_trig.xls
-% Generated on: Mon Feb 11 16:57:51 +0000 2008
+% Generated on: Sun Feb 17 21:42:23 +0000 2008
 
 -module(e_gnumeric_trig_trig_test_SUITE).
 -compile(export_all).
@@ -14,7 +14,9 @@ init_per_suite(Config) ->
     production_boot:setup_paths(),
     Data = test_util:read_excel_file("/Win Excel 2007 (as 97)/e_gnumeric_trig_trig.xls"),
     %% io:format("in init_per_suite Data is ~p~n",[Data]),
-    lists:merge([Config, [{e_gnumeric_trig_trig_test_SUITE, Data}]]).
+    Pid=spawn(test_util,test_state,[Data]),
+    io:format("in init_per_suite Pid is ~p~n",[Pid]),
+    [{?MODULE,Pid}|Config].
   
 end_per_suite(_Config) ->
     ok.
@@ -28,3823 +30,10699 @@ read_from_excel_data(Config,{Sheet,Row,Col}) ->
 
 trigonometry_k5_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k5_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TAN(K2)"},read_from_excel_data(Config,{"Trigonometry",4,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",4,10}), {formula,"=TAN(K2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",4,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",4,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TAN(K2)"}]),
+      test_util:expected2(Msg, {formula,"=TAN(K2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k16_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k16_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=RADIANS(K2)"},read_from_excel_data(Config,{"Trigonometry",15,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",15,10}), {formula,"=RADIANS(K2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",15,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",15,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=RADIANS(K2)"}]),
+      test_util:expected2(Msg, {formula,"=RADIANS(K2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k27_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k27_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",26,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",26,10}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",26,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",26,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k38_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k38_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(K5),IF(ISERROR(K22),IF(ERROR.TYPE(K5)=ERROR.TYPE(K22),1,0),0),IF(ISERROR(K22),0,IF(ABS(K5-K22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",37,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",37,10}), {formula,"=IF(ISERROR(K5),IF(ISERROR(K22),IF(ERROR.TYPE(K5)=ERROR.TYPE(K22),1,0),0),IF(ISERROR(K22),0,IF(ABS(K5-K22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",37,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",37,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(K5),IF(ISERROR(K22),IF(ERROR.TYPE(K5)=ERROR.TYPE(K22),1,0),0),IF(ISERROR(K22),0,IF(ABS(K5-K22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(K5),IF(ISERROR(K22),IF(ERROR.TYPE(K5)=ERROR.TYPE(K22),1,0),0),IF(ISERROR(K22),0,IF(ABS(K5-K22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k49_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k49_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(K16),IF(ISERROR(K33),IF(ERROR.TYPE(K16)=ERROR.TYPE(K33),1,0),0),IF(ISERROR(K33),0,IF(ABS(K16-K33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",48,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",48,10}), {formula,"=IF(ISERROR(K16),IF(ISERROR(K33),IF(ERROR.TYPE(K16)=ERROR.TYPE(K33),1,0),0),IF(ISERROR(K33),0,IF(ABS(K16-K33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",48,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",48,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(K16),IF(ISERROR(K33),IF(ERROR.TYPE(K16)=ERROR.TYPE(K33),1,0),0),IF(ISERROR(K33),0,IF(ABS(K16-K33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(K16),IF(ISERROR(K33),IF(ERROR.TYPE(K16)=ERROR.TYPE(K33),1,0),0),IF(ISERROR(K33),0,IF(ABS(K16-K33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k11_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k11_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TANH(K2)"},read_from_excel_data(Config,{"Trigonometry",10,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",10,10}), {formula,"=TANH(K2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",10,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",10,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TANH(K2)"}]),
+      test_util:expected2(Msg, {formula,"=TANH(K2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k22_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k22_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",21,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",21,10}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",21,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",21,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k33_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k33_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",32,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",32,10}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",32,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",32,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k44_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k44_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(K11),IF(ISERROR(K28),IF(ERROR.TYPE(K11)=ERROR.TYPE(K28),1,0),0),IF(ISERROR(K28),0,IF(ABS(K11-K28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",43,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",43,10}), {formula,"=IF(ISERROR(K11),IF(ISERROR(K28),IF(ERROR.TYPE(K11)=ERROR.TYPE(K28),1,0),0),IF(ISERROR(K28),0,IF(ABS(K11-K28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",43,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",43,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(K11),IF(ISERROR(K28),IF(ERROR.TYPE(K11)=ERROR.TYPE(K28),1,0),0),IF(ISERROR(K28),0,IF(ABS(K11-K28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(K11),IF(ISERROR(K28),IF(ERROR.TYPE(K11)=ERROR.TYPE(K28),1,0),0),IF(ISERROR(K28),0,IF(ABS(K11-K28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k6_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASIN(K2)"},read_from_excel_data(Config,{"Trigonometry",5,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",5,10}), {formula,"=ASIN(K2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",5,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",5,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASIN(K2)"}]),
+      test_util:expected2(Msg, {formula,"=ASIN(K2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k28_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k28_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",27,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",27,10}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",27,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",27,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k39_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k39_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(K6),IF(ISERROR(K23),IF(ERROR.TYPE(K6)=ERROR.TYPE(K23),1,0),0),IF(ISERROR(K23),0,IF(ABS(K6-K23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",38,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",38,10}), {formula,"=IF(ISERROR(K6),IF(ISERROR(K23),IF(ERROR.TYPE(K6)=ERROR.TYPE(K23),1,0),0),IF(ISERROR(K23),0,IF(ABS(K6-K23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",38,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",38,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(K6),IF(ISERROR(K23),IF(ERROR.TYPE(K6)=ERROR.TYPE(K23),1,0),0),IF(ISERROR(K23),0,IF(ABS(K6-K23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(K6),IF(ISERROR(K23),IF(ERROR.TYPE(K6)=ERROR.TYPE(K23),1,0),0),IF(ISERROR(K23),0,IF(ABS(K6-K23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k1_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k1_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Error"},read_from_excel_data(Config,{"Trigonometry",0,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",0,10}), {string,"Error"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",0,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",0,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Error"}]),
+      test_util:expected2(Msg, {string,"Error"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k12_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k12_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASINH(K2)"},read_from_excel_data(Config,{"Trigonometry",11,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",11,10}), {formula,"=ASINH(K2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",11,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",11,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASINH(K2)"}]),
+      test_util:expected2(Msg, {formula,"=ASINH(K2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k23_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k23_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",22,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",22,10}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",22,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",22,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k45_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k45_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(K12),IF(ISERROR(K29),IF(ERROR.TYPE(K12)=ERROR.TYPE(K29),1,0),0),IF(ISERROR(K29),0,IF(ABS(K12-K29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",44,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",44,10}), {formula,"=IF(ISERROR(K12),IF(ISERROR(K29),IF(ERROR.TYPE(K12)=ERROR.TYPE(K29),1,0),0),IF(ISERROR(K29),0,IF(ABS(K12-K29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",44,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",44,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(K12),IF(ISERROR(K29),IF(ERROR.TYPE(K12)=ERROR.TYPE(K29),1,0),0),IF(ISERROR(K29),0,IF(ABS(K12-K29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(K12),IF(ISERROR(K29),IF(ERROR.TYPE(K12)=ERROR.TYPE(K29),1,0),0),IF(ISERROR(K29),0,IF(ABS(K12-K29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k7_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k7_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOS(K2)"},read_from_excel_data(Config,{"Trigonometry",6,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",6,10}), {formula,"=ACOS(K2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",6,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",6,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOS(K2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOS(K2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k18_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k18_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Error"},read_from_excel_data(Config,{"Trigonometry",17,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",17,10}), {string,"Error"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",17,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",17,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Error"}]),
+      test_util:expected2(Msg, {string,"Error"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k29_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k29_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",28,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",28,10}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",28,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",28,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k40_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k40_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(K7),IF(ISERROR(K24),IF(ERROR.TYPE(K7)=ERROR.TYPE(K24),1,0),0),IF(ISERROR(K24),0,IF(ABS(K7-K24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",39,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",39,10}), {formula,"=IF(ISERROR(K7),IF(ISERROR(K24),IF(ERROR.TYPE(K7)=ERROR.TYPE(K24),1,0),0),IF(ISERROR(K24),0,IF(ABS(K7-K24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",39,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",39,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(K7),IF(ISERROR(K24),IF(ERROR.TYPE(K7)=ERROR.TYPE(K24),1,0),0),IF(ISERROR(K24),0,IF(ABS(K7-K24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(K7),IF(ISERROR(K24),IF(ERROR.TYPE(K7)=ERROR.TYPE(K24),1,0),0),IF(ISERROR(K24),0,IF(ABS(K7-K24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k2_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k2_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",1,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",1,10}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",1,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",1,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k13_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k13_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOSH(K2)"},read_from_excel_data(Config,{"Trigonometry",12,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",12,10}), {formula,"=ACOSH(K2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",12,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",12,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOSH(K2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOSH(K2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k24_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k24_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",23,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",23,10}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",23,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",23,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k46_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k46_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(K13),IF(ISERROR(K30),IF(ERROR.TYPE(K13)=ERROR.TYPE(K30),1,0),0),IF(ISERROR(K30),0,IF(ABS(K13-K30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",45,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",45,10}), {formula,"=IF(ISERROR(K13),IF(ISERROR(K30),IF(ERROR.TYPE(K13)=ERROR.TYPE(K30),1,0),0),IF(ISERROR(K30),0,IF(ABS(K13-K30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",45,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",45,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(K13),IF(ISERROR(K30),IF(ERROR.TYPE(K13)=ERROR.TYPE(K30),1,0),0),IF(ISERROR(K30),0,IF(ABS(K13-K30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(K13),IF(ISERROR(K30),IF(ERROR.TYPE(K13)=ERROR.TYPE(K30),1,0),0),IF(ISERROR(K30),0,IF(ABS(K13-K30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k8_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k8_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATAN(K2)"},read_from_excel_data(Config,{"Trigonometry",7,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",7,10}), {formula,"=ATAN(K2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",7,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",7,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATAN(K2)"}]),
+      test_util:expected2(Msg, {formula,"=ATAN(K2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k19_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k19_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",18,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",18,10}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",18,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",18,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k30_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k30_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",29,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",29,10}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",29,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",29,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k41_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k41_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(K8),IF(ISERROR(K25),IF(ERROR.TYPE(K8)=ERROR.TYPE(K25),1,0),0),IF(ISERROR(K25),0,IF(ABS(K8-K25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",40,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",40,10}), {formula,"=IF(ISERROR(K8),IF(ISERROR(K25),IF(ERROR.TYPE(K8)=ERROR.TYPE(K25),1,0),0),IF(ISERROR(K25),0,IF(ABS(K8-K25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",40,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",40,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(K8),IF(ISERROR(K25),IF(ERROR.TYPE(K8)=ERROR.TYPE(K25),1,0),0),IF(ISERROR(K25),0,IF(ABS(K8-K25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(K8),IF(ISERROR(K25),IF(ERROR.TYPE(K8)=ERROR.TYPE(K25),1,0),0),IF(ISERROR(K25),0,IF(ABS(K8-K25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k3_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SIN(K2)"},read_from_excel_data(Config,{"Trigonometry",2,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",2,10}), {formula,"=SIN(K2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",2,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",2,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SIN(K2)"}]),
+      test_util:expected2(Msg, {formula,"=SIN(K2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k14_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k14_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATANH(K2)"},read_from_excel_data(Config,{"Trigonometry",13,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",13,10}), {formula,"=ATANH(K2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",13,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",13,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATANH(K2)"}]),
+      test_util:expected2(Msg, {formula,"=ATANH(K2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k25_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k25_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",24,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",24,10}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",24,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",24,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k36_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k36_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(K3),IF(ISERROR(K20),IF(ERROR.TYPE(K3)=ERROR.TYPE(K20),1,0),0),IF(ISERROR(K20),0,IF(ABS(K3-K20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",35,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",35,10}), {formula,"=IF(ISERROR(K3),IF(ISERROR(K20),IF(ERROR.TYPE(K3)=ERROR.TYPE(K20),1,0),0),IF(ISERROR(K20),0,IF(ABS(K3-K20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",35,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",35,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(K3),IF(ISERROR(K20),IF(ERROR.TYPE(K3)=ERROR.TYPE(K20),1,0),0),IF(ISERROR(K20),0,IF(ABS(K3-K20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(K3),IF(ISERROR(K20),IF(ERROR.TYPE(K3)=ERROR.TYPE(K20),1,0),0),IF(ISERROR(K20),0,IF(ABS(K3-K20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k47_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k47_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(K14),IF(ISERROR(K31),IF(ERROR.TYPE(K14)=ERROR.TYPE(K31),1,0),0),IF(ISERROR(K31),0,IF(ABS(K14-K31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",46,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",46,10}), {formula,"=IF(ISERROR(K14),IF(ISERROR(K31),IF(ERROR.TYPE(K14)=ERROR.TYPE(K31),1,0),0),IF(ISERROR(K31),0,IF(ABS(K14-K31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",46,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",46,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(K14),IF(ISERROR(K31),IF(ERROR.TYPE(K14)=ERROR.TYPE(K31),1,0),0),IF(ISERROR(K31),0,IF(ABS(K14-K31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(K14),IF(ISERROR(K31),IF(ERROR.TYPE(K14)=ERROR.TYPE(K31),1,0),0),IF(ISERROR(K31),0,IF(ABS(K14-K31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k9_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k9_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SINH(K2)"},read_from_excel_data(Config,{"Trigonometry",8,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",8,10}), {formula,"=SINH(K2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",8,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",8,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SINH(K2)"}]),
+      test_util:expected2(Msg, {formula,"=SINH(K2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k20_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k20_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",19,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",19,10}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",19,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",19,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k31_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k31_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",30,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",30,10}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",30,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",30,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k42_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k42_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(K9),IF(ISERROR(K26),IF(ERROR.TYPE(K9)=ERROR.TYPE(K26),1,0),0),IF(ISERROR(K26),0,IF(ABS(K9-K26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",41,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",41,10}), {formula,"=IF(ISERROR(K9),IF(ISERROR(K26),IF(ERROR.TYPE(K9)=ERROR.TYPE(K26),1,0),0),IF(ISERROR(K26),0,IF(ABS(K9-K26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",41,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",41,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(K9),IF(ISERROR(K26),IF(ERROR.TYPE(K9)=ERROR.TYPE(K26),1,0),0),IF(ISERROR(K26),0,IF(ABS(K9-K26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(K9),IF(ISERROR(K26),IF(ERROR.TYPE(K9)=ERROR.TYPE(K26),1,0),0),IF(ISERROR(K26),0,IF(ABS(K9-K26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k4_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k4_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COS(K2)"},read_from_excel_data(Config,{"Trigonometry",3,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",3,10}), {formula,"=COS(K2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",3,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",3,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COS(K2)"}]),
+      test_util:expected2(Msg, {formula,"=COS(K2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k15_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k15_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=DEGREES(K2)"},read_from_excel_data(Config,{"Trigonometry",14,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",14,10}), {formula,"=DEGREES(K2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",14,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",14,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=DEGREES(K2)"}]),
+      test_util:expected2(Msg, {formula,"=DEGREES(K2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k26_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k26_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",25,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",25,10}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",25,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",25,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k37_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k37_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(K4),IF(ISERROR(K21),IF(ERROR.TYPE(K4)=ERROR.TYPE(K21),1,0),0),IF(ISERROR(K21),0,IF(ABS(K4-K21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",36,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",36,10}), {formula,"=IF(ISERROR(K4),IF(ISERROR(K21),IF(ERROR.TYPE(K4)=ERROR.TYPE(K21),1,0),0),IF(ISERROR(K21),0,IF(ABS(K4-K21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",36,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",36,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(K4),IF(ISERROR(K21),IF(ERROR.TYPE(K4)=ERROR.TYPE(K21),1,0),0),IF(ISERROR(K21),0,IF(ABS(K4-K21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(K4),IF(ISERROR(K21),IF(ERROR.TYPE(K4)=ERROR.TYPE(K21),1,0),0),IF(ISERROR(K21),0,IF(ABS(K4-K21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k48_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k48_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(K15),IF(ISERROR(K32),IF(ERROR.TYPE(K15)=ERROR.TYPE(K32),1,0),0),IF(ISERROR(K32),0,IF(ABS(K15-K32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",47,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",47,10}), {formula,"=IF(ISERROR(K15),IF(ISERROR(K32),IF(ERROR.TYPE(K15)=ERROR.TYPE(K32),1,0),0),IF(ISERROR(K32),0,IF(ABS(K15-K32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",47,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",47,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(K15),IF(ISERROR(K32),IF(ERROR.TYPE(K15)=ERROR.TYPE(K32),1,0),0),IF(ISERROR(K32),0,IF(ABS(K15-K32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(K15),IF(ISERROR(K32),IF(ERROR.TYPE(K15)=ERROR.TYPE(K32),1,0),0),IF(ISERROR(K32),0,IF(ABS(K15-K32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k10_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k10_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COSH(K2)"},read_from_excel_data(Config,{"Trigonometry",9,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",9,10}), {formula,"=COSH(K2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",9,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",9,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COSH(K2)"}]),
+      test_util:expected2(Msg, {formula,"=COSH(K2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k21_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k21_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",20,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",20,10}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",20,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",20,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k32_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k32_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",31,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",31,10}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",31,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",31,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_k43_test(doc) -> [{userdata,[{""}]}];
 trigonometry_k43_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(K10),IF(ISERROR(K27),IF(ERROR.TYPE(K10)=ERROR.TYPE(K27),1,0),0),IF(ISERROR(K27),0,IF(ABS(K10-K27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",42,10})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",42,10}), {formula,"=IF(ISERROR(K10),IF(ISERROR(K27),IF(ERROR.TYPE(K10)=ERROR.TYPE(K27),1,0),0),IF(ISERROR(K27),0,IF(ABS(K10-K27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",42,10}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",42,10}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(K10),IF(ISERROR(K27),IF(ERROR.TYPE(K10)=ERROR.TYPE(K27),1,0),0),IF(ISERROR(K27),0,IF(ABS(K10-K27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(K10),IF(ISERROR(K27),IF(ERROR.TYPE(K10)=ERROR.TYPE(K27),1,0),0),IF(ISERROR(K27),0,IF(ABS(K10-K27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a5_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a5_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"TAN"},read_from_excel_data(Config,{"Trigonometry",4,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",4,0}), {string,"TAN"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",4,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",4,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"TAN"}]),
+      test_util:expected2(Msg, {string,"TAN"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a16_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a16_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"RADIANS"},read_from_excel_data(Config,{"Trigonometry",15,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",15,0}), {string,"RADIANS"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",15,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",15,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"RADIANS"}]),
+      test_util:expected2(Msg, {string,"RADIANS"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a27_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a27_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"COSH"},read_from_excel_data(Config,{"Trigonometry",26,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",26,0}), {string,"COSH"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",26,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",26,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"COSH"}]),
+      test_util:expected2(Msg, {string,"COSH"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a11_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a11_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"TANH"},read_from_excel_data(Config,{"Trigonometry",10,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",10,0}), {string,"TANH"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",10,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",10,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"TANH"}]),
+      test_util:expected2(Msg, {string,"TANH"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a22_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a22_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"TAN"},read_from_excel_data(Config,{"Trigonometry",21,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",21,0}), {string,"TAN"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",21,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",21,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"TAN"}]),
+      test_util:expected2(Msg, {string,"TAN"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a33_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a33_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"RADIANS"},read_from_excel_data(Config,{"Trigonometry",32,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",32,0}), {string,"RADIANS"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",32,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",32,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"RADIANS"}]),
+      test_util:expected2(Msg, {string,"RADIANS"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a6_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"ASIN"},read_from_excel_data(Config,{"Trigonometry",5,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",5,0}), {string,"ASIN"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",5,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",5,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"ASIN"}]),
+      test_util:expected2(Msg, {string,"ASIN"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a28_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a28_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"TANH"},read_from_excel_data(Config,{"Trigonometry",27,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",27,0}), {string,"TANH"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",27,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",27,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"TANH"}]),
+      test_util:expected2(Msg, {string,"TANH"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a12_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a12_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"ASINH"},read_from_excel_data(Config,{"Trigonometry",11,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",11,0}), {string,"ASINH"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",11,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",11,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"ASINH"}]),
+      test_util:expected2(Msg, {string,"ASINH"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a23_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a23_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"ASIN"},read_from_excel_data(Config,{"Trigonometry",22,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",22,0}), {string,"ASIN"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",22,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",22,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"ASIN"}]),
+      test_util:expected2(Msg, {string,"ASIN"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a7_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a7_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"ACOS"},read_from_excel_data(Config,{"Trigonometry",6,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",6,0}), {string,"ACOS"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",6,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",6,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"ACOS"}]),
+      test_util:expected2(Msg, {string,"ACOS"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a29_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a29_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"ASINH"},read_from_excel_data(Config,{"Trigonometry",28,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",28,0}), {string,"ASINH"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",28,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",28,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"ASINH"}]),
+      test_util:expected2(Msg, {string,"ASINH"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a13_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a13_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"ACOSH"},read_from_excel_data(Config,{"Trigonometry",12,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",12,0}), {string,"ACOSH"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",12,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",12,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"ACOSH"}]),
+      test_util:expected2(Msg, {string,"ACOSH"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a24_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a24_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"ACOS"},read_from_excel_data(Config,{"Trigonometry",23,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",23,0}), {string,"ACOS"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",23,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",23,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"ACOS"}]),
+      test_util:expected2(Msg, {string,"ACOS"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a8_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a8_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"ATAN"},read_from_excel_data(Config,{"Trigonometry",7,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",7,0}), {string,"ATAN"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",7,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",7,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"ATAN"}]),
+      test_util:expected2(Msg, {string,"ATAN"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a30_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a30_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"ACOSH"},read_from_excel_data(Config,{"Trigonometry",29,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",29,0}), {string,"ACOSH"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",29,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",29,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"ACOSH"}]),
+      test_util:expected2(Msg, {string,"ACOSH"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a3_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Sin"},read_from_excel_data(Config,{"Trigonometry",2,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",2,0}), {string,"Sin"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",2,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",2,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Sin"}]),
+      test_util:expected2(Msg, {string,"Sin"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a14_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a14_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"ATANH"},read_from_excel_data(Config,{"Trigonometry",13,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",13,0}), {string,"ATANH"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",13,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",13,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"ATANH"}]),
+      test_util:expected2(Msg, {string,"ATANH"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a25_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a25_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"ATAN"},read_from_excel_data(Config,{"Trigonometry",24,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",24,0}), {string,"ATAN"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",24,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",24,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"ATAN"}]),
+      test_util:expected2(Msg, {string,"ATAN"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a36_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a36_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COUNT(B36:AL49)"},read_from_excel_data(Config,{"Trigonometry",35,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",35,0}), {formula,"=COUNT(B36:AL49)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",35,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",35,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COUNT(B36:AL49)"}]),
+      test_util:expected2(Msg, {formula,"=COUNT(B36:AL49)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a9_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a9_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"SINH"},read_from_excel_data(Config,{"Trigonometry",8,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",8,0}), {string,"SINH"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",8,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",8,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"SINH"}]),
+      test_util:expected2(Msg, {string,"SINH"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a20_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a20_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Sin"},read_from_excel_data(Config,{"Trigonometry",19,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",19,0}), {string,"Sin"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",19,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",19,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Sin"}]),
+      test_util:expected2(Msg, {string,"Sin"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a31_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a31_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"ATANH"},read_from_excel_data(Config,{"Trigonometry",30,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",30,0}), {string,"ATANH"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",30,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",30,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"ATANH"}]),
+      test_util:expected2(Msg, {string,"ATANH"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a4_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a4_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"COS"},read_from_excel_data(Config,{"Trigonometry",3,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",3,0}), {string,"COS"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",3,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",3,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"COS"}]),
+      test_util:expected2(Msg, {string,"COS"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a15_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a15_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"DEGREES"},read_from_excel_data(Config,{"Trigonometry",14,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",14,0}), {string,"DEGREES"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",14,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",14,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"DEGREES"}]),
+      test_util:expected2(Msg, {string,"DEGREES"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a26_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a26_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"SINH"},read_from_excel_data(Config,{"Trigonometry",25,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",25,0}), {string,"SINH"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",25,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",25,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"SINH"}]),
+      test_util:expected2(Msg, {string,"SINH"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a37_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a37_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SUM(B36:AL49)"},read_from_excel_data(Config,{"Trigonometry",36,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",36,0}), {formula,"=SUM(B36:AL49)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",36,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",36,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SUM(B36:AL49)"}]),
+      test_util:expected2(Msg, {formula,"=SUM(B36:AL49)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a10_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a10_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"COSH"},read_from_excel_data(Config,{"Trigonometry",9,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",9,0}), {string,"COSH"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",9,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",9,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"COSH"}]),
+      test_util:expected2(Msg, {string,"COSH"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a21_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a21_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"COS"},read_from_excel_data(Config,{"Trigonometry",20,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",20,0}), {string,"COS"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",20,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",20,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"COS"}]),
+      test_util:expected2(Msg, {string,"COS"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_a32_test(doc) -> [{userdata,[{""}]}];
 trigonometry_a32_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"DEGREES"},read_from_excel_data(Config,{"Trigonometry",31,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",31,0}), {string,"DEGREES"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",31,0}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",31,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"DEGREES"}]),
+      test_util:expected2(Msg, {string,"DEGREES"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l5_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l5_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TAN(L2)"},read_from_excel_data(Config,{"Trigonometry",4,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",4,11}), {formula,"=TAN(L2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",4,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",4,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TAN(L2)"}]),
+      test_util:expected2(Msg, {formula,"=TAN(L2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l16_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l16_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=RADIANS(L2)"},read_from_excel_data(Config,{"Trigonometry",15,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",15,11}), {formula,"=RADIANS(L2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",15,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",15,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=RADIANS(L2)"}]),
+      test_util:expected2(Msg, {formula,"=RADIANS(L2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l27_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l27_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",26,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",26,11}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",26,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",26,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l38_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l38_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(L5),IF(ISERROR(L22),IF(ERROR.TYPE(L5)=ERROR.TYPE(L22),1,0),0),IF(ISERROR(L22),0,IF(ABS(L5-L22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",37,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",37,11}), {formula,"=IF(ISERROR(L5),IF(ISERROR(L22),IF(ERROR.TYPE(L5)=ERROR.TYPE(L22),1,0),0),IF(ISERROR(L22),0,IF(ABS(L5-L22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",37,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",37,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(L5),IF(ISERROR(L22),IF(ERROR.TYPE(L5)=ERROR.TYPE(L22),1,0),0),IF(ISERROR(L22),0,IF(ABS(L5-L22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(L5),IF(ISERROR(L22),IF(ERROR.TYPE(L5)=ERROR.TYPE(L22),1,0),0),IF(ISERROR(L22),0,IF(ABS(L5-L22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l49_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l49_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(L16),IF(ISERROR(L33),IF(ERROR.TYPE(L16)=ERROR.TYPE(L33),1,0),0),IF(ISERROR(L33),0,IF(ABS(L16-L33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",48,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",48,11}), {formula,"=IF(ISERROR(L16),IF(ISERROR(L33),IF(ERROR.TYPE(L16)=ERROR.TYPE(L33),1,0),0),IF(ISERROR(L33),0,IF(ABS(L16-L33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",48,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",48,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(L16),IF(ISERROR(L33),IF(ERROR.TYPE(L16)=ERROR.TYPE(L33),1,0),0),IF(ISERROR(L33),0,IF(ABS(L16-L33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(L16),IF(ISERROR(L33),IF(ERROR.TYPE(L16)=ERROR.TYPE(L33),1,0),0),IF(ISERROR(L33),0,IF(ABS(L16-L33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l11_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l11_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TANH(L2)"},read_from_excel_data(Config,{"Trigonometry",10,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",10,11}), {formula,"=TANH(L2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",10,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",10,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TANH(L2)"}]),
+      test_util:expected2(Msg, {formula,"=TANH(L2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l22_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l22_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",21,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",21,11}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",21,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",21,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l33_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l33_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",32,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",32,11}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",32,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",32,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l44_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l44_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(L11),IF(ISERROR(L28),IF(ERROR.TYPE(L11)=ERROR.TYPE(L28),1,0),0),IF(ISERROR(L28),0,IF(ABS(L11-L28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",43,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",43,11}), {formula,"=IF(ISERROR(L11),IF(ISERROR(L28),IF(ERROR.TYPE(L11)=ERROR.TYPE(L28),1,0),0),IF(ISERROR(L28),0,IF(ABS(L11-L28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",43,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",43,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(L11),IF(ISERROR(L28),IF(ERROR.TYPE(L11)=ERROR.TYPE(L28),1,0),0),IF(ISERROR(L28),0,IF(ABS(L11-L28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(L11),IF(ISERROR(L28),IF(ERROR.TYPE(L11)=ERROR.TYPE(L28),1,0),0),IF(ISERROR(L28),0,IF(ABS(L11-L28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l6_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASIN(L2)"},read_from_excel_data(Config,{"Trigonometry",5,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",5,11}), {formula,"=ASIN(L2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",5,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",5,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASIN(L2)"}]),
+      test_util:expected2(Msg, {formula,"=ASIN(L2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l28_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l28_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",27,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",27,11}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",27,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",27,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l39_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l39_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(L6),IF(ISERROR(L23),IF(ERROR.TYPE(L6)=ERROR.TYPE(L23),1,0),0),IF(ISERROR(L23),0,IF(ABS(L6-L23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",38,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",38,11}), {formula,"=IF(ISERROR(L6),IF(ISERROR(L23),IF(ERROR.TYPE(L6)=ERROR.TYPE(L23),1,0),0),IF(ISERROR(L23),0,IF(ABS(L6-L23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",38,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",38,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(L6),IF(ISERROR(L23),IF(ERROR.TYPE(L6)=ERROR.TYPE(L23),1,0),0),IF(ISERROR(L23),0,IF(ABS(L6-L23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(L6),IF(ISERROR(L23),IF(ERROR.TYPE(L6)=ERROR.TYPE(L23),1,0),0),IF(ISERROR(L23),0,IF(ABS(L6-L23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l1_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l1_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Error"},read_from_excel_data(Config,{"Trigonometry",0,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",0,11}), {string,"Error"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",0,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",0,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Error"}]),
+      test_util:expected2(Msg, {string,"Error"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l12_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l12_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASINH(L2)"},read_from_excel_data(Config,{"Trigonometry",11,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",11,11}), {formula,"=ASINH(L2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",11,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",11,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASINH(L2)"}]),
+      test_util:expected2(Msg, {formula,"=ASINH(L2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l23_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l23_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",22,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",22,11}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",22,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",22,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l45_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l45_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(L12),IF(ISERROR(L29),IF(ERROR.TYPE(L12)=ERROR.TYPE(L29),1,0),0),IF(ISERROR(L29),0,IF(ABS(L12-L29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",44,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",44,11}), {formula,"=IF(ISERROR(L12),IF(ISERROR(L29),IF(ERROR.TYPE(L12)=ERROR.TYPE(L29),1,0),0),IF(ISERROR(L29),0,IF(ABS(L12-L29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",44,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",44,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(L12),IF(ISERROR(L29),IF(ERROR.TYPE(L12)=ERROR.TYPE(L29),1,0),0),IF(ISERROR(L29),0,IF(ABS(L12-L29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(L12),IF(ISERROR(L29),IF(ERROR.TYPE(L12)=ERROR.TYPE(L29),1,0),0),IF(ISERROR(L29),0,IF(ABS(L12-L29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l7_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l7_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOS(L2)"},read_from_excel_data(Config,{"Trigonometry",6,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",6,11}), {formula,"=ACOS(L2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",6,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",6,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOS(L2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOS(L2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l18_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l18_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Error"},read_from_excel_data(Config,{"Trigonometry",17,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",17,11}), {string,"Error"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",17,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",17,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Error"}]),
+      test_util:expected2(Msg, {string,"Error"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l29_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l29_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",28,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",28,11}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",28,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",28,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l40_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l40_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(L7),IF(ISERROR(L24),IF(ERROR.TYPE(L7)=ERROR.TYPE(L24),1,0),0),IF(ISERROR(L24),0,IF(ABS(L7-L24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",39,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",39,11}), {formula,"=IF(ISERROR(L7),IF(ISERROR(L24),IF(ERROR.TYPE(L7)=ERROR.TYPE(L24),1,0),0),IF(ISERROR(L24),0,IF(ABS(L7-L24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",39,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",39,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(L7),IF(ISERROR(L24),IF(ERROR.TYPE(L7)=ERROR.TYPE(L24),1,0),0),IF(ISERROR(L24),0,IF(ABS(L7-L24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(L7),IF(ISERROR(L24),IF(ERROR.TYPE(L7)=ERROR.TYPE(L24),1,0),0),IF(ISERROR(L24),0,IF(ABS(L7-L24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l2_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l2_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",1,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",1,11}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",1,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",1,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l13_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l13_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOSH(L2)"},read_from_excel_data(Config,{"Trigonometry",12,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",12,11}), {formula,"=ACOSH(L2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",12,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",12,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOSH(L2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOSH(L2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l24_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l24_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",23,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",23,11}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",23,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",23,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l46_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l46_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(L13),IF(ISERROR(L30),IF(ERROR.TYPE(L13)=ERROR.TYPE(L30),1,0),0),IF(ISERROR(L30),0,IF(ABS(L13-L30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",45,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",45,11}), {formula,"=IF(ISERROR(L13),IF(ISERROR(L30),IF(ERROR.TYPE(L13)=ERROR.TYPE(L30),1,0),0),IF(ISERROR(L30),0,IF(ABS(L13-L30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",45,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",45,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(L13),IF(ISERROR(L30),IF(ERROR.TYPE(L13)=ERROR.TYPE(L30),1,0),0),IF(ISERROR(L30),0,IF(ABS(L13-L30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(L13),IF(ISERROR(L30),IF(ERROR.TYPE(L13)=ERROR.TYPE(L30),1,0),0),IF(ISERROR(L30),0,IF(ABS(L13-L30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l8_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l8_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATAN(L2)"},read_from_excel_data(Config,{"Trigonometry",7,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",7,11}), {formula,"=ATAN(L2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",7,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",7,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATAN(L2)"}]),
+      test_util:expected2(Msg, {formula,"=ATAN(L2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l19_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l19_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",18,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",18,11}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",18,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",18,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l30_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l30_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",29,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",29,11}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",29,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",29,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l41_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l41_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(L8),IF(ISERROR(L25),IF(ERROR.TYPE(L8)=ERROR.TYPE(L25),1,0),0),IF(ISERROR(L25),0,IF(ABS(L8-L25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",40,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",40,11}), {formula,"=IF(ISERROR(L8),IF(ISERROR(L25),IF(ERROR.TYPE(L8)=ERROR.TYPE(L25),1,0),0),IF(ISERROR(L25),0,IF(ABS(L8-L25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",40,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",40,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(L8),IF(ISERROR(L25),IF(ERROR.TYPE(L8)=ERROR.TYPE(L25),1,0),0),IF(ISERROR(L25),0,IF(ABS(L8-L25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(L8),IF(ISERROR(L25),IF(ERROR.TYPE(L8)=ERROR.TYPE(L25),1,0),0),IF(ISERROR(L25),0,IF(ABS(L8-L25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l3_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SIN(L2)"},read_from_excel_data(Config,{"Trigonometry",2,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",2,11}), {formula,"=SIN(L2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",2,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",2,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SIN(L2)"}]),
+      test_util:expected2(Msg, {formula,"=SIN(L2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l14_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l14_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATANH(L2)"},read_from_excel_data(Config,{"Trigonometry",13,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",13,11}), {formula,"=ATANH(L2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",13,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",13,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATANH(L2)"}]),
+      test_util:expected2(Msg, {formula,"=ATANH(L2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l25_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l25_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",24,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",24,11}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",24,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",24,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l36_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l36_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(L3),IF(ISERROR(L20),IF(ERROR.TYPE(L3)=ERROR.TYPE(L20),1,0),0),IF(ISERROR(L20),0,IF(ABS(L3-L20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",35,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",35,11}), {formula,"=IF(ISERROR(L3),IF(ISERROR(L20),IF(ERROR.TYPE(L3)=ERROR.TYPE(L20),1,0),0),IF(ISERROR(L20),0,IF(ABS(L3-L20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",35,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",35,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(L3),IF(ISERROR(L20),IF(ERROR.TYPE(L3)=ERROR.TYPE(L20),1,0),0),IF(ISERROR(L20),0,IF(ABS(L3-L20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(L3),IF(ISERROR(L20),IF(ERROR.TYPE(L3)=ERROR.TYPE(L20),1,0),0),IF(ISERROR(L20),0,IF(ABS(L3-L20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l47_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l47_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(L14),IF(ISERROR(L31),IF(ERROR.TYPE(L14)=ERROR.TYPE(L31),1,0),0),IF(ISERROR(L31),0,IF(ABS(L14-L31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",46,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",46,11}), {formula,"=IF(ISERROR(L14),IF(ISERROR(L31),IF(ERROR.TYPE(L14)=ERROR.TYPE(L31),1,0),0),IF(ISERROR(L31),0,IF(ABS(L14-L31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",46,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",46,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(L14),IF(ISERROR(L31),IF(ERROR.TYPE(L14)=ERROR.TYPE(L31),1,0),0),IF(ISERROR(L31),0,IF(ABS(L14-L31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(L14),IF(ISERROR(L31),IF(ERROR.TYPE(L14)=ERROR.TYPE(L31),1,0),0),IF(ISERROR(L31),0,IF(ABS(L14-L31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l9_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l9_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SINH(L2)"},read_from_excel_data(Config,{"Trigonometry",8,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",8,11}), {formula,"=SINH(L2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",8,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",8,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SINH(L2)"}]),
+      test_util:expected2(Msg, {formula,"=SINH(L2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l20_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l20_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",19,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",19,11}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",19,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",19,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l31_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l31_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",30,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",30,11}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",30,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",30,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l42_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l42_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(L9),IF(ISERROR(L26),IF(ERROR.TYPE(L9)=ERROR.TYPE(L26),1,0),0),IF(ISERROR(L26),0,IF(ABS(L9-L26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",41,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",41,11}), {formula,"=IF(ISERROR(L9),IF(ISERROR(L26),IF(ERROR.TYPE(L9)=ERROR.TYPE(L26),1,0),0),IF(ISERROR(L26),0,IF(ABS(L9-L26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",41,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",41,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(L9),IF(ISERROR(L26),IF(ERROR.TYPE(L9)=ERROR.TYPE(L26),1,0),0),IF(ISERROR(L26),0,IF(ABS(L9-L26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(L9),IF(ISERROR(L26),IF(ERROR.TYPE(L9)=ERROR.TYPE(L26),1,0),0),IF(ISERROR(L26),0,IF(ABS(L9-L26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l4_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l4_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COS(L2)"},read_from_excel_data(Config,{"Trigonometry",3,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",3,11}), {formula,"=COS(L2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",3,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",3,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COS(L2)"}]),
+      test_util:expected2(Msg, {formula,"=COS(L2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l15_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l15_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=DEGREES(L2)"},read_from_excel_data(Config,{"Trigonometry",14,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",14,11}), {formula,"=DEGREES(L2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",14,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",14,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=DEGREES(L2)"}]),
+      test_util:expected2(Msg, {formula,"=DEGREES(L2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l26_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l26_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",25,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",25,11}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",25,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",25,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l37_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l37_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(L4),IF(ISERROR(L21),IF(ERROR.TYPE(L4)=ERROR.TYPE(L21),1,0),0),IF(ISERROR(L21),0,IF(ABS(L4-L21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",36,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",36,11}), {formula,"=IF(ISERROR(L4),IF(ISERROR(L21),IF(ERROR.TYPE(L4)=ERROR.TYPE(L21),1,0),0),IF(ISERROR(L21),0,IF(ABS(L4-L21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",36,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",36,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(L4),IF(ISERROR(L21),IF(ERROR.TYPE(L4)=ERROR.TYPE(L21),1,0),0),IF(ISERROR(L21),0,IF(ABS(L4-L21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(L4),IF(ISERROR(L21),IF(ERROR.TYPE(L4)=ERROR.TYPE(L21),1,0),0),IF(ISERROR(L21),0,IF(ABS(L4-L21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l48_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l48_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(L15),IF(ISERROR(L32),IF(ERROR.TYPE(L15)=ERROR.TYPE(L32),1,0),0),IF(ISERROR(L32),0,IF(ABS(L15-L32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",47,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",47,11}), {formula,"=IF(ISERROR(L15),IF(ISERROR(L32),IF(ERROR.TYPE(L15)=ERROR.TYPE(L32),1,0),0),IF(ISERROR(L32),0,IF(ABS(L15-L32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",47,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",47,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(L15),IF(ISERROR(L32),IF(ERROR.TYPE(L15)=ERROR.TYPE(L32),1,0),0),IF(ISERROR(L32),0,IF(ABS(L15-L32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(L15),IF(ISERROR(L32),IF(ERROR.TYPE(L15)=ERROR.TYPE(L32),1,0),0),IF(ISERROR(L32),0,IF(ABS(L15-L32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l10_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l10_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COSH(L2)"},read_from_excel_data(Config,{"Trigonometry",9,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",9,11}), {formula,"=COSH(L2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",9,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",9,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COSH(L2)"}]),
+      test_util:expected2(Msg, {formula,"=COSH(L2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l21_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l21_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",20,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",20,11}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",20,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",20,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l32_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l32_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",31,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",31,11}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",31,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",31,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_l43_test(doc) -> [{userdata,[{""}]}];
 trigonometry_l43_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(L10),IF(ISERROR(L27),IF(ERROR.TYPE(L10)=ERROR.TYPE(L27),1,0),0),IF(ISERROR(L27),0,IF(ABS(L10-L27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",42,11})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",42,11}), {formula,"=IF(ISERROR(L10),IF(ISERROR(L27),IF(ERROR.TYPE(L10)=ERROR.TYPE(L27),1,0),0),IF(ISERROR(L27),0,IF(ABS(L10-L27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",42,11}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",42,11}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(L10),IF(ISERROR(L27),IF(ERROR.TYPE(L10)=ERROR.TYPE(L27),1,0),0),IF(ISERROR(L27),0,IF(ABS(L10-L27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(L10),IF(ISERROR(L27),IF(ERROR.TYPE(L10)=ERROR.TYPE(L27),1,0),0),IF(ISERROR(L27),0,IF(ABS(L10-L27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b5_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b5_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TAN(B2)"},read_from_excel_data(Config,{"Trigonometry",4,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",4,1}), {formula,"=TAN(B2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",4,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",4,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TAN(B2)"}]),
+      test_util:expected2(Msg, {formula,"=TAN(B2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b16_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b16_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=RADIANS(B2)"},read_from_excel_data(Config,{"Trigonometry",15,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",15,1}), {formula,"=RADIANS(B2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",15,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",15,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=RADIANS(B2)"}]),
+      test_util:expected2(Msg, {formula,"=RADIANS(B2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b27_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b27_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1.0},read_from_excel_data(Config,{"Trigonometry",26,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",26,1}), {number,1.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",26,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",26,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.0}]),
+      test_util:expected2(Msg, {number,1.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b38_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b38_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(B5),IF(ISERROR(B22),IF(ERROR.TYPE(B5)=ERROR.TYPE(B22),1,0),0),IF(ISERROR(B22),0,IF(ABS(B5-B22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",37,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",37,1}), {formula,"=IF(ISERROR(B5),IF(ISERROR(B22),IF(ERROR.TYPE(B5)=ERROR.TYPE(B22),1,0),0),IF(ISERROR(B22),0,IF(ABS(B5-B22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",37,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",37,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(B5),IF(ISERROR(B22),IF(ERROR.TYPE(B5)=ERROR.TYPE(B22),1,0),0),IF(ISERROR(B22),0,IF(ABS(B5-B22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(B5),IF(ISERROR(B22),IF(ERROR.TYPE(B5)=ERROR.TYPE(B22),1,0),0),IF(ISERROR(B22),0,IF(ABS(B5-B22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b49_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b49_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(B16),IF(ISERROR(B33),IF(ERROR.TYPE(B16)=ERROR.TYPE(B33),1,0),0),IF(ISERROR(B33),0,IF(ABS(B16-B33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",48,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",48,1}), {formula,"=IF(ISERROR(B16),IF(ISERROR(B33),IF(ERROR.TYPE(B16)=ERROR.TYPE(B33),1,0),0),IF(ISERROR(B33),0,IF(ABS(B16-B33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",48,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",48,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(B16),IF(ISERROR(B33),IF(ERROR.TYPE(B16)=ERROR.TYPE(B33),1,0),0),IF(ISERROR(B33),0,IF(ABS(B16-B33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(B16),IF(ISERROR(B33),IF(ERROR.TYPE(B16)=ERROR.TYPE(B33),1,0),0),IF(ISERROR(B33),0,IF(ABS(B16-B33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b11_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b11_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TANH(B2)"},read_from_excel_data(Config,{"Trigonometry",10,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",10,1}), {formula,"=TANH(B2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",10,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",10,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TANH(B2)"}]),
+      test_util:expected2(Msg, {formula,"=TANH(B2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b22_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b22_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Trigonometry",21,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",21,1}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",21,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",21,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b33_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b33_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Trigonometry",32,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",32,1}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",32,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",32,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b44_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b44_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(B11),IF(ISERROR(B28),IF(ERROR.TYPE(B11)=ERROR.TYPE(B28),1,0),0),IF(ISERROR(B28),0,IF(ABS(B11-B28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",43,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",43,1}), {formula,"=IF(ISERROR(B11),IF(ISERROR(B28),IF(ERROR.TYPE(B11)=ERROR.TYPE(B28),1,0),0),IF(ISERROR(B28),0,IF(ABS(B11-B28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",43,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",43,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(B11),IF(ISERROR(B28),IF(ERROR.TYPE(B11)=ERROR.TYPE(B28),1,0),0),IF(ISERROR(B28),0,IF(ABS(B11-B28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(B11),IF(ISERROR(B28),IF(ERROR.TYPE(B11)=ERROR.TYPE(B28),1,0),0),IF(ISERROR(B28),0,IF(ABS(B11-B28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b6_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASIN(B2)"},read_from_excel_data(Config,{"Trigonometry",5,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",5,1}), {formula,"=ASIN(B2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",5,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",5,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASIN(B2)"}]),
+      test_util:expected2(Msg, {formula,"=ASIN(B2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b28_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b28_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Trigonometry",27,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",27,1}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",27,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",27,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b39_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b39_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(B6),IF(ISERROR(B23),IF(ERROR.TYPE(B6)=ERROR.TYPE(B23),1,0),0),IF(ISERROR(B23),0,IF(ABS(B6-B23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",38,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",38,1}), {formula,"=IF(ISERROR(B6),IF(ISERROR(B23),IF(ERROR.TYPE(B6)=ERROR.TYPE(B23),1,0),0),IF(ISERROR(B23),0,IF(ABS(B6-B23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",38,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",38,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(B6),IF(ISERROR(B23),IF(ERROR.TYPE(B6)=ERROR.TYPE(B23),1,0),0),IF(ISERROR(B23),0,IF(ABS(B6-B23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(B6),IF(ISERROR(B23),IF(ERROR.TYPE(B6)=ERROR.TYPE(B23),1,0),0),IF(ISERROR(B23),0,IF(ABS(B6-B23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b1_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b1_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Blank"},read_from_excel_data(Config,{"Trigonometry",0,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",0,1}), {string,"Blank"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",0,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",0,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Blank"}]),
+      test_util:expected2(Msg, {string,"Blank"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b12_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b12_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASINH(B2)"},read_from_excel_data(Config,{"Trigonometry",11,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",11,1}), {formula,"=ASINH(B2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",11,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",11,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASINH(B2)"}]),
+      test_util:expected2(Msg, {formula,"=ASINH(B2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b23_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b23_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Trigonometry",22,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",22,1}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",22,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",22,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b45_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b45_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(B12),IF(ISERROR(B29),IF(ERROR.TYPE(B12)=ERROR.TYPE(B29),1,0),0),IF(ISERROR(B29),0,IF(ABS(B12-B29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",44,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",44,1}), {formula,"=IF(ISERROR(B12),IF(ISERROR(B29),IF(ERROR.TYPE(B12)=ERROR.TYPE(B29),1,0),0),IF(ISERROR(B29),0,IF(ABS(B12-B29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",44,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",44,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(B12),IF(ISERROR(B29),IF(ERROR.TYPE(B12)=ERROR.TYPE(B29),1,0),0),IF(ISERROR(B29),0,IF(ABS(B12-B29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(B12),IF(ISERROR(B29),IF(ERROR.TYPE(B12)=ERROR.TYPE(B29),1,0),0),IF(ISERROR(B29),0,IF(ABS(B12-B29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b7_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b7_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOS(B2)"},read_from_excel_data(Config,{"Trigonometry",6,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",6,1}), {formula,"=ACOS(B2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",6,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",6,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOS(B2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOS(B2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b18_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b18_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Blank"},read_from_excel_data(Config,{"Trigonometry",17,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",17,1}), {string,"Blank"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",17,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",17,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Blank"}]),
+      test_util:expected2(Msg, {string,"Blank"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b29_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b29_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Trigonometry",28,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",28,1}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",28,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",28,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b40_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b40_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(B7),IF(ISERROR(B24),IF(ERROR.TYPE(B7)=ERROR.TYPE(B24),1,0),0),IF(ISERROR(B24),0,IF(ABS(B7-B24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",39,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",39,1}), {formula,"=IF(ISERROR(B7),IF(ISERROR(B24),IF(ERROR.TYPE(B7)=ERROR.TYPE(B24),1,0),0),IF(ISERROR(B24),0,IF(ABS(B7-B24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",39,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",39,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(B7),IF(ISERROR(B24),IF(ERROR.TYPE(B7)=ERROR.TYPE(B24),1,0),0),IF(ISERROR(B24),0,IF(ABS(B7-B24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(B7),IF(ISERROR(B24),IF(ERROR.TYPE(B7)=ERROR.TYPE(B24),1,0),0),IF(ISERROR(B24),0,IF(ABS(B7-B24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b13_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b13_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOSH(B2)"},read_from_excel_data(Config,{"Trigonometry",12,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",12,1}), {formula,"=ACOSH(B2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",12,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",12,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOSH(B2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOSH(B2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b24_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b24_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1.5707963267949},read_from_excel_data(Config,{"Trigonometry",23,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",23,1}), {number,1.5707963267949}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",23,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",23,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.5707963267949}]),
+      test_util:expected2(Msg, {number,1.5707963267949})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b46_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b46_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(B13),IF(ISERROR(B30),IF(ERROR.TYPE(B13)=ERROR.TYPE(B30),1,0),0),IF(ISERROR(B30),0,IF(ABS(B13-B30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",45,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",45,1}), {formula,"=IF(ISERROR(B13),IF(ISERROR(B30),IF(ERROR.TYPE(B13)=ERROR.TYPE(B30),1,0),0),IF(ISERROR(B30),0,IF(ABS(B13-B30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",45,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",45,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(B13),IF(ISERROR(B30),IF(ERROR.TYPE(B13)=ERROR.TYPE(B30),1,0),0),IF(ISERROR(B30),0,IF(ABS(B13-B30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(B13),IF(ISERROR(B30),IF(ERROR.TYPE(B13)=ERROR.TYPE(B30),1,0),0),IF(ISERROR(B30),0,IF(ABS(B13-B30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b8_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b8_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATAN(B2)"},read_from_excel_data(Config,{"Trigonometry",7,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",7,1}), {formula,"=ATAN(B2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",7,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",7,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATAN(B2)"}]),
+      test_util:expected2(Msg, {formula,"=ATAN(B2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b30_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b30_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",29,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",29,1}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",29,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",29,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b41_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b41_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(B8),IF(ISERROR(B25),IF(ERROR.TYPE(B8)=ERROR.TYPE(B25),1,0),0),IF(ISERROR(B25),0,IF(ABS(B8-B25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",40,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",40,1}), {formula,"=IF(ISERROR(B8),IF(ISERROR(B25),IF(ERROR.TYPE(B8)=ERROR.TYPE(B25),1,0),0),IF(ISERROR(B25),0,IF(ABS(B8-B25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",40,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",40,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(B8),IF(ISERROR(B25),IF(ERROR.TYPE(B8)=ERROR.TYPE(B25),1,0),0),IF(ISERROR(B25),0,IF(ABS(B8-B25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(B8),IF(ISERROR(B25),IF(ERROR.TYPE(B8)=ERROR.TYPE(B25),1,0),0),IF(ISERROR(B25),0,IF(ABS(B8-B25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b3_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SIN(B2)"},read_from_excel_data(Config,{"Trigonometry",2,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",2,1}), {formula,"=SIN(B2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",2,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",2,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SIN(B2)"}]),
+      test_util:expected2(Msg, {formula,"=SIN(B2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b14_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b14_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATANH(B2)"},read_from_excel_data(Config,{"Trigonometry",13,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",13,1}), {formula,"=ATANH(B2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",13,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",13,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATANH(B2)"}]),
+      test_util:expected2(Msg, {formula,"=ATANH(B2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b25_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b25_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Trigonometry",24,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",24,1}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",24,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",24,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b36_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b36_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(B3),IF(ISERROR(B20),IF(ERROR.TYPE(B3)=ERROR.TYPE(B20),1,0),0),IF(ISERROR(B20),0,IF(ABS(B3-B20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",35,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",35,1}), {formula,"=IF(ISERROR(B3),IF(ISERROR(B20),IF(ERROR.TYPE(B3)=ERROR.TYPE(B20),1,0),0),IF(ISERROR(B20),0,IF(ABS(B3-B20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",35,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",35,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(B3),IF(ISERROR(B20),IF(ERROR.TYPE(B3)=ERROR.TYPE(B20),1,0),0),IF(ISERROR(B20),0,IF(ABS(B3-B20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(B3),IF(ISERROR(B20),IF(ERROR.TYPE(B3)=ERROR.TYPE(B20),1,0),0),IF(ISERROR(B20),0,IF(ABS(B3-B20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b47_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b47_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(B14),IF(ISERROR(B31),IF(ERROR.TYPE(B14)=ERROR.TYPE(B31),1,0),0),IF(ISERROR(B31),0,IF(ABS(B14-B31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",46,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",46,1}), {formula,"=IF(ISERROR(B14),IF(ISERROR(B31),IF(ERROR.TYPE(B14)=ERROR.TYPE(B31),1,0),0),IF(ISERROR(B31),0,IF(ABS(B14-B31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",46,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",46,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(B14),IF(ISERROR(B31),IF(ERROR.TYPE(B14)=ERROR.TYPE(B31),1,0),0),IF(ISERROR(B31),0,IF(ABS(B14-B31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(B14),IF(ISERROR(B31),IF(ERROR.TYPE(B14)=ERROR.TYPE(B31),1,0),0),IF(ISERROR(B31),0,IF(ABS(B14-B31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b9_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b9_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SINH(B2)"},read_from_excel_data(Config,{"Trigonometry",8,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",8,1}), {formula,"=SINH(B2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",8,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",8,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SINH(B2)"}]),
+      test_util:expected2(Msg, {formula,"=SINH(B2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b20_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b20_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Trigonometry",19,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",19,1}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",19,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",19,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b31_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b31_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Trigonometry",30,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",30,1}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",30,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",30,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b42_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b42_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(B9),IF(ISERROR(B26),IF(ERROR.TYPE(B9)=ERROR.TYPE(B26),1,0),0),IF(ISERROR(B26),0,IF(ABS(B9-B26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",41,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",41,1}), {formula,"=IF(ISERROR(B9),IF(ISERROR(B26),IF(ERROR.TYPE(B9)=ERROR.TYPE(B26),1,0),0),IF(ISERROR(B26),0,IF(ABS(B9-B26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",41,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",41,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(B9),IF(ISERROR(B26),IF(ERROR.TYPE(B9)=ERROR.TYPE(B26),1,0),0),IF(ISERROR(B26),0,IF(ABS(B9-B26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(B9),IF(ISERROR(B26),IF(ERROR.TYPE(B9)=ERROR.TYPE(B26),1,0),0),IF(ISERROR(B26),0,IF(ABS(B9-B26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b4_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b4_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COS(B2)"},read_from_excel_data(Config,{"Trigonometry",3,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",3,1}), {formula,"=COS(B2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",3,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",3,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COS(B2)"}]),
+      test_util:expected2(Msg, {formula,"=COS(B2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b15_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b15_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=DEGREES(B2)"},read_from_excel_data(Config,{"Trigonometry",14,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",14,1}), {formula,"=DEGREES(B2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",14,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",14,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=DEGREES(B2)"}]),
+      test_util:expected2(Msg, {formula,"=DEGREES(B2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b26_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b26_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Trigonometry",25,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",25,1}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",25,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",25,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b37_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b37_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(B4),IF(ISERROR(B21),IF(ERROR.TYPE(B4)=ERROR.TYPE(B21),1,0),0),IF(ISERROR(B21),0,IF(ABS(B4-B21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",36,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",36,1}), {formula,"=IF(ISERROR(B4),IF(ISERROR(B21),IF(ERROR.TYPE(B4)=ERROR.TYPE(B21),1,0),0),IF(ISERROR(B21),0,IF(ABS(B4-B21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",36,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",36,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(B4),IF(ISERROR(B21),IF(ERROR.TYPE(B4)=ERROR.TYPE(B21),1,0),0),IF(ISERROR(B21),0,IF(ABS(B4-B21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(B4),IF(ISERROR(B21),IF(ERROR.TYPE(B4)=ERROR.TYPE(B21),1,0),0),IF(ISERROR(B21),0,IF(ABS(B4-B21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b48_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b48_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(B15),IF(ISERROR(B32),IF(ERROR.TYPE(B15)=ERROR.TYPE(B32),1,0),0),IF(ISERROR(B32),0,IF(ABS(B15-B32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",47,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",47,1}), {formula,"=IF(ISERROR(B15),IF(ISERROR(B32),IF(ERROR.TYPE(B15)=ERROR.TYPE(B32),1,0),0),IF(ISERROR(B32),0,IF(ABS(B15-B32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",47,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",47,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(B15),IF(ISERROR(B32),IF(ERROR.TYPE(B15)=ERROR.TYPE(B32),1,0),0),IF(ISERROR(B32),0,IF(ABS(B15-B32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(B15),IF(ISERROR(B32),IF(ERROR.TYPE(B15)=ERROR.TYPE(B32),1,0),0),IF(ISERROR(B32),0,IF(ABS(B15-B32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b10_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b10_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COSH(B2)"},read_from_excel_data(Config,{"Trigonometry",9,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",9,1}), {formula,"=COSH(B2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",9,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",9,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COSH(B2)"}]),
+      test_util:expected2(Msg, {formula,"=COSH(B2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b21_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b21_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1.0},read_from_excel_data(Config,{"Trigonometry",20,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",20,1}), {number,1.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",20,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",20,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.0}]),
+      test_util:expected2(Msg, {number,1.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b32_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b32_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Trigonometry",31,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",31,1}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",31,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",31,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_b43_test(doc) -> [{userdata,[{""}]}];
 trigonometry_b43_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(B10),IF(ISERROR(B27),IF(ERROR.TYPE(B10)=ERROR.TYPE(B27),1,0),0),IF(ISERROR(B27),0,IF(ABS(B10-B27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",42,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",42,1}), {formula,"=IF(ISERROR(B10),IF(ISERROR(B27),IF(ERROR.TYPE(B10)=ERROR.TYPE(B27),1,0),0),IF(ISERROR(B27),0,IF(ABS(B10-B27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",42,1}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",42,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(B10),IF(ISERROR(B27),IF(ERROR.TYPE(B10)=ERROR.TYPE(B27),1,0),0),IF(ISERROR(B27),0,IF(ABS(B10-B27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(B10),IF(ISERROR(B27),IF(ERROR.TYPE(B10)=ERROR.TYPE(B27),1,0),0),IF(ISERROR(B27),0,IF(ABS(B10-B27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m5_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m5_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TAN(M2)"},read_from_excel_data(Config,{"Trigonometry",4,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",4,12}), {formula,"=TAN(M2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",4,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",4,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TAN(M2)"}]),
+      test_util:expected2(Msg, {formula,"=TAN(M2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m16_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m16_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=RADIANS(M2)"},read_from_excel_data(Config,{"Trigonometry",15,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",15,12}), {formula,"=RADIANS(M2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",15,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",15,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=RADIANS(M2)"}]),
+      test_util:expected2(Msg, {formula,"=RADIANS(M2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m27_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m27_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",26,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",26,12}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",26,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",26,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m38_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m38_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(M5),IF(ISERROR(M22),IF(ERROR.TYPE(M5)=ERROR.TYPE(M22),1,0),0),IF(ISERROR(M22),0,IF(ABS(M5-M22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",37,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",37,12}), {formula,"=IF(ISERROR(M5),IF(ISERROR(M22),IF(ERROR.TYPE(M5)=ERROR.TYPE(M22),1,0),0),IF(ISERROR(M22),0,IF(ABS(M5-M22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",37,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",37,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(M5),IF(ISERROR(M22),IF(ERROR.TYPE(M5)=ERROR.TYPE(M22),1,0),0),IF(ISERROR(M22),0,IF(ABS(M5-M22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(M5),IF(ISERROR(M22),IF(ERROR.TYPE(M5)=ERROR.TYPE(M22),1,0),0),IF(ISERROR(M22),0,IF(ABS(M5-M22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m49_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m49_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(M16),IF(ISERROR(M33),IF(ERROR.TYPE(M16)=ERROR.TYPE(M33),1,0),0),IF(ISERROR(M33),0,IF(ABS(M16-M33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",48,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",48,12}), {formula,"=IF(ISERROR(M16),IF(ISERROR(M33),IF(ERROR.TYPE(M16)=ERROR.TYPE(M33),1,0),0),IF(ISERROR(M33),0,IF(ABS(M16-M33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",48,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",48,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(M16),IF(ISERROR(M33),IF(ERROR.TYPE(M16)=ERROR.TYPE(M33),1,0),0),IF(ISERROR(M33),0,IF(ABS(M16-M33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(M16),IF(ISERROR(M33),IF(ERROR.TYPE(M16)=ERROR.TYPE(M33),1,0),0),IF(ISERROR(M33),0,IF(ABS(M16-M33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m11_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m11_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TANH(M2)"},read_from_excel_data(Config,{"Trigonometry",10,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",10,12}), {formula,"=TANH(M2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",10,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",10,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TANH(M2)"}]),
+      test_util:expected2(Msg, {formula,"=TANH(M2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m22_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m22_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",21,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",21,12}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",21,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",21,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m33_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m33_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",32,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",32,12}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",32,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",32,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m44_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m44_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(M11),IF(ISERROR(M28),IF(ERROR.TYPE(M11)=ERROR.TYPE(M28),1,0),0),IF(ISERROR(M28),0,IF(ABS(M11-M28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",43,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",43,12}), {formula,"=IF(ISERROR(M11),IF(ISERROR(M28),IF(ERROR.TYPE(M11)=ERROR.TYPE(M28),1,0),0),IF(ISERROR(M28),0,IF(ABS(M11-M28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",43,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",43,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(M11),IF(ISERROR(M28),IF(ERROR.TYPE(M11)=ERROR.TYPE(M28),1,0),0),IF(ISERROR(M28),0,IF(ABS(M11-M28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(M11),IF(ISERROR(M28),IF(ERROR.TYPE(M11)=ERROR.TYPE(M28),1,0),0),IF(ISERROR(M28),0,IF(ABS(M11-M28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m6_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASIN(M2)"},read_from_excel_data(Config,{"Trigonometry",5,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",5,12}), {formula,"=ASIN(M2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",5,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",5,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASIN(M2)"}]),
+      test_util:expected2(Msg, {formula,"=ASIN(M2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m28_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m28_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",27,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",27,12}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",27,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",27,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m39_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m39_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(M6),IF(ISERROR(M23),IF(ERROR.TYPE(M6)=ERROR.TYPE(M23),1,0),0),IF(ISERROR(M23),0,IF(ABS(M6-M23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",38,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",38,12}), {formula,"=IF(ISERROR(M6),IF(ISERROR(M23),IF(ERROR.TYPE(M6)=ERROR.TYPE(M23),1,0),0),IF(ISERROR(M23),0,IF(ABS(M6-M23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",38,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",38,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(M6),IF(ISERROR(M23),IF(ERROR.TYPE(M6)=ERROR.TYPE(M23),1,0),0),IF(ISERROR(M23),0,IF(ABS(M6-M23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(M6),IF(ISERROR(M23),IF(ERROR.TYPE(M6)=ERROR.TYPE(M23),1,0),0),IF(ISERROR(M23),0,IF(ABS(M6-M23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m1_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m1_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"String"},read_from_excel_data(Config,{"Trigonometry",0,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",0,12}), {string,"String"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",0,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",0,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"String"}]),
+      test_util:expected2(Msg, {string,"String"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m12_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m12_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASINH(M2)"},read_from_excel_data(Config,{"Trigonometry",11,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",11,12}), {formula,"=ASINH(M2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",11,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",11,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASINH(M2)"}]),
+      test_util:expected2(Msg, {formula,"=ASINH(M2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m23_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m23_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",22,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",22,12}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",22,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",22,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m45_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m45_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(M12),IF(ISERROR(M29),IF(ERROR.TYPE(M12)=ERROR.TYPE(M29),1,0),0),IF(ISERROR(M29),0,IF(ABS(M12-M29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",44,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",44,12}), {formula,"=IF(ISERROR(M12),IF(ISERROR(M29),IF(ERROR.TYPE(M12)=ERROR.TYPE(M29),1,0),0),IF(ISERROR(M29),0,IF(ABS(M12-M29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",44,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",44,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(M12),IF(ISERROR(M29),IF(ERROR.TYPE(M12)=ERROR.TYPE(M29),1,0),0),IF(ISERROR(M29),0,IF(ABS(M12-M29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(M12),IF(ISERROR(M29),IF(ERROR.TYPE(M12)=ERROR.TYPE(M29),1,0),0),IF(ISERROR(M29),0,IF(ABS(M12-M29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m7_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m7_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOS(M2)"},read_from_excel_data(Config,{"Trigonometry",6,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",6,12}), {formula,"=ACOS(M2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",6,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",6,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOS(M2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOS(M2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m18_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m18_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"String"},read_from_excel_data(Config,{"Trigonometry",17,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",17,12}), {string,"String"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",17,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",17,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"String"}]),
+      test_util:expected2(Msg, {string,"String"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m29_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m29_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",28,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",28,12}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",28,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",28,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m40_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m40_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(M7),IF(ISERROR(M24),IF(ERROR.TYPE(M7)=ERROR.TYPE(M24),1,0),0),IF(ISERROR(M24),0,IF(ABS(M7-M24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",39,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",39,12}), {formula,"=IF(ISERROR(M7),IF(ISERROR(M24),IF(ERROR.TYPE(M7)=ERROR.TYPE(M24),1,0),0),IF(ISERROR(M24),0,IF(ABS(M7-M24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",39,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",39,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(M7),IF(ISERROR(M24),IF(ERROR.TYPE(M7)=ERROR.TYPE(M24),1,0),0),IF(ISERROR(M24),0,IF(ABS(M7-M24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(M7),IF(ISERROR(M24),IF(ERROR.TYPE(M7)=ERROR.TYPE(M24),1,0),0),IF(ISERROR(M24),0,IF(ABS(M7-M24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m2_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m2_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Liz"},read_from_excel_data(Config,{"Trigonometry",1,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",1,12}), {string,"Liz"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",1,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",1,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Liz"}]),
+      test_util:expected2(Msg, {string,"Liz"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m13_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m13_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOSH(M2)"},read_from_excel_data(Config,{"Trigonometry",12,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",12,12}), {formula,"=ACOSH(M2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",12,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",12,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOSH(M2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOSH(M2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m24_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m24_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",23,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",23,12}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",23,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",23,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m46_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m46_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(M13),IF(ISERROR(M30),IF(ERROR.TYPE(M13)=ERROR.TYPE(M30),1,0),0),IF(ISERROR(M30),0,IF(ABS(M13-M30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",45,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",45,12}), {formula,"=IF(ISERROR(M13),IF(ISERROR(M30),IF(ERROR.TYPE(M13)=ERROR.TYPE(M30),1,0),0),IF(ISERROR(M30),0,IF(ABS(M13-M30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",45,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",45,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(M13),IF(ISERROR(M30),IF(ERROR.TYPE(M13)=ERROR.TYPE(M30),1,0),0),IF(ISERROR(M30),0,IF(ABS(M13-M30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(M13),IF(ISERROR(M30),IF(ERROR.TYPE(M13)=ERROR.TYPE(M30),1,0),0),IF(ISERROR(M30),0,IF(ABS(M13-M30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m8_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m8_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATAN(M2)"},read_from_excel_data(Config,{"Trigonometry",7,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",7,12}), {formula,"=ATAN(M2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",7,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",7,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATAN(M2)"}]),
+      test_util:expected2(Msg, {formula,"=ATAN(M2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m19_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m19_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Liz"},read_from_excel_data(Config,{"Trigonometry",18,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",18,12}), {string,"Liz"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",18,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",18,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Liz"}]),
+      test_util:expected2(Msg, {string,"Liz"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m30_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m30_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",29,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",29,12}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",29,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",29,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m41_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m41_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(M8),IF(ISERROR(M25),IF(ERROR.TYPE(M8)=ERROR.TYPE(M25),1,0),0),IF(ISERROR(M25),0,IF(ABS(M8-M25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",40,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",40,12}), {formula,"=IF(ISERROR(M8),IF(ISERROR(M25),IF(ERROR.TYPE(M8)=ERROR.TYPE(M25),1,0),0),IF(ISERROR(M25),0,IF(ABS(M8-M25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",40,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",40,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(M8),IF(ISERROR(M25),IF(ERROR.TYPE(M8)=ERROR.TYPE(M25),1,0),0),IF(ISERROR(M25),0,IF(ABS(M8-M25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(M8),IF(ISERROR(M25),IF(ERROR.TYPE(M8)=ERROR.TYPE(M25),1,0),0),IF(ISERROR(M25),0,IF(ABS(M8-M25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m3_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SIN(M2)"},read_from_excel_data(Config,{"Trigonometry",2,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",2,12}), {formula,"=SIN(M2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",2,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",2,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SIN(M2)"}]),
+      test_util:expected2(Msg, {formula,"=SIN(M2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m14_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m14_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATANH(M2)"},read_from_excel_data(Config,{"Trigonometry",13,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",13,12}), {formula,"=ATANH(M2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",13,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",13,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATANH(M2)"}]),
+      test_util:expected2(Msg, {formula,"=ATANH(M2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m25_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m25_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",24,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",24,12}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",24,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",24,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m36_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m36_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(M3),IF(ISERROR(M20),IF(ERROR.TYPE(M3)=ERROR.TYPE(M20),1,0),0),IF(ISERROR(M20),0,IF(ABS(M3-M20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",35,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",35,12}), {formula,"=IF(ISERROR(M3),IF(ISERROR(M20),IF(ERROR.TYPE(M3)=ERROR.TYPE(M20),1,0),0),IF(ISERROR(M20),0,IF(ABS(M3-M20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",35,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",35,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(M3),IF(ISERROR(M20),IF(ERROR.TYPE(M3)=ERROR.TYPE(M20),1,0),0),IF(ISERROR(M20),0,IF(ABS(M3-M20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(M3),IF(ISERROR(M20),IF(ERROR.TYPE(M3)=ERROR.TYPE(M20),1,0),0),IF(ISERROR(M20),0,IF(ABS(M3-M20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m47_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m47_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(M14),IF(ISERROR(M31),IF(ERROR.TYPE(M14)=ERROR.TYPE(M31),1,0),0),IF(ISERROR(M31),0,IF(ABS(M14-M31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",46,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",46,12}), {formula,"=IF(ISERROR(M14),IF(ISERROR(M31),IF(ERROR.TYPE(M14)=ERROR.TYPE(M31),1,0),0),IF(ISERROR(M31),0,IF(ABS(M14-M31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",46,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",46,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(M14),IF(ISERROR(M31),IF(ERROR.TYPE(M14)=ERROR.TYPE(M31),1,0),0),IF(ISERROR(M31),0,IF(ABS(M14-M31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(M14),IF(ISERROR(M31),IF(ERROR.TYPE(M14)=ERROR.TYPE(M31),1,0),0),IF(ISERROR(M31),0,IF(ABS(M14-M31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m9_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m9_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SINH(M2)"},read_from_excel_data(Config,{"Trigonometry",8,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",8,12}), {formula,"=SINH(M2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",8,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",8,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SINH(M2)"}]),
+      test_util:expected2(Msg, {formula,"=SINH(M2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m20_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m20_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",19,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",19,12}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",19,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",19,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m31_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m31_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",30,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",30,12}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",30,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",30,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m42_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m42_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(M9),IF(ISERROR(M26),IF(ERROR.TYPE(M9)=ERROR.TYPE(M26),1,0),0),IF(ISERROR(M26),0,IF(ABS(M9-M26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",41,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",41,12}), {formula,"=IF(ISERROR(M9),IF(ISERROR(M26),IF(ERROR.TYPE(M9)=ERROR.TYPE(M26),1,0),0),IF(ISERROR(M26),0,IF(ABS(M9-M26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",41,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",41,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(M9),IF(ISERROR(M26),IF(ERROR.TYPE(M9)=ERROR.TYPE(M26),1,0),0),IF(ISERROR(M26),0,IF(ABS(M9-M26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(M9),IF(ISERROR(M26),IF(ERROR.TYPE(M9)=ERROR.TYPE(M26),1,0),0),IF(ISERROR(M26),0,IF(ABS(M9-M26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m4_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m4_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COS(M2)"},read_from_excel_data(Config,{"Trigonometry",3,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",3,12}), {formula,"=COS(M2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",3,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",3,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COS(M2)"}]),
+      test_util:expected2(Msg, {formula,"=COS(M2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m15_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m15_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=DEGREES(M2)"},read_from_excel_data(Config,{"Trigonometry",14,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",14,12}), {formula,"=DEGREES(M2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",14,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",14,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=DEGREES(M2)"}]),
+      test_util:expected2(Msg, {formula,"=DEGREES(M2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m26_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m26_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",25,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",25,12}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",25,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",25,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m37_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m37_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(M4),IF(ISERROR(M21),IF(ERROR.TYPE(M4)=ERROR.TYPE(M21),1,0),0),IF(ISERROR(M21),0,IF(ABS(M4-M21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",36,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",36,12}), {formula,"=IF(ISERROR(M4),IF(ISERROR(M21),IF(ERROR.TYPE(M4)=ERROR.TYPE(M21),1,0),0),IF(ISERROR(M21),0,IF(ABS(M4-M21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",36,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",36,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(M4),IF(ISERROR(M21),IF(ERROR.TYPE(M4)=ERROR.TYPE(M21),1,0),0),IF(ISERROR(M21),0,IF(ABS(M4-M21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(M4),IF(ISERROR(M21),IF(ERROR.TYPE(M4)=ERROR.TYPE(M21),1,0),0),IF(ISERROR(M21),0,IF(ABS(M4-M21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m48_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m48_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(M15),IF(ISERROR(M32),IF(ERROR.TYPE(M15)=ERROR.TYPE(M32),1,0),0),IF(ISERROR(M32),0,IF(ABS(M15-M32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",47,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",47,12}), {formula,"=IF(ISERROR(M15),IF(ISERROR(M32),IF(ERROR.TYPE(M15)=ERROR.TYPE(M32),1,0),0),IF(ISERROR(M32),0,IF(ABS(M15-M32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",47,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",47,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(M15),IF(ISERROR(M32),IF(ERROR.TYPE(M15)=ERROR.TYPE(M32),1,0),0),IF(ISERROR(M32),0,IF(ABS(M15-M32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(M15),IF(ISERROR(M32),IF(ERROR.TYPE(M15)=ERROR.TYPE(M32),1,0),0),IF(ISERROR(M32),0,IF(ABS(M15-M32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m10_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m10_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COSH(M2)"},read_from_excel_data(Config,{"Trigonometry",9,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",9,12}), {formula,"=COSH(M2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",9,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",9,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COSH(M2)"}]),
+      test_util:expected2(Msg, {formula,"=COSH(M2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m21_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m21_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",20,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",20,12}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",20,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",20,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m32_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m32_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826273},read_from_excel_data(Config,{"Trigonometry",31,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",31,12}), {number,-2146826273}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",31,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",31,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_m43_test(doc) -> [{userdata,[{""}]}];
 trigonometry_m43_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(M10),IF(ISERROR(M27),IF(ERROR.TYPE(M10)=ERROR.TYPE(M27),1,0),0),IF(ISERROR(M27),0,IF(ABS(M10-M27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",42,12})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",42,12}), {formula,"=IF(ISERROR(M10),IF(ISERROR(M27),IF(ERROR.TYPE(M10)=ERROR.TYPE(M27),1,0),0),IF(ISERROR(M27),0,IF(ABS(M10-M27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",42,12}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",42,12}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(M10),IF(ISERROR(M27),IF(ERROR.TYPE(M10)=ERROR.TYPE(M27),1,0),0),IF(ISERROR(M27),0,IF(ABS(M10-M27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(M10),IF(ISERROR(M27),IF(ERROR.TYPE(M10)=ERROR.TYPE(M27),1,0),0),IF(ISERROR(M27),0,IF(ABS(M10-M27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c5_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c5_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TAN(C2)"},read_from_excel_data(Config,{"Trigonometry",4,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",4,2}), {formula,"=TAN(C2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",4,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",4,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TAN(C2)"}]),
+      test_util:expected2(Msg, {formula,"=TAN(C2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c16_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c16_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=RADIANS(C2)"},read_from_excel_data(Config,{"Trigonometry",15,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",15,2}), {formula,"=RADIANS(C2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",15,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",15,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=RADIANS(C2)"}]),
+      test_util:expected2(Msg, {formula,"=RADIANS(C2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c27_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c27_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1.54308063481524},read_from_excel_data(Config,{"Trigonometry",26,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",26,2}), {number,1.54308063481524}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",26,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",26,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.54308063481524}]),
+      test_util:expected2(Msg, {number,1.54308063481524})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c38_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c38_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(C5),IF(ISERROR(C22),IF(ERROR.TYPE(C5)=ERROR.TYPE(C22),1,0),0),IF(ISERROR(C22),0,IF(ABS(C5-C22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",37,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",37,2}), {formula,"=IF(ISERROR(C5),IF(ISERROR(C22),IF(ERROR.TYPE(C5)=ERROR.TYPE(C22),1,0),0),IF(ISERROR(C22),0,IF(ABS(C5-C22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",37,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",37,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(C5),IF(ISERROR(C22),IF(ERROR.TYPE(C5)=ERROR.TYPE(C22),1,0),0),IF(ISERROR(C22),0,IF(ABS(C5-C22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(C5),IF(ISERROR(C22),IF(ERROR.TYPE(C5)=ERROR.TYPE(C22),1,0),0),IF(ISERROR(C22),0,IF(ABS(C5-C22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c49_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c49_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(C16),IF(ISERROR(C33),IF(ERROR.TYPE(C16)=ERROR.TYPE(C33),1,0),0),IF(ISERROR(C33),0,IF(ABS(C16-C33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",48,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",48,2}), {formula,"=IF(ISERROR(C16),IF(ISERROR(C33),IF(ERROR.TYPE(C16)=ERROR.TYPE(C33),1,0),0),IF(ISERROR(C33),0,IF(ABS(C16-C33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",48,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",48,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(C16),IF(ISERROR(C33),IF(ERROR.TYPE(C16)=ERROR.TYPE(C33),1,0),0),IF(ISERROR(C33),0,IF(ABS(C16-C33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(C16),IF(ISERROR(C33),IF(ERROR.TYPE(C16)=ERROR.TYPE(C33),1,0),0),IF(ISERROR(C33),0,IF(ABS(C16-C33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c11_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c11_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TANH(C2)"},read_from_excel_data(Config,{"Trigonometry",10,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",10,2}), {formula,"=TANH(C2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",10,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",10,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TANH(C2)"}]),
+      test_util:expected2(Msg, {formula,"=TANH(C2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c22_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c22_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1.5574077246549},read_from_excel_data(Config,{"Trigonometry",21,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",21,2}), {number,1.5574077246549}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",21,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",21,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.5574077246549}]),
+      test_util:expected2(Msg, {number,1.5574077246549})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c33_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c33_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0174532925199433},read_from_excel_data(Config,{"Trigonometry",32,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",32,2}), {number,0.0174532925199433}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",32,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",32,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0174532925199433}]),
+      test_util:expected2(Msg, {number,0.0174532925199433})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c44_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c44_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(C11),IF(ISERROR(C28),IF(ERROR.TYPE(C11)=ERROR.TYPE(C28),1,0),0),IF(ISERROR(C28),0,IF(ABS(C11-C28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",43,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",43,2}), {formula,"=IF(ISERROR(C11),IF(ISERROR(C28),IF(ERROR.TYPE(C11)=ERROR.TYPE(C28),1,0),0),IF(ISERROR(C28),0,IF(ABS(C11-C28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",43,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",43,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(C11),IF(ISERROR(C28),IF(ERROR.TYPE(C11)=ERROR.TYPE(C28),1,0),0),IF(ISERROR(C28),0,IF(ABS(C11-C28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(C11),IF(ISERROR(C28),IF(ERROR.TYPE(C11)=ERROR.TYPE(C28),1,0),0),IF(ISERROR(C28),0,IF(ABS(C11-C28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c6_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASIN(C2)"},read_from_excel_data(Config,{"Trigonometry",5,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",5,2}), {formula,"=ASIN(C2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",5,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",5,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASIN(C2)"}]),
+      test_util:expected2(Msg, {formula,"=ASIN(C2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c28_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c28_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.761594155955765},read_from_excel_data(Config,{"Trigonometry",27,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",27,2}), {number,0.761594155955765}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",27,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",27,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.761594155955765}]),
+      test_util:expected2(Msg, {number,0.761594155955765})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c39_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c39_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(C6),IF(ISERROR(C23),IF(ERROR.TYPE(C6)=ERROR.TYPE(C23),1,0),0),IF(ISERROR(C23),0,IF(ABS(C6-C23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",38,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",38,2}), {formula,"=IF(ISERROR(C6),IF(ISERROR(C23),IF(ERROR.TYPE(C6)=ERROR.TYPE(C23),1,0),0),IF(ISERROR(C23),0,IF(ABS(C6-C23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",38,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",38,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(C6),IF(ISERROR(C23),IF(ERROR.TYPE(C6)=ERROR.TYPE(C23),1,0),0),IF(ISERROR(C23),0,IF(ABS(C6-C23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(C6),IF(ISERROR(C23),IF(ERROR.TYPE(C6)=ERROR.TYPE(C23),1,0),0),IF(ISERROR(C23),0,IF(ABS(C6-C23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c1_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c1_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Boolean"},read_from_excel_data(Config,{"Trigonometry",0,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",0,2}), {string,"Boolean"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",0,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",0,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Boolean"}]),
+      test_util:expected2(Msg, {string,"Boolean"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c12_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c12_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASINH(C2)"},read_from_excel_data(Config,{"Trigonometry",11,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",11,2}), {formula,"=ASINH(C2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",11,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",11,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASINH(C2)"}]),
+      test_util:expected2(Msg, {formula,"=ASINH(C2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c23_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c23_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1.5707963267949},read_from_excel_data(Config,{"Trigonometry",22,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",22,2}), {number,1.5707963267949}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",22,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",22,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.5707963267949}]),
+      test_util:expected2(Msg, {number,1.5707963267949})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c45_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c45_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(C12),IF(ISERROR(C29),IF(ERROR.TYPE(C12)=ERROR.TYPE(C29),1,0),0),IF(ISERROR(C29),0,IF(ABS(C12-C29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",44,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",44,2}), {formula,"=IF(ISERROR(C12),IF(ISERROR(C29),IF(ERROR.TYPE(C12)=ERROR.TYPE(C29),1,0),0),IF(ISERROR(C29),0,IF(ABS(C12-C29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",44,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",44,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(C12),IF(ISERROR(C29),IF(ERROR.TYPE(C12)=ERROR.TYPE(C29),1,0),0),IF(ISERROR(C29),0,IF(ABS(C12-C29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(C12),IF(ISERROR(C29),IF(ERROR.TYPE(C12)=ERROR.TYPE(C29),1,0),0),IF(ISERROR(C29),0,IF(ABS(C12-C29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c7_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c7_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOS(C2)"},read_from_excel_data(Config,{"Trigonometry",6,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",6,2}), {formula,"=ACOS(C2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",6,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",6,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOS(C2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOS(C2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c18_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c18_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Boolean"},read_from_excel_data(Config,{"Trigonometry",17,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",17,2}), {string,"Boolean"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",17,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",17,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Boolean"}]),
+      test_util:expected2(Msg, {string,"Boolean"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c29_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c29_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.881373587019543},read_from_excel_data(Config,{"Trigonometry",28,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",28,2}), {number,0.881373587019543}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",28,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",28,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.881373587019543}]),
+      test_util:expected2(Msg, {number,0.881373587019543})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c40_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c40_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(C7),IF(ISERROR(C24),IF(ERROR.TYPE(C7)=ERROR.TYPE(C24),1,0),0),IF(ISERROR(C24),0,IF(ABS(C7-C24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",39,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",39,2}), {formula,"=IF(ISERROR(C7),IF(ISERROR(C24),IF(ERROR.TYPE(C7)=ERROR.TYPE(C24),1,0),0),IF(ISERROR(C24),0,IF(ABS(C7-C24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",39,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",39,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(C7),IF(ISERROR(C24),IF(ERROR.TYPE(C7)=ERROR.TYPE(C24),1,0),0),IF(ISERROR(C24),0,IF(ABS(C7-C24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(C7),IF(ISERROR(C24),IF(ERROR.TYPE(C7)=ERROR.TYPE(C24),1,0),0),IF(ISERROR(C24),0,IF(ABS(C7-C24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c2_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c2_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,true},read_from_excel_data(Config,{"Trigonometry",1,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",1,2}), {boolean,true}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",1,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",1,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,true}]),
+      test_util:expected2(Msg, {boolean,true})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c13_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c13_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOSH(C2)"},read_from_excel_data(Config,{"Trigonometry",12,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",12,2}), {formula,"=ACOSH(C2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",12,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",12,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOSH(C2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOSH(C2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c24_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c24_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Trigonometry",23,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",23,2}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",23,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",23,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c46_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c46_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(C13),IF(ISERROR(C30),IF(ERROR.TYPE(C13)=ERROR.TYPE(C30),1,0),0),IF(ISERROR(C30),0,IF(ABS(C13-C30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",45,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",45,2}), {formula,"=IF(ISERROR(C13),IF(ISERROR(C30),IF(ERROR.TYPE(C13)=ERROR.TYPE(C30),1,0),0),IF(ISERROR(C30),0,IF(ABS(C13-C30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",45,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",45,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(C13),IF(ISERROR(C30),IF(ERROR.TYPE(C13)=ERROR.TYPE(C30),1,0),0),IF(ISERROR(C30),0,IF(ABS(C13-C30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(C13),IF(ISERROR(C30),IF(ERROR.TYPE(C13)=ERROR.TYPE(C30),1,0),0),IF(ISERROR(C30),0,IF(ABS(C13-C30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c8_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c8_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATAN(C2)"},read_from_excel_data(Config,{"Trigonometry",7,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",7,2}), {formula,"=ATAN(C2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",7,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",7,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATAN(C2)"}]),
+      test_util:expected2(Msg, {formula,"=ATAN(C2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c19_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c19_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,true},read_from_excel_data(Config,{"Trigonometry",18,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",18,2}), {boolean,true}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",18,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",18,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,true}]),
+      test_util:expected2(Msg, {boolean,true})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c30_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c30_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Trigonometry",29,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",29,2}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",29,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",29,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c41_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c41_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(C8),IF(ISERROR(C25),IF(ERROR.TYPE(C8)=ERROR.TYPE(C25),1,0),0),IF(ISERROR(C25),0,IF(ABS(C8-C25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",40,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",40,2}), {formula,"=IF(ISERROR(C8),IF(ISERROR(C25),IF(ERROR.TYPE(C8)=ERROR.TYPE(C25),1,0),0),IF(ISERROR(C25),0,IF(ABS(C8-C25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",40,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",40,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(C8),IF(ISERROR(C25),IF(ERROR.TYPE(C8)=ERROR.TYPE(C25),1,0),0),IF(ISERROR(C25),0,IF(ABS(C8-C25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(C8),IF(ISERROR(C25),IF(ERROR.TYPE(C8)=ERROR.TYPE(C25),1,0),0),IF(ISERROR(C25),0,IF(ABS(C8-C25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c3_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SIN(C2)"},read_from_excel_data(Config,{"Trigonometry",2,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",2,2}), {formula,"=SIN(C2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",2,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",2,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SIN(C2)"}]),
+      test_util:expected2(Msg, {formula,"=SIN(C2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c14_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c14_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATANH(C2)"},read_from_excel_data(Config,{"Trigonometry",13,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",13,2}), {formula,"=ATANH(C2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",13,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",13,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATANH(C2)"}]),
+      test_util:expected2(Msg, {formula,"=ATANH(C2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c25_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c25_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.785398163397448},read_from_excel_data(Config,{"Trigonometry",24,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",24,2}), {number,0.785398163397448}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",24,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",24,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.785398163397448}]),
+      test_util:expected2(Msg, {number,0.785398163397448})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c36_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c36_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(C3),IF(ISERROR(C20),IF(ERROR.TYPE(C3)=ERROR.TYPE(C20),1,0),0),IF(ISERROR(C20),0,IF(ABS(C3-C20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",35,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",35,2}), {formula,"=IF(ISERROR(C3),IF(ISERROR(C20),IF(ERROR.TYPE(C3)=ERROR.TYPE(C20),1,0),0),IF(ISERROR(C20),0,IF(ABS(C3-C20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",35,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",35,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(C3),IF(ISERROR(C20),IF(ERROR.TYPE(C3)=ERROR.TYPE(C20),1,0),0),IF(ISERROR(C20),0,IF(ABS(C3-C20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(C3),IF(ISERROR(C20),IF(ERROR.TYPE(C3)=ERROR.TYPE(C20),1,0),0),IF(ISERROR(C20),0,IF(ABS(C3-C20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c47_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c47_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(C14),IF(ISERROR(C31),IF(ERROR.TYPE(C14)=ERROR.TYPE(C31),1,0),0),IF(ISERROR(C31),0,IF(ABS(C14-C31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",46,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",46,2}), {formula,"=IF(ISERROR(C14),IF(ISERROR(C31),IF(ERROR.TYPE(C14)=ERROR.TYPE(C31),1,0),0),IF(ISERROR(C31),0,IF(ABS(C14-C31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",46,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",46,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(C14),IF(ISERROR(C31),IF(ERROR.TYPE(C14)=ERROR.TYPE(C31),1,0),0),IF(ISERROR(C31),0,IF(ABS(C14-C31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(C14),IF(ISERROR(C31),IF(ERROR.TYPE(C14)=ERROR.TYPE(C31),1,0),0),IF(ISERROR(C31),0,IF(ABS(C14-C31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c9_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c9_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SINH(C2)"},read_from_excel_data(Config,{"Trigonometry",8,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",8,2}), {formula,"=SINH(C2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",8,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",8,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SINH(C2)"}]),
+      test_util:expected2(Msg, {formula,"=SINH(C2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c20_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c20_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.841470984807897},read_from_excel_data(Config,{"Trigonometry",19,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",19,2}), {number,0.841470984807897}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",19,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",19,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.841470984807897}]),
+      test_util:expected2(Msg, {number,0.841470984807897})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c31_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c31_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",30,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",30,2}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",30,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",30,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c42_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c42_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(C9),IF(ISERROR(C26),IF(ERROR.TYPE(C9)=ERROR.TYPE(C26),1,0),0),IF(ISERROR(C26),0,IF(ABS(C9-C26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",41,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",41,2}), {formula,"=IF(ISERROR(C9),IF(ISERROR(C26),IF(ERROR.TYPE(C9)=ERROR.TYPE(C26),1,0),0),IF(ISERROR(C26),0,IF(ABS(C9-C26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",41,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",41,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(C9),IF(ISERROR(C26),IF(ERROR.TYPE(C9)=ERROR.TYPE(C26),1,0),0),IF(ISERROR(C26),0,IF(ABS(C9-C26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(C9),IF(ISERROR(C26),IF(ERROR.TYPE(C9)=ERROR.TYPE(C26),1,0),0),IF(ISERROR(C26),0,IF(ABS(C9-C26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c4_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c4_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COS(C2)"},read_from_excel_data(Config,{"Trigonometry",3,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",3,2}), {formula,"=COS(C2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",3,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",3,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COS(C2)"}]),
+      test_util:expected2(Msg, {formula,"=COS(C2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c15_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c15_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=DEGREES(C2)"},read_from_excel_data(Config,{"Trigonometry",14,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",14,2}), {formula,"=DEGREES(C2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",14,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",14,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=DEGREES(C2)"}]),
+      test_util:expected2(Msg, {formula,"=DEGREES(C2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c26_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c26_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1.1752011936438},read_from_excel_data(Config,{"Trigonometry",25,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",25,2}), {number,1.1752011936438}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",25,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",25,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.1752011936438}]),
+      test_util:expected2(Msg, {number,1.1752011936438})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c37_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c37_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(C4),IF(ISERROR(C21),IF(ERROR.TYPE(C4)=ERROR.TYPE(C21),1,0),0),IF(ISERROR(C21),0,IF(ABS(C4-C21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",36,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",36,2}), {formula,"=IF(ISERROR(C4),IF(ISERROR(C21),IF(ERROR.TYPE(C4)=ERROR.TYPE(C21),1,0),0),IF(ISERROR(C21),0,IF(ABS(C4-C21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",36,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",36,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(C4),IF(ISERROR(C21),IF(ERROR.TYPE(C4)=ERROR.TYPE(C21),1,0),0),IF(ISERROR(C21),0,IF(ABS(C4-C21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(C4),IF(ISERROR(C21),IF(ERROR.TYPE(C4)=ERROR.TYPE(C21),1,0),0),IF(ISERROR(C21),0,IF(ABS(C4-C21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c48_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c48_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(C15),IF(ISERROR(C32),IF(ERROR.TYPE(C15)=ERROR.TYPE(C32),1,0),0),IF(ISERROR(C32),0,IF(ABS(C15-C32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",47,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",47,2}), {formula,"=IF(ISERROR(C15),IF(ISERROR(C32),IF(ERROR.TYPE(C15)=ERROR.TYPE(C32),1,0),0),IF(ISERROR(C32),0,IF(ABS(C15-C32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",47,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",47,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(C15),IF(ISERROR(C32),IF(ERROR.TYPE(C15)=ERROR.TYPE(C32),1,0),0),IF(ISERROR(C32),0,IF(ABS(C15-C32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(C15),IF(ISERROR(C32),IF(ERROR.TYPE(C15)=ERROR.TYPE(C32),1,0),0),IF(ISERROR(C32),0,IF(ABS(C15-C32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c10_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c10_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COSH(C2)"},read_from_excel_data(Config,{"Trigonometry",9,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",9,2}), {formula,"=COSH(C2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",9,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",9,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COSH(C2)"}]),
+      test_util:expected2(Msg, {formula,"=COSH(C2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c21_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c21_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.54030230586814},read_from_excel_data(Config,{"Trigonometry",20,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",20,2}), {number,0.54030230586814}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",20,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",20,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.54030230586814}]),
+      test_util:expected2(Msg, {number,0.54030230586814})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c32_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c32_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,57.2957795130823},read_from_excel_data(Config,{"Trigonometry",31,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",31,2}), {number,57.2957795130823}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",31,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",31,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,57.2957795130823}]),
+      test_util:expected2(Msg, {number,57.2957795130823})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_c43_test(doc) -> [{userdata,[{""}]}];
 trigonometry_c43_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(C10),IF(ISERROR(C27),IF(ERROR.TYPE(C10)=ERROR.TYPE(C27),1,0),0),IF(ISERROR(C27),0,IF(ABS(C10-C27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",42,2})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",42,2}), {formula,"=IF(ISERROR(C10),IF(ISERROR(C27),IF(ERROR.TYPE(C10)=ERROR.TYPE(C27),1,0),0),IF(ISERROR(C27),0,IF(ABS(C10-C27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",42,2}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",42,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(C10),IF(ISERROR(C27),IF(ERROR.TYPE(C10)=ERROR.TYPE(C27),1,0),0),IF(ISERROR(C27),0,IF(ABS(C10-C27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(C10),IF(ISERROR(C27),IF(ERROR.TYPE(C10)=ERROR.TYPE(C27),1,0),0),IF(ISERROR(C27),0,IF(ABS(C10-C27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n5_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n5_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TAN(N2)"},read_from_excel_data(Config,{"Trigonometry",4,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",4,13}), {formula,"=TAN(N2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",4,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",4,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TAN(N2)"}]),
+      test_util:expected2(Msg, {formula,"=TAN(N2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n16_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n16_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=RADIANS(N2)"},read_from_excel_data(Config,{"Trigonometry",15,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",15,13}), {formula,"=RADIANS(N2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",15,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",15,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=RADIANS(N2)"}]),
+      test_util:expected2(Msg, {formula,"=RADIANS(N2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n27_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n27_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,7.47346861880629},read_from_excel_data(Config,{"Trigonometry",26,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",26,13}), {number,7.47346861880629}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",26,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",26,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,7.47346861880629}]),
+      test_util:expected2(Msg, {number,7.47346861880629})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n38_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n38_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(N5),IF(ISERROR(N22),IF(ERROR.TYPE(N5)=ERROR.TYPE(N22),1,0),0),IF(ISERROR(N22),0,IF(ABS(N5-N22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",37,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",37,13}), {formula,"=IF(ISERROR(N5),IF(ISERROR(N22),IF(ERROR.TYPE(N5)=ERROR.TYPE(N22),1,0),0),IF(ISERROR(N22),0,IF(ABS(N5-N22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",37,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",37,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(N5),IF(ISERROR(N22),IF(ERROR.TYPE(N5)=ERROR.TYPE(N22),1,0),0),IF(ISERROR(N22),0,IF(ABS(N5-N22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(N5),IF(ISERROR(N22),IF(ERROR.TYPE(N5)=ERROR.TYPE(N22),1,0),0),IF(ISERROR(N22),0,IF(ABS(N5-N22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n49_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n49_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(N16),IF(ISERROR(N33),IF(ERROR.TYPE(N16)=ERROR.TYPE(N33),1,0),0),IF(ISERROR(N33),0,IF(ABS(N16-N33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",48,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",48,13}), {formula,"=IF(ISERROR(N16),IF(ISERROR(N33),IF(ERROR.TYPE(N16)=ERROR.TYPE(N33),1,0),0),IF(ISERROR(N33),0,IF(ABS(N16-N33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",48,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",48,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(N16),IF(ISERROR(N33),IF(ERROR.TYPE(N16)=ERROR.TYPE(N33),1,0),0),IF(ISERROR(N33),0,IF(ABS(N16-N33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(N16),IF(ISERROR(N33),IF(ERROR.TYPE(N16)=ERROR.TYPE(N33),1,0),0),IF(ISERROR(N33),0,IF(ABS(N16-N33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n11_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n11_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TANH(N2)"},read_from_excel_data(Config,{"Trigonometry",10,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",10,13}), {formula,"=TANH(N2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",10,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",10,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TANH(N2)"}]),
+      test_util:expected2(Msg, {formula,"=TANH(N2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n22_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n22_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-0.472727629103037},read_from_excel_data(Config,{"Trigonometry",21,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",21,13}), {number,-0.472727629103037}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",21,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",21,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-0.472727629103037}]),
+      test_util:expected2(Msg, {number,-0.472727629103037})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n33_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n33_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0471238898038469},read_from_excel_data(Config,{"Trigonometry",32,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",32,13}), {number,0.0471238898038469}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",32,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",32,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0471238898038469}]),
+      test_util:expected2(Msg, {number,0.0471238898038469})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n44_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n44_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(N11),IF(ISERROR(N28),IF(ERROR.TYPE(N11)=ERROR.TYPE(N28),1,0),0),IF(ISERROR(N28),0,IF(ABS(N11-N28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",43,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",43,13}), {formula,"=IF(ISERROR(N11),IF(ISERROR(N28),IF(ERROR.TYPE(N11)=ERROR.TYPE(N28),1,0),0),IF(ISERROR(N28),0,IF(ABS(N11-N28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",43,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",43,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(N11),IF(ISERROR(N28),IF(ERROR.TYPE(N11)=ERROR.TYPE(N28),1,0),0),IF(ISERROR(N28),0,IF(ABS(N11-N28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(N11),IF(ISERROR(N28),IF(ERROR.TYPE(N11)=ERROR.TYPE(N28),1,0),0),IF(ISERROR(N28),0,IF(ABS(N11-N28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n6_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASIN(N2)"},read_from_excel_data(Config,{"Trigonometry",5,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",5,13}), {formula,"=ASIN(N2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",5,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",5,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASIN(N2)"}]),
+      test_util:expected2(Msg, {formula,"=ASIN(N2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n28_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n28_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.991007453678117},read_from_excel_data(Config,{"Trigonometry",27,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",27,13}), {number,0.991007453678117}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",27,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",27,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.991007453678117}]),
+      test_util:expected2(Msg, {number,0.991007453678117})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n39_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n39_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(N6),IF(ISERROR(N23),IF(ERROR.TYPE(N6)=ERROR.TYPE(N23),1,0),0),IF(ISERROR(N23),0,IF(ABS(N6-N23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",38,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",38,13}), {formula,"=IF(ISERROR(N6),IF(ISERROR(N23),IF(ERROR.TYPE(N6)=ERROR.TYPE(N23),1,0),0),IF(ISERROR(N23),0,IF(ABS(N6-N23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",38,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",38,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(N6),IF(ISERROR(N23),IF(ERROR.TYPE(N6)=ERROR.TYPE(N23),1,0),0),IF(ISERROR(N23),0,IF(ABS(N6-N23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(N6),IF(ISERROR(N23),IF(ERROR.TYPE(N6)=ERROR.TYPE(N23),1,0),0),IF(ISERROR(N23),0,IF(ABS(N6-N23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n1_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n1_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Str Num"},read_from_excel_data(Config,{"Trigonometry",0,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",0,13}), {string,"Str Num"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",0,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",0,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Str Num"}]),
+      test_util:expected2(Msg, {string,"Str Num"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n12_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n12_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASINH(N2)"},read_from_excel_data(Config,{"Trigonometry",11,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",11,13}), {formula,"=ASINH(N2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",11,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",11,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASINH(N2)"}]),
+      test_util:expected2(Msg, {formula,"=ASINH(N2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n23_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n23_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",22,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",22,13}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",22,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",22,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n45_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n45_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(N12),IF(ISERROR(N29),IF(ERROR.TYPE(N12)=ERROR.TYPE(N29),1,0),0),IF(ISERROR(N29),0,IF(ABS(N12-N29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",44,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",44,13}), {formula,"=IF(ISERROR(N12),IF(ISERROR(N29),IF(ERROR.TYPE(N12)=ERROR.TYPE(N29),1,0),0),IF(ISERROR(N29),0,IF(ABS(N12-N29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",44,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",44,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(N12),IF(ISERROR(N29),IF(ERROR.TYPE(N12)=ERROR.TYPE(N29),1,0),0),IF(ISERROR(N29),0,IF(ABS(N12-N29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(N12),IF(ISERROR(N29),IF(ERROR.TYPE(N12)=ERROR.TYPE(N29),1,0),0),IF(ISERROR(N29),0,IF(ABS(N12-N29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n7_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n7_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOS(N2)"},read_from_excel_data(Config,{"Trigonometry",6,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",6,13}), {formula,"=ACOS(N2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",6,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",6,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOS(N2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOS(N2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n18_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n18_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Str Num"},read_from_excel_data(Config,{"Trigonometry",17,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",17,13}), {string,"Str Num"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",17,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",17,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Str Num"}]),
+      test_util:expected2(Msg, {string,"Str Num"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n29_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n29_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1.71905185120893},read_from_excel_data(Config,{"Trigonometry",28,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",28,13}), {number,1.71905185120893}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",28,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",28,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.71905185120893}]),
+      test_util:expected2(Msg, {number,1.71905185120893})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n40_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n40_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(N7),IF(ISERROR(N24),IF(ERROR.TYPE(N7)=ERROR.TYPE(N24),1,0),0),IF(ISERROR(N24),0,IF(ABS(N7-N24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",39,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",39,13}), {formula,"=IF(ISERROR(N7),IF(ISERROR(N24),IF(ERROR.TYPE(N7)=ERROR.TYPE(N24),1,0),0),IF(ISERROR(N24),0,IF(ABS(N7-N24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",39,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",39,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(N7),IF(ISERROR(N24),IF(ERROR.TYPE(N7)=ERROR.TYPE(N24),1,0),0),IF(ISERROR(N24),0,IF(ABS(N7-N24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(N7),IF(ISERROR(N24),IF(ERROR.TYPE(N7)=ERROR.TYPE(N24),1,0),0),IF(ISERROR(N24),0,IF(ABS(N7-N24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n2_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n2_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"2.7"},read_from_excel_data(Config,{"Trigonometry",1,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",1,13}), {string,"2.7"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",1,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",1,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"2.7"}]),
+      test_util:expected2(Msg, {string,"2.7"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n13_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n13_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOSH(N2)"},read_from_excel_data(Config,{"Trigonometry",12,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",12,13}), {formula,"=ACOSH(N2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",12,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",12,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOSH(N2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOSH(N2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n24_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n24_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",23,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",23,13}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",23,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",23,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n46_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n46_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(N13),IF(ISERROR(N30),IF(ERROR.TYPE(N13)=ERROR.TYPE(N30),1,0),0),IF(ISERROR(N30),0,IF(ABS(N13-N30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",45,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",45,13}), {formula,"=IF(ISERROR(N13),IF(ISERROR(N30),IF(ERROR.TYPE(N13)=ERROR.TYPE(N30),1,0),0),IF(ISERROR(N30),0,IF(ABS(N13-N30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",45,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",45,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(N13),IF(ISERROR(N30),IF(ERROR.TYPE(N13)=ERROR.TYPE(N30),1,0),0),IF(ISERROR(N30),0,IF(ABS(N13-N30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(N13),IF(ISERROR(N30),IF(ERROR.TYPE(N13)=ERROR.TYPE(N30),1,0),0),IF(ISERROR(N30),0,IF(ABS(N13-N30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n8_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n8_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATAN(N2)"},read_from_excel_data(Config,{"Trigonometry",7,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",7,13}), {formula,"=ATAN(N2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",7,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",7,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATAN(N2)"}]),
+      test_util:expected2(Msg, {formula,"=ATAN(N2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n19_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n19_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"2.7"},read_from_excel_data(Config,{"Trigonometry",18,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",18,13}), {string,"2.7"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",18,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",18,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"2.7"}]),
+      test_util:expected2(Msg, {string,"2.7"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n30_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n30_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1.65019345497948},read_from_excel_data(Config,{"Trigonometry",29,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",29,13}), {number,1.65019345497948}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",29,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",29,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.65019345497948}]),
+      test_util:expected2(Msg, {number,1.65019345497948})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n41_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n41_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(N8),IF(ISERROR(N25),IF(ERROR.TYPE(N8)=ERROR.TYPE(N25),1,0),0),IF(ISERROR(N25),0,IF(ABS(N8-N25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",40,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",40,13}), {formula,"=IF(ISERROR(N8),IF(ISERROR(N25),IF(ERROR.TYPE(N8)=ERROR.TYPE(N25),1,0),0),IF(ISERROR(N25),0,IF(ABS(N8-N25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",40,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",40,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(N8),IF(ISERROR(N25),IF(ERROR.TYPE(N8)=ERROR.TYPE(N25),1,0),0),IF(ISERROR(N25),0,IF(ABS(N8-N25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(N8),IF(ISERROR(N25),IF(ERROR.TYPE(N8)=ERROR.TYPE(N25),1,0),0),IF(ISERROR(N25),0,IF(ABS(N8-N25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n3_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SIN(N2)"},read_from_excel_data(Config,{"Trigonometry",2,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",2,13}), {formula,"=SIN(N2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",2,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",2,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SIN(N2)"}]),
+      test_util:expected2(Msg, {formula,"=SIN(N2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n14_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n14_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATANH(N2)"},read_from_excel_data(Config,{"Trigonometry",13,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",13,13}), {formula,"=ATANH(N2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",13,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",13,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATANH(N2)"}]),
+      test_util:expected2(Msg, {formula,"=ATANH(N2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n25_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n25_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1.21609067478396},read_from_excel_data(Config,{"Trigonometry",24,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",24,13}), {number,1.21609067478396}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",24,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",24,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.21609067478396}]),
+      test_util:expected2(Msg, {number,1.21609067478396})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n36_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n36_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(N3),IF(ISERROR(N20),IF(ERROR.TYPE(N3)=ERROR.TYPE(N20),1,0),0),IF(ISERROR(N20),0,IF(ABS(N3-N20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",35,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",35,13}), {formula,"=IF(ISERROR(N3),IF(ISERROR(N20),IF(ERROR.TYPE(N3)=ERROR.TYPE(N20),1,0),0),IF(ISERROR(N20),0,IF(ABS(N3-N20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",35,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",35,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(N3),IF(ISERROR(N20),IF(ERROR.TYPE(N3)=ERROR.TYPE(N20),1,0),0),IF(ISERROR(N20),0,IF(ABS(N3-N20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(N3),IF(ISERROR(N20),IF(ERROR.TYPE(N3)=ERROR.TYPE(N20),1,0),0),IF(ISERROR(N20),0,IF(ABS(N3-N20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n47_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n47_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(N14),IF(ISERROR(N31),IF(ERROR.TYPE(N14)=ERROR.TYPE(N31),1,0),0),IF(ISERROR(N31),0,IF(ABS(N14-N31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",46,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",46,13}), {formula,"=IF(ISERROR(N14),IF(ISERROR(N31),IF(ERROR.TYPE(N14)=ERROR.TYPE(N31),1,0),0),IF(ISERROR(N31),0,IF(ABS(N14-N31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",46,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",46,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(N14),IF(ISERROR(N31),IF(ERROR.TYPE(N14)=ERROR.TYPE(N31),1,0),0),IF(ISERROR(N31),0,IF(ABS(N14-N31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(N14),IF(ISERROR(N31),IF(ERROR.TYPE(N14)=ERROR.TYPE(N31),1,0),0),IF(ISERROR(N31),0,IF(ABS(N14-N31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n9_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n9_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SINH(N2)"},read_from_excel_data(Config,{"Trigonometry",8,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",8,13}), {formula,"=SINH(N2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",8,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",8,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SINH(N2)"}]),
+      test_util:expected2(Msg, {formula,"=SINH(N2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n20_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n20_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.42737988023383},read_from_excel_data(Config,{"Trigonometry",19,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",19,13}), {number,0.42737988023383}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",19,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",19,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.42737988023383}]),
+      test_util:expected2(Msg, {number,0.42737988023383})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n31_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n31_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",30,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",30,13}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",30,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",30,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n42_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n42_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(N9),IF(ISERROR(N26),IF(ERROR.TYPE(N9)=ERROR.TYPE(N26),1,0),0),IF(ISERROR(N26),0,IF(ABS(N9-N26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",41,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",41,13}), {formula,"=IF(ISERROR(N9),IF(ISERROR(N26),IF(ERROR.TYPE(N9)=ERROR.TYPE(N26),1,0),0),IF(ISERROR(N26),0,IF(ABS(N9-N26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",41,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",41,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(N9),IF(ISERROR(N26),IF(ERROR.TYPE(N9)=ERROR.TYPE(N26),1,0),0),IF(ISERROR(N26),0,IF(ABS(N9-N26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(N9),IF(ISERROR(N26),IF(ERROR.TYPE(N9)=ERROR.TYPE(N26),1,0),0),IF(ISERROR(N26),0,IF(ABS(N9-N26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n4_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n4_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COS(N2)"},read_from_excel_data(Config,{"Trigonometry",3,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",3,13}), {formula,"=COS(N2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",3,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",3,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COS(N2)"}]),
+      test_util:expected2(Msg, {formula,"=COS(N2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n15_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n15_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=DEGREES(N2)"},read_from_excel_data(Config,{"Trigonometry",14,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",14,13}), {formula,"=DEGREES(N2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",14,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",14,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=DEGREES(N2)"}]),
+      test_util:expected2(Msg, {formula,"=DEGREES(N2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n26_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n26_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,7.40626310606654},read_from_excel_data(Config,{"Trigonometry",25,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",25,13}), {number,7.40626310606654}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",25,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",25,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,7.40626310606654}]),
+      test_util:expected2(Msg, {number,7.40626310606654})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n37_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n37_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(N4),IF(ISERROR(N21),IF(ERROR.TYPE(N4)=ERROR.TYPE(N21),1,0),0),IF(ISERROR(N21),0,IF(ABS(N4-N21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",36,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",36,13}), {formula,"=IF(ISERROR(N4),IF(ISERROR(N21),IF(ERROR.TYPE(N4)=ERROR.TYPE(N21),1,0),0),IF(ISERROR(N21),0,IF(ABS(N4-N21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",36,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",36,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(N4),IF(ISERROR(N21),IF(ERROR.TYPE(N4)=ERROR.TYPE(N21),1,0),0),IF(ISERROR(N21),0,IF(ABS(N4-N21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(N4),IF(ISERROR(N21),IF(ERROR.TYPE(N4)=ERROR.TYPE(N21),1,0),0),IF(ISERROR(N21),0,IF(ABS(N4-N21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n48_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n48_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(N15),IF(ISERROR(N32),IF(ERROR.TYPE(N15)=ERROR.TYPE(N32),1,0),0),IF(ISERROR(N32),0,IF(ABS(N15-N32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",47,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",47,13}), {formula,"=IF(ISERROR(N15),IF(ISERROR(N32),IF(ERROR.TYPE(N15)=ERROR.TYPE(N32),1,0),0),IF(ISERROR(N32),0,IF(ABS(N15-N32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",47,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",47,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(N15),IF(ISERROR(N32),IF(ERROR.TYPE(N15)=ERROR.TYPE(N32),1,0),0),IF(ISERROR(N32),0,IF(ABS(N15-N32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(N15),IF(ISERROR(N32),IF(ERROR.TYPE(N15)=ERROR.TYPE(N32),1,0),0),IF(ISERROR(N32),0,IF(ABS(N15-N32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n10_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n10_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COSH(N2)"},read_from_excel_data(Config,{"Trigonometry",9,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",9,13}), {formula,"=COSH(N2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",9,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",9,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COSH(N2)"}]),
+      test_util:expected2(Msg, {formula,"=COSH(N2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n21_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n21_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-0.904072142017061},read_from_excel_data(Config,{"Trigonometry",20,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",20,13}), {number,-0.904072142017061}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",20,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",20,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-0.904072142017061}]),
+      test_util:expected2(Msg, {number,-0.904072142017061})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n32_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n32_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,154.698604685322},read_from_excel_data(Config,{"Trigonometry",31,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",31,13}), {number,154.698604685322}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",31,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",31,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,154.698604685322}]),
+      test_util:expected2(Msg, {number,154.698604685322})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_n43_test(doc) -> [{userdata,[{""}]}];
 trigonometry_n43_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(N10),IF(ISERROR(N27),IF(ERROR.TYPE(N10)=ERROR.TYPE(N27),1,0),0),IF(ISERROR(N27),0,IF(ABS(N10-N27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",42,13})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",42,13}), {formula,"=IF(ISERROR(N10),IF(ISERROR(N27),IF(ERROR.TYPE(N10)=ERROR.TYPE(N27),1,0),0),IF(ISERROR(N27),0,IF(ABS(N10-N27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",42,13}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",42,13}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(N10),IF(ISERROR(N27),IF(ERROR.TYPE(N10)=ERROR.TYPE(N27),1,0),0),IF(ISERROR(N27),0,IF(ABS(N10-N27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(N10),IF(ISERROR(N27),IF(ERROR.TYPE(N10)=ERROR.TYPE(N27),1,0),0),IF(ISERROR(N27),0,IF(ABS(N10-N27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d5_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d5_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TAN(D2)"},read_from_excel_data(Config,{"Trigonometry",4,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",4,3}), {formula,"=TAN(D2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",4,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",4,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TAN(D2)"}]),
+      test_util:expected2(Msg, {formula,"=TAN(D2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d16_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d16_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=RADIANS(D2)"},read_from_excel_data(Config,{"Trigonometry",15,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",15,3}), {formula,"=RADIANS(D2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",15,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",15,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=RADIANS(D2)"}]),
+      test_util:expected2(Msg, {formula,"=RADIANS(D2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d27_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d27_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1.0},read_from_excel_data(Config,{"Trigonometry",26,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",26,3}), {number,1.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",26,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",26,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.0}]),
+      test_util:expected2(Msg, {number,1.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d38_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d38_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(D5),IF(ISERROR(D22),IF(ERROR.TYPE(D5)=ERROR.TYPE(D22),1,0),0),IF(ISERROR(D22),0,IF(ABS(D5-D22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",37,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",37,3}), {formula,"=IF(ISERROR(D5),IF(ISERROR(D22),IF(ERROR.TYPE(D5)=ERROR.TYPE(D22),1,0),0),IF(ISERROR(D22),0,IF(ABS(D5-D22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",37,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",37,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(D5),IF(ISERROR(D22),IF(ERROR.TYPE(D5)=ERROR.TYPE(D22),1,0),0),IF(ISERROR(D22),0,IF(ABS(D5-D22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(D5),IF(ISERROR(D22),IF(ERROR.TYPE(D5)=ERROR.TYPE(D22),1,0),0),IF(ISERROR(D22),0,IF(ABS(D5-D22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d49_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d49_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(D16),IF(ISERROR(D33),IF(ERROR.TYPE(D16)=ERROR.TYPE(D33),1,0),0),IF(ISERROR(D33),0,IF(ABS(D16-D33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",48,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",48,3}), {formula,"=IF(ISERROR(D16),IF(ISERROR(D33),IF(ERROR.TYPE(D16)=ERROR.TYPE(D33),1,0),0),IF(ISERROR(D33),0,IF(ABS(D16-D33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",48,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",48,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(D16),IF(ISERROR(D33),IF(ERROR.TYPE(D16)=ERROR.TYPE(D33),1,0),0),IF(ISERROR(D33),0,IF(ABS(D16-D33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(D16),IF(ISERROR(D33),IF(ERROR.TYPE(D16)=ERROR.TYPE(D33),1,0),0),IF(ISERROR(D33),0,IF(ABS(D16-D33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d11_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d11_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TANH(D2)"},read_from_excel_data(Config,{"Trigonometry",10,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",10,3}), {formula,"=TANH(D2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",10,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",10,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TANH(D2)"}]),
+      test_util:expected2(Msg, {formula,"=TANH(D2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d22_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d22_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Trigonometry",21,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",21,3}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",21,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",21,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d33_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d33_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Trigonometry",32,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",32,3}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",32,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",32,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d44_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d44_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(D11),IF(ISERROR(D28),IF(ERROR.TYPE(D11)=ERROR.TYPE(D28),1,0),0),IF(ISERROR(D28),0,IF(ABS(D11-D28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",43,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",43,3}), {formula,"=IF(ISERROR(D11),IF(ISERROR(D28),IF(ERROR.TYPE(D11)=ERROR.TYPE(D28),1,0),0),IF(ISERROR(D28),0,IF(ABS(D11-D28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",43,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",43,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(D11),IF(ISERROR(D28),IF(ERROR.TYPE(D11)=ERROR.TYPE(D28),1,0),0),IF(ISERROR(D28),0,IF(ABS(D11-D28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(D11),IF(ISERROR(D28),IF(ERROR.TYPE(D11)=ERROR.TYPE(D28),1,0),0),IF(ISERROR(D28),0,IF(ABS(D11-D28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d6_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASIN(D2)"},read_from_excel_data(Config,{"Trigonometry",5,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",5,3}), {formula,"=ASIN(D2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",5,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",5,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASIN(D2)"}]),
+      test_util:expected2(Msg, {formula,"=ASIN(D2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d28_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d28_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Trigonometry",27,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",27,3}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",27,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",27,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d39_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d39_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(D6),IF(ISERROR(D23),IF(ERROR.TYPE(D6)=ERROR.TYPE(D23),1,0),0),IF(ISERROR(D23),0,IF(ABS(D6-D23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",38,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",38,3}), {formula,"=IF(ISERROR(D6),IF(ISERROR(D23),IF(ERROR.TYPE(D6)=ERROR.TYPE(D23),1,0),0),IF(ISERROR(D23),0,IF(ABS(D6-D23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",38,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",38,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(D6),IF(ISERROR(D23),IF(ERROR.TYPE(D6)=ERROR.TYPE(D23),1,0),0),IF(ISERROR(D23),0,IF(ABS(D6-D23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(D6),IF(ISERROR(D23),IF(ERROR.TYPE(D6)=ERROR.TYPE(D23),1,0),0),IF(ISERROR(D23),0,IF(ABS(D6-D23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d1_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d1_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Boolean"},read_from_excel_data(Config,{"Trigonometry",0,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",0,3}), {string,"Boolean"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",0,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",0,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Boolean"}]),
+      test_util:expected2(Msg, {string,"Boolean"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d12_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d12_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASINH(D2)"},read_from_excel_data(Config,{"Trigonometry",11,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",11,3}), {formula,"=ASINH(D2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",11,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",11,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASINH(D2)"}]),
+      test_util:expected2(Msg, {formula,"=ASINH(D2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d23_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d23_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Trigonometry",22,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",22,3}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",22,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",22,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d45_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d45_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(D12),IF(ISERROR(D29),IF(ERROR.TYPE(D12)=ERROR.TYPE(D29),1,0),0),IF(ISERROR(D29),0,IF(ABS(D12-D29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",44,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",44,3}), {formula,"=IF(ISERROR(D12),IF(ISERROR(D29),IF(ERROR.TYPE(D12)=ERROR.TYPE(D29),1,0),0),IF(ISERROR(D29),0,IF(ABS(D12-D29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",44,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",44,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(D12),IF(ISERROR(D29),IF(ERROR.TYPE(D12)=ERROR.TYPE(D29),1,0),0),IF(ISERROR(D29),0,IF(ABS(D12-D29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(D12),IF(ISERROR(D29),IF(ERROR.TYPE(D12)=ERROR.TYPE(D29),1,0),0),IF(ISERROR(D29),0,IF(ABS(D12-D29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d7_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d7_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOS(D2)"},read_from_excel_data(Config,{"Trigonometry",6,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",6,3}), {formula,"=ACOS(D2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",6,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",6,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOS(D2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOS(D2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d18_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d18_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Boolean"},read_from_excel_data(Config,{"Trigonometry",17,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",17,3}), {string,"Boolean"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",17,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",17,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Boolean"}]),
+      test_util:expected2(Msg, {string,"Boolean"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d29_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d29_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Trigonometry",28,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",28,3}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",28,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",28,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d40_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d40_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(D7),IF(ISERROR(D24),IF(ERROR.TYPE(D7)=ERROR.TYPE(D24),1,0),0),IF(ISERROR(D24),0,IF(ABS(D7-D24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",39,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",39,3}), {formula,"=IF(ISERROR(D7),IF(ISERROR(D24),IF(ERROR.TYPE(D7)=ERROR.TYPE(D24),1,0),0),IF(ISERROR(D24),0,IF(ABS(D7-D24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",39,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",39,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(D7),IF(ISERROR(D24),IF(ERROR.TYPE(D7)=ERROR.TYPE(D24),1,0),0),IF(ISERROR(D24),0,IF(ABS(D7-D24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(D7),IF(ISERROR(D24),IF(ERROR.TYPE(D7)=ERROR.TYPE(D24),1,0),0),IF(ISERROR(D24),0,IF(ABS(D7-D24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d2_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d2_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,false},read_from_excel_data(Config,{"Trigonometry",1,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",1,3}), {boolean,false}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",1,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",1,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,false}]),
+      test_util:expected2(Msg, {boolean,false})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d13_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d13_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOSH(D2)"},read_from_excel_data(Config,{"Trigonometry",12,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",12,3}), {formula,"=ACOSH(D2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",12,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",12,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOSH(D2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOSH(D2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d24_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d24_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1.5707963267949},read_from_excel_data(Config,{"Trigonometry",23,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",23,3}), {number,1.5707963267949}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",23,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",23,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.5707963267949}]),
+      test_util:expected2(Msg, {number,1.5707963267949})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d46_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d46_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(D13),IF(ISERROR(D30),IF(ERROR.TYPE(D13)=ERROR.TYPE(D30),1,0),0),IF(ISERROR(D30),0,IF(ABS(D13-D30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",45,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",45,3}), {formula,"=IF(ISERROR(D13),IF(ISERROR(D30),IF(ERROR.TYPE(D13)=ERROR.TYPE(D30),1,0),0),IF(ISERROR(D30),0,IF(ABS(D13-D30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",45,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",45,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(D13),IF(ISERROR(D30),IF(ERROR.TYPE(D13)=ERROR.TYPE(D30),1,0),0),IF(ISERROR(D30),0,IF(ABS(D13-D30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(D13),IF(ISERROR(D30),IF(ERROR.TYPE(D13)=ERROR.TYPE(D30),1,0),0),IF(ISERROR(D30),0,IF(ABS(D13-D30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d8_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d8_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATAN(D2)"},read_from_excel_data(Config,{"Trigonometry",7,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",7,3}), {formula,"=ATAN(D2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",7,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",7,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATAN(D2)"}]),
+      test_util:expected2(Msg, {formula,"=ATAN(D2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d19_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d19_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{boolean,false},read_from_excel_data(Config,{"Trigonometry",18,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",18,3}), {boolean,false}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",18,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",18,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{boolean,false}]),
+      test_util:expected2(Msg, {boolean,false})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d30_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d30_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",29,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",29,3}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",29,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",29,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d41_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d41_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(D8),IF(ISERROR(D25),IF(ERROR.TYPE(D8)=ERROR.TYPE(D25),1,0),0),IF(ISERROR(D25),0,IF(ABS(D8-D25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",40,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",40,3}), {formula,"=IF(ISERROR(D8),IF(ISERROR(D25),IF(ERROR.TYPE(D8)=ERROR.TYPE(D25),1,0),0),IF(ISERROR(D25),0,IF(ABS(D8-D25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",40,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",40,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(D8),IF(ISERROR(D25),IF(ERROR.TYPE(D8)=ERROR.TYPE(D25),1,0),0),IF(ISERROR(D25),0,IF(ABS(D8-D25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(D8),IF(ISERROR(D25),IF(ERROR.TYPE(D8)=ERROR.TYPE(D25),1,0),0),IF(ISERROR(D25),0,IF(ABS(D8-D25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d3_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SIN(D2)"},read_from_excel_data(Config,{"Trigonometry",2,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",2,3}), {formula,"=SIN(D2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",2,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",2,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SIN(D2)"}]),
+      test_util:expected2(Msg, {formula,"=SIN(D2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d14_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d14_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATANH(D2)"},read_from_excel_data(Config,{"Trigonometry",13,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",13,3}), {formula,"=ATANH(D2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",13,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",13,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATANH(D2)"}]),
+      test_util:expected2(Msg, {formula,"=ATANH(D2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d25_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d25_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Trigonometry",24,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",24,3}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",24,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",24,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d36_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d36_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(D3),IF(ISERROR(D20),IF(ERROR.TYPE(D3)=ERROR.TYPE(D20),1,0),0),IF(ISERROR(D20),0,IF(ABS(D3-D20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",35,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",35,3}), {formula,"=IF(ISERROR(D3),IF(ISERROR(D20),IF(ERROR.TYPE(D3)=ERROR.TYPE(D20),1,0),0),IF(ISERROR(D20),0,IF(ABS(D3-D20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",35,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",35,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(D3),IF(ISERROR(D20),IF(ERROR.TYPE(D3)=ERROR.TYPE(D20),1,0),0),IF(ISERROR(D20),0,IF(ABS(D3-D20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(D3),IF(ISERROR(D20),IF(ERROR.TYPE(D3)=ERROR.TYPE(D20),1,0),0),IF(ISERROR(D20),0,IF(ABS(D3-D20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d47_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d47_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(D14),IF(ISERROR(D31),IF(ERROR.TYPE(D14)=ERROR.TYPE(D31),1,0),0),IF(ISERROR(D31),0,IF(ABS(D14-D31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",46,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",46,3}), {formula,"=IF(ISERROR(D14),IF(ISERROR(D31),IF(ERROR.TYPE(D14)=ERROR.TYPE(D31),1,0),0),IF(ISERROR(D31),0,IF(ABS(D14-D31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",46,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",46,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(D14),IF(ISERROR(D31),IF(ERROR.TYPE(D14)=ERROR.TYPE(D31),1,0),0),IF(ISERROR(D31),0,IF(ABS(D14-D31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(D14),IF(ISERROR(D31),IF(ERROR.TYPE(D14)=ERROR.TYPE(D31),1,0),0),IF(ISERROR(D31),0,IF(ABS(D14-D31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d9_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d9_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SINH(D2)"},read_from_excel_data(Config,{"Trigonometry",8,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",8,3}), {formula,"=SINH(D2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",8,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",8,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SINH(D2)"}]),
+      test_util:expected2(Msg, {formula,"=SINH(D2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d20_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d20_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Trigonometry",19,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",19,3}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",19,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",19,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d31_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d31_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Trigonometry",30,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",30,3}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",30,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",30,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d42_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d42_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(D9),IF(ISERROR(D26),IF(ERROR.TYPE(D9)=ERROR.TYPE(D26),1,0),0),IF(ISERROR(D26),0,IF(ABS(D9-D26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",41,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",41,3}), {formula,"=IF(ISERROR(D9),IF(ISERROR(D26),IF(ERROR.TYPE(D9)=ERROR.TYPE(D26),1,0),0),IF(ISERROR(D26),0,IF(ABS(D9-D26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",41,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",41,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(D9),IF(ISERROR(D26),IF(ERROR.TYPE(D9)=ERROR.TYPE(D26),1,0),0),IF(ISERROR(D26),0,IF(ABS(D9-D26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(D9),IF(ISERROR(D26),IF(ERROR.TYPE(D9)=ERROR.TYPE(D26),1,0),0),IF(ISERROR(D26),0,IF(ABS(D9-D26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d4_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d4_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COS(D2)"},read_from_excel_data(Config,{"Trigonometry",3,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",3,3}), {formula,"=COS(D2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",3,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",3,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COS(D2)"}]),
+      test_util:expected2(Msg, {formula,"=COS(D2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d15_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d15_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=DEGREES(D2)"},read_from_excel_data(Config,{"Trigonometry",14,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",14,3}), {formula,"=DEGREES(D2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",14,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",14,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=DEGREES(D2)"}]),
+      test_util:expected2(Msg, {formula,"=DEGREES(D2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d26_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d26_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Trigonometry",25,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",25,3}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",25,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",25,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d37_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d37_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(D4),IF(ISERROR(D21),IF(ERROR.TYPE(D4)=ERROR.TYPE(D21),1,0),0),IF(ISERROR(D21),0,IF(ABS(D4-D21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",36,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",36,3}), {formula,"=IF(ISERROR(D4),IF(ISERROR(D21),IF(ERROR.TYPE(D4)=ERROR.TYPE(D21),1,0),0),IF(ISERROR(D21),0,IF(ABS(D4-D21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",36,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",36,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(D4),IF(ISERROR(D21),IF(ERROR.TYPE(D4)=ERROR.TYPE(D21),1,0),0),IF(ISERROR(D21),0,IF(ABS(D4-D21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(D4),IF(ISERROR(D21),IF(ERROR.TYPE(D4)=ERROR.TYPE(D21),1,0),0),IF(ISERROR(D21),0,IF(ABS(D4-D21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d48_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d48_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(D15),IF(ISERROR(D32),IF(ERROR.TYPE(D15)=ERROR.TYPE(D32),1,0),0),IF(ISERROR(D32),0,IF(ABS(D15-D32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",47,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",47,3}), {formula,"=IF(ISERROR(D15),IF(ISERROR(D32),IF(ERROR.TYPE(D15)=ERROR.TYPE(D32),1,0),0),IF(ISERROR(D32),0,IF(ABS(D15-D32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",47,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",47,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(D15),IF(ISERROR(D32),IF(ERROR.TYPE(D15)=ERROR.TYPE(D32),1,0),0),IF(ISERROR(D32),0,IF(ABS(D15-D32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(D15),IF(ISERROR(D32),IF(ERROR.TYPE(D15)=ERROR.TYPE(D32),1,0),0),IF(ISERROR(D32),0,IF(ABS(D15-D32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d10_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d10_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COSH(D2)"},read_from_excel_data(Config,{"Trigonometry",9,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",9,3}), {formula,"=COSH(D2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",9,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",9,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COSH(D2)"}]),
+      test_util:expected2(Msg, {formula,"=COSH(D2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d21_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d21_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1.0},read_from_excel_data(Config,{"Trigonometry",20,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",20,3}), {number,1.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",20,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",20,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.0}]),
+      test_util:expected2(Msg, {number,1.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d32_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d32_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.0},read_from_excel_data(Config,{"Trigonometry",31,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",31,3}), {number,0.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",31,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",31,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0}]),
+      test_util:expected2(Msg, {number,0.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_d43_test(doc) -> [{userdata,[{""}]}];
 trigonometry_d43_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(D10),IF(ISERROR(D27),IF(ERROR.TYPE(D10)=ERROR.TYPE(D27),1,0),0),IF(ISERROR(D27),0,IF(ABS(D10-D27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",42,3})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",42,3}), {formula,"=IF(ISERROR(D10),IF(ISERROR(D27),IF(ERROR.TYPE(D10)=ERROR.TYPE(D27),1,0),0),IF(ISERROR(D27),0,IF(ABS(D10-D27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",42,3}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",42,3}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(D10),IF(ISERROR(D27),IF(ERROR.TYPE(D10)=ERROR.TYPE(D27),1,0),0),IF(ISERROR(D27),0,IF(ABS(D10-D27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(D10),IF(ISERROR(D27),IF(ERROR.TYPE(D10)=ERROR.TYPE(D27),1,0),0),IF(ISERROR(D27),0,IF(ABS(D10-D27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o5_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o5_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TAN(O2)"},read_from_excel_data(Config,{"Trigonometry",4,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",4,14}), {formula,"=TAN(O2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",4,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",4,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TAN(O2)"}]),
+      test_util:expected2(Msg, {formula,"=TAN(O2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o16_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o16_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=RADIANS(O2)"},read_from_excel_data(Config,{"Trigonometry",15,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",15,14}), {formula,"=RADIANS(O2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",15,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",15,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=RADIANS(O2)"}]),
+      test_util:expected2(Msg, {formula,"=RADIANS(O2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o27_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o27_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,13244561064.9217},read_from_excel_data(Config,{"Trigonometry",26,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",26,14}), {number,13244561064.9217}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",26,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",26,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,13244561064.9217}]),
+      test_util:expected2(Msg, {number,13244561064.9217})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o38_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o38_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(O5),IF(ISERROR(O22),IF(ERROR.TYPE(O5)=ERROR.TYPE(O22),1,0),0),IF(ISERROR(O22),0,IF(ABS(O5-O22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",37,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",37,14}), {formula,"=IF(ISERROR(O5),IF(ISERROR(O22),IF(ERROR.TYPE(O5)=ERROR.TYPE(O22),1,0),0),IF(ISERROR(O22),0,IF(ABS(O5-O22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",37,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",37,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(O5),IF(ISERROR(O22),IF(ERROR.TYPE(O5)=ERROR.TYPE(O22),1,0),0),IF(ISERROR(O22),0,IF(ABS(O5-O22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(O5),IF(ISERROR(O22),IF(ERROR.TYPE(O5)=ERROR.TYPE(O22),1,0),0),IF(ISERROR(O22),0,IF(ABS(O5-O22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o49_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o49_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(O16),IF(ISERROR(O33),IF(ERROR.TYPE(O16)=ERROR.TYPE(O33),1,0),0),IF(ISERROR(O33),0,IF(ABS(O16-O33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",48,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",48,14}), {formula,"=IF(ISERROR(O16),IF(ISERROR(O33),IF(ERROR.TYPE(O16)=ERROR.TYPE(O33),1,0),0),IF(ISERROR(O33),0,IF(ABS(O16-O33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",48,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",48,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(O16),IF(ISERROR(O33),IF(ERROR.TYPE(O16)=ERROR.TYPE(O33),1,0),0),IF(ISERROR(O33),0,IF(ABS(O16-O33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(O16),IF(ISERROR(O33),IF(ERROR.TYPE(O16)=ERROR.TYPE(O33),1,0),0),IF(ISERROR(O33),0,IF(ABS(O16-O33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o11_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o11_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TANH(O2)"},read_from_excel_data(Config,{"Trigonometry",10,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",10,14}), {formula,"=TANH(O2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",10,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",10,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TANH(O2)"}]),
+      test_util:expected2(Msg, {formula,"=TANH(O2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o22_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o22_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2.1348966977217},read_from_excel_data(Config,{"Trigonometry",21,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",21,14}), {number,-2.1348966977217}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",21,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",21,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2.1348966977217}]),
+      test_util:expected2(Msg, {number,-2.1348966977217})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o33_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o33_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.418879020478639},read_from_excel_data(Config,{"Trigonometry",32,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",32,14}), {number,0.418879020478639}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",32,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",32,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.418879020478639}]),
+      test_util:expected2(Msg, {number,0.418879020478639})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o44_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o44_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(O11),IF(ISERROR(O28),IF(ERROR.TYPE(O11)=ERROR.TYPE(O28),1,0),0),IF(ISERROR(O28),0,IF(ABS(O11-O28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",43,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",43,14}), {formula,"=IF(ISERROR(O11),IF(ISERROR(O28),IF(ERROR.TYPE(O11)=ERROR.TYPE(O28),1,0),0),IF(ISERROR(O28),0,IF(ABS(O11-O28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",43,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",43,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(O11),IF(ISERROR(O28),IF(ERROR.TYPE(O11)=ERROR.TYPE(O28),1,0),0),IF(ISERROR(O28),0,IF(ABS(O11-O28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(O11),IF(ISERROR(O28),IF(ERROR.TYPE(O11)=ERROR.TYPE(O28),1,0),0),IF(ISERROR(O28),0,IF(ABS(O11-O28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o6_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASIN(O2)"},read_from_excel_data(Config,{"Trigonometry",5,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",5,14}), {formula,"=ASIN(O2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",5,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",5,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASIN(O2)"}]),
+      test_util:expected2(Msg, {formula,"=ASIN(O2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o28_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o28_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1.0},read_from_excel_data(Config,{"Trigonometry",27,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",27,14}), {number,1.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",27,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",27,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.0}]),
+      test_util:expected2(Msg, {number,1.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o39_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o39_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(O6),IF(ISERROR(O23),IF(ERROR.TYPE(O6)=ERROR.TYPE(O23),1,0),0),IF(ISERROR(O23),0,IF(ABS(O6-O23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",38,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",38,14}), {formula,"=IF(ISERROR(O6),IF(ISERROR(O23),IF(ERROR.TYPE(O6)=ERROR.TYPE(O23),1,0),0),IF(ISERROR(O23),0,IF(ABS(O6-O23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",38,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",38,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(O6),IF(ISERROR(O23),IF(ERROR.TYPE(O6)=ERROR.TYPE(O23),1,0),0),IF(ISERROR(O23),0,IF(ABS(O6-O23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(O6),IF(ISERROR(O23),IF(ERROR.TYPE(O6)=ERROR.TYPE(O23),1,0),0),IF(ISERROR(O23),0,IF(ABS(O6-O23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o1_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o1_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"String number Leading space"},read_from_excel_data(Config,{"Trigonometry",0,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",0,14}), {string,"String number Leading space"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",0,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",0,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"String number Leading space"}]),
+      test_util:expected2(Msg, {string,"String number Leading space"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o12_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o12_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASINH(O2)"},read_from_excel_data(Config,{"Trigonometry",11,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",11,14}), {formula,"=ASINH(O2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",11,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",11,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASINH(O2)"}]),
+      test_util:expected2(Msg, {formula,"=ASINH(O2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o23_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o23_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",22,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",22,14}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",22,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",22,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o45_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o45_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(O12),IF(ISERROR(O29),IF(ERROR.TYPE(O12)=ERROR.TYPE(O29),1,0),0),IF(ISERROR(O29),0,IF(ABS(O12-O29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",44,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",44,14}), {formula,"=IF(ISERROR(O12),IF(ISERROR(O29),IF(ERROR.TYPE(O12)=ERROR.TYPE(O29),1,0),0),IF(ISERROR(O29),0,IF(ABS(O12-O29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",44,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",44,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(O12),IF(ISERROR(O29),IF(ERROR.TYPE(O12)=ERROR.TYPE(O29),1,0),0),IF(ISERROR(O29),0,IF(ABS(O12-O29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(O12),IF(ISERROR(O29),IF(ERROR.TYPE(O12)=ERROR.TYPE(O29),1,0),0),IF(ISERROR(O29),0,IF(ABS(O12-O29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o7_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o7_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOS(O2)"},read_from_excel_data(Config,{"Trigonometry",6,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",6,14}), {formula,"=ACOS(O2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",6,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",6,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOS(O2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOS(O2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o18_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o18_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"String number Leading space"},read_from_excel_data(Config,{"Trigonometry",17,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",17,14}), {string,"String number Leading space"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",17,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",17,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"String number Leading space"}]),
+      test_util:expected2(Msg, {string,"String number Leading space"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o29_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o29_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,3.87163475638773},read_from_excel_data(Config,{"Trigonometry",28,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",28,14}), {number,3.87163475638773}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",28,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",28,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,3.87163475638773}]),
+      test_util:expected2(Msg, {number,3.87163475638773})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o40_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o40_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(O7),IF(ISERROR(O24),IF(ERROR.TYPE(O7)=ERROR.TYPE(O24),1,0),0),IF(ISERROR(O24),0,IF(ABS(O7-O24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",39,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",39,14}), {formula,"=IF(ISERROR(O7),IF(ISERROR(O24),IF(ERROR.TYPE(O7)=ERROR.TYPE(O24),1,0),0),IF(ISERROR(O24),0,IF(ABS(O7-O24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",39,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",39,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(O7),IF(ISERROR(O24),IF(ERROR.TYPE(O7)=ERROR.TYPE(O24),1,0),0),IF(ISERROR(O24),0,IF(ABS(O7-O24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(O7),IF(ISERROR(O24),IF(ERROR.TYPE(O7)=ERROR.TYPE(O24),1,0),0),IF(ISERROR(O24),0,IF(ABS(O7-O24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o2_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o2_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string," 24"},read_from_excel_data(Config,{"Trigonometry",1,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",1,14}), {string," 24"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",1,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",1,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string," 24"}]),
+      test_util:expected2(Msg, {string," 24"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o13_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o13_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOSH(O2)"},read_from_excel_data(Config,{"Trigonometry",12,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",12,14}), {formula,"=ACOSH(O2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",12,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",12,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOSH(O2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOSH(O2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o24_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o24_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",23,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",23,14}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",23,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",23,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o46_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o46_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(O13),IF(ISERROR(O30),IF(ERROR.TYPE(O13)=ERROR.TYPE(O30),1,0),0),IF(ISERROR(O30),0,IF(ABS(O13-O30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",45,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",45,14}), {formula,"=IF(ISERROR(O13),IF(ISERROR(O30),IF(ERROR.TYPE(O13)=ERROR.TYPE(O30),1,0),0),IF(ISERROR(O30),0,IF(ABS(O13-O30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",45,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",45,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(O13),IF(ISERROR(O30),IF(ERROR.TYPE(O13)=ERROR.TYPE(O30),1,0),0),IF(ISERROR(O30),0,IF(ABS(O13-O30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(O13),IF(ISERROR(O30),IF(ERROR.TYPE(O13)=ERROR.TYPE(O30),1,0),0),IF(ISERROR(O30),0,IF(ABS(O13-O30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o8_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o8_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATAN(O2)"},read_from_excel_data(Config,{"Trigonometry",7,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",7,14}), {formula,"=ATAN(O2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",7,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",7,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATAN(O2)"}]),
+      test_util:expected2(Msg, {formula,"=ATAN(O2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o19_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o19_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string," 24"},read_from_excel_data(Config,{"Trigonometry",18,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",18,14}), {string," 24"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",18,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",18,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string," 24"}]),
+      test_util:expected2(Msg, {string," 24"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o30_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o30_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,3.87076670028709},read_from_excel_data(Config,{"Trigonometry",29,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",29,14}), {number,3.87076670028709}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",29,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",29,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,3.87076670028709}]),
+      test_util:expected2(Msg, {number,3.87076670028709})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o41_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o41_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(O8),IF(ISERROR(O25),IF(ERROR.TYPE(O8)=ERROR.TYPE(O25),1,0),0),IF(ISERROR(O25),0,IF(ABS(O8-O25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",40,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",40,14}), {formula,"=IF(ISERROR(O8),IF(ISERROR(O25),IF(ERROR.TYPE(O8)=ERROR.TYPE(O25),1,0),0),IF(ISERROR(O25),0,IF(ABS(O8-O25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",40,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",40,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(O8),IF(ISERROR(O25),IF(ERROR.TYPE(O8)=ERROR.TYPE(O25),1,0),0),IF(ISERROR(O25),0,IF(ABS(O8-O25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(O8),IF(ISERROR(O25),IF(ERROR.TYPE(O8)=ERROR.TYPE(O25),1,0),0),IF(ISERROR(O25),0,IF(ABS(O8-O25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o3_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SIN(O2)"},read_from_excel_data(Config,{"Trigonometry",2,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",2,14}), {formula,"=SIN(O2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",2,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",2,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SIN(O2)"}]),
+      test_util:expected2(Msg, {formula,"=SIN(O2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o14_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o14_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATANH(O2)"},read_from_excel_data(Config,{"Trigonometry",13,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",13,14}), {formula,"=ATANH(O2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",13,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",13,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATANH(O2)"}]),
+      test_util:expected2(Msg, {formula,"=ATANH(O2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o25_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o25_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1.52915374769631},read_from_excel_data(Config,{"Trigonometry",24,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",24,14}), {number,1.52915374769631}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",24,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",24,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.52915374769631}]),
+      test_util:expected2(Msg, {number,1.52915374769631})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o36_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o36_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(O3),IF(ISERROR(O20),IF(ERROR.TYPE(O3)=ERROR.TYPE(O20),1,0),0),IF(ISERROR(O20),0,IF(ABS(O3-O20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",35,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",35,14}), {formula,"=IF(ISERROR(O3),IF(ISERROR(O20),IF(ERROR.TYPE(O3)=ERROR.TYPE(O20),1,0),0),IF(ISERROR(O20),0,IF(ABS(O3-O20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",35,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",35,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(O3),IF(ISERROR(O20),IF(ERROR.TYPE(O3)=ERROR.TYPE(O20),1,0),0),IF(ISERROR(O20),0,IF(ABS(O3-O20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(O3),IF(ISERROR(O20),IF(ERROR.TYPE(O3)=ERROR.TYPE(O20),1,0),0),IF(ISERROR(O20),0,IF(ABS(O3-O20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o47_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o47_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(O14),IF(ISERROR(O31),IF(ERROR.TYPE(O14)=ERROR.TYPE(O31),1,0),0),IF(ISERROR(O31),0,IF(ABS(O14-O31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",46,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",46,14}), {formula,"=IF(ISERROR(O14),IF(ISERROR(O31),IF(ERROR.TYPE(O14)=ERROR.TYPE(O31),1,0),0),IF(ISERROR(O31),0,IF(ABS(O14-O31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",46,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",46,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(O14),IF(ISERROR(O31),IF(ERROR.TYPE(O14)=ERROR.TYPE(O31),1,0),0),IF(ISERROR(O31),0,IF(ABS(O14-O31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(O14),IF(ISERROR(O31),IF(ERROR.TYPE(O14)=ERROR.TYPE(O31),1,0),0),IF(ISERROR(O31),0,IF(ABS(O14-O31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o9_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o9_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SINH(O2)"},read_from_excel_data(Config,{"Trigonometry",8,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",8,14}), {formula,"=SINH(O2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",8,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",8,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SINH(O2)"}]),
+      test_util:expected2(Msg, {formula,"=SINH(O2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o20_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o20_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-0.905578362006624},read_from_excel_data(Config,{"Trigonometry",19,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",19,14}), {number,-0.905578362006624}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",19,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",19,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-0.905578362006624}]),
+      test_util:expected2(Msg, {number,-0.905578362006624})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o31_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o31_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",30,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",30,14}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",30,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",30,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o42_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o42_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(O9),IF(ISERROR(O26),IF(ERROR.TYPE(O9)=ERROR.TYPE(O26),1,0),0),IF(ISERROR(O26),0,IF(ABS(O9-O26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",41,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",41,14}), {formula,"=IF(ISERROR(O9),IF(ISERROR(O26),IF(ERROR.TYPE(O9)=ERROR.TYPE(O26),1,0),0),IF(ISERROR(O26),0,IF(ABS(O9-O26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",41,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",41,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(O9),IF(ISERROR(O26),IF(ERROR.TYPE(O9)=ERROR.TYPE(O26),1,0),0),IF(ISERROR(O26),0,IF(ABS(O9-O26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(O9),IF(ISERROR(O26),IF(ERROR.TYPE(O9)=ERROR.TYPE(O26),1,0),0),IF(ISERROR(O26),0,IF(ABS(O9-O26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o4_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o4_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COS(O2)"},read_from_excel_data(Config,{"Trigonometry",3,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",3,14}), {formula,"=COS(O2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",3,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",3,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COS(O2)"}]),
+      test_util:expected2(Msg, {formula,"=COS(O2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o15_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o15_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=DEGREES(O2)"},read_from_excel_data(Config,{"Trigonometry",14,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",14,14}), {formula,"=DEGREES(O2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",14,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",14,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=DEGREES(O2)"}]),
+      test_util:expected2(Msg, {formula,"=DEGREES(O2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o26_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o26_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,13244561064.9217},read_from_excel_data(Config,{"Trigonometry",25,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",25,14}), {number,13244561064.9217}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",25,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",25,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,13244561064.9217}]),
+      test_util:expected2(Msg, {number,13244561064.9217})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o37_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o37_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(O4),IF(ISERROR(O21),IF(ERROR.TYPE(O4)=ERROR.TYPE(O21),1,0),0),IF(ISERROR(O21),0,IF(ABS(O4-O21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",36,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",36,14}), {formula,"=IF(ISERROR(O4),IF(ISERROR(O21),IF(ERROR.TYPE(O4)=ERROR.TYPE(O21),1,0),0),IF(ISERROR(O21),0,IF(ABS(O4-O21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",36,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",36,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(O4),IF(ISERROR(O21),IF(ERROR.TYPE(O4)=ERROR.TYPE(O21),1,0),0),IF(ISERROR(O21),0,IF(ABS(O4-O21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(O4),IF(ISERROR(O21),IF(ERROR.TYPE(O4)=ERROR.TYPE(O21),1,0),0),IF(ISERROR(O21),0,IF(ABS(O4-O21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o48_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o48_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(O15),IF(ISERROR(O32),IF(ERROR.TYPE(O15)=ERROR.TYPE(O32),1,0),0),IF(ISERROR(O32),0,IF(ABS(O15-O32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",47,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",47,14}), {formula,"=IF(ISERROR(O15),IF(ISERROR(O32),IF(ERROR.TYPE(O15)=ERROR.TYPE(O32),1,0),0),IF(ISERROR(O32),0,IF(ABS(O15-O32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",47,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",47,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(O15),IF(ISERROR(O32),IF(ERROR.TYPE(O15)=ERROR.TYPE(O32),1,0),0),IF(ISERROR(O32),0,IF(ABS(O15-O32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(O15),IF(ISERROR(O32),IF(ERROR.TYPE(O15)=ERROR.TYPE(O32),1,0),0),IF(ISERROR(O32),0,IF(ABS(O15-O32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o10_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o10_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COSH(O2)"},read_from_excel_data(Config,{"Trigonometry",9,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",9,14}), {formula,"=COSH(O2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",9,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",9,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COSH(O2)"}]),
+      test_util:expected2(Msg, {formula,"=COSH(O2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o21_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o21_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.424179007336997},read_from_excel_data(Config,{"Trigonometry",20,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",20,14}), {number,0.424179007336997}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",20,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",20,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.424179007336997}]),
+      test_util:expected2(Msg, {number,0.424179007336997})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o32_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o32_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1375.09870831398},read_from_excel_data(Config,{"Trigonometry",31,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",31,14}), {number,1375.09870831398}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",31,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",31,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1375.09870831398}]),
+      test_util:expected2(Msg, {number,1375.09870831398})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_o43_test(doc) -> [{userdata,[{""}]}];
 trigonometry_o43_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(O10),IF(ISERROR(O27),IF(ERROR.TYPE(O10)=ERROR.TYPE(O27),1,0),0),IF(ISERROR(O27),0,IF(ABS(O10-O27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",42,14})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",42,14}), {formula,"=IF(ISERROR(O10),IF(ISERROR(O27),IF(ERROR.TYPE(O10)=ERROR.TYPE(O27),1,0),0),IF(ISERROR(O27),0,IF(ABS(O10-O27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",42,14}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",42,14}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(O10),IF(ISERROR(O27),IF(ERROR.TYPE(O10)=ERROR.TYPE(O27),1,0),0),IF(ISERROR(O27),0,IF(ABS(O10-O27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(O10),IF(ISERROR(O27),IF(ERROR.TYPE(O10)=ERROR.TYPE(O27),1,0),0),IF(ISERROR(O27),0,IF(ABS(O10-O27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e5_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e5_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TAN(E2)"},read_from_excel_data(Config,{"Trigonometry",4,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",4,4}), {formula,"=TAN(E2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",4,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",4,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TAN(E2)"}]),
+      test_util:expected2(Msg, {formula,"=TAN(E2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e16_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e16_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=RADIANS(E2)"},read_from_excel_data(Config,{"Trigonometry",15,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",15,4}), {formula,"=RADIANS(E2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",15,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",15,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=RADIANS(E2)"}]),
+      test_util:expected2(Msg, {formula,"=RADIANS(E2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e27_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e27_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826281},read_from_excel_data(Config,{"Trigonometry",26,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",26,4}), {number,-2146826281}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",26,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",26,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826281}]),
+      test_util:expected2(Msg, {number,-2146826281})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e38_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e38_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(E5),IF(ISERROR(E22),IF(ERROR.TYPE(E5)=ERROR.TYPE(E22),1,0),0),IF(ISERROR(E22),0,IF(ABS(E5-E22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",37,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",37,4}), {formula,"=IF(ISERROR(E5),IF(ISERROR(E22),IF(ERROR.TYPE(E5)=ERROR.TYPE(E22),1,0),0),IF(ISERROR(E22),0,IF(ABS(E5-E22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",37,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",37,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(E5),IF(ISERROR(E22),IF(ERROR.TYPE(E5)=ERROR.TYPE(E22),1,0),0),IF(ISERROR(E22),0,IF(ABS(E5-E22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(E5),IF(ISERROR(E22),IF(ERROR.TYPE(E5)=ERROR.TYPE(E22),1,0),0),IF(ISERROR(E22),0,IF(ABS(E5-E22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e49_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e49_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(E16),IF(ISERROR(E33),IF(ERROR.TYPE(E16)=ERROR.TYPE(E33),1,0),0),IF(ISERROR(E33),0,IF(ABS(E16-E33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",48,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",48,4}), {formula,"=IF(ISERROR(E16),IF(ISERROR(E33),IF(ERROR.TYPE(E16)=ERROR.TYPE(E33),1,0),0),IF(ISERROR(E33),0,IF(ABS(E16-E33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",48,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",48,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(E16),IF(ISERROR(E33),IF(ERROR.TYPE(E16)=ERROR.TYPE(E33),1,0),0),IF(ISERROR(E33),0,IF(ABS(E16-E33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(E16),IF(ISERROR(E33),IF(ERROR.TYPE(E16)=ERROR.TYPE(E33),1,0),0),IF(ISERROR(E33),0,IF(ABS(E16-E33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e11_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e11_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TANH(E2)"},read_from_excel_data(Config,{"Trigonometry",10,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",10,4}), {formula,"=TANH(E2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",10,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",10,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TANH(E2)"}]),
+      test_util:expected2(Msg, {formula,"=TANH(E2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e22_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e22_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826281},read_from_excel_data(Config,{"Trigonometry",21,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",21,4}), {number,-2146826281}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",21,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",21,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826281}]),
+      test_util:expected2(Msg, {number,-2146826281})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e33_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e33_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826281},read_from_excel_data(Config,{"Trigonometry",32,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",32,4}), {number,-2146826281}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",32,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",32,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826281}]),
+      test_util:expected2(Msg, {number,-2146826281})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e44_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e44_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(E11),IF(ISERROR(E28),IF(ERROR.TYPE(E11)=ERROR.TYPE(E28),1,0),0),IF(ISERROR(E28),0,IF(ABS(E11-E28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",43,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",43,4}), {formula,"=IF(ISERROR(E11),IF(ISERROR(E28),IF(ERROR.TYPE(E11)=ERROR.TYPE(E28),1,0),0),IF(ISERROR(E28),0,IF(ABS(E11-E28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",43,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",43,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(E11),IF(ISERROR(E28),IF(ERROR.TYPE(E11)=ERROR.TYPE(E28),1,0),0),IF(ISERROR(E28),0,IF(ABS(E11-E28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(E11),IF(ISERROR(E28),IF(ERROR.TYPE(E11)=ERROR.TYPE(E28),1,0),0),IF(ISERROR(E28),0,IF(ABS(E11-E28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e6_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASIN(E2)"},read_from_excel_data(Config,{"Trigonometry",5,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",5,4}), {formula,"=ASIN(E2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",5,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",5,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASIN(E2)"}]),
+      test_util:expected2(Msg, {formula,"=ASIN(E2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e28_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e28_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826281},read_from_excel_data(Config,{"Trigonometry",27,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",27,4}), {number,-2146826281}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",27,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",27,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826281}]),
+      test_util:expected2(Msg, {number,-2146826281})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e39_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e39_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(E6),IF(ISERROR(E23),IF(ERROR.TYPE(E6)=ERROR.TYPE(E23),1,0),0),IF(ISERROR(E23),0,IF(ABS(E6-E23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",38,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",38,4}), {formula,"=IF(ISERROR(E6),IF(ISERROR(E23),IF(ERROR.TYPE(E6)=ERROR.TYPE(E23),1,0),0),IF(ISERROR(E23),0,IF(ABS(E6-E23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",38,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",38,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(E6),IF(ISERROR(E23),IF(ERROR.TYPE(E6)=ERROR.TYPE(E23),1,0),0),IF(ISERROR(E23),0,IF(ABS(E6-E23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(E6),IF(ISERROR(E23),IF(ERROR.TYPE(E6)=ERROR.TYPE(E23),1,0),0),IF(ISERROR(E23),0,IF(ABS(E6-E23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e1_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e1_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Error"},read_from_excel_data(Config,{"Trigonometry",0,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",0,4}), {string,"Error"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",0,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",0,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Error"}]),
+      test_util:expected2(Msg, {string,"Error"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e12_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e12_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASINH(E2)"},read_from_excel_data(Config,{"Trigonometry",11,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",11,4}), {formula,"=ASINH(E2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",11,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",11,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASINH(E2)"}]),
+      test_util:expected2(Msg, {formula,"=ASINH(E2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e23_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e23_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826281},read_from_excel_data(Config,{"Trigonometry",22,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",22,4}), {number,-2146826281}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",22,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",22,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826281}]),
+      test_util:expected2(Msg, {number,-2146826281})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e45_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e45_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(E12),IF(ISERROR(E29),IF(ERROR.TYPE(E12)=ERROR.TYPE(E29),1,0),0),IF(ISERROR(E29),0,IF(ABS(E12-E29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",44,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",44,4}), {formula,"=IF(ISERROR(E12),IF(ISERROR(E29),IF(ERROR.TYPE(E12)=ERROR.TYPE(E29),1,0),0),IF(ISERROR(E29),0,IF(ABS(E12-E29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",44,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",44,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(E12),IF(ISERROR(E29),IF(ERROR.TYPE(E12)=ERROR.TYPE(E29),1,0),0),IF(ISERROR(E29),0,IF(ABS(E12-E29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(E12),IF(ISERROR(E29),IF(ERROR.TYPE(E12)=ERROR.TYPE(E29),1,0),0),IF(ISERROR(E29),0,IF(ABS(E12-E29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e7_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e7_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOS(E2)"},read_from_excel_data(Config,{"Trigonometry",6,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",6,4}), {formula,"=ACOS(E2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",6,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",6,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOS(E2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOS(E2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e18_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e18_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Error"},read_from_excel_data(Config,{"Trigonometry",17,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",17,4}), {string,"Error"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",17,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",17,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Error"}]),
+      test_util:expected2(Msg, {string,"Error"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e29_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e29_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826281},read_from_excel_data(Config,{"Trigonometry",28,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",28,4}), {number,-2146826281}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",28,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",28,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826281}]),
+      test_util:expected2(Msg, {number,-2146826281})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e40_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e40_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(E7),IF(ISERROR(E24),IF(ERROR.TYPE(E7)=ERROR.TYPE(E24),1,0),0),IF(ISERROR(E24),0,IF(ABS(E7-E24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",39,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",39,4}), {formula,"=IF(ISERROR(E7),IF(ISERROR(E24),IF(ERROR.TYPE(E7)=ERROR.TYPE(E24),1,0),0),IF(ISERROR(E24),0,IF(ABS(E7-E24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",39,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",39,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(E7),IF(ISERROR(E24),IF(ERROR.TYPE(E7)=ERROR.TYPE(E24),1,0),0),IF(ISERROR(E24),0,IF(ABS(E7-E24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(E7),IF(ISERROR(E24),IF(ERROR.TYPE(E7)=ERROR.TYPE(E24),1,0),0),IF(ISERROR(E24),0,IF(ABS(E7-E24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e2_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e2_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=1/0"},read_from_excel_data(Config,{"Trigonometry",1,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",1,4}), {formula,"=1/0"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",1,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",1,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=1/0"}]),
+      test_util:expected2(Msg, {formula,"=1/0"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e13_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e13_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOSH(E2)"},read_from_excel_data(Config,{"Trigonometry",12,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",12,4}), {formula,"=ACOSH(E2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",12,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",12,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOSH(E2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOSH(E2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e24_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e24_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826281},read_from_excel_data(Config,{"Trigonometry",23,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",23,4}), {number,-2146826281}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",23,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",23,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826281}]),
+      test_util:expected2(Msg, {number,-2146826281})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e46_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e46_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(E13),IF(ISERROR(E30),IF(ERROR.TYPE(E13)=ERROR.TYPE(E30),1,0),0),IF(ISERROR(E30),0,IF(ABS(E13-E30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",45,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",45,4}), {formula,"=IF(ISERROR(E13),IF(ISERROR(E30),IF(ERROR.TYPE(E13)=ERROR.TYPE(E30),1,0),0),IF(ISERROR(E30),0,IF(ABS(E13-E30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",45,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",45,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(E13),IF(ISERROR(E30),IF(ERROR.TYPE(E13)=ERROR.TYPE(E30),1,0),0),IF(ISERROR(E30),0,IF(ABS(E13-E30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(E13),IF(ISERROR(E30),IF(ERROR.TYPE(E13)=ERROR.TYPE(E30),1,0),0),IF(ISERROR(E30),0,IF(ABS(E13-E30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e8_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e8_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATAN(E2)"},read_from_excel_data(Config,{"Trigonometry",7,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",7,4}), {formula,"=ATAN(E2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",7,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",7,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATAN(E2)"}]),
+      test_util:expected2(Msg, {formula,"=ATAN(E2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e19_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e19_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826281},read_from_excel_data(Config,{"Trigonometry",18,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",18,4}), {number,-2146826281}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",18,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",18,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826281}]),
+      test_util:expected2(Msg, {number,-2146826281})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e30_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e30_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826281},read_from_excel_data(Config,{"Trigonometry",29,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",29,4}), {number,-2146826281}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",29,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",29,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826281}]),
+      test_util:expected2(Msg, {number,-2146826281})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e41_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e41_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(E8),IF(ISERROR(E25),IF(ERROR.TYPE(E8)=ERROR.TYPE(E25),1,0),0),IF(ISERROR(E25),0,IF(ABS(E8-E25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",40,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",40,4}), {formula,"=IF(ISERROR(E8),IF(ISERROR(E25),IF(ERROR.TYPE(E8)=ERROR.TYPE(E25),1,0),0),IF(ISERROR(E25),0,IF(ABS(E8-E25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",40,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",40,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(E8),IF(ISERROR(E25),IF(ERROR.TYPE(E8)=ERROR.TYPE(E25),1,0),0),IF(ISERROR(E25),0,IF(ABS(E8-E25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(E8),IF(ISERROR(E25),IF(ERROR.TYPE(E8)=ERROR.TYPE(E25),1,0),0),IF(ISERROR(E25),0,IF(ABS(E8-E25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e3_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SIN(E2)"},read_from_excel_data(Config,{"Trigonometry",2,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",2,4}), {formula,"=SIN(E2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",2,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",2,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SIN(E2)"}]),
+      test_util:expected2(Msg, {formula,"=SIN(E2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e14_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e14_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATANH(E2)"},read_from_excel_data(Config,{"Trigonometry",13,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",13,4}), {formula,"=ATANH(E2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",13,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",13,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATANH(E2)"}]),
+      test_util:expected2(Msg, {formula,"=ATANH(E2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e25_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e25_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826281},read_from_excel_data(Config,{"Trigonometry",24,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",24,4}), {number,-2146826281}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",24,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",24,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826281}]),
+      test_util:expected2(Msg, {number,-2146826281})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e36_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e36_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(E3),IF(ISERROR(E20),IF(ERROR.TYPE(E3)=ERROR.TYPE(E20),1,0),0),IF(ISERROR(E20),0,IF(ABS(E3-E20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",35,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",35,4}), {formula,"=IF(ISERROR(E3),IF(ISERROR(E20),IF(ERROR.TYPE(E3)=ERROR.TYPE(E20),1,0),0),IF(ISERROR(E20),0,IF(ABS(E3-E20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",35,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",35,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(E3),IF(ISERROR(E20),IF(ERROR.TYPE(E3)=ERROR.TYPE(E20),1,0),0),IF(ISERROR(E20),0,IF(ABS(E3-E20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(E3),IF(ISERROR(E20),IF(ERROR.TYPE(E3)=ERROR.TYPE(E20),1,0),0),IF(ISERROR(E20),0,IF(ABS(E3-E20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e47_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e47_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(E14),IF(ISERROR(E31),IF(ERROR.TYPE(E14)=ERROR.TYPE(E31),1,0),0),IF(ISERROR(E31),0,IF(ABS(E14-E31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",46,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",46,4}), {formula,"=IF(ISERROR(E14),IF(ISERROR(E31),IF(ERROR.TYPE(E14)=ERROR.TYPE(E31),1,0),0),IF(ISERROR(E31),0,IF(ABS(E14-E31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",46,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",46,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(E14),IF(ISERROR(E31),IF(ERROR.TYPE(E14)=ERROR.TYPE(E31),1,0),0),IF(ISERROR(E31),0,IF(ABS(E14-E31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(E14),IF(ISERROR(E31),IF(ERROR.TYPE(E14)=ERROR.TYPE(E31),1,0),0),IF(ISERROR(E31),0,IF(ABS(E14-E31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e9_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e9_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SINH(E2)"},read_from_excel_data(Config,{"Trigonometry",8,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",8,4}), {formula,"=SINH(E2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",8,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",8,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SINH(E2)"}]),
+      test_util:expected2(Msg, {formula,"=SINH(E2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e20_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e20_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826281},read_from_excel_data(Config,{"Trigonometry",19,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",19,4}), {number,-2146826281}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",19,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",19,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826281}]),
+      test_util:expected2(Msg, {number,-2146826281})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e31_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e31_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826281},read_from_excel_data(Config,{"Trigonometry",30,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",30,4}), {number,-2146826281}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",30,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",30,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826281}]),
+      test_util:expected2(Msg, {number,-2146826281})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e42_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e42_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(E9),IF(ISERROR(E26),IF(ERROR.TYPE(E9)=ERROR.TYPE(E26),1,0),0),IF(ISERROR(E26),0,IF(ABS(E9-E26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",41,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",41,4}), {formula,"=IF(ISERROR(E9),IF(ISERROR(E26),IF(ERROR.TYPE(E9)=ERROR.TYPE(E26),1,0),0),IF(ISERROR(E26),0,IF(ABS(E9-E26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",41,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",41,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(E9),IF(ISERROR(E26),IF(ERROR.TYPE(E9)=ERROR.TYPE(E26),1,0),0),IF(ISERROR(E26),0,IF(ABS(E9-E26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(E9),IF(ISERROR(E26),IF(ERROR.TYPE(E9)=ERROR.TYPE(E26),1,0),0),IF(ISERROR(E26),0,IF(ABS(E9-E26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e4_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e4_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COS(E2)"},read_from_excel_data(Config,{"Trigonometry",3,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",3,4}), {formula,"=COS(E2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",3,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",3,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COS(E2)"}]),
+      test_util:expected2(Msg, {formula,"=COS(E2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e15_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e15_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=DEGREES(E2)"},read_from_excel_data(Config,{"Trigonometry",14,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",14,4}), {formula,"=DEGREES(E2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",14,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",14,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=DEGREES(E2)"}]),
+      test_util:expected2(Msg, {formula,"=DEGREES(E2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e26_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e26_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826281},read_from_excel_data(Config,{"Trigonometry",25,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",25,4}), {number,-2146826281}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",25,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",25,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826281}]),
+      test_util:expected2(Msg, {number,-2146826281})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e37_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e37_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(E4),IF(ISERROR(E21),IF(ERROR.TYPE(E4)=ERROR.TYPE(E21),1,0),0),IF(ISERROR(E21),0,IF(ABS(E4-E21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",36,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",36,4}), {formula,"=IF(ISERROR(E4),IF(ISERROR(E21),IF(ERROR.TYPE(E4)=ERROR.TYPE(E21),1,0),0),IF(ISERROR(E21),0,IF(ABS(E4-E21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",36,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",36,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(E4),IF(ISERROR(E21),IF(ERROR.TYPE(E4)=ERROR.TYPE(E21),1,0),0),IF(ISERROR(E21),0,IF(ABS(E4-E21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(E4),IF(ISERROR(E21),IF(ERROR.TYPE(E4)=ERROR.TYPE(E21),1,0),0),IF(ISERROR(E21),0,IF(ABS(E4-E21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e48_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e48_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(E15),IF(ISERROR(E32),IF(ERROR.TYPE(E15)=ERROR.TYPE(E32),1,0),0),IF(ISERROR(E32),0,IF(ABS(E15-E32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",47,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",47,4}), {formula,"=IF(ISERROR(E15),IF(ISERROR(E32),IF(ERROR.TYPE(E15)=ERROR.TYPE(E32),1,0),0),IF(ISERROR(E32),0,IF(ABS(E15-E32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",47,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",47,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(E15),IF(ISERROR(E32),IF(ERROR.TYPE(E15)=ERROR.TYPE(E32),1,0),0),IF(ISERROR(E32),0,IF(ABS(E15-E32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(E15),IF(ISERROR(E32),IF(ERROR.TYPE(E15)=ERROR.TYPE(E32),1,0),0),IF(ISERROR(E32),0,IF(ABS(E15-E32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e10_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e10_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COSH(E2)"},read_from_excel_data(Config,{"Trigonometry",9,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",9,4}), {formula,"=COSH(E2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",9,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",9,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COSH(E2)"}]),
+      test_util:expected2(Msg, {formula,"=COSH(E2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e21_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e21_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826281},read_from_excel_data(Config,{"Trigonometry",20,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",20,4}), {number,-2146826281}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",20,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",20,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826281}]),
+      test_util:expected2(Msg, {number,-2146826281})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e32_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e32_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826281},read_from_excel_data(Config,{"Trigonometry",31,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",31,4}), {number,-2146826281}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",31,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",31,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826281}]),
+      test_util:expected2(Msg, {number,-2146826281})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_e43_test(doc) -> [{userdata,[{""}]}];
 trigonometry_e43_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(E10),IF(ISERROR(E27),IF(ERROR.TYPE(E10)=ERROR.TYPE(E27),1,0),0),IF(ISERROR(E27),0,IF(ABS(E10-E27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",42,4})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",42,4}), {formula,"=IF(ISERROR(E10),IF(ISERROR(E27),IF(ERROR.TYPE(E10)=ERROR.TYPE(E27),1,0),0),IF(ISERROR(E27),0,IF(ABS(E10-E27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",42,4}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",42,4}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(E10),IF(ISERROR(E27),IF(ERROR.TYPE(E10)=ERROR.TYPE(E27),1,0),0),IF(ISERROR(E27),0,IF(ABS(E10-E27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(E10),IF(ISERROR(E27),IF(ERROR.TYPE(E10)=ERROR.TYPE(E27),1,0),0),IF(ISERROR(E27),0,IF(ABS(E10-E27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p5_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p5_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TAN(P2)"},read_from_excel_data(Config,{"Trigonometry",4,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",4,15}), {formula,"=TAN(P2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",4,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",4,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TAN(P2)"}]),
+      test_util:expected2(Msg, {formula,"=TAN(P2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p16_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p16_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=RADIANS(P2)"},read_from_excel_data(Config,{"Trigonometry",15,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",15,15}), {formula,"=RADIANS(P2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",15,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",15,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=RADIANS(P2)"}]),
+      test_util:expected2(Msg, {formula,"=RADIANS(P2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p27_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p27_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",26,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",26,15}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",26,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",26,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p38_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p38_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(P5),IF(ISERROR(P22),IF(ERROR.TYPE(P5)=ERROR.TYPE(P22),1,0),0),IF(ISERROR(P22),0,IF(ABS(P5-P22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",37,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",37,15}), {formula,"=IF(ISERROR(P5),IF(ISERROR(P22),IF(ERROR.TYPE(P5)=ERROR.TYPE(P22),1,0),0),IF(ISERROR(P22),0,IF(ABS(P5-P22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",37,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",37,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(P5),IF(ISERROR(P22),IF(ERROR.TYPE(P5)=ERROR.TYPE(P22),1,0),0),IF(ISERROR(P22),0,IF(ABS(P5-P22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(P5),IF(ISERROR(P22),IF(ERROR.TYPE(P5)=ERROR.TYPE(P22),1,0),0),IF(ISERROR(P22),0,IF(ABS(P5-P22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p49_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p49_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(P16),IF(ISERROR(P33),IF(ERROR.TYPE(P16)=ERROR.TYPE(P33),1,0),0),IF(ISERROR(P33),0,IF(ABS(P16-P33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",48,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",48,15}), {formula,"=IF(ISERROR(P16),IF(ISERROR(P33),IF(ERROR.TYPE(P16)=ERROR.TYPE(P33),1,0),0),IF(ISERROR(P33),0,IF(ABS(P16-P33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",48,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",48,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(P16),IF(ISERROR(P33),IF(ERROR.TYPE(P16)=ERROR.TYPE(P33),1,0),0),IF(ISERROR(P33),0,IF(ABS(P16-P33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(P16),IF(ISERROR(P33),IF(ERROR.TYPE(P16)=ERROR.TYPE(P33),1,0),0),IF(ISERROR(P33),0,IF(ABS(P16-P33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p11_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p11_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TANH(P2)"},read_from_excel_data(Config,{"Trigonometry",10,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",10,15}), {formula,"=TANH(P2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",10,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",10,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TANH(P2)"}]),
+      test_util:expected2(Msg, {formula,"=TANH(P2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p22_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p22_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1.14439030668831},read_from_excel_data(Config,{"Trigonometry",21,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",21,15}), {number,1.14439030668831}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",21,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",21,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.14439030668831}]),
+      test_util:expected2(Msg, {number,1.14439030668831})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p33_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p33_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,631.669562881788},read_from_excel_data(Config,{"Trigonometry",32,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",32,15}), {number,631.669562881788}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",32,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",32,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,631.669562881788}]),
+      test_util:expected2(Msg, {number,631.669562881788})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p44_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p44_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(P11),IF(ISERROR(P28),IF(ERROR.TYPE(P11)=ERROR.TYPE(P28),1,0),0),IF(ISERROR(P28),0,IF(ABS(P11-P28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",43,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",43,15}), {formula,"=IF(ISERROR(P11),IF(ISERROR(P28),IF(ERROR.TYPE(P11)=ERROR.TYPE(P28),1,0),0),IF(ISERROR(P28),0,IF(ABS(P11-P28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",43,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",43,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(P11),IF(ISERROR(P28),IF(ERROR.TYPE(P11)=ERROR.TYPE(P28),1,0),0),IF(ISERROR(P28),0,IF(ABS(P11-P28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(P11),IF(ISERROR(P28),IF(ERROR.TYPE(P11)=ERROR.TYPE(P28),1,0),0),IF(ISERROR(P28),0,IF(ABS(P11-P28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p6_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASIN(P2)"},read_from_excel_data(Config,{"Trigonometry",5,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",5,15}), {formula,"=ASIN(P2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",5,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",5,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASIN(P2)"}]),
+      test_util:expected2(Msg, {formula,"=ASIN(P2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p28_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p28_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1.0},read_from_excel_data(Config,{"Trigonometry",27,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",27,15}), {number,1.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",27,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",27,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.0}]),
+      test_util:expected2(Msg, {number,1.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p39_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p39_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(P6),IF(ISERROR(P23),IF(ERROR.TYPE(P6)=ERROR.TYPE(P23),1,0),0),IF(ISERROR(P23),0,IF(ABS(P6-P23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",38,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",38,15}), {formula,"=IF(ISERROR(P6),IF(ISERROR(P23),IF(ERROR.TYPE(P6)=ERROR.TYPE(P23),1,0),0),IF(ISERROR(P23),0,IF(ABS(P6-P23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",38,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",38,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(P6),IF(ISERROR(P23),IF(ERROR.TYPE(P6)=ERROR.TYPE(P23),1,0),0),IF(ISERROR(P23),0,IF(ABS(P6-P23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(P6),IF(ISERROR(P23),IF(ERROR.TYPE(P6)=ERROR.TYPE(P23),1,0),0),IF(ISERROR(P23),0,IF(ABS(P6-P23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p1_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p1_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Integer"},read_from_excel_data(Config,{"Trigonometry",0,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",0,15}), {string,"Integer"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",0,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",0,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Integer"}]),
+      test_util:expected2(Msg, {string,"Integer"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p12_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p12_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASINH(P2)"},read_from_excel_data(Config,{"Trigonometry",11,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",11,15}), {formula,"=ASINH(P2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",11,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",11,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASINH(P2)"}]),
+      test_util:expected2(Msg, {formula,"=ASINH(P2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p23_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p23_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",22,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",22,15}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",22,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",22,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p45_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p45_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(P12),IF(ISERROR(P29),IF(ERROR.TYPE(P12)=ERROR.TYPE(P29),1,0),0),IF(ISERROR(P29),0,IF(ABS(P12-P29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",44,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",44,15}), {formula,"=IF(ISERROR(P12),IF(ISERROR(P29),IF(ERROR.TYPE(P12)=ERROR.TYPE(P29),1,0),0),IF(ISERROR(P29),0,IF(ABS(P12-P29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",44,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",44,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(P12),IF(ISERROR(P29),IF(ERROR.TYPE(P12)=ERROR.TYPE(P29),1,0),0),IF(ISERROR(P29),0,IF(ABS(P12-P29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(P12),IF(ISERROR(P29),IF(ERROR.TYPE(P12)=ERROR.TYPE(P29),1,0),0),IF(ISERROR(P29),0,IF(ABS(P12-P29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p7_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p7_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOS(P2)"},read_from_excel_data(Config,{"Trigonometry",6,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",6,15}), {formula,"=ACOS(P2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",6,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",6,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOS(P2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOS(P2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p18_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p18_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Integer"},read_from_excel_data(Config,{"Trigonometry",17,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",17,15}), {string,"Integer"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",17,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",17,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Integer"}]),
+      test_util:expected2(Msg, {string,"Integer"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p29_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p29_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,11.1897405596667},read_from_excel_data(Config,{"Trigonometry",28,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",28,15}), {number,11.1897405596667}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",28,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",28,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,11.1897405596667}]),
+      test_util:expected2(Msg, {number,11.1897405596667})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p40_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p40_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(P7),IF(ISERROR(P24),IF(ERROR.TYPE(P7)=ERROR.TYPE(P24),1,0),0),IF(ISERROR(P24),0,IF(ABS(P7-P24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",39,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",39,15}), {formula,"=IF(ISERROR(P7),IF(ISERROR(P24),IF(ERROR.TYPE(P7)=ERROR.TYPE(P24),1,0),0),IF(ISERROR(P24),0,IF(ABS(P7-P24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",39,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",39,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(P7),IF(ISERROR(P24),IF(ERROR.TYPE(P7)=ERROR.TYPE(P24),1,0),0),IF(ISERROR(P24),0,IF(ABS(P7-P24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(P7),IF(ISERROR(P24),IF(ERROR.TYPE(P7)=ERROR.TYPE(P24),1,0),0),IF(ISERROR(P24),0,IF(ABS(P7-P24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p2_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p2_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,36192.0},read_from_excel_data(Config,{"Trigonometry",1,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",1,15}), {number,36192.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",1,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",1,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,36192.0}]),
+      test_util:expected2(Msg, {number,36192.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p13_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p13_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOSH(P2)"},read_from_excel_data(Config,{"Trigonometry",12,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",12,15}), {formula,"=ACOSH(P2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",12,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",12,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOSH(P2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOSH(P2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p24_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p24_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",23,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",23,15}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",23,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",23,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p46_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p46_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(P13),IF(ISERROR(P30),IF(ERROR.TYPE(P13)=ERROR.TYPE(P30),1,0),0),IF(ISERROR(P30),0,IF(ABS(P13-P30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",45,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",45,15}), {formula,"=IF(ISERROR(P13),IF(ISERROR(P30),IF(ERROR.TYPE(P13)=ERROR.TYPE(P30),1,0),0),IF(ISERROR(P30),0,IF(ABS(P13-P30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",45,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",45,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(P13),IF(ISERROR(P30),IF(ERROR.TYPE(P13)=ERROR.TYPE(P30),1,0),0),IF(ISERROR(P30),0,IF(ABS(P13-P30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(P13),IF(ISERROR(P30),IF(ERROR.TYPE(P13)=ERROR.TYPE(P30),1,0),0),IF(ISERROR(P30),0,IF(ABS(P13-P30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p8_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p8_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATAN(P2)"},read_from_excel_data(Config,{"Trigonometry",7,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",7,15}), {formula,"=ATAN(P2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",7,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",7,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATAN(P2)"}]),
+      test_util:expected2(Msg, {formula,"=ATAN(P2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p19_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p19_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,36192.0},read_from_excel_data(Config,{"Trigonometry",18,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",18,15}), {number,36192.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",18,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",18,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,36192.0}]),
+      test_util:expected2(Msg, {number,36192.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p30_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p30_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,11.1897405592849},read_from_excel_data(Config,{"Trigonometry",29,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",29,15}), {number,11.1897405592849}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",29,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",29,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,11.1897405592849}]),
+      test_util:expected2(Msg, {number,11.1897405592849})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p41_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p41_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(P8),IF(ISERROR(P25),IF(ERROR.TYPE(P8)=ERROR.TYPE(P25),1,0),0),IF(ISERROR(P25),0,IF(ABS(P8-P25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",40,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",40,15}), {formula,"=IF(ISERROR(P8),IF(ISERROR(P25),IF(ERROR.TYPE(P8)=ERROR.TYPE(P25),1,0),0),IF(ISERROR(P25),0,IF(ABS(P8-P25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",40,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",40,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(P8),IF(ISERROR(P25),IF(ERROR.TYPE(P8)=ERROR.TYPE(P25),1,0),0),IF(ISERROR(P25),0,IF(ABS(P8-P25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(P8),IF(ISERROR(P25),IF(ERROR.TYPE(P8)=ERROR.TYPE(P25),1,0),0),IF(ISERROR(P25),0,IF(ABS(P8-P25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p3_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SIN(P2)"},read_from_excel_data(Config,{"Trigonometry",2,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",2,15}), {formula,"=SIN(P2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",2,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",2,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SIN(P2)"}]),
+      test_util:expected2(Msg, {formula,"=SIN(P2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p14_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p14_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATANH(P2)"},read_from_excel_data(Config,{"Trigonometry",13,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",13,15}), {formula,"=ATANH(P2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",13,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",13,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATANH(P2)"}]),
+      test_util:expected2(Msg, {formula,"=ATANH(P2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p25_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p25_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1.57076869637934},read_from_excel_data(Config,{"Trigonometry",24,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",24,15}), {number,1.57076869637934}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",24,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",24,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.57076869637934}]),
+      test_util:expected2(Msg, {number,1.57076869637934})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p36_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p36_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(P3),IF(ISERROR(P20),IF(ERROR.TYPE(P3)=ERROR.TYPE(P20),1,0),0),IF(ISERROR(P20),0,IF(ABS(P3-P20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",35,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",35,15}), {formula,"=IF(ISERROR(P3),IF(ISERROR(P20),IF(ERROR.TYPE(P3)=ERROR.TYPE(P20),1,0),0),IF(ISERROR(P20),0,IF(ABS(P3-P20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",35,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",35,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(P3),IF(ISERROR(P20),IF(ERROR.TYPE(P3)=ERROR.TYPE(P20),1,0),0),IF(ISERROR(P20),0,IF(ABS(P3-P20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(P3),IF(ISERROR(P20),IF(ERROR.TYPE(P3)=ERROR.TYPE(P20),1,0),0),IF(ISERROR(P20),0,IF(ABS(P3-P20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p47_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p47_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(P14),IF(ISERROR(P31),IF(ERROR.TYPE(P14)=ERROR.TYPE(P31),1,0),0),IF(ISERROR(P31),0,IF(ABS(P14-P31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",46,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",46,15}), {formula,"=IF(ISERROR(P14),IF(ISERROR(P31),IF(ERROR.TYPE(P14)=ERROR.TYPE(P31),1,0),0),IF(ISERROR(P31),0,IF(ABS(P14-P31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",46,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",46,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(P14),IF(ISERROR(P31),IF(ERROR.TYPE(P14)=ERROR.TYPE(P31),1,0),0),IF(ISERROR(P31),0,IF(ABS(P14-P31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(P14),IF(ISERROR(P31),IF(ERROR.TYPE(P14)=ERROR.TYPE(P31),1,0),0),IF(ISERROR(P31),0,IF(ABS(P14-P31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p9_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p9_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SINH(P2)"},read_from_excel_data(Config,{"Trigonometry",8,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",8,15}), {formula,"=SINH(P2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",8,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",8,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SINH(P2)"}]),
+      test_util:expected2(Msg, {formula,"=SINH(P2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p20_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p20_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.753013985344698},read_from_excel_data(Config,{"Trigonometry",19,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",19,15}), {number,0.753013985344698}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",19,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",19,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.753013985344698}]),
+      test_util:expected2(Msg, {number,0.753013985344698})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p31_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p31_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",30,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",30,15}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",30,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",30,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p42_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p42_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(P9),IF(ISERROR(P26),IF(ERROR.TYPE(P9)=ERROR.TYPE(P26),1,0),0),IF(ISERROR(P26),0,IF(ABS(P9-P26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",41,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",41,15}), {formula,"=IF(ISERROR(P9),IF(ISERROR(P26),IF(ERROR.TYPE(P9)=ERROR.TYPE(P26),1,0),0),IF(ISERROR(P26),0,IF(ABS(P9-P26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",41,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",41,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(P9),IF(ISERROR(P26),IF(ERROR.TYPE(P9)=ERROR.TYPE(P26),1,0),0),IF(ISERROR(P26),0,IF(ABS(P9-P26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(P9),IF(ISERROR(P26),IF(ERROR.TYPE(P9)=ERROR.TYPE(P26),1,0),0),IF(ISERROR(P26),0,IF(ABS(P9-P26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p4_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p4_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COS(P2)"},read_from_excel_data(Config,{"Trigonometry",3,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",3,15}), {formula,"=COS(P2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",3,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",3,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COS(P2)"}]),
+      test_util:expected2(Msg, {formula,"=COS(P2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p15_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p15_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=DEGREES(P2)"},read_from_excel_data(Config,{"Trigonometry",14,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",14,15}), {formula,"=DEGREES(P2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",14,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",14,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=DEGREES(P2)"}]),
+      test_util:expected2(Msg, {formula,"=DEGREES(P2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p26_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p26_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",25,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",25,15}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",25,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",25,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p37_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p37_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(P4),IF(ISERROR(P21),IF(ERROR.TYPE(P4)=ERROR.TYPE(P21),1,0),0),IF(ISERROR(P21),0,IF(ABS(P4-P21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",36,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",36,15}), {formula,"=IF(ISERROR(P4),IF(ISERROR(P21),IF(ERROR.TYPE(P4)=ERROR.TYPE(P21),1,0),0),IF(ISERROR(P21),0,IF(ABS(P4-P21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",36,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",36,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(P4),IF(ISERROR(P21),IF(ERROR.TYPE(P4)=ERROR.TYPE(P21),1,0),0),IF(ISERROR(P21),0,IF(ABS(P4-P21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(P4),IF(ISERROR(P21),IF(ERROR.TYPE(P4)=ERROR.TYPE(P21),1,0),0),IF(ISERROR(P21),0,IF(ABS(P4-P21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p48_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p48_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(P15),IF(ISERROR(P32),IF(ERROR.TYPE(P15)=ERROR.TYPE(P32),1,0),0),IF(ISERROR(P32),0,IF(ABS(P15-P32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",47,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",47,15}), {formula,"=IF(ISERROR(P15),IF(ISERROR(P32),IF(ERROR.TYPE(P15)=ERROR.TYPE(P32),1,0),0),IF(ISERROR(P32),0,IF(ABS(P15-P32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",47,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",47,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(P15),IF(ISERROR(P32),IF(ERROR.TYPE(P15)=ERROR.TYPE(P32),1,0),0),IF(ISERROR(P32),0,IF(ABS(P15-P32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(P15),IF(ISERROR(P32),IF(ERROR.TYPE(P15)=ERROR.TYPE(P32),1,0),0),IF(ISERROR(P32),0,IF(ABS(P15-P32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p10_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p10_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COSH(P2)"},read_from_excel_data(Config,{"Trigonometry",9,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",9,15}), {formula,"=COSH(P2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",9,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",9,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COSH(P2)"}]),
+      test_util:expected2(Msg, {formula,"=COSH(P2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p21_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p21_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.658004512047824},read_from_excel_data(Config,{"Trigonometry",20,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",20,15}), {number,0.658004512047824}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",20,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",20,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.658004512047824}]),
+      test_util:expected2(Msg, {number,0.658004512047824})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p32_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p32_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,2073648.85213748},read_from_excel_data(Config,{"Trigonometry",31,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",31,15}), {number,2073648.85213748}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",31,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",31,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,2073648.85213748}]),
+      test_util:expected2(Msg, {number,2073648.85213748})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_p43_test(doc) -> [{userdata,[{""}]}];
 trigonometry_p43_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(P10),IF(ISERROR(P27),IF(ERROR.TYPE(P10)=ERROR.TYPE(P27),1,0),0),IF(ISERROR(P27),0,IF(ABS(P10-P27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",42,15})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",42,15}), {formula,"=IF(ISERROR(P10),IF(ISERROR(P27),IF(ERROR.TYPE(P10)=ERROR.TYPE(P27),1,0),0),IF(ISERROR(P27),0,IF(ABS(P10-P27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",42,15}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",42,15}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(P10),IF(ISERROR(P27),IF(ERROR.TYPE(P10)=ERROR.TYPE(P27),1,0),0),IF(ISERROR(P27),0,IF(ABS(P10-P27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(P10),IF(ISERROR(P27),IF(ERROR.TYPE(P10)=ERROR.TYPE(P27),1,0),0),IF(ISERROR(P27),0,IF(ABS(P10-P27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f5_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f5_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TAN(F2)"},read_from_excel_data(Config,{"Trigonometry",4,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",4,5}), {formula,"=TAN(F2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",4,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",4,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TAN(F2)"}]),
+      test_util:expected2(Msg, {formula,"=TAN(F2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f16_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f16_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=RADIANS(F2)"},read_from_excel_data(Config,{"Trigonometry",15,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",15,5}), {formula,"=RADIANS(F2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",15,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",15,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=RADIANS(F2)"}]),
+      test_util:expected2(Msg, {formula,"=RADIANS(F2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f27_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f27_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",26,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",26,5}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",26,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",26,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f38_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f38_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(F5),IF(ISERROR(F22),IF(ERROR.TYPE(F5)=ERROR.TYPE(F22),1,0),0),IF(ISERROR(F22),0,IF(ABS(F5-F22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",37,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",37,5}), {formula,"=IF(ISERROR(F5),IF(ISERROR(F22),IF(ERROR.TYPE(F5)=ERROR.TYPE(F22),1,0),0),IF(ISERROR(F22),0,IF(ABS(F5-F22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",37,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",37,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(F5),IF(ISERROR(F22),IF(ERROR.TYPE(F5)=ERROR.TYPE(F22),1,0),0),IF(ISERROR(F22),0,IF(ABS(F5-F22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(F5),IF(ISERROR(F22),IF(ERROR.TYPE(F5)=ERROR.TYPE(F22),1,0),0),IF(ISERROR(F22),0,IF(ABS(F5-F22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f49_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f49_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(F16),IF(ISERROR(F33),IF(ERROR.TYPE(F16)=ERROR.TYPE(F33),1,0),0),IF(ISERROR(F33),0,IF(ABS(F16-F33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",48,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",48,5}), {formula,"=IF(ISERROR(F16),IF(ISERROR(F33),IF(ERROR.TYPE(F16)=ERROR.TYPE(F33),1,0),0),IF(ISERROR(F33),0,IF(ABS(F16-F33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",48,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",48,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(F16),IF(ISERROR(F33),IF(ERROR.TYPE(F16)=ERROR.TYPE(F33),1,0),0),IF(ISERROR(F33),0,IF(ABS(F16-F33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(F16),IF(ISERROR(F33),IF(ERROR.TYPE(F16)=ERROR.TYPE(F33),1,0),0),IF(ISERROR(F33),0,IF(ABS(F16-F33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f11_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f11_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TANH(F2)"},read_from_excel_data(Config,{"Trigonometry",10,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",10,5}), {formula,"=TANH(F2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",10,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",10,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TANH(F2)"}]),
+      test_util:expected2(Msg, {formula,"=TANH(F2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f22_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f22_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",21,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",21,5}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",21,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",21,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f33_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f33_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",32,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",32,5}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",32,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",32,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f44_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f44_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(F11),IF(ISERROR(F28),IF(ERROR.TYPE(F11)=ERROR.TYPE(F28),1,0),0),IF(ISERROR(F28),0,IF(ABS(F11-F28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",43,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",43,5}), {formula,"=IF(ISERROR(F11),IF(ISERROR(F28),IF(ERROR.TYPE(F11)=ERROR.TYPE(F28),1,0),0),IF(ISERROR(F28),0,IF(ABS(F11-F28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",43,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",43,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(F11),IF(ISERROR(F28),IF(ERROR.TYPE(F11)=ERROR.TYPE(F28),1,0),0),IF(ISERROR(F28),0,IF(ABS(F11-F28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(F11),IF(ISERROR(F28),IF(ERROR.TYPE(F11)=ERROR.TYPE(F28),1,0),0),IF(ISERROR(F28),0,IF(ABS(F11-F28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f6_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASIN(F2)"},read_from_excel_data(Config,{"Trigonometry",5,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",5,5}), {formula,"=ASIN(F2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",5,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",5,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASIN(F2)"}]),
+      test_util:expected2(Msg, {formula,"=ASIN(F2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f28_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f28_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",27,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",27,5}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",27,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",27,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f39_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f39_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(F6),IF(ISERROR(F23),IF(ERROR.TYPE(F6)=ERROR.TYPE(F23),1,0),0),IF(ISERROR(F23),0,IF(ABS(F6-F23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",38,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",38,5}), {formula,"=IF(ISERROR(F6),IF(ISERROR(F23),IF(ERROR.TYPE(F6)=ERROR.TYPE(F23),1,0),0),IF(ISERROR(F23),0,IF(ABS(F6-F23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",38,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",38,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(F6),IF(ISERROR(F23),IF(ERROR.TYPE(F6)=ERROR.TYPE(F23),1,0),0),IF(ISERROR(F23),0,IF(ABS(F6-F23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(F6),IF(ISERROR(F23),IF(ERROR.TYPE(F6)=ERROR.TYPE(F23),1,0),0),IF(ISERROR(F23),0,IF(ABS(F6-F23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f1_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f1_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Error"},read_from_excel_data(Config,{"Trigonometry",0,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",0,5}), {string,"Error"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",0,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",0,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Error"}]),
+      test_util:expected2(Msg, {string,"Error"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f12_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f12_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASINH(F2)"},read_from_excel_data(Config,{"Trigonometry",11,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",11,5}), {formula,"=ASINH(F2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",11,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",11,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASINH(F2)"}]),
+      test_util:expected2(Msg, {formula,"=ASINH(F2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f23_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f23_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",22,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",22,5}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",22,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",22,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f45_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f45_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(F12),IF(ISERROR(F29),IF(ERROR.TYPE(F12)=ERROR.TYPE(F29),1,0),0),IF(ISERROR(F29),0,IF(ABS(F12-F29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",44,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",44,5}), {formula,"=IF(ISERROR(F12),IF(ISERROR(F29),IF(ERROR.TYPE(F12)=ERROR.TYPE(F29),1,0),0),IF(ISERROR(F29),0,IF(ABS(F12-F29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",44,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",44,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(F12),IF(ISERROR(F29),IF(ERROR.TYPE(F12)=ERROR.TYPE(F29),1,0),0),IF(ISERROR(F29),0,IF(ABS(F12-F29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(F12),IF(ISERROR(F29),IF(ERROR.TYPE(F12)=ERROR.TYPE(F29),1,0),0),IF(ISERROR(F29),0,IF(ABS(F12-F29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f7_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f7_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOS(F2)"},read_from_excel_data(Config,{"Trigonometry",6,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",6,5}), {formula,"=ACOS(F2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",6,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",6,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOS(F2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOS(F2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f18_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f18_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Error"},read_from_excel_data(Config,{"Trigonometry",17,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",17,5}), {string,"Error"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",17,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",17,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Error"}]),
+      test_util:expected2(Msg, {string,"Error"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f29_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f29_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",28,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",28,5}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",28,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",28,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f40_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f40_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(F7),IF(ISERROR(F24),IF(ERROR.TYPE(F7)=ERROR.TYPE(F24),1,0),0),IF(ISERROR(F24),0,IF(ABS(F7-F24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",39,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",39,5}), {formula,"=IF(ISERROR(F7),IF(ISERROR(F24),IF(ERROR.TYPE(F7)=ERROR.TYPE(F24),1,0),0),IF(ISERROR(F24),0,IF(ABS(F7-F24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",39,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",39,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(F7),IF(ISERROR(F24),IF(ERROR.TYPE(F7)=ERROR.TYPE(F24),1,0),0),IF(ISERROR(F24),0,IF(ABS(F7-F24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(F7),IF(ISERROR(F24),IF(ERROR.TYPE(F7)=ERROR.TYPE(F24),1,0),0),IF(ISERROR(F24),0,IF(ABS(F7-F24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f2_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f2_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",1,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",1,5}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",1,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",1,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f13_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f13_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOSH(F2)"},read_from_excel_data(Config,{"Trigonometry",12,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",12,5}), {formula,"=ACOSH(F2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",12,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",12,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOSH(F2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOSH(F2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f24_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f24_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",23,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",23,5}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",23,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",23,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f46_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f46_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(F13),IF(ISERROR(F30),IF(ERROR.TYPE(F13)=ERROR.TYPE(F30),1,0),0),IF(ISERROR(F30),0,IF(ABS(F13-F30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",45,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",45,5}), {formula,"=IF(ISERROR(F13),IF(ISERROR(F30),IF(ERROR.TYPE(F13)=ERROR.TYPE(F30),1,0),0),IF(ISERROR(F30),0,IF(ABS(F13-F30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",45,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",45,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(F13),IF(ISERROR(F30),IF(ERROR.TYPE(F13)=ERROR.TYPE(F30),1,0),0),IF(ISERROR(F30),0,IF(ABS(F13-F30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(F13),IF(ISERROR(F30),IF(ERROR.TYPE(F13)=ERROR.TYPE(F30),1,0),0),IF(ISERROR(F30),0,IF(ABS(F13-F30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f8_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f8_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATAN(F2)"},read_from_excel_data(Config,{"Trigonometry",7,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",7,5}), {formula,"=ATAN(F2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",7,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",7,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATAN(F2)"}]),
+      test_util:expected2(Msg, {formula,"=ATAN(F2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f19_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f19_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",18,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",18,5}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",18,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",18,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f30_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f30_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",29,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",29,5}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",29,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",29,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f41_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f41_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(F8),IF(ISERROR(F25),IF(ERROR.TYPE(F8)=ERROR.TYPE(F25),1,0),0),IF(ISERROR(F25),0,IF(ABS(F8-F25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",40,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",40,5}), {formula,"=IF(ISERROR(F8),IF(ISERROR(F25),IF(ERROR.TYPE(F8)=ERROR.TYPE(F25),1,0),0),IF(ISERROR(F25),0,IF(ABS(F8-F25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",40,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",40,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(F8),IF(ISERROR(F25),IF(ERROR.TYPE(F8)=ERROR.TYPE(F25),1,0),0),IF(ISERROR(F25),0,IF(ABS(F8-F25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(F8),IF(ISERROR(F25),IF(ERROR.TYPE(F8)=ERROR.TYPE(F25),1,0),0),IF(ISERROR(F25),0,IF(ABS(F8-F25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f3_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SIN(F2)"},read_from_excel_data(Config,{"Trigonometry",2,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",2,5}), {formula,"=SIN(F2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",2,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",2,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SIN(F2)"}]),
+      test_util:expected2(Msg, {formula,"=SIN(F2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f14_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f14_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATANH(F2)"},read_from_excel_data(Config,{"Trigonometry",13,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",13,5}), {formula,"=ATANH(F2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",13,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",13,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATANH(F2)"}]),
+      test_util:expected2(Msg, {formula,"=ATANH(F2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f25_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f25_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",24,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",24,5}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",24,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",24,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f36_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f36_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(F3),IF(ISERROR(F20),IF(ERROR.TYPE(F3)=ERROR.TYPE(F20),1,0),0),IF(ISERROR(F20),0,IF(ABS(F3-F20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",35,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",35,5}), {formula,"=IF(ISERROR(F3),IF(ISERROR(F20),IF(ERROR.TYPE(F3)=ERROR.TYPE(F20),1,0),0),IF(ISERROR(F20),0,IF(ABS(F3-F20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",35,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",35,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(F3),IF(ISERROR(F20),IF(ERROR.TYPE(F3)=ERROR.TYPE(F20),1,0),0),IF(ISERROR(F20),0,IF(ABS(F3-F20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(F3),IF(ISERROR(F20),IF(ERROR.TYPE(F3)=ERROR.TYPE(F20),1,0),0),IF(ISERROR(F20),0,IF(ABS(F3-F20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f47_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f47_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(F14),IF(ISERROR(F31),IF(ERROR.TYPE(F14)=ERROR.TYPE(F31),1,0),0),IF(ISERROR(F31),0,IF(ABS(F14-F31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",46,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",46,5}), {formula,"=IF(ISERROR(F14),IF(ISERROR(F31),IF(ERROR.TYPE(F14)=ERROR.TYPE(F31),1,0),0),IF(ISERROR(F31),0,IF(ABS(F14-F31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",46,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",46,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(F14),IF(ISERROR(F31),IF(ERROR.TYPE(F14)=ERROR.TYPE(F31),1,0),0),IF(ISERROR(F31),0,IF(ABS(F14-F31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(F14),IF(ISERROR(F31),IF(ERROR.TYPE(F14)=ERROR.TYPE(F31),1,0),0),IF(ISERROR(F31),0,IF(ABS(F14-F31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f9_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f9_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SINH(F2)"},read_from_excel_data(Config,{"Trigonometry",8,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",8,5}), {formula,"=SINH(F2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",8,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",8,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SINH(F2)"}]),
+      test_util:expected2(Msg, {formula,"=SINH(F2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f20_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f20_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",19,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",19,5}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",19,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",19,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f31_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f31_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",30,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",30,5}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",30,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",30,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f42_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f42_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(F9),IF(ISERROR(F26),IF(ERROR.TYPE(F9)=ERROR.TYPE(F26),1,0),0),IF(ISERROR(F26),0,IF(ABS(F9-F26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",41,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",41,5}), {formula,"=IF(ISERROR(F9),IF(ISERROR(F26),IF(ERROR.TYPE(F9)=ERROR.TYPE(F26),1,0),0),IF(ISERROR(F26),0,IF(ABS(F9-F26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",41,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",41,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(F9),IF(ISERROR(F26),IF(ERROR.TYPE(F9)=ERROR.TYPE(F26),1,0),0),IF(ISERROR(F26),0,IF(ABS(F9-F26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(F9),IF(ISERROR(F26),IF(ERROR.TYPE(F9)=ERROR.TYPE(F26),1,0),0),IF(ISERROR(F26),0,IF(ABS(F9-F26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f4_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f4_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COS(F2)"},read_from_excel_data(Config,{"Trigonometry",3,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",3,5}), {formula,"=COS(F2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",3,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",3,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COS(F2)"}]),
+      test_util:expected2(Msg, {formula,"=COS(F2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f15_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f15_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=DEGREES(F2)"},read_from_excel_data(Config,{"Trigonometry",14,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",14,5}), {formula,"=DEGREES(F2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",14,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",14,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=DEGREES(F2)"}]),
+      test_util:expected2(Msg, {formula,"=DEGREES(F2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f26_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f26_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",25,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",25,5}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",25,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",25,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f37_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f37_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(F4),IF(ISERROR(F21),IF(ERROR.TYPE(F4)=ERROR.TYPE(F21),1,0),0),IF(ISERROR(F21),0,IF(ABS(F4-F21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",36,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",36,5}), {formula,"=IF(ISERROR(F4),IF(ISERROR(F21),IF(ERROR.TYPE(F4)=ERROR.TYPE(F21),1,0),0),IF(ISERROR(F21),0,IF(ABS(F4-F21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",36,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",36,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(F4),IF(ISERROR(F21),IF(ERROR.TYPE(F4)=ERROR.TYPE(F21),1,0),0),IF(ISERROR(F21),0,IF(ABS(F4-F21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(F4),IF(ISERROR(F21),IF(ERROR.TYPE(F4)=ERROR.TYPE(F21),1,0),0),IF(ISERROR(F21),0,IF(ABS(F4-F21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f48_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f48_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(F15),IF(ISERROR(F32),IF(ERROR.TYPE(F15)=ERROR.TYPE(F32),1,0),0),IF(ISERROR(F32),0,IF(ABS(F15-F32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",47,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",47,5}), {formula,"=IF(ISERROR(F15),IF(ISERROR(F32),IF(ERROR.TYPE(F15)=ERROR.TYPE(F32),1,0),0),IF(ISERROR(F32),0,IF(ABS(F15-F32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",47,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",47,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(F15),IF(ISERROR(F32),IF(ERROR.TYPE(F15)=ERROR.TYPE(F32),1,0),0),IF(ISERROR(F32),0,IF(ABS(F15-F32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(F15),IF(ISERROR(F32),IF(ERROR.TYPE(F15)=ERROR.TYPE(F32),1,0),0),IF(ISERROR(F32),0,IF(ABS(F15-F32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f10_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f10_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COSH(F2)"},read_from_excel_data(Config,{"Trigonometry",9,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",9,5}), {formula,"=COSH(F2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",9,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",9,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COSH(F2)"}]),
+      test_util:expected2(Msg, {formula,"=COSH(F2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f21_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f21_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",20,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",20,5}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",20,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",20,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f32_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f32_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826246},read_from_excel_data(Config,{"Trigonometry",31,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",31,5}), {number,-2146826246}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",31,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",31,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826246}]),
+      test_util:expected2(Msg, {number,-2146826246})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_f43_test(doc) -> [{userdata,[{""}]}];
 trigonometry_f43_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(F10),IF(ISERROR(F27),IF(ERROR.TYPE(F10)=ERROR.TYPE(F27),1,0),0),IF(ISERROR(F27),0,IF(ABS(F10-F27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",42,5})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",42,5}), {formula,"=IF(ISERROR(F10),IF(ISERROR(F27),IF(ERROR.TYPE(F10)=ERROR.TYPE(F27),1,0),0),IF(ISERROR(F27),0,IF(ABS(F10-F27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",42,5}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",42,5}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(F10),IF(ISERROR(F27),IF(ERROR.TYPE(F10)=ERROR.TYPE(F27),1,0),0),IF(ISERROR(F27),0,IF(ABS(F10-F27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(F10),IF(ISERROR(F27),IF(ERROR.TYPE(F10)=ERROR.TYPE(F27),1,0),0),IF(ISERROR(F27),0,IF(ABS(F10-F27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q5_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q5_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TAN(Q2)"},read_from_excel_data(Config,{"Trigonometry",4,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",4,16}), {formula,"=TAN(Q2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",4,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",4,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TAN(Q2)"}]),
+      test_util:expected2(Msg, {formula,"=TAN(Q2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q16_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q16_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=RADIANS(Q2)"},read_from_excel_data(Config,{"Trigonometry",15,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",15,16}), {formula,"=RADIANS(Q2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",15,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",15,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=RADIANS(Q2)"}]),
+      test_util:expected2(Msg, {formula,"=RADIANS(Q2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q27_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q27_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1.54308063481524},read_from_excel_data(Config,{"Trigonometry",26,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",26,16}), {number,1.54308063481524}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",26,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",26,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.54308063481524}]),
+      test_util:expected2(Msg, {number,1.54308063481524})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q38_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q38_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(Q5),IF(ISERROR(Q22),IF(ERROR.TYPE(Q5)=ERROR.TYPE(Q22),1,0),0),IF(ISERROR(Q22),0,IF(ABS(Q5-Q22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",37,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",37,16}), {formula,"=IF(ISERROR(Q5),IF(ISERROR(Q22),IF(ERROR.TYPE(Q5)=ERROR.TYPE(Q22),1,0),0),IF(ISERROR(Q22),0,IF(ABS(Q5-Q22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",37,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",37,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(Q5),IF(ISERROR(Q22),IF(ERROR.TYPE(Q5)=ERROR.TYPE(Q22),1,0),0),IF(ISERROR(Q22),0,IF(ABS(Q5-Q22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(Q5),IF(ISERROR(Q22),IF(ERROR.TYPE(Q5)=ERROR.TYPE(Q22),1,0),0),IF(ISERROR(Q22),0,IF(ABS(Q5-Q22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q49_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q49_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(Q16),IF(ISERROR(Q33),IF(ERROR.TYPE(Q16)=ERROR.TYPE(Q33),1,0),0),IF(ISERROR(Q33),0,IF(ABS(Q16-Q33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",48,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",48,16}), {formula,"=IF(ISERROR(Q16),IF(ISERROR(Q33),IF(ERROR.TYPE(Q16)=ERROR.TYPE(Q33),1,0),0),IF(ISERROR(Q33),0,IF(ABS(Q16-Q33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",48,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",48,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(Q16),IF(ISERROR(Q33),IF(ERROR.TYPE(Q16)=ERROR.TYPE(Q33),1,0),0),IF(ISERROR(Q33),0,IF(ABS(Q16-Q33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(Q16),IF(ISERROR(Q33),IF(ERROR.TYPE(Q16)=ERROR.TYPE(Q33),1,0),0),IF(ISERROR(Q33),0,IF(ABS(Q16-Q33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q11_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q11_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TANH(Q2)"},read_from_excel_data(Config,{"Trigonometry",10,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",10,16}), {formula,"=TANH(Q2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",10,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",10,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TANH(Q2)"}]),
+      test_util:expected2(Msg, {formula,"=TANH(Q2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q22_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q22_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-1.5574077246549},read_from_excel_data(Config,{"Trigonometry",21,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",21,16}), {number,-1.5574077246549}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",21,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",21,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-1.5574077246549}]),
+      test_util:expected2(Msg, {number,-1.5574077246549})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q33_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q33_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-0.0174532925199433},read_from_excel_data(Config,{"Trigonometry",32,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",32,16}), {number,-0.0174532925199433}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",32,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",32,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-0.0174532925199433}]),
+      test_util:expected2(Msg, {number,-0.0174532925199433})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q44_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q44_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(Q11),IF(ISERROR(Q28),IF(ERROR.TYPE(Q11)=ERROR.TYPE(Q28),1,0),0),IF(ISERROR(Q28),0,IF(ABS(Q11-Q28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",43,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",43,16}), {formula,"=IF(ISERROR(Q11),IF(ISERROR(Q28),IF(ERROR.TYPE(Q11)=ERROR.TYPE(Q28),1,0),0),IF(ISERROR(Q28),0,IF(ABS(Q11-Q28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",43,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",43,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(Q11),IF(ISERROR(Q28),IF(ERROR.TYPE(Q11)=ERROR.TYPE(Q28),1,0),0),IF(ISERROR(Q28),0,IF(ABS(Q11-Q28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(Q11),IF(ISERROR(Q28),IF(ERROR.TYPE(Q11)=ERROR.TYPE(Q28),1,0),0),IF(ISERROR(Q28),0,IF(ABS(Q11-Q28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q6_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASIN(Q2)"},read_from_excel_data(Config,{"Trigonometry",5,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",5,16}), {formula,"=ASIN(Q2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",5,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",5,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASIN(Q2)"}]),
+      test_util:expected2(Msg, {formula,"=ASIN(Q2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q28_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q28_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-0.761594155955765},read_from_excel_data(Config,{"Trigonometry",27,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",27,16}), {number,-0.761594155955765}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",27,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",27,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-0.761594155955765}]),
+      test_util:expected2(Msg, {number,-0.761594155955765})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q39_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q39_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(Q6),IF(ISERROR(Q23),IF(ERROR.TYPE(Q6)=ERROR.TYPE(Q23),1,0),0),IF(ISERROR(Q23),0,IF(ABS(Q6-Q23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",38,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",38,16}), {formula,"=IF(ISERROR(Q6),IF(ISERROR(Q23),IF(ERROR.TYPE(Q6)=ERROR.TYPE(Q23),1,0),0),IF(ISERROR(Q23),0,IF(ABS(Q6-Q23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",38,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",38,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(Q6),IF(ISERROR(Q23),IF(ERROR.TYPE(Q6)=ERROR.TYPE(Q23),1,0),0),IF(ISERROR(Q23),0,IF(ABS(Q6-Q23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(Q6),IF(ISERROR(Q23),IF(ERROR.TYPE(Q6)=ERROR.TYPE(Q23),1,0),0),IF(ISERROR(Q23),0,IF(ABS(Q6-Q23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q1_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q1_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Number"},read_from_excel_data(Config,{"Trigonometry",0,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",0,16}), {string,"Number"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",0,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",0,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Number"}]),
+      test_util:expected2(Msg, {string,"Number"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q12_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q12_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASINH(Q2)"},read_from_excel_data(Config,{"Trigonometry",11,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",11,16}), {formula,"=ASINH(Q2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",11,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",11,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASINH(Q2)"}]),
+      test_util:expected2(Msg, {formula,"=ASINH(Q2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q23_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q23_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-1.5707963267949},read_from_excel_data(Config,{"Trigonometry",22,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",22,16}), {number,-1.5707963267949}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",22,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",22,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-1.5707963267949}]),
+      test_util:expected2(Msg, {number,-1.5707963267949})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q45_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q45_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(Q12),IF(ISERROR(Q29),IF(ERROR.TYPE(Q12)=ERROR.TYPE(Q29),1,0),0),IF(ISERROR(Q29),0,IF(ABS(Q12-Q29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",44,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",44,16}), {formula,"=IF(ISERROR(Q12),IF(ISERROR(Q29),IF(ERROR.TYPE(Q12)=ERROR.TYPE(Q29),1,0),0),IF(ISERROR(Q29),0,IF(ABS(Q12-Q29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",44,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",44,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(Q12),IF(ISERROR(Q29),IF(ERROR.TYPE(Q12)=ERROR.TYPE(Q29),1,0),0),IF(ISERROR(Q29),0,IF(ABS(Q12-Q29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(Q12),IF(ISERROR(Q29),IF(ERROR.TYPE(Q12)=ERROR.TYPE(Q29),1,0),0),IF(ISERROR(Q29),0,IF(ABS(Q12-Q29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q7_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q7_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOS(Q2)"},read_from_excel_data(Config,{"Trigonometry",6,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",6,16}), {formula,"=ACOS(Q2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",6,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",6,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOS(Q2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOS(Q2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q18_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q18_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Number"},read_from_excel_data(Config,{"Trigonometry",17,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",17,16}), {string,"Number"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",17,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",17,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Number"}]),
+      test_util:expected2(Msg, {string,"Number"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q29_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q29_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-0.881373587019543},read_from_excel_data(Config,{"Trigonometry",28,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",28,16}), {number,-0.881373587019543}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",28,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",28,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-0.881373587019543}]),
+      test_util:expected2(Msg, {number,-0.881373587019543})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q40_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q40_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(Q7),IF(ISERROR(Q24),IF(ERROR.TYPE(Q7)=ERROR.TYPE(Q24),1,0),0),IF(ISERROR(Q24),0,IF(ABS(Q7-Q24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",39,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",39,16}), {formula,"=IF(ISERROR(Q7),IF(ISERROR(Q24),IF(ERROR.TYPE(Q7)=ERROR.TYPE(Q24),1,0),0),IF(ISERROR(Q24),0,IF(ABS(Q7-Q24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",39,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",39,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(Q7),IF(ISERROR(Q24),IF(ERROR.TYPE(Q7)=ERROR.TYPE(Q24),1,0),0),IF(ISERROR(Q24),0,IF(ABS(Q7-Q24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(Q7),IF(ISERROR(Q24),IF(ERROR.TYPE(Q7)=ERROR.TYPE(Q24),1,0),0),IF(ISERROR(Q24),0,IF(ABS(Q7-Q24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q2_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q2_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-1.0},read_from_excel_data(Config,{"Trigonometry",1,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",1,16}), {number,-1.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",1,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",1,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-1.0}]),
+      test_util:expected2(Msg, {number,-1.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q13_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q13_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOSH(Q2)"},read_from_excel_data(Config,{"Trigonometry",12,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",12,16}), {formula,"=ACOSH(Q2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",12,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",12,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOSH(Q2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOSH(Q2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q24_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q24_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,3.14159265358979},read_from_excel_data(Config,{"Trigonometry",23,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",23,16}), {number,3.14159265358979}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",23,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",23,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,3.14159265358979}]),
+      test_util:expected2(Msg, {number,3.14159265358979})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q46_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q46_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(Q13),IF(ISERROR(Q30),IF(ERROR.TYPE(Q13)=ERROR.TYPE(Q30),1,0),0),IF(ISERROR(Q30),0,IF(ABS(Q13-Q30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",45,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",45,16}), {formula,"=IF(ISERROR(Q13),IF(ISERROR(Q30),IF(ERROR.TYPE(Q13)=ERROR.TYPE(Q30),1,0),0),IF(ISERROR(Q30),0,IF(ABS(Q13-Q30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",45,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",45,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(Q13),IF(ISERROR(Q30),IF(ERROR.TYPE(Q13)=ERROR.TYPE(Q30),1,0),0),IF(ISERROR(Q30),0,IF(ABS(Q13-Q30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(Q13),IF(ISERROR(Q30),IF(ERROR.TYPE(Q13)=ERROR.TYPE(Q30),1,0),0),IF(ISERROR(Q30),0,IF(ABS(Q13-Q30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q8_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q8_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATAN(Q2)"},read_from_excel_data(Config,{"Trigonometry",7,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",7,16}), {formula,"=ATAN(Q2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",7,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",7,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATAN(Q2)"}]),
+      test_util:expected2(Msg, {formula,"=ATAN(Q2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q19_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q19_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-1.0},read_from_excel_data(Config,{"Trigonometry",18,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",18,16}), {number,-1.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",18,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",18,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-1.0}]),
+      test_util:expected2(Msg, {number,-1.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q30_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q30_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",29,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",29,16}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",29,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",29,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q41_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q41_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(Q8),IF(ISERROR(Q25),IF(ERROR.TYPE(Q8)=ERROR.TYPE(Q25),1,0),0),IF(ISERROR(Q25),0,IF(ABS(Q8-Q25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",40,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",40,16}), {formula,"=IF(ISERROR(Q8),IF(ISERROR(Q25),IF(ERROR.TYPE(Q8)=ERROR.TYPE(Q25),1,0),0),IF(ISERROR(Q25),0,IF(ABS(Q8-Q25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",40,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",40,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(Q8),IF(ISERROR(Q25),IF(ERROR.TYPE(Q8)=ERROR.TYPE(Q25),1,0),0),IF(ISERROR(Q25),0,IF(ABS(Q8-Q25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(Q8),IF(ISERROR(Q25),IF(ERROR.TYPE(Q8)=ERROR.TYPE(Q25),1,0),0),IF(ISERROR(Q25),0,IF(ABS(Q8-Q25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q3_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SIN(Q2)"},read_from_excel_data(Config,{"Trigonometry",2,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",2,16}), {formula,"=SIN(Q2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",2,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",2,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SIN(Q2)"}]),
+      test_util:expected2(Msg, {formula,"=SIN(Q2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q14_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q14_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATANH(Q2)"},read_from_excel_data(Config,{"Trigonometry",13,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",13,16}), {formula,"=ATANH(Q2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",13,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",13,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATANH(Q2)"}]),
+      test_util:expected2(Msg, {formula,"=ATANH(Q2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q25_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q25_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-0.785398163397448},read_from_excel_data(Config,{"Trigonometry",24,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",24,16}), {number,-0.785398163397448}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",24,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",24,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-0.785398163397448}]),
+      test_util:expected2(Msg, {number,-0.785398163397448})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q36_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q36_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(Q3),IF(ISERROR(Q20),IF(ERROR.TYPE(Q3)=ERROR.TYPE(Q20),1,0),0),IF(ISERROR(Q20),0,IF(ABS(Q3-Q20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",35,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",35,16}), {formula,"=IF(ISERROR(Q3),IF(ISERROR(Q20),IF(ERROR.TYPE(Q3)=ERROR.TYPE(Q20),1,0),0),IF(ISERROR(Q20),0,IF(ABS(Q3-Q20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",35,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",35,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(Q3),IF(ISERROR(Q20),IF(ERROR.TYPE(Q3)=ERROR.TYPE(Q20),1,0),0),IF(ISERROR(Q20),0,IF(ABS(Q3-Q20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(Q3),IF(ISERROR(Q20),IF(ERROR.TYPE(Q3)=ERROR.TYPE(Q20),1,0),0),IF(ISERROR(Q20),0,IF(ABS(Q3-Q20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q47_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q47_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(Q14),IF(ISERROR(Q31),IF(ERROR.TYPE(Q14)=ERROR.TYPE(Q31),1,0),0),IF(ISERROR(Q31),0,IF(ABS(Q14-Q31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",46,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",46,16}), {formula,"=IF(ISERROR(Q14),IF(ISERROR(Q31),IF(ERROR.TYPE(Q14)=ERROR.TYPE(Q31),1,0),0),IF(ISERROR(Q31),0,IF(ABS(Q14-Q31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",46,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",46,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(Q14),IF(ISERROR(Q31),IF(ERROR.TYPE(Q14)=ERROR.TYPE(Q31),1,0),0),IF(ISERROR(Q31),0,IF(ABS(Q14-Q31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(Q14),IF(ISERROR(Q31),IF(ERROR.TYPE(Q14)=ERROR.TYPE(Q31),1,0),0),IF(ISERROR(Q31),0,IF(ABS(Q14-Q31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q9_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q9_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SINH(Q2)"},read_from_excel_data(Config,{"Trigonometry",8,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",8,16}), {formula,"=SINH(Q2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",8,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",8,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SINH(Q2)"}]),
+      test_util:expected2(Msg, {formula,"=SINH(Q2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q20_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q20_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-0.841470984807897},read_from_excel_data(Config,{"Trigonometry",19,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",19,16}), {number,-0.841470984807897}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",19,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",19,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-0.841470984807897}]),
+      test_util:expected2(Msg, {number,-0.841470984807897})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q31_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q31_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",30,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",30,16}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",30,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",30,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q42_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q42_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(Q9),IF(ISERROR(Q26),IF(ERROR.TYPE(Q9)=ERROR.TYPE(Q26),1,0),0),IF(ISERROR(Q26),0,IF(ABS(Q9-Q26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",41,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",41,16}), {formula,"=IF(ISERROR(Q9),IF(ISERROR(Q26),IF(ERROR.TYPE(Q9)=ERROR.TYPE(Q26),1,0),0),IF(ISERROR(Q26),0,IF(ABS(Q9-Q26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",41,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",41,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(Q9),IF(ISERROR(Q26),IF(ERROR.TYPE(Q9)=ERROR.TYPE(Q26),1,0),0),IF(ISERROR(Q26),0,IF(ABS(Q9-Q26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(Q9),IF(ISERROR(Q26),IF(ERROR.TYPE(Q9)=ERROR.TYPE(Q26),1,0),0),IF(ISERROR(Q26),0,IF(ABS(Q9-Q26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q4_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q4_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COS(Q2)"},read_from_excel_data(Config,{"Trigonometry",3,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",3,16}), {formula,"=COS(Q2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",3,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",3,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COS(Q2)"}]),
+      test_util:expected2(Msg, {formula,"=COS(Q2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q15_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q15_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=DEGREES(Q2)"},read_from_excel_data(Config,{"Trigonometry",14,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",14,16}), {formula,"=DEGREES(Q2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",14,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",14,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=DEGREES(Q2)"}]),
+      test_util:expected2(Msg, {formula,"=DEGREES(Q2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q26_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q26_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-1.1752011936438},read_from_excel_data(Config,{"Trigonometry",25,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",25,16}), {number,-1.1752011936438}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",25,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",25,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-1.1752011936438}]),
+      test_util:expected2(Msg, {number,-1.1752011936438})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q37_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q37_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(Q4),IF(ISERROR(Q21),IF(ERROR.TYPE(Q4)=ERROR.TYPE(Q21),1,0),0),IF(ISERROR(Q21),0,IF(ABS(Q4-Q21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",36,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",36,16}), {formula,"=IF(ISERROR(Q4),IF(ISERROR(Q21),IF(ERROR.TYPE(Q4)=ERROR.TYPE(Q21),1,0),0),IF(ISERROR(Q21),0,IF(ABS(Q4-Q21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",36,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",36,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(Q4),IF(ISERROR(Q21),IF(ERROR.TYPE(Q4)=ERROR.TYPE(Q21),1,0),0),IF(ISERROR(Q21),0,IF(ABS(Q4-Q21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(Q4),IF(ISERROR(Q21),IF(ERROR.TYPE(Q4)=ERROR.TYPE(Q21),1,0),0),IF(ISERROR(Q21),0,IF(ABS(Q4-Q21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q48_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q48_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(Q15),IF(ISERROR(Q32),IF(ERROR.TYPE(Q15)=ERROR.TYPE(Q32),1,0),0),IF(ISERROR(Q32),0,IF(ABS(Q15-Q32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",47,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",47,16}), {formula,"=IF(ISERROR(Q15),IF(ISERROR(Q32),IF(ERROR.TYPE(Q15)=ERROR.TYPE(Q32),1,0),0),IF(ISERROR(Q32),0,IF(ABS(Q15-Q32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",47,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",47,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(Q15),IF(ISERROR(Q32),IF(ERROR.TYPE(Q15)=ERROR.TYPE(Q32),1,0),0),IF(ISERROR(Q32),0,IF(ABS(Q15-Q32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(Q15),IF(ISERROR(Q32),IF(ERROR.TYPE(Q15)=ERROR.TYPE(Q32),1,0),0),IF(ISERROR(Q32),0,IF(ABS(Q15-Q32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q10_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q10_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COSH(Q2)"},read_from_excel_data(Config,{"Trigonometry",9,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",9,16}), {formula,"=COSH(Q2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",9,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",9,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COSH(Q2)"}]),
+      test_util:expected2(Msg, {formula,"=COSH(Q2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q21_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q21_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,0.54030230586814},read_from_excel_data(Config,{"Trigonometry",20,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",20,16}), {number,0.54030230586814}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",20,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",20,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.54030230586814}]),
+      test_util:expected2(Msg, {number,0.54030230586814})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q32_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q32_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-57.2957795130823},read_from_excel_data(Config,{"Trigonometry",31,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",31,16}), {number,-57.2957795130823}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",31,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",31,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-57.2957795130823}]),
+      test_util:expected2(Msg, {number,-57.2957795130823})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_q43_test(doc) -> [{userdata,[{""}]}];
 trigonometry_q43_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(Q10),IF(ISERROR(Q27),IF(ERROR.TYPE(Q10)=ERROR.TYPE(Q27),1,0),0),IF(ISERROR(Q27),0,IF(ABS(Q10-Q27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",42,16})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",42,16}), {formula,"=IF(ISERROR(Q10),IF(ISERROR(Q27),IF(ERROR.TYPE(Q10)=ERROR.TYPE(Q27),1,0),0),IF(ISERROR(Q27),0,IF(ABS(Q10-Q27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",42,16}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",42,16}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(Q10),IF(ISERROR(Q27),IF(ERROR.TYPE(Q10)=ERROR.TYPE(Q27),1,0),0),IF(ISERROR(Q27),0,IF(ABS(Q10-Q27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(Q10),IF(ISERROR(Q27),IF(ERROR.TYPE(Q10)=ERROR.TYPE(Q27),1,0),0),IF(ISERROR(Q27),0,IF(ABS(Q10-Q27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g5_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g5_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TAN(G2)"},read_from_excel_data(Config,{"Trigonometry",4,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",4,6}), {formula,"=TAN(G2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",4,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",4,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TAN(G2)"}]),
+      test_util:expected2(Msg, {formula,"=TAN(G2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g16_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g16_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=RADIANS(G2)"},read_from_excel_data(Config,{"Trigonometry",15,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",15,6}), {formula,"=RADIANS(G2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",15,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",15,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=RADIANS(G2)"}]),
+      test_util:expected2(Msg, {formula,"=RADIANS(G2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g27_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g27_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826259},read_from_excel_data(Config,{"Trigonometry",26,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",26,6}), {number,-2146826259}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",26,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",26,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826259}]),
+      test_util:expected2(Msg, {number,-2146826259})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g38_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g38_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(G5),IF(ISERROR(G22),IF(ERROR.TYPE(G5)=ERROR.TYPE(G22),1,0),0),IF(ISERROR(G22),0,IF(ABS(G5-G22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",37,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",37,6}), {formula,"=IF(ISERROR(G5),IF(ISERROR(G22),IF(ERROR.TYPE(G5)=ERROR.TYPE(G22),1,0),0),IF(ISERROR(G22),0,IF(ABS(G5-G22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",37,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",37,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(G5),IF(ISERROR(G22),IF(ERROR.TYPE(G5)=ERROR.TYPE(G22),1,0),0),IF(ISERROR(G22),0,IF(ABS(G5-G22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(G5),IF(ISERROR(G22),IF(ERROR.TYPE(G5)=ERROR.TYPE(G22),1,0),0),IF(ISERROR(G22),0,IF(ABS(G5-G22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g49_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g49_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(G16),IF(ISERROR(G33),IF(ERROR.TYPE(G16)=ERROR.TYPE(G33),1,0),0),IF(ISERROR(G33),0,IF(ABS(G16-G33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",48,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",48,6}), {formula,"=IF(ISERROR(G16),IF(ISERROR(G33),IF(ERROR.TYPE(G16)=ERROR.TYPE(G33),1,0),0),IF(ISERROR(G33),0,IF(ABS(G16-G33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",48,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",48,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(G16),IF(ISERROR(G33),IF(ERROR.TYPE(G16)=ERROR.TYPE(G33),1,0),0),IF(ISERROR(G33),0,IF(ABS(G16-G33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(G16),IF(ISERROR(G33),IF(ERROR.TYPE(G16)=ERROR.TYPE(G33),1,0),0),IF(ISERROR(G33),0,IF(ABS(G16-G33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g11_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g11_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TANH(G2)"},read_from_excel_data(Config,{"Trigonometry",10,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",10,6}), {formula,"=TANH(G2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",10,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",10,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TANH(G2)"}]),
+      test_util:expected2(Msg, {formula,"=TANH(G2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g22_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g22_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826259},read_from_excel_data(Config,{"Trigonometry",21,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",21,6}), {number,-2146826259}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",21,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",21,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826259}]),
+      test_util:expected2(Msg, {number,-2146826259})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g33_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g33_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826259},read_from_excel_data(Config,{"Trigonometry",32,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",32,6}), {number,-2146826259}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",32,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",32,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826259}]),
+      test_util:expected2(Msg, {number,-2146826259})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g44_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g44_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(G11),IF(ISERROR(G28),IF(ERROR.TYPE(G11)=ERROR.TYPE(G28),1,0),0),IF(ISERROR(G28),0,IF(ABS(G11-G28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",43,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",43,6}), {formula,"=IF(ISERROR(G11),IF(ISERROR(G28),IF(ERROR.TYPE(G11)=ERROR.TYPE(G28),1,0),0),IF(ISERROR(G28),0,IF(ABS(G11-G28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",43,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",43,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(G11),IF(ISERROR(G28),IF(ERROR.TYPE(G11)=ERROR.TYPE(G28),1,0),0),IF(ISERROR(G28),0,IF(ABS(G11-G28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(G11),IF(ISERROR(G28),IF(ERROR.TYPE(G11)=ERROR.TYPE(G28),1,0),0),IF(ISERROR(G28),0,IF(ABS(G11-G28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g6_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASIN(G2)"},read_from_excel_data(Config,{"Trigonometry",5,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",5,6}), {formula,"=ASIN(G2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",5,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",5,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASIN(G2)"}]),
+      test_util:expected2(Msg, {formula,"=ASIN(G2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g28_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g28_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826259},read_from_excel_data(Config,{"Trigonometry",27,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",27,6}), {number,-2146826259}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",27,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",27,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826259}]),
+      test_util:expected2(Msg, {number,-2146826259})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g39_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g39_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(G6),IF(ISERROR(G23),IF(ERROR.TYPE(G6)=ERROR.TYPE(G23),1,0),0),IF(ISERROR(G23),0,IF(ABS(G6-G23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",38,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",38,6}), {formula,"=IF(ISERROR(G6),IF(ISERROR(G23),IF(ERROR.TYPE(G6)=ERROR.TYPE(G23),1,0),0),IF(ISERROR(G23),0,IF(ABS(G6-G23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",38,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",38,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(G6),IF(ISERROR(G23),IF(ERROR.TYPE(G6)=ERROR.TYPE(G23),1,0),0),IF(ISERROR(G23),0,IF(ABS(G6-G23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(G6),IF(ISERROR(G23),IF(ERROR.TYPE(G6)=ERROR.TYPE(G23),1,0),0),IF(ISERROR(G23),0,IF(ABS(G6-G23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g1_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g1_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Error"},read_from_excel_data(Config,{"Trigonometry",0,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",0,6}), {string,"Error"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",0,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",0,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Error"}]),
+      test_util:expected2(Msg, {string,"Error"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g12_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g12_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASINH(G2)"},read_from_excel_data(Config,{"Trigonometry",11,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",11,6}), {formula,"=ASINH(G2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",11,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",11,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASINH(G2)"}]),
+      test_util:expected2(Msg, {formula,"=ASINH(G2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g23_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g23_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826259},read_from_excel_data(Config,{"Trigonometry",22,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",22,6}), {number,-2146826259}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",22,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",22,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826259}]),
+      test_util:expected2(Msg, {number,-2146826259})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g45_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g45_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(G12),IF(ISERROR(G29),IF(ERROR.TYPE(G12)=ERROR.TYPE(G29),1,0),0),IF(ISERROR(G29),0,IF(ABS(G12-G29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",44,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",44,6}), {formula,"=IF(ISERROR(G12),IF(ISERROR(G29),IF(ERROR.TYPE(G12)=ERROR.TYPE(G29),1,0),0),IF(ISERROR(G29),0,IF(ABS(G12-G29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",44,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",44,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(G12),IF(ISERROR(G29),IF(ERROR.TYPE(G12)=ERROR.TYPE(G29),1,0),0),IF(ISERROR(G29),0,IF(ABS(G12-G29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(G12),IF(ISERROR(G29),IF(ERROR.TYPE(G12)=ERROR.TYPE(G29),1,0),0),IF(ISERROR(G29),0,IF(ABS(G12-G29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g7_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g7_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOS(G2)"},read_from_excel_data(Config,{"Trigonometry",6,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",6,6}), {formula,"=ACOS(G2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",6,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",6,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOS(G2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOS(G2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g18_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g18_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Error"},read_from_excel_data(Config,{"Trigonometry",17,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",17,6}), {string,"Error"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",17,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",17,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Error"}]),
+      test_util:expected2(Msg, {string,"Error"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g29_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g29_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826259},read_from_excel_data(Config,{"Trigonometry",28,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",28,6}), {number,-2146826259}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",28,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",28,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826259}]),
+      test_util:expected2(Msg, {number,-2146826259})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g40_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g40_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(G7),IF(ISERROR(G24),IF(ERROR.TYPE(G7)=ERROR.TYPE(G24),1,0),0),IF(ISERROR(G24),0,IF(ABS(G7-G24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",39,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",39,6}), {formula,"=IF(ISERROR(G7),IF(ISERROR(G24),IF(ERROR.TYPE(G7)=ERROR.TYPE(G24),1,0),0),IF(ISERROR(G24),0,IF(ABS(G7-G24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",39,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",39,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(G7),IF(ISERROR(G24),IF(ERROR.TYPE(G7)=ERROR.TYPE(G24),1,0),0),IF(ISERROR(G24),0,IF(ABS(G7-G24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(G7),IF(ISERROR(G24),IF(ERROR.TYPE(G7)=ERROR.TYPE(G24),1,0),0),IF(ISERROR(G24),0,IF(ABS(G7-G24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g2_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g2_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826259},read_from_excel_data(Config,{"Trigonometry",1,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",1,6}), {number,-2146826259}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",1,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",1,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826259}]),
+      test_util:expected2(Msg, {number,-2146826259})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g13_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g13_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOSH(G2)"},read_from_excel_data(Config,{"Trigonometry",12,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",12,6}), {formula,"=ACOSH(G2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",12,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",12,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOSH(G2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOSH(G2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g24_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g24_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826259},read_from_excel_data(Config,{"Trigonometry",23,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",23,6}), {number,-2146826259}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",23,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",23,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826259}]),
+      test_util:expected2(Msg, {number,-2146826259})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g46_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g46_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(G13),IF(ISERROR(G30),IF(ERROR.TYPE(G13)=ERROR.TYPE(G30),1,0),0),IF(ISERROR(G30),0,IF(ABS(G13-G30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",45,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",45,6}), {formula,"=IF(ISERROR(G13),IF(ISERROR(G30),IF(ERROR.TYPE(G13)=ERROR.TYPE(G30),1,0),0),IF(ISERROR(G30),0,IF(ABS(G13-G30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",45,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",45,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(G13),IF(ISERROR(G30),IF(ERROR.TYPE(G13)=ERROR.TYPE(G30),1,0),0),IF(ISERROR(G30),0,IF(ABS(G13-G30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(G13),IF(ISERROR(G30),IF(ERROR.TYPE(G13)=ERROR.TYPE(G30),1,0),0),IF(ISERROR(G30),0,IF(ABS(G13-G30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g8_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g8_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATAN(G2)"},read_from_excel_data(Config,{"Trigonometry",7,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",7,6}), {formula,"=ATAN(G2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",7,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",7,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATAN(G2)"}]),
+      test_util:expected2(Msg, {formula,"=ATAN(G2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g19_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g19_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826259},read_from_excel_data(Config,{"Trigonometry",18,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",18,6}), {number,-2146826259}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",18,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",18,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826259}]),
+      test_util:expected2(Msg, {number,-2146826259})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g30_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g30_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826259},read_from_excel_data(Config,{"Trigonometry",29,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",29,6}), {number,-2146826259}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",29,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",29,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826259}]),
+      test_util:expected2(Msg, {number,-2146826259})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g41_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g41_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(G8),IF(ISERROR(G25),IF(ERROR.TYPE(G8)=ERROR.TYPE(G25),1,0),0),IF(ISERROR(G25),0,IF(ABS(G8-G25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",40,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",40,6}), {formula,"=IF(ISERROR(G8),IF(ISERROR(G25),IF(ERROR.TYPE(G8)=ERROR.TYPE(G25),1,0),0),IF(ISERROR(G25),0,IF(ABS(G8-G25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",40,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",40,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(G8),IF(ISERROR(G25),IF(ERROR.TYPE(G8)=ERROR.TYPE(G25),1,0),0),IF(ISERROR(G25),0,IF(ABS(G8-G25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(G8),IF(ISERROR(G25),IF(ERROR.TYPE(G8)=ERROR.TYPE(G25),1,0),0),IF(ISERROR(G25),0,IF(ABS(G8-G25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g3_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SIN(G2)"},read_from_excel_data(Config,{"Trigonometry",2,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",2,6}), {formula,"=SIN(G2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",2,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",2,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SIN(G2)"}]),
+      test_util:expected2(Msg, {formula,"=SIN(G2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g14_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g14_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATANH(G2)"},read_from_excel_data(Config,{"Trigonometry",13,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",13,6}), {formula,"=ATANH(G2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",13,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",13,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATANH(G2)"}]),
+      test_util:expected2(Msg, {formula,"=ATANH(G2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g25_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g25_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826259},read_from_excel_data(Config,{"Trigonometry",24,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",24,6}), {number,-2146826259}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",24,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",24,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826259}]),
+      test_util:expected2(Msg, {number,-2146826259})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g36_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g36_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(G3),IF(ISERROR(G20),IF(ERROR.TYPE(G3)=ERROR.TYPE(G20),1,0),0),IF(ISERROR(G20),0,IF(ABS(G3-G20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",35,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",35,6}), {formula,"=IF(ISERROR(G3),IF(ISERROR(G20),IF(ERROR.TYPE(G3)=ERROR.TYPE(G20),1,0),0),IF(ISERROR(G20),0,IF(ABS(G3-G20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",35,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",35,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(G3),IF(ISERROR(G20),IF(ERROR.TYPE(G3)=ERROR.TYPE(G20),1,0),0),IF(ISERROR(G20),0,IF(ABS(G3-G20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(G3),IF(ISERROR(G20),IF(ERROR.TYPE(G3)=ERROR.TYPE(G20),1,0),0),IF(ISERROR(G20),0,IF(ABS(G3-G20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g47_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g47_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(G14),IF(ISERROR(G31),IF(ERROR.TYPE(G14)=ERROR.TYPE(G31),1,0),0),IF(ISERROR(G31),0,IF(ABS(G14-G31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",46,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",46,6}), {formula,"=IF(ISERROR(G14),IF(ISERROR(G31),IF(ERROR.TYPE(G14)=ERROR.TYPE(G31),1,0),0),IF(ISERROR(G31),0,IF(ABS(G14-G31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",46,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",46,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(G14),IF(ISERROR(G31),IF(ERROR.TYPE(G14)=ERROR.TYPE(G31),1,0),0),IF(ISERROR(G31),0,IF(ABS(G14-G31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(G14),IF(ISERROR(G31),IF(ERROR.TYPE(G14)=ERROR.TYPE(G31),1,0),0),IF(ISERROR(G31),0,IF(ABS(G14-G31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g9_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g9_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SINH(G2)"},read_from_excel_data(Config,{"Trigonometry",8,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",8,6}), {formula,"=SINH(G2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",8,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",8,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SINH(G2)"}]),
+      test_util:expected2(Msg, {formula,"=SINH(G2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g20_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g20_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826259},read_from_excel_data(Config,{"Trigonometry",19,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",19,6}), {number,-2146826259}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",19,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",19,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826259}]),
+      test_util:expected2(Msg, {number,-2146826259})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g31_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g31_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826259},read_from_excel_data(Config,{"Trigonometry",30,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",30,6}), {number,-2146826259}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",30,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",30,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826259}]),
+      test_util:expected2(Msg, {number,-2146826259})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g42_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g42_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(G9),IF(ISERROR(G26),IF(ERROR.TYPE(G9)=ERROR.TYPE(G26),1,0),0),IF(ISERROR(G26),0,IF(ABS(G9-G26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",41,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",41,6}), {formula,"=IF(ISERROR(G9),IF(ISERROR(G26),IF(ERROR.TYPE(G9)=ERROR.TYPE(G26),1,0),0),IF(ISERROR(G26),0,IF(ABS(G9-G26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",41,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",41,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(G9),IF(ISERROR(G26),IF(ERROR.TYPE(G9)=ERROR.TYPE(G26),1,0),0),IF(ISERROR(G26),0,IF(ABS(G9-G26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(G9),IF(ISERROR(G26),IF(ERROR.TYPE(G9)=ERROR.TYPE(G26),1,0),0),IF(ISERROR(G26),0,IF(ABS(G9-G26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g4_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g4_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COS(G2)"},read_from_excel_data(Config,{"Trigonometry",3,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",3,6}), {formula,"=COS(G2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",3,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",3,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COS(G2)"}]),
+      test_util:expected2(Msg, {formula,"=COS(G2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g15_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g15_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=DEGREES(G2)"},read_from_excel_data(Config,{"Trigonometry",14,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",14,6}), {formula,"=DEGREES(G2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",14,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",14,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=DEGREES(G2)"}]),
+      test_util:expected2(Msg, {formula,"=DEGREES(G2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g26_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g26_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826259},read_from_excel_data(Config,{"Trigonometry",25,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",25,6}), {number,-2146826259}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",25,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",25,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826259}]),
+      test_util:expected2(Msg, {number,-2146826259})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g37_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g37_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(G4),IF(ISERROR(G21),IF(ERROR.TYPE(G4)=ERROR.TYPE(G21),1,0),0),IF(ISERROR(G21),0,IF(ABS(G4-G21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",36,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",36,6}), {formula,"=IF(ISERROR(G4),IF(ISERROR(G21),IF(ERROR.TYPE(G4)=ERROR.TYPE(G21),1,0),0),IF(ISERROR(G21),0,IF(ABS(G4-G21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",36,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",36,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(G4),IF(ISERROR(G21),IF(ERROR.TYPE(G4)=ERROR.TYPE(G21),1,0),0),IF(ISERROR(G21),0,IF(ABS(G4-G21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(G4),IF(ISERROR(G21),IF(ERROR.TYPE(G4)=ERROR.TYPE(G21),1,0),0),IF(ISERROR(G21),0,IF(ABS(G4-G21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g48_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g48_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(G15),IF(ISERROR(G32),IF(ERROR.TYPE(G15)=ERROR.TYPE(G32),1,0),0),IF(ISERROR(G32),0,IF(ABS(G15-G32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",47,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",47,6}), {formula,"=IF(ISERROR(G15),IF(ISERROR(G32),IF(ERROR.TYPE(G15)=ERROR.TYPE(G32),1,0),0),IF(ISERROR(G32),0,IF(ABS(G15-G32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",47,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",47,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(G15),IF(ISERROR(G32),IF(ERROR.TYPE(G15)=ERROR.TYPE(G32),1,0),0),IF(ISERROR(G32),0,IF(ABS(G15-G32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(G15),IF(ISERROR(G32),IF(ERROR.TYPE(G15)=ERROR.TYPE(G32),1,0),0),IF(ISERROR(G32),0,IF(ABS(G15-G32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g10_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g10_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COSH(G2)"},read_from_excel_data(Config,{"Trigonometry",9,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",9,6}), {formula,"=COSH(G2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",9,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",9,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COSH(G2)"}]),
+      test_util:expected2(Msg, {formula,"=COSH(G2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g21_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g21_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826259},read_from_excel_data(Config,{"Trigonometry",20,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",20,6}), {number,-2146826259}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",20,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",20,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826259}]),
+      test_util:expected2(Msg, {number,-2146826259})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g32_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g32_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826259},read_from_excel_data(Config,{"Trigonometry",31,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",31,6}), {number,-2146826259}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",31,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",31,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826259}]),
+      test_util:expected2(Msg, {number,-2146826259})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_g43_test(doc) -> [{userdata,[{""}]}];
 trigonometry_g43_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(G10),IF(ISERROR(G27),IF(ERROR.TYPE(G10)=ERROR.TYPE(G27),1,0),0),IF(ISERROR(G27),0,IF(ABS(G10-G27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",42,6})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",42,6}), {formula,"=IF(ISERROR(G10),IF(ISERROR(G27),IF(ERROR.TYPE(G10)=ERROR.TYPE(G27),1,0),0),IF(ISERROR(G27),0,IF(ABS(G10-G27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",42,6}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",42,6}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(G10),IF(ISERROR(G27),IF(ERROR.TYPE(G10)=ERROR.TYPE(G27),1,0),0),IF(ISERROR(G27),0,IF(ABS(G10-G27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(G10),IF(ISERROR(G27),IF(ERROR.TYPE(G10)=ERROR.TYPE(G27),1,0),0),IF(ISERROR(G27),0,IF(ABS(G10-G27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h5_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h5_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TAN(H2)"},read_from_excel_data(Config,{"Trigonometry",4,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",4,7}), {formula,"=TAN(H2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",4,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",4,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TAN(H2)"}]),
+      test_util:expected2(Msg, {formula,"=TAN(H2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h16_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h16_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=RADIANS(H2)"},read_from_excel_data(Config,{"Trigonometry",15,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",15,7}), {formula,"=RADIANS(H2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",15,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",15,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=RADIANS(H2)"}]),
+      test_util:expected2(Msg, {formula,"=RADIANS(H2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h27_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h27_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826288},read_from_excel_data(Config,{"Trigonometry",26,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",26,7}), {number,-2146826288}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",26,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",26,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826288}]),
+      test_util:expected2(Msg, {number,-2146826288})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h38_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h38_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(H5),IF(ISERROR(H22),IF(ERROR.TYPE(H5)=ERROR.TYPE(H22),1,0),0),IF(ISERROR(H22),0,IF(ABS(H5-H22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",37,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",37,7}), {formula,"=IF(ISERROR(H5),IF(ISERROR(H22),IF(ERROR.TYPE(H5)=ERROR.TYPE(H22),1,0),0),IF(ISERROR(H22),0,IF(ABS(H5-H22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",37,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",37,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(H5),IF(ISERROR(H22),IF(ERROR.TYPE(H5)=ERROR.TYPE(H22),1,0),0),IF(ISERROR(H22),0,IF(ABS(H5-H22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(H5),IF(ISERROR(H22),IF(ERROR.TYPE(H5)=ERROR.TYPE(H22),1,0),0),IF(ISERROR(H22),0,IF(ABS(H5-H22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h49_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h49_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(H16),IF(ISERROR(H33),IF(ERROR.TYPE(H16)=ERROR.TYPE(H33),1,0),0),IF(ISERROR(H33),0,IF(ABS(H16-H33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",48,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",48,7}), {formula,"=IF(ISERROR(H16),IF(ISERROR(H33),IF(ERROR.TYPE(H16)=ERROR.TYPE(H33),1,0),0),IF(ISERROR(H33),0,IF(ABS(H16-H33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",48,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",48,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(H16),IF(ISERROR(H33),IF(ERROR.TYPE(H16)=ERROR.TYPE(H33),1,0),0),IF(ISERROR(H33),0,IF(ABS(H16-H33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(H16),IF(ISERROR(H33),IF(ERROR.TYPE(H16)=ERROR.TYPE(H33),1,0),0),IF(ISERROR(H33),0,IF(ABS(H16-H33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h11_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h11_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TANH(H2)"},read_from_excel_data(Config,{"Trigonometry",10,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",10,7}), {formula,"=TANH(H2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",10,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",10,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TANH(H2)"}]),
+      test_util:expected2(Msg, {formula,"=TANH(H2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h22_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h22_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826288},read_from_excel_data(Config,{"Trigonometry",21,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",21,7}), {number,-2146826288}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",21,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",21,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826288}]),
+      test_util:expected2(Msg, {number,-2146826288})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h33_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h33_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826288},read_from_excel_data(Config,{"Trigonometry",32,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",32,7}), {number,-2146826288}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",32,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",32,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826288}]),
+      test_util:expected2(Msg, {number,-2146826288})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h44_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h44_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(H11),IF(ISERROR(H28),IF(ERROR.TYPE(H11)=ERROR.TYPE(H28),1,0),0),IF(ISERROR(H28),0,IF(ABS(H11-H28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",43,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",43,7}), {formula,"=IF(ISERROR(H11),IF(ISERROR(H28),IF(ERROR.TYPE(H11)=ERROR.TYPE(H28),1,0),0),IF(ISERROR(H28),0,IF(ABS(H11-H28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",43,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",43,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(H11),IF(ISERROR(H28),IF(ERROR.TYPE(H11)=ERROR.TYPE(H28),1,0),0),IF(ISERROR(H28),0,IF(ABS(H11-H28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(H11),IF(ISERROR(H28),IF(ERROR.TYPE(H11)=ERROR.TYPE(H28),1,0),0),IF(ISERROR(H28),0,IF(ABS(H11-H28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h6_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASIN(H2)"},read_from_excel_data(Config,{"Trigonometry",5,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",5,7}), {formula,"=ASIN(H2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",5,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",5,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASIN(H2)"}]),
+      test_util:expected2(Msg, {formula,"=ASIN(H2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h28_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h28_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826288},read_from_excel_data(Config,{"Trigonometry",27,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",27,7}), {number,-2146826288}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",27,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",27,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826288}]),
+      test_util:expected2(Msg, {number,-2146826288})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h39_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h39_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(H6),IF(ISERROR(H23),IF(ERROR.TYPE(H6)=ERROR.TYPE(H23),1,0),0),IF(ISERROR(H23),0,IF(ABS(H6-H23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",38,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",38,7}), {formula,"=IF(ISERROR(H6),IF(ISERROR(H23),IF(ERROR.TYPE(H6)=ERROR.TYPE(H23),1,0),0),IF(ISERROR(H23),0,IF(ABS(H6-H23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",38,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",38,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(H6),IF(ISERROR(H23),IF(ERROR.TYPE(H6)=ERROR.TYPE(H23),1,0),0),IF(ISERROR(H23),0,IF(ABS(H6-H23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(H6),IF(ISERROR(H23),IF(ERROR.TYPE(H6)=ERROR.TYPE(H23),1,0),0),IF(ISERROR(H23),0,IF(ABS(H6-H23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h1_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h1_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Error"},read_from_excel_data(Config,{"Trigonometry",0,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",0,7}), {string,"Error"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",0,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",0,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Error"}]),
+      test_util:expected2(Msg, {string,"Error"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h12_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h12_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASINH(H2)"},read_from_excel_data(Config,{"Trigonometry",11,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",11,7}), {formula,"=ASINH(H2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",11,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",11,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASINH(H2)"}]),
+      test_util:expected2(Msg, {formula,"=ASINH(H2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h23_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h23_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826288},read_from_excel_data(Config,{"Trigonometry",22,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",22,7}), {number,-2146826288}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",22,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",22,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826288}]),
+      test_util:expected2(Msg, {number,-2146826288})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h45_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h45_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(H12),IF(ISERROR(H29),IF(ERROR.TYPE(H12)=ERROR.TYPE(H29),1,0),0),IF(ISERROR(H29),0,IF(ABS(H12-H29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",44,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",44,7}), {formula,"=IF(ISERROR(H12),IF(ISERROR(H29),IF(ERROR.TYPE(H12)=ERROR.TYPE(H29),1,0),0),IF(ISERROR(H29),0,IF(ABS(H12-H29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",44,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",44,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(H12),IF(ISERROR(H29),IF(ERROR.TYPE(H12)=ERROR.TYPE(H29),1,0),0),IF(ISERROR(H29),0,IF(ABS(H12-H29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(H12),IF(ISERROR(H29),IF(ERROR.TYPE(H12)=ERROR.TYPE(H29),1,0),0),IF(ISERROR(H29),0,IF(ABS(H12-H29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h7_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h7_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOS(H2)"},read_from_excel_data(Config,{"Trigonometry",6,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",6,7}), {formula,"=ACOS(H2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",6,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",6,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOS(H2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOS(H2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h18_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h18_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Error"},read_from_excel_data(Config,{"Trigonometry",17,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",17,7}), {string,"Error"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",17,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",17,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Error"}]),
+      test_util:expected2(Msg, {string,"Error"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h29_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h29_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826288},read_from_excel_data(Config,{"Trigonometry",28,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",28,7}), {number,-2146826288}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",28,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",28,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826288}]),
+      test_util:expected2(Msg, {number,-2146826288})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h40_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h40_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(H7),IF(ISERROR(H24),IF(ERROR.TYPE(H7)=ERROR.TYPE(H24),1,0),0),IF(ISERROR(H24),0,IF(ABS(H7-H24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",39,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",39,7}), {formula,"=IF(ISERROR(H7),IF(ISERROR(H24),IF(ERROR.TYPE(H7)=ERROR.TYPE(H24),1,0),0),IF(ISERROR(H24),0,IF(ABS(H7-H24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",39,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",39,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(H7),IF(ISERROR(H24),IF(ERROR.TYPE(H7)=ERROR.TYPE(H24),1,0),0),IF(ISERROR(H24),0,IF(ABS(H7-H24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(H7),IF(ISERROR(H24),IF(ERROR.TYPE(H7)=ERROR.TYPE(H24),1,0),0),IF(ISERROR(H24),0,IF(ABS(H7-H24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h2_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h2_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826288},read_from_excel_data(Config,{"Trigonometry",1,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",1,7}), {number,-2146826288}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",1,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",1,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826288}]),
+      test_util:expected2(Msg, {number,-2146826288})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h13_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h13_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOSH(H2)"},read_from_excel_data(Config,{"Trigonometry",12,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",12,7}), {formula,"=ACOSH(H2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",12,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",12,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOSH(H2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOSH(H2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h24_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h24_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826288},read_from_excel_data(Config,{"Trigonometry",23,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",23,7}), {number,-2146826288}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",23,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",23,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826288}]),
+      test_util:expected2(Msg, {number,-2146826288})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h46_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h46_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(H13),IF(ISERROR(H30),IF(ERROR.TYPE(H13)=ERROR.TYPE(H30),1,0),0),IF(ISERROR(H30),0,IF(ABS(H13-H30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",45,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",45,7}), {formula,"=IF(ISERROR(H13),IF(ISERROR(H30),IF(ERROR.TYPE(H13)=ERROR.TYPE(H30),1,0),0),IF(ISERROR(H30),0,IF(ABS(H13-H30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",45,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",45,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(H13),IF(ISERROR(H30),IF(ERROR.TYPE(H13)=ERROR.TYPE(H30),1,0),0),IF(ISERROR(H30),0,IF(ABS(H13-H30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(H13),IF(ISERROR(H30),IF(ERROR.TYPE(H13)=ERROR.TYPE(H30),1,0),0),IF(ISERROR(H30),0,IF(ABS(H13-H30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h8_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h8_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATAN(H2)"},read_from_excel_data(Config,{"Trigonometry",7,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",7,7}), {formula,"=ATAN(H2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",7,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",7,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATAN(H2)"}]),
+      test_util:expected2(Msg, {formula,"=ATAN(H2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h19_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h19_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826288},read_from_excel_data(Config,{"Trigonometry",18,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",18,7}), {number,-2146826288}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",18,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",18,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826288}]),
+      test_util:expected2(Msg, {number,-2146826288})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h30_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h30_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826288},read_from_excel_data(Config,{"Trigonometry",29,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",29,7}), {number,-2146826288}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",29,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",29,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826288}]),
+      test_util:expected2(Msg, {number,-2146826288})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h41_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h41_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(H8),IF(ISERROR(H25),IF(ERROR.TYPE(H8)=ERROR.TYPE(H25),1,0),0),IF(ISERROR(H25),0,IF(ABS(H8-H25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",40,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",40,7}), {formula,"=IF(ISERROR(H8),IF(ISERROR(H25),IF(ERROR.TYPE(H8)=ERROR.TYPE(H25),1,0),0),IF(ISERROR(H25),0,IF(ABS(H8-H25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",40,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",40,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(H8),IF(ISERROR(H25),IF(ERROR.TYPE(H8)=ERROR.TYPE(H25),1,0),0),IF(ISERROR(H25),0,IF(ABS(H8-H25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(H8),IF(ISERROR(H25),IF(ERROR.TYPE(H8)=ERROR.TYPE(H25),1,0),0),IF(ISERROR(H25),0,IF(ABS(H8-H25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h3_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SIN(H2)"},read_from_excel_data(Config,{"Trigonometry",2,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",2,7}), {formula,"=SIN(H2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",2,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",2,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SIN(H2)"}]),
+      test_util:expected2(Msg, {formula,"=SIN(H2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h14_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h14_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATANH(H2)"},read_from_excel_data(Config,{"Trigonometry",13,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",13,7}), {formula,"=ATANH(H2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",13,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",13,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATANH(H2)"}]),
+      test_util:expected2(Msg, {formula,"=ATANH(H2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h25_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h25_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826288},read_from_excel_data(Config,{"Trigonometry",24,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",24,7}), {number,-2146826288}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",24,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",24,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826288}]),
+      test_util:expected2(Msg, {number,-2146826288})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h36_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h36_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(H3),IF(ISERROR(H20),IF(ERROR.TYPE(H3)=ERROR.TYPE(H20),1,0),0),IF(ISERROR(H20),0,IF(ABS(H3-H20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",35,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",35,7}), {formula,"=IF(ISERROR(H3),IF(ISERROR(H20),IF(ERROR.TYPE(H3)=ERROR.TYPE(H20),1,0),0),IF(ISERROR(H20),0,IF(ABS(H3-H20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",35,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",35,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(H3),IF(ISERROR(H20),IF(ERROR.TYPE(H3)=ERROR.TYPE(H20),1,0),0),IF(ISERROR(H20),0,IF(ABS(H3-H20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(H3),IF(ISERROR(H20),IF(ERROR.TYPE(H3)=ERROR.TYPE(H20),1,0),0),IF(ISERROR(H20),0,IF(ABS(H3-H20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h47_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h47_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(H14),IF(ISERROR(H31),IF(ERROR.TYPE(H14)=ERROR.TYPE(H31),1,0),0),IF(ISERROR(H31),0,IF(ABS(H14-H31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",46,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",46,7}), {formula,"=IF(ISERROR(H14),IF(ISERROR(H31),IF(ERROR.TYPE(H14)=ERROR.TYPE(H31),1,0),0),IF(ISERROR(H31),0,IF(ABS(H14-H31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",46,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",46,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(H14),IF(ISERROR(H31),IF(ERROR.TYPE(H14)=ERROR.TYPE(H31),1,0),0),IF(ISERROR(H31),0,IF(ABS(H14-H31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(H14),IF(ISERROR(H31),IF(ERROR.TYPE(H14)=ERROR.TYPE(H31),1,0),0),IF(ISERROR(H31),0,IF(ABS(H14-H31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h9_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h9_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SINH(H2)"},read_from_excel_data(Config,{"Trigonometry",8,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",8,7}), {formula,"=SINH(H2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",8,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",8,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SINH(H2)"}]),
+      test_util:expected2(Msg, {formula,"=SINH(H2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h20_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h20_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826288},read_from_excel_data(Config,{"Trigonometry",19,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",19,7}), {number,-2146826288}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",19,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",19,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826288}]),
+      test_util:expected2(Msg, {number,-2146826288})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h31_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h31_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826288},read_from_excel_data(Config,{"Trigonometry",30,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",30,7}), {number,-2146826288}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",30,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",30,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826288}]),
+      test_util:expected2(Msg, {number,-2146826288})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h42_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h42_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(H9),IF(ISERROR(H26),IF(ERROR.TYPE(H9)=ERROR.TYPE(H26),1,0),0),IF(ISERROR(H26),0,IF(ABS(H9-H26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",41,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",41,7}), {formula,"=IF(ISERROR(H9),IF(ISERROR(H26),IF(ERROR.TYPE(H9)=ERROR.TYPE(H26),1,0),0),IF(ISERROR(H26),0,IF(ABS(H9-H26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",41,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",41,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(H9),IF(ISERROR(H26),IF(ERROR.TYPE(H9)=ERROR.TYPE(H26),1,0),0),IF(ISERROR(H26),0,IF(ABS(H9-H26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(H9),IF(ISERROR(H26),IF(ERROR.TYPE(H9)=ERROR.TYPE(H26),1,0),0),IF(ISERROR(H26),0,IF(ABS(H9-H26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h4_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h4_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COS(H2)"},read_from_excel_data(Config,{"Trigonometry",3,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",3,7}), {formula,"=COS(H2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",3,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",3,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COS(H2)"}]),
+      test_util:expected2(Msg, {formula,"=COS(H2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h15_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h15_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=DEGREES(H2)"},read_from_excel_data(Config,{"Trigonometry",14,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",14,7}), {formula,"=DEGREES(H2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",14,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",14,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=DEGREES(H2)"}]),
+      test_util:expected2(Msg, {formula,"=DEGREES(H2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h26_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h26_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826288},read_from_excel_data(Config,{"Trigonometry",25,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",25,7}), {number,-2146826288}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",25,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",25,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826288}]),
+      test_util:expected2(Msg, {number,-2146826288})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h37_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h37_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(H4),IF(ISERROR(H21),IF(ERROR.TYPE(H4)=ERROR.TYPE(H21),1,0),0),IF(ISERROR(H21),0,IF(ABS(H4-H21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",36,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",36,7}), {formula,"=IF(ISERROR(H4),IF(ISERROR(H21),IF(ERROR.TYPE(H4)=ERROR.TYPE(H21),1,0),0),IF(ISERROR(H21),0,IF(ABS(H4-H21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",36,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",36,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(H4),IF(ISERROR(H21),IF(ERROR.TYPE(H4)=ERROR.TYPE(H21),1,0),0),IF(ISERROR(H21),0,IF(ABS(H4-H21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(H4),IF(ISERROR(H21),IF(ERROR.TYPE(H4)=ERROR.TYPE(H21),1,0),0),IF(ISERROR(H21),0,IF(ABS(H4-H21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h48_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h48_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(H15),IF(ISERROR(H32),IF(ERROR.TYPE(H15)=ERROR.TYPE(H32),1,0),0),IF(ISERROR(H32),0,IF(ABS(H15-H32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",47,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",47,7}), {formula,"=IF(ISERROR(H15),IF(ISERROR(H32),IF(ERROR.TYPE(H15)=ERROR.TYPE(H32),1,0),0),IF(ISERROR(H32),0,IF(ABS(H15-H32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",47,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",47,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(H15),IF(ISERROR(H32),IF(ERROR.TYPE(H15)=ERROR.TYPE(H32),1,0),0),IF(ISERROR(H32),0,IF(ABS(H15-H32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(H15),IF(ISERROR(H32),IF(ERROR.TYPE(H15)=ERROR.TYPE(H32),1,0),0),IF(ISERROR(H32),0,IF(ABS(H15-H32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h10_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h10_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COSH(H2)"},read_from_excel_data(Config,{"Trigonometry",9,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",9,7}), {formula,"=COSH(H2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",9,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",9,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COSH(H2)"}]),
+      test_util:expected2(Msg, {formula,"=COSH(H2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h21_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h21_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826288},read_from_excel_data(Config,{"Trigonometry",20,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",20,7}), {number,-2146826288}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",20,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",20,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826288}]),
+      test_util:expected2(Msg, {number,-2146826288})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h32_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h32_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826288},read_from_excel_data(Config,{"Trigonometry",31,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",31,7}), {number,-2146826288}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",31,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",31,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826288}]),
+      test_util:expected2(Msg, {number,-2146826288})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_h43_test(doc) -> [{userdata,[{""}]}];
 trigonometry_h43_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(H10),IF(ISERROR(H27),IF(ERROR.TYPE(H10)=ERROR.TYPE(H27),1,0),0),IF(ISERROR(H27),0,IF(ABS(H10-H27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",42,7})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",42,7}), {formula,"=IF(ISERROR(H10),IF(ISERROR(H27),IF(ERROR.TYPE(H10)=ERROR.TYPE(H27),1,0),0),IF(ISERROR(H27),0,IF(ABS(H10-H27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",42,7}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",42,7}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(H10),IF(ISERROR(H27),IF(ERROR.TYPE(H10)=ERROR.TYPE(H27),1,0),0),IF(ISERROR(H27),0,IF(ABS(H10-H27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(H10),IF(ISERROR(H27),IF(ERROR.TYPE(H10)=ERROR.TYPE(H27),1,0),0),IF(ISERROR(H27),0,IF(ABS(H10-H27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i5_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i5_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TAN(I2)"},read_from_excel_data(Config,{"Trigonometry",4,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",4,8}), {formula,"=TAN(I2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",4,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",4,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TAN(I2)"}]),
+      test_util:expected2(Msg, {formula,"=TAN(I2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i16_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i16_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=RADIANS(I2)"},read_from_excel_data(Config,{"Trigonometry",15,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",15,8}), {formula,"=RADIANS(I2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",15,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",15,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=RADIANS(I2)"}]),
+      test_util:expected2(Msg, {formula,"=RADIANS(I2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i27_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i27_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",26,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",26,8}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",26,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",26,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i38_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i38_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(I5),IF(ISERROR(I22),IF(ERROR.TYPE(I5)=ERROR.TYPE(I22),1,0),0),IF(ISERROR(I22),0,IF(ABS(I5-I22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",37,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",37,8}), {formula,"=IF(ISERROR(I5),IF(ISERROR(I22),IF(ERROR.TYPE(I5)=ERROR.TYPE(I22),1,0),0),IF(ISERROR(I22),0,IF(ABS(I5-I22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",37,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",37,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(I5),IF(ISERROR(I22),IF(ERROR.TYPE(I5)=ERROR.TYPE(I22),1,0),0),IF(ISERROR(I22),0,IF(ABS(I5-I22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(I5),IF(ISERROR(I22),IF(ERROR.TYPE(I5)=ERROR.TYPE(I22),1,0),0),IF(ISERROR(I22),0,IF(ABS(I5-I22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i49_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i49_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(I16),IF(ISERROR(I33),IF(ERROR.TYPE(I16)=ERROR.TYPE(I33),1,0),0),IF(ISERROR(I33),0,IF(ABS(I16-I33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",48,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",48,8}), {formula,"=IF(ISERROR(I16),IF(ISERROR(I33),IF(ERROR.TYPE(I16)=ERROR.TYPE(I33),1,0),0),IF(ISERROR(I33),0,IF(ABS(I16-I33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",48,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",48,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(I16),IF(ISERROR(I33),IF(ERROR.TYPE(I16)=ERROR.TYPE(I33),1,0),0),IF(ISERROR(I33),0,IF(ABS(I16-I33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(I16),IF(ISERROR(I33),IF(ERROR.TYPE(I16)=ERROR.TYPE(I33),1,0),0),IF(ISERROR(I33),0,IF(ABS(I16-I33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i11_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i11_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TANH(I2)"},read_from_excel_data(Config,{"Trigonometry",10,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",10,8}), {formula,"=TANH(I2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",10,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",10,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TANH(I2)"}]),
+      test_util:expected2(Msg, {formula,"=TANH(I2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i22_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i22_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",21,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",21,8}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",21,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",21,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i33_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i33_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",32,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",32,8}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",32,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",32,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i44_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i44_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(I11),IF(ISERROR(I28),IF(ERROR.TYPE(I11)=ERROR.TYPE(I28),1,0),0),IF(ISERROR(I28),0,IF(ABS(I11-I28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",43,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",43,8}), {formula,"=IF(ISERROR(I11),IF(ISERROR(I28),IF(ERROR.TYPE(I11)=ERROR.TYPE(I28),1,0),0),IF(ISERROR(I28),0,IF(ABS(I11-I28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",43,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",43,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(I11),IF(ISERROR(I28),IF(ERROR.TYPE(I11)=ERROR.TYPE(I28),1,0),0),IF(ISERROR(I28),0,IF(ABS(I11-I28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(I11),IF(ISERROR(I28),IF(ERROR.TYPE(I11)=ERROR.TYPE(I28),1,0),0),IF(ISERROR(I28),0,IF(ABS(I11-I28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i6_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASIN(I2)"},read_from_excel_data(Config,{"Trigonometry",5,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",5,8}), {formula,"=ASIN(I2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",5,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",5,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASIN(I2)"}]),
+      test_util:expected2(Msg, {formula,"=ASIN(I2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i28_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i28_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",27,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",27,8}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",27,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",27,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i39_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i39_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(I6),IF(ISERROR(I23),IF(ERROR.TYPE(I6)=ERROR.TYPE(I23),1,0),0),IF(ISERROR(I23),0,IF(ABS(I6-I23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",38,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",38,8}), {formula,"=IF(ISERROR(I6),IF(ISERROR(I23),IF(ERROR.TYPE(I6)=ERROR.TYPE(I23),1,0),0),IF(ISERROR(I23),0,IF(ABS(I6-I23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",38,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",38,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(I6),IF(ISERROR(I23),IF(ERROR.TYPE(I6)=ERROR.TYPE(I23),1,0),0),IF(ISERROR(I23),0,IF(ABS(I6-I23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(I6),IF(ISERROR(I23),IF(ERROR.TYPE(I6)=ERROR.TYPE(I23),1,0),0),IF(ISERROR(I23),0,IF(ABS(I6-I23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i1_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i1_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Error"},read_from_excel_data(Config,{"Trigonometry",0,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",0,8}), {string,"Error"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",0,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",0,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Error"}]),
+      test_util:expected2(Msg, {string,"Error"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i12_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i12_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASINH(I2)"},read_from_excel_data(Config,{"Trigonometry",11,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",11,8}), {formula,"=ASINH(I2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",11,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",11,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASINH(I2)"}]),
+      test_util:expected2(Msg, {formula,"=ASINH(I2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i23_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i23_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",22,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",22,8}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",22,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",22,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i45_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i45_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(I12),IF(ISERROR(I29),IF(ERROR.TYPE(I12)=ERROR.TYPE(I29),1,0),0),IF(ISERROR(I29),0,IF(ABS(I12-I29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",44,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",44,8}), {formula,"=IF(ISERROR(I12),IF(ISERROR(I29),IF(ERROR.TYPE(I12)=ERROR.TYPE(I29),1,0),0),IF(ISERROR(I29),0,IF(ABS(I12-I29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",44,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",44,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(I12),IF(ISERROR(I29),IF(ERROR.TYPE(I12)=ERROR.TYPE(I29),1,0),0),IF(ISERROR(I29),0,IF(ABS(I12-I29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(I12),IF(ISERROR(I29),IF(ERROR.TYPE(I12)=ERROR.TYPE(I29),1,0),0),IF(ISERROR(I29),0,IF(ABS(I12-I29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i7_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i7_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOS(I2)"},read_from_excel_data(Config,{"Trigonometry",6,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",6,8}), {formula,"=ACOS(I2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",6,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",6,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOS(I2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOS(I2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i18_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i18_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Error"},read_from_excel_data(Config,{"Trigonometry",17,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",17,8}), {string,"Error"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",17,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",17,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Error"}]),
+      test_util:expected2(Msg, {string,"Error"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i29_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i29_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",28,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",28,8}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",28,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",28,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i40_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i40_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(I7),IF(ISERROR(I24),IF(ERROR.TYPE(I7)=ERROR.TYPE(I24),1,0),0),IF(ISERROR(I24),0,IF(ABS(I7-I24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",39,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",39,8}), {formula,"=IF(ISERROR(I7),IF(ISERROR(I24),IF(ERROR.TYPE(I7)=ERROR.TYPE(I24),1,0),0),IF(ISERROR(I24),0,IF(ABS(I7-I24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",39,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",39,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(I7),IF(ISERROR(I24),IF(ERROR.TYPE(I7)=ERROR.TYPE(I24),1,0),0),IF(ISERROR(I24),0,IF(ABS(I7-I24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(I7),IF(ISERROR(I24),IF(ERROR.TYPE(I7)=ERROR.TYPE(I24),1,0),0),IF(ISERROR(I24),0,IF(ABS(I7-I24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i2_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i2_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",1,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",1,8}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",1,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",1,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i13_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i13_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOSH(I2)"},read_from_excel_data(Config,{"Trigonometry",12,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",12,8}), {formula,"=ACOSH(I2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",12,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",12,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOSH(I2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOSH(I2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i24_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i24_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",23,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",23,8}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",23,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",23,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i46_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i46_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(I13),IF(ISERROR(I30),IF(ERROR.TYPE(I13)=ERROR.TYPE(I30),1,0),0),IF(ISERROR(I30),0,IF(ABS(I13-I30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",45,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",45,8}), {formula,"=IF(ISERROR(I13),IF(ISERROR(I30),IF(ERROR.TYPE(I13)=ERROR.TYPE(I30),1,0),0),IF(ISERROR(I30),0,IF(ABS(I13-I30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",45,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",45,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(I13),IF(ISERROR(I30),IF(ERROR.TYPE(I13)=ERROR.TYPE(I30),1,0),0),IF(ISERROR(I30),0,IF(ABS(I13-I30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(I13),IF(ISERROR(I30),IF(ERROR.TYPE(I13)=ERROR.TYPE(I30),1,0),0),IF(ISERROR(I30),0,IF(ABS(I13-I30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i8_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i8_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATAN(I2)"},read_from_excel_data(Config,{"Trigonometry",7,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",7,8}), {formula,"=ATAN(I2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",7,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",7,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATAN(I2)"}]),
+      test_util:expected2(Msg, {formula,"=ATAN(I2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i19_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i19_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",18,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",18,8}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",18,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",18,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i30_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i30_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",29,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",29,8}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",29,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",29,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i41_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i41_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(I8),IF(ISERROR(I25),IF(ERROR.TYPE(I8)=ERROR.TYPE(I25),1,0),0),IF(ISERROR(I25),0,IF(ABS(I8-I25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",40,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",40,8}), {formula,"=IF(ISERROR(I8),IF(ISERROR(I25),IF(ERROR.TYPE(I8)=ERROR.TYPE(I25),1,0),0),IF(ISERROR(I25),0,IF(ABS(I8-I25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",40,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",40,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(I8),IF(ISERROR(I25),IF(ERROR.TYPE(I8)=ERROR.TYPE(I25),1,0),0),IF(ISERROR(I25),0,IF(ABS(I8-I25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(I8),IF(ISERROR(I25),IF(ERROR.TYPE(I8)=ERROR.TYPE(I25),1,0),0),IF(ISERROR(I25),0,IF(ABS(I8-I25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i3_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SIN(I2)"},read_from_excel_data(Config,{"Trigonometry",2,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",2,8}), {formula,"=SIN(I2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",2,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",2,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SIN(I2)"}]),
+      test_util:expected2(Msg, {formula,"=SIN(I2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i14_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i14_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATANH(I2)"},read_from_excel_data(Config,{"Trigonometry",13,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",13,8}), {formula,"=ATANH(I2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",13,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",13,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATANH(I2)"}]),
+      test_util:expected2(Msg, {formula,"=ATANH(I2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i25_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i25_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",24,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",24,8}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",24,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",24,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i36_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i36_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(I3),IF(ISERROR(I20),IF(ERROR.TYPE(I3)=ERROR.TYPE(I20),1,0),0),IF(ISERROR(I20),0,IF(ABS(I3-I20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",35,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",35,8}), {formula,"=IF(ISERROR(I3),IF(ISERROR(I20),IF(ERROR.TYPE(I3)=ERROR.TYPE(I20),1,0),0),IF(ISERROR(I20),0,IF(ABS(I3-I20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",35,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",35,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(I3),IF(ISERROR(I20),IF(ERROR.TYPE(I3)=ERROR.TYPE(I20),1,0),0),IF(ISERROR(I20),0,IF(ABS(I3-I20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(I3),IF(ISERROR(I20),IF(ERROR.TYPE(I3)=ERROR.TYPE(I20),1,0),0),IF(ISERROR(I20),0,IF(ABS(I3-I20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i47_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i47_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(I14),IF(ISERROR(I31),IF(ERROR.TYPE(I14)=ERROR.TYPE(I31),1,0),0),IF(ISERROR(I31),0,IF(ABS(I14-I31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",46,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",46,8}), {formula,"=IF(ISERROR(I14),IF(ISERROR(I31),IF(ERROR.TYPE(I14)=ERROR.TYPE(I31),1,0),0),IF(ISERROR(I31),0,IF(ABS(I14-I31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",46,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",46,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(I14),IF(ISERROR(I31),IF(ERROR.TYPE(I14)=ERROR.TYPE(I31),1,0),0),IF(ISERROR(I31),0,IF(ABS(I14-I31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(I14),IF(ISERROR(I31),IF(ERROR.TYPE(I14)=ERROR.TYPE(I31),1,0),0),IF(ISERROR(I31),0,IF(ABS(I14-I31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i9_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i9_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SINH(I2)"},read_from_excel_data(Config,{"Trigonometry",8,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",8,8}), {formula,"=SINH(I2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",8,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",8,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SINH(I2)"}]),
+      test_util:expected2(Msg, {formula,"=SINH(I2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i20_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i20_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",19,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",19,8}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",19,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",19,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i31_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i31_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",30,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",30,8}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",30,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",30,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i42_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i42_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(I9),IF(ISERROR(I26),IF(ERROR.TYPE(I9)=ERROR.TYPE(I26),1,0),0),IF(ISERROR(I26),0,IF(ABS(I9-I26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",41,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",41,8}), {formula,"=IF(ISERROR(I9),IF(ISERROR(I26),IF(ERROR.TYPE(I9)=ERROR.TYPE(I26),1,0),0),IF(ISERROR(I26),0,IF(ABS(I9-I26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",41,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",41,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(I9),IF(ISERROR(I26),IF(ERROR.TYPE(I9)=ERROR.TYPE(I26),1,0),0),IF(ISERROR(I26),0,IF(ABS(I9-I26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(I9),IF(ISERROR(I26),IF(ERROR.TYPE(I9)=ERROR.TYPE(I26),1,0),0),IF(ISERROR(I26),0,IF(ABS(I9-I26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i4_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i4_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COS(I2)"},read_from_excel_data(Config,{"Trigonometry",3,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",3,8}), {formula,"=COS(I2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",3,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",3,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COS(I2)"}]),
+      test_util:expected2(Msg, {formula,"=COS(I2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i15_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i15_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=DEGREES(I2)"},read_from_excel_data(Config,{"Trigonometry",14,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",14,8}), {formula,"=DEGREES(I2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",14,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",14,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=DEGREES(I2)"}]),
+      test_util:expected2(Msg, {formula,"=DEGREES(I2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i26_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i26_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",25,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",25,8}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",25,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",25,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i37_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i37_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(I4),IF(ISERROR(I21),IF(ERROR.TYPE(I4)=ERROR.TYPE(I21),1,0),0),IF(ISERROR(I21),0,IF(ABS(I4-I21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",36,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",36,8}), {formula,"=IF(ISERROR(I4),IF(ISERROR(I21),IF(ERROR.TYPE(I4)=ERROR.TYPE(I21),1,0),0),IF(ISERROR(I21),0,IF(ABS(I4-I21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",36,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",36,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(I4),IF(ISERROR(I21),IF(ERROR.TYPE(I4)=ERROR.TYPE(I21),1,0),0),IF(ISERROR(I21),0,IF(ABS(I4-I21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(I4),IF(ISERROR(I21),IF(ERROR.TYPE(I4)=ERROR.TYPE(I21),1,0),0),IF(ISERROR(I21),0,IF(ABS(I4-I21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i48_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i48_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(I15),IF(ISERROR(I32),IF(ERROR.TYPE(I15)=ERROR.TYPE(I32),1,0),0),IF(ISERROR(I32),0,IF(ABS(I15-I32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",47,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",47,8}), {formula,"=IF(ISERROR(I15),IF(ISERROR(I32),IF(ERROR.TYPE(I15)=ERROR.TYPE(I32),1,0),0),IF(ISERROR(I32),0,IF(ABS(I15-I32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",47,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",47,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(I15),IF(ISERROR(I32),IF(ERROR.TYPE(I15)=ERROR.TYPE(I32),1,0),0),IF(ISERROR(I32),0,IF(ABS(I15-I32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(I15),IF(ISERROR(I32),IF(ERROR.TYPE(I15)=ERROR.TYPE(I32),1,0),0),IF(ISERROR(I32),0,IF(ABS(I15-I32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i10_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i10_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COSH(I2)"},read_from_excel_data(Config,{"Trigonometry",9,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",9,8}), {formula,"=COSH(I2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",9,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",9,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COSH(I2)"}]),
+      test_util:expected2(Msg, {formula,"=COSH(I2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i21_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i21_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",20,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",20,8}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",20,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",20,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i32_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i32_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826252},read_from_excel_data(Config,{"Trigonometry",31,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",31,8}), {number,-2146826252}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",31,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",31,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_i43_test(doc) -> [{userdata,[{""}]}];
 trigonometry_i43_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(I10),IF(ISERROR(I27),IF(ERROR.TYPE(I10)=ERROR.TYPE(I27),1,0),0),IF(ISERROR(I27),0,IF(ABS(I10-I27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",42,8})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",42,8}), {formula,"=IF(ISERROR(I10),IF(ISERROR(I27),IF(ERROR.TYPE(I10)=ERROR.TYPE(I27),1,0),0),IF(ISERROR(I27),0,IF(ABS(I10-I27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",42,8}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",42,8}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(I10),IF(ISERROR(I27),IF(ERROR.TYPE(I10)=ERROR.TYPE(I27),1,0),0),IF(ISERROR(I27),0,IF(ABS(I10-I27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(I10),IF(ISERROR(I27),IF(ERROR.TYPE(I10)=ERROR.TYPE(I27),1,0),0),IF(ISERROR(I27),0,IF(ABS(I10-I27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j5_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j5_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TAN(J2)"},read_from_excel_data(Config,{"Trigonometry",4,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",4,9}), {formula,"=TAN(J2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",4,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",4,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TAN(J2)"}]),
+      test_util:expected2(Msg, {formula,"=TAN(J2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j16_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j16_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=RADIANS(J2)"},read_from_excel_data(Config,{"Trigonometry",15,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",15,9}), {formula,"=RADIANS(J2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",15,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",15,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=RADIANS(J2)"}]),
+      test_util:expected2(Msg, {formula,"=RADIANS(J2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j27_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j27_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826265},read_from_excel_data(Config,{"Trigonometry",26,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",26,9}), {number,-2146826265}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",26,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",26,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826265}]),
+      test_util:expected2(Msg, {number,-2146826265})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j38_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j38_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(J5),IF(ISERROR(J22),IF(ERROR.TYPE(J5)=ERROR.TYPE(J22),1,0),0),IF(ISERROR(J22),0,IF(ABS(J5-J22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",37,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",37,9}), {formula,"=IF(ISERROR(J5),IF(ISERROR(J22),IF(ERROR.TYPE(J5)=ERROR.TYPE(J22),1,0),0),IF(ISERROR(J22),0,IF(ABS(J5-J22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",37,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",37,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(J5),IF(ISERROR(J22),IF(ERROR.TYPE(J5)=ERROR.TYPE(J22),1,0),0),IF(ISERROR(J22),0,IF(ABS(J5-J22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(J5),IF(ISERROR(J22),IF(ERROR.TYPE(J5)=ERROR.TYPE(J22),1,0),0),IF(ISERROR(J22),0,IF(ABS(J5-J22)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j49_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j49_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(J16),IF(ISERROR(J33),IF(ERROR.TYPE(J16)=ERROR.TYPE(J33),1,0),0),IF(ISERROR(J33),0,IF(ABS(J16-J33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",48,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",48,9}), {formula,"=IF(ISERROR(J16),IF(ISERROR(J33),IF(ERROR.TYPE(J16)=ERROR.TYPE(J33),1,0),0),IF(ISERROR(J33),0,IF(ABS(J16-J33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",48,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",48,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(J16),IF(ISERROR(J33),IF(ERROR.TYPE(J16)=ERROR.TYPE(J33),1,0),0),IF(ISERROR(J33),0,IF(ABS(J16-J33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(J16),IF(ISERROR(J33),IF(ERROR.TYPE(J16)=ERROR.TYPE(J33),1,0),0),IF(ISERROR(J33),0,IF(ABS(J16-J33)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j11_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j11_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=TANH(J2)"},read_from_excel_data(Config,{"Trigonometry",10,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",10,9}), {formula,"=TANH(J2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",10,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",10,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=TANH(J2)"}]),
+      test_util:expected2(Msg, {formula,"=TANH(J2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j22_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j22_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826265},read_from_excel_data(Config,{"Trigonometry",21,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",21,9}), {number,-2146826265}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",21,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",21,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826265}]),
+      test_util:expected2(Msg, {number,-2146826265})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j33_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j33_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826265},read_from_excel_data(Config,{"Trigonometry",32,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",32,9}), {number,-2146826265}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",32,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",32,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826265}]),
+      test_util:expected2(Msg, {number,-2146826265})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j44_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j44_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(J11),IF(ISERROR(J28),IF(ERROR.TYPE(J11)=ERROR.TYPE(J28),1,0),0),IF(ISERROR(J28),0,IF(ABS(J11-J28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",43,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",43,9}), {formula,"=IF(ISERROR(J11),IF(ISERROR(J28),IF(ERROR.TYPE(J11)=ERROR.TYPE(J28),1,0),0),IF(ISERROR(J28),0,IF(ABS(J11-J28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",43,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",43,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(J11),IF(ISERROR(J28),IF(ERROR.TYPE(J11)=ERROR.TYPE(J28),1,0),0),IF(ISERROR(J28),0,IF(ABS(J11-J28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(J11),IF(ISERROR(J28),IF(ERROR.TYPE(J11)=ERROR.TYPE(J28),1,0),0),IF(ISERROR(J28),0,IF(ABS(J11-J28)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j6_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASIN(J2)"},read_from_excel_data(Config,{"Trigonometry",5,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",5,9}), {formula,"=ASIN(J2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",5,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",5,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASIN(J2)"}]),
+      test_util:expected2(Msg, {formula,"=ASIN(J2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j28_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j28_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826265},read_from_excel_data(Config,{"Trigonometry",27,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",27,9}), {number,-2146826265}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",27,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",27,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826265}]),
+      test_util:expected2(Msg, {number,-2146826265})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j39_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j39_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(J6),IF(ISERROR(J23),IF(ERROR.TYPE(J6)=ERROR.TYPE(J23),1,0),0),IF(ISERROR(J23),0,IF(ABS(J6-J23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",38,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",38,9}), {formula,"=IF(ISERROR(J6),IF(ISERROR(J23),IF(ERROR.TYPE(J6)=ERROR.TYPE(J23),1,0),0),IF(ISERROR(J23),0,IF(ABS(J6-J23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",38,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",38,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(J6),IF(ISERROR(J23),IF(ERROR.TYPE(J6)=ERROR.TYPE(J23),1,0),0),IF(ISERROR(J23),0,IF(ABS(J6-J23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(J6),IF(ISERROR(J23),IF(ERROR.TYPE(J6)=ERROR.TYPE(J23),1,0),0),IF(ISERROR(J23),0,IF(ABS(J6-J23)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j1_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j1_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Error"},read_from_excel_data(Config,{"Trigonometry",0,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",0,9}), {string,"Error"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",0,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",0,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Error"}]),
+      test_util:expected2(Msg, {string,"Error"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j12_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j12_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ASINH(J2)"},read_from_excel_data(Config,{"Trigonometry",11,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",11,9}), {formula,"=ASINH(J2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",11,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",11,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ASINH(J2)"}]),
+      test_util:expected2(Msg, {formula,"=ASINH(J2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j23_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j23_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826265},read_from_excel_data(Config,{"Trigonometry",22,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",22,9}), {number,-2146826265}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",22,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",22,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826265}]),
+      test_util:expected2(Msg, {number,-2146826265})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j45_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j45_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(J12),IF(ISERROR(J29),IF(ERROR.TYPE(J12)=ERROR.TYPE(J29),1,0),0),IF(ISERROR(J29),0,IF(ABS(J12-J29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",44,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",44,9}), {formula,"=IF(ISERROR(J12),IF(ISERROR(J29),IF(ERROR.TYPE(J12)=ERROR.TYPE(J29),1,0),0),IF(ISERROR(J29),0,IF(ABS(J12-J29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",44,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",44,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(J12),IF(ISERROR(J29),IF(ERROR.TYPE(J12)=ERROR.TYPE(J29),1,0),0),IF(ISERROR(J29),0,IF(ABS(J12-J29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(J12),IF(ISERROR(J29),IF(ERROR.TYPE(J12)=ERROR.TYPE(J29),1,0),0),IF(ISERROR(J29),0,IF(ABS(J12-J29)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j7_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j7_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOS(J2)"},read_from_excel_data(Config,{"Trigonometry",6,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",6,9}), {formula,"=ACOS(J2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",6,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",6,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOS(J2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOS(J2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j18_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j18_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Error"},read_from_excel_data(Config,{"Trigonometry",17,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",17,9}), {string,"Error"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",17,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",17,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Error"}]),
+      test_util:expected2(Msg, {string,"Error"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j29_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j29_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826265},read_from_excel_data(Config,{"Trigonometry",28,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",28,9}), {number,-2146826265}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",28,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",28,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826265}]),
+      test_util:expected2(Msg, {number,-2146826265})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j40_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j40_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(J7),IF(ISERROR(J24),IF(ERROR.TYPE(J7)=ERROR.TYPE(J24),1,0),0),IF(ISERROR(J24),0,IF(ABS(J7-J24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",39,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",39,9}), {formula,"=IF(ISERROR(J7),IF(ISERROR(J24),IF(ERROR.TYPE(J7)=ERROR.TYPE(J24),1,0),0),IF(ISERROR(J24),0,IF(ABS(J7-J24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",39,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",39,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(J7),IF(ISERROR(J24),IF(ERROR.TYPE(J7)=ERROR.TYPE(J24),1,0),0),IF(ISERROR(J24),0,IF(ABS(J7-J24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(J7),IF(ISERROR(J24),IF(ERROR.TYPE(J7)=ERROR.TYPE(J24),1,0),0),IF(ISERROR(J24),0,IF(ABS(J7-J24)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j2_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j2_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826265},read_from_excel_data(Config,{"Trigonometry",1,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",1,9}), {number,-2146826265}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",1,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",1,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826265}]),
+      test_util:expected2(Msg, {number,-2146826265})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j13_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j13_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ACOSH(J2)"},read_from_excel_data(Config,{"Trigonometry",12,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",12,9}), {formula,"=ACOSH(J2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",12,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",12,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ACOSH(J2)"}]),
+      test_util:expected2(Msg, {formula,"=ACOSH(J2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j24_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j24_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826265},read_from_excel_data(Config,{"Trigonometry",23,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",23,9}), {number,-2146826265}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",23,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",23,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826265}]),
+      test_util:expected2(Msg, {number,-2146826265})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j46_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j46_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(J13),IF(ISERROR(J30),IF(ERROR.TYPE(J13)=ERROR.TYPE(J30),1,0),0),IF(ISERROR(J30),0,IF(ABS(J13-J30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",45,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",45,9}), {formula,"=IF(ISERROR(J13),IF(ISERROR(J30),IF(ERROR.TYPE(J13)=ERROR.TYPE(J30),1,0),0),IF(ISERROR(J30),0,IF(ABS(J13-J30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",45,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",45,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(J13),IF(ISERROR(J30),IF(ERROR.TYPE(J13)=ERROR.TYPE(J30),1,0),0),IF(ISERROR(J30),0,IF(ABS(J13-J30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(J13),IF(ISERROR(J30),IF(ERROR.TYPE(J13)=ERROR.TYPE(J30),1,0),0),IF(ISERROR(J30),0,IF(ABS(J13-J30)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j8_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j8_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATAN(J2)"},read_from_excel_data(Config,{"Trigonometry",7,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",7,9}), {formula,"=ATAN(J2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",7,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",7,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATAN(J2)"}]),
+      test_util:expected2(Msg, {formula,"=ATAN(J2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j19_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j19_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826265},read_from_excel_data(Config,{"Trigonometry",18,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",18,9}), {number,-2146826265}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",18,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",18,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826265}]),
+      test_util:expected2(Msg, {number,-2146826265})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j30_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j30_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826265},read_from_excel_data(Config,{"Trigonometry",29,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",29,9}), {number,-2146826265}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",29,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",29,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826265}]),
+      test_util:expected2(Msg, {number,-2146826265})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j41_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j41_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(J8),IF(ISERROR(J25),IF(ERROR.TYPE(J8)=ERROR.TYPE(J25),1,0),0),IF(ISERROR(J25),0,IF(ABS(J8-J25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",40,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",40,9}), {formula,"=IF(ISERROR(J8),IF(ISERROR(J25),IF(ERROR.TYPE(J8)=ERROR.TYPE(J25),1,0),0),IF(ISERROR(J25),0,IF(ABS(J8-J25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",40,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",40,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(J8),IF(ISERROR(J25),IF(ERROR.TYPE(J8)=ERROR.TYPE(J25),1,0),0),IF(ISERROR(J25),0,IF(ABS(J8-J25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(J8),IF(ISERROR(J25),IF(ERROR.TYPE(J8)=ERROR.TYPE(J25),1,0),0),IF(ISERROR(J25),0,IF(ABS(J8-J25)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j3_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SIN(J2)"},read_from_excel_data(Config,{"Trigonometry",2,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",2,9}), {formula,"=SIN(J2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",2,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",2,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SIN(J2)"}]),
+      test_util:expected2(Msg, {formula,"=SIN(J2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j14_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j14_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=ATANH(J2)"},read_from_excel_data(Config,{"Trigonometry",13,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",13,9}), {formula,"=ATANH(J2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",13,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",13,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=ATANH(J2)"}]),
+      test_util:expected2(Msg, {formula,"=ATANH(J2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j25_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j25_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826265},read_from_excel_data(Config,{"Trigonometry",24,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",24,9}), {number,-2146826265}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",24,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",24,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826265}]),
+      test_util:expected2(Msg, {number,-2146826265})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j36_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j36_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(J3),IF(ISERROR(J20),IF(ERROR.TYPE(J3)=ERROR.TYPE(J20),1,0),0),IF(ISERROR(J20),0,IF(ABS(J3-J20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",35,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",35,9}), {formula,"=IF(ISERROR(J3),IF(ISERROR(J20),IF(ERROR.TYPE(J3)=ERROR.TYPE(J20),1,0),0),IF(ISERROR(J20),0,IF(ABS(J3-J20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",35,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",35,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(J3),IF(ISERROR(J20),IF(ERROR.TYPE(J3)=ERROR.TYPE(J20),1,0),0),IF(ISERROR(J20),0,IF(ABS(J3-J20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(J3),IF(ISERROR(J20),IF(ERROR.TYPE(J3)=ERROR.TYPE(J20),1,0),0),IF(ISERROR(J20),0,IF(ABS(J3-J20)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j47_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j47_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(J14),IF(ISERROR(J31),IF(ERROR.TYPE(J14)=ERROR.TYPE(J31),1,0),0),IF(ISERROR(J31),0,IF(ABS(J14-J31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",46,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",46,9}), {formula,"=IF(ISERROR(J14),IF(ISERROR(J31),IF(ERROR.TYPE(J14)=ERROR.TYPE(J31),1,0),0),IF(ISERROR(J31),0,IF(ABS(J14-J31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",46,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",46,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(J14),IF(ISERROR(J31),IF(ERROR.TYPE(J14)=ERROR.TYPE(J31),1,0),0),IF(ISERROR(J31),0,IF(ABS(J14-J31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(J14),IF(ISERROR(J31),IF(ERROR.TYPE(J14)=ERROR.TYPE(J31),1,0),0),IF(ISERROR(J31),0,IF(ABS(J14-J31)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j9_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j9_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SINH(J2)"},read_from_excel_data(Config,{"Trigonometry",8,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",8,9}), {formula,"=SINH(J2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",8,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",8,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SINH(J2)"}]),
+      test_util:expected2(Msg, {formula,"=SINH(J2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j20_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j20_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826265},read_from_excel_data(Config,{"Trigonometry",19,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",19,9}), {number,-2146826265}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",19,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",19,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826265}]),
+      test_util:expected2(Msg, {number,-2146826265})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j31_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j31_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826265},read_from_excel_data(Config,{"Trigonometry",30,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",30,9}), {number,-2146826265}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",30,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",30,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826265}]),
+      test_util:expected2(Msg, {number,-2146826265})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j42_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j42_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(J9),IF(ISERROR(J26),IF(ERROR.TYPE(J9)=ERROR.TYPE(J26),1,0),0),IF(ISERROR(J26),0,IF(ABS(J9-J26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",41,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",41,9}), {formula,"=IF(ISERROR(J9),IF(ISERROR(J26),IF(ERROR.TYPE(J9)=ERROR.TYPE(J26),1,0),0),IF(ISERROR(J26),0,IF(ABS(J9-J26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",41,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",41,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(J9),IF(ISERROR(J26),IF(ERROR.TYPE(J9)=ERROR.TYPE(J26),1,0),0),IF(ISERROR(J26),0,IF(ABS(J9-J26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(J9),IF(ISERROR(J26),IF(ERROR.TYPE(J9)=ERROR.TYPE(J26),1,0),0),IF(ISERROR(J26),0,IF(ABS(J9-J26)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j4_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j4_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COS(J2)"},read_from_excel_data(Config,{"Trigonometry",3,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",3,9}), {formula,"=COS(J2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",3,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",3,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COS(J2)"}]),
+      test_util:expected2(Msg, {formula,"=COS(J2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j15_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j15_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=DEGREES(J2)"},read_from_excel_data(Config,{"Trigonometry",14,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",14,9}), {formula,"=DEGREES(J2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",14,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",14,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=DEGREES(J2)"}]),
+      test_util:expected2(Msg, {formula,"=DEGREES(J2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j26_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j26_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826265},read_from_excel_data(Config,{"Trigonometry",25,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",25,9}), {number,-2146826265}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",25,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",25,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826265}]),
+      test_util:expected2(Msg, {number,-2146826265})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j37_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j37_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(J4),IF(ISERROR(J21),IF(ERROR.TYPE(J4)=ERROR.TYPE(J21),1,0),0),IF(ISERROR(J21),0,IF(ABS(J4-J21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",36,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",36,9}), {formula,"=IF(ISERROR(J4),IF(ISERROR(J21),IF(ERROR.TYPE(J4)=ERROR.TYPE(J21),1,0),0),IF(ISERROR(J21),0,IF(ABS(J4-J21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",36,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",36,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(J4),IF(ISERROR(J21),IF(ERROR.TYPE(J4)=ERROR.TYPE(J21),1,0),0),IF(ISERROR(J21),0,IF(ABS(J4-J21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(J4),IF(ISERROR(J21),IF(ERROR.TYPE(J4)=ERROR.TYPE(J21),1,0),0),IF(ISERROR(J21),0,IF(ABS(J4-J21)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j48_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j48_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(J15),IF(ISERROR(J32),IF(ERROR.TYPE(J15)=ERROR.TYPE(J32),1,0),0),IF(ISERROR(J32),0,IF(ABS(J15-J32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",47,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",47,9}), {formula,"=IF(ISERROR(J15),IF(ISERROR(J32),IF(ERROR.TYPE(J15)=ERROR.TYPE(J32),1,0),0),IF(ISERROR(J32),0,IF(ABS(J15-J32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",47,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",47,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(J15),IF(ISERROR(J32),IF(ERROR.TYPE(J15)=ERROR.TYPE(J32),1,0),0),IF(ISERROR(J32),0,IF(ABS(J15-J32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(J15),IF(ISERROR(J32),IF(ERROR.TYPE(J15)=ERROR.TYPE(J32),1,0),0),IF(ISERROR(J32),0,IF(ABS(J15-J32)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j10_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j10_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=COSH(J2)"},read_from_excel_data(Config,{"Trigonometry",9,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",9,9}), {formula,"=COSH(J2)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",9,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",9,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=COSH(J2)"}]),
+      test_util:expected2(Msg, {formula,"=COSH(J2)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j21_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j21_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826265},read_from_excel_data(Config,{"Trigonometry",20,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",20,9}), {number,-2146826265}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",20,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",20,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826265}]),
+      test_util:expected2(Msg, {number,-2146826265})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j32_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j32_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,-2146826265},read_from_excel_data(Config,{"Trigonometry",31,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",31,9}), {number,-2146826265}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",31,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",31,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826265}]),
+      test_util:expected2(Msg, {number,-2146826265})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 trigonometry_j43_test(doc) -> [{userdata,[{""}]}];
 trigonometry_j43_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=IF(ISERROR(J10),IF(ISERROR(J27),IF(ERROR.TYPE(J10)=ERROR.TYPE(J27),1,0),0),IF(ISERROR(J27),0,IF(ABS(J10-J27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"},read_from_excel_data(Config,{"Trigonometry",42,9})]),
-  test_util:expected2(read_from_excel_data(Config,{"Trigonometry",42,9}), {formula,"=IF(ISERROR(J10),IF(ISERROR(J27),IF(ERROR.TYPE(J10)=ERROR.TYPE(J27),1,0),0),IF(ISERROR(J27),0,IF(ABS(J10-J27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Trigonometry",42,9}]),
+  Pid ! {msg,self(),?MODULE,{"Trigonometry",42,9}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=IF(ISERROR(J10),IF(ISERROR(J27),IF(ERROR.TYPE(J10)=ERROR.TYPE(J27),1,0),0),IF(ISERROR(J27),0,IF(ABS(J10-J27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"}]),
+      test_util:expected2(Msg, {formula,"=IF(ISERROR(J10),IF(ISERROR(J27),IF(ERROR.TYPE(J10)=ERROR.TYPE(J27),1,0),0),IF(ISERROR(J27),0,IF(ABS(J10-J27)<'c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[e_gnumeric_trig.xls]Summary'!$E$2,1,0)))"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 all() -> 
     [trigonometry_k5_test,

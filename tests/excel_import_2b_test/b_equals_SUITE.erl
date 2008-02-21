@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_equals.xls
-% Generated on: Mon Feb 11 08:24:29 +0000 2008
+% Generated on: Sat Feb 16 11:09:51 +0000 2008
 
 -module(b_equals_SUITE).
 -compile(export_all).
@@ -69,7 +69,14 @@ assert_eql(X, Y) when is_float(X) andalso is_integer(Y) ->
 assert_eql(X, Y) ->
     X == Y.
     
+sheet1_a2_test(doc) -> [{userdata,[{""}]}];
+sheet1_a2_test(_Config) -> 
+  Got=hn_get("http://127.0.0.1:9000","/Sheet1/","a2"),
+  Expected="=",
+  io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
+  test_util:expected(Expected,Got).
+  
 all() -> 
-    [
+    [sheet1_a2_test
     ].
   

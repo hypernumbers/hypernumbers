@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_trig_trig.xls
-% Generated on: Mon Feb 11 16:54:44 +0000 2008
+% Generated on: Sun Feb 17 21:43:03 +0000 2008
 
 -module(e_gnumeric_trig_trig_SUITE).
 -compile(export_all).

@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_wierd_failures.xls
-% Generated on: Mon Feb 11 00:19:32 +0000 2008
+% Generated on: Sun Feb 17 21:41:54 +0000 2008
 
 -module(b_wierd_failures_test_SUITE).
 -compile(export_all).
@@ -14,7 +14,9 @@ init_per_suite(Config) ->
     production_boot:setup_paths(),
     Data = test_util:read_excel_file("/Win Excel 2007 (as 97)/b_wierd_failures.xls"),
     %% io:format("in init_per_suite Data is ~p~n",[Data]),
-    lists:merge([Config, [{b_wierd_failures_test_SUITE, Data}]]).
+    Pid=spawn(test_util,test_state,[Data]),
+    io:format("in init_per_suite Pid is ~p~n",[Pid]),
+    [{?MODULE,Pid}|Config].
   
 end_per_suite(_Config) ->
     ok.
@@ -28,13 +30,31 @@ read_from_excel_data(Config,{Sheet,Row,Col}) ->
 
 sheet1_a1_test(doc) -> [{userdata,[{""}]}];
 sheet1_a1_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SUM(B1:D1)"},read_from_excel_data(Config,{"Sheet1",0,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",0,0}), {formula,"=SUM(B1:D1)"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",0,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",0,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SUM(B1:D1)"}]),
+      test_util:expected2(Msg, {formula,"=SUM(B1:D1)"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b1_test(doc) -> [{userdata,[{""}]}];
 sheet1_b1_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,3.0},read_from_excel_data(Config,{"Sheet1",0,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",0,1}), {number,3.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",0,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",0,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,3.0}]),
+      test_util:expected2(Msg, {number,3.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 all() -> 
     [sheet1_a1_test,

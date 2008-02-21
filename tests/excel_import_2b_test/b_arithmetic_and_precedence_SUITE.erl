@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_arithmetic_and_precedence.xls
-% Generated on: Mon Feb 11 06:23:49 +0000 2008
+% Generated on: Sun Feb 17 21:42:28 +0000 2008
 
 -module(b_arithmetic_and_precedence_SUITE).
 -compile(export_all).
@@ -191,7 +191,7 @@ sheet1_a24_test(_Config) ->
 sheet1_a35_test(doc) -> [{userdata,[{""}]}];
 sheet1_a35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","a35"),
-  Expected="117629.660801556",
+  Expected="117608.060801556",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
@@ -415,7 +415,7 @@ sheet1_b24_test(_Config) ->
 sheet1_b35_test(doc) -> [{userdata,[{""}]}];
 sheet1_b35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","b35"),
-  Expected="117629.660468932",
+  Expected="117608.060801556",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   

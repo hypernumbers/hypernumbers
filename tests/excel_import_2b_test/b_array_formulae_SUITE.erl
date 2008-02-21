@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_array_formulae.xls
-% Generated on: Mon Feb 11 06:23:50 +0000 2008
+% Generated on: Sun Feb 17 21:42:29 +0000 2008
 
 -module(b_array_formulae_SUITE).
 -compile(export_all).

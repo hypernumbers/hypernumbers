@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: d_gnumeric_maths.xls
-% Generated on: Mon Feb 11 06:24:04 +0000 2008
+% Generated on: Sun Feb 17 21:42:48 +0000 2008
 
 -module(d_gnumeric_maths_SUITE).
 -compile(export_all).

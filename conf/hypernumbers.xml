@@ -10,6 +10,7 @@
         <reldir>lib/formula_engine-1.0/ebin</reldir>
         <reldir>lib/parser-1.0/ebin</reldir>
         <reldir>lib/engine-1.0/ebin</reldir>
+        <reldir>lib/mochi-1.0/ebin</reldir>
     </includes>
 
     <mnesia>

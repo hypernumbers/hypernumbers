@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_abs_and_rel_addressing.xls
-% Generated on: Mon Feb 11 06:23:49 +0000 2008
+% Generated on: Sun Feb 17 21:42:28 +0000 2008
 
 -module(b_abs_and_rel_addressing_SUITE).
 -compile(export_all).

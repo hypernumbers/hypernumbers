@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_array_formulae.xls
-% Generated on: Mon Feb 11 00:19:26 +0000 2008
+% Generated on: Sun Feb 17 21:41:48 +0000 2008
 
 -module(b_array_formulae_test_SUITE).
 -compile(export_all).
@@ -14,7 +14,9 @@ init_per_suite(Config) ->
     production_boot:setup_paths(),
     Data = test_util:read_excel_file("/Win Excel 2007 (as 97)/b_array_formulae.xls"),
     %% io:format("in init_per_suite Data is ~p~n",[Data]),
-    lists:merge([Config, [{b_array_formulae_test_SUITE, Data}]]).
+    Pid=spawn(test_util,test_state,[Data]),
+    io:format("in init_per_suite Pid is ~p~n",[Pid]),
+    [{?MODULE,Pid}|Config].
   
 end_per_suite(_Config) ->
     ok.
@@ -28,53 +30,143 @@ read_from_excel_data(Config,{Sheet,Row,Col}) ->
 
 sheet1_a5_test(doc) -> [{userdata,[{""}]}];
 sheet1_a5_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Functions with arrays"},read_from_excel_data(Config,{"Sheet1",4,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",4,0}), {string,"Functions with arrays"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",4,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",4,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Functions with arrays"}]),
+      test_util:expected2(Msg, {string,"Functions with arrays"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a6_test(doc) -> [{userdata,[{""}]}];
 sheet1_a6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"1D Sum"},read_from_excel_data(Config,{"Sheet1",5,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",5,0}), {string,"1D Sum"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",5,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",5,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"1D Sum"}]),
+      test_util:expected2(Msg, {string,"1D Sum"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a1_test(doc) -> [{userdata,[{""}]}];
 sheet1_a1_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"Array Formulae"},read_from_excel_data(Config,{"Sheet1",0,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",0,0}), {string,"Array Formulae"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",0,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",0,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"Array Formulae"}]),
+      test_util:expected2(Msg, {string,"Array Formulae"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a7_test(doc) -> [{userdata,[{""}]}];
 sheet1_a7_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{string,"2D Sum"},read_from_excel_data(Config,{"Sheet1",6,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",6,0}), {string,"2D Sum"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",6,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",6,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"2D Sum"}]),
+      test_util:expected2(Msg, {string,"2D Sum"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a2_test(doc) -> [{userdata,[{""}]}];
 sheet1_a2_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,1.0},read_from_excel_data(Config,{"Sheet1",1,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",1,0}), {number,1.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",1,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",1,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.0}]),
+      test_util:expected2(Msg, {number,1.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_a3_test(doc) -> [{userdata,[{""}]}];
 sheet1_a3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,3.0},read_from_excel_data(Config,{"Sheet1",2,0})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",2,0}), {number,3.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",2,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",2,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,3.0}]),
+      test_util:expected2(Msg, {number,3.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b6_test(doc) -> [{userdata,[{""}]}];
 sheet1_b6_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SUM({1,2,3})"},read_from_excel_data(Config,{"Sheet1",5,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",5,1}), {formula,"=SUM({1,2,3})"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",5,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",5,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SUM({1,2,3})"}]),
+      test_util:expected2(Msg, {formula,"=SUM({1,2,3})"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b7_test(doc) -> [{userdata,[{""}]}];
 sheet1_b7_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{formula,"=SUM({1,2,3;4,5,6;7,8,9})"},read_from_excel_data(Config,{"Sheet1",6,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",6,1}), {formula,"=SUM({1,2,3;4,5,6;7,8,9})"}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",6,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",6,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SUM({1,2,3;4,5,6;7,8,9})"}]),
+      test_util:expected2(Msg, {formula,"=SUM({1,2,3;4,5,6;7,8,9})"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b2_test(doc) -> [{userdata,[{""}]}];
 sheet1_b2_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,2.0},read_from_excel_data(Config,{"Sheet1",1,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",1,1}), {number,2.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",1,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",1,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,2.0}]),
+      test_util:expected2(Msg, {number,2.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 sheet1_b3_test(doc) -> [{userdata,[{""}]}];
 sheet1_b3_test(Config) -> 
-  io:format("Expected : ~p~nGot      : ~p~n",[{number,4.0},read_from_excel_data(Config,{"Sheet1",2,1})]),
-  test_util:expected2(read_from_excel_data(Config,{"Sheet1",2,1}), {number,4.0}).
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",2,1}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",2,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,4.0}]),
+      test_util:expected2(Msg, {number,4.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
   
 all() -> 
     [sheet1_a5_test,

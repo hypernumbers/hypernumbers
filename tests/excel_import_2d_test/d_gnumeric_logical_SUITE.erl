@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: d_gnumeric_logical.xls
-% Generated on: Mon Feb 11 06:24:02 +0000 2008
+% Generated on: Sun Feb 17 21:42:47 +0000 2008
 
 -module(d_gnumeric_logical_SUITE).
 -compile(export_all).

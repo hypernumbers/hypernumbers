@@ -12,6 +12,7 @@
 -include("excel_records.hrl").
 -include("excel_errors.hrl").
 -include("excel_supbook.hrl").
+%%-include("excel_externname.hrl").
 
 -export([parse_rec/5]).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -21,97 +22,73 @@
 %%% excelfileformat.pdf (V1.40)                                              %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-parse_rec(?FORMULA,Bin,Name,Tables,FileOut)->
-    excel_util:put_log(FileOut,"[FORMULA *DONE*]"),
+parse_rec(?FORMULA,Bin,Name,CurrentFormula,Tables)->
     <<RowIndex:16/little-unsigned-integer,
      ColIndex:16/little-unsigned-integer,
      XFIndex:16/little-unsigned-integer,
-     Result:64/little-unsigned-integer,
-     CalcFlag:16/little-unsigned-integer,
-     __NotUsed:32/little-unsigned-integer,
+     _Result:64/little-unsigned-integer,
+     _CalcFlag:16/little-unsigned-integer,
+     _NotUsed:32/little-unsigned-integer,
      Rest/binary>>=Bin,
-    excel_util:put_log(FileOut,io_lib:fwrite("RowIndex is ~p~n"++
-				  "ColIndex is ~p~n"++
-				  "XFIndex is ~p~n"++
-				  "Result is ~p~n"++
-				  "CalcFlag is ~p",
-				  [RowIndex,
-				   ColIndex,
-				   XFIndex,
-				   Result,
-				   CalcFlag])),
-    {Tokens,TokenArrays}=parse_FRM_Results(formula,Rest,Tables,FileOut),
-    %% io:format("in excel_records:parse_rec for ARRAY~n-Tokens are ~p-TokenArrays are ~p~n",
-    %%      [Tokens,TokenArrays]),
-    excel_util:write(Tables,cell_tokens,[{{sheet,Name},{row_index,RowIndex},{col_index,ColIndex}},
-		       {xf_index,XFIndex},{tokens,Tokens},{tokenarrays,TokenArrays}]),
-    excel_util:put_log(FileOut,"[/FORMULA]"),
-    {ok,ok};
-parse_rec(?EOF,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[EOF]"),
-    excel_util:put_log(FileOut,"[/EOF]"),
-    {ok,ok};
-parse_rec(?CALCOUNT,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[CALCOUNT]"),
-    excel_util:put_log(FileOut,"CALCOUNT is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/CALCOUNT]"),
-    {ok,ok};
-parse_rec(?CALCMODE,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[CALCMODE]"),
-    excel_util:put_log(FileOut,"CALCMODE is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/CALCMODE]"),
-    {ok,ok};
-parse_rec(?PRECISION,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[PRECISION]"),
-    excel_util:put_log(FileOut,"PRECISION is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/PRECISION]"),
-    {ok,ok};
-parse_rec(?REFMODE,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[REFMODE]"),
-    excel_util:put_log(FileOut,"REFMODE is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/REFMODE]"),
-    {ok,ok};
-parse_rec(?DELTA,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[DELTA]"),
-    excel_util:put_log(FileOut,"DELTA is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/DELTA]"),
-    {ok,ok};
-parse_rec(?ITERATION,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[ITERATION]"),
-    excel_util:put_log(FileOut,"ITERATION is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/ITERATION]"),
-    {ok,ok};
-parse_rec(?PROTECT,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[PROTECT]"),
-    excel_util:put_log(FileOut,"PROTECT is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/PROTECT]"),
-    {ok,ok};
-parse_rec(?PASSWORD,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[PASSWORD]"),
-    excel_util:put_log(FileOut,"PASSWORD is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/PASSWORD]"),
-    {ok,ok};
-parse_rec(?HEADER,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[HEADER]"),
-    excel_util:put_log(FileOut,"HEADER is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/HEADER]"),
-    {ok,ok};
-parse_rec(?FOOTER,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[]"),
-    excel_util:put_log(FileOut,"FOOTER is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[]"),
-    {ok,ok};
-parse_rec(?EXTERNSHEET,Bin,_Name,Tables,FileOut)->
-    excel_util:put_log(FileOut,"[EXTERNSHEET *Done*]"),
+    {PackedName,_}=Name,
+    Name2=excel_util:get_utf8(PackedName),
+    io:format("in excel_records:parse_rec for FORMULA Name2 is ~p~n",[Name2]),
+    {Tokens,TokenArrays}=parse_FRM_Results(Rest,Name),
+    io:format("in excel_records:parse_rec for FORMULA RowIndex is ~p ColIndex is ~p~n",
+        [RowIndex,ColIndex]),
+    excel_util:write(Tables,cell_tokens,[{{sheet,Name2},{row_index,RowIndex},
+                    {col_index,ColIndex}},{xf_index,XFIndex},
+                    {tokens,Tokens},{tokenarrays,TokenArrays}]),
+  NewCurrentFormula={{sheet,Name2},{row_index,RowIndex},{col_index,ColIndex}},
+  {ok,NewCurrentFormula};
+parse_rec(?EOF,_Bin,_Name,CurrentFormula,_Tables)->
+    {ok,CurrentFormula};
+parse_rec(?CALCOUNT,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"CALCOUNT"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?CALCMODE,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"CALCMODE"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?PRECISION,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"PRECISION"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?REFMODE,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"REFMODE"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?DELTA,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"DELTA"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?ITERATION,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"ITERATION"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?PROTECT,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"PROTECT"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?PASSWORD,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"PASSWORD"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?HEADER,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"HEADER"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?FOOTER,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"FOOTER"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?EXTERNSHEET,Bin,_Name,CurrentFormula,Tables)->
     <<_NumRefs:16/little-unsigned-integer,
       R2/binary>>=Bin,
-      %% io:format("in excel_records:parse_rec for Externsheet NumRefs is ~p~n",
-      %%  [NumRefs]),
-        {ok,ok}=parse_externsheet(R2,0,Tables,FileOut),
-    excel_util:put_log(FileOut,"[/EXTERNSHEET]"),
-    {ok,ok};
-parse_rec(?NAME,Bin,_Name,Tables,FileOut)->
-    excel_util:put_log(FileOut,"[NAME *DONE*]"),
+    {ok,CurrentFormula}=parse_externsheet(R2,0,Tables),
+    {ok,CurrentFormula};
+parse_rec(?NAME,Bin,_Name,CurrentFormula,Tables)->
     <<OptionFlag:2/binary,
      KybdShortCut:8/little-unsigned-integer,
      NameLength:8/little-unsigned-integer,
@@ -123,455 +100,323 @@ parse_rec(?NAME,Bin,_Name,Tables,FileOut)->
      HelpTxtLen:8/little-unsigned-integer,
      StatusTxtLen:8/little-unsigned-integer,
      Rest/binary>>=Bin,
-    excel_util:put_log(FileOut,io_lib:fwrite("OptionFlag is ~p~n"++
-     "KybdShortCut is ~p~n"++
-     "NameLength is ~p~n"++
-     "Size is ~p~n"++
-     "SheetIndex is ~p~n"++
-     "MenuTxtLen is ~p~n"++
-     "DescTxtLen is ~p~n"++
-     "HelpTxtLen is ~p~n"++
-     "StatusTxtLen is ~p~n",
-    [OptionFlag,
-     KybdShortCut,
-     NameLength,
-     Size,
-     SheetIndex,
-     MenuTxtLen,
-     DescTxtLen,
-     HelpTxtLen,
-     StatusTxtLen])),
      parse_Name(OptionFlag,KybdShortCut,NameLength,Size,SheetIndex,
-     MenuTxtLen,DescTxtLen,HelpTxtLen,StatusTxtLen,Rest,Tables,FileOut),
-    excel_util:put_log(FileOut,"[/NAME]"),
-    {ok,ok};
-parse_rec(?WINDOWPROTECT,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[WINDOWPROTECT]"),
-    excel_util:put_log(FileOut,"WINDOWPROTECT is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/WINDOWPROTECT]"),
-    {ok,ok};
-parse_rec(?VERTICALPAGEBREAKS,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[VERTICALPAGEBREAKS]"),
-    excel_util:put_log(FileOut,"VERTICALPAGEBREAKS is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/VERTICALPAGEBREAKS]"),
-    {ok,ok};
-parse_rec(?HORIZONTALPAGEBREAKS,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[HORIZONTALPAGEBREAKS]"),
-    excel_util:put_log(FileOut,"HORIZONTALPAGEBREAKS is not being processed "++
-	    "at the moment"),
-    excel_util:put_log(FileOut,"[/HORIZONTALPAGEBREAKS]"),
-    {ok,ok};
-parse_rec(?NOTE,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[NOTE]"),
-    excel_util:put_log(FileOut,"NOTE is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/NOTE]"),
-    {ok,ok};
-parse_rec(?SELECTION,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[SELECTION]"),
-    excel_util:put_log(FileOut,"SELECTION is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/SELECTION]"),
-    {ok,ok};
-parse_rec(?DATEMODE,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[DATEMODE]"),
-    excel_util:put_log(FileOut,"DATEMODE is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/DATEMODE]"),
-    {ok,ok};
-parse_rec(?EXTERNNAME2,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[EXTERNNAME2]"),
-    excel_util:put_log(FileOut,"EXTERNNAME2 is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/EXTERNNAME2]"),
-    {ok,ok};
-parse_rec(?LEFTMARGIN,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[LEFTMARGIN]"),
-    excel_util:put_log(FileOut,"LEFTMARGIN is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/LEFTMARGIN]"),
-    {ok,ok};
-parse_rec(?RIGHTMARGIN,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[RIGHTMARGIN]"),
-    excel_util:put_log(FileOut,"RIGHTMARGIN is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/RIGHTMARGIN]"),
-    {ok,ok};
-parse_rec(?TOPMARGIN,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[TOPMARGIN]"),
-    excel_util:put_log(FileOut,"TOPMARGIN is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/TOPMARGIN]"),
-    {ok,ok};
-parse_rec(?BOTTOMMARGIN,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[BOTTOMMARGIN]"),
-    excel_util:put_log(FileOut,"BOTTOMMARGIN is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/BOTTOMMARGIN]"),
-    {ok,ok};
-parse_rec(?PRINTHEADERS,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[PRINTHEADERS]"),
-    excel_util:put_log(FileOut,"PRINTHEADERS is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/PRINTHEADERS]"),
-    {ok,ok};
-parse_rec(?PRINTGRIDLINES,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[PRINTGRIDLINES]"),
-    excel_util:put_log(FileOut,"PRINTGRIDLINES is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/PRINTGRIDLINES]"),
-    {ok,ok};
-parse_rec(?FILEPASS,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[FILEPASS]"),
-    excel_util:put_log(FileOut,"FILEPASS is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/FILEPASS]"),
-    {ok,ok};
-parse_rec(?FONT,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[FONT]"),
-    excel_util:put_log(FileOut,"FONT is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/FONT]"),
-    {ok,ok};
-parse_rec(?CONTINUE,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[CONTINUE]"),
-    excel_util:put_log(FileOut,"CONTINUE is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/CONTINUE]"),
-    {ok,ok};
-parse_rec(?WINDOW1,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[WINDOW1]"),
-    excel_util:put_log(FileOut,"WINDOW1 is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/WINDOW1]"),
-    {ok,ok};
-parse_rec(?BACKUP,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[BACKUP]"),
-    excel_util:put_log(FileOut,"BACKUP is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/BACKUP]"),
-    {ok,ok};
-parse_rec(?PANE,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[PANE]"),
-    excel_util:put_log(FileOut,"PANE is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/PANE]"),
-    {ok,ok};
-parse_rec(?CODEPAGE,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[CODEPAGE]"),
-    excel_util:put_log(FileOut,"CODEPAGE is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/CODEPAGE]"),
-    {ok,ok};
-parse_rec(?DCONREF,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[DCONREF]"),
-    excel_util:put_log(FileOut,"DCONREF is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/DCONREF]"),
-    {ok,ok};
-parse_rec(?DEFCOLWIDTH,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[DEFCOLWIDTH]"),
-    excel_util:put_log(FileOut,"DEFCOLWIDTH is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/DEFCOLWIDTH]"),
-    {ok,ok};
-parse_rec(?XCT,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[XCT]"),
-    excel_util:put_log(FileOut,"XCT is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/XCT]"),
-    {ok,ok};
-parse_rec(?CRN,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[CRN]"),
-    excel_util:put_log(FileOut,"CRN is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/CRN]"),
-    {ok,ok};
-parse_rec(?FILESHARING,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[FILESHARING]"),
-    excel_util:put_log(FileOut,"FILESHARING is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/FILESHARING]"),
-    {ok,ok};
-parse_rec(?WRITEACCESS,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[WRITEACCESS]"),
-    excel_util:put_log(FileOut,"WRITEACCESS is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/WRITEACCESS]"),
-    {ok,ok};
-parse_rec(?UNCALCED,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[UNCALCED]"),
-    excel_util:put_log(FileOut,"UNCALCED is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/UNCALCED]"),
-    {ok,ok};
-parse_rec(?SAVERECALC,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[SAVERECALC]"),
-    excel_util:put_log(FileOut,"SAVERECALC is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/SAVERECALC]"),
-    {ok,ok};
-parse_rec(?OBJECTPROTECT,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[OBJECTPROTECT]"),
-    excel_util:put_log(FileOut,"OBJECTPROTECT is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/OBJECTPROTECT]"),
-    {ok,ok};
-parse_rec(?COLINFO,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[COLINFO]"),
-    excel_util:put_log(FileOut,"COLINFO is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/COLINFO]"),
-    {ok,ok};
-parse_rec(?GUTS,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[GUTS]"),
-    excel_util:put_log(FileOut,"GUTS is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/GUTS]"),
-    {ok,ok};
-parse_rec(?WSBOOL,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[WSBOOL]"),
-    excel_util:put_log(FileOut,"WSBOOL is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/WSBOOL]"),
-    {ok,ok};
-parse_rec(?GRIDSET,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[GRIDSET]"),
-    excel_util:put_log(FileOut,"GRIDSET is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/GRIDSET]"),
-    {ok,ok};
-parse_rec(?HCENTRE,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[HCENTRE]"),
-    excel_util:put_log(FileOut,"HCENTRE is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/HCENTRE]"),
-    {ok,ok};
-parse_rec(?VCENTRE,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[VCENTRE]"),
-    excel_util:put_log(FileOut,"VCENTRE is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/VCENTRE]"),
-    {ok,ok};
-parse_rec(?BOUNDSHEET,Bin,_Name,Tables,FileOut)->
-    excel_util:put_log(FileOut,"[BOUNDSHEET *DONE*]"),
-    {SheetBOF,Visibility,SheetType,Name,SheetName}=excel_util:get_bound_sheet(Bin,Tables,FileOut),
-    [{_Type,NameBin}]=SheetName,
-    excel_util:append_sheet_name(Tables,binary_to_list(NameBin)),
-    excel_util:put_log(FileOut,io_lib:fwrite("SheetBOF is ~p~n"++
-				  "Visibility is ~p~n"++
-				  "SheetType is ~p~n"++
-				  "Name is ~p",
-				  [SheetBOF,
-				   Visibility,
-				   SheetType,
-				   Name])),
-    excel_util:put_log(FileOut,io_lib:fwrite("Visibility can be one of the following:~n"++
-				  "* Visible       0~n"++
-				  "* Hidden        1~n"++
-				  "* Strong Hidden 2~n"++
-				  "Sheet Type can be one of the following:~n"++
-				  "* Worksheet            0~n"++
-				  "* Chart                2~n"++
-				  "* Visible Basic Module 6",[])),
-    excel_util:put_log(FileOut,io_lib:fwrite("SheetName is ~p",
-				  [SheetName])),
-    excel_util:put_log(FileOut,"[/BOUNDSHEET]"),
-    {ok,ok};
-parse_rec(?WRITEPROT,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[WRITEPROT]"),
-    excel_util:put_log(FileOut,"WRITEPROT is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/WRITEPROT]"),
-    {ok,ok};
-parse_rec(?COUNTRY,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[COUNTRY]"),
-    excel_util:put_log(FileOut,"COUNTRY is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/COUNTRY]"),
-    {ok,ok};
-parse_rec(?HIDEOBJ,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[HIDEOBJ]"),
-    excel_util:put_log(FileOut,"HIDEOBJ is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/HIDEOBJ]"),
-    {ok,ok};
-parse_rec(?SORT,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[SORT]"),
-    excel_util:put_log(FileOut,"SORT is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/SORT]"),
-    {ok,ok};
-parse_rec(?PALETTE,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[PALETTE]"),
-    excel_util:put_log(FileOut,"PALETTE is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/PALETTE]"),
-    {ok,ok};
-parse_rec(?STANDARDWIDTH,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[STANDARDWIDTH]"),
-    excel_util:put_log(FileOut,"STANDARDWIDTH is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/STANDARDWIDTH]"),
-    {ok,ok};
-parse_rec(?SCL,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[SCL]"),
-    excel_util:put_log(FileOut,"SCL is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/SCL]"),
-    {ok,ok};
-parse_rec(?SETUP,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[SETUP]"),
-    excel_util:put_log(FileOut,"SETUP is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/SETUP]"),
-    {ok,ok};
-parse_rec(?MULRK,Bin,Name,Tables,FileOut)->
-    excel_util:put_log(FileOut,"[MULRK *DONE*]"),
+     MenuTxtLen,DescTxtLen,HelpTxtLen,StatusTxtLen,Rest,Tables),
+    {ok,CurrentFormula};
+parse_rec(?WINDOWPROTECT,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"WINDOWPROTECT"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?VERTICALPAGEBREAKS,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"VERTICALPAGEBREAKS"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?HORIZONTALPAGEBREAKS,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"HORIZONTALPAGEBREAKS"},
+    {source,excel_records.erl},{msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?NOTE,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"NOTE"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?SELECTION,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"SELECTION"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?DATEMODE,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"DATEMODE"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?EXTERNNAME2,Bin,_Name,CurrentFormula,Tables)->
+    io:format("in excel_records EXTERNNAME~n"),
+    %% parse_externname(Bin,Tables),
+  excel_util:write(Tables,lacunae,[{identifier,"EXTERNNAME2"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?LEFTMARGIN,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"LEFTMARGIN"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?RIGHTMARGIN,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"RIGHTMARGIN"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?TOPMARGIN,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"TOPMARGIN"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?BOTTOMMARGIN,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"BOTTOMMARGIN"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?PRINTHEADERS,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"PRINTHEADERS"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?PRINTGRIDLINES,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"PRINTGRIDLINES"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?FILEPASS,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"FILEPASS"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?FONT,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"FONT"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?CONTINUE,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"CONTINUE"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?WINDOW1,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"WINDOW1"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?BACKUP,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"BACKUP"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?PANE,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"PANE"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?CODEPAGE,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"CODEPAGE"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?DCONREF,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"DCONREF"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?DEFCOLWIDTH,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"DEFCOLWIDTH"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?XCT,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"XCT"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?CRN,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"CRN"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?FILESHARING,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"FILESHARING"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?WRITEACCESS,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"WRITEACCESS"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?UNCALCED,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"UNCALCED"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?SAVERECALC,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"SAVERECALC"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?OBJECTPROTECT,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"OBJECTPROTECT"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?COLINFO,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"COLINFO"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?GUTS,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"GUTS"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?WSBOOL,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"WSBOOL"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?GRIDSET,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"GRIDSET"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?HCENTRE,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"HCENTRE"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?VCENTRE,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"VCENTRE"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?BOUNDSHEET,Bin,_Name,CurrentFormula,Tables)->
+    {_SheetBOF,_Visibility,_SheetType,_Name2,SheetName}=excel_util:get_bound_sheet(Bin,Tables),
+    excel_util:append_sheetname(Tables,excel_util:get_utf8(SheetName)),
+    {ok,CurrentFormula};
+parse_rec(?WRITEPROT,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"WRITEPROT"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?COUNTRY,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"COUNTRY"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?HIDEOBJ,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"HIDEOBJ"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?SORT,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"SORT"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?PALETTE,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"PALETTE"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?STANDARDWIDTH,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"STANDARDWIDTH"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?SCL,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"SCL"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?SETUP,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"SETUP"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?MULRK,Bin,Name,CurrentFormula,Tables)->
     <<RowIndex:16/little-unsigned-integer,
      FirstColIndex:16/little-unsigned-integer,
      Rest/binary>>=Bin,
-    excel_util:put_log(FileOut,io_lib:fwrite("RowIndex is ~p~n"++
-				  "FirstColIndex is ~p",
-				  [RowIndex,
-				   FirstColIndex])),
-    io:format("in excel_records:parse_rec for MULRK RowIndex is ~p and FirstColIndex is ~p~n",
-        [RowIndex,FirstColIndex]),
-    Tokens=parse_XF_RK(Rest,Tables,FileOut),
-    write_row(Tokens,RowIndex,FirstColIndex,Name,Tables),
-    excel_util:put_log(FileOut,"[/MULRK]"),
-    {ok,ok};
-parse_rec(?MULBLANK,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[MULBLANK]"),
-    excel_util:put_log(FileOut,"MULBLANK is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/MULBLANK]"),
-    {ok,ok};
-parse_rec(?RSTRING,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[RSTRING]"),
-    excel_util:put_log(FileOut,"RSTRING is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/RSTRING]"),
-    {ok,ok};
-parse_rec(?DBCELL,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[DBCELL]"),
-    excel_util:put_log(FileOut,"DBCELL is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/DBCELL]"),
-    {ok,ok};
-parse_rec(?BOOKBOOL,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[BOOKBOOL]"),
-    excel_util:put_log(FileOut,"BOOKBOOL is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/BOOKBOOL]"),
-    {ok,ok};
-parse_rec(?SCENPROTECT,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[SCENPROTECT]"),
-    excel_util:put_log(FileOut,"SCENPROTECT is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/SCENPROTECT]"),
-    {ok,ok};
-parse_rec(?XF2,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[XF2]"),
-    excel_util:put_log(FileOut,"XF2 is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/XF2]"),
-    {ok,ok};
-parse_rec(?MERGEDCELLS,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[MERGEDCELLS]"),
-    excel_util:put_log(FileOut,"MERGEDCELLS is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/MERGEDCELLS]"),
-    {ok,ok};
-parse_rec(?BITMAP,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[BITMAP]"),
-    excel_util:put_log(FileOut,"BITMAP is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/BITMAP]"),
-    {ok,ok};
-parse_rec(?PHONETIC,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[PHONETIC]"),
-    excel_util:put_log(FileOut,"PHONETIC is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/PHONETIC]"),
-    {ok,ok};
-parse_rec(?SST,[H|T],_Name,Tables,FileOut)->
-    %%io:format("in excel_records:parse_rec for SST~n"),
-    excel_util:put_log(FileOut,"[SST *DONE*]"),
-    <<NoStringsUsed:32/little-unsigned-integer,
+    {PackedName,_}=Name,
+    Name2=excel_util:get_utf8(PackedName),
+    Tokens=parse_XF_RK(Rest),
+    write_row(Tokens,RowIndex,FirstColIndex,Name2,Tables),
+    {ok,CurrentFormula};
+parse_rec(?MULBLANK,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"MULBLANK"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?RSTRING,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"RSTRING"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?DBCELL,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"DBCELL"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?BOOKBOOL,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"BOOKBOOL"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?SCENPROTECT,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"SCENPROTECT"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?XF2,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"XF2"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?MERGEDCELLS,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"MERGEDCELLS"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?BITMAP,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"BITMAP"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?PHONETIC,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"PHONETIC"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?SST,[H|T],_Name,CurrentFormula,Tables)->
+    <<_NoStringsUsed:32/little-unsigned-integer,
      NoActualStrings:32/little-unsigned-integer,
      Rest/binary>>=H,
-    excel_util:put_log(FileOut,io_lib:fwrite("NoStringsUsed is ~p~n "++
-				  "and NoActualString is ~p~n",
-				  [NoStringsUsed,NoActualStrings])),
-    parse_SST(0,NoActualStrings,Tables,[Rest|T],FileOut),
-    excel_util:put_log(FileOut,"[/SST]"),
-    {ok,ok};
-parse_rec(?LABELSST,Bin,Name,Tables,FileOut)->
-    excel_util:put_log(FileOut,"[LABELSST *Done*]"),
+    parse_SST(0,NoActualStrings,Tables,[Rest|T]),
+    {ok,CurrentFormula};
+parse_rec(?LABELSST,Bin,Name,CurrentFormula,Tables)->
        <<RowIndex:16/little-unsigned-integer,
         ColIndex:16/little-unsigned-integer,
         XFIndex:16/little-unsigned-integer,
         SSTIndex:32/little-unsigned-integer,
         _Rest/binary>>=Bin,
-    excel_util:put_log(FileOut,io_lib:fwrite("RowIndex is ~p~n"++
-				  "ColIndex is ~p~n"++
-				  "XFIndex is ~p~n"++
-				  "SSTIndex is ~p",
-				  [RowIndex,
-				   ColIndex,
-				   XFIndex,
-				   SSTIndex])),
     %% Now look up the string in the string table
     String=excel_util:lookup_string(Tables,SSTIndex),
-    excel_util:write(Tables,cell,[{{sheet,Name},{row_index,RowIndex},{col_index,ColIndex}},
+    {PackedName,_}=Name,
+    Name2=excel_util:get_utf8(PackedName),
+    excel_util:write(Tables,cell,[{{sheet,Name2},{row_index,RowIndex},{col_index,ColIndex}},
 		       {xf_index,XFIndex},{string,String}]),
-    excel_util:put_log(FileOut,"[/LABELSST]"),    
-    {ok,ok};
-parse_rec(?EXTSST,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[EXTSST]"),
-    excel_util:put_log(FileOut,"EXTSST is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/EXTSST]"),
-    {ok,ok};
-parse_rec(?LABELRANGES,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[LABELRANGES]"),
-    excel_util:put_log(FileOut,"LABELRANGES is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/LABELRANGES]"),
-    {ok,ok};
-parse_rec(?USESELFS,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[USESELFS]"),
-    excel_util:put_log(FileOut,"USESELFS is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/USESELFS]"),
-    {ok,ok};
-parse_rec(?DSF,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[DSF]"),
-    excel_util:put_log(FileOut,"DSF is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/DSF]"),
-    {ok,ok};
-parse_rec(?SUPBOOK,Bin,_Name,Tables,FileOut)->
-    excel_util:put_log(FileOut,"[SUPBOOK *Done]"),
-    %% io:format("in excel_records:parse_rec for SUPBOOK Bin is ~p~n",[Bin]),
+    {ok,CurrentFormula};
+parse_rec(?EXTSST,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"EXTSST"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?LABELRANGES,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"LABELRANGES"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?USESELFS,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"USESELFS"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?DSF,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"DSF"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?SUPBOOK,Bin,_Name,CurrentFormula,Tables)->
     case Bin of
         <<NoSheets:16/little-unsigned-integer,
-        ?SheetsInBook:16/little-unsigned-integer>> ->
-          excel_util:put_log(FileOut,
-            io_lib:fwrite("SupBook No of sheets in workbook is ~p~n",[NoSheets])),
-          excel_util:write(Tables,misc,[{noofsheets,NoSheets}]);
-        _ ->
-          excel_util:put_log(FileOut,
-            io_lib:fwrite("This type of SUPBOOK not being processed!~n",[]))
+            ?InternalReferences:16/little-unsigned-integer>> ->
+                  excel_util:write(Tables,misc,[{noofsheets,NoSheets}]);
+        <<?Add_In_Fns1:16/little-unsigned-integer,
+            ?Add_In_Fns2:16/little-unsigned-integer>> ->
+                  excel_util:write(Tables,lacunae,[{identifier,"Add_In_Fns"},
+                        {source,excel_records.erl}]);
+          <<?DDE_OLE:16/little-unsigned-integer,_Rest/binary>> ->
+                  excel_util:write(Tables,lacunae,
+                        [{identifier,"DDE and OLE links"},
+                        {source,excel_records.erl}]);
+        _ -> 
+                  parse_external_refs(Bin,Tables)
     end,
-    excel_util:put_log(FileOut,"[/SUPBOOK]"),
-    {ok,ok};
-parse_rec(?CONDFMT,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[CONDFMT]"),
-    excel_util:put_log(FileOut,"CONDFMT is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/CONDFMT]"),
-    {ok,ok};
-parse_rec(?DVAL,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[DVAL]"),
-    excel_util:put_log(FileOut,"DVAL is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/DVAL]"),
-    {ok,ok};
-parse_rec(?HLINK,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[HLINK]"),
-    excel_util:put_log(FileOut,"HLINK is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/HLINK]"),
-    {ok,ok};
-parse_rec(?DV,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[DV]"),
-    excel_util:put_log(FileOut,"DV is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/DV]"),
-    {ok,ok};
-parse_rec(?DIMENSIONS2,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[DIMENSIONS2]"),
-    excel_util:put_log(FileOut,"DIMENSIONS2 is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/DIMENSIONS2]"),
-    {ok,ok};
-parse_rec(?BLANK2,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[BLANK2]"),
-    excel_util:put_log(FileOut,"BLANK2 is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/BLANK2]"),
-    {ok,ok};
-parse_rec(?NUMBER2,Bin,Name,Tables,FileOut)->
-    excel_util:put_log(FileOut,"[NUMBER2 *done*]"),
+    {ok,CurrentFormula};
+parse_rec(?CONDFMT,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"CONDFMT"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?DVAL,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"DVAL"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?HLINK,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"HLINK"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?DV,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"DV"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?DIMENSIONS2,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"DIMENSIONS2"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?BLANK2,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"BLANK2"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?NUMBER2,Bin,Name,CurrentFormula,Tables)->
     <<RowIndex:16/little-unsigned-integer,
      ColIndex:16/little-unsigned-integer,
      XFIndex:16/little-unsigned-integer,
      Float:64/little-unsigned-float>>=Bin,
-    excel_util:put_log(FileOut,io_lib:fwrite("(Unparsed) Bin is ~p",[Bin])),
-    excel_util:put_log(FileOut,io_lib:fwrite("RowIndex is ~p~n"++
-				  "ColIndex is ~p~n"++
-				  "XFIndex is ~p~n"++
-				  "Float (unparsed Binary) is ~p",
-				  [RowIndex,
-				   ColIndex,
-				   XFIndex,
-				   Float])),
-    %%RKValue2=parse_CRS_RK(<<RKValue:64/little-unsigned-integer>>,FileOut),
-    excel_util:write(Tables,cell,[{{sheet,Name},{row_index,RowIndex},{col_index,ColIndex}},
+    {PackedName,_}=Name,
+    Name2=excel_util:get_utf8(PackedName),
+    excel_util:write(Tables,cell,[{{sheet,Name2},{row_index,RowIndex},{col_index,ColIndex}},
 		       {xf_index,XFIndex},{value,number,Float}]),
-    excel_util:put_log(FileOut,io_lib:fwrite("(Parsed) RKValue is ~p",[Float])),
-    excel_util:put_log(FileOut,"[/NUMBER2]"),
-    {ok,ok};
-parse_rec(?LABEL2,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[LABEL2]"),
-    excel_util:put_log(FileOut,"LABEL2 is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/LABEL2]"),
-    {ok,ok};
-parse_rec(?BOOLERR2,Bin,Name,Tables,FileOut)->
-    excel_util:put_log(FileOut,"[BOOLERR2 *DONE*]"),
+    {ok,CurrentFormula};
+parse_rec(?LABEL2,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"LABEL2"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?BOOLERR2,Bin,Name,CurrentFormula,Tables)->
     %% One might think that a record called BoolErr would contain a boolean error
     %% and error pertaining or obtaining in some straightforwar dway to Booleans
     %% wouldn't one? But on no - it contains a Boolean *OR* an Error
@@ -583,13 +428,11 @@ parse_rec(?BOOLERR2,Bin,Name,Tables,FileOut)->
      Type:8/little-unsigned-integer>>=Bin,
     {ValType,Value} = case Type of
         0 -> 
-            excel_util:put_log(FileOut,"It's a Boolean!"),
             case BoolErr of
               0 -> {boolean,false};
               1 -> {boolean,true}
            end;
         1 ->
-            excel_util:put_log(FileOut,"It's an Error!"),
             case BoolErr of
               ?NullError    -> {error,"#NULL!"};
               ?DivZeroError -> {error,"#DIV/0!"};
@@ -600,233 +443,134 @@ parse_rec(?BOOLERR2,Bin,Name,Tables,FileOut)->
               ?NAError      -> {error,"#N/A"}
           end
     end,
-    %%io:format("in excel_records:parse_rec ValType is ~p and Value is ~p~n",
-    %%    [ValType,Value]),
-    excel_util:write(Tables,cell,[{{sheet,Name},{row_index,RowIndex},{col_index,ColIndex}},
-		       {xf_index,XFIndex},{value,ValType,Value}]),
-    excel_util:put_log(FileOut,"[/BOOLERR2]"),
-    {ok,ok};
-parse_rec(?STRING2,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[STRING2]"),
-    excel_util:put_log(FileOut,"STRING2 is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/STRING2]"),
-    {ok,ok};
-parse_rec(?ROW2,Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[ROW2 *DONE*]"),
-    case Bin of
-	<<RowIndex:16/little-unsigned-integer,
-	 FirstColIndex:16/little-unsigned-integer,
-	 LastColIndex:16/little-unsigned-integer,
-	 Height:16/little-unsigned-integer,
-	 __NotUsed:16/little-unsigned-integer,
-	 DefaultsFlag:8/little-unsigned-integer,
-	 RelativeOffset:16/little-unsigned-integer>> ->
-	    excel_util:put_log(FileOut,io_lib:fwrite("RowIndex is ~p~n"++
-					  "FirstColIndex is ~p~n"++
-					  "LastColIndex is ~p~n"++
-					  "Height is ~p~n"++
-					  "__NotUsed is ~p~n"++
-					  "DefaultsFlag is ~p~n"++
-					  "RelativeOffset is ~p",
-					  [RowIndex,
-					   FirstColIndex,
-					   LastColIndex,
-					   Height,
-					   __NotUsed,
-					   DefaultsFlag,
-					   RelativeOffset]));
-	<<RowIndex:16/little-unsigned-integer,
-	 FirstColIndex:16/little-unsigned-integer,
-	 LastColIndex:16/little-unsigned-integer,
-	 Height:16/little-unsigned-integer,
-	 __NotUsed:16/little-unsigned-integer,
-	 DefaultsFlag:8/little-unsigned-integer,
-	 RelativeOffset:16/little-unsigned-integer,
-	 DefaultRowAttributes:24/little-unsigned-integer>> ->
-	    excel_util:put_log(FileOut,io_lib:fwrite("RowIndex is ~p~n"++
-					  "FirstColIndex is ~p~n"++
-					  "LastColIndex is ~p~n"++
-					  "Height is ~p~n"++
-					  "__NotUsed is ~p~n"++
-					  "DefaultsFlag is ~p~n"++
-					  "RelativeOffset is ~p~n"++
-					  "DefaultRowAttributes is ~p",
-					  [RowIndex,
-					   FirstColIndex,
-					   LastColIndex,
-					   Height,
-					   __NotUsed,
-					   DefaultsFlag,
-					   RelativeOffset,
-					   DefaultRowAttributes])),
-	    excel_util:put_log(FileOut,"DefaultRowAttributes not being processed yet");
-	<<RowIndex:16/little-unsigned-integer,
-	 FirstColIndex:16/little-unsigned-integer,
-	 LastColIndex:16/little-unsigned-integer,
-	 Height:16/little-unsigned-integer,
-	 __NotUsed:16/little-unsigned-integer,
-	 DefaultsFlag:8/little-unsigned-integer,
-	 RelativeOffset:16/little-unsigned-integer,
-	 XFIndex:16/little-unsigned-integer>> ->
-	    excel_util:put_log(FileOut,io_lib:fwrite("RowIndex is ~p~n"++
-					  "FirstColIndex is ~p~n"++
-					  "LastColIndex is ~p~n"++
-					  "Height is ~p~n"++
-					  "__NotUsed is ~p~n"++
-					  "DefaultsFlag is ~p~n"++
-					  "RelativeOffset is ~p~n"++
-					  "XFIndex is ~p",
-					  [RowIndex,
-					   FirstColIndex,
-					   LastColIndex,
-					   Height,
-					   __NotUsed,
-					   DefaultsFlag,
-					   RelativeOffset,
-					   XFIndex])),
-	    excel_util:put_log(FileOut,"XFIndex not being processed yet")
-    end,
-    excel_util:put_log(FileOut,"[/ROW2]"),
-    {ok,ok};
-parse_rec(?INDEX2,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[INDEX2]"),
-    excel_util:put_log(FileOut,"INDEX2 is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/INDEX2]"),
-    {ok,ok};
-parse_rec(?ARRAY2,Bin,_Name,Tables,FileOut)->
-    excel_util:put_log(FileOut,"[ARRAY2 *DONE*]"),
+    {PackedName,_}=Name,
+    Name2=excel_util:get_utf8(PackedName),
+    excel_util:write(Tables,cell,[{{sheet,Name2},{row_index,RowIndex},
+    {col_index,ColIndex}},{xf_index,XFIndex},{value,ValType,Value}]),
+    {ok,CurrentFormula};
+parse_rec(?STRING2,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"STRING2"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?ROW2,_Bin,_Name,CurrentFormula,Tables)->
+%%    case Bin of
+%%	<<RowIndex:16/little-unsigned-integer,
+%%	 FirstColIndex:16/little-unsigned-integer,
+%%	 LastColIndex:16/little-unsigned-integer,
+%%	 Height:16/little-unsigned-integer,
+%%	 __NotUsed:16/little-unsigned-integer,
+%%	 DefaultsFlag:8/little-unsigned-integer,
+%%	 RelativeOffset:16/little-unsigned-integer>> ->
+%%	<<RowIndex:16/little-unsigned-integer,
+%%	 FirstColIndex:16/little-unsigned-integer,
+%%	 LastColIndex:16/little-unsigned-integer,
+%%	 Height:16/little-unsigned-integer,
+%%	 __NotUsed:16/little-unsigned-integer,
+%%	 DefaultsFlag:8/little-unsigned-integer,
+%%	 RelativeOffset:16/little-unsigned-integer,
+%%	 DefaultRowAttributes:24/little-unsigned-integer>> ->
+%%	<<RowIndex:16/little-unsigned-integer,
+%%	 FirstColIndex:16/little-unsigned-integer,
+%%	 LastColIndex:16/little-unsigned-integer,
+%%	 Height:16/little-unsigned-integer,
+%%	 __NotUsed:16/little-unsigned-integer,
+%%	 DefaultsFlag:8/little-unsigned-integer,
+%%	 RelativeOffset:16/little-unsigned-integer,
+%%	 XFIndex:16/little-unsigned-integer>> ->
+%%    end,
+  excel_util:write(Tables,lacunae,[{identifier,"ROW2"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?INDEX2,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"INDEX2"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?ARRAY2,Bin,Name,CurrentFormula,Tables)->
     <<Range:8/binary, % 6 + 2 bits
       _NotUsed:4/binary,
       RawTokens/binary>>=Bin,
-      %% io:format("in excel_records:parse_rec for ARRAY2~n-Range is ~p~n",[Range]),
-      {[{Row,Col,_,_}],_Bin}=excel_util:read_cell_range_addies(1,Range,FileOut),
-      %% io:format("in excel_records:parse_rec for ARRAY2~n-Row is ~p~n-Col is ~p~n"++
-      %%    "-RawTokens is ~p~n",[Row,Col,RawTokens]),
-      Return=parse_FRM_Results(formula,RawTokens,Tables,FileOut),
-      %% io:format("in excel_records:parse_rec for ARRAY2 Return is ~p~n",[Return]),
+      {[{Row,Col,_,_}],_}=excel_util:read_cell_range_addies(1,'16bit',Range),
+      Return=parse_FRM_Results(RawTokens,Name),
       {Tokens,TokenArrays}=Return,
-      %% io:format("in excel_records:parse_rec for ARRAY~n-Tokens are ~p-TokenArrays are ~p~n",
-      %%    [Tokens,TokenArrays]),
-      excel_util:write(Tables,arrayformula,[{{row_index,Row},{col_index,Col}},{tokens,Tokens},
-              {tokenarray,TokenArrays}]),
-      %% filefilters:dump(Tables),
-      %% exit("goodbye from within excel_records - fix arrays"),
-    excel_util:put_log(FileOut,"[/ARRAY2]"),
-    {ok,ok};
-parse_rec(?DEFAULTROWHEIGHT2,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[DEFAULTROWHEIGHT2]"),
-    excel_util:put_log(FileOut,"DEFAULTROWHEIGHT2 is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/DEFAULTROWHEIGHT2]"),
-    {ok,ok};
-parse_rec(?TABLEOP_2,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[TABLEOP_2]"),
-    excel_util:put_log(FileOut,"TABLEOP_2 is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/TABLEOP_2]"),
-    {ok,ok};
-parse_rec(?WINDOW2_2,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[WINDOW2_2]"),
-    excel_util:put_log(FileOut,"WINDOW2_2 is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/WINDOW2_2]"),
-    {ok,ok};
-parse_rec(?RK,Bin,Name,Tables,FileOut)->
-    excel_util:put_log(FileOut,"[RK *DONE*]"),
+      excel_util:write(Tables,sh_arr_formula,[{{sheet,Name},{row_index,Row},
+          {col_index,Col}},{type,array},{tokens,Tokens},{tokenarray,TokenArrays}]),
+    {ok,CurrentFormula};
+parse_rec(?DEFAULTROWHEIGHT2,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"DEFAULTROWHEIGHT2"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?TABLEOP_2,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"TABLEOP_2"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?WINDOW2_2,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"WINDOW2_2"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?RK,Bin,Name,CurrentFormula,Tables)->
     <<RowIndex:16/little-unsigned-integer,
      ColIndex:16/little-unsigned-integer,
      XFIndex:16/little-unsigned-integer,
      RKValue:32/little-unsigned-integer>>=Bin,
-    excel_util:put_log(FileOut,io_lib:fwrite("(Unparsed) Bin is ~p",[Bin])),
-    excel_util:put_log(FileOut,io_lib:fwrite("RowIndex is ~p~n"++
-				  "ColIndex is ~p~n"++
-				  "XFIndex is ~p~n"++
-				  "RKValue (unparsed Binary) is ~p",
-				  [RowIndex,
-				   ColIndex,
-				   XFIndex,
-				   RKValue])),
-    RKValue2=excel_util:parse_CRS_RK(<<RKValue:32/little-unsigned-integer>>,FileOut),
-    excel_util:write(Tables,cell,[{{sheet,Name},{row_index,RowIndex},{col_index,ColIndex}},
-		       {xf_index,XFIndex},{value,number,RKValue2}]),
-    excel_util:put_log(FileOut,io_lib:fwrite("(Parsed) RKValue is ~p",[RKValue2])),
-    excel_util:put_log(FileOut,"[/RK]"),
-    {ok,ok};
-parse_rec(?STYLE,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[STYLE]"),
-    excel_util:put_log(FileOut,"STYLE is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/STYLE]"),
-    {ok,ok};
-parse_rec(?FORMAT2,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[FORMAT2]"),
-    excel_util:put_log(FileOut,"FORMAT2 is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/FORMAT2]"),
-    {ok,ok};
-parse_rec(?SHRFMLA,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[SHRFMLA]"),
-    excel_util:put_log(FileOut,"SHRFMLA is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/SHRFMLA]"),
-    {ok,ok};
-parse_rec(?QUICKTIP,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[QUICKTIP]"),
-    excel_util:put_log(FileOut,"QUICKTIP is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/QUICKTIP]"),
-    {ok,ok};
-parse_rec(?BOF4,Bin,_Name,_Tables,FileOut)->
+    RKValue2=excel_util:parse_CRS_RK(<<RKValue:32/little-unsigned-integer>>),
+    {PackedName,_}=Name,
+    Name2=excel_util:get_utf8(PackedName),
+    excel_util:write(Tables,cell,[{{sheet,Name2},{row_index,RowIndex},
+    {col_index,ColIndex}},{xf_index,XFIndex},{value,number,RKValue2}]),
+    {ok,CurrentFormula};
+parse_rec(?STYLE,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"STYLE"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?FORMAT2,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"FORMAT2"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?SHRFMLA,Bin,Name,CurrentFormula,Tables)->
+  <<Range:6/binary,
+   _NotUsed:8/little-unsigned-integer,
+   NoRecords:8/little-unsigned-integer,
+   Rest/binary>>=Bin,
+    {PackedName,_}=Name,
+    Name2=excel_util:get_utf8(PackedName),
+  io:format("in excel_records:parse_rec for SHRFMLA CurrentFormula is ~p~n",[CurrentFormula]),
+  io:format("in excel_records:parse_rec for SHRFMLA NoRecords is ~p~n",[NoRecords]),
+  {[{FirstRow,LastRow,FirstCol,LastCol}],_}=excel_util:read_cell_range_addies(1,'8bit',Range),
+  {Tokens,TokenArrays}=parse_FRM_Results(Rest,Name),
+  io:format("in excel_records:parse_rec for SHRFMLA~n-FirstRow is ~p FirstCol is ~p~n"++
+      "-LastRow  is ~p LastCol  is ~p~n",[FirstRow,LastRow,FirstCol,LastCol]),
+  excel_util:write(Tables,sh_arr_formula,[{{sheet,Name2},{firstrow,FirstRow},
+    {firstcol,FirstCol},{lastrow,LastRow},{lastcol,LastCol}},{type,shared},Tokens,TokenArrays]),
+    {ok,CurrentFormula};
+parse_rec(?QUICKTIP,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"QUICKTIP"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?BOF4,Bin,_Name,CurrentFormula,Tables)->
     %% BOF BIFF8 Section 5.8.1 excelfileformat.pdf V1.40
-    excel_util:put_log(FileOut,"[BOF4 RECORD *DONE*]"),
-    <<BiffVsn:16/little-unsigned-integer,
-     Type:16/little-unsigned-integer,
-     BuildID:16/little-unsigned-integer,
-     BuildYr:16/little-unsigned-integer,
-     FileHist:32/little-unsigned-integer,
-     LowestVsn:32/little-unsigned-integer>>=Bin,
-    excel_util:put_log(FileOut,io_lib:fwrite("BiffVsn is ~p~n"++
-				  "(BOF4) Type is ~p~n"++
-				  "BuildID is ~p~n"++
-				  "BuildYr is ~p~n"++
-				  "FileHist is ~p~n"++
-				  "LowestVsn is ~p",
-				  [BiffVsn,
-				   Type,
-				   BuildID,
-				   BuildYr,
-				   FileHist,
-				   LowestVsn])),
-    excel_util:put_log(FileOut,io_lib:fwrite("Type can have the following values:~n"++
-				  "Workbook Globals ~p~n"++
-				  "VB Modules       ~p~n"++
-				  "Sheet/Dialog     ~p~n"++
-				  "Chart            ~p~n"++
-				  "Macro            ~p~n"++
-				  "Workspace        ~p~n",
-				  [?rc_BOF_WorkbookGlobals,
-				   ?rc_BOF_VBModule,
-				   ?rc_BOF_Worksheet,
-				   ?rc_BOF_Chart,
-				   ?rc_BOF_MacroSheet,
-				   ?rc_BOF_Workspace])),
-    excel_util:put_log(FileOut,"[/BOF4 RECORD]"),
-    {ok,ok};
-parse_rec(?SHEETLAYOUT,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[SHEETLAYOUT]"),
-    excel_util:put_log(FileOut,"SHEETLAYOUT is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/SHEETLAYOUT]"),
-    {ok,ok};
-parse_rec(?SHEETPROTECTION,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[SHEETPROTECTION]"),
-    excel_util:put_log(FileOut,"SHEETPROTECTION is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/SHEETPROTECTION]"),
-    {ok,ok};
-parse_rec(?RANGEPROTECTION,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[RANGEPROTECTION]"),
-    excel_util:put_log(FileOut,"RANGEPROTECTION is not being processed at the moment"),
-    excel_util:put_log(FileOut,"[/RANGEPROTECTION]"),
-    {ok,ok};
-parse_rec(Other,_Bin,_Name,_Tables,FileOut)->
-    excel_util:put_log(FileOut,"[****ERROR*****]"),
-    excel_util:put_log(FileOut,io_lib:fwrite("Non-existant type 0x~.16b",[Other])),
-    excel_util:put_log(FileOut,"[\****ERROR*****]"),
-    FileOut2=FileOut++".error",
-    excel_util:put_log(FileOut2,io_lib:fwrite("Non-existant type 0x~.16b",[Other])),
-    {ok,ok}.
+    <<_BiffVsn:16/little-unsigned-integer,
+     _Type:16/little-unsigned-integer,
+     _BuildID:16/little-unsigned-integer,
+     _BuildYr:16/little-unsigned-integer,
+     _FileHist:32/little-unsigned-integer,
+     _LowestVsn:32/little-unsigned-integer>>=Bin,
+    {ok,CurrentFormula};
+parse_rec(?SHEETLAYOUT,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"SHEETLAYOUT"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?SHEETPROTECTION,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"SHEETPROTECTION"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(?RANGEPROTECTION,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,"RANGEPROTECTION"},{source,excel_records.erl},
+    {msg,"not being processed"}]),
+    {ok,CurrentFormula};
+parse_rec(Other,_Bin,_Name,CurrentFormula,Tables)->
+  excel_util:write(Tables,lacunae,[{identifier,Other},{source,excel_records.erl},
+    {msg,"not being checked for and processed"}]),
+    {ok,CurrentFormula}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -844,27 +588,16 @@ parse_rec(Other,_Bin,_Name,_Tables,FileOut)->
 %% that happens later. When we are reading a formula right now it will
 %% make reference to things like names and arrayformulae that we haven't
 %% read yet
-parse_FRM_Results(formula,<<>>,_Tables,FileOut)->
-    excel_util:put_log(FileOut,io_lib:fwrite("in parse_FRM_Results - "++
-				  "finished parsing results",[])),
+parse_FRM_Results(<<>>,_Name)->
     ok;
-parse_FRM_Results(formula,Bin,Tables,FileOut) ->
+parse_FRM_Results(Bin,Name) ->
     <<Size:16/little-unsigned-integer,Rest/binary>>=Bin,
-    excel_util:put_log(FileOut,io_lib:fwrite("in parse_FRM_Results the "++
-				  "record size is ~p~nbinary is ~p",
-				  [Size,Bin])),
     {Tokens,TokenArray2}=case Size of
-	       0     -> 
-            io:format("in excel_records:parse_FRM_Results - zero length formula!"),
+	       0        -> io:format("in excel_records:parse_FRM_Results - zero length formula!"),
 			      {[],[]};
-	       RPN_Size -> 
-            <<RPN:RPN_Size/binary,TokenArray/binary>>=Rest,
-            %%io:format("in excel_records:parse_FRM_Results RPN is ~p~n-RPN_Size is ~p~n"++
-            %%                "-TokenArray is ~p~n",[RPN,RPN_Size,TokenArray]),
-            excel_tokens:parse_tokens(RPN,TokenArray,[],Tables,FileOut)
+	       RPN_Size -> <<RPN:RPN_Size/binary,TokenArray/binary>>=Rest,
+                           excel_tokens:parse_tokens(RPN,Name,TokenArray,[])
     end,
-    excel_util:put_log(FileOut,io_lib:fwrite("in parse_FRM_Results the "++
-				  "tokens are ~p",[Tokens])),
     {Tokens,TokenArray2}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -874,42 +607,21 @@ parse_FRM_Results(formula,Bin,Tables,FileOut) ->
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 parse_Name(OptionFlag,_KybdShortCut,NameLength,_Size,SheetIndex,
-  _MenuTxtLen,_DescTxtLen,_HelpTxtLen,_StatusTxtLen,Bin,Tables,FileOut)->
-  <<Hidden:1/integer,Func:1/integer,VBasic:1/integer,Macro:1/integer,
-    Complex:1/integer,BuiltIn:1/integer,FuncGroup1:1/integer,
-    FuncGroup2:1/integer,FuncGroup3:1/integer,FuncGroup4:1/integer,
-    FuncGroup5:1/integer,FuncGroup6:1/integer,
-    Binary:1/integer,_A:1/integer,_B:1/integer,_C:1/integer>>=OptionFlag,
-  excel_util:put_log(FileOut,io_lib:fwrite(" OptionsFlags are:~n-Hidden is ~p~n"++
-    "-Func is ~p~n"++
-    "-VBasic is ~p~n"++
-    "-Macro is ~p~n"++
-    "-Complex is ~p~n"++
-    "-BuiltIn is ~p~n"++
-    "-FuncGroups are ~p ~p ~p ~p ~p ~p~n"++
-    "-Binary is ~p~n",
-    [Hidden,
-     Func,
-     VBasic,
-     Macro,
-     Complex,
-     BuiltIn,
-     FuncGroup1,
-     FuncGroup2,
-     FuncGroup3,
-     FuncGroup4,
-     FuncGroup5,
-     FuncGroup6,
-     Binary])),
+  _MenuTxtLen,_DescTxtLen,_HelpTxtLen,_StatusTxtLen,Bin,Tables)->
+  <<_Hidden:1/integer,_Func:1/integer,_VBasic:1/integer,_Macro:1/integer,
+    _Complex:1/integer,_BuiltIn:1/integer,_FuncGroup1:1/integer,
+    _FuncGroup2:1/integer,_FuncGroup3:1/integer,_FuncGroup4:1/integer,
+    _FuncGroup5:1/integer,_FuncGroup6:1/integer,
+    _Binary:1/integer,_A:1/integer,_B:1/integer,_C:1/integer>>=OptionFlag,
   <<_Options:1/binary,Name:NameLength/binary,_Rest/binary>>=Bin,
-  excel_util:put_log(FileOut,io_lib:fwrite("Just ignoring the compression options for "++
-    "Unicode names at the moment - will wig when not using Latin-1~n",[])),
-  excel_util:put_log(FileOut,io_lib:fwrite("Name is ~p~n",[Name])),
+  io:format("Just ignoring the compression options for "++
+    "Unicode names at the moment - will wig when not using Latin-1~n"),
   Scope = case SheetIndex of
             0 -> global;
             _ -> local
         end,
-  excel_util:write(Tables,names,[{index,SheetIndex},{type,Scope},{name,Name}]).
+  Index=excel_util:get_length(Tables,names),
+  excel_util:write(Tables,names,[{index,Index},{sheetindex,SheetIndex},{type,Scope},{name,Name}]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -917,27 +629,17 @@ parse_Name(OptionFlag,_KybdShortCut,NameLength,_Size,SheetIndex,
 %%% excelfileformat.pdf (V1.40)                                              %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-parse_XF_RK(Bin,Tables,FileOut)->
-  parse_XF_RK(Bin,[],Tables,FileOut).
+parse_XF_RK(Bin)->
+  parse_XF_RK(Bin,[]).
 
-%%parse_XF_RK(<<>>,Residuum,Tables,FileOut)->
-%%    excel_util:put_log(FileOut,"**ERROR** There ought to be a LastColIndex fragment"),
-%%    excel_util:put_log(FileOut++".error","ERROR There should be a LastColIndex fragment"),
-parse_XF_RK(<<LastColIndex:16/little-unsigned-integer>>,Residuum,_Tables,FileOut)->
-    excel_util:put_log(FileOut,io_lib:fwrite("LastColIndex is ~p",[LastColIndex])),
+parse_XF_RK(<<_LastColIndex:16/little-unsigned-integer>>,Residuum)->
     lists:reverse(Residuum);
 parse_XF_RK(<<XFIndex:16/little-unsigned-integer,
 	     RKValue:32/little-unsigned-integer,
-	     Rest/binary>>,Residuum,Tables,FileOut)->
-    excel_util:put_log(FileOut,io_lib:fwrite("Rest is ~p",[Rest])),
-    excel_util:put_log(FileOut,io_lib:fwrite("XFIndex is ~p~n"++
-				  "RKValue is ~p",
-				  [XFIndex,
-				   RKValue])),
-    Num=excel_util:parse_CRS_RK(<<RKValue:32/little-unsigned-integer>>,FileOut),
-    excel_util:put_log(FileOut,io_lib:fwrite("Num is ~p",[Num])),
+	     Rest/binary>>,Residuum)->
+    Num=excel_util:parse_CRS_RK(<<RKValue:32/little-unsigned-integer>>),
     NewResiduum=[{{xf_index,XFIndex},{value,number,Num}}|Residuum],
-    parse_XF_RK(Rest,NewResiduum,Tables,FileOut).
+    parse_XF_RK(Rest,NewResiduum).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% These functions process composites of the main record types of           %%%
@@ -945,22 +647,20 @@ parse_XF_RK(<<XFIndex:16/little-unsigned-integer,
 %%% substructures of Section 2.5                                             %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-parse_SST(NoOfStrings,NoOfStrings,_Tables,_,FileOut)->
-    excel_util:put_log(FileOut,"String table parsed");
-parse_SST(StringNo,NoOfStrings,Tables,[BinHead|BinTail],FileOut)->
+parse_SST(NoOfStrings,NoOfStrings,Tables,_)->
+    io:format("String table parsed~n");
+parse_SST(StringNo,NoOfStrings,Tables,[BinHead|BinTail])->
     BinLen1=length(binary_to_list(BinHead)),
     <<BinLen2:16/little-unsigned-integer,_Rest/binary>>=BinHead,
     %% This clause handles the case where a record falls over a contination
     %% if it does it rejigs parse_SST to move down the Binary List
-    %% io:format("in excel_records:parse_SST BinLen1 is ~p and BinLen2 is ~p~n",
-    %%	      [BinLen1,BinLen2]),
     if
 	(BinLen1 > BinLen2+3) ->NewBinHead = BinHead,
-                                NewBinTail = BinTail,
-                                ParseBin=BinHead;
+                                 NewBinTail = BinTail,
+                                 ParseBin=BinHead;
 	(BinLen1 == BinLen2+3)->case BinTail of
-                                    []    -> H1 = [],
-                                             T1 = [];
+                                    []     -> H1 = [],
+                                              T1 = [];
                                     _Other -> [H1|T1]=BinTail
                                 end,
                                 NewBinTail=T1,
@@ -976,32 +676,108 @@ parse_SST(StringNo,NoOfStrings,Tables,[BinHead|BinTail],FileOut)->
                                 NewBinHead=list_to_binary([ParseBin,
                                                            NewBinHeadPart])
     end,
-    {[{_Type,String}],_,_}=excel_util:parse_CRS_Uni16(ParseBin,2,FileOut),
-    Len=string:len(binary_to_list(String)),
+    Return=excel_util:parse_CRS_Uni16(ParseBin,2),
+    String=excel_util:get_utf8(Return),
+    {[{Type,BinString}],StringLen,RestLen}=Return,    
+    Len=string:len(binary_to_list(BinString)),
     BinLen=8*(Len+3), % add an offset for the 2 byte index and 1 byte flags
     <<_String2:BinLen/little-unsigned-integer,Rest/binary>>=NewBinHead,
-    excel_util:write(Tables,strings,[{index,StringNo},{string,binary_to_list(String)}]),
-    parse_SST(StringNo+1,NoOfStrings,Tables,[Rest|NewBinTail],FileOut).
+    excel_util:write(Tables,strings,[{index,StringNo},{string,String}]),
+    parse_SST(StringNo+1,NoOfStrings,Tables,[Rest|NewBinTail]).
 
-write_row([],_RowIndex,_FirstColIndex,_Name,_TablSUPBOOKes)->
+write_row([],_RowIndex,_FirstColIndex,_Name,Tables)->
   {ok,ok};
 write_row([{{xf_index,XFIndex},{value,number,Number}}|T],RowIndex,FirstColIndex,Name,Tables)->
-    excel_util:write(Tables,cell,[{{sheet,Name},{row_index,RowIndex},{col_index,FirstColIndex}},
-		       {xf_index,XFIndex},{value,number,Number}]),
+    excel_util:write(Tables,cell,[{{sheet,Name},{row_index,RowIndex},
+        {col_index,FirstColIndex}},{xf_index,XFIndex},{value,number,Number}]),
     write_row(T,RowIndex,FirstColIndex+1,Name,Tables).
 
- 
-parse_externsheet(<<>>,_N,_Tables,_FileOut)->
+parse_externsheet(<<>>,_N,Tables)->
   {ok,ok};
-parse_externsheet(Bin,N,Tables,FileOut)->
+parse_externsheet(Bin,N,Tables)->
   <<SubRec:16/little-unsigned-integer,
     FirstSheet:16/little-unsigned-integer,
     LastSheet:16/little-unsigned-integer,
     Rest/binary>>=Bin,
-    Record=[{sheet_no,N},{subrec,SubRec},{firstsheet,FirstSheet},
+    Record=[{index,N},{subrec,SubRec},{firstsheet,FirstSheet},
                  {lastsheet,LastSheet}],
     excel_util:write(Tables,externsheets,Record),
-    excel_util:put_log(FileOut,
-        io_lib:fwrite("Externsheet record is ~p~n",[Record])),
-    parse_externsheet(Rest,N+1,Tables,FileOut).
+    parse_externsheet(Rest,N+1,Tables).
+
+%% parses external references as defined in Section 5.99.1 of excelvileformatV1.40.pdf
+%% that definition is buggy as this record doesn't contain any details of the external file
+%% name - don't know from whence that is got at the mo...
+parse_external_refs(<<NoOfSheets:16/little-unsigned-integer,Rest/binary>>,Tables)->
+    [RawFilename|BinaryList]=get_ext_ref_names(Rest,[]),
+    io:format("in excel_records:parse_external_refs BinaryList is ~p~n",[BinaryList]),
+    Names=[binary_to_list(X) || X <- BinaryList],
+    ParsedFileName=parse_filename(RawFilename),
+    Index=excel_util:get_length(Tables,externalrefs),
+    excel_util:write(Tables,externalrefs,[{index,Index},{file,ParsedFileName},Names]).
     
+get_ext_ref_names(<<>>,Residuum)->
+  lists:reverse(Residuum);
+get_ext_ref_names(Bin,Residuum)->
+    Return=excel_util:parse_CRS_Uni16(Bin,2),
+    {[{Type,String}],StringLen,RestLen}=Return,
+    Utf8String=excel_util:get_utf8(Return),
+    StringLen2=StringLen*8,
+    <<String2:StringLen2/little-unsigned-integer,Rest/binary>>=Bin,
+    get_ext_ref_names(Rest,[list_to_binary(Utf8String)|Residuum]).
+
+parse_filename(<<?chEncode:8/little-unsigned-integer,
+               chVolume:8/little-unsigned-integer,
+               Rest/binary>>) -> "./"++snip_xls(Rest)++"/";
+parse_filename(<<?chEncode:8/little-unsigned-integer,
+               chSameVolume:8/little-unsigned-integer,
+               Rest/binary>>) -> "./"++snip_xls(Rest)++"/";
+parse_filename(<<?chEncode:8/little-unsigned-integer,
+               chDownDir:8/little-unsigned-integer,
+               Rest/binary>>) -> "./"++snip_xls(Rest)++"/";
+parse_filename(<<?chEncode:8/little-unsigned-integer,
+               chUpDir:8/little-unsigned-integer,
+               Rest/binary>>) -> "../"++snip_xls(Rest)++"/";
+parse_filename(<<?chEncode:8/little-unsigned-integer,
+               chStartUpDir:8/little-unsigned-integer,
+               Rest/binary>>) -> "./"++snip_xls(Rest)++"/";
+parse_filename(<<?chEncode:8/little-unsigned-integer,
+               chAltStartUpDir:8/little-unsigned-integer,
+               Rest/binary>>) -> "./"++snip_xls(Rest)++"/";
+parse_filename(<<?chEncode:8/little-unsigned-integer,
+               chLibDir:8/little-unsigned-integer,
+               Rest/binary>>) -> "./"++snip_xls(Rest)++"/";
+parse_filename(<<?chEncode:8/little-unsigned-integer,
+               Rest/binary>>) -> "./"++snip_xls(Rest)++"/";
+parse_filename(Bin) -> "./"++binary_to_list(Bin)++"/".
+
+snip_xls(Bin)->
+  FileName=binary_to_list(Bin),
+  RegExp=".xls$",
+  Snipped=case regexp:gsub(FileName,RegExp,"") of
+      {ok, NewString,_} -> NewString;
+      {error,_}         -> FileName
+  end.
+
+%% parse_externname(Bin,Tables)->
+  %% we dont care mostly but for the first 4 bits (the minioptions) and we chuck the remaining 12 bits
+  %% away (the discard) mostly - except when we don't :(
+%%  <<MiniOptions:4/little-unsigned-integer,Discard:12/little-unsigned-integer,Rest/binary>>=Bin,
+%%  case MiniOptions of
+%%    ?STANDARD   -> case Discard of
+%%                        0 -> excel_util:write(Tables,lacunae,[{identifier,"Built-in functions"},
+%%                                {source,excel_records.erl},{msg,"not being processed"}]);
+%%                        Other -> write_externname(Rest,Tables)
+%%                    end;
+%%    ?BUILT_IN   -> write_externname(Rest,Tables);
+%%    ?MANUAL_DDE -> excel_util:write(Tables,lacunae,[{identifier,"MANUAL_DDE"},
+%%                        {source,excel_records.erl},{msg,"not being processed"}]);
+%%    ?AUTO_DDE   -> excel_util:write(Tables,lacunae,[{identifier,"AUTO_DDE"},
+%%                        {source,excel_records.erl},{msg,"not being processed"}]);
+%%    ?MANUAL_OLE -> excel_util:write(Tables,lacunae,[{identifier,"MANUAL_OLE"},
+%%                        {source,excel_records.erl},{msg,"not being processed"}]);
+%%    ?AUTO_OLE   -> excel_util:write(Tables,lacunae,[{identifier,"AUTO_OLE"},
+%%                        {source,excel_records.erl},{msg,"not being processed"}])
+%%    end.
+
+%% write_externname(<<_NotUsed:16/little-unsigned-integer,Rest/binary>>,Tables)->
+%%  ok.

@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_operators_eq.xls
-% Generated on: Mon Feb 11 16:54:37 +0000 2008
+% Generated on: Sun Feb 17 21:42:57 +0000 2008
 
 -module(e_gnumeric_operators_eq_SUITE).
 -compile(export_all).

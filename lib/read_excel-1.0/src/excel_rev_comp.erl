@@ -27,134 +27,115 @@
 
 %% The formulae are stored in reverse Polish Notation within excel
 %% The reverse compiler recreates the original formula by running the RPN
-
-
-reverse_compile(Tokens,TokenArray,Tables,FileOut)->
-    io:format("******************Starts******************************~n"),
-    io:format("*                                                    *~n"),    
-    io:format("in excel_rev_comp:reverse_compile~n-Tokens ~p~n"++
-         "-TokenArray is ~p~n",[Tokens,TokenArray]),
-    io:format("*                                                    *~n"),    
-    io:format("*******************Ends*******************************~n"),
-    reverse_compile(Tokens,TokenArray,[],[],Tables,FileOut).
+reverse_compile(Index,Tokens,TokenArray,Tables)->
+  %% io:format("in excel_rev_comp:reverse_compile~n-Tokens are ~p~n-TokenArray is ~p~n",
+  %%  [Tokens,TokenArray]),
+  reverse_compile(Index,Tokens,TokenArray,[],[],Tables).
 
 %% When the tokens are exhausted the Stack is just flattened to a string
-reverse_compile([],_TokenArray,Stack,_Residuum,_Tables,_FileOut) ->
-  io:format("in excel_rev_comp:reverse_compile dropping to to_str~n-Stack is ~p~n",[Stack]),
+reverse_compile(Index,[],_TokenArray,Stack,_Residuum,_Tables) ->
   "="++to_str(Stack);
+%%  RawString="="++to_str(Stack),
+  %% Now escape all of the ' and " in the string
+%%  String2=case regexp:gsub(RawString,"\"","\\\"") of
+%%    {ok,String3,_} -> String3;
+%%    {error,_}      -> RawString
+%%  end,
+%%  String5=case regexp:gsub(String2,"\'","\\\'") of
+%%    {ok,String4,_} -> String4;
+%%    {error,_}      -> String2
+%%  end,
+%%  io:format("in excel_rev_comp String5 is ~p~n",[String5]),
+%%  String5;
+  
 %%	tExp    
-reverse_compile([{expr_formula_range,{tExp,[{row_index,Row},{col_index,Col}],{return,none}}}|T],
-    TokenArray,Stack,Residuum,Tables,FileOut) ->
-    Formula=excel_util:read(Tables,arrayformula,{{row_index,Row},{col_index,Col}}),
-    %% io:format("in excel_rev_comp for tExp Formula is ~p~n",[Formula]),
+reverse_compile(Index,[{expr_formula_range,{tExp,[{sheet,Name},{row_index,Row},{col_index,Col}],{return,none}}}|T],
+    TokenArray,Stack,Residuum,Tables) ->
+    io:format("in excel_rev_comp:reverse_compile for tExp Name is ~p Row is ~p Col is ~p~n",
+      [Name,Row,Col]),
+    Formula=excel_util:read_shared(Tables,{{sheet,Name},{row_index,Row},{col_index,Col}}),
+    io:format("in excel_rev_comp:reverse_compile for tExp TokenArray is ~p Formula is ~p~n",
+    [TokenArray,Formula]),
     NewStack = push(Stack,{string,Formula}),    
-    reverse_compile(T,TokenArray,NewStack,Residuum,Tables,FileOut);    
+    reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);    
     
 %%	tTbl    
 	
 %%	tAdd tSub tMul tDiv tPower tConcat tLT tLE tEQ tGE tGT tNE tIsect
-reverse_compile([{Operator,_Token}|T],TokenArray,Stack,Residuum,Tables,FileOut) when
+reverse_compile(Index,[{Operator,_Token}|T],TokenArray,Stack,Residuum,Tables) when
     Operator =:= addition ; Operator =:= subtraction ; Operator =:= multiply ;
     Operator =:= divide ; Operator =:= power; Operator =:= concatenate; 
     Operator =:= less_than ; Operator =:= less_than_or_equal ; 
     Operator =:= equals ; Operator =:= greater_than_or_equal ;
     Operator =:= greater_than ; Operator =:= not_equal ->
-    io:format("~nin excel_rev_comp:reverse_compile for Operators~n"),
     %% Pop two of the stack and the build an operator set backwards
     %% ie second first and first second...
-    %% io:format("~nin excel_rev_comp:reverse_compile for Operators Operator is ~p~n-Stack is ~p~n",[Operator,Stack]),
     {First,NewStack}=pop(Stack),
-    %%io:format("in excel_rev_comp:reverse_compile for Operator First is ~p~n-NewStack is ~p~n",[First,NewStack]),
     {Second,Rest2}=pop(NewStack),
-    %%io:format("in excel_rev_comp:reverse_compile for Operator Second is ~p~n-Rest2 is ~p~n",[Second,NewStack]),
     Formula = push(Rest2,{Second,Operator,First}),
-    %%io:format("in excel_rev_comp:reverse_compile operator T is ~p~n-Formula are ~p~n-Residuum is ~p~n",
-    %%[T,Formula,Residuum]),
-    reverse_compile(T,TokenArray,Formula,Residuum,Tables,FileOut);
+    reverse_compile(Index,T,TokenArray,Formula,Residuum,Tables);
 
 % tIsect
-reverse_compile([{intersect,_Token}|T],TokenArray,Stack,Residuum,Tables,FileOut) ->
+reverse_compile(Index,[{intersect,_Token}|T],TokenArray,Stack,Residuum,Tables) ->
     %% Pop two of the stack and the build an operator set backwards
     %% ie second first and first second...
-    io:format("~nin excel_rev_comp:reverse_compile for tIntersect Stack is ~p~n",[Stack]),
     {{string,First},NewStack}=pop(Stack),
-    %%io:format("in excel_rev_comp:reverse_compile for Operator First is ~p~n-NewStack is ~p~n",[First,NewStack]),
     {{string,Second},Rest2}=pop(NewStack),
-    %%io:format("in excel_rev_comp:reverse_compile for Operator Second is ~p~n-Rest2 is ~p~n",[Second,NewStack]),
     Formula = push(Rest2,{string,lists:flatten([Second," ",First])}),
-    %%io:format("in excel_rev_comp:reverse_compile operator T is ~p~n-Formula are ~p~n-Residuum is ~p~n",
-    %%    [T,Formula,Residuum]),
-    reverse_compile(T,TokenArray,Formula,Residuum,Tables,FileOut);
+    reverse_compile(Index,T,TokenArray,Formula,Residuum,Tables);
 
 %%	tList   
-reverse_compile([{list,{tList,[{op_type,binary}],{return,reference}}}|T],TokenArray,Stack,Residuum,Tables,FileOut)  ->
-    io:format("~nin excel_rev_comp:reverse_compile for tList~n"),
-    %% io:format("~nin excel_rev_comp:reverse_compile for tList Stack is ~p~n",[Stack]),
+reverse_compile(Index,[{list,{tList,[{op_type,binary}],{return,reference}}}|T],TokenArray,Stack,Residuum,Tables)  ->
     {First,NewStack}=pop(Stack),
     {Second,Rest2}=pop(NewStack),
     Formula = push(Rest2,{Second,comma,First}),
     %% io:format("in excel_rev_comp:reverse_compile for tList - dinnae understand!~n"),
-    reverse_compile(T,TokenArray,Formula,Residuum,Tables,FileOut);
+    reverse_compile(Index,T,TokenArray,Formula,Residuum,Tables);
 	
 %%	tRange  
 	
 %%	tUplus
-reverse_compile([{plus,{tPlus,[{op_type,unary}],{return,_Value}}}|T],
-    TokenArray,Stack,Residuum,Tables,FileOut) ->
-  io:format("~nin excel_rev_comp:reverse_compile for tUplus Stack is ~p~n",[Stack]),
+reverse_compile(Index,[{plus,{tPlus,[{op_type,unary}],{return,_Value}}}|T],
+    TokenArray,Stack,Residuum,Tables) ->
   {First,NewStack}=pop(Stack),
   Formula = push(NewStack,{string,"+"++to_str(First)}),
-  %%io:format("in excel_rev_comp:reverse_compile operator T is ~p~n-Formula are ~p~n-Residuum is ~p~n",
-  %%[T,Formula,Residuum]),
-  reverse_compile(T,TokenArray,Formula,Residuum,Tables,FileOut);
+  reverse_compile(Index,T,TokenArray,Formula,Residuum,Tables);
 
 %%	tUminus 
-reverse_compile([{minus,{tUminus,[{op_type,unary}],{return,_Value}}}|T],
-    TokenArray,Stack,Residuum,Tables,FileOut) ->
-  io:format("~nin excel_rev_comp:reverse_compile for tUminus Stack is ~p~n",[Stack]),
+reverse_compile(Index,[{minus,{tUminus,[{op_type,unary}],{return,_Value}}}|T],
+    TokenArray,Stack,Residuum,Tables) ->
   {First,NewStack}=pop(Stack),
   Formula = push(NewStack,{string,"-"++to_str(First)}),
-  %%io:format("in excel_rev_comp:reverse_compile operator T is ~p~n-Formula are ~p~n-Residuum is ~p~n",
-  %%[T,Formula,Residuum]),
-  reverse_compile(T,TokenArray,Formula,Residuum,Tables,FileOut);
+  reverse_compile(Index,T,TokenArray,Formula,Residuum,Tables);
 
 %%	tPercent
-reverse_compile([{percent,{tPercent,[{op_type,unary}],{return,_Value}}}|T],
-    TokenArray,Stack,Residuum,Tables,FileOut) ->
-  io:format("~nin excel_rev_comp:reverse_compile for tPercent Stack is ~p~n",[Stack]),
+reverse_compile(Index,[{percent,{tPercent,[{op_type,unary}],{return,_Value}}}|T],
+    TokenArray,Stack,Residuum,Tables) ->
   {First,NewStack}=pop(Stack),
   Formula = push(NewStack,{string,to_str(First)++"%"}),
-  %% io:format("in excel_rev_comp:reverse_compile operator T is ~p~n-Formula are ~p~n-Residuum is ~p~n",
-  %% [T,Formula,Residuum]),
-  reverse_compile(T,TokenArray,Formula,Residuum,Tables,FileOut);
+  reverse_compile(Index,T,TokenArray,Formula,Residuum,Tables);
 	
 %%	tParen  
-reverse_compile([{parentheses,{tParen,[],{return,none}}}|T],TokenArray,Stack,Residuum,Tables,FileOut) ->
+reverse_compile(Index,[{parentheses,{tParen,[],{return,none}}}|T],TokenArray,Stack,Residuum,Tables) ->
   {Last,Rest} = pop(Stack),
-  io:format("~nin excel_rev_comp:reverse_compile for Brackets~n-Stack is ~p~n-Last is ~p~n-Rest is ~p~n",
-            [Stack,Last,Rest]),
-  reverse_compile(T,TokenArray,push(Rest,{open,Last,close}),Residuum,Tables,FileOut);
+  reverse_compile(Index,T,TokenArray,push(Rest,{open,Last,close}),Residuum,Tables);
 	
 %%	tMissArg
-reverse_compile([{missing_argument,{tMissArg,[],{return,value}}}|T],
-  TokenArray,Stack,Residuum,Tables,FileOut)  ->
-    io:format("~nin excel_rev_comp:reverse_compile for tMissArg Stack is ~p~n",[Stack]),
+reverse_compile(Index,[{missing_argument,{tMissArg,[],{return,value}}}|T],
+  TokenArray,Stack,Residuum,Tables)  ->
     NewStack = push(Stack,{string,""}),
-    reverse_compile(T,TokenArray,NewStack,Residuum,Tables,FileOut);
+    reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
 	
 %%	tStr    
-reverse_compile([{string,{tStr,[{value,Binary}],
-  {return,value}}}|T],TokenArray,Stack,Residuum,Tables,FileOut)  ->
-    io:format("~nin excel_rev_comp:reverse_compile for tStr Stack is ~p~n",[Stack]),
+reverse_compile(Index,[{string,{tStr,[{value,Binary}],
+  {return,value}}}|T],TokenArray,Stack,Residuum,Tables)  ->
     NewStack = push(Stack,{string,binary_to_list(Binary)}),
-    reverse_compile(T,TokenArray,NewStack,Residuum,Tables,FileOut);
+    reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
 	
 %%	tNlr    
 	
 %%	tAttr   
-reverse_compile([{attributes,Attributes}|T],TokenArray,Stack,Residuum,Tables,FileOut)  ->
-    io:format("~nin excel_rev_comp:reverse_compile for tAttr Stack is ~p~n"++
-    "-Attributes are ~p~n",[Stack,Attributes]),
+reverse_compile(Index,[{attributes,Attributes}|T],TokenArray,Stack,Residuum,Tables)  ->
     NewStack = case Attributes of
       {tAttrVolatile,volatile_attribute,[],{return,none}}    -> Stack; % do nothing, don't care
       {tAttrIf,if_attribute,[{jump,_Jump}],{return,none}}     -> Stack; % do nothing, don't care
@@ -166,13 +147,13 @@ reverse_compile([{attributes,Attributes}|T],TokenArray,Stack,Residuum,Tables,Fil
       {tAttrSum,sum_attribute,[],{return,none}}              -> 
             SplitLen=length(Stack)-1,
             {Rest,FunArgs} = lists:split(SplitLen,Stack), % this is an attribute of SUM with 1 arg...
-            %% io:format("in excel_rev_comp:reverse_compile for tAttr Rest is ~p~n-"++
-            %%          "FunArgs is ~p~n",[Rest,FunArgs]),
-            push(Rest,{func,4,FunArgs}); % 4 if the index to the func SUM
+            push(Rest,{func,4,FunArgs}); % 4 is the index to the func SUM
       {tAttrAssign,assign_attribute,[],{return,none}}        -> Stack; % do nothing, don't care
       {tAttrSpace,special_character,
           [{char,_Type},{no_of_chars,_NoOfSpecChars}],
             {return,none}}                                   -> Stack; % do nothing, don't care
+    _List                                                    -> push(Stack,fucked7)   end,
+  reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 %% Can't be bothered to carefully replace the spaces in the functions...
@@ -192,121 +173,98 @@ reverse_compile([{attributes,Attributes}|T],TokenArray,Stack,Residuum,Tables,Fil
 %%          io:format("in excel_rev_comp:reverse_compile for tAttr, Rest2 is ~p~n-PArg is ~p~n",[Rest2,PArg]),
 %%          push(Rest2,{string, PArg});
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    _List                                                     -> push(Stack,fucked7) %tAttr_SpaceVolatile
-  end,
-  %% io:format("in excel_rev_com:reverse_compile for tAttr T is ~p~n-NewStack is ~p~n-Residuum is ~p~n",
-  %%          [T,NewStack,Residuum]),
-  reverse_compile(T,TokenArray,NewStack,Residuum,Tables,FileOut);
 	
 %%	tSheet  
 	
 %%	tEndSheet
 	
 %%	tErr
-reverse_compile([{error,{tErr,[{value,_Value}],{return,_Return}}}|T],
-        TokenArray,Stack,Residuum,Tables,FileOut)  ->
-    io:format("~nin excel_rev_comp:reverse_compile for tErr Stack is ~p~n",[Stack]),
+reverse_compile(Index,[{error,{tErr,[{value,_Value}],{return,_Return}}}|T],
+        TokenArray,Stack,Residuum,Tables)  ->
     NewStack = push(Stack,{string,"#REF!"}),
-    reverse_compile(T,TokenArray,NewStack,Residuum,Tables,FileOut);
+    reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
 	
 %%	tBool   
-reverse_compile([{boolean,{tBool,[{value,Value}],{return,value}}}|T],
-        TokenArray,Stack,Residuum,Tables,FileOut)  ->
-    io:format("~nin excel_rev_comp:reverse_compile for tBool Stack is ~p~n",[Stack]),
+reverse_compile(Index,[{boolean,{tBool,[{value,Value}],{return,value}}}|T],
+        TokenArray,Stack,Residuum,Tables)  ->
     Boolean = case Value of
            1 -> "TRUE";
            0 -> "FALSE"
         end,
     NewStack = push(Stack,{string,Boolean}),
-    reverse_compile(T,TokenArray,NewStack,Residuum,Tables,FileOut);
+    reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
 	
 %%	tInt    
-reverse_compile([{integer,{tInt,[{value,Val}],{return,value}}}|T],
-        TokenArray,Stack,Residuum,Tables,FileOut)  ->
-    io:format("~nin excel_rev_comp:reverse_compile for Int Integer is ~p~n-Stack is ~p~n",[Val,Stack]),
+reverse_compile(Index,[{integer,{tInt,[{value,Val}],{return,value}}}|T],
+        TokenArray,Stack,Residuum,Tables)  ->
     NewStack = push(Stack,{integer,Val}),
-    reverse_compile(T,TokenArray,NewStack,Residuum,Tables,FileOut);
+    reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
 	
 %%	tNum    
-reverse_compile([{number,{tNum,[{value,Val}],{return,value}}}|T],
-        TokenArray,Stack,Residuum,Tables,FileOut)  ->
-    io:format("~nin excel_rev_comp:reverse_compile for Num Number is ~p~n-Stack is ~p~n",[Val,Stack]),
+reverse_compile(Index,[{number,{tNum,[{value,Val}],{return,value}}}|T],
+        TokenArray,Stack,Residuum,Tables)  ->
     NewStack = push(Stack,{float,Val}),
-    reverse_compile(T,TokenArray,NewStack,Residuum,Tables,FileOut);
+    reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
 
 %%%
 %%% Classified Tokens
 %%%
 
 %%	tArray
-reverse_compile([{array_type,{tArray,[{type,_Type}],{return,_Reference}}}|T],
-        TokenArray,Stack,Residuum,Tables,FileOut)  ->
-        {{NoCols,NoRows,Array},ArrayTail}=read_const_val_array(TokenArray,FileOut),
-    io:format("~nin excel_rev_comp:reverse_compile for tArray Stack is ~p~n"++
-        "-Array is ~p~n",[Stack,Array]),
+reverse_compile(Index,[{array_type,{tArray,[{type,_Type}],{return,_Reference}}}|T],
+        TokenArray,Stack,Residuum,Tables)  ->
+        {{NoCols,NoRows,Array},ArrayTail}=read_const_val_array(TokenArray),
     ArrayString=array_to_str(Array,NoCols,NoRows),
-    %%io:format("~nin excel_rev_comp:reverse_compile for tArray ArrayString is ~p~n",[ArrayString]),
     NewStack=push(Stack,{string,ArrayString}),
-    reverse_compile(T,ArrayTail,NewStack,Residuum,Tables,FileOut);
+    reverse_compile(Index,T,ArrayTail,NewStack,Residuum,Tables);
 	
 %%	tFunc   
-reverse_compile([{functional_index,{Function,[{value,FuncVar},
-        {type,_Type}],{return,_Return}}}|T],TokenArray,Stack,Residuum,Tables,FileOut)
+reverse_compile(Index,[{functional_index,{Function,[{value,FuncVar},
+        {type,_Type}],{return,_Return}}}|T],TokenArray,Stack,Residuum,Tables)
         when Function =:= tFunc ; Function =:= tFuncVar ; 
         Function =:= tFuncVarV ;Function =:= tFuncVarR ; 
         Function =:= tFuncVarA ->
-    io:format("~nin excel_rev_comp:reverse_compile for tFunc~n-FuncVar is ~p~n"++
-        "-Function is ~p~n-TokenArray is ~p~n-Stack is ~p~n",
-        [FuncVar,Function,TokenArray,Stack]),
     NumArgs=macro_no_of_args(FuncVar),
-    io:format("in excel_rev_comp:reverse_compile for tFunc~n-NumArgs is ~p Stack is ~p~n",[NumArgs,Stack]),
     SplitLen=length(Stack)-NumArgs,
     {Rest,FunArgs} = lists:split(SplitLen,Stack),
-    %%io:format("in excel_rev_comp:reverse_compile for tFunc~n-FunArgs is ~p~n-Rest is ~p~n",[FunArgs,Rest]),
     NewStack = push(Rest,{func,FuncVar,FunArgs}),
-    %%io:format("in excel_rev_comp:reverse_compile for tFunc~n-NewStack is ~p~n-T is ~p~n",[NewStack,T]),
-    reverse_compile(T,TokenArray,NewStack,Residuum,Tables,FileOut);
+    reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
 	
 %%	tFuncVar
-reverse_compile([{var_func_idx,{Function,[{value,FuncVar},
+reverse_compile(Index,[{var_func_idx,{Function,[{value,FuncVar},
         {number_of_args,NumArgs},{user_prompt,_Prompt},{type,_Type}],
-        {return,_ReturnType}}}|T],TokenArray,Stack,Residuum,Tables,FileOut) when Function =:= tFuncVar ;
+        {return,_ReturnType}}}|T],TokenArray,Stack,Residuum,Tables) when Function =:= tFuncVar ;
         Function =:= tFuncVarV ;Function =:= tFuncVarR ; Function =:= tFuncVarA ->
-    io:format("~nin excel_rev_comp:reverse_compile for Functions II FuncVar is ~p "++
-       "NumArgs is ~p Stack is ~p~n",[FuncVar,NumArgs,Stack]),
-    %% {FunArgs,Rest} = lists:split(NumArgs,Stack),
     SplitLen=length(Stack)-NumArgs,
     {Rest,FunArgs} = lists:split(SplitLen,Stack),
     NewStack = push(Rest,{func,FuncVar,FunArgs}),
-    reverse_compile(T,TokenArray,NewStack,Residuum,Tables,FileOut);
+    reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
 
 %%	tName   
-reverse_compile([{name_index,{tName,[{value,_Value},{type,_Type}],{return,reference}}}|T],
-        TokenArray,Stack,Residuum,Tables,FileOut)  ->
-    io:format("~nin excel_rev_comp:reverse_compile for tName Stack is ~p~n",[Stack]),
-    NewStack = push(Stack,{string,"write the name lookup, ya bas!"}),
-    reverse_compile(T,TokenArray,NewStack,Residuum,Tables,FileOut);
+reverse_compile(Index,[{name_index,{tName,[{value,Value},{type,_Type}],{return,reference}}}|T],
+    TokenArray,Stack,Residuum,Tables)  ->
+  [{_Index,[_Index,_Type2,{name,BinName}]}]=excel_util:read(Tables,names,Value),
+  Name=binary_to_list(BinName),
+  NewStack = push(Stack,{string,Name}),
+  reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
 	
-%%	tRef    
-reverse_compile([{abs_ref,{tRef,[{value,{Row,Col,RowType,ColType}}|{type,_Type}],
-       {return,reference}}}|T],TokenArray,Stack,Residuum,Tables,FileOut) ->
-    io:format("in excel_rev_comp:reverse_compile for Absolute Reference~n"),
+%%	tRef
+reverse_compile(Index,[{abs_ref,{tRef,[{value,{Row,Col,RowType,ColType}}|{type,_Type}],
+       {return,reference}}}|T],TokenArray,Stack,Residuum,Tables) ->
     NewStack=push(Stack,{string,make_cell({Row,Col,RowType,ColType})}),
-    reverse_compile(T,TokenArray,NewStack,Residuum,Tables,FileOut);
+    reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
 	
 %%	tArea   
-reverse_compile([{absolute_area,{tArea,[[{start_cell,StartCell}|
-    {end_cell,EndCell}]|_R1],_R2}}|T],TokenArray,Stack,Residuum,Tables,FileOut) ->
-    io:format("in excel_rev_comp:reverse_compile for tArea~n"),
+reverse_compile(Index,[{absolute_area,{tArea,[[{start_cell,StartCell}|
+    {end_cell,EndCell}]|_R1],_R2}}|T],TokenArray,Stack,Residuum,Tables) ->
     Range=make_range(StartCell,EndCell),
     NewStack=push(Stack,{string,Range}),
-    reverse_compile(T,TokenArray,NewStack,Residuum,Tables,FileOut);
+    reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
 	
 %%	tMemArea
-reverse_compile([{memory_area,{tMemArea,[{value,MemArea},{type,_Type}],
-				   {return,reference}}}|T],TokenArray,Stack,Residuum,Tables,FileOut) ->
-    io:format("in excel_rev_comp:reverse_compile for tMemArea MemArea is ~p~n",
-        [MemArea]),
+reverse_compile(Index,[{memory_area,{tMemArea,[{value,_MemArea},{type,_Type}],
+				   {return,reference}}}|T],TokenArray,Stack,
+                                   Residuum,Tables) ->
     %% See discussion in Section 3.1.6 of excelfileformat.v1.40.pdf
     %%
     %% for tMemArea there is an appended set of tokens in the TokenArray
@@ -320,45 +278,64 @@ reverse_compile([{memory_area,{tMemArea,[{value,MemArea},{type,_Type}],
     %% whereas reverse compiling is only interested in the full
     %% range "A1:A2 A2:A3" and discards the TokenArray "A2"
     %% ie the first return variable in the next line
-    {_Array,ArrayTail}=excel_util:read_cell_range_add_list(TokenArray,FileOut),
+    {_Array,ArrayTail}=excel_util:read_cell_range_add_list(TokenArray,'16bit'),
     %% Given that this token holds a look up to the results of parsing
     %% the subsequent array we can just chuck it away.
-    reverse_compile(T,ArrayTail,Stack,Residuum,Tables,FileOut);
+    reverse_compile(Index,T,ArrayTail,Stack,Residuum,Tables);
 	
 %%	tMemErr 
-reverse_compile([{memory_err,{tMemErr,[{value,_Value},{type,_Type}],{return,reference}}}|T],
-  TokenArray,Stack,Residuum,Tables,FileOut) ->
-  io:format("~nin excel_rev_comp:reverse_compile for tMemFunc Stack is ~p~n",[Stack]),
+reverse_compile(Index,[{memory_err,{tMemErr,[{value,_Value},{type,_Type}],{return,reference}}}|T],
+  TokenArray,Stack,Residuum,Tables) ->
   %% this token does nothing for reverse compile - skip...
-  reverse_compile(T,TokenArray,Stack,Residuum,Tables,FileOut);
+  reverse_compile(Index,T,TokenArray,Stack,Residuum,Tables);
 	
 %%	tMemNoMem
 	
 %%	tMemFunc
-reverse_compile([{memory_function,{tMemFunc,[{value,_Value},{type,_Type}],{return,reference}}}|T],
-  TokenArray,Stack,Residuum,Tables,FileOut) ->
-  io:format("~nin excel_rev_comp:reverse_compile for tMemFunc Stack is ~p~n",[Stack]),
+reverse_compile(Index,[{memory_function,{tMemFunc,[{value,_Value},{type,_Type}],{return,reference}}}|T],
+  TokenArray,Stack,Residuum,Tables) ->
   %% this token does nothing for reverse compile - skip...
-  reverse_compile(T,TokenArray,Stack,Residuum,Tables,FileOut);
+  reverse_compile(Index,T,TokenArray,Stack,Residuum,Tables);
 
 %%	tRefErr 
-reverse_compile([{reference_error,{tRefErr,[{type,_Type}],{return,_Return}}}|T],
-        TokenArray,Stack,Residuum,Tables,FileOut)  ->
-    io:format("~nin excel_rev_comp:reverse_compile for tErr Stack is ~p~n",[Stack]),
+reverse_compile(Index,[{reference_error,{tRefErr,[{type,_Type}],{return,_Return}}}|T],
+        TokenArray,Stack,Residuum,Tables)  ->
     NewStack = push(Stack,{string,"#REF!"}),
-    reverse_compile(T,TokenArray,NewStack,Residuum,Tables,FileOut);
+    reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
 	
 %%	tAreaErr
-reverse_compile([{area_error,{tAreaErr,[{type,_Type}],{return,reference}}}|T],
-  TokenArray,Stack,Residuum,Tables,FileOut) ->
-  io:format("~nin excel_rev_comp:reverse_compile for tAreaErr Stack is ~p~n",[Stack]),
+reverse_compile(Index,[{area_error,{tAreaErr,[{type,_Type}],{return,reference}}}|T],
+  TokenArray,Stack,Residuum,Tables) ->
   NewStack = push(Stack,{string,"#REF!"}),
-  reverse_compile(T,TokenArray,NewStack,Residuum,Tables,FileOut);
+  reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
 	
 %%	tRefN   
+reverse_compile(Index,[{relative_reference,{tRefN,[{value,{Row,Col,RowType,ColType}},{type,_Type}],
+       {return,reference}}}|T],TokenArray,Stack,Residuum,Tables) ->
+    NewStack=push(Stack,{string,make_cell({Row,Col,RowType,ColType})}),
+    reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
 
 %%	tAreaN  
-	
+reverse_compile(Index,[{relative_area,{tAreaN,[NewDetails|{type,Type}],{return,reference}}}|T],
+      TokenArray,Stack,Residuum,Tables) ->
+      io:format("in excel_rev_comp:reverse_compile for tAreaN~n-NewDetails is ~p~n",[NewDetails]),
+      {{sheet,Sheet},{row_index,TopRow},{col_index,TopCol}}=Index,
+      [{start_cell,{StartRow,StartCol,_,_}}|{end_cell,{EndRow,EndCol,_,_}}]=NewDetails,
+        %% these addresses are relative and must be added to the top point
+        %% Excel has a row limit of 65535 (2^16) rows and a column limit of
+        %% 256 (2^8) columns so the relative addresses must 'overflow' those
+        %% bounds
+        NewStartRow=StartRow+TopRow-65535*erlang:round((StartRow+TopRow)/65535),
+        NewStartCol=StartCol+TopCol+1-255*erlang:round((StartCol+TopCol)/255),
+        NewEndRow=EndRow+TopRow-65535*erlang:round((EndRow+TopRow)/65535),
+        NewEndCol=EndCol+TopCol+1-255*erlang:round((EndCol+TopCol)/255),
+        %% by definition it is a relative address so just 'make it so'
+        StartCell=make_cell({NewStartRow,NewStartCol,rel_row,rel_col}),
+        EndCell=make_cell({NewEndRow,NewEndCol,rel_row,rel_col}),
+        NewRange=StartCell++":"++EndCell,
+        NewStack=push(Stack,{string,NewRange}),
+  reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
+      
 %%	tMemAreaN
 	
 %%	tMemNoMemN	
@@ -366,43 +343,35 @@ reverse_compile([{area_error,{tAreaErr,[{type,_Type}],{return,reference}}}|T],
 %%	tFuncCE 
 	
 %%	tNameX  
-reverse_compile([{name_xref,{tNameX,[{reference_index,_RefIndex},{name_index,_NameIndex},
+reverse_compile(Index,[{name_xref,{tNameX,[{reference_index,RefIndex},{name_index,NameIndex},
     {type,reference}],{return,reference}}}|T],
-    TokenArray,Stack,Residuum,Tables,FileOut) ->
-  io:format("~nin excel_rev_comp:reverse_compile for tNameX Stack is ~p~n",[Stack]),
-  %% this token does nothing for reverse compile - skip...
-  NewStack = push(Stack,{string,"write the name lookup, ya bas!"}),
-  reverse_compile(T,TokenArray,NewStack,Residuum,Tables,FileOut);
+    TokenArray,Stack,Residuum,Tables) ->
+  io:format("in excel_rev_comp:reverse_compile for tNameX RefIndex is ~p and NameIndex is ~p~n",
+      [RefIndex,NameIndex]),
+  Name=get_ref_name(RefIndex,NameIndex,Tables),
+  NewStack = push(Stack,{string,Name}),
+  reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
 	
 %%	tRef3d  	
-reverse_compile([{three_dee_reference,{tRef3d,[{reference_index,RefIdx},
+reverse_compile(Index,[{three_dee_reference,{tRef3d,[{reference_index,RefIdx},
       Reference,{type,_Type}],{return,_ReturnType}}}|T],
-      TokenArray,Stack,Residuum,Tables,FileOut) ->
-    io:format("in excel_rev_comp for tRef3d~n"),
-    Return=excel_util:read(Tables,sheetnames,{index,RefIdx}),
-    %%io:format("in excel_rev_comp for tRef3d Return is ~p~n",[Return]),
-    [{{_,_},[{_,SheetName}]}]=Return,
+      TokenArray,Stack,Residuum,Tables) ->
+    SheetRef=get_sheet_ref(RefIdx,Tables),
     Cell=make_cell(Reference),
-    ThreeDRef=SheetName++"!"++Cell,
-    %%io:format("in excel_rev_comp:reverse_compile for tRef3d~n"++
-    %%    "-Stack is ~p~n-ThreeDRef is ~p~n",[Stack,ThreeDRef]),
+    ThreeDRef=SheetRef++"!"++Cell,
     NewStack=push(Stack,{string,ThreeDRef}),
-    reverse_compile(T,TokenArray,NewStack,Residuum,Tables,FileOut);
+    reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
   
 %%	tArea3d 
-reverse_compile([{three_dee_area,{tArea3d,[{reference_index,RefIdx},
+reverse_compile(Index,[{three_dee_area,{tArea3d,[{reference_index,RefIdx},
       Reference,{type,_Type}],{return,_ReturnType}}}|T],
-      TokenArray,Stack,Residuum,Tables,FileOut) ->
-    [{{_,_},[{_,SheetName}]}]=excel_util:read(Tables,sheetnames,{index,RefIdx}),
-    io:format("in excel_rev_comp for tArea3d Reference is ~p~n",[Reference]),
+      TokenArray,Stack,Residuum,Tables) ->
+    SheetRef=get_sheet_ref(RefIdx,Tables),
     [{start_cell,Ref1}|{end_cell,Ref2}]=Reference,
     Range=make_range(Ref1,Ref2),
-    ThreeDRef=SheetName++"!"++Range,
-    %% io:format("in excel_rev_comp:reverse_compile for tArea3d~n"++
-    %%    "-Stack is ~p~n-ThreeDRef is ~p~n",[Stack,ThreeDRef]),
+    ThreeDRef=SheetRef++"!"++Range,
     NewStack=push(Stack,{string,ThreeDRef}),
-    reverse_compile(T,TokenArray,NewStack,Residuum,Tables,FileOut);
-
+    reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
 
 %%	tRefErr3d
 	
@@ -411,11 +380,38 @@ reverse_compile([{three_dee_area,{tArea3d,[{reference_index,RefIdx},
 %%%%%%%%%%%%%%%%%%%%%%
 
 %% This will catch missed out stuff...
-reverse_compile([Head|T],TokenArray,Stack,Residuum,Tables,FileOut) ->
-    io:format("~nin excel_rev_comp:reverse_compile for What's This? Head is ~p~n",[Head]),
-    exit("missing tokens in excel_rev_comp:reverse_compile"),
-    excel_util:put_log(FileOut++".rev_comp",io_lib:fwrite("Missing Token is ~p",[Head])),
-    reverse_compile(T,TokenArray,Stack,Residuum,Tables,FileOut).
+reverse_compile(Index,[Head|T],TokenArray,Stack,Residuum,Tables) ->
+    %%exit("missing tokens in excel_rev_comp:reverse_compile"),
+    io:format("in reverse compile missing tokens are ~p~n",[Head]),
+    reverse_compile(Index,T,TokenArray,Stack,Residuum,Tables).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                         %%%
+%%% Internal functions                                                      %%%
+%%%                                                                         %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Looks up an external reference from the Supbook
+get_ref_name(RefIndex,NameIndex,Tables)->
+  NameTable=excel_util:read(Tables,externalrefs,RefIndex),
+  io:format("in excel_rev_comp:get_ref_name NameTable is ~p~n",[NameTable]),
+  "fix me - hubba-hubba".
+
+%% Looks up a reference to an externsheet and turns it into a sheet ref
+get_sheet_ref(Index,Tables)->
+  [{{_,_},RefList}]=excel_util:read(Tables,externsheets,Index),
+  {_,{_,FirstSheet}}=lists:keysearch(firstsheet,1,RefList),
+  {_,{_,LastSheet}} =lists:keysearch(lastsheet,1,RefList),
+  SheetRef = case FirstSheet of
+    65535     -> "#REF";
+    LastSheet -> [{{_,_},[{_,FirstSheetRef}]}]=excel_util:read(Tables,sheetnames,FirstSheet),
+                  FirstSheetRef;
+    _Other    -> [{{_,_},[{_,FirstSheetRef}]}]=excel_util:read(Tables,sheetnames,FirstSheet),
+                 [{{_,_},[{_,LastSheetRef}]}] =excel_util:read(Tables,sheetnames,LastSheet),
+                  FirstSheetRef++":"++LastSheetRef
+  end,
+  SheetRef.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                         %%%
@@ -426,79 +422,59 @@ reverse_compile([Head|T],TokenArray,Stack,Residuum,Tables,FileOut) ->
 
 %% Read a Constant Value Array
 %% defined in Section 2.5.8 of excelfileformatV1-40.pdf
-read_const_val_array(Bin,FileOut)->
+read_const_val_array(Bin)->
   %%io:format("in excel_rev_comp:read_const_val_array Bin is ~p~n",[Bin]),
   <<NoCols:8/little-unsigned-integer,
     NoRows:16/little-unsigned-integer,
     Rest/binary>>=Bin,
     Sz=(NoCols+1)*(NoRows+1),
-    %%io:format("in excel_rev_comp:read_const_val_array NoCols is ~p~n"++
-    %%  "NoRows is ~p~nSz is ~p~n",[NoCols,NoRows,Sz]),
-    {Array,ArrayTail}= read_token_array(Sz,Rest,FileOut),
+    {Array,ArrayTail}= read_token_array(Sz,Rest),
     {{NoCols+1,NoRows+1,Array},ArrayTail}.
 
 %% This function parses the token array
 %% defined in Section 2.5.7 of excelfileformatV1-40.pdf
-read_token_array(N,Array,FileOut)->
+read_token_array(N,Array)->
   %%io:format("in excel_rev_comp:read_token_array Array is ~p~n",[Array]),
-  read_token_array(N,Array,[],FileOut).
+  read_token_array(N,Array,[]).
 
-read_token_array(0,Bin,Residuum,_FileOut)->
+read_token_array(0,Bin,Residuum)->
   {lists:reverse(Residuum),Bin};
 read_token_array(N,<<?EmptyArrayEl:8/little-unsigned-integer,
     _NotUsed:8/binary,
-    Rest/binary>>,Residuum,FileOut)->
-    %%io:format("in excel_rev_comp:read_token_array for EmptyArrayEl~n"),
-  read_token_array(N-1,Rest,[{string,""}|Residuum],FileOut);
+    Rest/binary>>,Residuum)->
+  read_token_array(N-1,Rest,[{string,""}|Residuum]);
 read_token_array(N,<<?NumberArrayEl:8/little-unsigned-integer,
     Float:64/little-float,
-    Rest/binary>>,Residuum,FileOut)->
-    %%io:format("in excel_rev_comp:read_token_array for NumberArrayEl Float is ~p~n",
-    %%    [Float]),
-  read_token_array(N-1,Rest,[{float,Float}|Residuum],FileOut);
+    Rest/binary>>,Residuum)->
+  read_token_array(N-1,Rest,[{float,Float}|Residuum]);
 read_token_array(N,<<?StringArrayEl:8/little-unsigned-integer,
-  Rest/binary>>,Residuum,FileOut)->
-  %%io:format("in excel_rev_comp:read_token_array for StringArrayEl Rest is ~p~n",
-  %%  [Rest]),
+  Rest/binary>>,Residuum)->
   %% The index is always 16 bits in this instance - see note in Section 2.5.7
   %% of excelfileformatV1-40.pdf
   %% so we jump to the index length of 2 (2 time 8 bits)...
     <<Len:8/little-unsigned-integer,
       NFlags:8/little-unsigned-integer,
       R3/binary>>=Rest,
-    BinLen=excel_util:get_len_CRS_Uni16(Len,2,R3,NFlags,FileOut),
-    %%io:format("in excel_tokens:read_token_array for tStr BinLen is ~p~n",[BinLen]),
+    BinLen=excel_util:get_len_CRS_Uni16(Len,2,R3,NFlags),
     %% The 2nd byte which contains the encoding flags needs to be included...
     %% if the String is Rich Text or Asian this next bit might blow up
     %% (who knows!)
     <<StrBin:BinLen/binary,R4/binary>>=Rest,
-    {[{_,String2}],_,_}=excel_util:parse_CRS_Uni16(StrBin,2,FileOut),
-%%  <<StringSz:16/little-unsigned-integer,NotUsed/binary>>=Rest,
-%%  io:format("in excel_rev_comp:read_token_array StringSZ is ~p~n",[StringSz]),
-%%  {[{Type,String2}],Len,_}=excel_util:parse_CRS_Uni16(Rest,2,FileOut),
-%%  io:format("in excel_rev_comp:read_token_array String2 is ~p~n",[String2]),
-%%  %% Now cut out the string from Rest
-%%  Len2=Len+1,
-%%  <<CutOut:Len2/binary,Rest2/binary>>=Rest,
-%%  io:format("in excel_rev_comp:read_token_array Rest2 is ~p~n",[Rest2]),
-%%  read_token_array(N-1,Rest2,[{string,binary_to_list(String2)}|Residuum],FileOut);
-  read_token_array(N-1,R4,[{string,binary_to_list(String2)}|Residuum],FileOut);
+    String2=excel_util:get_utf8(excel_util:parse_CRS_Uni16(StrBin,2)),
+  read_token_array(N-1,R4,[{string,"\""++String2++"\""}|Residuum]);
 read_token_array(N,<<?BooleanArrayEl:8/little-unsigned-integer,
     Boolean:8/little-unsigned-integer,
     _NotUsed:7/binary,
-    Rest/binary>>,Residuum,FileOut)->
-    %%io:format("in excel_rev_comp:read_token_array for BooleanArrayEl~n"),
+    Rest/binary>>,Residuum)->
     Value = case Boolean of
      0 -> "FALSE";
      1 -> "TRUE"
   end,
-  %%io:format("in excel_rev_comp:read_token_array Boolean is ~p~n",[Boolean]),
-  read_token_array(N-1,Rest,[{string,Value}|Residuum],FileOut);
+  read_token_array(N-1,Rest,[{string,Value}|Residuum]);
 read_token_array(N,<<?ErrorArrayEl:8/little-unsigned-integer,
     Error:8/little-unsigned-integer,
     _NotUsed:7/binary,
-    Rest/binary>>,Residuum,FileOut)->
-    %%io:format("in excel_rev_comp:read_token_array for ErrorArrayEl~n"),
+    Rest/binary>>,Residuum)->
   Value = case Error of
       ?NullError    -> "#NULL!";
       ?DivZeroError -> "#DIV/0!";
@@ -508,9 +484,7 @@ read_token_array(N,<<?ErrorArrayEl:8/little-unsigned-integer,
       ?NumError     -> "#NUM!";
       ?NAError      -> "N/A"
   end,
-    %%io:format("in excel_rev_comp:read_token_array for ErrorArrayEl Error is ~p~n",
-    %%    [Error]),
-  read_token_array(N-1,Rest,[{string,Value}|Residuum],FileOut).
+  read_token_array(N-1,Rest,[{string,Value}|Residuum]).
 
 %%--------------------------------------------------------------------
 %% Function:    implode/2
@@ -521,17 +495,14 @@ read_token_array(N,<<?ErrorArrayEl:8/little-unsigned-integer,
 %%--------------------------------------------------------------------
 implode(List, Token) ->
     F = fun(X, Acc) ->
-        UTok = case lists:last(List) of
-            X -> [];
-            _ -> Token
-        end,
         if
-            is_integer(X) -> Acc ++ integer_to_list(X) ++ UTok;
-            is_float(X)   -> Acc ++ to_str({float,X}) ++ UTok; % we want a float like "2.00000" to come back as "2"
-            true          -> Acc ++ X ++ UTok
+            is_integer(X) -> [Token,integer_to_list(X)|Acc];
+            is_float(X)   -> [Token,to_str({float,X})|Acc]; % float like "2.000" to come back as "2"
+            true          -> [Token,X|Acc]
         end
     end,
-    lists:foldl(F, [], List).
+    [_TrailingToken|RealList]=lists:foldl(F, [], List),
+    lists:flatten(lists:reverse(RealList)).
 
 %%% set of functions used by reverse_compile to generate the actual 
 %%% Formula Strings that are in the cells
@@ -557,7 +528,19 @@ R = fun(Item) ->
     Other    -> to_str(Other)
     end
   end,
-  macro_to_string(Var)++"("++implode(lists:map(R,Args),",")++")";
+  %% If the Value of Var is 255 then this is a non-excel function and the 'first arg' is the name
+  %% that the user actually typed in
+  case Var of
+    255    -> [{string,FuncName}|Args2]=Args,
+             case Args2 of
+               [] -> FuncName++"()";
+               _  -> FuncName++"("++implode(lists:map(R,Args2),",")++")"
+             end;
+    _Other -> case Args of
+               [] -> macro_to_string(Var)++"()";
+               _  -> macro_to_string(Var)++"("++implode(lists:map(R,Args),",")++")"
+             end
+  end;
 to_str([])  -> "";
 to_str({H}) -> to_str(H);
 to_str([H]) -> to_str(H);
@@ -568,40 +551,33 @@ to_str({integer,Val}) -> integer_to_list(Val);
 to_str({float,Val}) ->
   case (Val-round(Val)) of
     0.0 -> integer_to_list(round(Val));
-    _   -> float_to_list(Val)
+    _   -> String=mochinum:digits(Val),
+            {_,String2,_}=regexp:gsub(String,[e],$e),
+            String2
   end;
 to_str({abs_ref,Y,X,rel_row,rel_col}) -> util2:make_b26(X)++integer_to_list(Y);
 to_str({abs_ref,Y,X,abs_row,rel_col}) -> util2:make_b26(X)++"$"++integer_to_list(Y);
 to_str({abs_ref,Y,X,rel_row,abs_col}) -> "$"++util2:make_b26(X)++integer_to_list(Y);
 to_str({abs_ref,Y,X,abs_row,abs_col}) -> "$"++util2:make_b26(X)++"$"++integer_to_list(Y).
-%%to_str({array1D,Array}) -> array_to_str(Array,["{"]).
 
 %% builds up 2D arrays - 1st dimension is given by "," and second by ";"
-array_to_str(Array,NoCols,_NoRows) -> array_to_str(Array,NoCols,1,["{"]).
+array_to_str(Array,NoCols,_NoRows) -> 
+  array_to_str(Array,NoCols,1,["{"]).
 
 array_to_str([],_NoCols,_N,[_Comma|Tail]) -> % cut off the additional ","
   TokenArray=lists:reverse(["}"|Tail]),
-  %%io:format("in excel_rev_comp:array_to_str TokenArray is ~p~n",[TokenArray]),
   lists:flatten(TokenArray);
 array_to_str([H|T],NoCols,NoCols,Residuum)-> % list seperator is a semi-colon
-  io:format("in excel_rev_comp:array_to_str H is ~p T is ~p~n-Residuuum is ~p~n",
-      [H,T,Residuum]),
   NewResiduum=[to_str(H)|Residuum],
   NewResiduum2=[";"|NewResiduum],
-  %%io:format("in excel_rev_comp:array_to_str NewResiduuum2 is ~p~n",[NewResiduum2]),
   array_to_str(T,NoCols,1,NewResiduum2);
 array_to_str([H|T],NoCols,N,Residuum)-> % list seperator is a comma
-  %%io:format("in excel_rev_comp:array_to_str H is ~p T is ~p~n-Residuuum is ~p~n",
-  %%    [H,T,Residuum]),
-  %%io:format("in excel_rev_comp:array_to_str NoCols is ~p N is ~p~n",[NoCols,N]),
   NewResiduum=[to_str(H)|Residuum],
   NewResiduum2=[","|NewResiduum],
-  %%io:format("in excel_rev_comp:array_to_str NewResiduuum2 is ~p~n",[NewResiduum2]),
   array_to_str(T,NoCols,N+1,NewResiduum2).
 
 push([],Val)    -> [lists:append([],Val)];
 push(List,Val)  -> 
-  %%io:format("in excel_rev_comp:push List is ~p~n- Val is ~p~n",[List,Val]),
   lists:reverse(lists:flatten([Val,lists:reverse(List)])).
 
 pop([H|[]]) -> {H,[]};
@@ -610,10 +586,7 @@ pop(List)   -> [Pop|NewList]=lists:reverse(List),
 
 %% this function makes a range from the start and end cell specifications
 make_range(StartCell,EndCell)->
-  %%io:format("in excel_rev_comp:make_range StartCell is ~p~n-EndCell is ~p~n",
-  %%  [StartCell,EndCell]),
     Return=make_cell(StartCell)++":"++make_cell(EndCell),
-    %%io:format("in excel_rev_comp Return is ~p~n",[Return]),
     Return.
 
 %% make a cell from 0-Indexed Row and Column indices
@@ -841,7 +814,7 @@ macro_to_string(285) -> "FLOOR";
 macro_to_string(286) -> "GAMMADIST";
 macro_to_string(287) -> "GAMMAINV";
 macro_to_string(288) -> "CEILING";
-macro_to_string(289) -> "HYPGEOMVERT";
+macro_to_string(289) -> "HYPGEOMDIST";
 %%  290=LOGNORMDIST,LOGINV,NEGBINOMDIST,NORMDIST,NORMSDIST,NORMINV,NORMSINV,STANDARDIZE,ODD,PERMUT
 macro_to_string(290) -> "LOGNORMDIST";
 macro_to_string(291) -> "LOGINV";
