@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_nested_functions.xls
-% Generated on: Sun Feb 17 21:42:35 +0000 2008
+% Generated on: Fri Feb 22 19:04:06 +0000 2008
 
 -module(b_nested_functions_SUITE).
 -compile(export_all).
@@ -19,8 +19,9 @@ init_per_suite(Config) ->
         {_,Data2}                                -> Data2;
         {_,number,Data2} when is_float(Data2)   -> float_to_list(Data2);
         {_,number,Data2} when is_integer(Data2) -> integer_to_list(Data2);
-        {_,boolean,true}                        -> "true";
-        {_,boolean,false}                       -> "false"
+        {_,error,Error}                          -> Error;
+        {_,boolean,true}                         -> "true";
+        {_,boolean,false}                        -> "false"
       end,
       Path="/"++Sheet++"/",
       Cell=util2:make_b26(ColIdx+1)++integer_to_list(RowIdx+1),

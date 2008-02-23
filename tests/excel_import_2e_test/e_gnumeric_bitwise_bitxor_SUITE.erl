@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_bitwise_bitxor.xls
-% Generated on: Sun Feb 17 21:42:53 +0000 2008
+% Generated on: Fri Feb 22 19:04:23 +0000 2008
 
 -module(e_gnumeric_bitwise_bitxor_SUITE).
 -compile(export_all).
@@ -19,8 +19,9 @@ init_per_suite(Config) ->
         {_,Data2}                                -> Data2;
         {_,number,Data2} when is_float(Data2)   -> float_to_list(Data2);
         {_,number,Data2} when is_integer(Data2) -> integer_to_list(Data2);
-        {_,boolean,true}                        -> "true";
-        {_,boolean,false}                       -> "false"
+        {_,error,Error}                          -> Error;
+        {_,boolean,true}                         -> "true";
+        {_,boolean,false}                        -> "false"
       end,
       Path="/"++Sheet++"/",
       Cell=util2:make_b26(ColIdx+1)++integer_to_list(RowIdx+1),
@@ -74,8988 +75,8988 @@ bitxor_k5_test(_Config) ->
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k5"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k16_test(doc) -> [{userdata,[{""}]}];
 bitxor_k16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k16"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k27_test(doc) -> [{userdata,[{""}]}];
 bitxor_k27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k27"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k38_test(doc) -> [{userdata,[{""}]}];
 bitxor_k38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k38"),
   Expected="24.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k49_test(doc) -> [{userdata,[{""}]}];
 bitxor_k49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k49"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k60_test(doc) -> [{userdata,[{""}]}];
 bitxor_k60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k60"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k11_test(doc) -> [{userdata,[{""}]}];
 bitxor_k11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k11"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k22_test(doc) -> [{userdata,[{""}]}];
 bitxor_k22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k22"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k33_test(doc) -> [{userdata,[{""}]}];
 bitxor_k33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k33"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k44_test(doc) -> [{userdata,[{""}]}];
 bitxor_k44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k55_test(doc) -> [{userdata,[{""}]}];
 bitxor_k55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k55"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k6_test(doc) -> [{userdata,[{""}]}];
 bitxor_k6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k6"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k17_test(doc) -> [{userdata,[{""}]}];
 bitxor_k17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k17"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k28_test(doc) -> [{userdata,[{""}]}];
 bitxor_k28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k28"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k39_test(doc) -> [{userdata,[{""}]}];
 bitxor_k39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k39"),
   Expected="25.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k50_test(doc) -> [{userdata,[{""}]}];
 bitxor_k50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k50"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k61_test(doc) -> [{userdata,[{""}]}];
 bitxor_k61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k61"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k1_test(doc) -> [{userdata,[{""}]}];
 bitxor_k1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k1"),
   Expected="String number Leading space",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k12_test(doc) -> [{userdata,[{""}]}];
 bitxor_k12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k12"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k34_test(doc) -> [{userdata,[{""}]}];
 bitxor_k34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k34"),
   Expected="20.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k45_test(doc) -> [{userdata,[{""}]}];
 bitxor_k45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k45"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k56_test(doc) -> [{userdata,[{""}]}];
 bitxor_k56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k56"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k7_test(doc) -> [{userdata,[{""}]}];
 bitxor_k7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k7"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k18_test(doc) -> [{userdata,[{""}]}];
 bitxor_k18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k18"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k29_test(doc) -> [{userdata,[{""}]}];
 bitxor_k29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k29"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k40_test(doc) -> [{userdata,[{""}]}];
 bitxor_k40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k40"),
   Expected="24.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k51_test(doc) -> [{userdata,[{""}]}];
 bitxor_k51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k51"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k62_test(doc) -> [{userdata,[{""}]}];
 bitxor_k62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k62"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k2_test(doc) -> [{userdata,[{""}]}];
 bitxor_k2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k2"),
   Expected=" 24",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k13_test(doc) -> [{userdata,[{""}]}];
 bitxor_k13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k13"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k35_test(doc) -> [{userdata,[{""}]}];
 bitxor_k35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k35"),
   Expected="15.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k46_test(doc) -> [{userdata,[{""}]}];
 bitxor_k46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k46"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k57_test(doc) -> [{userdata,[{""}]}];
 bitxor_k57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k57"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k8_test(doc) -> [{userdata,[{""}]}];
 bitxor_k8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k19_test(doc) -> [{userdata,[{""}]}];
 bitxor_k19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k19"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k30_test(doc) -> [{userdata,[{""}]}];
 bitxor_k30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k41_test(doc) -> [{userdata,[{""}]}];
 bitxor_k41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k52_test(doc) -> [{userdata,[{""}]}];
 bitxor_k52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k52"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k63_test(doc) -> [{userdata,[{""}]}];
 bitxor_k63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k63"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k3_test(doc) -> [{userdata,[{""}]}];
 bitxor_k3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k3"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k14_test(doc) -> [{userdata,[{""}]}];
 bitxor_k14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k14"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k25_test(doc) -> [{userdata,[{""}]}];
 bitxor_k25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k25"),
   Expected="String number Leading space",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k36_test(doc) -> [{userdata,[{""}]}];
 bitxor_k36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k36"),
   Expected="24896.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k58_test(doc) -> [{userdata,[{""}]}];
 bitxor_k58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k58"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k9_test(doc) -> [{userdata,[{""}]}];
 bitxor_k9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k9"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k20_test(doc) -> [{userdata,[{""}]}];
 bitxor_k20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k20"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k31_test(doc) -> [{userdata,[{""}]}];
 bitxor_k31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k31"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k42_test(doc) -> [{userdata,[{""}]}];
 bitxor_k42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k53_test(doc) -> [{userdata,[{""}]}];
 bitxor_k53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k53"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k64_test(doc) -> [{userdata,[{""}]}];
 bitxor_k64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k64"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k4_test(doc) -> [{userdata,[{""}]}];
 bitxor_k4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k4"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k15_test(doc) -> [{userdata,[{""}]}];
 bitxor_k15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k15"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k26_test(doc) -> [{userdata,[{""}]}];
 bitxor_k26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k26"),
   Expected=" 24",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k37_test(doc) -> [{userdata,[{""}]}];
 bitxor_k37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k37"),
   Expected="27.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k59_test(doc) -> [{userdata,[{""}]}];
 bitxor_k59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k59"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k10_test(doc) -> [{userdata,[{""}]}];
 bitxor_k10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k10"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k21_test(doc) -> [{userdata,[{""}]}];
 bitxor_k21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k21"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k32_test(doc) -> [{userdata,[{""}]}];
 bitxor_k32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k32"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k43_test(doc) -> [{userdata,[{""}]}];
 bitxor_k43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_k54_test(doc) -> [{userdata,[{""}]}];
 bitxor_k54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","k54"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v5_test(doc) -> [{userdata,[{""}]}];
 bitxor_v5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v5"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v16_test(doc) -> [{userdata,[{""}]}];
 bitxor_v16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v16"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v27_test(doc) -> [{userdata,[{""}]}];
 bitxor_v27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v27"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v38_test(doc) -> [{userdata,[{""}]}];
 bitxor_v38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v49_test(doc) -> [{userdata,[{""}]}];
 bitxor_v49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v49"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v60_test(doc) -> [{userdata,[{""}]}];
 bitxor_v60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v60"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v11_test(doc) -> [{userdata,[{""}]}];
 bitxor_v11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v11"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v22_test(doc) -> [{userdata,[{""}]}];
 bitxor_v22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v22"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v33_test(doc) -> [{userdata,[{""}]}];
 bitxor_v33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v33"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v44_test(doc) -> [{userdata,[{""}]}];
 bitxor_v44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v55_test(doc) -> [{userdata,[{""}]}];
 bitxor_v55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v55"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v6_test(doc) -> [{userdata,[{""}]}];
 bitxor_v6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v6"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v17_test(doc) -> [{userdata,[{""}]}];
 bitxor_v17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v17"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v28_test(doc) -> [{userdata,[{""}]}];
 bitxor_v28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v28"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v39_test(doc) -> [{userdata,[{""}]}];
 bitxor_v39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v50_test(doc) -> [{userdata,[{""}]}];
 bitxor_v50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v50"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v61_test(doc) -> [{userdata,[{""}]}];
 bitxor_v61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v61"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v1_test(doc) -> [{userdata,[{""}]}];
 bitxor_v1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v1"),
   Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v12_test(doc) -> [{userdata,[{""}]}];
 bitxor_v12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v12"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v34_test(doc) -> [{userdata,[{""}]}];
 bitxor_v34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v45_test(doc) -> [{userdata,[{""}]}];
 bitxor_v45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v45"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v56_test(doc) -> [{userdata,[{""}]}];
 bitxor_v56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v56"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v7_test(doc) -> [{userdata,[{""}]}];
 bitxor_v7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v7"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v18_test(doc) -> [{userdata,[{""}]}];
 bitxor_v18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v18"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v29_test(doc) -> [{userdata,[{""}]}];
 bitxor_v29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v29"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v40_test(doc) -> [{userdata,[{""}]}];
 bitxor_v40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v40"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v51_test(doc) -> [{userdata,[{""}]}];
 bitxor_v51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v51"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v62_test(doc) -> [{userdata,[{""}]}];
 bitxor_v62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v62"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v2_test(doc) -> [{userdata,[{""}]}];
 bitxor_v2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v2"),
   Expected="X3:X6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v13_test(doc) -> [{userdata,[{""}]}];
 bitxor_v13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v13"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v35_test(doc) -> [{userdata,[{""}]}];
 bitxor_v35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v46_test(doc) -> [{userdata,[{""}]}];
 bitxor_v46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v46"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v57_test(doc) -> [{userdata,[{""}]}];
 bitxor_v57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v57"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v8_test(doc) -> [{userdata,[{""}]}];
 bitxor_v8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v19_test(doc) -> [{userdata,[{""}]}];
 bitxor_v19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v19"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v30_test(doc) -> [{userdata,[{""}]}];
 bitxor_v30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v41_test(doc) -> [{userdata,[{""}]}];
 bitxor_v41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v52_test(doc) -> [{userdata,[{""}]}];
 bitxor_v52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v52"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v63_test(doc) -> [{userdata,[{""}]}];
 bitxor_v63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v63"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v3_test(doc) -> [{userdata,[{""}]}];
 bitxor_v3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v3"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v14_test(doc) -> [{userdata,[{""}]}];
 bitxor_v14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v14"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v25_test(doc) -> [{userdata,[{""}]}];
 bitxor_v25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v25"),
   Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v36_test(doc) -> [{userdata,[{""}]}];
 bitxor_v36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v58_test(doc) -> [{userdata,[{""}]}];
 bitxor_v58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v58"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v9_test(doc) -> [{userdata,[{""}]}];
 bitxor_v9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v9"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v20_test(doc) -> [{userdata,[{""}]}];
 bitxor_v20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v20"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v31_test(doc) -> [{userdata,[{""}]}];
 bitxor_v31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v31"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v42_test(doc) -> [{userdata,[{""}]}];
 bitxor_v42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v53_test(doc) -> [{userdata,[{""}]}];
 bitxor_v53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v53"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v64_test(doc) -> [{userdata,[{""}]}];
 bitxor_v64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v64"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v4_test(doc) -> [{userdata,[{""}]}];
 bitxor_v4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v4"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v15_test(doc) -> [{userdata,[{""}]}];
 bitxor_v15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v15"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v26_test(doc) -> [{userdata,[{""}]}];
 bitxor_v26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v26"),
   Expected="X3:X6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v37_test(doc) -> [{userdata,[{""}]}];
 bitxor_v37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v59_test(doc) -> [{userdata,[{""}]}];
 bitxor_v59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v59"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v10_test(doc) -> [{userdata,[{""}]}];
 bitxor_v10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v10"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v21_test(doc) -> [{userdata,[{""}]}];
 bitxor_v21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v21"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v32_test(doc) -> [{userdata,[{""}]}];
 bitxor_v32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v32"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v43_test(doc) -> [{userdata,[{""}]}];
 bitxor_v43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_v54_test(doc) -> [{userdata,[{""}]}];
 bitxor_v54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","v54"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a5_test(doc) -> [{userdata,[{""}]}];
 bitxor_a5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a5"),
   Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a16_test(doc) -> [{userdata,[{""}]}];
 bitxor_a16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a16"),
   Expected="Logical",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a27_test(doc) -> [{userdata,[{""}]}];
 bitxor_a27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a27"),
   Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a38_test(doc) -> [{userdata,[{""}]}];
 bitxor_a38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a38"),
   Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a49_test(doc) -> [{userdata,[{""}]}];
 bitxor_a49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a49"),
   Expected="320.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a11_test(doc) -> [{userdata,[{""}]}];
 bitxor_a11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a11"),
   Expected="String Number Leading space",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a22_test(doc) -> [{userdata,[{""}]}];
 bitxor_a22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a22"),
   Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a33_test(doc) -> [{userdata,[{""}]}];
 bitxor_a33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a33"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a44_test(doc) -> [{userdata,[{""}]}];
 bitxor_a44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a44"),
   Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a6_test(doc) -> [{userdata,[{""}]}];
 bitxor_a6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a6"),
   Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a17_test(doc) -> [{userdata,[{""}]}];
 bitxor_a17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a17"),
   Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a28_test(doc) -> [{userdata,[{""}]}];
 bitxor_a28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a28"),
   Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a39_test(doc) -> [{userdata,[{""}]}];
 bitxor_a39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a39"),
   Expected="Logical",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a50_test(doc) -> [{userdata,[{""}]}];
 bitxor_a50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a50"),
   Expected="7.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a1_test(doc) -> [{userdata,[{""}]}];
 bitxor_a1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a1"),
   Expected="bitxor(A,B)",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a12_test(doc) -> [{userdata,[{""}]}];
 bitxor_a12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a12"),
   Expected="Interger",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a34_test(doc) -> [{userdata,[{""}]}];
 bitxor_a34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a34"),
   Expected="String Number",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a45_test(doc) -> [{userdata,[{""}]}];
 bitxor_a45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a45"),
   Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a7_test(doc) -> [{userdata,[{""}]}];
 bitxor_a7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a7"),
   Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a18_test(doc) -> [{userdata,[{""}]}];
 bitxor_a18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a18"),
   Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a29_test(doc) -> [{userdata,[{""}]}];
 bitxor_a29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a29"),
   Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a40_test(doc) -> [{userdata,[{""}]}];
 bitxor_a40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a40"),
   Expected="Logical",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a2_test(doc) -> [{userdata,[{""}]}];
 bitxor_a2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a2"),
   Expected="A",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a13_test(doc) -> [{userdata,[{""}]}];
 bitxor_a13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a13"),
   Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a35_test(doc) -> [{userdata,[{""}]}];
 bitxor_a35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a35"),
   Expected="String Number Leading space",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a46_test(doc) -> [{userdata,[{""}]}];
 bitxor_a46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a46"),
   Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a8_test(doc) -> [{userdata,[{""}]}];
 bitxor_a8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a8"),
   Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a19_test(doc) -> [{userdata,[{""}]}];
 bitxor_a19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a19"),
   Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a30_test(doc) -> [{userdata,[{""}]}];
 bitxor_a30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a30"),
   Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a41_test(doc) -> [{userdata,[{""}]}];
 bitxor_a41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a41"),
   Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a3_test(doc) -> [{userdata,[{""}]}];
 bitxor_a3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a3"),
   Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a14_test(doc) -> [{userdata,[{""}]}];
 bitxor_a14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a14"),
   Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a25_test(doc) -> [{userdata,[{""}]}];
 bitxor_a25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a25"),
   Expected="bitxor(A,B)",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a36_test(doc) -> [{userdata,[{""}]}];
 bitxor_a36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a36"),
   Expected="Interger",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a9_test(doc) -> [{userdata,[{""}]}];
 bitxor_a9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a9"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a20_test(doc) -> [{userdata,[{""}]}];
 bitxor_a20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a20"),
   Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a31_test(doc) -> [{userdata,[{""}]}];
 bitxor_a31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a31"),
   Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a42_test(doc) -> [{userdata,[{""}]}];
 bitxor_a42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a42"),
   Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a4_test(doc) -> [{userdata,[{""}]}];
 bitxor_a4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a4"),
   Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a15_test(doc) -> [{userdata,[{""}]}];
 bitxor_a15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a15"),
   Expected="Logical",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a26_test(doc) -> [{userdata,[{""}]}];
 bitxor_a26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a26"),
   Expected="A",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a37_test(doc) -> [{userdata,[{""}]}];
 bitxor_a37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a37"),
   Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a10_test(doc) -> [{userdata,[{""}]}];
 bitxor_a10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a10"),
   Expected="String Number",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a21_test(doc) -> [{userdata,[{""}]}];
 bitxor_a21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a21"),
   Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a32_test(doc) -> [{userdata,[{""}]}];
 bitxor_a32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a32"),
   Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_a43_test(doc) -> [{userdata,[{""}]}];
 bitxor_a43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","a43"),
   Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l5_test(doc) -> [{userdata,[{""}]}];
 bitxor_l5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l5"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l16_test(doc) -> [{userdata,[{""}]}];
 bitxor_l16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l16"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l27_test(doc) -> [{userdata,[{""}]}];
 bitxor_l27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l27"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l38_test(doc) -> [{userdata,[{""}]}];
 bitxor_l38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l38"),
   Expected="24920.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l49_test(doc) -> [{userdata,[{""}]}];
 bitxor_l49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l49"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l60_test(doc) -> [{userdata,[{""}]}];
 bitxor_l60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l60"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l11_test(doc) -> [{userdata,[{""}]}];
 bitxor_l11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l11"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l22_test(doc) -> [{userdata,[{""}]}];
 bitxor_l22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l22"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l33_test(doc) -> [{userdata,[{""}]}];
 bitxor_l33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l33"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l44_test(doc) -> [{userdata,[{""}]}];
 bitxor_l44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l55_test(doc) -> [{userdata,[{""}]}];
 bitxor_l55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l55"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l6_test(doc) -> [{userdata,[{""}]}];
 bitxor_l6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l6"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l17_test(doc) -> [{userdata,[{""}]}];
 bitxor_l17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l17"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l28_test(doc) -> [{userdata,[{""}]}];
 bitxor_l28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l28"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l39_test(doc) -> [{userdata,[{""}]}];
 bitxor_l39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l39"),
   Expected="24921.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l50_test(doc) -> [{userdata,[{""}]}];
 bitxor_l50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l50"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l61_test(doc) -> [{userdata,[{""}]}];
 bitxor_l61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l61"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l1_test(doc) -> [{userdata,[{""}]}];
 bitxor_l1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l1"),
   Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l12_test(doc) -> [{userdata,[{""}]}];
 bitxor_l12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l12"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l34_test(doc) -> [{userdata,[{""}]}];
 bitxor_l34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l34"),
   Expected="24916.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l45_test(doc) -> [{userdata,[{""}]}];
 bitxor_l45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l45"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l56_test(doc) -> [{userdata,[{""}]}];
 bitxor_l56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l56"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l7_test(doc) -> [{userdata,[{""}]}];
 bitxor_l7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l7"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l18_test(doc) -> [{userdata,[{""}]}];
 bitxor_l18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l18"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l29_test(doc) -> [{userdata,[{""}]}];
 bitxor_l29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l29"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l40_test(doc) -> [{userdata,[{""}]}];
 bitxor_l40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l40"),
   Expected="24920.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l51_test(doc) -> [{userdata,[{""}]}];
 bitxor_l51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l51"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l62_test(doc) -> [{userdata,[{""}]}];
 bitxor_l62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l62"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l2_test(doc) -> [{userdata,[{""}]}];
 bitxor_l2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l2"),
   Expected="1968/03/23 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l13_test(doc) -> [{userdata,[{""}]}];
 bitxor_l13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l13"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l35_test(doc) -> [{userdata,[{""}]}];
 bitxor_l35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l35"),
   Expected="24911.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l46_test(doc) -> [{userdata,[{""}]}];
 bitxor_l46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l46"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l57_test(doc) -> [{userdata,[{""}]}];
 bitxor_l57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l57"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l8_test(doc) -> [{userdata,[{""}]}];
 bitxor_l8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l19_test(doc) -> [{userdata,[{""}]}];
 bitxor_l19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l19"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l30_test(doc) -> [{userdata,[{""}]}];
 bitxor_l30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l41_test(doc) -> [{userdata,[{""}]}];
 bitxor_l41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l52_test(doc) -> [{userdata,[{""}]}];
 bitxor_l52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l52"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l63_test(doc) -> [{userdata,[{""}]}];
 bitxor_l63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l63"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l3_test(doc) -> [{userdata,[{""}]}];
 bitxor_l3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l3"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l14_test(doc) -> [{userdata,[{""}]}];
 bitxor_l14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l14"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l25_test(doc) -> [{userdata,[{""}]}];
 bitxor_l25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l25"),
   Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l36_test(doc) -> [{userdata,[{""}]}];
 bitxor_l36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l36"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l58_test(doc) -> [{userdata,[{""}]}];
 bitxor_l58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l58"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l9_test(doc) -> [{userdata,[{""}]}];
 bitxor_l9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l9"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l20_test(doc) -> [{userdata,[{""}]}];
 bitxor_l20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l20"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l31_test(doc) -> [{userdata,[{""}]}];
 bitxor_l31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l31"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l42_test(doc) -> [{userdata,[{""}]}];
 bitxor_l42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l53_test(doc) -> [{userdata,[{""}]}];
 bitxor_l53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l53"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l64_test(doc) -> [{userdata,[{""}]}];
 bitxor_l64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l64"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l4_test(doc) -> [{userdata,[{""}]}];
 bitxor_l4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l4"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l15_test(doc) -> [{userdata,[{""}]}];
 bitxor_l15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l15"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l26_test(doc) -> [{userdata,[{""}]}];
 bitxor_l26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l26"),
   Expected="1968/03/23 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l37_test(doc) -> [{userdata,[{""}]}];
 bitxor_l37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l37"),
   Expected="24923.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l59_test(doc) -> [{userdata,[{""}]}];
 bitxor_l59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l59"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l10_test(doc) -> [{userdata,[{""}]}];
 bitxor_l10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l10"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l21_test(doc) -> [{userdata,[{""}]}];
 bitxor_l21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l21"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l32_test(doc) -> [{userdata,[{""}]}];
 bitxor_l32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l32"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l43_test(doc) -> [{userdata,[{""}]}];
 bitxor_l43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_l54_test(doc) -> [{userdata,[{""}]}];
 bitxor_l54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","l54"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b5_test(doc) -> [{userdata,[{""}]}];
 bitxor_b5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b5"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b16_test(doc) -> [{userdata,[{""}]}];
 bitxor_b16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b16"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b27_test(doc) -> [{userdata,[{""}]}];
 bitxor_b27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b27"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b11_test(doc) -> [{userdata,[{""}]}];
 bitxor_b11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b11"),
   Expected=" 23",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b22_test(doc) -> [{userdata,[{""}]}];
 bitxor_b22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b22"),
   Expected="X3:X6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b33_test(doc) -> [{userdata,[{""}]}];
 bitxor_b33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b33"),
   Expected="Phillip",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b44_test(doc) -> [{userdata,[{""}]}];
 bitxor_b44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b44"),
   Expected="X3:AA6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b6_test(doc) -> [{userdata,[{""}]}];
 bitxor_b6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b6"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b17_test(doc) -> [{userdata,[{""}]}];
 bitxor_b17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b17"),
   Expected="X3:Y3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b28_test(doc) -> [{userdata,[{""}]}];
 bitxor_b28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b28"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b39_test(doc) -> [{userdata,[{""}]}];
 bitxor_b39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b39"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b1_test(doc) -> [{userdata,[{""}]}];
 bitxor_b1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b1"),
   Expected="B",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b12_test(doc) -> [{userdata,[{""}]}];
 bitxor_b12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b12"),
   Expected="1968/03/23 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b34_test(doc) -> [{userdata,[{""}]}];
 bitxor_b34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b34"),
   Expected="12",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b45_test(doc) -> [{userdata,[{""}]}];
 bitxor_b45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b45"),
   Expected="X3:X4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b7_test(doc) -> [{userdata,[{""}]}];
 bitxor_b7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b7"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b18_test(doc) -> [{userdata,[{""}]}];
 bitxor_b18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b18"),
   Expected="X3:AA3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b29_test(doc) -> [{userdata,[{""}]}];
 bitxor_b29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b29"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b40_test(doc) -> [{userdata,[{""}]}];
 bitxor_b40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b40"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b13_test(doc) -> [{userdata,[{""}]}];
 bitxor_b13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b13"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b35_test(doc) -> [{userdata,[{""}]}];
 bitxor_b35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b35"),
   Expected=" 23",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b46_test(doc) -> [{userdata,[{""}]}];
 bitxor_b46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b46"),
   Expected="X3:X6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b8_test(doc) -> [{userdata,[{""}]}];
 bitxor_b8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b8"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b19_test(doc) -> [{userdata,[{""}]}];
 bitxor_b19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b19"),
   Expected="X3:Y4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b30_test(doc) -> [{userdata,[{""}]}];
 bitxor_b30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b41_test(doc) -> [{userdata,[{""}]}];
 bitxor_b41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b41"),
   Expected="X3:Y3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b3_test(doc) -> [{userdata,[{""}]}];
 bitxor_b3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b3"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b25_test(doc) -> [{userdata,[{""}]}];
 bitxor_b25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b25"),
   Expected="B",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b36_test(doc) -> [{userdata,[{""}]}];
 bitxor_b36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b36"),
   Expected="1968/03/23 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b9_test(doc) -> [{userdata,[{""}]}];
 bitxor_b9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b9"),
   Expected="Phillip",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b20_test(doc) -> [{userdata,[{""}]}];
 bitxor_b20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b20"),
   Expected="X3:AA6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b31_test(doc) -> [{userdata,[{""}]}];
 bitxor_b31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b31"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b42_test(doc) -> [{userdata,[{""}]}];
 bitxor_b42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b42"),
   Expected="X3:AA3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b4_test(doc) -> [{userdata,[{""}]}];
 bitxor_b4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b4"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b15_test(doc) -> [{userdata,[{""}]}];
 bitxor_b15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b15"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b37_test(doc) -> [{userdata,[{""}]}];
 bitxor_b37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b37"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b10_test(doc) -> [{userdata,[{""}]}];
 bitxor_b10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b10"),
   Expected="12",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b21_test(doc) -> [{userdata,[{""}]}];
 bitxor_b21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b21"),
   Expected="X3:X4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b32_test(doc) -> [{userdata,[{""}]}];
 bitxor_b32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b32"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_b43_test(doc) -> [{userdata,[{""}]}];
 bitxor_b43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","b43"),
   Expected="X3:Y4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m5_test(doc) -> [{userdata,[{""}]}];
 bitxor_m5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m5"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m16_test(doc) -> [{userdata,[{""}]}];
 bitxor_m16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m16"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m27_test(doc) -> [{userdata,[{""}]}];
 bitxor_m27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m27"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m38_test(doc) -> [{userdata,[{""}]}];
 bitxor_m38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m38"),
   Expected="3.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m49_test(doc) -> [{userdata,[{""}]}];
 bitxor_m49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m49"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m60_test(doc) -> [{userdata,[{""}]}];
 bitxor_m60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m60"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m11_test(doc) -> [{userdata,[{""}]}];
 bitxor_m11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m11"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m22_test(doc) -> [{userdata,[{""}]}];
 bitxor_m22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m22"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m33_test(doc) -> [{userdata,[{""}]}];
 bitxor_m33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m33"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m44_test(doc) -> [{userdata,[{""}]}];
 bitxor_m44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m55_test(doc) -> [{userdata,[{""}]}];
 bitxor_m55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m55"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m6_test(doc) -> [{userdata,[{""}]}];
 bitxor_m6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m6"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m17_test(doc) -> [{userdata,[{""}]}];
 bitxor_m17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m17"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m28_test(doc) -> [{userdata,[{""}]}];
 bitxor_m28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m28"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m39_test(doc) -> [{userdata,[{""}]}];
 bitxor_m39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m39"),
   Expected="2.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m50_test(doc) -> [{userdata,[{""}]}];
 bitxor_m50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m50"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m61_test(doc) -> [{userdata,[{""}]}];
 bitxor_m61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m61"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m1_test(doc) -> [{userdata,[{""}]}];
 bitxor_m1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m1"),
   Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m12_test(doc) -> [{userdata,[{""}]}];
 bitxor_m12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m12"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m34_test(doc) -> [{userdata,[{""}]}];
 bitxor_m34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m34"),
   Expected="15.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m45_test(doc) -> [{userdata,[{""}]}];
 bitxor_m45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m45"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m56_test(doc) -> [{userdata,[{""}]}];
 bitxor_m56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m56"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m7_test(doc) -> [{userdata,[{""}]}];
 bitxor_m7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m7"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m18_test(doc) -> [{userdata,[{""}]}];
 bitxor_m18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m18"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m29_test(doc) -> [{userdata,[{""}]}];
 bitxor_m29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m29"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m40_test(doc) -> [{userdata,[{""}]}];
 bitxor_m40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m40"),
   Expected="3.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m51_test(doc) -> [{userdata,[{""}]}];
 bitxor_m51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m51"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m62_test(doc) -> [{userdata,[{""}]}];
 bitxor_m62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m62"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m2_test(doc) -> [{userdata,[{""}]}];
 bitxor_m2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m2"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m13_test(doc) -> [{userdata,[{""}]}];
 bitxor_m13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m13"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m35_test(doc) -> [{userdata,[{""}]}];
 bitxor_m35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m35"),
   Expected="20.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m46_test(doc) -> [{userdata,[{""}]}];
 bitxor_m46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m46"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m57_test(doc) -> [{userdata,[{""}]}];
 bitxor_m57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m57"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m8_test(doc) -> [{userdata,[{""}]}];
 bitxor_m8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m19_test(doc) -> [{userdata,[{""}]}];
 bitxor_m19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m19"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m30_test(doc) -> [{userdata,[{""}]}];
 bitxor_m30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m41_test(doc) -> [{userdata,[{""}]}];
 bitxor_m41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m52_test(doc) -> [{userdata,[{""}]}];
 bitxor_m52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m52"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m63_test(doc) -> [{userdata,[{""}]}];
 bitxor_m63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m63"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m3_test(doc) -> [{userdata,[{""}]}];
 bitxor_m3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m3"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m14_test(doc) -> [{userdata,[{""}]}];
 bitxor_m14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m14"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m25_test(doc) -> [{userdata,[{""}]}];
 bitxor_m25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m25"),
   Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m36_test(doc) -> [{userdata,[{""}]}];
 bitxor_m36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m36"),
   Expected="24923.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m58_test(doc) -> [{userdata,[{""}]}];
 bitxor_m58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m58"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m9_test(doc) -> [{userdata,[{""}]}];
 bitxor_m9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m9"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m20_test(doc) -> [{userdata,[{""}]}];
 bitxor_m20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m20"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m31_test(doc) -> [{userdata,[{""}]}];
 bitxor_m31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m31"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m42_test(doc) -> [{userdata,[{""}]}];
 bitxor_m42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m53_test(doc) -> [{userdata,[{""}]}];
 bitxor_m53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m53"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m64_test(doc) -> [{userdata,[{""}]}];
 bitxor_m64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m64"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m4_test(doc) -> [{userdata,[{""}]}];
 bitxor_m4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m4"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m15_test(doc) -> [{userdata,[{""}]}];
 bitxor_m15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m15"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m26_test(doc) -> [{userdata,[{""}]}];
 bitxor_m26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m26"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m37_test(doc) -> [{userdata,[{""}]}];
 bitxor_m37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m37"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m59_test(doc) -> [{userdata,[{""}]}];
 bitxor_m59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m59"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m10_test(doc) -> [{userdata,[{""}]}];
 bitxor_m10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m10"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m21_test(doc) -> [{userdata,[{""}]}];
 bitxor_m21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m21"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m32_test(doc) -> [{userdata,[{""}]}];
 bitxor_m32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m32"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m43_test(doc) -> [{userdata,[{""}]}];
 bitxor_m43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_m54_test(doc) -> [{userdata,[{""}]}];
 bitxor_m54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","m54"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c5_test(doc) -> [{userdata,[{""}]}];
 bitxor_c5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c5"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c16_test(doc) -> [{userdata,[{""}]}];
 bitxor_c16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c16"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c27_test(doc) -> [{userdata,[{""}]}];
 bitxor_c27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c27"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c38_test(doc) -> [{userdata,[{""}]}];
 bitxor_c38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c38"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c49_test(doc) -> [{userdata,[{""}]}];
 bitxor_c49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c49"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c60_test(doc) -> [{userdata,[{""}]}];
 bitxor_c60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c60"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c11_test(doc) -> [{userdata,[{""}]}];
 bitxor_c11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c11"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c22_test(doc) -> [{userdata,[{""}]}];
 bitxor_c22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c22"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c33_test(doc) -> [{userdata,[{""}]}];
 bitxor_c33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c33"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c44_test(doc) -> [{userdata,[{""}]}];
 bitxor_c44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c55_test(doc) -> [{userdata,[{""}]}];
 bitxor_c55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c55"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c6_test(doc) -> [{userdata,[{""}]}];
 bitxor_c6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c6"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c17_test(doc) -> [{userdata,[{""}]}];
 bitxor_c17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c17"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c28_test(doc) -> [{userdata,[{""}]}];
 bitxor_c28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c28"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c39_test(doc) -> [{userdata,[{""}]}];
 bitxor_c39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c39"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c50_test(doc) -> [{userdata,[{""}]}];
 bitxor_c50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c50"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c61_test(doc) -> [{userdata,[{""}]}];
 bitxor_c61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c61"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c1_test(doc) -> [{userdata,[{""}]}];
 bitxor_c1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c1"),
   Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c12_test(doc) -> [{userdata,[{""}]}];
 bitxor_c12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c12"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c34_test(doc) -> [{userdata,[{""}]}];
 bitxor_c34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c34"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c45_test(doc) -> [{userdata,[{""}]}];
 bitxor_c45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c45"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c56_test(doc) -> [{userdata,[{""}]}];
 bitxor_c56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c56"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c7_test(doc) -> [{userdata,[{""}]}];
 bitxor_c7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c7"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c18_test(doc) -> [{userdata,[{""}]}];
 bitxor_c18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c18"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c29_test(doc) -> [{userdata,[{""}]}];
 bitxor_c29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c29"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c40_test(doc) -> [{userdata,[{""}]}];
 bitxor_c40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c40"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c51_test(doc) -> [{userdata,[{""}]}];
 bitxor_c51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c51"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c62_test(doc) -> [{userdata,[{""}]}];
 bitxor_c62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c62"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c2_test(doc) -> [{userdata,[{""}]}];
 bitxor_c2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c2"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c13_test(doc) -> [{userdata,[{""}]}];
 bitxor_c13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c13"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c35_test(doc) -> [{userdata,[{""}]}];
 bitxor_c35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c35"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c46_test(doc) -> [{userdata,[{""}]}];
 bitxor_c46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c46"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c57_test(doc) -> [{userdata,[{""}]}];
 bitxor_c57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c57"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c8_test(doc) -> [{userdata,[{""}]}];
 bitxor_c8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c19_test(doc) -> [{userdata,[{""}]}];
 bitxor_c19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c19"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c30_test(doc) -> [{userdata,[{""}]}];
 bitxor_c30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c41_test(doc) -> [{userdata,[{""}]}];
 bitxor_c41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c52_test(doc) -> [{userdata,[{""}]}];
 bitxor_c52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c52"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c63_test(doc) -> [{userdata,[{""}]}];
 bitxor_c63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c63"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c3_test(doc) -> [{userdata,[{""}]}];
 bitxor_c3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c3"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c14_test(doc) -> [{userdata,[{""}]}];
 bitxor_c14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c14"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c25_test(doc) -> [{userdata,[{""}]}];
 bitxor_c25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c25"),
   Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c36_test(doc) -> [{userdata,[{""}]}];
 bitxor_c36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c36"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c58_test(doc) -> [{userdata,[{""}]}];
 bitxor_c58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c58"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c9_test(doc) -> [{userdata,[{""}]}];
 bitxor_c9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c9"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c20_test(doc) -> [{userdata,[{""}]}];
 bitxor_c20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c20"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c31_test(doc) -> [{userdata,[{""}]}];
 bitxor_c31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c31"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c42_test(doc) -> [{userdata,[{""}]}];
 bitxor_c42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c53_test(doc) -> [{userdata,[{""}]}];
 bitxor_c53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c53"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c64_test(doc) -> [{userdata,[{""}]}];
 bitxor_c64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c64"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c4_test(doc) -> [{userdata,[{""}]}];
 bitxor_c4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c4"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c15_test(doc) -> [{userdata,[{""}]}];
 bitxor_c15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c15"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c26_test(doc) -> [{userdata,[{""}]}];
 bitxor_c26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c26"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c37_test(doc) -> [{userdata,[{""}]}];
 bitxor_c37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c37"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c59_test(doc) -> [{userdata,[{""}]}];
 bitxor_c59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c59"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c10_test(doc) -> [{userdata,[{""}]}];
 bitxor_c10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c10"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c21_test(doc) -> [{userdata,[{""}]}];
 bitxor_c21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c21"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c32_test(doc) -> [{userdata,[{""}]}];
 bitxor_c32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c32"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c43_test(doc) -> [{userdata,[{""}]}];
 bitxor_c43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_c54_test(doc) -> [{userdata,[{""}]}];
 bitxor_c54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","c54"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n5_test(doc) -> [{userdata,[{""}]}];
 bitxor_n5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n5"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n16_test(doc) -> [{userdata,[{""}]}];
 bitxor_n16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n16"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n27_test(doc) -> [{userdata,[{""}]}];
 bitxor_n27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n27"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n38_test(doc) -> [{userdata,[{""}]}];
 bitxor_n38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n38"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n49_test(doc) -> [{userdata,[{""}]}];
 bitxor_n49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n49"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n60_test(doc) -> [{userdata,[{""}]}];
 bitxor_n60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n60"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n11_test(doc) -> [{userdata,[{""}]}];
 bitxor_n11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n11"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n22_test(doc) -> [{userdata,[{""}]}];
 bitxor_n22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n22"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n33_test(doc) -> [{userdata,[{""}]}];
 bitxor_n33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n33"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n44_test(doc) -> [{userdata,[{""}]}];
 bitxor_n44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n55_test(doc) -> [{userdata,[{""}]}];
 bitxor_n55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n55"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n6_test(doc) -> [{userdata,[{""}]}];
 bitxor_n6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n6"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n17_test(doc) -> [{userdata,[{""}]}];
 bitxor_n17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n17"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n28_test(doc) -> [{userdata,[{""}]}];
 bitxor_n28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n28"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n39_test(doc) -> [{userdata,[{""}]}];
 bitxor_n39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n39"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n50_test(doc) -> [{userdata,[{""}]}];
 bitxor_n50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n50"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n61_test(doc) -> [{userdata,[{""}]}];
 bitxor_n61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n61"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n1_test(doc) -> [{userdata,[{""}]}];
 bitxor_n1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n1"),
   Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n12_test(doc) -> [{userdata,[{""}]}];
 bitxor_n12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n12"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n34_test(doc) -> [{userdata,[{""}]}];
 bitxor_n34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n34"),
   Expected="12.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n45_test(doc) -> [{userdata,[{""}]}];
 bitxor_n45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n45"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n56_test(doc) -> [{userdata,[{""}]}];
 bitxor_n56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n56"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n7_test(doc) -> [{userdata,[{""}]}];
 bitxor_n7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n7"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n18_test(doc) -> [{userdata,[{""}]}];
 bitxor_n18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n18"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n29_test(doc) -> [{userdata,[{""}]}];
 bitxor_n29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n29"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n40_test(doc) -> [{userdata,[{""}]}];
 bitxor_n40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n40"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n51_test(doc) -> [{userdata,[{""}]}];
 bitxor_n51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n51"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n62_test(doc) -> [{userdata,[{""}]}];
 bitxor_n62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n62"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n13_test(doc) -> [{userdata,[{""}]}];
 bitxor_n13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n13"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n35_test(doc) -> [{userdata,[{""}]}];
 bitxor_n35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n35"),
   Expected="23.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n46_test(doc) -> [{userdata,[{""}]}];
 bitxor_n46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n46"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n57_test(doc) -> [{userdata,[{""}]}];
 bitxor_n57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n57"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n8_test(doc) -> [{userdata,[{""}]}];
 bitxor_n8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n19_test(doc) -> [{userdata,[{""}]}];
 bitxor_n19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n19"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n30_test(doc) -> [{userdata,[{""}]}];
 bitxor_n30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n41_test(doc) -> [{userdata,[{""}]}];
 bitxor_n41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n52_test(doc) -> [{userdata,[{""}]}];
 bitxor_n52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n52"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n63_test(doc) -> [{userdata,[{""}]}];
 bitxor_n63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n63"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n3_test(doc) -> [{userdata,[{""}]}];
 bitxor_n3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n3"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n14_test(doc) -> [{userdata,[{""}]}];
 bitxor_n14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n14"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n25_test(doc) -> [{userdata,[{""}]}];
 bitxor_n25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n25"),
   Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n36_test(doc) -> [{userdata,[{""}]}];
 bitxor_n36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n36"),
   Expected="24920.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n58_test(doc) -> [{userdata,[{""}]}];
 bitxor_n58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n58"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n9_test(doc) -> [{userdata,[{""}]}];
 bitxor_n9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n9"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n20_test(doc) -> [{userdata,[{""}]}];
 bitxor_n20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n20"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n31_test(doc) -> [{userdata,[{""}]}];
 bitxor_n31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n31"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n42_test(doc) -> [{userdata,[{""}]}];
 bitxor_n42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n53_test(doc) -> [{userdata,[{""}]}];
 bitxor_n53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n53"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n64_test(doc) -> [{userdata,[{""}]}];
 bitxor_n64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n64"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n4_test(doc) -> [{userdata,[{""}]}];
 bitxor_n4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n4"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n15_test(doc) -> [{userdata,[{""}]}];
 bitxor_n15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n15"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n37_test(doc) -> [{userdata,[{""}]}];
 bitxor_n37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n37"),
   Expected="3.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n59_test(doc) -> [{userdata,[{""}]}];
 bitxor_n59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n59"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n10_test(doc) -> [{userdata,[{""}]}];
 bitxor_n10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n10"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n21_test(doc) -> [{userdata,[{""}]}];
 bitxor_n21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n21"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n32_test(doc) -> [{userdata,[{""}]}];
 bitxor_n32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n32"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n43_test(doc) -> [{userdata,[{""}]}];
 bitxor_n43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_n54_test(doc) -> [{userdata,[{""}]}];
 bitxor_n54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","n54"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d5_test(doc) -> [{userdata,[{""}]}];
 bitxor_d5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d5"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d16_test(doc) -> [{userdata,[{""}]}];
 bitxor_d16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d16"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d27_test(doc) -> [{userdata,[{""}]}];
 bitxor_d27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d27"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d38_test(doc) -> [{userdata,[{""}]}];
 bitxor_d38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d49_test(doc) -> [{userdata,[{""}]}];
 bitxor_d49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d49"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d60_test(doc) -> [{userdata,[{""}]}];
 bitxor_d60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d60"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d11_test(doc) -> [{userdata,[{""}]}];
 bitxor_d11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d11"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d22_test(doc) -> [{userdata,[{""}]}];
 bitxor_d22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d22"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d33_test(doc) -> [{userdata,[{""}]}];
 bitxor_d33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d33"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d44_test(doc) -> [{userdata,[{""}]}];
 bitxor_d44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d55_test(doc) -> [{userdata,[{""}]}];
 bitxor_d55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d55"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d6_test(doc) -> [{userdata,[{""}]}];
 bitxor_d6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d6"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d17_test(doc) -> [{userdata,[{""}]}];
 bitxor_d17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d17"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d28_test(doc) -> [{userdata,[{""}]}];
 bitxor_d28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d28"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d39_test(doc) -> [{userdata,[{""}]}];
 bitxor_d39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d50_test(doc) -> [{userdata,[{""}]}];
 bitxor_d50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d50"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d61_test(doc) -> [{userdata,[{""}]}];
 bitxor_d61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d61"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d1_test(doc) -> [{userdata,[{""}]}];
 bitxor_d1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d1"),
   Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d12_test(doc) -> [{userdata,[{""}]}];
 bitxor_d12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d12"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d34_test(doc) -> [{userdata,[{""}]}];
 bitxor_d34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d45_test(doc) -> [{userdata,[{""}]}];
 bitxor_d45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d45"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d56_test(doc) -> [{userdata,[{""}]}];
 bitxor_d56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d56"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d7_test(doc) -> [{userdata,[{""}]}];
 bitxor_d7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d7"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d18_test(doc) -> [{userdata,[{""}]}];
 bitxor_d18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d18"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d29_test(doc) -> [{userdata,[{""}]}];
 bitxor_d29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d29"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d40_test(doc) -> [{userdata,[{""}]}];
 bitxor_d40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d40"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d51_test(doc) -> [{userdata,[{""}]}];
 bitxor_d51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d51"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d62_test(doc) -> [{userdata,[{""}]}];
 bitxor_d62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d62"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d2_test(doc) -> [{userdata,[{""}]}];
 bitxor_d2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d2"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d13_test(doc) -> [{userdata,[{""}]}];
 bitxor_d13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d13"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d35_test(doc) -> [{userdata,[{""}]}];
 bitxor_d35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d46_test(doc) -> [{userdata,[{""}]}];
 bitxor_d46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d46"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d57_test(doc) -> [{userdata,[{""}]}];
 bitxor_d57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d57"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d8_test(doc) -> [{userdata,[{""}]}];
 bitxor_d8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d19_test(doc) -> [{userdata,[{""}]}];
 bitxor_d19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d19"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d30_test(doc) -> [{userdata,[{""}]}];
 bitxor_d30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d41_test(doc) -> [{userdata,[{""}]}];
 bitxor_d41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d52_test(doc) -> [{userdata,[{""}]}];
 bitxor_d52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d52"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d63_test(doc) -> [{userdata,[{""}]}];
 bitxor_d63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d63"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d3_test(doc) -> [{userdata,[{""}]}];
 bitxor_d3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d3"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d14_test(doc) -> [{userdata,[{""}]}];
 bitxor_d14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d14"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d25_test(doc) -> [{userdata,[{""}]}];
 bitxor_d25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d25"),
   Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d36_test(doc) -> [{userdata,[{""}]}];
 bitxor_d36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d58_test(doc) -> [{userdata,[{""}]}];
 bitxor_d58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d58"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d9_test(doc) -> [{userdata,[{""}]}];
 bitxor_d9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d9"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d20_test(doc) -> [{userdata,[{""}]}];
 bitxor_d20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d20"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d31_test(doc) -> [{userdata,[{""}]}];
 bitxor_d31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d31"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d42_test(doc) -> [{userdata,[{""}]}];
 bitxor_d42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d53_test(doc) -> [{userdata,[{""}]}];
 bitxor_d53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d53"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d64_test(doc) -> [{userdata,[{""}]}];
 bitxor_d64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d64"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d4_test(doc) -> [{userdata,[{""}]}];
 bitxor_d4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d4"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d15_test(doc) -> [{userdata,[{""}]}];
 bitxor_d15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d15"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d26_test(doc) -> [{userdata,[{""}]}];
 bitxor_d26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d26"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d37_test(doc) -> [{userdata,[{""}]}];
 bitxor_d37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d59_test(doc) -> [{userdata,[{""}]}];
 bitxor_d59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d59"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d10_test(doc) -> [{userdata,[{""}]}];
 bitxor_d10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d10"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d21_test(doc) -> [{userdata,[{""}]}];
 bitxor_d21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d21"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d32_test(doc) -> [{userdata,[{""}]}];
 bitxor_d32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d32"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d43_test(doc) -> [{userdata,[{""}]}];
 bitxor_d43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_d54_test(doc) -> [{userdata,[{""}]}];
 bitxor_d54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","d54"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o5_test(doc) -> [{userdata,[{""}]}];
 bitxor_o5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o5"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o16_test(doc) -> [{userdata,[{""}]}];
 bitxor_o16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o16"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o27_test(doc) -> [{userdata,[{""}]}];
 bitxor_o27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o27"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o38_test(doc) -> [{userdata,[{""}]}];
 bitxor_o38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o38"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o49_test(doc) -> [{userdata,[{""}]}];
 bitxor_o49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o49"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o60_test(doc) -> [{userdata,[{""}]}];
 bitxor_o60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o60"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o11_test(doc) -> [{userdata,[{""}]}];
 bitxor_o11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o11"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o22_test(doc) -> [{userdata,[{""}]}];
 bitxor_o22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o22"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o33_test(doc) -> [{userdata,[{""}]}];
 bitxor_o33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o33"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o44_test(doc) -> [{userdata,[{""}]}];
 bitxor_o44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o55_test(doc) -> [{userdata,[{""}]}];
 bitxor_o55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o55"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o6_test(doc) -> [{userdata,[{""}]}];
 bitxor_o6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o6"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o17_test(doc) -> [{userdata,[{""}]}];
 bitxor_o17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o17"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o28_test(doc) -> [{userdata,[{""}]}];
 bitxor_o28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o28"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o39_test(doc) -> [{userdata,[{""}]}];
 bitxor_o39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o39"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o50_test(doc) -> [{userdata,[{""}]}];
 bitxor_o50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o50"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o61_test(doc) -> [{userdata,[{""}]}];
 bitxor_o61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o61"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o1_test(doc) -> [{userdata,[{""}]}];
 bitxor_o1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o1"),
   Expected="Logical",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o12_test(doc) -> [{userdata,[{""}]}];
 bitxor_o12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o12"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o34_test(doc) -> [{userdata,[{""}]}];
 bitxor_o34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o34"),
   Expected="13.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o45_test(doc) -> [{userdata,[{""}]}];
 bitxor_o45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o45"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o56_test(doc) -> [{userdata,[{""}]}];
 bitxor_o56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o56"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o7_test(doc) -> [{userdata,[{""}]}];
 bitxor_o7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o7"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o18_test(doc) -> [{userdata,[{""}]}];
 bitxor_o18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o18"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o29_test(doc) -> [{userdata,[{""}]}];
 bitxor_o29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o29"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o40_test(doc) -> [{userdata,[{""}]}];
 bitxor_o40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o40"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o51_test(doc) -> [{userdata,[{""}]}];
 bitxor_o51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o51"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o62_test(doc) -> [{userdata,[{""}]}];
 bitxor_o62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o62"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o2_test(doc) -> [{userdata,[{""}]}];
 bitxor_o2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o2"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o13_test(doc) -> [{userdata,[{""}]}];
 bitxor_o13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o13"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o35_test(doc) -> [{userdata,[{""}]}];
 bitxor_o35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o35"),
   Expected="22.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o46_test(doc) -> [{userdata,[{""}]}];
 bitxor_o46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o46"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o57_test(doc) -> [{userdata,[{""}]}];
 bitxor_o57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o57"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o8_test(doc) -> [{userdata,[{""}]}];
 bitxor_o8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o19_test(doc) -> [{userdata,[{""}]}];
 bitxor_o19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o19"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o30_test(doc) -> [{userdata,[{""}]}];
 bitxor_o30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o41_test(doc) -> [{userdata,[{""}]}];
 bitxor_o41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o52_test(doc) -> [{userdata,[{""}]}];
 bitxor_o52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o52"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o63_test(doc) -> [{userdata,[{""}]}];
 bitxor_o63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o63"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o3_test(doc) -> [{userdata,[{""}]}];
 bitxor_o3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o3"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o14_test(doc) -> [{userdata,[{""}]}];
 bitxor_o14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o14"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o25_test(doc) -> [{userdata,[{""}]}];
 bitxor_o25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o25"),
   Expected="Logical",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o36_test(doc) -> [{userdata,[{""}]}];
 bitxor_o36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o36"),
   Expected="24921.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o58_test(doc) -> [{userdata,[{""}]}];
 bitxor_o58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o58"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o9_test(doc) -> [{userdata,[{""}]}];
 bitxor_o9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o9"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o20_test(doc) -> [{userdata,[{""}]}];
 bitxor_o20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o20"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o31_test(doc) -> [{userdata,[{""}]}];
 bitxor_o31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o31"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o42_test(doc) -> [{userdata,[{""}]}];
 bitxor_o42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o53_test(doc) -> [{userdata,[{""}]}];
 bitxor_o53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o53"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o64_test(doc) -> [{userdata,[{""}]}];
 bitxor_o64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o64"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o4_test(doc) -> [{userdata,[{""}]}];
 bitxor_o4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o4"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o15_test(doc) -> [{userdata,[{""}]}];
 bitxor_o15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o15"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o26_test(doc) -> [{userdata,[{""}]}];
 bitxor_o26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o26"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o37_test(doc) -> [{userdata,[{""}]}];
 bitxor_o37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o37"),
   Expected="2.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o59_test(doc) -> [{userdata,[{""}]}];
 bitxor_o59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o59"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o10_test(doc) -> [{userdata,[{""}]}];
 bitxor_o10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o10"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o21_test(doc) -> [{userdata,[{""}]}];
 bitxor_o21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o21"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o32_test(doc) -> [{userdata,[{""}]}];
 bitxor_o32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o32"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o43_test(doc) -> [{userdata,[{""}]}];
 bitxor_o43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_o54_test(doc) -> [{userdata,[{""}]}];
 bitxor_o54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","o54"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e5_test(doc) -> [{userdata,[{""}]}];
 bitxor_e5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e5"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e16_test(doc) -> [{userdata,[{""}]}];
 bitxor_e16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e16"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e27_test(doc) -> [{userdata,[{""}]}];
 bitxor_e27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e27"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e38_test(doc) -> [{userdata,[{""}]}];
 bitxor_e38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e38"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e49_test(doc) -> [{userdata,[{""}]}];
 bitxor_e49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e49"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e60_test(doc) -> [{userdata,[{""}]}];
 bitxor_e60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e60"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e11_test(doc) -> [{userdata,[{""}]}];
 bitxor_e11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e11"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e22_test(doc) -> [{userdata,[{""}]}];
 bitxor_e22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e22"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e33_test(doc) -> [{userdata,[{""}]}];
 bitxor_e33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e33"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e44_test(doc) -> [{userdata,[{""}]}];
 bitxor_e44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e55_test(doc) -> [{userdata,[{""}]}];
 bitxor_e55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e55"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e6_test(doc) -> [{userdata,[{""}]}];
 bitxor_e6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e6"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e17_test(doc) -> [{userdata,[{""}]}];
 bitxor_e17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e17"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e28_test(doc) -> [{userdata,[{""}]}];
 bitxor_e28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e28"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e39_test(doc) -> [{userdata,[{""}]}];
 bitxor_e39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e39"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e50_test(doc) -> [{userdata,[{""}]}];
 bitxor_e50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e50"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e61_test(doc) -> [{userdata,[{""}]}];
 bitxor_e61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e61"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e1_test(doc) -> [{userdata,[{""}]}];
 bitxor_e1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e1"),
   Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e12_test(doc) -> [{userdata,[{""}]}];
 bitxor_e12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e12"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e34_test(doc) -> [{userdata,[{""}]}];
 bitxor_e34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e34"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e45_test(doc) -> [{userdata,[{""}]}];
 bitxor_e45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e45"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e56_test(doc) -> [{userdata,[{""}]}];
 bitxor_e56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e56"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e7_test(doc) -> [{userdata,[{""}]}];
 bitxor_e7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e7"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e18_test(doc) -> [{userdata,[{""}]}];
 bitxor_e18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e18"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e29_test(doc) -> [{userdata,[{""}]}];
 bitxor_e29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e29"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e40_test(doc) -> [{userdata,[{""}]}];
 bitxor_e40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e40"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e51_test(doc) -> [{userdata,[{""}]}];
 bitxor_e51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e51"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e62_test(doc) -> [{userdata,[{""}]}];
 bitxor_e62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e62"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e2_test(doc) -> [{userdata,[{""}]}];
 bitxor_e2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e2"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e13_test(doc) -> [{userdata,[{""}]}];
 bitxor_e13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e13"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e35_test(doc) -> [{userdata,[{""}]}];
 bitxor_e35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e35"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e46_test(doc) -> [{userdata,[{""}]}];
 bitxor_e46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e46"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e57_test(doc) -> [{userdata,[{""}]}];
 bitxor_e57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e57"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e8_test(doc) -> [{userdata,[{""}]}];
 bitxor_e8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e19_test(doc) -> [{userdata,[{""}]}];
 bitxor_e19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e19"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e30_test(doc) -> [{userdata,[{""}]}];
 bitxor_e30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e41_test(doc) -> [{userdata,[{""}]}];
 bitxor_e41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e52_test(doc) -> [{userdata,[{""}]}];
 bitxor_e52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e52"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e63_test(doc) -> [{userdata,[{""}]}];
 bitxor_e63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e63"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e3_test(doc) -> [{userdata,[{""}]}];
 bitxor_e3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e3"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e14_test(doc) -> [{userdata,[{""}]}];
 bitxor_e14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e14"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e25_test(doc) -> [{userdata,[{""}]}];
 bitxor_e25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e25"),
   Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e36_test(doc) -> [{userdata,[{""}]}];
 bitxor_e36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e36"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e58_test(doc) -> [{userdata,[{""}]}];
 bitxor_e58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e58"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e9_test(doc) -> [{userdata,[{""}]}];
 bitxor_e9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e9"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e20_test(doc) -> [{userdata,[{""}]}];
 bitxor_e20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e20"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e31_test(doc) -> [{userdata,[{""}]}];
 bitxor_e31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e31"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e42_test(doc) -> [{userdata,[{""}]}];
 bitxor_e42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e53_test(doc) -> [{userdata,[{""}]}];
 bitxor_e53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e53"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e64_test(doc) -> [{userdata,[{""}]}];
 bitxor_e64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e64"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e4_test(doc) -> [{userdata,[{""}]}];
 bitxor_e4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e4"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e15_test(doc) -> [{userdata,[{""}]}];
 bitxor_e15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e15"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e26_test(doc) -> [{userdata,[{""}]}];
 bitxor_e26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e26"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e37_test(doc) -> [{userdata,[{""}]}];
 bitxor_e37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e37"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e59_test(doc) -> [{userdata,[{""}]}];
 bitxor_e59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e59"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e10_test(doc) -> [{userdata,[{""}]}];
 bitxor_e10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e10"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e21_test(doc) -> [{userdata,[{""}]}];
 bitxor_e21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e21"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e32_test(doc) -> [{userdata,[{""}]}];
 bitxor_e32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e32"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e43_test(doc) -> [{userdata,[{""}]}];
 bitxor_e43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_e54_test(doc) -> [{userdata,[{""}]}];
 bitxor_e54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","e54"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p5_test(doc) -> [{userdata,[{""}]}];
 bitxor_p5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p5"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p16_test(doc) -> [{userdata,[{""}]}];
 bitxor_p16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p16"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p27_test(doc) -> [{userdata,[{""}]}];
 bitxor_p27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p27"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p38_test(doc) -> [{userdata,[{""}]}];
 bitxor_p38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p38"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p49_test(doc) -> [{userdata,[{""}]}];
 bitxor_p49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p49"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p60_test(doc) -> [{userdata,[{""}]}];
 bitxor_p60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p60"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p11_test(doc) -> [{userdata,[{""}]}];
 bitxor_p11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p11"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p22_test(doc) -> [{userdata,[{""}]}];
 bitxor_p22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p22"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p33_test(doc) -> [{userdata,[{""}]}];
 bitxor_p33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p33"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p44_test(doc) -> [{userdata,[{""}]}];
 bitxor_p44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p55_test(doc) -> [{userdata,[{""}]}];
 bitxor_p55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p55"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p6_test(doc) -> [{userdata,[{""}]}];
 bitxor_p6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p6"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p17_test(doc) -> [{userdata,[{""}]}];
 bitxor_p17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p17"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p28_test(doc) -> [{userdata,[{""}]}];
 bitxor_p28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p28"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p39_test(doc) -> [{userdata,[{""}]}];
 bitxor_p39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p39"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p50_test(doc) -> [{userdata,[{""}]}];
 bitxor_p50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p50"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p61_test(doc) -> [{userdata,[{""}]}];
 bitxor_p61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p61"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p1_test(doc) -> [{userdata,[{""}]}];
 bitxor_p1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p1"),
   Expected="Logical",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p12_test(doc) -> [{userdata,[{""}]}];
 bitxor_p12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p12"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p34_test(doc) -> [{userdata,[{""}]}];
 bitxor_p34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p34"),
   Expected="12.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p45_test(doc) -> [{userdata,[{""}]}];
 bitxor_p45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p45"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p56_test(doc) -> [{userdata,[{""}]}];
 bitxor_p56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p56"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p7_test(doc) -> [{userdata,[{""}]}];
 bitxor_p7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p7"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p18_test(doc) -> [{userdata,[{""}]}];
 bitxor_p18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p18"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p29_test(doc) -> [{userdata,[{""}]}];
 bitxor_p29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p29"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p40_test(doc) -> [{userdata,[{""}]}];
 bitxor_p40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p40"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p51_test(doc) -> [{userdata,[{""}]}];
 bitxor_p51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p51"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p62_test(doc) -> [{userdata,[{""}]}];
 bitxor_p62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p62"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p2_test(doc) -> [{userdata,[{""}]}];
 bitxor_p2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p2"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p13_test(doc) -> [{userdata,[{""}]}];
 bitxor_p13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p13"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p35_test(doc) -> [{userdata,[{""}]}];
 bitxor_p35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p35"),
   Expected="23.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p46_test(doc) -> [{userdata,[{""}]}];
 bitxor_p46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p46"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p57_test(doc) -> [{userdata,[{""}]}];
 bitxor_p57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p57"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p8_test(doc) -> [{userdata,[{""}]}];
 bitxor_p8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p19_test(doc) -> [{userdata,[{""}]}];
 bitxor_p19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p19"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p30_test(doc) -> [{userdata,[{""}]}];
 bitxor_p30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p41_test(doc) -> [{userdata,[{""}]}];
 bitxor_p41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p52_test(doc) -> [{userdata,[{""}]}];
 bitxor_p52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p52"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p63_test(doc) -> [{userdata,[{""}]}];
 bitxor_p63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p63"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p3_test(doc) -> [{userdata,[{""}]}];
 bitxor_p3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p3"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p14_test(doc) -> [{userdata,[{""}]}];
 bitxor_p14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p14"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p25_test(doc) -> [{userdata,[{""}]}];
 bitxor_p25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p25"),
   Expected="Logical",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p36_test(doc) -> [{userdata,[{""}]}];
 bitxor_p36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p36"),
   Expected="24920.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p58_test(doc) -> [{userdata,[{""}]}];
 bitxor_p58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p58"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p9_test(doc) -> [{userdata,[{""}]}];
 bitxor_p9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p9"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p20_test(doc) -> [{userdata,[{""}]}];
 bitxor_p20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p20"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p31_test(doc) -> [{userdata,[{""}]}];
 bitxor_p31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p31"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p42_test(doc) -> [{userdata,[{""}]}];
 bitxor_p42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p53_test(doc) -> [{userdata,[{""}]}];
 bitxor_p53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p53"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p64_test(doc) -> [{userdata,[{""}]}];
 bitxor_p64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p64"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p4_test(doc) -> [{userdata,[{""}]}];
 bitxor_p4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p4"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p15_test(doc) -> [{userdata,[{""}]}];
 bitxor_p15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p15"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p26_test(doc) -> [{userdata,[{""}]}];
 bitxor_p26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p26"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p37_test(doc) -> [{userdata,[{""}]}];
 bitxor_p37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p37"),
   Expected="3.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p59_test(doc) -> [{userdata,[{""}]}];
 bitxor_p59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p59"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p10_test(doc) -> [{userdata,[{""}]}];
 bitxor_p10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p10"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p21_test(doc) -> [{userdata,[{""}]}];
 bitxor_p21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p21"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p32_test(doc) -> [{userdata,[{""}]}];
 bitxor_p32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p32"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p43_test(doc) -> [{userdata,[{""}]}];
 bitxor_p43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_p54_test(doc) -> [{userdata,[{""}]}];
 bitxor_p54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","p54"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f5_test(doc) -> [{userdata,[{""}]}];
 bitxor_f5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f5"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f16_test(doc) -> [{userdata,[{""}]}];
 bitxor_f16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f16"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f27_test(doc) -> [{userdata,[{""}]}];
 bitxor_f27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f27"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f38_test(doc) -> [{userdata,[{""}]}];
 bitxor_f38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f38"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f49_test(doc) -> [{userdata,[{""}]}];
 bitxor_f49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f49"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f60_test(doc) -> [{userdata,[{""}]}];
 bitxor_f60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f60"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f11_test(doc) -> [{userdata,[{""}]}];
 bitxor_f11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f11"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f22_test(doc) -> [{userdata,[{""}]}];
 bitxor_f22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f22"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f33_test(doc) -> [{userdata,[{""}]}];
 bitxor_f33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f33"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f44_test(doc) -> [{userdata,[{""}]}];
 bitxor_f44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f55_test(doc) -> [{userdata,[{""}]}];
 bitxor_f55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f6_test(doc) -> [{userdata,[{""}]}];
 bitxor_f6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f6"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f17_test(doc) -> [{userdata,[{""}]}];
 bitxor_f17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f17"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f28_test(doc) -> [{userdata,[{""}]}];
 bitxor_f28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f28"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f39_test(doc) -> [{userdata,[{""}]}];
 bitxor_f39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f39"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f50_test(doc) -> [{userdata,[{""}]}];
 bitxor_f50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f50"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f61_test(doc) -> [{userdata,[{""}]}];
 bitxor_f61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f61"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f1_test(doc) -> [{userdata,[{""}]}];
 bitxor_f1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f1"),
   Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f12_test(doc) -> [{userdata,[{""}]}];
 bitxor_f12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f12"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f34_test(doc) -> [{userdata,[{""}]}];
 bitxor_f34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f34"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f45_test(doc) -> [{userdata,[{""}]}];
 bitxor_f45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f45"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f56_test(doc) -> [{userdata,[{""}]}];
 bitxor_f56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f7_test(doc) -> [{userdata,[{""}]}];
 bitxor_f7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f7"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f18_test(doc) -> [{userdata,[{""}]}];
 bitxor_f18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f18"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f29_test(doc) -> [{userdata,[{""}]}];
 bitxor_f29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f29"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f40_test(doc) -> [{userdata,[{""}]}];
 bitxor_f40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f40"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f51_test(doc) -> [{userdata,[{""}]}];
 bitxor_f51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f51"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f62_test(doc) -> [{userdata,[{""}]}];
 bitxor_f62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f62"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f2_test(doc) -> [{userdata,[{""}]}];
 bitxor_f2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f2"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f13_test(doc) -> [{userdata,[{""}]}];
 bitxor_f13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f13"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f35_test(doc) -> [{userdata,[{""}]}];
 bitxor_f35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f35"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f46_test(doc) -> [{userdata,[{""}]}];
 bitxor_f46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f46"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f57_test(doc) -> [{userdata,[{""}]}];
 bitxor_f57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f8_test(doc) -> [{userdata,[{""}]}];
 bitxor_f8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f19_test(doc) -> [{userdata,[{""}]}];
 bitxor_f19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f19"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f30_test(doc) -> [{userdata,[{""}]}];
 bitxor_f30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f41_test(doc) -> [{userdata,[{""}]}];
 bitxor_f41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f52_test(doc) -> [{userdata,[{""}]}];
 bitxor_f52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f63_test(doc) -> [{userdata,[{""}]}];
 bitxor_f63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f63"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f3_test(doc) -> [{userdata,[{""}]}];
 bitxor_f3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f3"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f14_test(doc) -> [{userdata,[{""}]}];
 bitxor_f14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f14"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f25_test(doc) -> [{userdata,[{""}]}];
 bitxor_f25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f25"),
   Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f36_test(doc) -> [{userdata,[{""}]}];
 bitxor_f36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f36"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f58_test(doc) -> [{userdata,[{""}]}];
 bitxor_f58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f9_test(doc) -> [{userdata,[{""}]}];
 bitxor_f9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f9"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f20_test(doc) -> [{userdata,[{""}]}];
 bitxor_f20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f20"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f31_test(doc) -> [{userdata,[{""}]}];
 bitxor_f31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f31"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f42_test(doc) -> [{userdata,[{""}]}];
 bitxor_f42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f53_test(doc) -> [{userdata,[{""}]}];
 bitxor_f53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f64_test(doc) -> [{userdata,[{""}]}];
 bitxor_f64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f64"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f4_test(doc) -> [{userdata,[{""}]}];
 bitxor_f4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f4"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f15_test(doc) -> [{userdata,[{""}]}];
 bitxor_f15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f15"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f26_test(doc) -> [{userdata,[{""}]}];
 bitxor_f26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f26"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f37_test(doc) -> [{userdata,[{""}]}];
 bitxor_f37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f37"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f59_test(doc) -> [{userdata,[{""}]}];
 bitxor_f59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f59"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f10_test(doc) -> [{userdata,[{""}]}];
 bitxor_f10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f10"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f21_test(doc) -> [{userdata,[{""}]}];
 bitxor_f21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f21"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f32_test(doc) -> [{userdata,[{""}]}];
 bitxor_f32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f32"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f43_test(doc) -> [{userdata,[{""}]}];
 bitxor_f43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_f54_test(doc) -> [{userdata,[{""}]}];
 bitxor_f54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","f54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q5_test(doc) -> [{userdata,[{""}]}];
 bitxor_q5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q5"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q16_test(doc) -> [{userdata,[{""}]}];
 bitxor_q16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q16"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q27_test(doc) -> [{userdata,[{""}]}];
 bitxor_q27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q27"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q38_test(doc) -> [{userdata,[{""}]}];
 bitxor_q38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q49_test(doc) -> [{userdata,[{""}]}];
 bitxor_q49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q49"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q60_test(doc) -> [{userdata,[{""}]}];
 bitxor_q60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q60"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q11_test(doc) -> [{userdata,[{""}]}];
 bitxor_q11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q11"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q22_test(doc) -> [{userdata,[{""}]}];
 bitxor_q22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q22"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q33_test(doc) -> [{userdata,[{""}]}];
 bitxor_q33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q33"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q44_test(doc) -> [{userdata,[{""}]}];
 bitxor_q44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q55_test(doc) -> [{userdata,[{""}]}];
 bitxor_q55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q55"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q6_test(doc) -> [{userdata,[{""}]}];
 bitxor_q6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q6"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q17_test(doc) -> [{userdata,[{""}]}];
 bitxor_q17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q17"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q28_test(doc) -> [{userdata,[{""}]}];
 bitxor_q28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q28"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q39_test(doc) -> [{userdata,[{""}]}];
 bitxor_q39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q50_test(doc) -> [{userdata,[{""}]}];
 bitxor_q50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q50"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q61_test(doc) -> [{userdata,[{""}]}];
 bitxor_q61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q61"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q1_test(doc) -> [{userdata,[{""}]}];
 bitxor_q1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q1"),
   Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q12_test(doc) -> [{userdata,[{""}]}];
 bitxor_q12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q12"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q34_test(doc) -> [{userdata,[{""}]}];
 bitxor_q34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q45_test(doc) -> [{userdata,[{""}]}];
 bitxor_q45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q45"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q56_test(doc) -> [{userdata,[{""}]}];
 bitxor_q56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q56"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q7_test(doc) -> [{userdata,[{""}]}];
 bitxor_q7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q7"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q18_test(doc) -> [{userdata,[{""}]}];
 bitxor_q18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q18"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q29_test(doc) -> [{userdata,[{""}]}];
 bitxor_q29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q29"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q40_test(doc) -> [{userdata,[{""}]}];
 bitxor_q40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q40"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q51_test(doc) -> [{userdata,[{""}]}];
 bitxor_q51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q51"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q62_test(doc) -> [{userdata,[{""}]}];
 bitxor_q62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q62"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q2_test(doc) -> [{userdata,[{""}]}];
 bitxor_q2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q2"),
   Expected="X3:Y3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q13_test(doc) -> [{userdata,[{""}]}];
 bitxor_q13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q13"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q35_test(doc) -> [{userdata,[{""}]}];
 bitxor_q35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q46_test(doc) -> [{userdata,[{""}]}];
 bitxor_q46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q46"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q57_test(doc) -> [{userdata,[{""}]}];
 bitxor_q57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q57"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q8_test(doc) -> [{userdata,[{""}]}];
 bitxor_q8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q19_test(doc) -> [{userdata,[{""}]}];
 bitxor_q19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q19"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q30_test(doc) -> [{userdata,[{""}]}];
 bitxor_q30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q41_test(doc) -> [{userdata,[{""}]}];
 bitxor_q41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q52_test(doc) -> [{userdata,[{""}]}];
 bitxor_q52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q52"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q63_test(doc) -> [{userdata,[{""}]}];
 bitxor_q63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q63"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q3_test(doc) -> [{userdata,[{""}]}];
 bitxor_q3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q3"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q14_test(doc) -> [{userdata,[{""}]}];
 bitxor_q14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q14"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q25_test(doc) -> [{userdata,[{""}]}];
 bitxor_q25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q25"),
   Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q36_test(doc) -> [{userdata,[{""}]}];
 bitxor_q36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q58_test(doc) -> [{userdata,[{""}]}];
 bitxor_q58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q58"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q9_test(doc) -> [{userdata,[{""}]}];
 bitxor_q9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q9"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q20_test(doc) -> [{userdata,[{""}]}];
 bitxor_q20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q20"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q31_test(doc) -> [{userdata,[{""}]}];
 bitxor_q31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q31"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q42_test(doc) -> [{userdata,[{""}]}];
 bitxor_q42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q53_test(doc) -> [{userdata,[{""}]}];
 bitxor_q53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q53"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q64_test(doc) -> [{userdata,[{""}]}];
 bitxor_q64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q64"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q4_test(doc) -> [{userdata,[{""}]}];
 bitxor_q4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q4"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q15_test(doc) -> [{userdata,[{""}]}];
 bitxor_q15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q15"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q26_test(doc) -> [{userdata,[{""}]}];
 bitxor_q26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q26"),
   Expected="X3:Y3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q37_test(doc) -> [{userdata,[{""}]}];
 bitxor_q37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q59_test(doc) -> [{userdata,[{""}]}];
 bitxor_q59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q59"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q10_test(doc) -> [{userdata,[{""}]}];
 bitxor_q10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q10"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q21_test(doc) -> [{userdata,[{""}]}];
 bitxor_q21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q21"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q32_test(doc) -> [{userdata,[{""}]}];
 bitxor_q32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q32"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q43_test(doc) -> [{userdata,[{""}]}];
 bitxor_q43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_q54_test(doc) -> [{userdata,[{""}]}];
 bitxor_q54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","q54"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g5_test(doc) -> [{userdata,[{""}]}];
 bitxor_g5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g5"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g16_test(doc) -> [{userdata,[{""}]}];
 bitxor_g16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g16"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g27_test(doc) -> [{userdata,[{""}]}];
 bitxor_g27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g27"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g38_test(doc) -> [{userdata,[{""}]}];
 bitxor_g38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g38"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g49_test(doc) -> [{userdata,[{""}]}];
 bitxor_g49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g49"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g60_test(doc) -> [{userdata,[{""}]}];
 bitxor_g60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g60"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g11_test(doc) -> [{userdata,[{""}]}];
 bitxor_g11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g11"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g22_test(doc) -> [{userdata,[{""}]}];
 bitxor_g22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g22"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g33_test(doc) -> [{userdata,[{""}]}];
 bitxor_g33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g33"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g44_test(doc) -> [{userdata,[{""}]}];
 bitxor_g44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g55_test(doc) -> [{userdata,[{""}]}];
 bitxor_g55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g55"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g6_test(doc) -> [{userdata,[{""}]}];
 bitxor_g6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g6"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g17_test(doc) -> [{userdata,[{""}]}];
 bitxor_g17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g17"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g28_test(doc) -> [{userdata,[{""}]}];
 bitxor_g28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g28"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g39_test(doc) -> [{userdata,[{""}]}];
 bitxor_g39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g39"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g50_test(doc) -> [{userdata,[{""}]}];
 bitxor_g50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g50"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g61_test(doc) -> [{userdata,[{""}]}];
 bitxor_g61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g61"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g1_test(doc) -> [{userdata,[{""}]}];
 bitxor_g1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g1"),
   Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g12_test(doc) -> [{userdata,[{""}]}];
 bitxor_g12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g12"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g34_test(doc) -> [{userdata,[{""}]}];
 bitxor_g34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g34"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g45_test(doc) -> [{userdata,[{""}]}];
 bitxor_g45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g45"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g56_test(doc) -> [{userdata,[{""}]}];
 bitxor_g56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g56"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g7_test(doc) -> [{userdata,[{""}]}];
 bitxor_g7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g7"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g18_test(doc) -> [{userdata,[{""}]}];
 bitxor_g18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g18"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g29_test(doc) -> [{userdata,[{""}]}];
 bitxor_g29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g29"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g40_test(doc) -> [{userdata,[{""}]}];
 bitxor_g40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g40"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g51_test(doc) -> [{userdata,[{""}]}];
 bitxor_g51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g51"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g62_test(doc) -> [{userdata,[{""}]}];
 bitxor_g62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g62"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g2_test(doc) -> [{userdata,[{""}]}];
 bitxor_g2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g2"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g13_test(doc) -> [{userdata,[{""}]}];
 bitxor_g13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g13"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g35_test(doc) -> [{userdata,[{""}]}];
 bitxor_g35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g35"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g46_test(doc) -> [{userdata,[{""}]}];
 bitxor_g46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g46"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g57_test(doc) -> [{userdata,[{""}]}];
 bitxor_g57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g57"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g8_test(doc) -> [{userdata,[{""}]}];
 bitxor_g8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g19_test(doc) -> [{userdata,[{""}]}];
 bitxor_g19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g19"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g30_test(doc) -> [{userdata,[{""}]}];
 bitxor_g30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g41_test(doc) -> [{userdata,[{""}]}];
 bitxor_g41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g52_test(doc) -> [{userdata,[{""}]}];
 bitxor_g52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g52"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g63_test(doc) -> [{userdata,[{""}]}];
 bitxor_g63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g63"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g3_test(doc) -> [{userdata,[{""}]}];
 bitxor_g3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g3"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g14_test(doc) -> [{userdata,[{""}]}];
 bitxor_g14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g14"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g25_test(doc) -> [{userdata,[{""}]}];
 bitxor_g25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g25"),
   Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g36_test(doc) -> [{userdata,[{""}]}];
 bitxor_g36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g36"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g58_test(doc) -> [{userdata,[{""}]}];
 bitxor_g58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g58"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g9_test(doc) -> [{userdata,[{""}]}];
 bitxor_g9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g9"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g20_test(doc) -> [{userdata,[{""}]}];
 bitxor_g20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g20"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g31_test(doc) -> [{userdata,[{""}]}];
 bitxor_g31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g31"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g42_test(doc) -> [{userdata,[{""}]}];
 bitxor_g42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g53_test(doc) -> [{userdata,[{""}]}];
 bitxor_g53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g53"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g64_test(doc) -> [{userdata,[{""}]}];
 bitxor_g64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g64"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g4_test(doc) -> [{userdata,[{""}]}];
 bitxor_g4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g4"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g15_test(doc) -> [{userdata,[{""}]}];
 bitxor_g15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g15"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g26_test(doc) -> [{userdata,[{""}]}];
 bitxor_g26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g26"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g37_test(doc) -> [{userdata,[{""}]}];
 bitxor_g37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g37"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g59_test(doc) -> [{userdata,[{""}]}];
 bitxor_g59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g59"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g10_test(doc) -> [{userdata,[{""}]}];
 bitxor_g10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g10"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g21_test(doc) -> [{userdata,[{""}]}];
 bitxor_g21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g21"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g32_test(doc) -> [{userdata,[{""}]}];
 bitxor_g32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g32"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g43_test(doc) -> [{userdata,[{""}]}];
 bitxor_g43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_g54_test(doc) -> [{userdata,[{""}]}];
 bitxor_g54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","g54"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r5_test(doc) -> [{userdata,[{""}]}];
 bitxor_r5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r5"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r16_test(doc) -> [{userdata,[{""}]}];
 bitxor_r16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r16"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r27_test(doc) -> [{userdata,[{""}]}];
 bitxor_r27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r27"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r38_test(doc) -> [{userdata,[{""}]}];
 bitxor_r38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r49_test(doc) -> [{userdata,[{""}]}];
 bitxor_r49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r49"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r60_test(doc) -> [{userdata,[{""}]}];
 bitxor_r60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r60"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r11_test(doc) -> [{userdata,[{""}]}];
 bitxor_r11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r11"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r22_test(doc) -> [{userdata,[{""}]}];
 bitxor_r22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r22"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r33_test(doc) -> [{userdata,[{""}]}];
 bitxor_r33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r33"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r44_test(doc) -> [{userdata,[{""}]}];
 bitxor_r44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r55_test(doc) -> [{userdata,[{""}]}];
 bitxor_r55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r55"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r6_test(doc) -> [{userdata,[{""}]}];
 bitxor_r6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r6"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r17_test(doc) -> [{userdata,[{""}]}];
 bitxor_r17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r17"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r28_test(doc) -> [{userdata,[{""}]}];
 bitxor_r28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r28"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r39_test(doc) -> [{userdata,[{""}]}];
 bitxor_r39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r50_test(doc) -> [{userdata,[{""}]}];
 bitxor_r50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r50"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r61_test(doc) -> [{userdata,[{""}]}];
 bitxor_r61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r61"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r1_test(doc) -> [{userdata,[{""}]}];
 bitxor_r1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r1"),
   Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r12_test(doc) -> [{userdata,[{""}]}];
 bitxor_r12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r12"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r34_test(doc) -> [{userdata,[{""}]}];
 bitxor_r34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r45_test(doc) -> [{userdata,[{""}]}];
 bitxor_r45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r45"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r56_test(doc) -> [{userdata,[{""}]}];
 bitxor_r56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r56"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r7_test(doc) -> [{userdata,[{""}]}];
 bitxor_r7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r7"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r18_test(doc) -> [{userdata,[{""}]}];
 bitxor_r18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r18"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r29_test(doc) -> [{userdata,[{""}]}];
 bitxor_r29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r29"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r40_test(doc) -> [{userdata,[{""}]}];
 bitxor_r40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r40"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r51_test(doc) -> [{userdata,[{""}]}];
 bitxor_r51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r51"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r62_test(doc) -> [{userdata,[{""}]}];
 bitxor_r62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r62"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r2_test(doc) -> [{userdata,[{""}]}];
 bitxor_r2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r2"),
   Expected="X3:AA3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r13_test(doc) -> [{userdata,[{""}]}];
 bitxor_r13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r13"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r35_test(doc) -> [{userdata,[{""}]}];
 bitxor_r35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r46_test(doc) -> [{userdata,[{""}]}];
 bitxor_r46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r46"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r57_test(doc) -> [{userdata,[{""}]}];
 bitxor_r57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r57"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r8_test(doc) -> [{userdata,[{""}]}];
 bitxor_r8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r19_test(doc) -> [{userdata,[{""}]}];
 bitxor_r19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r19"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r30_test(doc) -> [{userdata,[{""}]}];
 bitxor_r30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r41_test(doc) -> [{userdata,[{""}]}];
 bitxor_r41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r52_test(doc) -> [{userdata,[{""}]}];
 bitxor_r52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r52"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r63_test(doc) -> [{userdata,[{""}]}];
 bitxor_r63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r63"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r3_test(doc) -> [{userdata,[{""}]}];
 bitxor_r3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r3"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r14_test(doc) -> [{userdata,[{""}]}];
 bitxor_r14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r14"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r25_test(doc) -> [{userdata,[{""}]}];
 bitxor_r25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r25"),
   Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r36_test(doc) -> [{userdata,[{""}]}];
 bitxor_r36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r58_test(doc) -> [{userdata,[{""}]}];
 bitxor_r58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r58"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r9_test(doc) -> [{userdata,[{""}]}];
 bitxor_r9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r9"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r20_test(doc) -> [{userdata,[{""}]}];
 bitxor_r20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r20"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r31_test(doc) -> [{userdata,[{""}]}];
 bitxor_r31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r31"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r42_test(doc) -> [{userdata,[{""}]}];
 bitxor_r42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r53_test(doc) -> [{userdata,[{""}]}];
 bitxor_r53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r53"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r64_test(doc) -> [{userdata,[{""}]}];
 bitxor_r64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r64"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r4_test(doc) -> [{userdata,[{""}]}];
 bitxor_r4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r4"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r15_test(doc) -> [{userdata,[{""}]}];
 bitxor_r15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r15"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r26_test(doc) -> [{userdata,[{""}]}];
 bitxor_r26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r26"),
   Expected="X3:AA3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r37_test(doc) -> [{userdata,[{""}]}];
 bitxor_r37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r59_test(doc) -> [{userdata,[{""}]}];
 bitxor_r59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r59"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r10_test(doc) -> [{userdata,[{""}]}];
 bitxor_r10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r10"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r21_test(doc) -> [{userdata,[{""}]}];
 bitxor_r21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r21"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r32_test(doc) -> [{userdata,[{""}]}];
 bitxor_r32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r32"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r43_test(doc) -> [{userdata,[{""}]}];
 bitxor_r43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_r54_test(doc) -> [{userdata,[{""}]}];
 bitxor_r54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","r54"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h5_test(doc) -> [{userdata,[{""}]}];
 bitxor_h5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h5"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h16_test(doc) -> [{userdata,[{""}]}];
 bitxor_h16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h16"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h27_test(doc) -> [{userdata,[{""}]}];
 bitxor_h27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h27"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h38_test(doc) -> [{userdata,[{""}]}];
 bitxor_h38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h38"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h49_test(doc) -> [{userdata,[{""}]}];
 bitxor_h49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h49"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h60_test(doc) -> [{userdata,[{""}]}];
 bitxor_h60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h60"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h11_test(doc) -> [{userdata,[{""}]}];
 bitxor_h11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h11"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h22_test(doc) -> [{userdata,[{""}]}];
 bitxor_h22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h22"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h33_test(doc) -> [{userdata,[{""}]}];
 bitxor_h33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h33"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h44_test(doc) -> [{userdata,[{""}]}];
 bitxor_h44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h55_test(doc) -> [{userdata,[{""}]}];
 bitxor_h55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h55"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h6_test(doc) -> [{userdata,[{""}]}];
 bitxor_h6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h6"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h17_test(doc) -> [{userdata,[{""}]}];
 bitxor_h17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h17"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h28_test(doc) -> [{userdata,[{""}]}];
 bitxor_h28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h28"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h39_test(doc) -> [{userdata,[{""}]}];
 bitxor_h39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h39"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h50_test(doc) -> [{userdata,[{""}]}];
 bitxor_h50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h50"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h61_test(doc) -> [{userdata,[{""}]}];
 bitxor_h61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h61"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h1_test(doc) -> [{userdata,[{""}]}];
 bitxor_h1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h1"),
   Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h12_test(doc) -> [{userdata,[{""}]}];
 bitxor_h12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h12"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h34_test(doc) -> [{userdata,[{""}]}];
 bitxor_h34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h34"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h45_test(doc) -> [{userdata,[{""}]}];
 bitxor_h45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h45"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h56_test(doc) -> [{userdata,[{""}]}];
 bitxor_h56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h56"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h7_test(doc) -> [{userdata,[{""}]}];
 bitxor_h7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h7"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h18_test(doc) -> [{userdata,[{""}]}];
 bitxor_h18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h18"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h29_test(doc) -> [{userdata,[{""}]}];
 bitxor_h29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h29"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h40_test(doc) -> [{userdata,[{""}]}];
 bitxor_h40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h40"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h51_test(doc) -> [{userdata,[{""}]}];
 bitxor_h51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h51"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h62_test(doc) -> [{userdata,[{""}]}];
 bitxor_h62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h62"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h2_test(doc) -> [{userdata,[{""}]}];
 bitxor_h2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h2"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h13_test(doc) -> [{userdata,[{""}]}];
 bitxor_h13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h13"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h35_test(doc) -> [{userdata,[{""}]}];
 bitxor_h35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h35"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h46_test(doc) -> [{userdata,[{""}]}];
 bitxor_h46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h46"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h57_test(doc) -> [{userdata,[{""}]}];
 bitxor_h57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h57"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h8_test(doc) -> [{userdata,[{""}]}];
 bitxor_h8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h19_test(doc) -> [{userdata,[{""}]}];
 bitxor_h19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h19"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h30_test(doc) -> [{userdata,[{""}]}];
 bitxor_h30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h41_test(doc) -> [{userdata,[{""}]}];
 bitxor_h41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h52_test(doc) -> [{userdata,[{""}]}];
 bitxor_h52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h52"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h63_test(doc) -> [{userdata,[{""}]}];
 bitxor_h63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h63"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h3_test(doc) -> [{userdata,[{""}]}];
 bitxor_h3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h3"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h14_test(doc) -> [{userdata,[{""}]}];
 bitxor_h14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h14"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h25_test(doc) -> [{userdata,[{""}]}];
 bitxor_h25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h25"),
   Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h36_test(doc) -> [{userdata,[{""}]}];
 bitxor_h36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h36"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h58_test(doc) -> [{userdata,[{""}]}];
 bitxor_h58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h58"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h9_test(doc) -> [{userdata,[{""}]}];
 bitxor_h9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h9"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h20_test(doc) -> [{userdata,[{""}]}];
 bitxor_h20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h20"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h31_test(doc) -> [{userdata,[{""}]}];
 bitxor_h31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h31"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h42_test(doc) -> [{userdata,[{""}]}];
 bitxor_h42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h53_test(doc) -> [{userdata,[{""}]}];
 bitxor_h53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h53"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h64_test(doc) -> [{userdata,[{""}]}];
 bitxor_h64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h64"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h4_test(doc) -> [{userdata,[{""}]}];
 bitxor_h4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h4"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h15_test(doc) -> [{userdata,[{""}]}];
 bitxor_h15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h15"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h26_test(doc) -> [{userdata,[{""}]}];
 bitxor_h26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h26"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h37_test(doc) -> [{userdata,[{""}]}];
 bitxor_h37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h37"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h59_test(doc) -> [{userdata,[{""}]}];
 bitxor_h59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h59"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h10_test(doc) -> [{userdata,[{""}]}];
 bitxor_h10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h10"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h21_test(doc) -> [{userdata,[{""}]}];
 bitxor_h21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h21"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h32_test(doc) -> [{userdata,[{""}]}];
 bitxor_h32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h32"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h43_test(doc) -> [{userdata,[{""}]}];
 bitxor_h43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_h54_test(doc) -> [{userdata,[{""}]}];
 bitxor_h54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","h54"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s5_test(doc) -> [{userdata,[{""}]}];
 bitxor_s5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s5"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s16_test(doc) -> [{userdata,[{""}]}];
 bitxor_s16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s16"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s27_test(doc) -> [{userdata,[{""}]}];
 bitxor_s27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s27"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s38_test(doc) -> [{userdata,[{""}]}];
 bitxor_s38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s49_test(doc) -> [{userdata,[{""}]}];
 bitxor_s49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s49"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s60_test(doc) -> [{userdata,[{""}]}];
 bitxor_s60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s60"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s11_test(doc) -> [{userdata,[{""}]}];
 bitxor_s11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s11"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s22_test(doc) -> [{userdata,[{""}]}];
 bitxor_s22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s22"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s33_test(doc) -> [{userdata,[{""}]}];
 bitxor_s33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s33"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s44_test(doc) -> [{userdata,[{""}]}];
 bitxor_s44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s55_test(doc) -> [{userdata,[{""}]}];
 bitxor_s55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s55"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s6_test(doc) -> [{userdata,[{""}]}];
 bitxor_s6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s6"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s17_test(doc) -> [{userdata,[{""}]}];
 bitxor_s17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s17"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s28_test(doc) -> [{userdata,[{""}]}];
 bitxor_s28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s28"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s39_test(doc) -> [{userdata,[{""}]}];
 bitxor_s39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s50_test(doc) -> [{userdata,[{""}]}];
 bitxor_s50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s50"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s61_test(doc) -> [{userdata,[{""}]}];
 bitxor_s61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s61"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s1_test(doc) -> [{userdata,[{""}]}];
 bitxor_s1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s1"),
   Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s12_test(doc) -> [{userdata,[{""}]}];
 bitxor_s12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s12"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s34_test(doc) -> [{userdata,[{""}]}];
 bitxor_s34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s45_test(doc) -> [{userdata,[{""}]}];
 bitxor_s45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s45"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s56_test(doc) -> [{userdata,[{""}]}];
 bitxor_s56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s56"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s7_test(doc) -> [{userdata,[{""}]}];
 bitxor_s7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s7"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s18_test(doc) -> [{userdata,[{""}]}];
 bitxor_s18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s18"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s29_test(doc) -> [{userdata,[{""}]}];
 bitxor_s29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s29"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s40_test(doc) -> [{userdata,[{""}]}];
 bitxor_s40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s40"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s51_test(doc) -> [{userdata,[{""}]}];
 bitxor_s51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s51"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s62_test(doc) -> [{userdata,[{""}]}];
 bitxor_s62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s62"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s2_test(doc) -> [{userdata,[{""}]}];
 bitxor_s2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s2"),
   Expected="X3:Y4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s13_test(doc) -> [{userdata,[{""}]}];
 bitxor_s13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s13"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s35_test(doc) -> [{userdata,[{""}]}];
 bitxor_s35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s46_test(doc) -> [{userdata,[{""}]}];
 bitxor_s46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s46"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s57_test(doc) -> [{userdata,[{""}]}];
 bitxor_s57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s57"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s8_test(doc) -> [{userdata,[{""}]}];
 bitxor_s8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s19_test(doc) -> [{userdata,[{""}]}];
 bitxor_s19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s19"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s30_test(doc) -> [{userdata,[{""}]}];
 bitxor_s30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s41_test(doc) -> [{userdata,[{""}]}];
 bitxor_s41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s52_test(doc) -> [{userdata,[{""}]}];
 bitxor_s52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s52"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s63_test(doc) -> [{userdata,[{""}]}];
 bitxor_s63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s63"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s3_test(doc) -> [{userdata,[{""}]}];
 bitxor_s3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s3"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s14_test(doc) -> [{userdata,[{""}]}];
 bitxor_s14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s14"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s25_test(doc) -> [{userdata,[{""}]}];
 bitxor_s25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s25"),
   Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s36_test(doc) -> [{userdata,[{""}]}];
 bitxor_s36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s58_test(doc) -> [{userdata,[{""}]}];
 bitxor_s58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s58"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s9_test(doc) -> [{userdata,[{""}]}];
 bitxor_s9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s9"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s20_test(doc) -> [{userdata,[{""}]}];
 bitxor_s20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s20"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s31_test(doc) -> [{userdata,[{""}]}];
 bitxor_s31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s31"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s42_test(doc) -> [{userdata,[{""}]}];
 bitxor_s42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s53_test(doc) -> [{userdata,[{""}]}];
 bitxor_s53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s53"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s64_test(doc) -> [{userdata,[{""}]}];
 bitxor_s64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s64"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s4_test(doc) -> [{userdata,[{""}]}];
 bitxor_s4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s4"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s15_test(doc) -> [{userdata,[{""}]}];
 bitxor_s15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s15"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s26_test(doc) -> [{userdata,[{""}]}];
 bitxor_s26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s26"),
   Expected="X3:Y4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s37_test(doc) -> [{userdata,[{""}]}];
 bitxor_s37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s59_test(doc) -> [{userdata,[{""}]}];
 bitxor_s59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s59"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s10_test(doc) -> [{userdata,[{""}]}];
 bitxor_s10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s10"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s21_test(doc) -> [{userdata,[{""}]}];
 bitxor_s21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s21"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s32_test(doc) -> [{userdata,[{""}]}];
 bitxor_s32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s32"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s43_test(doc) -> [{userdata,[{""}]}];
 bitxor_s43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_s54_test(doc) -> [{userdata,[{""}]}];
 bitxor_s54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","s54"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i5_test(doc) -> [{userdata,[{""}]}];
 bitxor_i5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i5"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i16_test(doc) -> [{userdata,[{""}]}];
 bitxor_i16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i16"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i27_test(doc) -> [{userdata,[{""}]}];
 bitxor_i27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i27"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i38_test(doc) -> [{userdata,[{""}]}];
 bitxor_i38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i49_test(doc) -> [{userdata,[{""}]}];
 bitxor_i49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i49"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i60_test(doc) -> [{userdata,[{""}]}];
 bitxor_i60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i60"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i11_test(doc) -> [{userdata,[{""}]}];
 bitxor_i11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i11"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i22_test(doc) -> [{userdata,[{""}]}];
 bitxor_i22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i22"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i33_test(doc) -> [{userdata,[{""}]}];
 bitxor_i33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i33"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i44_test(doc) -> [{userdata,[{""}]}];
 bitxor_i44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i55_test(doc) -> [{userdata,[{""}]}];
 bitxor_i55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i55"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i6_test(doc) -> [{userdata,[{""}]}];
 bitxor_i6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i6"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i17_test(doc) -> [{userdata,[{""}]}];
 bitxor_i17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i17"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i28_test(doc) -> [{userdata,[{""}]}];
 bitxor_i28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i28"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i39_test(doc) -> [{userdata,[{""}]}];
 bitxor_i39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i50_test(doc) -> [{userdata,[{""}]}];
 bitxor_i50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i50"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i61_test(doc) -> [{userdata,[{""}]}];
 bitxor_i61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i61"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i1_test(doc) -> [{userdata,[{""}]}];
 bitxor_i1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i1"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i12_test(doc) -> [{userdata,[{""}]}];
 bitxor_i12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i12"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i34_test(doc) -> [{userdata,[{""}]}];
 bitxor_i34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i45_test(doc) -> [{userdata,[{""}]}];
 bitxor_i45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i45"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i56_test(doc) -> [{userdata,[{""}]}];
 bitxor_i56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i56"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i7_test(doc) -> [{userdata,[{""}]}];
 bitxor_i7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i7"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i18_test(doc) -> [{userdata,[{""}]}];
 bitxor_i18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i18"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i29_test(doc) -> [{userdata,[{""}]}];
 bitxor_i29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i29"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i40_test(doc) -> [{userdata,[{""}]}];
 bitxor_i40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i40"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i51_test(doc) -> [{userdata,[{""}]}];
 bitxor_i51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i51"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i62_test(doc) -> [{userdata,[{""}]}];
 bitxor_i62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i62"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i2_test(doc) -> [{userdata,[{""}]}];
 bitxor_i2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i2"),
   Expected="Phillip",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i13_test(doc) -> [{userdata,[{""}]}];
 bitxor_i13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i13"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i35_test(doc) -> [{userdata,[{""}]}];
 bitxor_i35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i46_test(doc) -> [{userdata,[{""}]}];
 bitxor_i46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i46"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i57_test(doc) -> [{userdata,[{""}]}];
 bitxor_i57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i57"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i8_test(doc) -> [{userdata,[{""}]}];
 bitxor_i8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i19_test(doc) -> [{userdata,[{""}]}];
 bitxor_i19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i19"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i30_test(doc) -> [{userdata,[{""}]}];
 bitxor_i30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i41_test(doc) -> [{userdata,[{""}]}];
 bitxor_i41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i52_test(doc) -> [{userdata,[{""}]}];
 bitxor_i52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i52"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i63_test(doc) -> [{userdata,[{""}]}];
 bitxor_i63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i63"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i3_test(doc) -> [{userdata,[{""}]}];
 bitxor_i3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i3"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i14_test(doc) -> [{userdata,[{""}]}];
 bitxor_i14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i14"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i25_test(doc) -> [{userdata,[{""}]}];
 bitxor_i25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i25"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i36_test(doc) -> [{userdata,[{""}]}];
 bitxor_i36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i58_test(doc) -> [{userdata,[{""}]}];
 bitxor_i58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i58"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i9_test(doc) -> [{userdata,[{""}]}];
 bitxor_i9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i9"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i20_test(doc) -> [{userdata,[{""}]}];
 bitxor_i20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i20"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i31_test(doc) -> [{userdata,[{""}]}];
 bitxor_i31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i31"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i42_test(doc) -> [{userdata,[{""}]}];
 bitxor_i42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i53_test(doc) -> [{userdata,[{""}]}];
 bitxor_i53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i53"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i64_test(doc) -> [{userdata,[{""}]}];
 bitxor_i64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i64"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i4_test(doc) -> [{userdata,[{""}]}];
 bitxor_i4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i4"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i15_test(doc) -> [{userdata,[{""}]}];
 bitxor_i15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i15"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i26_test(doc) -> [{userdata,[{""}]}];
 bitxor_i26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i26"),
   Expected="Phillip",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i37_test(doc) -> [{userdata,[{""}]}];
 bitxor_i37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i59_test(doc) -> [{userdata,[{""}]}];
 bitxor_i59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i59"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i10_test(doc) -> [{userdata,[{""}]}];
 bitxor_i10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i10"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i21_test(doc) -> [{userdata,[{""}]}];
 bitxor_i21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i21"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i32_test(doc) -> [{userdata,[{""}]}];
 bitxor_i32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i32"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i43_test(doc) -> [{userdata,[{""}]}];
 bitxor_i43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_i54_test(doc) -> [{userdata,[{""}]}];
 bitxor_i54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","i54"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t5_test(doc) -> [{userdata,[{""}]}];
 bitxor_t5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t5"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t16_test(doc) -> [{userdata,[{""}]}];
 bitxor_t16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t16"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t27_test(doc) -> [{userdata,[{""}]}];
 bitxor_t27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t27"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t38_test(doc) -> [{userdata,[{""}]}];
 bitxor_t38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t49_test(doc) -> [{userdata,[{""}]}];
 bitxor_t49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t49"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t60_test(doc) -> [{userdata,[{""}]}];
 bitxor_t60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t60"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t11_test(doc) -> [{userdata,[{""}]}];
 bitxor_t11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t11"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t22_test(doc) -> [{userdata,[{""}]}];
 bitxor_t22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t22"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t33_test(doc) -> [{userdata,[{""}]}];
 bitxor_t33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t33"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t44_test(doc) -> [{userdata,[{""}]}];
 bitxor_t44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t55_test(doc) -> [{userdata,[{""}]}];
 bitxor_t55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t55"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t6_test(doc) -> [{userdata,[{""}]}];
 bitxor_t6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t6"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t17_test(doc) -> [{userdata,[{""}]}];
 bitxor_t17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t17"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t28_test(doc) -> [{userdata,[{""}]}];
 bitxor_t28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t28"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t39_test(doc) -> [{userdata,[{""}]}];
 bitxor_t39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t50_test(doc) -> [{userdata,[{""}]}];
 bitxor_t50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t50"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t61_test(doc) -> [{userdata,[{""}]}];
 bitxor_t61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t61"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t1_test(doc) -> [{userdata,[{""}]}];
 bitxor_t1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t1"),
   Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t12_test(doc) -> [{userdata,[{""}]}];
 bitxor_t12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t12"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t34_test(doc) -> [{userdata,[{""}]}];
 bitxor_t34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t45_test(doc) -> [{userdata,[{""}]}];
 bitxor_t45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t45"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t56_test(doc) -> [{userdata,[{""}]}];
 bitxor_t56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t56"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t7_test(doc) -> [{userdata,[{""}]}];
 bitxor_t7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t7"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t18_test(doc) -> [{userdata,[{""}]}];
 bitxor_t18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t18"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t29_test(doc) -> [{userdata,[{""}]}];
 bitxor_t29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t29"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t40_test(doc) -> [{userdata,[{""}]}];
 bitxor_t40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t40"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t51_test(doc) -> [{userdata,[{""}]}];
 bitxor_t51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t51"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t62_test(doc) -> [{userdata,[{""}]}];
 bitxor_t62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t62"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t2_test(doc) -> [{userdata,[{""}]}];
 bitxor_t2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t2"),
   Expected="X3:AA6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t13_test(doc) -> [{userdata,[{""}]}];
 bitxor_t13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t13"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t35_test(doc) -> [{userdata,[{""}]}];
 bitxor_t35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t46_test(doc) -> [{userdata,[{""}]}];
 bitxor_t46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t46"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t57_test(doc) -> [{userdata,[{""}]}];
 bitxor_t57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t57"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t8_test(doc) -> [{userdata,[{""}]}];
 bitxor_t8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t19_test(doc) -> [{userdata,[{""}]}];
 bitxor_t19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t19"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t30_test(doc) -> [{userdata,[{""}]}];
 bitxor_t30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t41_test(doc) -> [{userdata,[{""}]}];
 bitxor_t41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t52_test(doc) -> [{userdata,[{""}]}];
 bitxor_t52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t52"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t63_test(doc) -> [{userdata,[{""}]}];
 bitxor_t63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t63"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t3_test(doc) -> [{userdata,[{""}]}];
 bitxor_t3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t3"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t14_test(doc) -> [{userdata,[{""}]}];
 bitxor_t14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t14"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t25_test(doc) -> [{userdata,[{""}]}];
 bitxor_t25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t25"),
   Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t36_test(doc) -> [{userdata,[{""}]}];
 bitxor_t36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t58_test(doc) -> [{userdata,[{""}]}];
 bitxor_t58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t58"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t9_test(doc) -> [{userdata,[{""}]}];
 bitxor_t9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t9"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t20_test(doc) -> [{userdata,[{""}]}];
 bitxor_t20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t20"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t31_test(doc) -> [{userdata,[{""}]}];
 bitxor_t31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t31"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t42_test(doc) -> [{userdata,[{""}]}];
 bitxor_t42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t53_test(doc) -> [{userdata,[{""}]}];
 bitxor_t53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t53"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t64_test(doc) -> [{userdata,[{""}]}];
 bitxor_t64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t64"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t4_test(doc) -> [{userdata,[{""}]}];
 bitxor_t4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t4"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t15_test(doc) -> [{userdata,[{""}]}];
 bitxor_t15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t15"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t26_test(doc) -> [{userdata,[{""}]}];
 bitxor_t26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t26"),
   Expected="X3:AA6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t37_test(doc) -> [{userdata,[{""}]}];
 bitxor_t37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t59_test(doc) -> [{userdata,[{""}]}];
 bitxor_t59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t59"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t10_test(doc) -> [{userdata,[{""}]}];
 bitxor_t10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t10"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t21_test(doc) -> [{userdata,[{""}]}];
 bitxor_t21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t21"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t32_test(doc) -> [{userdata,[{""}]}];
 bitxor_t32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t32"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t43_test(doc) -> [{userdata,[{""}]}];
 bitxor_t43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_t54_test(doc) -> [{userdata,[{""}]}];
 bitxor_t54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","t54"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j5_test(doc) -> [{userdata,[{""}]}];
 bitxor_j5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j5"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j16_test(doc) -> [{userdata,[{""}]}];
 bitxor_j16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j16"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j27_test(doc) -> [{userdata,[{""}]}];
 bitxor_j27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j27"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j38_test(doc) -> [{userdata,[{""}]}];
 bitxor_j38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j38"),
   Expected="13.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j49_test(doc) -> [{userdata,[{""}]}];
 bitxor_j49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j49"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j60_test(doc) -> [{userdata,[{""}]}];
 bitxor_j60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j60"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j11_test(doc) -> [{userdata,[{""}]}];
 bitxor_j11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j11"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j22_test(doc) -> [{userdata,[{""}]}];
 bitxor_j22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j22"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j33_test(doc) -> [{userdata,[{""}]}];
 bitxor_j33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j33"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j44_test(doc) -> [{userdata,[{""}]}];
 bitxor_j44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j55_test(doc) -> [{userdata,[{""}]}];
 bitxor_j55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j55"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j6_test(doc) -> [{userdata,[{""}]}];
 bitxor_j6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j6"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j17_test(doc) -> [{userdata,[{""}]}];
 bitxor_j17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j17"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j28_test(doc) -> [{userdata,[{""}]}];
 bitxor_j28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j28"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j39_test(doc) -> [{userdata,[{""}]}];
 bitxor_j39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j39"),
   Expected="12.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j50_test(doc) -> [{userdata,[{""}]}];
 bitxor_j50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j50"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j61_test(doc) -> [{userdata,[{""}]}];
 bitxor_j61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j61"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j1_test(doc) -> [{userdata,[{""}]}];
 bitxor_j1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j1"),
   Expected="String Number",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j12_test(doc) -> [{userdata,[{""}]}];
 bitxor_j12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j12"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j34_test(doc) -> [{userdata,[{""}]}];
 bitxor_j34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j34"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j45_test(doc) -> [{userdata,[{""}]}];
 bitxor_j45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j45"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j56_test(doc) -> [{userdata,[{""}]}];
 bitxor_j56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j56"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j7_test(doc) -> [{userdata,[{""}]}];
 bitxor_j7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j7"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j18_test(doc) -> [{userdata,[{""}]}];
 bitxor_j18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j18"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j29_test(doc) -> [{userdata,[{""}]}];
 bitxor_j29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j29"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j40_test(doc) -> [{userdata,[{""}]}];
 bitxor_j40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j40"),
   Expected="13.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j51_test(doc) -> [{userdata,[{""}]}];
 bitxor_j51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j51"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j62_test(doc) -> [{userdata,[{""}]}];
 bitxor_j62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j62"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j2_test(doc) -> [{userdata,[{""}]}];
 bitxor_j2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j2"),
   Expected="13",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j13_test(doc) -> [{userdata,[{""}]}];
 bitxor_j13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j13"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j35_test(doc) -> [{userdata,[{""}]}];
 bitxor_j35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j35"),
   Expected="26.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j46_test(doc) -> [{userdata,[{""}]}];
 bitxor_j46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j46"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j57_test(doc) -> [{userdata,[{""}]}];
 bitxor_j57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j57"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j8_test(doc) -> [{userdata,[{""}]}];
 bitxor_j8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j19_test(doc) -> [{userdata,[{""}]}];
 bitxor_j19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j19"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j30_test(doc) -> [{userdata,[{""}]}];
 bitxor_j30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j41_test(doc) -> [{userdata,[{""}]}];
 bitxor_j41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j52_test(doc) -> [{userdata,[{""}]}];
 bitxor_j52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j52"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j63_test(doc) -> [{userdata,[{""}]}];
 bitxor_j63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j63"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j3_test(doc) -> [{userdata,[{""}]}];
 bitxor_j3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j3"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j14_test(doc) -> [{userdata,[{""}]}];
 bitxor_j14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j14"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j25_test(doc) -> [{userdata,[{""}]}];
 bitxor_j25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j25"),
   Expected="String Number",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j36_test(doc) -> [{userdata,[{""}]}];
 bitxor_j36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j36"),
   Expected="24917.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j58_test(doc) -> [{userdata,[{""}]}];
 bitxor_j58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j58"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j9_test(doc) -> [{userdata,[{""}]}];
 bitxor_j9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j9"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j20_test(doc) -> [{userdata,[{""}]}];
 bitxor_j20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j20"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j31_test(doc) -> [{userdata,[{""}]}];
 bitxor_j31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j31"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j42_test(doc) -> [{userdata,[{""}]}];
 bitxor_j42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j53_test(doc) -> [{userdata,[{""}]}];
 bitxor_j53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j53"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j64_test(doc) -> [{userdata,[{""}]}];
 bitxor_j64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j64"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j4_test(doc) -> [{userdata,[{""}]}];
 bitxor_j4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j4"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j15_test(doc) -> [{userdata,[{""}]}];
 bitxor_j15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j15"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j26_test(doc) -> [{userdata,[{""}]}];
 bitxor_j26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j26"),
   Expected="13",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j37_test(doc) -> [{userdata,[{""}]}];
 bitxor_j37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j37"),
   Expected="14.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j59_test(doc) -> [{userdata,[{""}]}];
 bitxor_j59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j59"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j10_test(doc) -> [{userdata,[{""}]}];
 bitxor_j10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j10"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j21_test(doc) -> [{userdata,[{""}]}];
 bitxor_j21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j21"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j32_test(doc) -> [{userdata,[{""}]}];
 bitxor_j32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j32"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j43_test(doc) -> [{userdata,[{""}]}];
 bitxor_j43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_j54_test(doc) -> [{userdata,[{""}]}];
 bitxor_j54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","j54"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u5_test(doc) -> [{userdata,[{""}]}];
 bitxor_u5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u5"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u16_test(doc) -> [{userdata,[{""}]}];
 bitxor_u16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u16"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u27_test(doc) -> [{userdata,[{""}]}];
 bitxor_u27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u27"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u38_test(doc) -> [{userdata,[{""}]}];
 bitxor_u38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u49_test(doc) -> [{userdata,[{""}]}];
 bitxor_u49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u49"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u60_test(doc) -> [{userdata,[{""}]}];
 bitxor_u60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u60"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u11_test(doc) -> [{userdata,[{""}]}];
 bitxor_u11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u11"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u22_test(doc) -> [{userdata,[{""}]}];
 bitxor_u22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u22"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u33_test(doc) -> [{userdata,[{""}]}];
 bitxor_u33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u33"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u44_test(doc) -> [{userdata,[{""}]}];
 bitxor_u44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u55_test(doc) -> [{userdata,[{""}]}];
 bitxor_u55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u55"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u6_test(doc) -> [{userdata,[{""}]}];
 bitxor_u6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u6"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u17_test(doc) -> [{userdata,[{""}]}];
 bitxor_u17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u17"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u28_test(doc) -> [{userdata,[{""}]}];
 bitxor_u28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u28"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u39_test(doc) -> [{userdata,[{""}]}];
 bitxor_u39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u50_test(doc) -> [{userdata,[{""}]}];
 bitxor_u50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u50"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u61_test(doc) -> [{userdata,[{""}]}];
 bitxor_u61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u61"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u1_test(doc) -> [{userdata,[{""}]}];
 bitxor_u1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u1"),
   Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u12_test(doc) -> [{userdata,[{""}]}];
 bitxor_u12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u12"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u34_test(doc) -> [{userdata,[{""}]}];
 bitxor_u34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u45_test(doc) -> [{userdata,[{""}]}];
 bitxor_u45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u45"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u56_test(doc) -> [{userdata,[{""}]}];
 bitxor_u56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u56"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u7_test(doc) -> [{userdata,[{""}]}];
 bitxor_u7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u7"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u18_test(doc) -> [{userdata,[{""}]}];
 bitxor_u18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u18"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u29_test(doc) -> [{userdata,[{""}]}];
 bitxor_u29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u29"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u40_test(doc) -> [{userdata,[{""}]}];
 bitxor_u40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u40"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u51_test(doc) -> [{userdata,[{""}]}];
 bitxor_u51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u51"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u62_test(doc) -> [{userdata,[{""}]}];
 bitxor_u62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u62"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u2_test(doc) -> [{userdata,[{""}]}];
 bitxor_u2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u2"),
   Expected="X3:X4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u13_test(doc) -> [{userdata,[{""}]}];
 bitxor_u13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u13"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u35_test(doc) -> [{userdata,[{""}]}];
 bitxor_u35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u46_test(doc) -> [{userdata,[{""}]}];
 bitxor_u46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u46"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u57_test(doc) -> [{userdata,[{""}]}];
 bitxor_u57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u57"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u8_test(doc) -> [{userdata,[{""}]}];
 bitxor_u8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u19_test(doc) -> [{userdata,[{""}]}];
 bitxor_u19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u19"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u30_test(doc) -> [{userdata,[{""}]}];
 bitxor_u30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u41_test(doc) -> [{userdata,[{""}]}];
 bitxor_u41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u52_test(doc) -> [{userdata,[{""}]}];
 bitxor_u52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u52"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u63_test(doc) -> [{userdata,[{""}]}];
 bitxor_u63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u63"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u3_test(doc) -> [{userdata,[{""}]}];
 bitxor_u3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u3"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u14_test(doc) -> [{userdata,[{""}]}];
 bitxor_u14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u14"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u25_test(doc) -> [{userdata,[{""}]}];
 bitxor_u25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u25"),
   Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u36_test(doc) -> [{userdata,[{""}]}];
 bitxor_u36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u58_test(doc) -> [{userdata,[{""}]}];
 bitxor_u58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u58"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u9_test(doc) -> [{userdata,[{""}]}];
 bitxor_u9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u9"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u20_test(doc) -> [{userdata,[{""}]}];
 bitxor_u20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u20"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u31_test(doc) -> [{userdata,[{""}]}];
 bitxor_u31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u31"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u42_test(doc) -> [{userdata,[{""}]}];
 bitxor_u42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u53_test(doc) -> [{userdata,[{""}]}];
 bitxor_u53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u53"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u64_test(doc) -> [{userdata,[{""}]}];
 bitxor_u64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u64"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u4_test(doc) -> [{userdata,[{""}]}];
 bitxor_u4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u4"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u15_test(doc) -> [{userdata,[{""}]}];
 bitxor_u15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u15"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u26_test(doc) -> [{userdata,[{""}]}];
 bitxor_u26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u26"),
   Expected="X3:X4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u37_test(doc) -> [{userdata,[{""}]}];
 bitxor_u37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u59_test(doc) -> [{userdata,[{""}]}];
 bitxor_u59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u59"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u10_test(doc) -> [{userdata,[{""}]}];
 bitxor_u10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u10"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u21_test(doc) -> [{userdata,[{""}]}];
 bitxor_u21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u21"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u32_test(doc) -> [{userdata,[{""}]}];
 bitxor_u32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u32"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u43_test(doc) -> [{userdata,[{""}]}];
 bitxor_u43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 bitxor_u54_test(doc) -> [{userdata,[{""}]}];
 bitxor_u54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitxor/","u54"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 all() -> 
     [bitxor_k5_test,

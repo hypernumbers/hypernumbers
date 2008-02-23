@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_operators_gte.xls
-% Generated on: Sun Feb 17 21:42:59 +0000 2008
+% Generated on: Fri Feb 22 19:04:30 +0000 2008
 
 -module(e_gnumeric_operators_gte_SUITE).
 -compile(export_all).
@@ -19,8 +19,9 @@ init_per_suite(Config) ->
         {_,Data2}                                -> Data2;
         {_,number,Data2} when is_float(Data2)   -> float_to_list(Data2);
         {_,number,Data2} when is_integer(Data2) -> integer_to_list(Data2);
-        {_,boolean,true}                        -> "true";
-        {_,boolean,false}                       -> "false"
+        {_,error,Error}                          -> Error;
+        {_,boolean,true}                         -> "true";
+        {_,boolean,false}                        -> "false"
       end,
       Path="/"++Sheet++"/",
       Cell=util2:make_b26(ColIdx+1)++integer_to_list(RowIdx+1),
@@ -74,9121 +75,9121 @@ gte_k5_test(_Config) ->
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k5"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k16_test(doc) -> [{userdata,[{""}]}];
 gte_k16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k16"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k27_test(doc) -> [{userdata,[{""}]}];
 gte_k27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k27"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k38_test(doc) -> [{userdata,[{""}]}];
 gte_k38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k38"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k49_test(doc) -> [{userdata,[{""}]}];
 gte_k49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k60_test(doc) -> [{userdata,[{""}]}];
 gte_k60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k11_test(doc) -> [{userdata,[{""}]}];
 gte_k11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k22_test(doc) -> [{userdata,[{""}]}];
 gte_k22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k22"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k33_test(doc) -> [{userdata,[{""}]}];
 gte_k33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k44_test(doc) -> [{userdata,[{""}]}];
 gte_k44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k44"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k55_test(doc) -> [{userdata,[{""}]}];
 gte_k55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k66_test(doc) -> [{userdata,[{""}]}];
 gte_k66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k6_test(doc) -> [{userdata,[{""}]}];
 gte_k6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k17_test(doc) -> [{userdata,[{""}]}];
 gte_k17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k17"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k28_test(doc) -> [{userdata,[{""}]}];
 gte_k28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k39_test(doc) -> [{userdata,[{""}]}];
 gte_k39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k39"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k50_test(doc) -> [{userdata,[{""}]}];
 gte_k50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k61_test(doc) -> [{userdata,[{""}]}];
 gte_k61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k1_test(doc) -> [{userdata,[{""}]}];
 gte_k1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k12_test(doc) -> [{userdata,[{""}]}];
 gte_k12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k34_test(doc) -> [{userdata,[{""}]}];
 gte_k34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k56_test(doc) -> [{userdata,[{""}]}];
 gte_k56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k7_test(doc) -> [{userdata,[{""}]}];
 gte_k7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k18_test(doc) -> [{userdata,[{""}]}];
 gte_k18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k18"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k29_test(doc) -> [{userdata,[{""}]}];
 gte_k29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k40_test(doc) -> [{userdata,[{""}]}];
 gte_k40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k40"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k51_test(doc) -> [{userdata,[{""}]}];
 gte_k51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k62_test(doc) -> [{userdata,[{""}]}];
 gte_k62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k2_test(doc) -> [{userdata,[{""}]}];
 gte_k2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k2"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k13_test(doc) -> [{userdata,[{""}]}];
 gte_k13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k13"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k35_test(doc) -> [{userdata,[{""}]}];
 gte_k35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k35"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k57_test(doc) -> [{userdata,[{""}]}];
 gte_k57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k8_test(doc) -> [{userdata,[{""}]}];
 gte_k8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k19_test(doc) -> [{userdata,[{""}]}];
 gte_k19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k19"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k30_test(doc) -> [{userdata,[{""}]}];
 gte_k30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k41_test(doc) -> [{userdata,[{""}]}];
 gte_k41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k41"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k52_test(doc) -> [{userdata,[{""}]}];
 gte_k52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k63_test(doc) -> [{userdata,[{""}]}];
 gte_k63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k3_test(doc) -> [{userdata,[{""}]}];
 gte_k3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k3"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k14_test(doc) -> [{userdata,[{""}]}];
 gte_k14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k14"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k25_test(doc) -> [{userdata,[{""}]}];
 gte_k25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k25"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k36_test(doc) -> [{userdata,[{""}]}];
 gte_k36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k36"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k47_test(doc) -> [{userdata,[{""}]}];
 gte_k47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k58_test(doc) -> [{userdata,[{""}]}];
 gte_k58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k9_test(doc) -> [{userdata,[{""}]}];
 gte_k9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k20_test(doc) -> [{userdata,[{""}]}];
 gte_k20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k20"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k31_test(doc) -> [{userdata,[{""}]}];
 gte_k31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k42_test(doc) -> [{userdata,[{""}]}];
 gte_k42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k42"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k53_test(doc) -> [{userdata,[{""}]}];
 gte_k53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k64_test(doc) -> [{userdata,[{""}]}];
 gte_k64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k4_test(doc) -> [{userdata,[{""}]}];
 gte_k4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k4"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k15_test(doc) -> [{userdata,[{""}]}];
 gte_k15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k15"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k26_test(doc) -> [{userdata,[{""}]}];
 gte_k26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k26"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k37_test(doc) -> [{userdata,[{""}]}];
 gte_k37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k37"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k48_test(doc) -> [{userdata,[{""}]}];
 gte_k48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k59_test(doc) -> [{userdata,[{""}]}];
 gte_k59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k10_test(doc) -> [{userdata,[{""}]}];
 gte_k10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k21_test(doc) -> [{userdata,[{""}]}];
 gte_k21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k21"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k32_test(doc) -> [{userdata,[{""}]}];
 gte_k32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k43_test(doc) -> [{userdata,[{""}]}];
 gte_k43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k43"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k54_test(doc) -> [{userdata,[{""}]}];
 gte_k54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_k65_test(doc) -> [{userdata,[{""}]}];
 gte_k65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","k65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v5_test(doc) -> [{userdata,[{""}]}];
 gte_v5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v5"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v16_test(doc) -> [{userdata,[{""}]}];
 gte_v16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v16"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v27_test(doc) -> [{userdata,[{""}]}];
 gte_v27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v27"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v38_test(doc) -> [{userdata,[{""}]}];
 gte_v38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v38"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v49_test(doc) -> [{userdata,[{""}]}];
 gte_v49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v60_test(doc) -> [{userdata,[{""}]}];
 gte_v60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v11_test(doc) -> [{userdata,[{""}]}];
 gte_v11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v22_test(doc) -> [{userdata,[{""}]}];
 gte_v22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v22"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v33_test(doc) -> [{userdata,[{""}]}];
 gte_v33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v44_test(doc) -> [{userdata,[{""}]}];
 gte_v44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v44"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v55_test(doc) -> [{userdata,[{""}]}];
 gte_v55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v66_test(doc) -> [{userdata,[{""}]}];
 gte_v66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v6_test(doc) -> [{userdata,[{""}]}];
 gte_v6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v17_test(doc) -> [{userdata,[{""}]}];
 gte_v17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v17"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v28_test(doc) -> [{userdata,[{""}]}];
 gte_v28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v39_test(doc) -> [{userdata,[{""}]}];
 gte_v39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v39"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v50_test(doc) -> [{userdata,[{""}]}];
 gte_v50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v61_test(doc) -> [{userdata,[{""}]}];
 gte_v61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v1_test(doc) -> [{userdata,[{""}]}];
 gte_v1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v1"),
   Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v12_test(doc) -> [{userdata,[{""}]}];
 gte_v12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v34_test(doc) -> [{userdata,[{""}]}];
 gte_v34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v56_test(doc) -> [{userdata,[{""}]}];
 gte_v56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v7_test(doc) -> [{userdata,[{""}]}];
 gte_v7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v18_test(doc) -> [{userdata,[{""}]}];
 gte_v18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v18"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v29_test(doc) -> [{userdata,[{""}]}];
 gte_v29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v40_test(doc) -> [{userdata,[{""}]}];
 gte_v40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v40"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v51_test(doc) -> [{userdata,[{""}]}];
 gte_v51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v62_test(doc) -> [{userdata,[{""}]}];
 gte_v62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v2_test(doc) -> [{userdata,[{""}]}];
 gte_v2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v2"),
   Expected="36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v13_test(doc) -> [{userdata,[{""}]}];
 gte_v13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v13"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v35_test(doc) -> [{userdata,[{""}]}];
 gte_v35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v35"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v57_test(doc) -> [{userdata,[{""}]}];
 gte_v57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v8_test(doc) -> [{userdata,[{""}]}];
 gte_v8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v19_test(doc) -> [{userdata,[{""}]}];
 gte_v19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v19"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v30_test(doc) -> [{userdata,[{""}]}];
 gte_v30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v41_test(doc) -> [{userdata,[{""}]}];
 gte_v41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v41"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v52_test(doc) -> [{userdata,[{""}]}];
 gte_v52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v63_test(doc) -> [{userdata,[{""}]}];
 gte_v63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v3_test(doc) -> [{userdata,[{""}]}];
 gte_v3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v3"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v14_test(doc) -> [{userdata,[{""}]}];
 gte_v14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v14"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v25_test(doc) -> [{userdata,[{""}]}];
 gte_v25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v25"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v36_test(doc) -> [{userdata,[{""}]}];
 gte_v36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v36"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v47_test(doc) -> [{userdata,[{""}]}];
 gte_v47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v58_test(doc) -> [{userdata,[{""}]}];
 gte_v58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v9_test(doc) -> [{userdata,[{""}]}];
 gte_v9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v20_test(doc) -> [{userdata,[{""}]}];
 gte_v20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v20"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v31_test(doc) -> [{userdata,[{""}]}];
 gte_v31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v42_test(doc) -> [{userdata,[{""}]}];
 gte_v42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v42"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v53_test(doc) -> [{userdata,[{""}]}];
 gte_v53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v64_test(doc) -> [{userdata,[{""}]}];
 gte_v64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v4_test(doc) -> [{userdata,[{""}]}];
 gte_v4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v4"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v15_test(doc) -> [{userdata,[{""}]}];
 gte_v15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v15"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v26_test(doc) -> [{userdata,[{""}]}];
 gte_v26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v26"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v37_test(doc) -> [{userdata,[{""}]}];
 gte_v37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v37"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v48_test(doc) -> [{userdata,[{""}]}];
 gte_v48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v59_test(doc) -> [{userdata,[{""}]}];
 gte_v59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v10_test(doc) -> [{userdata,[{""}]}];
 gte_v10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v21_test(doc) -> [{userdata,[{""}]}];
 gte_v21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v21"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v32_test(doc) -> [{userdata,[{""}]}];
 gte_v32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v43_test(doc) -> [{userdata,[{""}]}];
 gte_v43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v43"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v54_test(doc) -> [{userdata,[{""}]}];
 gte_v54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_v65_test(doc) -> [{userdata,[{""}]}];
 gte_v65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","v65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a5_test(doc) -> [{userdata,[{""}]}];
 gte_a5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a5"),
   Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a16_test(doc) -> [{userdata,[{""}]}];
 gte_a16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a16"),
   Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a27_test(doc) -> [{userdata,[{""}]}];
 gte_a27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a27"),
   Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a38_test(doc) -> [{userdata,[{""}]}];
 gte_a38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a38"),
   Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a11_test(doc) -> [{userdata,[{""}]}];
 gte_a11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a11"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a22_test(doc) -> [{userdata,[{""}]}];
 gte_a22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a22"),
   Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a33_test(doc) -> [{userdata,[{""}]}];
 gte_a33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a33"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a44_test(doc) -> [{userdata,[{""}]}];
 gte_a44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a44"),
   Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a6_test(doc) -> [{userdata,[{""}]}];
 gte_a6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a6"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a17_test(doc) -> [{userdata,[{""}]}];
 gte_a17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a17"),
   Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a28_test(doc) -> [{userdata,[{""}]}];
 gte_a28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a28"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a39_test(doc) -> [{userdata,[{""}]}];
 gte_a39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a39"),
   Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a1_test(doc) -> [{userdata,[{""}]}];
 gte_a1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a1"),
   Expected=">=",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a12_test(doc) -> [{userdata,[{""}]}];
 gte_a12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a12"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a34_test(doc) -> [{userdata,[{""}]}];
 gte_a34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a34"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a7_test(doc) -> [{userdata,[{""}]}];
 gte_a7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a7"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a18_test(doc) -> [{userdata,[{""}]}];
 gte_a18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a18"),
   Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a29_test(doc) -> [{userdata,[{""}]}];
 gte_a29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a29"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a40_test(doc) -> [{userdata,[{""}]}];
 gte_a40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a40"),
   Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a2_test(doc) -> [{userdata,[{""}]}];
 gte_a2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a2"),
   Expected="A",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a13_test(doc) -> [{userdata,[{""}]}];
 gte_a13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a13"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a35_test(doc) -> [{userdata,[{""}]}];
 gte_a35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a35"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a8_test(doc) -> [{userdata,[{""}]}];
 gte_a8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a8"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a19_test(doc) -> [{userdata,[{""}]}];
 gte_a19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a19"),
   Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a30_test(doc) -> [{userdata,[{""}]}];
 gte_a30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a30"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a41_test(doc) -> [{userdata,[{""}]}];
 gte_a41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a41"),
   Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a3_test(doc) -> [{userdata,[{""}]}];
 gte_a3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a3"),
   Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a14_test(doc) -> [{userdata,[{""}]}];
 gte_a14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a14"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a25_test(doc) -> [{userdata,[{""}]}];
 gte_a25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a25"),
   Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a36_test(doc) -> [{userdata,[{""}]}];
 gte_a36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a36"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a47_test(doc) -> [{userdata,[{""}]}];
 gte_a47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a47"),
   Expected="400.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a9_test(doc) -> [{userdata,[{""}]}];
 gte_a9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a9"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a20_test(doc) -> [{userdata,[{""}]}];
 gte_a20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a20"),
   Expected="Zero",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a31_test(doc) -> [{userdata,[{""}]}];
 gte_a31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a31"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a42_test(doc) -> [{userdata,[{""}]}];
 gte_a42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a42"),
   Expected="Zero",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a4_test(doc) -> [{userdata,[{""}]}];
 gte_a4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a4"),
   Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a15_test(doc) -> [{userdata,[{""}]}];
 gte_a15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a15"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a26_test(doc) -> [{userdata,[{""}]}];
 gte_a26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a26"),
   Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a37_test(doc) -> [{userdata,[{""}]}];
 gte_a37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a37"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a48_test(doc) -> [{userdata,[{""}]}];
 gte_a48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a48"),
   Expected="Success",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a10_test(doc) -> [{userdata,[{""}]}];
 gte_a10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a10"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a21_test(doc) -> [{userdata,[{""}]}];
 gte_a21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a21"),
   Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a32_test(doc) -> [{userdata,[{""}]}];
 gte_a32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a32"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_a43_test(doc) -> [{userdata,[{""}]}];
 gte_a43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","a43"),
   Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l5_test(doc) -> [{userdata,[{""}]}];
 gte_l5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l5"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l16_test(doc) -> [{userdata,[{""}]}];
 gte_l16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l16"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l27_test(doc) -> [{userdata,[{""}]}];
 gte_l27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l27"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l38_test(doc) -> [{userdata,[{""}]}];
 gte_l38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l49_test(doc) -> [{userdata,[{""}]}];
 gte_l49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l60_test(doc) -> [{userdata,[{""}]}];
 gte_l60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l11_test(doc) -> [{userdata,[{""}]}];
 gte_l11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l22_test(doc) -> [{userdata,[{""}]}];
 gte_l22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l22"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l33_test(doc) -> [{userdata,[{""}]}];
 gte_l33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l44_test(doc) -> [{userdata,[{""}]}];
 gte_l44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l55_test(doc) -> [{userdata,[{""}]}];
 gte_l55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l66_test(doc) -> [{userdata,[{""}]}];
 gte_l66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l6_test(doc) -> [{userdata,[{""}]}];
 gte_l6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l17_test(doc) -> [{userdata,[{""}]}];
 gte_l17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l17"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l28_test(doc) -> [{userdata,[{""}]}];
 gte_l28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l39_test(doc) -> [{userdata,[{""}]}];
 gte_l39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l50_test(doc) -> [{userdata,[{""}]}];
 gte_l50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l61_test(doc) -> [{userdata,[{""}]}];
 gte_l61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l1_test(doc) -> [{userdata,[{""}]}];
 gte_l1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l12_test(doc) -> [{userdata,[{""}]}];
 gte_l12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l34_test(doc) -> [{userdata,[{""}]}];
 gte_l34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l56_test(doc) -> [{userdata,[{""}]}];
 gte_l56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l7_test(doc) -> [{userdata,[{""}]}];
 gte_l7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l18_test(doc) -> [{userdata,[{""}]}];
 gte_l18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l18"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l29_test(doc) -> [{userdata,[{""}]}];
 gte_l29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l40_test(doc) -> [{userdata,[{""}]}];
 gte_l40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l40"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l51_test(doc) -> [{userdata,[{""}]}];
 gte_l51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l62_test(doc) -> [{userdata,[{""}]}];
 gte_l62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l2_test(doc) -> [{userdata,[{""}]}];
 gte_l2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l2"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l13_test(doc) -> [{userdata,[{""}]}];
 gte_l13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l35_test(doc) -> [{userdata,[{""}]}];
 gte_l35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l57_test(doc) -> [{userdata,[{""}]}];
 gte_l57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l8_test(doc) -> [{userdata,[{""}]}];
 gte_l8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l19_test(doc) -> [{userdata,[{""}]}];
 gte_l19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l19"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l30_test(doc) -> [{userdata,[{""}]}];
 gte_l30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l41_test(doc) -> [{userdata,[{""}]}];
 gte_l41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l52_test(doc) -> [{userdata,[{""}]}];
 gte_l52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l63_test(doc) -> [{userdata,[{""}]}];
 gte_l63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l3_test(doc) -> [{userdata,[{""}]}];
 gte_l3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l3"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l14_test(doc) -> [{userdata,[{""}]}];
 gte_l14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l25_test(doc) -> [{userdata,[{""}]}];
 gte_l25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l25"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l36_test(doc) -> [{userdata,[{""}]}];
 gte_l36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l47_test(doc) -> [{userdata,[{""}]}];
 gte_l47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l58_test(doc) -> [{userdata,[{""}]}];
 gte_l58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l9_test(doc) -> [{userdata,[{""}]}];
 gte_l9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l20_test(doc) -> [{userdata,[{""}]}];
 gte_l20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l20"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l31_test(doc) -> [{userdata,[{""}]}];
 gte_l31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l42_test(doc) -> [{userdata,[{""}]}];
 gte_l42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l53_test(doc) -> [{userdata,[{""}]}];
 gte_l53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l64_test(doc) -> [{userdata,[{""}]}];
 gte_l64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l4_test(doc) -> [{userdata,[{""}]}];
 gte_l4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l4"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l15_test(doc) -> [{userdata,[{""}]}];
 gte_l15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l26_test(doc) -> [{userdata,[{""}]}];
 gte_l26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l26"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l37_test(doc) -> [{userdata,[{""}]}];
 gte_l37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l48_test(doc) -> [{userdata,[{""}]}];
 gte_l48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l59_test(doc) -> [{userdata,[{""}]}];
 gte_l59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l10_test(doc) -> [{userdata,[{""}]}];
 gte_l10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l21_test(doc) -> [{userdata,[{""}]}];
 gte_l21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l21"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l32_test(doc) -> [{userdata,[{""}]}];
 gte_l32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l43_test(doc) -> [{userdata,[{""}]}];
 gte_l43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l54_test(doc) -> [{userdata,[{""}]}];
 gte_l54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_l65_test(doc) -> [{userdata,[{""}]}];
 gte_l65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","l65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_b5_test(doc) -> [{userdata,[{""}]}];
 gte_b5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","b5"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_b16_test(doc) -> [{userdata,[{""}]}];
 gte_b16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","b16"),
   Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_b11_test(doc) -> [{userdata,[{""}]}];
 gte_b11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","b11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_b22_test(doc) -> [{userdata,[{""}]}];
 gte_b22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","b22"),
   Expected="36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_b6_test(doc) -> [{userdata,[{""}]}];
 gte_b6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","b6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_b17_test(doc) -> [{userdata,[{""}]}];
 gte_b17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","b17"),
   Expected="3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_b1_test(doc) -> [{userdata,[{""}]}];
 gte_b1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","b1"),
   Expected="B",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_b12_test(doc) -> [{userdata,[{""}]}];
 gte_b12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","b12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_b7_test(doc) -> [{userdata,[{""}]}];
 gte_b7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","b7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_b18_test(doc) -> [{userdata,[{""}]}];
 gte_b18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","b18"),
   Expected="1999/02/01 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_b13_test(doc) -> [{userdata,[{""}]}];
 gte_b13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","b13"),
   Expected="Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_b8_test(doc) -> [{userdata,[{""}]}];
 gte_b8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","b8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_b19_test(doc) -> [{userdata,[{""}]}];
 gte_b19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","b19"),
   Expected="1999/02/02 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_b14_test(doc) -> [{userdata,[{""}]}];
 gte_b14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","b14"),
   Expected="Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_b9_test(doc) -> [{userdata,[{""}]}];
 gte_b9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","b9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_b20_test(doc) -> [{userdata,[{""}]}];
 gte_b20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","b20"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_b4_test(doc) -> [{userdata,[{""}]}];
 gte_b4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","b4"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_b15_test(doc) -> [{userdata,[{""}]}];
 gte_b15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","b15"),
   Expected="Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_b10_test(doc) -> [{userdata,[{""}]}];
 gte_b10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","b10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_b21_test(doc) -> [{userdata,[{""}]}];
 gte_b21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","b21"),
   Expected="3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m5_test(doc) -> [{userdata,[{""}]}];
 gte_m5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m5"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m16_test(doc) -> [{userdata,[{""}]}];
 gte_m16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m16"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m27_test(doc) -> [{userdata,[{""}]}];
 gte_m27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m27"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m38_test(doc) -> [{userdata,[{""}]}];
 gte_m38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m38"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m49_test(doc) -> [{userdata,[{""}]}];
 gte_m49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m60_test(doc) -> [{userdata,[{""}]}];
 gte_m60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m11_test(doc) -> [{userdata,[{""}]}];
 gte_m11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m22_test(doc) -> [{userdata,[{""}]}];
 gte_m22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m22"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m33_test(doc) -> [{userdata,[{""}]}];
 gte_m33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m44_test(doc) -> [{userdata,[{""}]}];
 gte_m44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m44"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m55_test(doc) -> [{userdata,[{""}]}];
 gte_m55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m66_test(doc) -> [{userdata,[{""}]}];
 gte_m66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m6_test(doc) -> [{userdata,[{""}]}];
 gte_m6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m17_test(doc) -> [{userdata,[{""}]}];
 gte_m17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m17"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m28_test(doc) -> [{userdata,[{""}]}];
 gte_m28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m39_test(doc) -> [{userdata,[{""}]}];
 gte_m39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m39"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m50_test(doc) -> [{userdata,[{""}]}];
 gte_m50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m61_test(doc) -> [{userdata,[{""}]}];
 gte_m61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m1_test(doc) -> [{userdata,[{""}]}];
 gte_m1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m1"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m12_test(doc) -> [{userdata,[{""}]}];
 gte_m12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m34_test(doc) -> [{userdata,[{""}]}];
 gte_m34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m56_test(doc) -> [{userdata,[{""}]}];
 gte_m56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m7_test(doc) -> [{userdata,[{""}]}];
 gte_m7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m18_test(doc) -> [{userdata,[{""}]}];
 gte_m18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m18"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m29_test(doc) -> [{userdata,[{""}]}];
 gte_m29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m40_test(doc) -> [{userdata,[{""}]}];
 gte_m40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m40"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m51_test(doc) -> [{userdata,[{""}]}];
 gte_m51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m62_test(doc) -> [{userdata,[{""}]}];
 gte_m62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m2_test(doc) -> [{userdata,[{""}]}];
 gte_m2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m2"),
   Expected="Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m13_test(doc) -> [{userdata,[{""}]}];
 gte_m13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m13"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m35_test(doc) -> [{userdata,[{""}]}];
 gte_m35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m35"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m57_test(doc) -> [{userdata,[{""}]}];
 gte_m57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m8_test(doc) -> [{userdata,[{""}]}];
 gte_m8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m19_test(doc) -> [{userdata,[{""}]}];
 gte_m19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m19"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m30_test(doc) -> [{userdata,[{""}]}];
 gte_m30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m41_test(doc) -> [{userdata,[{""}]}];
 gte_m41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m41"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m52_test(doc) -> [{userdata,[{""}]}];
 gte_m52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m63_test(doc) -> [{userdata,[{""}]}];
 gte_m63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m3_test(doc) -> [{userdata,[{""}]}];
 gte_m3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m3"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m14_test(doc) -> [{userdata,[{""}]}];
 gte_m14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m14"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m25_test(doc) -> [{userdata,[{""}]}];
 gte_m25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m25"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m36_test(doc) -> [{userdata,[{""}]}];
 gte_m36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m36"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m47_test(doc) -> [{userdata,[{""}]}];
 gte_m47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m58_test(doc) -> [{userdata,[{""}]}];
 gte_m58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m9_test(doc) -> [{userdata,[{""}]}];
 gte_m9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m20_test(doc) -> [{userdata,[{""}]}];
 gte_m20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m20"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m31_test(doc) -> [{userdata,[{""}]}];
 gte_m31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m42_test(doc) -> [{userdata,[{""}]}];
 gte_m42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m42"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m53_test(doc) -> [{userdata,[{""}]}];
 gte_m53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m64_test(doc) -> [{userdata,[{""}]}];
 gte_m64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m4_test(doc) -> [{userdata,[{""}]}];
 gte_m4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m4"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m15_test(doc) -> [{userdata,[{""}]}];
 gte_m15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m15"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m26_test(doc) -> [{userdata,[{""}]}];
 gte_m26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m26"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m37_test(doc) -> [{userdata,[{""}]}];
 gte_m37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m37"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m48_test(doc) -> [{userdata,[{""}]}];
 gte_m48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m59_test(doc) -> [{userdata,[{""}]}];
 gte_m59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m10_test(doc) -> [{userdata,[{""}]}];
 gte_m10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m21_test(doc) -> [{userdata,[{""}]}];
 gte_m21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m21"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m32_test(doc) -> [{userdata,[{""}]}];
 gte_m32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m43_test(doc) -> [{userdata,[{""}]}];
 gte_m43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m43"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m54_test(doc) -> [{userdata,[{""}]}];
 gte_m54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_m65_test(doc) -> [{userdata,[{""}]}];
 gte_m65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","m65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c5_test(doc) -> [{userdata,[{""}]}];
 gte_c5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c5"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c16_test(doc) -> [{userdata,[{""}]}];
 gte_c16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c16"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c27_test(doc) -> [{userdata,[{""}]}];
 gte_c27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c27"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c38_test(doc) -> [{userdata,[{""}]}];
 gte_c38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c38"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c49_test(doc) -> [{userdata,[{""}]}];
 gte_c49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c60_test(doc) -> [{userdata,[{""}]}];
 gte_c60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c11_test(doc) -> [{userdata,[{""}]}];
 gte_c11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c22_test(doc) -> [{userdata,[{""}]}];
 gte_c22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c22"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c33_test(doc) -> [{userdata,[{""}]}];
 gte_c33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c44_test(doc) -> [{userdata,[{""}]}];
 gte_c44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c44"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c55_test(doc) -> [{userdata,[{""}]}];
 gte_c55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c66_test(doc) -> [{userdata,[{""}]}];
 gte_c66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c6_test(doc) -> [{userdata,[{""}]}];
 gte_c6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c17_test(doc) -> [{userdata,[{""}]}];
 gte_c17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c17"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c28_test(doc) -> [{userdata,[{""}]}];
 gte_c28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c39_test(doc) -> [{userdata,[{""}]}];
 gte_c39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c39"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c50_test(doc) -> [{userdata,[{""}]}];
 gte_c50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c61_test(doc) -> [{userdata,[{""}]}];
 gte_c61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c1_test(doc) -> [{userdata,[{""}]}];
 gte_c1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c1"),
   Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c12_test(doc) -> [{userdata,[{""}]}];
 gte_c12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c34_test(doc) -> [{userdata,[{""}]}];
 gte_c34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c56_test(doc) -> [{userdata,[{""}]}];
 gte_c56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c7_test(doc) -> [{userdata,[{""}]}];
 gte_c7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c18_test(doc) -> [{userdata,[{""}]}];
 gte_c18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c18"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c29_test(doc) -> [{userdata,[{""}]}];
 gte_c29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c40_test(doc) -> [{userdata,[{""}]}];
 gte_c40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c40"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c51_test(doc) -> [{userdata,[{""}]}];
 gte_c51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c62_test(doc) -> [{userdata,[{""}]}];
 gte_c62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c13_test(doc) -> [{userdata,[{""}]}];
 gte_c13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c13"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c35_test(doc) -> [{userdata,[{""}]}];
 gte_c35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c35"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c57_test(doc) -> [{userdata,[{""}]}];
 gte_c57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c8_test(doc) -> [{userdata,[{""}]}];
 gte_c8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c19_test(doc) -> [{userdata,[{""}]}];
 gte_c19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c19"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c30_test(doc) -> [{userdata,[{""}]}];
 gte_c30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c41_test(doc) -> [{userdata,[{""}]}];
 gte_c41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c41"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c52_test(doc) -> [{userdata,[{""}]}];
 gte_c52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c63_test(doc) -> [{userdata,[{""}]}];
 gte_c63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c3_test(doc) -> [{userdata,[{""}]}];
 gte_c3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c3"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c14_test(doc) -> [{userdata,[{""}]}];
 gte_c14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c14"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c25_test(doc) -> [{userdata,[{""}]}];
 gte_c25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c25"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c36_test(doc) -> [{userdata,[{""}]}];
 gte_c36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c36"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c47_test(doc) -> [{userdata,[{""}]}];
 gte_c47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c58_test(doc) -> [{userdata,[{""}]}];
 gte_c58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c9_test(doc) -> [{userdata,[{""}]}];
 gte_c9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c20_test(doc) -> [{userdata,[{""}]}];
 gte_c20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c20"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c31_test(doc) -> [{userdata,[{""}]}];
 gte_c31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c42_test(doc) -> [{userdata,[{""}]}];
 gte_c42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c42"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c53_test(doc) -> [{userdata,[{""}]}];
 gte_c53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c64_test(doc) -> [{userdata,[{""}]}];
 gte_c64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c4_test(doc) -> [{userdata,[{""}]}];
 gte_c4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c4"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c15_test(doc) -> [{userdata,[{""}]}];
 gte_c15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c15"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c26_test(doc) -> [{userdata,[{""}]}];
 gte_c26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c26"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c37_test(doc) -> [{userdata,[{""}]}];
 gte_c37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c37"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c48_test(doc) -> [{userdata,[{""}]}];
 gte_c48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c59_test(doc) -> [{userdata,[{""}]}];
 gte_c59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c10_test(doc) -> [{userdata,[{""}]}];
 gte_c10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c21_test(doc) -> [{userdata,[{""}]}];
 gte_c21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c21"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c32_test(doc) -> [{userdata,[{""}]}];
 gte_c32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c43_test(doc) -> [{userdata,[{""}]}];
 gte_c43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c43"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c54_test(doc) -> [{userdata,[{""}]}];
 gte_c54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_c65_test(doc) -> [{userdata,[{""}]}];
 gte_c65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","c65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n5_test(doc) -> [{userdata,[{""}]}];
 gte_n5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n5"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n16_test(doc) -> [{userdata,[{""}]}];
 gte_n16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n16"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n27_test(doc) -> [{userdata,[{""}]}];
 gte_n27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n27"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n38_test(doc) -> [{userdata,[{""}]}];
 gte_n38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n38"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n49_test(doc) -> [{userdata,[{""}]}];
 gte_n49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n60_test(doc) -> [{userdata,[{""}]}];
 gte_n60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n11_test(doc) -> [{userdata,[{""}]}];
 gte_n11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n22_test(doc) -> [{userdata,[{""}]}];
 gte_n22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n22"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n33_test(doc) -> [{userdata,[{""}]}];
 gte_n33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n44_test(doc) -> [{userdata,[{""}]}];
 gte_n44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n44"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n55_test(doc) -> [{userdata,[{""}]}];
 gte_n55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n66_test(doc) -> [{userdata,[{""}]}];
 gte_n66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n6_test(doc) -> [{userdata,[{""}]}];
 gte_n6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n17_test(doc) -> [{userdata,[{""}]}];
 gte_n17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n17"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n28_test(doc) -> [{userdata,[{""}]}];
 gte_n28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n39_test(doc) -> [{userdata,[{""}]}];
 gte_n39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n39"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n50_test(doc) -> [{userdata,[{""}]}];
 gte_n50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n61_test(doc) -> [{userdata,[{""}]}];
 gte_n61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n1_test(doc) -> [{userdata,[{""}]}];
 gte_n1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n1"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n12_test(doc) -> [{userdata,[{""}]}];
 gte_n12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n34_test(doc) -> [{userdata,[{""}]}];
 gte_n34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n56_test(doc) -> [{userdata,[{""}]}];
 gte_n56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n7_test(doc) -> [{userdata,[{""}]}];
 gte_n7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n18_test(doc) -> [{userdata,[{""}]}];
 gte_n18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n18"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n29_test(doc) -> [{userdata,[{""}]}];
 gte_n29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n40_test(doc) -> [{userdata,[{""}]}];
 gte_n40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n40"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n51_test(doc) -> [{userdata,[{""}]}];
 gte_n51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n62_test(doc) -> [{userdata,[{""}]}];
 gte_n62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n2_test(doc) -> [{userdata,[{""}]}];
 gte_n2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n2"),
   Expected="Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n13_test(doc) -> [{userdata,[{""}]}];
 gte_n13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n13"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n35_test(doc) -> [{userdata,[{""}]}];
 gte_n35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n35"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n57_test(doc) -> [{userdata,[{""}]}];
 gte_n57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n8_test(doc) -> [{userdata,[{""}]}];
 gte_n8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n19_test(doc) -> [{userdata,[{""}]}];
 gte_n19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n19"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n30_test(doc) -> [{userdata,[{""}]}];
 gte_n30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n41_test(doc) -> [{userdata,[{""}]}];
 gte_n41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n41"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n52_test(doc) -> [{userdata,[{""}]}];
 gte_n52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n63_test(doc) -> [{userdata,[{""}]}];
 gte_n63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n3_test(doc) -> [{userdata,[{""}]}];
 gte_n3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n3"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n14_test(doc) -> [{userdata,[{""}]}];
 gte_n14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n14"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n25_test(doc) -> [{userdata,[{""}]}];
 gte_n25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n25"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n36_test(doc) -> [{userdata,[{""}]}];
 gte_n36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n36"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n47_test(doc) -> [{userdata,[{""}]}];
 gte_n47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n58_test(doc) -> [{userdata,[{""}]}];
 gte_n58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n9_test(doc) -> [{userdata,[{""}]}];
 gte_n9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n20_test(doc) -> [{userdata,[{""}]}];
 gte_n20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n20"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n31_test(doc) -> [{userdata,[{""}]}];
 gte_n31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n42_test(doc) -> [{userdata,[{""}]}];
 gte_n42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n42"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n53_test(doc) -> [{userdata,[{""}]}];
 gte_n53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n64_test(doc) -> [{userdata,[{""}]}];
 gte_n64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n4_test(doc) -> [{userdata,[{""}]}];
 gte_n4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n4"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n15_test(doc) -> [{userdata,[{""}]}];
 gte_n15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n15"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n26_test(doc) -> [{userdata,[{""}]}];
 gte_n26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n26"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n37_test(doc) -> [{userdata,[{""}]}];
 gte_n37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n37"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n48_test(doc) -> [{userdata,[{""}]}];
 gte_n48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n59_test(doc) -> [{userdata,[{""}]}];
 gte_n59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n10_test(doc) -> [{userdata,[{""}]}];
 gte_n10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n21_test(doc) -> [{userdata,[{""}]}];
 gte_n21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n21"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n32_test(doc) -> [{userdata,[{""}]}];
 gte_n32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n43_test(doc) -> [{userdata,[{""}]}];
 gte_n43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n43"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n54_test(doc) -> [{userdata,[{""}]}];
 gte_n54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_n65_test(doc) -> [{userdata,[{""}]}];
 gte_n65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","n65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d5_test(doc) -> [{userdata,[{""}]}];
 gte_d5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d5"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d16_test(doc) -> [{userdata,[{""}]}];
 gte_d16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d16"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d27_test(doc) -> [{userdata,[{""}]}];
 gte_d27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d27"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d38_test(doc) -> [{userdata,[{""}]}];
 gte_d38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d38"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d49_test(doc) -> [{userdata,[{""}]}];
 gte_d49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d60_test(doc) -> [{userdata,[{""}]}];
 gte_d60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d11_test(doc) -> [{userdata,[{""}]}];
 gte_d11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d22_test(doc) -> [{userdata,[{""}]}];
 gte_d22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d22"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d33_test(doc) -> [{userdata,[{""}]}];
 gte_d33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d44_test(doc) -> [{userdata,[{""}]}];
 gte_d44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d44"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d55_test(doc) -> [{userdata,[{""}]}];
 gte_d55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d66_test(doc) -> [{userdata,[{""}]}];
 gte_d66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d6_test(doc) -> [{userdata,[{""}]}];
 gte_d6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d17_test(doc) -> [{userdata,[{""}]}];
 gte_d17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d17"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d28_test(doc) -> [{userdata,[{""}]}];
 gte_d28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d39_test(doc) -> [{userdata,[{""}]}];
 gte_d39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d39"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d50_test(doc) -> [{userdata,[{""}]}];
 gte_d50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d61_test(doc) -> [{userdata,[{""}]}];
 gte_d61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d1_test(doc) -> [{userdata,[{""}]}];
 gte_d1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d1"),
   Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d12_test(doc) -> [{userdata,[{""}]}];
 gte_d12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d34_test(doc) -> [{userdata,[{""}]}];
 gte_d34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d56_test(doc) -> [{userdata,[{""}]}];
 gte_d56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d7_test(doc) -> [{userdata,[{""}]}];
 gte_d7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d18_test(doc) -> [{userdata,[{""}]}];
 gte_d18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d18"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d29_test(doc) -> [{userdata,[{""}]}];
 gte_d29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d40_test(doc) -> [{userdata,[{""}]}];
 gte_d40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d40"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d51_test(doc) -> [{userdata,[{""}]}];
 gte_d51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d62_test(doc) -> [{userdata,[{""}]}];
 gte_d62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d2_test(doc) -> [{userdata,[{""}]}];
 gte_d2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d2"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d13_test(doc) -> [{userdata,[{""}]}];
 gte_d13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d13"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d35_test(doc) -> [{userdata,[{""}]}];
 gte_d35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d35"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d57_test(doc) -> [{userdata,[{""}]}];
 gte_d57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d8_test(doc) -> [{userdata,[{""}]}];
 gte_d8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d19_test(doc) -> [{userdata,[{""}]}];
 gte_d19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d19"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d30_test(doc) -> [{userdata,[{""}]}];
 gte_d30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d41_test(doc) -> [{userdata,[{""}]}];
 gte_d41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d41"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d52_test(doc) -> [{userdata,[{""}]}];
 gte_d52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d63_test(doc) -> [{userdata,[{""}]}];
 gte_d63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d3_test(doc) -> [{userdata,[{""}]}];
 gte_d3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d3"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d14_test(doc) -> [{userdata,[{""}]}];
 gte_d14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d14"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d25_test(doc) -> [{userdata,[{""}]}];
 gte_d25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d25"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d36_test(doc) -> [{userdata,[{""}]}];
 gte_d36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d36"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d47_test(doc) -> [{userdata,[{""}]}];
 gte_d47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d58_test(doc) -> [{userdata,[{""}]}];
 gte_d58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d9_test(doc) -> [{userdata,[{""}]}];
 gte_d9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d20_test(doc) -> [{userdata,[{""}]}];
 gte_d20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d20"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d31_test(doc) -> [{userdata,[{""}]}];
 gte_d31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d42_test(doc) -> [{userdata,[{""}]}];
 gte_d42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d42"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d53_test(doc) -> [{userdata,[{""}]}];
 gte_d53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d64_test(doc) -> [{userdata,[{""}]}];
 gte_d64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d4_test(doc) -> [{userdata,[{""}]}];
 gte_d4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d4"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d15_test(doc) -> [{userdata,[{""}]}];
 gte_d15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d15"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d26_test(doc) -> [{userdata,[{""}]}];
 gte_d26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d26"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d37_test(doc) -> [{userdata,[{""}]}];
 gte_d37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d37"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d48_test(doc) -> [{userdata,[{""}]}];
 gte_d48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d59_test(doc) -> [{userdata,[{""}]}];
 gte_d59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d10_test(doc) -> [{userdata,[{""}]}];
 gte_d10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d21_test(doc) -> [{userdata,[{""}]}];
 gte_d21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d21"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d32_test(doc) -> [{userdata,[{""}]}];
 gte_d32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d43_test(doc) -> [{userdata,[{""}]}];
 gte_d43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d43"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d54_test(doc) -> [{userdata,[{""}]}];
 gte_d54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_d65_test(doc) -> [{userdata,[{""}]}];
 gte_d65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","d65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o5_test(doc) -> [{userdata,[{""}]}];
 gte_o5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o5"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o16_test(doc) -> [{userdata,[{""}]}];
 gte_o16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o16"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o27_test(doc) -> [{userdata,[{""}]}];
 gte_o27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o27"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o38_test(doc) -> [{userdata,[{""}]}];
 gte_o38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o38"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o49_test(doc) -> [{userdata,[{""}]}];
 gte_o49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o60_test(doc) -> [{userdata,[{""}]}];
 gte_o60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o11_test(doc) -> [{userdata,[{""}]}];
 gte_o11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o22_test(doc) -> [{userdata,[{""}]}];
 gte_o22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o22"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o33_test(doc) -> [{userdata,[{""}]}];
 gte_o33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o44_test(doc) -> [{userdata,[{""}]}];
 gte_o44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o44"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o55_test(doc) -> [{userdata,[{""}]}];
 gte_o55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o66_test(doc) -> [{userdata,[{""}]}];
 gte_o66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o6_test(doc) -> [{userdata,[{""}]}];
 gte_o6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o17_test(doc) -> [{userdata,[{""}]}];
 gte_o17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o17"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o28_test(doc) -> [{userdata,[{""}]}];
 gte_o28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o39_test(doc) -> [{userdata,[{""}]}];
 gte_o39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o39"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o50_test(doc) -> [{userdata,[{""}]}];
 gte_o50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o61_test(doc) -> [{userdata,[{""}]}];
 gte_o61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o1_test(doc) -> [{userdata,[{""}]}];
 gte_o1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o1"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o12_test(doc) -> [{userdata,[{""}]}];
 gte_o12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o34_test(doc) -> [{userdata,[{""}]}];
 gte_o34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o56_test(doc) -> [{userdata,[{""}]}];
 gte_o56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o7_test(doc) -> [{userdata,[{""}]}];
 gte_o7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o18_test(doc) -> [{userdata,[{""}]}];
 gte_o18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o18"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o29_test(doc) -> [{userdata,[{""}]}];
 gte_o29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o40_test(doc) -> [{userdata,[{""}]}];
 gte_o40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o40"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o51_test(doc) -> [{userdata,[{""}]}];
 gte_o51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o62_test(doc) -> [{userdata,[{""}]}];
 gte_o62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o2_test(doc) -> [{userdata,[{""}]}];
 gte_o2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o2"),
   Expected="Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o13_test(doc) -> [{userdata,[{""}]}];
 gte_o13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o13"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o35_test(doc) -> [{userdata,[{""}]}];
 gte_o35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o35"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o57_test(doc) -> [{userdata,[{""}]}];
 gte_o57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o8_test(doc) -> [{userdata,[{""}]}];
 gte_o8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o19_test(doc) -> [{userdata,[{""}]}];
 gte_o19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o19"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o30_test(doc) -> [{userdata,[{""}]}];
 gte_o30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o41_test(doc) -> [{userdata,[{""}]}];
 gte_o41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o41"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o52_test(doc) -> [{userdata,[{""}]}];
 gte_o52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o63_test(doc) -> [{userdata,[{""}]}];
 gte_o63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o3_test(doc) -> [{userdata,[{""}]}];
 gte_o3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o3"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o14_test(doc) -> [{userdata,[{""}]}];
 gte_o14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o14"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o25_test(doc) -> [{userdata,[{""}]}];
 gte_o25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o25"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o36_test(doc) -> [{userdata,[{""}]}];
 gte_o36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o36"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o47_test(doc) -> [{userdata,[{""}]}];
 gte_o47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o58_test(doc) -> [{userdata,[{""}]}];
 gte_o58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o9_test(doc) -> [{userdata,[{""}]}];
 gte_o9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o20_test(doc) -> [{userdata,[{""}]}];
 gte_o20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o20"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o31_test(doc) -> [{userdata,[{""}]}];
 gte_o31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o42_test(doc) -> [{userdata,[{""}]}];
 gte_o42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o42"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o53_test(doc) -> [{userdata,[{""}]}];
 gte_o53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o64_test(doc) -> [{userdata,[{""}]}];
 gte_o64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o4_test(doc) -> [{userdata,[{""}]}];
 gte_o4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o4"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o15_test(doc) -> [{userdata,[{""}]}];
 gte_o15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o15"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o26_test(doc) -> [{userdata,[{""}]}];
 gte_o26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o26"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o37_test(doc) -> [{userdata,[{""}]}];
 gte_o37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o37"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o48_test(doc) -> [{userdata,[{""}]}];
 gte_o48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o59_test(doc) -> [{userdata,[{""}]}];
 gte_o59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o10_test(doc) -> [{userdata,[{""}]}];
 gte_o10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o21_test(doc) -> [{userdata,[{""}]}];
 gte_o21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o21"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o32_test(doc) -> [{userdata,[{""}]}];
 gte_o32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o43_test(doc) -> [{userdata,[{""}]}];
 gte_o43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o43"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o54_test(doc) -> [{userdata,[{""}]}];
 gte_o54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_o65_test(doc) -> [{userdata,[{""}]}];
 gte_o65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","o65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e5_test(doc) -> [{userdata,[{""}]}];
 gte_e5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e5"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e16_test(doc) -> [{userdata,[{""}]}];
 gte_e16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e16"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e27_test(doc) -> [{userdata,[{""}]}];
 gte_e27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e27"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e38_test(doc) -> [{userdata,[{""}]}];
 gte_e38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e38"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e49_test(doc) -> [{userdata,[{""}]}];
 gte_e49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e60_test(doc) -> [{userdata,[{""}]}];
 gte_e60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e11_test(doc) -> [{userdata,[{""}]}];
 gte_e11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e22_test(doc) -> [{userdata,[{""}]}];
 gte_e22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e22"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e33_test(doc) -> [{userdata,[{""}]}];
 gte_e33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e44_test(doc) -> [{userdata,[{""}]}];
 gte_e44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e44"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e55_test(doc) -> [{userdata,[{""}]}];
 gte_e55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e66_test(doc) -> [{userdata,[{""}]}];
 gte_e66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e6_test(doc) -> [{userdata,[{""}]}];
 gte_e6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e17_test(doc) -> [{userdata,[{""}]}];
 gte_e17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e17"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e28_test(doc) -> [{userdata,[{""}]}];
 gte_e28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e39_test(doc) -> [{userdata,[{""}]}];
 gte_e39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e39"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e50_test(doc) -> [{userdata,[{""}]}];
 gte_e50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e61_test(doc) -> [{userdata,[{""}]}];
 gte_e61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e1_test(doc) -> [{userdata,[{""}]}];
 gte_e1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e1"),
   Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e12_test(doc) -> [{userdata,[{""}]}];
 gte_e12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e34_test(doc) -> [{userdata,[{""}]}];
 gte_e34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e56_test(doc) -> [{userdata,[{""}]}];
 gte_e56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e7_test(doc) -> [{userdata,[{""}]}];
 gte_e7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e18_test(doc) -> [{userdata,[{""}]}];
 gte_e18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e18"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e29_test(doc) -> [{userdata,[{""}]}];
 gte_e29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e40_test(doc) -> [{userdata,[{""}]}];
 gte_e40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e40"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e51_test(doc) -> [{userdata,[{""}]}];
 gte_e51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e62_test(doc) -> [{userdata,[{""}]}];
 gte_e62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e2_test(doc) -> [{userdata,[{""}]}];
 gte_e2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e2"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e13_test(doc) -> [{userdata,[{""}]}];
 gte_e13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e13"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e35_test(doc) -> [{userdata,[{""}]}];
 gte_e35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e35"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e57_test(doc) -> [{userdata,[{""}]}];
 gte_e57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e8_test(doc) -> [{userdata,[{""}]}];
 gte_e8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e19_test(doc) -> [{userdata,[{""}]}];
 gte_e19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e19"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e30_test(doc) -> [{userdata,[{""}]}];
 gte_e30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e41_test(doc) -> [{userdata,[{""}]}];
 gte_e41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e41"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e52_test(doc) -> [{userdata,[{""}]}];
 gte_e52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e63_test(doc) -> [{userdata,[{""}]}];
 gte_e63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e3_test(doc) -> [{userdata,[{""}]}];
 gte_e3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e3"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e14_test(doc) -> [{userdata,[{""}]}];
 gte_e14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e14"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e25_test(doc) -> [{userdata,[{""}]}];
 gte_e25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e25"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e36_test(doc) -> [{userdata,[{""}]}];
 gte_e36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e36"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e47_test(doc) -> [{userdata,[{""}]}];
 gte_e47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e58_test(doc) -> [{userdata,[{""}]}];
 gte_e58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e9_test(doc) -> [{userdata,[{""}]}];
 gte_e9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e20_test(doc) -> [{userdata,[{""}]}];
 gte_e20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e20"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e31_test(doc) -> [{userdata,[{""}]}];
 gte_e31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e42_test(doc) -> [{userdata,[{""}]}];
 gte_e42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e42"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e53_test(doc) -> [{userdata,[{""}]}];
 gte_e53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e64_test(doc) -> [{userdata,[{""}]}];
 gte_e64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e4_test(doc) -> [{userdata,[{""}]}];
 gte_e4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e4"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e15_test(doc) -> [{userdata,[{""}]}];
 gte_e15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e15"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e26_test(doc) -> [{userdata,[{""}]}];
 gte_e26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e26"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e37_test(doc) -> [{userdata,[{""}]}];
 gte_e37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e37"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e48_test(doc) -> [{userdata,[{""}]}];
 gte_e48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e59_test(doc) -> [{userdata,[{""}]}];
 gte_e59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e10_test(doc) -> [{userdata,[{""}]}];
 gte_e10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e21_test(doc) -> [{userdata,[{""}]}];
 gte_e21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e21"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e32_test(doc) -> [{userdata,[{""}]}];
 gte_e32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e43_test(doc) -> [{userdata,[{""}]}];
 gte_e43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e43"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e54_test(doc) -> [{userdata,[{""}]}];
 gte_e54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_e65_test(doc) -> [{userdata,[{""}]}];
 gte_e65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","e65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p5_test(doc) -> [{userdata,[{""}]}];
 gte_p5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p5"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p16_test(doc) -> [{userdata,[{""}]}];
 gte_p16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p16"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p27_test(doc) -> [{userdata,[{""}]}];
 gte_p27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p27"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p38_test(doc) -> [{userdata,[{""}]}];
 gte_p38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p38"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p49_test(doc) -> [{userdata,[{""}]}];
 gte_p49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p60_test(doc) -> [{userdata,[{""}]}];
 gte_p60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p11_test(doc) -> [{userdata,[{""}]}];
 gte_p11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p22_test(doc) -> [{userdata,[{""}]}];
 gte_p22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p22"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p33_test(doc) -> [{userdata,[{""}]}];
 gte_p33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p44_test(doc) -> [{userdata,[{""}]}];
 gte_p44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p44"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p55_test(doc) -> [{userdata,[{""}]}];
 gte_p55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p66_test(doc) -> [{userdata,[{""}]}];
 gte_p66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p6_test(doc) -> [{userdata,[{""}]}];
 gte_p6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p17_test(doc) -> [{userdata,[{""}]}];
 gte_p17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p17"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p28_test(doc) -> [{userdata,[{""}]}];
 gte_p28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p39_test(doc) -> [{userdata,[{""}]}];
 gte_p39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p39"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p50_test(doc) -> [{userdata,[{""}]}];
 gte_p50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p61_test(doc) -> [{userdata,[{""}]}];
 gte_p61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p1_test(doc) -> [{userdata,[{""}]}];
 gte_p1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p1"),
   Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p12_test(doc) -> [{userdata,[{""}]}];
 gte_p12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p34_test(doc) -> [{userdata,[{""}]}];
 gte_p34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p56_test(doc) -> [{userdata,[{""}]}];
 gte_p56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p7_test(doc) -> [{userdata,[{""}]}];
 gte_p7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p18_test(doc) -> [{userdata,[{""}]}];
 gte_p18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p18"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p29_test(doc) -> [{userdata,[{""}]}];
 gte_p29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p40_test(doc) -> [{userdata,[{""}]}];
 gte_p40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p40"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p51_test(doc) -> [{userdata,[{""}]}];
 gte_p51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p62_test(doc) -> [{userdata,[{""}]}];
 gte_p62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p2_test(doc) -> [{userdata,[{""}]}];
 gte_p2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p2"),
   Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p13_test(doc) -> [{userdata,[{""}]}];
 gte_p13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p13"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p35_test(doc) -> [{userdata,[{""}]}];
 gte_p35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p35"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p57_test(doc) -> [{userdata,[{""}]}];
 gte_p57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p8_test(doc) -> [{userdata,[{""}]}];
 gte_p8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p19_test(doc) -> [{userdata,[{""}]}];
 gte_p19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p19"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p30_test(doc) -> [{userdata,[{""}]}];
 gte_p30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p41_test(doc) -> [{userdata,[{""}]}];
 gte_p41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p41"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p52_test(doc) -> [{userdata,[{""}]}];
 gte_p52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p63_test(doc) -> [{userdata,[{""}]}];
 gte_p63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p3_test(doc) -> [{userdata,[{""}]}];
 gte_p3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p3"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p14_test(doc) -> [{userdata,[{""}]}];
 gte_p14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p14"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p25_test(doc) -> [{userdata,[{""}]}];
 gte_p25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p25"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p36_test(doc) -> [{userdata,[{""}]}];
 gte_p36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p36"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p47_test(doc) -> [{userdata,[{""}]}];
 gte_p47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p58_test(doc) -> [{userdata,[{""}]}];
 gte_p58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p9_test(doc) -> [{userdata,[{""}]}];
 gte_p9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p20_test(doc) -> [{userdata,[{""}]}];
 gte_p20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p20"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p31_test(doc) -> [{userdata,[{""}]}];
 gte_p31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p42_test(doc) -> [{userdata,[{""}]}];
 gte_p42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p42"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p53_test(doc) -> [{userdata,[{""}]}];
 gte_p53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p64_test(doc) -> [{userdata,[{""}]}];
 gte_p64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p4_test(doc) -> [{userdata,[{""}]}];
 gte_p4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p4"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p15_test(doc) -> [{userdata,[{""}]}];
 gte_p15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p15"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p26_test(doc) -> [{userdata,[{""}]}];
 gte_p26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p26"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p37_test(doc) -> [{userdata,[{""}]}];
 gte_p37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p37"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p48_test(doc) -> [{userdata,[{""}]}];
 gte_p48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p59_test(doc) -> [{userdata,[{""}]}];
 gte_p59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p10_test(doc) -> [{userdata,[{""}]}];
 gte_p10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p21_test(doc) -> [{userdata,[{""}]}];
 gte_p21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p21"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p32_test(doc) -> [{userdata,[{""}]}];
 gte_p32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p43_test(doc) -> [{userdata,[{""}]}];
 gte_p43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p43"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p54_test(doc) -> [{userdata,[{""}]}];
 gte_p54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_p65_test(doc) -> [{userdata,[{""}]}];
 gte_p65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","p65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f5_test(doc) -> [{userdata,[{""}]}];
 gte_f5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f5"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f16_test(doc) -> [{userdata,[{""}]}];
 gte_f16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f16"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f27_test(doc) -> [{userdata,[{""}]}];
 gte_f27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f27"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f38_test(doc) -> [{userdata,[{""}]}];
 gte_f38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f38"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f49_test(doc) -> [{userdata,[{""}]}];
 gte_f49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f60_test(doc) -> [{userdata,[{""}]}];
 gte_f60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f11_test(doc) -> [{userdata,[{""}]}];
 gte_f11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f22_test(doc) -> [{userdata,[{""}]}];
 gte_f22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f22"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f33_test(doc) -> [{userdata,[{""}]}];
 gte_f33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f44_test(doc) -> [{userdata,[{""}]}];
 gte_f44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f44"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f55_test(doc) -> [{userdata,[{""}]}];
 gte_f55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f66_test(doc) -> [{userdata,[{""}]}];
 gte_f66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f6_test(doc) -> [{userdata,[{""}]}];
 gte_f6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f17_test(doc) -> [{userdata,[{""}]}];
 gte_f17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f17"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f28_test(doc) -> [{userdata,[{""}]}];
 gte_f28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f39_test(doc) -> [{userdata,[{""}]}];
 gte_f39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f39"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f50_test(doc) -> [{userdata,[{""}]}];
 gte_f50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f61_test(doc) -> [{userdata,[{""}]}];
 gte_f61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f1_test(doc) -> [{userdata,[{""}]}];
 gte_f1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f12_test(doc) -> [{userdata,[{""}]}];
 gte_f12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f34_test(doc) -> [{userdata,[{""}]}];
 gte_f34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f56_test(doc) -> [{userdata,[{""}]}];
 gte_f56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f7_test(doc) -> [{userdata,[{""}]}];
 gte_f7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f18_test(doc) -> [{userdata,[{""}]}];
 gte_f18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f18"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f29_test(doc) -> [{userdata,[{""}]}];
 gte_f29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f40_test(doc) -> [{userdata,[{""}]}];
 gte_f40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f40"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f51_test(doc) -> [{userdata,[{""}]}];
 gte_f51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f62_test(doc) -> [{userdata,[{""}]}];
 gte_f62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f2_test(doc) -> [{userdata,[{""}]}];
 gte_f2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f2"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f13_test(doc) -> [{userdata,[{""}]}];
 gte_f13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f13"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f35_test(doc) -> [{userdata,[{""}]}];
 gte_f35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f35"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f57_test(doc) -> [{userdata,[{""}]}];
 gte_f57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f8_test(doc) -> [{userdata,[{""}]}];
 gte_f8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f19_test(doc) -> [{userdata,[{""}]}];
 gte_f19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f19"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f30_test(doc) -> [{userdata,[{""}]}];
 gte_f30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f41_test(doc) -> [{userdata,[{""}]}];
 gte_f41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f41"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f52_test(doc) -> [{userdata,[{""}]}];
 gte_f52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f63_test(doc) -> [{userdata,[{""}]}];
 gte_f63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f3_test(doc) -> [{userdata,[{""}]}];
 gte_f3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f3"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f14_test(doc) -> [{userdata,[{""}]}];
 gte_f14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f14"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f25_test(doc) -> [{userdata,[{""}]}];
 gte_f25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f25"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f36_test(doc) -> [{userdata,[{""}]}];
 gte_f36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f36"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f47_test(doc) -> [{userdata,[{""}]}];
 gte_f47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f58_test(doc) -> [{userdata,[{""}]}];
 gte_f58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f9_test(doc) -> [{userdata,[{""}]}];
 gte_f9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f20_test(doc) -> [{userdata,[{""}]}];
 gte_f20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f20"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f31_test(doc) -> [{userdata,[{""}]}];
 gte_f31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f42_test(doc) -> [{userdata,[{""}]}];
 gte_f42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f42"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f53_test(doc) -> [{userdata,[{""}]}];
 gte_f53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f64_test(doc) -> [{userdata,[{""}]}];
 gte_f64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f4_test(doc) -> [{userdata,[{""}]}];
 gte_f4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f4"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f15_test(doc) -> [{userdata,[{""}]}];
 gte_f15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f15"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f26_test(doc) -> [{userdata,[{""}]}];
 gte_f26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f26"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f37_test(doc) -> [{userdata,[{""}]}];
 gte_f37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f37"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f48_test(doc) -> [{userdata,[{""}]}];
 gte_f48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f59_test(doc) -> [{userdata,[{""}]}];
 gte_f59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f10_test(doc) -> [{userdata,[{""}]}];
 gte_f10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f21_test(doc) -> [{userdata,[{""}]}];
 gte_f21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f21"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f32_test(doc) -> [{userdata,[{""}]}];
 gte_f32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f43_test(doc) -> [{userdata,[{""}]}];
 gte_f43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f43"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f54_test(doc) -> [{userdata,[{""}]}];
 gte_f54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_f65_test(doc) -> [{userdata,[{""}]}];
 gte_f65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","f65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q5_test(doc) -> [{userdata,[{""}]}];
 gte_q5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q5"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q16_test(doc) -> [{userdata,[{""}]}];
 gte_q16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q16"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q27_test(doc) -> [{userdata,[{""}]}];
 gte_q27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q27"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q38_test(doc) -> [{userdata,[{""}]}];
 gte_q38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q38"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q49_test(doc) -> [{userdata,[{""}]}];
 gte_q49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q60_test(doc) -> [{userdata,[{""}]}];
 gte_q60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q11_test(doc) -> [{userdata,[{""}]}];
 gte_q11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q22_test(doc) -> [{userdata,[{""}]}];
 gte_q22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q22"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q33_test(doc) -> [{userdata,[{""}]}];
 gte_q33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q44_test(doc) -> [{userdata,[{""}]}];
 gte_q44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q44"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q55_test(doc) -> [{userdata,[{""}]}];
 gte_q55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q66_test(doc) -> [{userdata,[{""}]}];
 gte_q66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q6_test(doc) -> [{userdata,[{""}]}];
 gte_q6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q17_test(doc) -> [{userdata,[{""}]}];
 gte_q17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q17"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q28_test(doc) -> [{userdata,[{""}]}];
 gte_q28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q39_test(doc) -> [{userdata,[{""}]}];
 gte_q39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q39"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q50_test(doc) -> [{userdata,[{""}]}];
 gte_q50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q61_test(doc) -> [{userdata,[{""}]}];
 gte_q61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q1_test(doc) -> [{userdata,[{""}]}];
 gte_q1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q1"),
   Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q12_test(doc) -> [{userdata,[{""}]}];
 gte_q12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q34_test(doc) -> [{userdata,[{""}]}];
 gte_q34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q56_test(doc) -> [{userdata,[{""}]}];
 gte_q56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q7_test(doc) -> [{userdata,[{""}]}];
 gte_q7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q18_test(doc) -> [{userdata,[{""}]}];
 gte_q18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q18"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q29_test(doc) -> [{userdata,[{""}]}];
 gte_q29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q40_test(doc) -> [{userdata,[{""}]}];
 gte_q40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q40"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q51_test(doc) -> [{userdata,[{""}]}];
 gte_q51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q62_test(doc) -> [{userdata,[{""}]}];
 gte_q62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q2_test(doc) -> [{userdata,[{""}]}];
 gte_q2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q2"),
   Expected="3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q13_test(doc) -> [{userdata,[{""}]}];
 gte_q13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q13"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q35_test(doc) -> [{userdata,[{""}]}];
 gte_q35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q35"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q57_test(doc) -> [{userdata,[{""}]}];
 gte_q57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q8_test(doc) -> [{userdata,[{""}]}];
 gte_q8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q19_test(doc) -> [{userdata,[{""}]}];
 gte_q19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q19"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q30_test(doc) -> [{userdata,[{""}]}];
 gte_q30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q41_test(doc) -> [{userdata,[{""}]}];
 gte_q41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q41"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q52_test(doc) -> [{userdata,[{""}]}];
 gte_q52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q63_test(doc) -> [{userdata,[{""}]}];
 gte_q63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q3_test(doc) -> [{userdata,[{""}]}];
 gte_q3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q3"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q14_test(doc) -> [{userdata,[{""}]}];
 gte_q14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q14"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q25_test(doc) -> [{userdata,[{""}]}];
 gte_q25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q25"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q36_test(doc) -> [{userdata,[{""}]}];
 gte_q36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q36"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q47_test(doc) -> [{userdata,[{""}]}];
 gte_q47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q58_test(doc) -> [{userdata,[{""}]}];
 gte_q58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q9_test(doc) -> [{userdata,[{""}]}];
 gte_q9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q20_test(doc) -> [{userdata,[{""}]}];
 gte_q20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q20"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q31_test(doc) -> [{userdata,[{""}]}];
 gte_q31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q42_test(doc) -> [{userdata,[{""}]}];
 gte_q42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q42"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q53_test(doc) -> [{userdata,[{""}]}];
 gte_q53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q64_test(doc) -> [{userdata,[{""}]}];
 gte_q64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q4_test(doc) -> [{userdata,[{""}]}];
 gte_q4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q4"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q15_test(doc) -> [{userdata,[{""}]}];
 gte_q15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q15"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q26_test(doc) -> [{userdata,[{""}]}];
 gte_q26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q26"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q37_test(doc) -> [{userdata,[{""}]}];
 gte_q37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q37"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q48_test(doc) -> [{userdata,[{""}]}];
 gte_q48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q59_test(doc) -> [{userdata,[{""}]}];
 gte_q59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q10_test(doc) -> [{userdata,[{""}]}];
 gte_q10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q21_test(doc) -> [{userdata,[{""}]}];
 gte_q21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q21"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q32_test(doc) -> [{userdata,[{""}]}];
 gte_q32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q43_test(doc) -> [{userdata,[{""}]}];
 gte_q43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q43"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q54_test(doc) -> [{userdata,[{""}]}];
 gte_q54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_q65_test(doc) -> [{userdata,[{""}]}];
 gte_q65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","q65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g5_test(doc) -> [{userdata,[{""}]}];
 gte_g5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g5"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g16_test(doc) -> [{userdata,[{""}]}];
 gte_g16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g16"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g27_test(doc) -> [{userdata,[{""}]}];
 gte_g27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g27"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g38_test(doc) -> [{userdata,[{""}]}];
 gte_g38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g38"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g49_test(doc) -> [{userdata,[{""}]}];
 gte_g49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g60_test(doc) -> [{userdata,[{""}]}];
 gte_g60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g11_test(doc) -> [{userdata,[{""}]}];
 gte_g11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g22_test(doc) -> [{userdata,[{""}]}];
 gte_g22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g22"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g33_test(doc) -> [{userdata,[{""}]}];
 gte_g33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g44_test(doc) -> [{userdata,[{""}]}];
 gte_g44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g44"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g55_test(doc) -> [{userdata,[{""}]}];
 gte_g55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g66_test(doc) -> [{userdata,[{""}]}];
 gte_g66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g6_test(doc) -> [{userdata,[{""}]}];
 gte_g6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g17_test(doc) -> [{userdata,[{""}]}];
 gte_g17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g17"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g28_test(doc) -> [{userdata,[{""}]}];
 gte_g28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g39_test(doc) -> [{userdata,[{""}]}];
 gte_g39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g39"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g50_test(doc) -> [{userdata,[{""}]}];
 gte_g50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g61_test(doc) -> [{userdata,[{""}]}];
 gte_g61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g1_test(doc) -> [{userdata,[{""}]}];
 gte_g1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g12_test(doc) -> [{userdata,[{""}]}];
 gte_g12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g34_test(doc) -> [{userdata,[{""}]}];
 gte_g34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g56_test(doc) -> [{userdata,[{""}]}];
 gte_g56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g7_test(doc) -> [{userdata,[{""}]}];
 gte_g7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g18_test(doc) -> [{userdata,[{""}]}];
 gte_g18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g18"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g29_test(doc) -> [{userdata,[{""}]}];
 gte_g29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g40_test(doc) -> [{userdata,[{""}]}];
 gte_g40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g40"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g51_test(doc) -> [{userdata,[{""}]}];
 gte_g51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g62_test(doc) -> [{userdata,[{""}]}];
 gte_g62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g2_test(doc) -> [{userdata,[{""}]}];
 gte_g2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g2"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g13_test(doc) -> [{userdata,[{""}]}];
 gte_g13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g13"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g35_test(doc) -> [{userdata,[{""}]}];
 gte_g35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g35"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g57_test(doc) -> [{userdata,[{""}]}];
 gte_g57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g8_test(doc) -> [{userdata,[{""}]}];
 gte_g8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g19_test(doc) -> [{userdata,[{""}]}];
 gte_g19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g19"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g30_test(doc) -> [{userdata,[{""}]}];
 gte_g30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g41_test(doc) -> [{userdata,[{""}]}];
 gte_g41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g41"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g52_test(doc) -> [{userdata,[{""}]}];
 gte_g52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g63_test(doc) -> [{userdata,[{""}]}];
 gte_g63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g3_test(doc) -> [{userdata,[{""}]}];
 gte_g3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g3"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g14_test(doc) -> [{userdata,[{""}]}];
 gte_g14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g14"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g25_test(doc) -> [{userdata,[{""}]}];
 gte_g25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g25"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g36_test(doc) -> [{userdata,[{""}]}];
 gte_g36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g36"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g47_test(doc) -> [{userdata,[{""}]}];
 gte_g47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g58_test(doc) -> [{userdata,[{""}]}];
 gte_g58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g9_test(doc) -> [{userdata,[{""}]}];
 gte_g9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g20_test(doc) -> [{userdata,[{""}]}];
 gte_g20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g20"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g31_test(doc) -> [{userdata,[{""}]}];
 gte_g31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g42_test(doc) -> [{userdata,[{""}]}];
 gte_g42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g42"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g53_test(doc) -> [{userdata,[{""}]}];
 gte_g53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g64_test(doc) -> [{userdata,[{""}]}];
 gte_g64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g4_test(doc) -> [{userdata,[{""}]}];
 gte_g4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g4"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g15_test(doc) -> [{userdata,[{""}]}];
 gte_g15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g15"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g26_test(doc) -> [{userdata,[{""}]}];
 gte_g26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g26"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g37_test(doc) -> [{userdata,[{""}]}];
 gte_g37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g37"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g48_test(doc) -> [{userdata,[{""}]}];
 gte_g48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g59_test(doc) -> [{userdata,[{""}]}];
 gte_g59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g10_test(doc) -> [{userdata,[{""}]}];
 gte_g10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g21_test(doc) -> [{userdata,[{""}]}];
 gte_g21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g21"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g32_test(doc) -> [{userdata,[{""}]}];
 gte_g32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g43_test(doc) -> [{userdata,[{""}]}];
 gte_g43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g43"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g54_test(doc) -> [{userdata,[{""}]}];
 gte_g54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_g65_test(doc) -> [{userdata,[{""}]}];
 gte_g65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","g65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r5_test(doc) -> [{userdata,[{""}]}];
 gte_r5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r5"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r16_test(doc) -> [{userdata,[{""}]}];
 gte_r16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r16"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r27_test(doc) -> [{userdata,[{""}]}];
 gte_r27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r27"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r38_test(doc) -> [{userdata,[{""}]}];
 gte_r38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r38"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r49_test(doc) -> [{userdata,[{""}]}];
 gte_r49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r60_test(doc) -> [{userdata,[{""}]}];
 gte_r60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r11_test(doc) -> [{userdata,[{""}]}];
 gte_r11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r22_test(doc) -> [{userdata,[{""}]}];
 gte_r22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r22"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r33_test(doc) -> [{userdata,[{""}]}];
 gte_r33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r44_test(doc) -> [{userdata,[{""}]}];
 gte_r44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r44"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r55_test(doc) -> [{userdata,[{""}]}];
 gte_r55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r66_test(doc) -> [{userdata,[{""}]}];
 gte_r66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r6_test(doc) -> [{userdata,[{""}]}];
 gte_r6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r17_test(doc) -> [{userdata,[{""}]}];
 gte_r17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r17"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r28_test(doc) -> [{userdata,[{""}]}];
 gte_r28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r39_test(doc) -> [{userdata,[{""}]}];
 gte_r39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r39"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r50_test(doc) -> [{userdata,[{""}]}];
 gte_r50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r61_test(doc) -> [{userdata,[{""}]}];
 gte_r61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r1_test(doc) -> [{userdata,[{""}]}];
 gte_r1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r1"),
   Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r12_test(doc) -> [{userdata,[{""}]}];
 gte_r12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r34_test(doc) -> [{userdata,[{""}]}];
 gte_r34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r56_test(doc) -> [{userdata,[{""}]}];
 gte_r56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r7_test(doc) -> [{userdata,[{""}]}];
 gte_r7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r18_test(doc) -> [{userdata,[{""}]}];
 gte_r18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r18"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r29_test(doc) -> [{userdata,[{""}]}];
 gte_r29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r40_test(doc) -> [{userdata,[{""}]}];
 gte_r40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r40"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r51_test(doc) -> [{userdata,[{""}]}];
 gte_r51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r62_test(doc) -> [{userdata,[{""}]}];
 gte_r62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r2_test(doc) -> [{userdata,[{""}]}];
 gte_r2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r2"),
   Expected="1999/02/01 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r13_test(doc) -> [{userdata,[{""}]}];
 gte_r13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r13"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r35_test(doc) -> [{userdata,[{""}]}];
 gte_r35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r35"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r57_test(doc) -> [{userdata,[{""}]}];
 gte_r57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r8_test(doc) -> [{userdata,[{""}]}];
 gte_r8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r19_test(doc) -> [{userdata,[{""}]}];
 gte_r19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r19"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r30_test(doc) -> [{userdata,[{""}]}];
 gte_r30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r41_test(doc) -> [{userdata,[{""}]}];
 gte_r41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r41"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r52_test(doc) -> [{userdata,[{""}]}];
 gte_r52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r63_test(doc) -> [{userdata,[{""}]}];
 gte_r63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r3_test(doc) -> [{userdata,[{""}]}];
 gte_r3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r3"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r14_test(doc) -> [{userdata,[{""}]}];
 gte_r14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r14"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r25_test(doc) -> [{userdata,[{""}]}];
 gte_r25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r25"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r36_test(doc) -> [{userdata,[{""}]}];
 gte_r36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r36"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r47_test(doc) -> [{userdata,[{""}]}];
 gte_r47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r58_test(doc) -> [{userdata,[{""}]}];
 gte_r58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r9_test(doc) -> [{userdata,[{""}]}];
 gte_r9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r20_test(doc) -> [{userdata,[{""}]}];
 gte_r20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r20"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r31_test(doc) -> [{userdata,[{""}]}];
 gte_r31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r42_test(doc) -> [{userdata,[{""}]}];
 gte_r42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r42"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r53_test(doc) -> [{userdata,[{""}]}];
 gte_r53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r64_test(doc) -> [{userdata,[{""}]}];
 gte_r64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r4_test(doc) -> [{userdata,[{""}]}];
 gte_r4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r4"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r15_test(doc) -> [{userdata,[{""}]}];
 gte_r15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r15"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r26_test(doc) -> [{userdata,[{""}]}];
 gte_r26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r26"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r37_test(doc) -> [{userdata,[{""}]}];
 gte_r37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r37"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r48_test(doc) -> [{userdata,[{""}]}];
 gte_r48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r59_test(doc) -> [{userdata,[{""}]}];
 gte_r59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r10_test(doc) -> [{userdata,[{""}]}];
 gte_r10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r21_test(doc) -> [{userdata,[{""}]}];
 gte_r21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r21"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r32_test(doc) -> [{userdata,[{""}]}];
 gte_r32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r43_test(doc) -> [{userdata,[{""}]}];
 gte_r43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r43"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r54_test(doc) -> [{userdata,[{""}]}];
 gte_r54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_r65_test(doc) -> [{userdata,[{""}]}];
 gte_r65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","r65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h5_test(doc) -> [{userdata,[{""}]}];
 gte_h5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h5"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h16_test(doc) -> [{userdata,[{""}]}];
 gte_h16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h16"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h27_test(doc) -> [{userdata,[{""}]}];
 gte_h27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h27"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h38_test(doc) -> [{userdata,[{""}]}];
 gte_h38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h38"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h49_test(doc) -> [{userdata,[{""}]}];
 gte_h49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h60_test(doc) -> [{userdata,[{""}]}];
 gte_h60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h11_test(doc) -> [{userdata,[{""}]}];
 gte_h11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h22_test(doc) -> [{userdata,[{""}]}];
 gte_h22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h22"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h33_test(doc) -> [{userdata,[{""}]}];
 gte_h33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h44_test(doc) -> [{userdata,[{""}]}];
 gte_h44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h44"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h55_test(doc) -> [{userdata,[{""}]}];
 gte_h55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h66_test(doc) -> [{userdata,[{""}]}];
 gte_h66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h6_test(doc) -> [{userdata,[{""}]}];
 gte_h6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h17_test(doc) -> [{userdata,[{""}]}];
 gte_h17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h17"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h28_test(doc) -> [{userdata,[{""}]}];
 gte_h28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h39_test(doc) -> [{userdata,[{""}]}];
 gte_h39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h39"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h50_test(doc) -> [{userdata,[{""}]}];
 gte_h50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h61_test(doc) -> [{userdata,[{""}]}];
 gte_h61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h1_test(doc) -> [{userdata,[{""}]}];
 gte_h1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h12_test(doc) -> [{userdata,[{""}]}];
 gte_h12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h34_test(doc) -> [{userdata,[{""}]}];
 gte_h34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h56_test(doc) -> [{userdata,[{""}]}];
 gte_h56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h7_test(doc) -> [{userdata,[{""}]}];
 gte_h7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h18_test(doc) -> [{userdata,[{""}]}];
 gte_h18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h18"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h29_test(doc) -> [{userdata,[{""}]}];
 gte_h29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h40_test(doc) -> [{userdata,[{""}]}];
 gte_h40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h40"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h51_test(doc) -> [{userdata,[{""}]}];
 gte_h51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h62_test(doc) -> [{userdata,[{""}]}];
 gte_h62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h2_test(doc) -> [{userdata,[{""}]}];
 gte_h2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h2"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h13_test(doc) -> [{userdata,[{""}]}];
 gte_h13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h13"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h35_test(doc) -> [{userdata,[{""}]}];
 gte_h35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h35"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h57_test(doc) -> [{userdata,[{""}]}];
 gte_h57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h8_test(doc) -> [{userdata,[{""}]}];
 gte_h8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h19_test(doc) -> [{userdata,[{""}]}];
 gte_h19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h19"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h30_test(doc) -> [{userdata,[{""}]}];
 gte_h30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h41_test(doc) -> [{userdata,[{""}]}];
 gte_h41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h41"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h52_test(doc) -> [{userdata,[{""}]}];
 gte_h52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h63_test(doc) -> [{userdata,[{""}]}];
 gte_h63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h3_test(doc) -> [{userdata,[{""}]}];
 gte_h3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h3"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h14_test(doc) -> [{userdata,[{""}]}];
 gte_h14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h14"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h25_test(doc) -> [{userdata,[{""}]}];
 gte_h25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h25"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h36_test(doc) -> [{userdata,[{""}]}];
 gte_h36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h36"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h47_test(doc) -> [{userdata,[{""}]}];
 gte_h47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h58_test(doc) -> [{userdata,[{""}]}];
 gte_h58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h9_test(doc) -> [{userdata,[{""}]}];
 gte_h9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h20_test(doc) -> [{userdata,[{""}]}];
 gte_h20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h20"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h31_test(doc) -> [{userdata,[{""}]}];
 gte_h31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h42_test(doc) -> [{userdata,[{""}]}];
 gte_h42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h42"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h53_test(doc) -> [{userdata,[{""}]}];
 gte_h53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h64_test(doc) -> [{userdata,[{""}]}];
 gte_h64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h4_test(doc) -> [{userdata,[{""}]}];
 gte_h4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h4"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h15_test(doc) -> [{userdata,[{""}]}];
 gte_h15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h15"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h26_test(doc) -> [{userdata,[{""}]}];
 gte_h26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h26"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h37_test(doc) -> [{userdata,[{""}]}];
 gte_h37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h37"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h48_test(doc) -> [{userdata,[{""}]}];
 gte_h48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h59_test(doc) -> [{userdata,[{""}]}];
 gte_h59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h10_test(doc) -> [{userdata,[{""}]}];
 gte_h10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h21_test(doc) -> [{userdata,[{""}]}];
 gte_h21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h21"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h32_test(doc) -> [{userdata,[{""}]}];
 gte_h32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h43_test(doc) -> [{userdata,[{""}]}];
 gte_h43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h43"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h54_test(doc) -> [{userdata,[{""}]}];
 gte_h54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_h65_test(doc) -> [{userdata,[{""}]}];
 gte_h65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","h65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s5_test(doc) -> [{userdata,[{""}]}];
 gte_s5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s5"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s16_test(doc) -> [{userdata,[{""}]}];
 gte_s16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s16"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s27_test(doc) -> [{userdata,[{""}]}];
 gte_s27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s27"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s38_test(doc) -> [{userdata,[{""}]}];
 gte_s38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s38"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s49_test(doc) -> [{userdata,[{""}]}];
 gte_s49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s60_test(doc) -> [{userdata,[{""}]}];
 gte_s60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s11_test(doc) -> [{userdata,[{""}]}];
 gte_s11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s22_test(doc) -> [{userdata,[{""}]}];
 gte_s22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s22"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s33_test(doc) -> [{userdata,[{""}]}];
 gte_s33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s44_test(doc) -> [{userdata,[{""}]}];
 gte_s44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s44"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s55_test(doc) -> [{userdata,[{""}]}];
 gte_s55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s66_test(doc) -> [{userdata,[{""}]}];
 gte_s66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s6_test(doc) -> [{userdata,[{""}]}];
 gte_s6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s17_test(doc) -> [{userdata,[{""}]}];
 gte_s17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s17"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s28_test(doc) -> [{userdata,[{""}]}];
 gte_s28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s39_test(doc) -> [{userdata,[{""}]}];
 gte_s39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s39"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s50_test(doc) -> [{userdata,[{""}]}];
 gte_s50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s61_test(doc) -> [{userdata,[{""}]}];
 gte_s61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s1_test(doc) -> [{userdata,[{""}]}];
 gte_s1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s1"),
   Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s12_test(doc) -> [{userdata,[{""}]}];
 gte_s12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s34_test(doc) -> [{userdata,[{""}]}];
 gte_s34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s56_test(doc) -> [{userdata,[{""}]}];
 gte_s56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s7_test(doc) -> [{userdata,[{""}]}];
 gte_s7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s18_test(doc) -> [{userdata,[{""}]}];
 gte_s18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s18"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s29_test(doc) -> [{userdata,[{""}]}];
 gte_s29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s40_test(doc) -> [{userdata,[{""}]}];
 gte_s40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s40"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s51_test(doc) -> [{userdata,[{""}]}];
 gte_s51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s62_test(doc) -> [{userdata,[{""}]}];
 gte_s62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s2_test(doc) -> [{userdata,[{""}]}];
 gte_s2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s2"),
   Expected="1999/02/02 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s13_test(doc) -> [{userdata,[{""}]}];
 gte_s13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s13"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s35_test(doc) -> [{userdata,[{""}]}];
 gte_s35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s35"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s57_test(doc) -> [{userdata,[{""}]}];
 gte_s57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s8_test(doc) -> [{userdata,[{""}]}];
 gte_s8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s19_test(doc) -> [{userdata,[{""}]}];
 gte_s19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s19"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s30_test(doc) -> [{userdata,[{""}]}];
 gte_s30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s41_test(doc) -> [{userdata,[{""}]}];
 gte_s41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s41"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s52_test(doc) -> [{userdata,[{""}]}];
 gte_s52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s63_test(doc) -> [{userdata,[{""}]}];
 gte_s63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s3_test(doc) -> [{userdata,[{""}]}];
 gte_s3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s3"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s14_test(doc) -> [{userdata,[{""}]}];
 gte_s14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s14"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s25_test(doc) -> [{userdata,[{""}]}];
 gte_s25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s25"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s36_test(doc) -> [{userdata,[{""}]}];
 gte_s36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s36"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s47_test(doc) -> [{userdata,[{""}]}];
 gte_s47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s58_test(doc) -> [{userdata,[{""}]}];
 gte_s58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s9_test(doc) -> [{userdata,[{""}]}];
 gte_s9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s20_test(doc) -> [{userdata,[{""}]}];
 gte_s20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s20"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s31_test(doc) -> [{userdata,[{""}]}];
 gte_s31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s42_test(doc) -> [{userdata,[{""}]}];
 gte_s42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s42"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s53_test(doc) -> [{userdata,[{""}]}];
 gte_s53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s64_test(doc) -> [{userdata,[{""}]}];
 gte_s64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s4_test(doc) -> [{userdata,[{""}]}];
 gte_s4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s4"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s15_test(doc) -> [{userdata,[{""}]}];
 gte_s15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s15"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s26_test(doc) -> [{userdata,[{""}]}];
 gte_s26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s26"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s37_test(doc) -> [{userdata,[{""}]}];
 gte_s37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s37"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s48_test(doc) -> [{userdata,[{""}]}];
 gte_s48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s59_test(doc) -> [{userdata,[{""}]}];
 gte_s59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s10_test(doc) -> [{userdata,[{""}]}];
 gte_s10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s21_test(doc) -> [{userdata,[{""}]}];
 gte_s21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s21"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s32_test(doc) -> [{userdata,[{""}]}];
 gte_s32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s43_test(doc) -> [{userdata,[{""}]}];
 gte_s43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s43"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s54_test(doc) -> [{userdata,[{""}]}];
 gte_s54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_s65_test(doc) -> [{userdata,[{""}]}];
 gte_s65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","s65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i5_test(doc) -> [{userdata,[{""}]}];
 gte_i5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i5"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i16_test(doc) -> [{userdata,[{""}]}];
 gte_i16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i16"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i27_test(doc) -> [{userdata,[{""}]}];
 gte_i27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i27"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i38_test(doc) -> [{userdata,[{""}]}];
 gte_i38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i38"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i49_test(doc) -> [{userdata,[{""}]}];
 gte_i49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i60_test(doc) -> [{userdata,[{""}]}];
 gte_i60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i11_test(doc) -> [{userdata,[{""}]}];
 gte_i11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i22_test(doc) -> [{userdata,[{""}]}];
 gte_i22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i22"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i33_test(doc) -> [{userdata,[{""}]}];
 gte_i33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i44_test(doc) -> [{userdata,[{""}]}];
 gte_i44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i44"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i55_test(doc) -> [{userdata,[{""}]}];
 gte_i55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i66_test(doc) -> [{userdata,[{""}]}];
 gte_i66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i6_test(doc) -> [{userdata,[{""}]}];
 gte_i6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i17_test(doc) -> [{userdata,[{""}]}];
 gte_i17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i17"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i28_test(doc) -> [{userdata,[{""}]}];
 gte_i28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i39_test(doc) -> [{userdata,[{""}]}];
 gte_i39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i39"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i50_test(doc) -> [{userdata,[{""}]}];
 gte_i50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i61_test(doc) -> [{userdata,[{""}]}];
 gte_i61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i1_test(doc) -> [{userdata,[{""}]}];
 gte_i1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i12_test(doc) -> [{userdata,[{""}]}];
 gte_i12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i34_test(doc) -> [{userdata,[{""}]}];
 gte_i34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i56_test(doc) -> [{userdata,[{""}]}];
 gte_i56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i7_test(doc) -> [{userdata,[{""}]}];
 gte_i7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i18_test(doc) -> [{userdata,[{""}]}];
 gte_i18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i18"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i29_test(doc) -> [{userdata,[{""}]}];
 gte_i29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i40_test(doc) -> [{userdata,[{""}]}];
 gte_i40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i40"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i51_test(doc) -> [{userdata,[{""}]}];
 gte_i51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i62_test(doc) -> [{userdata,[{""}]}];
 gte_i62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i2_test(doc) -> [{userdata,[{""}]}];
 gte_i2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i2"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i13_test(doc) -> [{userdata,[{""}]}];
 gte_i13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i13"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i35_test(doc) -> [{userdata,[{""}]}];
 gte_i35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i35"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i57_test(doc) -> [{userdata,[{""}]}];
 gte_i57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i8_test(doc) -> [{userdata,[{""}]}];
 gte_i8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i19_test(doc) -> [{userdata,[{""}]}];
 gte_i19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i19"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i30_test(doc) -> [{userdata,[{""}]}];
 gte_i30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i41_test(doc) -> [{userdata,[{""}]}];
 gte_i41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i41"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i52_test(doc) -> [{userdata,[{""}]}];
 gte_i52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i63_test(doc) -> [{userdata,[{""}]}];
 gte_i63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i3_test(doc) -> [{userdata,[{""}]}];
 gte_i3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i3"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i14_test(doc) -> [{userdata,[{""}]}];
 gte_i14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i14"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i25_test(doc) -> [{userdata,[{""}]}];
 gte_i25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i25"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i36_test(doc) -> [{userdata,[{""}]}];
 gte_i36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i36"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i47_test(doc) -> [{userdata,[{""}]}];
 gte_i47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i58_test(doc) -> [{userdata,[{""}]}];
 gte_i58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i9_test(doc) -> [{userdata,[{""}]}];
 gte_i9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i20_test(doc) -> [{userdata,[{""}]}];
 gte_i20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i20"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i31_test(doc) -> [{userdata,[{""}]}];
 gte_i31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i42_test(doc) -> [{userdata,[{""}]}];
 gte_i42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i42"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i53_test(doc) -> [{userdata,[{""}]}];
 gte_i53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i64_test(doc) -> [{userdata,[{""}]}];
 gte_i64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i4_test(doc) -> [{userdata,[{""}]}];
 gte_i4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i4"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i15_test(doc) -> [{userdata,[{""}]}];
 gte_i15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i15"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i26_test(doc) -> [{userdata,[{""}]}];
 gte_i26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i26"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i37_test(doc) -> [{userdata,[{""}]}];
 gte_i37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i37"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i48_test(doc) -> [{userdata,[{""}]}];
 gte_i48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i59_test(doc) -> [{userdata,[{""}]}];
 gte_i59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i10_test(doc) -> [{userdata,[{""}]}];
 gte_i10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i21_test(doc) -> [{userdata,[{""}]}];
 gte_i21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i21"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i32_test(doc) -> [{userdata,[{""}]}];
 gte_i32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i43_test(doc) -> [{userdata,[{""}]}];
 gte_i43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i43"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i54_test(doc) -> [{userdata,[{""}]}];
 gte_i54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_i65_test(doc) -> [{userdata,[{""}]}];
 gte_i65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","i65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t5_test(doc) -> [{userdata,[{""}]}];
 gte_t5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t5"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t16_test(doc) -> [{userdata,[{""}]}];
 gte_t16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t16"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t27_test(doc) -> [{userdata,[{""}]}];
 gte_t27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t27"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t38_test(doc) -> [{userdata,[{""}]}];
 gte_t38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t38"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t49_test(doc) -> [{userdata,[{""}]}];
 gte_t49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t60_test(doc) -> [{userdata,[{""}]}];
 gte_t60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t11_test(doc) -> [{userdata,[{""}]}];
 gte_t11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t22_test(doc) -> [{userdata,[{""}]}];
 gte_t22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t22"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t33_test(doc) -> [{userdata,[{""}]}];
 gte_t33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t44_test(doc) -> [{userdata,[{""}]}];
 gte_t44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t44"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t55_test(doc) -> [{userdata,[{""}]}];
 gte_t55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t66_test(doc) -> [{userdata,[{""}]}];
 gte_t66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t6_test(doc) -> [{userdata,[{""}]}];
 gte_t6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t17_test(doc) -> [{userdata,[{""}]}];
 gte_t17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t17"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t28_test(doc) -> [{userdata,[{""}]}];
 gte_t28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t39_test(doc) -> [{userdata,[{""}]}];
 gte_t39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t39"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t50_test(doc) -> [{userdata,[{""}]}];
 gte_t50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t61_test(doc) -> [{userdata,[{""}]}];
 gte_t61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t1_test(doc) -> [{userdata,[{""}]}];
 gte_t1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t1"),
   Expected="Zero",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t12_test(doc) -> [{userdata,[{""}]}];
 gte_t12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t34_test(doc) -> [{userdata,[{""}]}];
 gte_t34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t56_test(doc) -> [{userdata,[{""}]}];
 gte_t56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t7_test(doc) -> [{userdata,[{""}]}];
 gte_t7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t18_test(doc) -> [{userdata,[{""}]}];
 gte_t18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t18"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t29_test(doc) -> [{userdata,[{""}]}];
 gte_t29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t40_test(doc) -> [{userdata,[{""}]}];
 gte_t40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t40"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t51_test(doc) -> [{userdata,[{""}]}];
 gte_t51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t62_test(doc) -> [{userdata,[{""}]}];
 gte_t62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t2_test(doc) -> [{userdata,[{""}]}];
 gte_t2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t2"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t13_test(doc) -> [{userdata,[{""}]}];
 gte_t13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t13"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t35_test(doc) -> [{userdata,[{""}]}];
 gte_t35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t35"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t57_test(doc) -> [{userdata,[{""}]}];
 gte_t57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t8_test(doc) -> [{userdata,[{""}]}];
 gte_t8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t19_test(doc) -> [{userdata,[{""}]}];
 gte_t19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t19"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t30_test(doc) -> [{userdata,[{""}]}];
 gte_t30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t41_test(doc) -> [{userdata,[{""}]}];
 gte_t41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t41"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t52_test(doc) -> [{userdata,[{""}]}];
 gte_t52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t63_test(doc) -> [{userdata,[{""}]}];
 gte_t63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t3_test(doc) -> [{userdata,[{""}]}];
 gte_t3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t3"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t14_test(doc) -> [{userdata,[{""}]}];
 gte_t14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t14"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t25_test(doc) -> [{userdata,[{""}]}];
 gte_t25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t25"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t36_test(doc) -> [{userdata,[{""}]}];
 gte_t36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t36"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t47_test(doc) -> [{userdata,[{""}]}];
 gte_t47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t58_test(doc) -> [{userdata,[{""}]}];
 gte_t58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t9_test(doc) -> [{userdata,[{""}]}];
 gte_t9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t20_test(doc) -> [{userdata,[{""}]}];
 gte_t20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t20"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t31_test(doc) -> [{userdata,[{""}]}];
 gte_t31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t42_test(doc) -> [{userdata,[{""}]}];
 gte_t42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t42"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t53_test(doc) -> [{userdata,[{""}]}];
 gte_t53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t64_test(doc) -> [{userdata,[{""}]}];
 gte_t64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t4_test(doc) -> [{userdata,[{""}]}];
 gte_t4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t4"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t15_test(doc) -> [{userdata,[{""}]}];
 gte_t15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t15"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t26_test(doc) -> [{userdata,[{""}]}];
 gte_t26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t26"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t37_test(doc) -> [{userdata,[{""}]}];
 gte_t37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t37"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t48_test(doc) -> [{userdata,[{""}]}];
 gte_t48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t59_test(doc) -> [{userdata,[{""}]}];
 gte_t59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t10_test(doc) -> [{userdata,[{""}]}];
 gte_t10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t21_test(doc) -> [{userdata,[{""}]}];
 gte_t21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t21"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t32_test(doc) -> [{userdata,[{""}]}];
 gte_t32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t43_test(doc) -> [{userdata,[{""}]}];
 gte_t43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t43"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t54_test(doc) -> [{userdata,[{""}]}];
 gte_t54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_t65_test(doc) -> [{userdata,[{""}]}];
 gte_t65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","t65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j5_test(doc) -> [{userdata,[{""}]}];
 gte_j5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j5"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j16_test(doc) -> [{userdata,[{""}]}];
 gte_j16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j16"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j27_test(doc) -> [{userdata,[{""}]}];
 gte_j27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j27"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j38_test(doc) -> [{userdata,[{""}]}];
 gte_j38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j38"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j49_test(doc) -> [{userdata,[{""}]}];
 gte_j49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j60_test(doc) -> [{userdata,[{""}]}];
 gte_j60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j11_test(doc) -> [{userdata,[{""}]}];
 gte_j11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j22_test(doc) -> [{userdata,[{""}]}];
 gte_j22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j22"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j33_test(doc) -> [{userdata,[{""}]}];
 gte_j33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j44_test(doc) -> [{userdata,[{""}]}];
 gte_j44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j44"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j55_test(doc) -> [{userdata,[{""}]}];
 gte_j55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j66_test(doc) -> [{userdata,[{""}]}];
 gte_j66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j6_test(doc) -> [{userdata,[{""}]}];
 gte_j6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j17_test(doc) -> [{userdata,[{""}]}];
 gte_j17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j17"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j28_test(doc) -> [{userdata,[{""}]}];
 gte_j28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j39_test(doc) -> [{userdata,[{""}]}];
 gte_j39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j39"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j50_test(doc) -> [{userdata,[{""}]}];
 gte_j50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j61_test(doc) -> [{userdata,[{""}]}];
 gte_j61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j1_test(doc) -> [{userdata,[{""}]}];
 gte_j1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j12_test(doc) -> [{userdata,[{""}]}];
 gte_j12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j34_test(doc) -> [{userdata,[{""}]}];
 gte_j34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j56_test(doc) -> [{userdata,[{""}]}];
 gte_j56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j7_test(doc) -> [{userdata,[{""}]}];
 gte_j7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j18_test(doc) -> [{userdata,[{""}]}];
 gte_j18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j18"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j29_test(doc) -> [{userdata,[{""}]}];
 gte_j29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j40_test(doc) -> [{userdata,[{""}]}];
 gte_j40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j40"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j51_test(doc) -> [{userdata,[{""}]}];
 gte_j51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j62_test(doc) -> [{userdata,[{""}]}];
 gte_j62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j2_test(doc) -> [{userdata,[{""}]}];
 gte_j2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j2"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j13_test(doc) -> [{userdata,[{""}]}];
 gte_j13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j13"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j35_test(doc) -> [{userdata,[{""}]}];
 gte_j35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j35"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j57_test(doc) -> [{userdata,[{""}]}];
 gte_j57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j8_test(doc) -> [{userdata,[{""}]}];
 gte_j8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j19_test(doc) -> [{userdata,[{""}]}];
 gte_j19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j19"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j30_test(doc) -> [{userdata,[{""}]}];
 gte_j30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j41_test(doc) -> [{userdata,[{""}]}];
 gte_j41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j41"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j52_test(doc) -> [{userdata,[{""}]}];
 gte_j52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j63_test(doc) -> [{userdata,[{""}]}];
 gte_j63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j3_test(doc) -> [{userdata,[{""}]}];
 gte_j3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j3"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j14_test(doc) -> [{userdata,[{""}]}];
 gte_j14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j14"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j25_test(doc) -> [{userdata,[{""}]}];
 gte_j25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j25"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j36_test(doc) -> [{userdata,[{""}]}];
 gte_j36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j36"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j47_test(doc) -> [{userdata,[{""}]}];
 gte_j47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j58_test(doc) -> [{userdata,[{""}]}];
 gte_j58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j9_test(doc) -> [{userdata,[{""}]}];
 gte_j9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j20_test(doc) -> [{userdata,[{""}]}];
 gte_j20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j20"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j31_test(doc) -> [{userdata,[{""}]}];
 gte_j31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j42_test(doc) -> [{userdata,[{""}]}];
 gte_j42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j42"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j53_test(doc) -> [{userdata,[{""}]}];
 gte_j53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j64_test(doc) -> [{userdata,[{""}]}];
 gte_j64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j4_test(doc) -> [{userdata,[{""}]}];
 gte_j4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j4"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j15_test(doc) -> [{userdata,[{""}]}];
 gte_j15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j15"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j26_test(doc) -> [{userdata,[{""}]}];
 gte_j26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j26"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j37_test(doc) -> [{userdata,[{""}]}];
 gte_j37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j37"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j48_test(doc) -> [{userdata,[{""}]}];
 gte_j48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j59_test(doc) -> [{userdata,[{""}]}];
 gte_j59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j10_test(doc) -> [{userdata,[{""}]}];
 gte_j10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j21_test(doc) -> [{userdata,[{""}]}];
 gte_j21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j21"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j32_test(doc) -> [{userdata,[{""}]}];
 gte_j32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j43_test(doc) -> [{userdata,[{""}]}];
 gte_j43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j43"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j54_test(doc) -> [{userdata,[{""}]}];
 gte_j54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_j65_test(doc) -> [{userdata,[{""}]}];
 gte_j65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","j65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u5_test(doc) -> [{userdata,[{""}]}];
 gte_u5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u5"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u16_test(doc) -> [{userdata,[{""}]}];
 gte_u16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u16"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u27_test(doc) -> [{userdata,[{""}]}];
 gte_u27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u27"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u38_test(doc) -> [{userdata,[{""}]}];
 gte_u38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u38"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u49_test(doc) -> [{userdata,[{""}]}];
 gte_u49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u60_test(doc) -> [{userdata,[{""}]}];
 gte_u60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u11_test(doc) -> [{userdata,[{""}]}];
 gte_u11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u22_test(doc) -> [{userdata,[{""}]}];
 gte_u22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u22"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u33_test(doc) -> [{userdata,[{""}]}];
 gte_u33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u44_test(doc) -> [{userdata,[{""}]}];
 gte_u44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u44"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u55_test(doc) -> [{userdata,[{""}]}];
 gte_u55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u66_test(doc) -> [{userdata,[{""}]}];
 gte_u66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u6_test(doc) -> [{userdata,[{""}]}];
 gte_u6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u17_test(doc) -> [{userdata,[{""}]}];
 gte_u17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u17"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u28_test(doc) -> [{userdata,[{""}]}];
 gte_u28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u39_test(doc) -> [{userdata,[{""}]}];
 gte_u39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u39"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u50_test(doc) -> [{userdata,[{""}]}];
 gte_u50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u61_test(doc) -> [{userdata,[{""}]}];
 gte_u61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u1_test(doc) -> [{userdata,[{""}]}];
 gte_u1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u1"),
   Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u12_test(doc) -> [{userdata,[{""}]}];
 gte_u12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u34_test(doc) -> [{userdata,[{""}]}];
 gte_u34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u56_test(doc) -> [{userdata,[{""}]}];
 gte_u56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u7_test(doc) -> [{userdata,[{""}]}];
 gte_u7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u18_test(doc) -> [{userdata,[{""}]}];
 gte_u18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u18"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u29_test(doc) -> [{userdata,[{""}]}];
 gte_u29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u40_test(doc) -> [{userdata,[{""}]}];
 gte_u40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u40"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u51_test(doc) -> [{userdata,[{""}]}];
 gte_u51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u62_test(doc) -> [{userdata,[{""}]}];
 gte_u62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u2_test(doc) -> [{userdata,[{""}]}];
 gte_u2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u2"),
   Expected="3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u13_test(doc) -> [{userdata,[{""}]}];
 gte_u13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u13"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u35_test(doc) -> [{userdata,[{""}]}];
 gte_u35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u35"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u57_test(doc) -> [{userdata,[{""}]}];
 gte_u57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u8_test(doc) -> [{userdata,[{""}]}];
 gte_u8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u19_test(doc) -> [{userdata,[{""}]}];
 gte_u19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u19"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u30_test(doc) -> [{userdata,[{""}]}];
 gte_u30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u41_test(doc) -> [{userdata,[{""}]}];
 gte_u41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u41"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u52_test(doc) -> [{userdata,[{""}]}];
 gte_u52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u63_test(doc) -> [{userdata,[{""}]}];
 gte_u63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u3_test(doc) -> [{userdata,[{""}]}];
 gte_u3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u3"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u14_test(doc) -> [{userdata,[{""}]}];
 gte_u14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u14"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u25_test(doc) -> [{userdata,[{""}]}];
 gte_u25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u25"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u36_test(doc) -> [{userdata,[{""}]}];
 gte_u36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u36"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u47_test(doc) -> [{userdata,[{""}]}];
 gte_u47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u58_test(doc) -> [{userdata,[{""}]}];
 gte_u58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u9_test(doc) -> [{userdata,[{""}]}];
 gte_u9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u20_test(doc) -> [{userdata,[{""}]}];
 gte_u20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u20"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u31_test(doc) -> [{userdata,[{""}]}];
 gte_u31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u42_test(doc) -> [{userdata,[{""}]}];
 gte_u42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u42"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u53_test(doc) -> [{userdata,[{""}]}];
 gte_u53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u64_test(doc) -> [{userdata,[{""}]}];
 gte_u64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u4_test(doc) -> [{userdata,[{""}]}];
 gte_u4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u4"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u15_test(doc) -> [{userdata,[{""}]}];
 gte_u15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u15"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u26_test(doc) -> [{userdata,[{""}]}];
 gte_u26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u26"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u37_test(doc) -> [{userdata,[{""}]}];
 gte_u37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u37"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u48_test(doc) -> [{userdata,[{""}]}];
 gte_u48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u59_test(doc) -> [{userdata,[{""}]}];
 gte_u59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u10_test(doc) -> [{userdata,[{""}]}];
 gte_u10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u21_test(doc) -> [{userdata,[{""}]}];
 gte_u21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u21"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u32_test(doc) -> [{userdata,[{""}]}];
 gte_u32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u43_test(doc) -> [{userdata,[{""}]}];
 gte_u43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u43"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u54_test(doc) -> [{userdata,[{""}]}];
 gte_u54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 gte_u65_test(doc) -> [{userdata,[{""}]}];
 gte_u65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GTE/","u65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 all() -> 
     [gte_k5_test,

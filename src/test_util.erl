@@ -11,13 +11,13 @@
 -export([
 	 expected/2,
          expected2/2,
-	 get_Arg/4,
 	 read_excel_file/1,
 	 equal_to_digit/3,
 	 excel_equal/2,
 	 wait/0,
 	 wait/1,
-         test_state/1
+         test_state/1,
+         make_float/1
 	]).
 
 -include("excel_errors.hrl").
@@ -73,7 +73,39 @@ equal_to_digit(F1,F2,DigitIdx) ->
     Bs=string:substr(Bs0,1,DigitIdx+2),
     As==Bs.
 
+excel_equal("-2146826281","#DIV/0!") -> true;
+excel_equal("-2146826246","#N/A")    -> true;
+excel_equal("-2146826259","#NAME?")  -> true;
+excel_equal("-2146826288","#NULL!")  -> true;
+excel_equal("-2146826252","#NUM!")   -> true;
+excel_equal("-2146826265","#REF!")   -> true;
+excel_equal("-2146826273","#VALUE!") -> true;
 %% Checks that two Excel values are equal.
+excel_equal(String1,String2) when is_list(String1), is_list(String2) ->
+  %% this test is used in the full test only - not the reverse compile
+  %% fix-up the fact that we have changed the syntax for function Error.Type to ErrorType
+    Return=regexp:gsub(String2,"Error.Type","ErrorType"),
+    io:format("Return is ~p~n",[Return]),
+    {ok,String2a,_}=Return,
+    io:format("String1 is ~p and String2a is ~p~n",[String1,String2a]),
+    Result = case String1 of
+            String2a -> true;
+            _        -> false
+      end,
+    %% if the strings aren't the same try and make numbers of them and compare then
+    case Result of
+      true  -> true;
+      false ->
+        String1f=make_float(String1),
+        String2f=make_float(String2),
+        case {String1f,String2f} of
+          {"not float","not float"} -> false;
+          {"not float",_}           -> false;
+          {_          ,"not float"} -> false;
+          _                          -> equal_to_digit(String1f,String2f,
+                                            ?EXCEL_IMPORT_FLOAT_PRECISION)
+        end
+    end;
 excel_equal({number, F1}, {number, F2}) ->
     equal_to_digit(F1, F2, ?EXCEL_IMPORT_FLOAT_PRECISION);
 excel_equal({formula, Fla1}, {formula, Fla2}) ->
@@ -87,12 +119,12 @@ excel_equal({error,Error1},{number,ErrorVal}) ->
     Error2=make_err_val(ErrorVal),
     case Error1 of
         Error2 -> true;
-        _    -> false
+        _      -> false
     end;
 excel_equal({error,Error1},{error,Error2}) ->
     case Error1 of
         Error2 -> true;
-        _    -> false
+        _      -> false
     end;
 excel_equal({string,String1},{string,String2}) ->
     case String1 of
@@ -112,7 +144,7 @@ make_err_val(X)            -> X.
 expected(Expected, Got) ->
     case Got of
         Expected ->
-            io:format("SUCCESS~nExpected: ~p~nGot:      ~p~n",[Expected,Got]),
+            io:format("SUCCESS~nExpected: ~p~nGot:       ~p~n",[Expected,Got]),
             {test, ok};
         _Else ->
             exit({"E:", Expected, "G:", Got})
@@ -140,73 +172,28 @@ expected2(Expected, Got) ->
 read_excel_file(Filename) ->
     filefilters:read(excel,?FILEDIR++Filename,fun dump_cells/1).
 
-get_Arg(IP,DomainAndPort,PathAndRef,FormatAndDecos)->
-    Port=open_port({spawn,bash},[]),% get a spoof port
-    port_close(Port),
-    {arg,
-     Port,
-     {IP,60091},
-     {headers,
-      "keep-alive",
-      "text/xml,application/xml,application/xhtml+xml,text/html;"++
-      "q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5",
-      DomainAndPort,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      "Mozilla/5.0 (X11; U; Linux i686; en-GB; rv:1.8.0.5) "++
-      "Gecko/20060731 Ubuntu/dapper-security Firefox/1.5.0.5",
-      undefined,
-      [],
-      "300",
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      [{http_header,
-	1,
-	'Cache-Control',
-	undefined,
-	"max-age=0"},
-       {http_header,
-	9,
-	'Accept-Charset',
-	undefined,
-	"ISO-8859-1,utf-8;q=0.7,*;q=0.7"},
-       {http_header,
-	10,
-	'Accept-Encoding',
-	undefined,
-	"gzip,deflate"},
-       {http_header,
-	11,
-	'Accept-Language',
-	undefined,
-	"en-gb,en;q=0.5"}]},
-     {http_request,
-      'GET',
-      {abs_path,PathAndRef++"?"++FormatAndDecos},
-      {1,1}},
-     undefined,
-     PathAndRef,
-     FormatAndDecos,
-     PathAndRef,
-     "/opt/SVN/spriki/trunk/include/docroot",
-     "/",
-     "/opt/SVN/spriki/trunk/include/docroot"++PathAndRef,
-     undefined,
-     undefined,
-     self(),
-     [],
-     [],
-     [],
-     PathAndRef}.
+make_float(List) ->
+    Return = try
+                list_to_float(List)
+              catch
+                exit:_Reason   -> "not float";
+                error:_Message -> "not float";
+                throw:Term     -> "not float"
+            end,
+    case Return of
+      "not float" -> make_float2(List);
+      _           -> Return
+    end.
+
+make_float2(List)->
+    try
+      list_to_integer(List)*1.0
+    catch
+      exit:_Reason   -> "not float";
+      error:_Message -> "not float";
+      throw:Term     -> "not float"
+    end.
+
 
 %% Default operation wait time, used for the test suites.
 wait() ->

@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_operators_sub.xls
-% Generated on: Sun Feb 17 21:43:02 +0000 2008
+% Generated on: Fri Feb 22 19:04:33 +0000 2008
 
 -module(e_gnumeric_operators_sub_SUITE).
 -compile(export_all).
@@ -19,8 +19,9 @@ init_per_suite(Config) ->
         {_,Data2}                                -> Data2;
         {_,number,Data2} when is_float(Data2)   -> float_to_list(Data2);
         {_,number,Data2} when is_integer(Data2) -> integer_to_list(Data2);
-        {_,boolean,true}                        -> "true";
-        {_,boolean,false}                       -> "false"
+        {_,error,Error}                          -> Error;
+        {_,boolean,true}                         -> "true";
+        {_,boolean,false}                        -> "false"
       end,
       Path="/"++Sheet++"/",
       Cell=util2:make_b26(ColIdx+1)++integer_to_list(RowIdx+1),
@@ -74,9121 +75,9121 @@ sub_k5_test(_Config) ->
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k5"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k16_test(doc) -> [{userdata,[{""}]}];
 sub_k16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k16"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k27_test(doc) -> [{userdata,[{""}]}];
 sub_k27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k27"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k38_test(doc) -> [{userdata,[{""}]}];
 sub_k38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k38"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k49_test(doc) -> [{userdata,[{""}]}];
 sub_k49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k60_test(doc) -> [{userdata,[{""}]}];
 sub_k60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k11_test(doc) -> [{userdata,[{""}]}];
 sub_k11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k22_test(doc) -> [{userdata,[{""}]}];
 sub_k22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k22"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k33_test(doc) -> [{userdata,[{""}]}];
 sub_k33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k44_test(doc) -> [{userdata,[{""}]}];
 sub_k44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k44"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k55_test(doc) -> [{userdata,[{""}]}];
 sub_k55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k66_test(doc) -> [{userdata,[{""}]}];
 sub_k66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k6_test(doc) -> [{userdata,[{""}]}];
 sub_k6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k17_test(doc) -> [{userdata,[{""}]}];
 sub_k17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k17"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k28_test(doc) -> [{userdata,[{""}]}];
 sub_k28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k39_test(doc) -> [{userdata,[{""}]}];
 sub_k39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k39"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k50_test(doc) -> [{userdata,[{""}]}];
 sub_k50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k61_test(doc) -> [{userdata,[{""}]}];
 sub_k61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k1_test(doc) -> [{userdata,[{""}]}];
 sub_k1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k12_test(doc) -> [{userdata,[{""}]}];
 sub_k12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k34_test(doc) -> [{userdata,[{""}]}];
 sub_k34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k56_test(doc) -> [{userdata,[{""}]}];
 sub_k56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k7_test(doc) -> [{userdata,[{""}]}];
 sub_k7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k18_test(doc) -> [{userdata,[{""}]}];
 sub_k18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k18"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k29_test(doc) -> [{userdata,[{""}]}];
 sub_k29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k40_test(doc) -> [{userdata,[{""}]}];
 sub_k40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k40"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k51_test(doc) -> [{userdata,[{""}]}];
 sub_k51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k62_test(doc) -> [{userdata,[{""}]}];
 sub_k62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k2_test(doc) -> [{userdata,[{""}]}];
 sub_k2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k2"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k13_test(doc) -> [{userdata,[{""}]}];
 sub_k13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k35_test(doc) -> [{userdata,[{""}]}];
 sub_k35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k57_test(doc) -> [{userdata,[{""}]}];
 sub_k57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k8_test(doc) -> [{userdata,[{""}]}];
 sub_k8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k19_test(doc) -> [{userdata,[{""}]}];
 sub_k19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k19"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k30_test(doc) -> [{userdata,[{""}]}];
 sub_k30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k41_test(doc) -> [{userdata,[{""}]}];
 sub_k41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k41"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k52_test(doc) -> [{userdata,[{""}]}];
 sub_k52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k63_test(doc) -> [{userdata,[{""}]}];
 sub_k63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k3_test(doc) -> [{userdata,[{""}]}];
 sub_k3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k3"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k14_test(doc) -> [{userdata,[{""}]}];
 sub_k14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k25_test(doc) -> [{userdata,[{""}]}];
 sub_k25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k25"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k36_test(doc) -> [{userdata,[{""}]}];
 sub_k36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k47_test(doc) -> [{userdata,[{""}]}];
 sub_k47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k58_test(doc) -> [{userdata,[{""}]}];
 sub_k58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k9_test(doc) -> [{userdata,[{""}]}];
 sub_k9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k20_test(doc) -> [{userdata,[{""}]}];
 sub_k20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k20"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k31_test(doc) -> [{userdata,[{""}]}];
 sub_k31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k42_test(doc) -> [{userdata,[{""}]}];
 sub_k42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k42"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k53_test(doc) -> [{userdata,[{""}]}];
 sub_k53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k64_test(doc) -> [{userdata,[{""}]}];
 sub_k64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k4_test(doc) -> [{userdata,[{""}]}];
 sub_k4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k4"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k15_test(doc) -> [{userdata,[{""}]}];
 sub_k15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k26_test(doc) -> [{userdata,[{""}]}];
 sub_k26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k26"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k37_test(doc) -> [{userdata,[{""}]}];
 sub_k37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k48_test(doc) -> [{userdata,[{""}]}];
 sub_k48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k59_test(doc) -> [{userdata,[{""}]}];
 sub_k59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k10_test(doc) -> [{userdata,[{""}]}];
 sub_k10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k21_test(doc) -> [{userdata,[{""}]}];
 sub_k21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k21"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k32_test(doc) -> [{userdata,[{""}]}];
 sub_k32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k43_test(doc) -> [{userdata,[{""}]}];
 sub_k43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k43"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k54_test(doc) -> [{userdata,[{""}]}];
 sub_k54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_k65_test(doc) -> [{userdata,[{""}]}];
 sub_k65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","k65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v5_test(doc) -> [{userdata,[{""}]}];
 sub_v5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v5"),
   Expected="-36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v16_test(doc) -> [{userdata,[{""}]}];
 sub_v16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v16"),
   Expected="-36190.5",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v27_test(doc) -> [{userdata,[{""}]}];
 sub_v27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v27"),
   Expected="-36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v38_test(doc) -> [{userdata,[{""}]}];
 sub_v38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v38"),
   Expected="-36190.5",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v49_test(doc) -> [{userdata,[{""}]}];
 sub_v49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v60_test(doc) -> [{userdata,[{""}]}];
 sub_v60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v11_test(doc) -> [{userdata,[{""}]}];
 sub_v11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v22_test(doc) -> [{userdata,[{""}]}];
 sub_v22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v22"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v33_test(doc) -> [{userdata,[{""}]}];
 sub_v33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v44_test(doc) -> [{userdata,[{""}]}];
 sub_v44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v44"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v55_test(doc) -> [{userdata,[{""}]}];
 sub_v55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v66_test(doc) -> [{userdata,[{""}]}];
 sub_v66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v6_test(doc) -> [{userdata,[{""}]}];
 sub_v6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v17_test(doc) -> [{userdata,[{""}]}];
 sub_v17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v17"),
   Expected="-36189.66",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v28_test(doc) -> [{userdata,[{""}]}];
 sub_v28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v39_test(doc) -> [{userdata,[{""}]}];
 sub_v39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v39"),
   Expected="-36189.66",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v50_test(doc) -> [{userdata,[{""}]}];
 sub_v50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v61_test(doc) -> [{userdata,[{""}]}];
 sub_v61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v1_test(doc) -> [{userdata,[{""}]}];
 sub_v1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v1"),
   Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v12_test(doc) -> [{userdata,[{""}]}];
 sub_v12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v34_test(doc) -> [{userdata,[{""}]}];
 sub_v34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v56_test(doc) -> [{userdata,[{""}]}];
 sub_v56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v7_test(doc) -> [{userdata,[{""}]}];
 sub_v7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v18_test(doc) -> [{userdata,[{""}]}];
 sub_v18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v18"),
   Expected="-1.19999999999709",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v29_test(doc) -> [{userdata,[{""}]}];
 sub_v29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v40_test(doc) -> [{userdata,[{""}]}];
 sub_v40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v40"),
   Expected="-1.19999999999709",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v51_test(doc) -> [{userdata,[{""}]}];
 sub_v51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v62_test(doc) -> [{userdata,[{""}]}];
 sub_v62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v2_test(doc) -> [{userdata,[{""}]}];
 sub_v2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v2"),
   Expected="36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v13_test(doc) -> [{userdata,[{""}]}];
 sub_v13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v35_test(doc) -> [{userdata,[{""}]}];
 sub_v35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v57_test(doc) -> [{userdata,[{""}]}];
 sub_v57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v8_test(doc) -> [{userdata,[{""}]}];
 sub_v8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v19_test(doc) -> [{userdata,[{""}]}];
 sub_v19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v19"),
   Expected="-0.19999999999709",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v30_test(doc) -> [{userdata,[{""}]}];
 sub_v30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v41_test(doc) -> [{userdata,[{""}]}];
 sub_v41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v41"),
   Expected="-0.19999999999709",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v52_test(doc) -> [{userdata,[{""}]}];
 sub_v52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v63_test(doc) -> [{userdata,[{""}]}];
 sub_v63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v3_test(doc) -> [{userdata,[{""}]}];
 sub_v3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v3"),
   Expected="-36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v14_test(doc) -> [{userdata,[{""}]}];
 sub_v14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v25_test(doc) -> [{userdata,[{""}]}];
 sub_v25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v25"),
   Expected="-36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v36_test(doc) -> [{userdata,[{""}]}];
 sub_v36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v47_test(doc) -> [{userdata,[{""}]}];
 sub_v47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v58_test(doc) -> [{userdata,[{""}]}];
 sub_v58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v9_test(doc) -> [{userdata,[{""}]}];
 sub_v9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v20_test(doc) -> [{userdata,[{""}]}];
 sub_v20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v20"),
   Expected="-36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v31_test(doc) -> [{userdata,[{""}]}];
 sub_v31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v42_test(doc) -> [{userdata,[{""}]}];
 sub_v42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v42"),
   Expected="-36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v53_test(doc) -> [{userdata,[{""}]}];
 sub_v53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v64_test(doc) -> [{userdata,[{""}]}];
 sub_v64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v4_test(doc) -> [{userdata,[{""}]}];
 sub_v4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v4"),
   Expected="-36192.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v15_test(doc) -> [{userdata,[{""}]}];
 sub_v15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v26_test(doc) -> [{userdata,[{""}]}];
 sub_v26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v26"),
   Expected="-36192.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v37_test(doc) -> [{userdata,[{""}]}];
 sub_v37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v48_test(doc) -> [{userdata,[{""}]}];
 sub_v48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v59_test(doc) -> [{userdata,[{""}]}];
 sub_v59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v10_test(doc) -> [{userdata,[{""}]}];
 sub_v10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v21_test(doc) -> [{userdata,[{""}]}];
 sub_v21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v21"),
   Expected="-36190.0585",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v32_test(doc) -> [{userdata,[{""}]}];
 sub_v32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v43_test(doc) -> [{userdata,[{""}]}];
 sub_v43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v43"),
   Expected="-36190.0585",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v54_test(doc) -> [{userdata,[{""}]}];
 sub_v54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_v65_test(doc) -> [{userdata,[{""}]}];
 sub_v65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","v65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a5_test(doc) -> [{userdata,[{""}]}];
 sub_a5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a5"),
   Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a16_test(doc) -> [{userdata,[{""}]}];
 sub_a16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a16"),
   Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a27_test(doc) -> [{userdata,[{""}]}];
 sub_a27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a27"),
   Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a38_test(doc) -> [{userdata,[{""}]}];
 sub_a38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a38"),
   Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a11_test(doc) -> [{userdata,[{""}]}];
 sub_a11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a11"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a22_test(doc) -> [{userdata,[{""}]}];
 sub_a22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a22"),
   Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a33_test(doc) -> [{userdata,[{""}]}];
 sub_a33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a33"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a44_test(doc) -> [{userdata,[{""}]}];
 sub_a44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a44"),
   Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a6_test(doc) -> [{userdata,[{""}]}];
 sub_a6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a6"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a17_test(doc) -> [{userdata,[{""}]}];
 sub_a17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a17"),
   Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a28_test(doc) -> [{userdata,[{""}]}];
 sub_a28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a28"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a39_test(doc) -> [{userdata,[{""}]}];
 sub_a39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a39"),
   Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a1_test(doc) -> [{userdata,[{""}]}];
 sub_a1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a1"),
   Expected="-",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a12_test(doc) -> [{userdata,[{""}]}];
 sub_a12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a12"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a34_test(doc) -> [{userdata,[{""}]}];
 sub_a34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a34"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a7_test(doc) -> [{userdata,[{""}]}];
 sub_a7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a7"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a18_test(doc) -> [{userdata,[{""}]}];
 sub_a18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a18"),
   Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a29_test(doc) -> [{userdata,[{""}]}];
 sub_a29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a29"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a40_test(doc) -> [{userdata,[{""}]}];
 sub_a40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a40"),
   Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a2_test(doc) -> [{userdata,[{""}]}];
 sub_a2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a2"),
   Expected="A",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a13_test(doc) -> [{userdata,[{""}]}];
 sub_a13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a13"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a35_test(doc) -> [{userdata,[{""}]}];
 sub_a35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a35"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a8_test(doc) -> [{userdata,[{""}]}];
 sub_a8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a8"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a19_test(doc) -> [{userdata,[{""}]}];
 sub_a19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a19"),
   Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a30_test(doc) -> [{userdata,[{""}]}];
 sub_a30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a30"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a41_test(doc) -> [{userdata,[{""}]}];
 sub_a41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a41"),
   Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a3_test(doc) -> [{userdata,[{""}]}];
 sub_a3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a3"),
   Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a14_test(doc) -> [{userdata,[{""}]}];
 sub_a14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a14"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a25_test(doc) -> [{userdata,[{""}]}];
 sub_a25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a25"),
   Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a36_test(doc) -> [{userdata,[{""}]}];
 sub_a36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a36"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a47_test(doc) -> [{userdata,[{""}]}];
 sub_a47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a47"),
   Expected="400.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a9_test(doc) -> [{userdata,[{""}]}];
 sub_a9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a9"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a20_test(doc) -> [{userdata,[{""}]}];
 sub_a20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a20"),
   Expected="Zero",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a31_test(doc) -> [{userdata,[{""}]}];
 sub_a31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a31"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a42_test(doc) -> [{userdata,[{""}]}];
 sub_a42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a42"),
   Expected="Zero",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a4_test(doc) -> [{userdata,[{""}]}];
 sub_a4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a4"),
   Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a15_test(doc) -> [{userdata,[{""}]}];
 sub_a15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a15"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a26_test(doc) -> [{userdata,[{""}]}];
 sub_a26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a26"),
   Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a37_test(doc) -> [{userdata,[{""}]}];
 sub_a37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a37"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a48_test(doc) -> [{userdata,[{""}]}];
 sub_a48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a48"),
   Expected="Success",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a10_test(doc) -> [{userdata,[{""}]}];
 sub_a10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a10"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a21_test(doc) -> [{userdata,[{""}]}];
 sub_a21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a21"),
   Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a32_test(doc) -> [{userdata,[{""}]}];
 sub_a32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a32"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_a43_test(doc) -> [{userdata,[{""}]}];
 sub_a43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","a43"),
   Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l5_test(doc) -> [{userdata,[{""}]}];
 sub_l5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l5"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l16_test(doc) -> [{userdata,[{""}]}];
 sub_l16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l16"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l27_test(doc) -> [{userdata,[{""}]}];
 sub_l27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l27"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l38_test(doc) -> [{userdata,[{""}]}];
 sub_l38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l49_test(doc) -> [{userdata,[{""}]}];
 sub_l49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l60_test(doc) -> [{userdata,[{""}]}];
 sub_l60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l11_test(doc) -> [{userdata,[{""}]}];
 sub_l11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l22_test(doc) -> [{userdata,[{""}]}];
 sub_l22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l22"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l33_test(doc) -> [{userdata,[{""}]}];
 sub_l33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l44_test(doc) -> [{userdata,[{""}]}];
 sub_l44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l55_test(doc) -> [{userdata,[{""}]}];
 sub_l55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l66_test(doc) -> [{userdata,[{""}]}];
 sub_l66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l6_test(doc) -> [{userdata,[{""}]}];
 sub_l6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l17_test(doc) -> [{userdata,[{""}]}];
 sub_l17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l17"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l28_test(doc) -> [{userdata,[{""}]}];
 sub_l28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l39_test(doc) -> [{userdata,[{""}]}];
 sub_l39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l50_test(doc) -> [{userdata,[{""}]}];
 sub_l50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l61_test(doc) -> [{userdata,[{""}]}];
 sub_l61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l1_test(doc) -> [{userdata,[{""}]}];
 sub_l1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l12_test(doc) -> [{userdata,[{""}]}];
 sub_l12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l34_test(doc) -> [{userdata,[{""}]}];
 sub_l34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l56_test(doc) -> [{userdata,[{""}]}];
 sub_l56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l7_test(doc) -> [{userdata,[{""}]}];
 sub_l7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l18_test(doc) -> [{userdata,[{""}]}];
 sub_l18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l18"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l29_test(doc) -> [{userdata,[{""}]}];
 sub_l29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l40_test(doc) -> [{userdata,[{""}]}];
 sub_l40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l40"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l51_test(doc) -> [{userdata,[{""}]}];
 sub_l51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l62_test(doc) -> [{userdata,[{""}]}];
 sub_l62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l2_test(doc) -> [{userdata,[{""}]}];
 sub_l2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l2"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l13_test(doc) -> [{userdata,[{""}]}];
 sub_l13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l35_test(doc) -> [{userdata,[{""}]}];
 sub_l35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l57_test(doc) -> [{userdata,[{""}]}];
 sub_l57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l8_test(doc) -> [{userdata,[{""}]}];
 sub_l8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l19_test(doc) -> [{userdata,[{""}]}];
 sub_l19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l19"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l30_test(doc) -> [{userdata,[{""}]}];
 sub_l30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l41_test(doc) -> [{userdata,[{""}]}];
 sub_l41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l52_test(doc) -> [{userdata,[{""}]}];
 sub_l52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l63_test(doc) -> [{userdata,[{""}]}];
 sub_l63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l3_test(doc) -> [{userdata,[{""}]}];
 sub_l3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l3"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l14_test(doc) -> [{userdata,[{""}]}];
 sub_l14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l25_test(doc) -> [{userdata,[{""}]}];
 sub_l25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l25"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l36_test(doc) -> [{userdata,[{""}]}];
 sub_l36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l47_test(doc) -> [{userdata,[{""}]}];
 sub_l47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l58_test(doc) -> [{userdata,[{""}]}];
 sub_l58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l9_test(doc) -> [{userdata,[{""}]}];
 sub_l9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l20_test(doc) -> [{userdata,[{""}]}];
 sub_l20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l20"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l31_test(doc) -> [{userdata,[{""}]}];
 sub_l31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l42_test(doc) -> [{userdata,[{""}]}];
 sub_l42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l53_test(doc) -> [{userdata,[{""}]}];
 sub_l53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l64_test(doc) -> [{userdata,[{""}]}];
 sub_l64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l4_test(doc) -> [{userdata,[{""}]}];
 sub_l4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l4"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l15_test(doc) -> [{userdata,[{""}]}];
 sub_l15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l26_test(doc) -> [{userdata,[{""}]}];
 sub_l26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l26"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l37_test(doc) -> [{userdata,[{""}]}];
 sub_l37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l48_test(doc) -> [{userdata,[{""}]}];
 sub_l48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l59_test(doc) -> [{userdata,[{""}]}];
 sub_l59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l10_test(doc) -> [{userdata,[{""}]}];
 sub_l10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l21_test(doc) -> [{userdata,[{""}]}];
 sub_l21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l21"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l32_test(doc) -> [{userdata,[{""}]}];
 sub_l32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l43_test(doc) -> [{userdata,[{""}]}];
 sub_l43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l54_test(doc) -> [{userdata,[{""}]}];
 sub_l54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_l65_test(doc) -> [{userdata,[{""}]}];
 sub_l65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","l65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_b5_test(doc) -> [{userdata,[{""}]}];
 sub_b5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","b5"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_b16_test(doc) -> [{userdata,[{""}]}];
 sub_b16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","b16"),
   Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_b11_test(doc) -> [{userdata,[{""}]}];
 sub_b11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","b11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_b22_test(doc) -> [{userdata,[{""}]}];
 sub_b22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","b22"),
   Expected="36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_b6_test(doc) -> [{userdata,[{""}]}];
 sub_b6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","b6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_b17_test(doc) -> [{userdata,[{""}]}];
 sub_b17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","b17"),
   Expected="3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_b1_test(doc) -> [{userdata,[{""}]}];
 sub_b1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","b1"),
   Expected="B",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_b12_test(doc) -> [{userdata,[{""}]}];
 sub_b12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","b12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_b7_test(doc) -> [{userdata,[{""}]}];
 sub_b7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","b7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_b18_test(doc) -> [{userdata,[{""}]}];
 sub_b18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","b18"),
   Expected="1999/02/01 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_b13_test(doc) -> [{userdata,[{""}]}];
 sub_b13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","b13"),
   Expected="Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_b8_test(doc) -> [{userdata,[{""}]}];
 sub_b8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","b8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_b19_test(doc) -> [{userdata,[{""}]}];
 sub_b19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","b19"),
   Expected="1999/02/02 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_b14_test(doc) -> [{userdata,[{""}]}];
 sub_b14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","b14"),
   Expected="Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_b9_test(doc) -> [{userdata,[{""}]}];
 sub_b9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","b9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_b20_test(doc) -> [{userdata,[{""}]}];
 sub_b20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","b20"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_b4_test(doc) -> [{userdata,[{""}]}];
 sub_b4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","b4"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_b15_test(doc) -> [{userdata,[{""}]}];
 sub_b15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","b15"),
   Expected="Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_b10_test(doc) -> [{userdata,[{""}]}];
 sub_b10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","b10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_b21_test(doc) -> [{userdata,[{""}]}];
 sub_b21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","b21"),
   Expected="3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m5_test(doc) -> [{userdata,[{""}]}];
 sub_m5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m5"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m16_test(doc) -> [{userdata,[{""}]}];
 sub_m16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m16"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m27_test(doc) -> [{userdata,[{""}]}];
 sub_m27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m27"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m38_test(doc) -> [{userdata,[{""}]}];
 sub_m38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m49_test(doc) -> [{userdata,[{""}]}];
 sub_m49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m60_test(doc) -> [{userdata,[{""}]}];
 sub_m60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m11_test(doc) -> [{userdata,[{""}]}];
 sub_m11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m22_test(doc) -> [{userdata,[{""}]}];
 sub_m22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m22"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m33_test(doc) -> [{userdata,[{""}]}];
 sub_m33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m44_test(doc) -> [{userdata,[{""}]}];
 sub_m44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m55_test(doc) -> [{userdata,[{""}]}];
 sub_m55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m66_test(doc) -> [{userdata,[{""}]}];
 sub_m66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m6_test(doc) -> [{userdata,[{""}]}];
 sub_m6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m17_test(doc) -> [{userdata,[{""}]}];
 sub_m17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m17"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m28_test(doc) -> [{userdata,[{""}]}];
 sub_m28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m39_test(doc) -> [{userdata,[{""}]}];
 sub_m39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m50_test(doc) -> [{userdata,[{""}]}];
 sub_m50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m61_test(doc) -> [{userdata,[{""}]}];
 sub_m61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m1_test(doc) -> [{userdata,[{""}]}];
 sub_m1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m1"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m12_test(doc) -> [{userdata,[{""}]}];
 sub_m12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m34_test(doc) -> [{userdata,[{""}]}];
 sub_m34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m56_test(doc) -> [{userdata,[{""}]}];
 sub_m56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m7_test(doc) -> [{userdata,[{""}]}];
 sub_m7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m18_test(doc) -> [{userdata,[{""}]}];
 sub_m18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m18"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m29_test(doc) -> [{userdata,[{""}]}];
 sub_m29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m40_test(doc) -> [{userdata,[{""}]}];
 sub_m40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m40"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m51_test(doc) -> [{userdata,[{""}]}];
 sub_m51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m62_test(doc) -> [{userdata,[{""}]}];
 sub_m62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m2_test(doc) -> [{userdata,[{""}]}];
 sub_m2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m2"),
   Expected="Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m13_test(doc) -> [{userdata,[{""}]}];
 sub_m13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m35_test(doc) -> [{userdata,[{""}]}];
 sub_m35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m57_test(doc) -> [{userdata,[{""}]}];
 sub_m57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m8_test(doc) -> [{userdata,[{""}]}];
 sub_m8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m19_test(doc) -> [{userdata,[{""}]}];
 sub_m19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m19"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m30_test(doc) -> [{userdata,[{""}]}];
 sub_m30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m41_test(doc) -> [{userdata,[{""}]}];
 sub_m41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m52_test(doc) -> [{userdata,[{""}]}];
 sub_m52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m63_test(doc) -> [{userdata,[{""}]}];
 sub_m63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m3_test(doc) -> [{userdata,[{""}]}];
 sub_m3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m3"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m14_test(doc) -> [{userdata,[{""}]}];
 sub_m14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m25_test(doc) -> [{userdata,[{""}]}];
 sub_m25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m25"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m36_test(doc) -> [{userdata,[{""}]}];
 sub_m36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m47_test(doc) -> [{userdata,[{""}]}];
 sub_m47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m58_test(doc) -> [{userdata,[{""}]}];
 sub_m58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m9_test(doc) -> [{userdata,[{""}]}];
 sub_m9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m20_test(doc) -> [{userdata,[{""}]}];
 sub_m20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m20"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m31_test(doc) -> [{userdata,[{""}]}];
 sub_m31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m42_test(doc) -> [{userdata,[{""}]}];
 sub_m42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m53_test(doc) -> [{userdata,[{""}]}];
 sub_m53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m64_test(doc) -> [{userdata,[{""}]}];
 sub_m64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m4_test(doc) -> [{userdata,[{""}]}];
 sub_m4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m4"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m15_test(doc) -> [{userdata,[{""}]}];
 sub_m15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m26_test(doc) -> [{userdata,[{""}]}];
 sub_m26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m26"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m37_test(doc) -> [{userdata,[{""}]}];
 sub_m37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m48_test(doc) -> [{userdata,[{""}]}];
 sub_m48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m59_test(doc) -> [{userdata,[{""}]}];
 sub_m59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m10_test(doc) -> [{userdata,[{""}]}];
 sub_m10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m21_test(doc) -> [{userdata,[{""}]}];
 sub_m21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m21"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m32_test(doc) -> [{userdata,[{""}]}];
 sub_m32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m43_test(doc) -> [{userdata,[{""}]}];
 sub_m43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m54_test(doc) -> [{userdata,[{""}]}];
 sub_m54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_m65_test(doc) -> [{userdata,[{""}]}];
 sub_m65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","m65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c5_test(doc) -> [{userdata,[{""}]}];
 sub_c5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c5"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c16_test(doc) -> [{userdata,[{""}]}];
 sub_c16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c16"),
   Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c27_test(doc) -> [{userdata,[{""}]}];
 sub_c27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c27"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c38_test(doc) -> [{userdata,[{""}]}];
 sub_c38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c38"),
   Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c49_test(doc) -> [{userdata,[{""}]}];
 sub_c49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c60_test(doc) -> [{userdata,[{""}]}];
 sub_c60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c11_test(doc) -> [{userdata,[{""}]}];
 sub_c11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c22_test(doc) -> [{userdata,[{""}]}];
 sub_c22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c22"),
   Expected="36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c33_test(doc) -> [{userdata,[{""}]}];
 sub_c33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c44_test(doc) -> [{userdata,[{""}]}];
 sub_c44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c44"),
   Expected="36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c55_test(doc) -> [{userdata,[{""}]}];
 sub_c55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c66_test(doc) -> [{userdata,[{""}]}];
 sub_c66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c6_test(doc) -> [{userdata,[{""}]}];
 sub_c6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c17_test(doc) -> [{userdata,[{""}]}];
 sub_c17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c17"),
   Expected="3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c28_test(doc) -> [{userdata,[{""}]}];
 sub_c28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c39_test(doc) -> [{userdata,[{""}]}];
 sub_c39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c39"),
   Expected="3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c50_test(doc) -> [{userdata,[{""}]}];
 sub_c50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c61_test(doc) -> [{userdata,[{""}]}];
 sub_c61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c1_test(doc) -> [{userdata,[{""}]}];
 sub_c1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c1"),
   Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c12_test(doc) -> [{userdata,[{""}]}];
 sub_c12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c34_test(doc) -> [{userdata,[{""}]}];
 sub_c34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c56_test(doc) -> [{userdata,[{""}]}];
 sub_c56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c7_test(doc) -> [{userdata,[{""}]}];
 sub_c7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c18_test(doc) -> [{userdata,[{""}]}];
 sub_c18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c18"),
   Expected="36192.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c29_test(doc) -> [{userdata,[{""}]}];
 sub_c29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c40_test(doc) -> [{userdata,[{""}]}];
 sub_c40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c40"),
   Expected="36192.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c51_test(doc) -> [{userdata,[{""}]}];
 sub_c51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c62_test(doc) -> [{userdata,[{""}]}];
 sub_c62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c13_test(doc) -> [{userdata,[{""}]}];
 sub_c13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c35_test(doc) -> [{userdata,[{""}]}];
 sub_c35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c57_test(doc) -> [{userdata,[{""}]}];
 sub_c57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c8_test(doc) -> [{userdata,[{""}]}];
 sub_c8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c19_test(doc) -> [{userdata,[{""}]}];
 sub_c19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c19"),
   Expected="36193.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c30_test(doc) -> [{userdata,[{""}]}];
 sub_c30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c41_test(doc) -> [{userdata,[{""}]}];
 sub_c41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c41"),
   Expected="36193.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c52_test(doc) -> [{userdata,[{""}]}];
 sub_c52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c63_test(doc) -> [{userdata,[{""}]}];
 sub_c63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c3_test(doc) -> [{userdata,[{""}]}];
 sub_c3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c3"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c14_test(doc) -> [{userdata,[{""}]}];
 sub_c14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c25_test(doc) -> [{userdata,[{""}]}];
 sub_c25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c25"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c36_test(doc) -> [{userdata,[{""}]}];
 sub_c36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c47_test(doc) -> [{userdata,[{""}]}];
 sub_c47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c58_test(doc) -> [{userdata,[{""}]}];
 sub_c58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c9_test(doc) -> [{userdata,[{""}]}];
 sub_c9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c20_test(doc) -> [{userdata,[{""}]}];
 sub_c20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c20"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c31_test(doc) -> [{userdata,[{""}]}];
 sub_c31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c42_test(doc) -> [{userdata,[{""}]}];
 sub_c42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c42"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c53_test(doc) -> [{userdata,[{""}]}];
 sub_c53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c64_test(doc) -> [{userdata,[{""}]}];
 sub_c64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c4_test(doc) -> [{userdata,[{""}]}];
 sub_c4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c4"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c15_test(doc) -> [{userdata,[{""}]}];
 sub_c15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c26_test(doc) -> [{userdata,[{""}]}];
 sub_c26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c26"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c37_test(doc) -> [{userdata,[{""}]}];
 sub_c37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c48_test(doc) -> [{userdata,[{""}]}];
 sub_c48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c59_test(doc) -> [{userdata,[{""}]}];
 sub_c59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c10_test(doc) -> [{userdata,[{""}]}];
 sub_c10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c21_test(doc) -> [{userdata,[{""}]}];
 sub_c21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c21"),
   Expected="3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c32_test(doc) -> [{userdata,[{""}]}];
 sub_c32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c43_test(doc) -> [{userdata,[{""}]}];
 sub_c43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c43"),
   Expected="3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c54_test(doc) -> [{userdata,[{""}]}];
 sub_c54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_c65_test(doc) -> [{userdata,[{""}]}];
 sub_c65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","c65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n5_test(doc) -> [{userdata,[{""}]}];
 sub_n5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n5"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n16_test(doc) -> [{userdata,[{""}]}];
 sub_n16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n16"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n27_test(doc) -> [{userdata,[{""}]}];
 sub_n27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n27"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n38_test(doc) -> [{userdata,[{""}]}];
 sub_n38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n49_test(doc) -> [{userdata,[{""}]}];
 sub_n49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n60_test(doc) -> [{userdata,[{""}]}];
 sub_n60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n11_test(doc) -> [{userdata,[{""}]}];
 sub_n11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n22_test(doc) -> [{userdata,[{""}]}];
 sub_n22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n22"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n33_test(doc) -> [{userdata,[{""}]}];
 sub_n33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n44_test(doc) -> [{userdata,[{""}]}];
 sub_n44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n55_test(doc) -> [{userdata,[{""}]}];
 sub_n55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n66_test(doc) -> [{userdata,[{""}]}];
 sub_n66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n6_test(doc) -> [{userdata,[{""}]}];
 sub_n6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n17_test(doc) -> [{userdata,[{""}]}];
 sub_n17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n17"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n28_test(doc) -> [{userdata,[{""}]}];
 sub_n28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n39_test(doc) -> [{userdata,[{""}]}];
 sub_n39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n50_test(doc) -> [{userdata,[{""}]}];
 sub_n50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n61_test(doc) -> [{userdata,[{""}]}];
 sub_n61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n1_test(doc) -> [{userdata,[{""}]}];
 sub_n1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n1"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n12_test(doc) -> [{userdata,[{""}]}];
 sub_n12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n34_test(doc) -> [{userdata,[{""}]}];
 sub_n34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n56_test(doc) -> [{userdata,[{""}]}];
 sub_n56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n7_test(doc) -> [{userdata,[{""}]}];
 sub_n7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n18_test(doc) -> [{userdata,[{""}]}];
 sub_n18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n18"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n29_test(doc) -> [{userdata,[{""}]}];
 sub_n29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n40_test(doc) -> [{userdata,[{""}]}];
 sub_n40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n40"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n51_test(doc) -> [{userdata,[{""}]}];
 sub_n51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n62_test(doc) -> [{userdata,[{""}]}];
 sub_n62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n2_test(doc) -> [{userdata,[{""}]}];
 sub_n2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n2"),
   Expected="Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n13_test(doc) -> [{userdata,[{""}]}];
 sub_n13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n35_test(doc) -> [{userdata,[{""}]}];
 sub_n35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n57_test(doc) -> [{userdata,[{""}]}];
 sub_n57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n8_test(doc) -> [{userdata,[{""}]}];
 sub_n8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n19_test(doc) -> [{userdata,[{""}]}];
 sub_n19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n19"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n30_test(doc) -> [{userdata,[{""}]}];
 sub_n30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n41_test(doc) -> [{userdata,[{""}]}];
 sub_n41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n52_test(doc) -> [{userdata,[{""}]}];
 sub_n52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n63_test(doc) -> [{userdata,[{""}]}];
 sub_n63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n3_test(doc) -> [{userdata,[{""}]}];
 sub_n3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n3"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n14_test(doc) -> [{userdata,[{""}]}];
 sub_n14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n25_test(doc) -> [{userdata,[{""}]}];
 sub_n25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n25"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n36_test(doc) -> [{userdata,[{""}]}];
 sub_n36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n47_test(doc) -> [{userdata,[{""}]}];
 sub_n47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n58_test(doc) -> [{userdata,[{""}]}];
 sub_n58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n9_test(doc) -> [{userdata,[{""}]}];
 sub_n9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n20_test(doc) -> [{userdata,[{""}]}];
 sub_n20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n20"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n31_test(doc) -> [{userdata,[{""}]}];
 sub_n31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n42_test(doc) -> [{userdata,[{""}]}];
 sub_n42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n53_test(doc) -> [{userdata,[{""}]}];
 sub_n53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n64_test(doc) -> [{userdata,[{""}]}];
 sub_n64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n4_test(doc) -> [{userdata,[{""}]}];
 sub_n4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n4"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n15_test(doc) -> [{userdata,[{""}]}];
 sub_n15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n26_test(doc) -> [{userdata,[{""}]}];
 sub_n26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n26"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n37_test(doc) -> [{userdata,[{""}]}];
 sub_n37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n48_test(doc) -> [{userdata,[{""}]}];
 sub_n48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n59_test(doc) -> [{userdata,[{""}]}];
 sub_n59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n10_test(doc) -> [{userdata,[{""}]}];
 sub_n10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n21_test(doc) -> [{userdata,[{""}]}];
 sub_n21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n21"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n32_test(doc) -> [{userdata,[{""}]}];
 sub_n32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n43_test(doc) -> [{userdata,[{""}]}];
 sub_n43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n54_test(doc) -> [{userdata,[{""}]}];
 sub_n54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_n65_test(doc) -> [{userdata,[{""}]}];
 sub_n65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","n65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d5_test(doc) -> [{userdata,[{""}]}];
 sub_d5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d5"),
   Expected="-1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d16_test(doc) -> [{userdata,[{""}]}];
 sub_d16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d16"),
   Expected="1.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d27_test(doc) -> [{userdata,[{""}]}];
 sub_d27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d27"),
   Expected="-1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d38_test(doc) -> [{userdata,[{""}]}];
 sub_d38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d38"),
   Expected="1.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d49_test(doc) -> [{userdata,[{""}]}];
 sub_d49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d60_test(doc) -> [{userdata,[{""}]}];
 sub_d60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d11_test(doc) -> [{userdata,[{""}]}];
 sub_d11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d22_test(doc) -> [{userdata,[{""}]}];
 sub_d22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d22"),
   Expected="36192.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d33_test(doc) -> [{userdata,[{""}]}];
 sub_d33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d44_test(doc) -> [{userdata,[{""}]}];
 sub_d44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d44"),
   Expected="36192.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d55_test(doc) -> [{userdata,[{""}]}];
 sub_d55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d66_test(doc) -> [{userdata,[{""}]}];
 sub_d66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d6_test(doc) -> [{userdata,[{""}]}];
 sub_d6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d17_test(doc) -> [{userdata,[{""}]}];
 sub_d17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d17"),
   Expected="2.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d28_test(doc) -> [{userdata,[{""}]}];
 sub_d28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d39_test(doc) -> [{userdata,[{""}]}];
 sub_d39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d39"),
   Expected="2.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d50_test(doc) -> [{userdata,[{""}]}];
 sub_d50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d61_test(doc) -> [{userdata,[{""}]}];
 sub_d61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d1_test(doc) -> [{userdata,[{""}]}];
 sub_d1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d1"),
   Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d12_test(doc) -> [{userdata,[{""}]}];
 sub_d12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d34_test(doc) -> [{userdata,[{""}]}];
 sub_d34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d56_test(doc) -> [{userdata,[{""}]}];
 sub_d56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d7_test(doc) -> [{userdata,[{""}]}];
 sub_d7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d18_test(doc) -> [{userdata,[{""}]}];
 sub_d18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d18"),
   Expected="36191.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d29_test(doc) -> [{userdata,[{""}]}];
 sub_d29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d40_test(doc) -> [{userdata,[{""}]}];
 sub_d40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d40"),
   Expected="36191.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d51_test(doc) -> [{userdata,[{""}]}];
 sub_d51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d62_test(doc) -> [{userdata,[{""}]}];
 sub_d62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d2_test(doc) -> [{userdata,[{""}]}];
 sub_d2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d2"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d13_test(doc) -> [{userdata,[{""}]}];
 sub_d13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d35_test(doc) -> [{userdata,[{""}]}];
 sub_d35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d57_test(doc) -> [{userdata,[{""}]}];
 sub_d57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d8_test(doc) -> [{userdata,[{""}]}];
 sub_d8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d19_test(doc) -> [{userdata,[{""}]}];
 sub_d19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d19"),
   Expected="36192.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d30_test(doc) -> [{userdata,[{""}]}];
 sub_d30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d41_test(doc) -> [{userdata,[{""}]}];
 sub_d41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d41"),
   Expected="36192.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d52_test(doc) -> [{userdata,[{""}]}];
 sub_d52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d63_test(doc) -> [{userdata,[{""}]}];
 sub_d63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d3_test(doc) -> [{userdata,[{""}]}];
 sub_d3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d3"),
   Expected="-1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d14_test(doc) -> [{userdata,[{""}]}];
 sub_d14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d25_test(doc) -> [{userdata,[{""}]}];
 sub_d25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d25"),
   Expected="-1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d36_test(doc) -> [{userdata,[{""}]}];
 sub_d36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d47_test(doc) -> [{userdata,[{""}]}];
 sub_d47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d58_test(doc) -> [{userdata,[{""}]}];
 sub_d58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d9_test(doc) -> [{userdata,[{""}]}];
 sub_d9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d20_test(doc) -> [{userdata,[{""}]}];
 sub_d20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d20"),
   Expected="-1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d31_test(doc) -> [{userdata,[{""}]}];
 sub_d31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d42_test(doc) -> [{userdata,[{""}]}];
 sub_d42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d42"),
   Expected="-1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d53_test(doc) -> [{userdata,[{""}]}];
 sub_d53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d64_test(doc) -> [{userdata,[{""}]}];
 sub_d64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d4_test(doc) -> [{userdata,[{""}]}];
 sub_d4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d4"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d15_test(doc) -> [{userdata,[{""}]}];
 sub_d15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d26_test(doc) -> [{userdata,[{""}]}];
 sub_d26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d26"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d37_test(doc) -> [{userdata,[{""}]}];
 sub_d37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d48_test(doc) -> [{userdata,[{""}]}];
 sub_d48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d59_test(doc) -> [{userdata,[{""}]}];
 sub_d59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d10_test(doc) -> [{userdata,[{""}]}];
 sub_d10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d21_test(doc) -> [{userdata,[{""}]}];
 sub_d21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d21"),
   Expected="2.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d32_test(doc) -> [{userdata,[{""}]}];
 sub_d32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d43_test(doc) -> [{userdata,[{""}]}];
 sub_d43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d43"),
   Expected="2.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d54_test(doc) -> [{userdata,[{""}]}];
 sub_d54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_d65_test(doc) -> [{userdata,[{""}]}];
 sub_d65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","d65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o5_test(doc) -> [{userdata,[{""}]}];
 sub_o5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o5"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o16_test(doc) -> [{userdata,[{""}]}];
 sub_o16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o16"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o27_test(doc) -> [{userdata,[{""}]}];
 sub_o27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o27"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o38_test(doc) -> [{userdata,[{""}]}];
 sub_o38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o49_test(doc) -> [{userdata,[{""}]}];
 sub_o49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o60_test(doc) -> [{userdata,[{""}]}];
 sub_o60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o11_test(doc) -> [{userdata,[{""}]}];
 sub_o11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o22_test(doc) -> [{userdata,[{""}]}];
 sub_o22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o22"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o33_test(doc) -> [{userdata,[{""}]}];
 sub_o33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o44_test(doc) -> [{userdata,[{""}]}];
 sub_o44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o55_test(doc) -> [{userdata,[{""}]}];
 sub_o55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o66_test(doc) -> [{userdata,[{""}]}];
 sub_o66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o6_test(doc) -> [{userdata,[{""}]}];
 sub_o6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o17_test(doc) -> [{userdata,[{""}]}];
 sub_o17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o17"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o28_test(doc) -> [{userdata,[{""}]}];
 sub_o28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o39_test(doc) -> [{userdata,[{""}]}];
 sub_o39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o50_test(doc) -> [{userdata,[{""}]}];
 sub_o50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o61_test(doc) -> [{userdata,[{""}]}];
 sub_o61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o1_test(doc) -> [{userdata,[{""}]}];
 sub_o1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o1"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o12_test(doc) -> [{userdata,[{""}]}];
 sub_o12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o34_test(doc) -> [{userdata,[{""}]}];
 sub_o34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o56_test(doc) -> [{userdata,[{""}]}];
 sub_o56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o7_test(doc) -> [{userdata,[{""}]}];
 sub_o7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o18_test(doc) -> [{userdata,[{""}]}];
 sub_o18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o18"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o29_test(doc) -> [{userdata,[{""}]}];
 sub_o29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o40_test(doc) -> [{userdata,[{""}]}];
 sub_o40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o40"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o51_test(doc) -> [{userdata,[{""}]}];
 sub_o51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o62_test(doc) -> [{userdata,[{""}]}];
 sub_o62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o2_test(doc) -> [{userdata,[{""}]}];
 sub_o2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o2"),
   Expected="Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o13_test(doc) -> [{userdata,[{""}]}];
 sub_o13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o35_test(doc) -> [{userdata,[{""}]}];
 sub_o35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o57_test(doc) -> [{userdata,[{""}]}];
 sub_o57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o8_test(doc) -> [{userdata,[{""}]}];
 sub_o8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o19_test(doc) -> [{userdata,[{""}]}];
 sub_o19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o19"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o30_test(doc) -> [{userdata,[{""}]}];
 sub_o30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o41_test(doc) -> [{userdata,[{""}]}];
 sub_o41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o52_test(doc) -> [{userdata,[{""}]}];
 sub_o52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o63_test(doc) -> [{userdata,[{""}]}];
 sub_o63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o3_test(doc) -> [{userdata,[{""}]}];
 sub_o3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o3"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o14_test(doc) -> [{userdata,[{""}]}];
 sub_o14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o25_test(doc) -> [{userdata,[{""}]}];
 sub_o25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o25"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o36_test(doc) -> [{userdata,[{""}]}];
 sub_o36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o47_test(doc) -> [{userdata,[{""}]}];
 sub_o47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o58_test(doc) -> [{userdata,[{""}]}];
 sub_o58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o9_test(doc) -> [{userdata,[{""}]}];
 sub_o9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o20_test(doc) -> [{userdata,[{""}]}];
 sub_o20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o20"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o31_test(doc) -> [{userdata,[{""}]}];
 sub_o31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o42_test(doc) -> [{userdata,[{""}]}];
 sub_o42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o53_test(doc) -> [{userdata,[{""}]}];
 sub_o53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o64_test(doc) -> [{userdata,[{""}]}];
 sub_o64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o4_test(doc) -> [{userdata,[{""}]}];
 sub_o4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o4"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o15_test(doc) -> [{userdata,[{""}]}];
 sub_o15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o26_test(doc) -> [{userdata,[{""}]}];
 sub_o26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o26"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o37_test(doc) -> [{userdata,[{""}]}];
 sub_o37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o48_test(doc) -> [{userdata,[{""}]}];
 sub_o48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o59_test(doc) -> [{userdata,[{""}]}];
 sub_o59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o10_test(doc) -> [{userdata,[{""}]}];
 sub_o10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o21_test(doc) -> [{userdata,[{""}]}];
 sub_o21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o21"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o32_test(doc) -> [{userdata,[{""}]}];
 sub_o32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o43_test(doc) -> [{userdata,[{""}]}];
 sub_o43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o54_test(doc) -> [{userdata,[{""}]}];
 sub_o54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_o65_test(doc) -> [{userdata,[{""}]}];
 sub_o65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","o65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e5_test(doc) -> [{userdata,[{""}]}];
 sub_e5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e5"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e16_test(doc) -> [{userdata,[{""}]}];
 sub_e16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e16"),
   Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e27_test(doc) -> [{userdata,[{""}]}];
 sub_e27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e27"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e38_test(doc) -> [{userdata,[{""}]}];
 sub_e38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e38"),
   Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e49_test(doc) -> [{userdata,[{""}]}];
 sub_e49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e60_test(doc) -> [{userdata,[{""}]}];
 sub_e60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e11_test(doc) -> [{userdata,[{""}]}];
 sub_e11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e22_test(doc) -> [{userdata,[{""}]}];
 sub_e22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e22"),
   Expected="36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e33_test(doc) -> [{userdata,[{""}]}];
 sub_e33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e44_test(doc) -> [{userdata,[{""}]}];
 sub_e44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e44"),
   Expected="36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e55_test(doc) -> [{userdata,[{""}]}];
 sub_e55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e66_test(doc) -> [{userdata,[{""}]}];
 sub_e66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e6_test(doc) -> [{userdata,[{""}]}];
 sub_e6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e17_test(doc) -> [{userdata,[{""}]}];
 sub_e17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e17"),
   Expected="3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e28_test(doc) -> [{userdata,[{""}]}];
 sub_e28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e39_test(doc) -> [{userdata,[{""}]}];
 sub_e39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e39"),
   Expected="3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e50_test(doc) -> [{userdata,[{""}]}];
 sub_e50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e61_test(doc) -> [{userdata,[{""}]}];
 sub_e61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e1_test(doc) -> [{userdata,[{""}]}];
 sub_e1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e1"),
   Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e12_test(doc) -> [{userdata,[{""}]}];
 sub_e12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e34_test(doc) -> [{userdata,[{""}]}];
 sub_e34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e56_test(doc) -> [{userdata,[{""}]}];
 sub_e56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e7_test(doc) -> [{userdata,[{""}]}];
 sub_e7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e18_test(doc) -> [{userdata,[{""}]}];
 sub_e18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e18"),
   Expected="36192.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e29_test(doc) -> [{userdata,[{""}]}];
 sub_e29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e40_test(doc) -> [{userdata,[{""}]}];
 sub_e40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e40"),
   Expected="36192.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e51_test(doc) -> [{userdata,[{""}]}];
 sub_e51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e62_test(doc) -> [{userdata,[{""}]}];
 sub_e62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e2_test(doc) -> [{userdata,[{""}]}];
 sub_e2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e2"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e13_test(doc) -> [{userdata,[{""}]}];
 sub_e13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e35_test(doc) -> [{userdata,[{""}]}];
 sub_e35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e57_test(doc) -> [{userdata,[{""}]}];
 sub_e57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e8_test(doc) -> [{userdata,[{""}]}];
 sub_e8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e19_test(doc) -> [{userdata,[{""}]}];
 sub_e19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e19"),
   Expected="36193.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e30_test(doc) -> [{userdata,[{""}]}];
 sub_e30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e41_test(doc) -> [{userdata,[{""}]}];
 sub_e41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e41"),
   Expected="36193.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e52_test(doc) -> [{userdata,[{""}]}];
 sub_e52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e63_test(doc) -> [{userdata,[{""}]}];
 sub_e63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e3_test(doc) -> [{userdata,[{""}]}];
 sub_e3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e3"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e14_test(doc) -> [{userdata,[{""}]}];
 sub_e14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e25_test(doc) -> [{userdata,[{""}]}];
 sub_e25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e25"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e36_test(doc) -> [{userdata,[{""}]}];
 sub_e36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e47_test(doc) -> [{userdata,[{""}]}];
 sub_e47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e58_test(doc) -> [{userdata,[{""}]}];
 sub_e58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e9_test(doc) -> [{userdata,[{""}]}];
 sub_e9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e20_test(doc) -> [{userdata,[{""}]}];
 sub_e20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e20"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e31_test(doc) -> [{userdata,[{""}]}];
 sub_e31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e42_test(doc) -> [{userdata,[{""}]}];
 sub_e42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e42"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e53_test(doc) -> [{userdata,[{""}]}];
 sub_e53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e64_test(doc) -> [{userdata,[{""}]}];
 sub_e64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e4_test(doc) -> [{userdata,[{""}]}];
 sub_e4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e4"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e15_test(doc) -> [{userdata,[{""}]}];
 sub_e15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e26_test(doc) -> [{userdata,[{""}]}];
 sub_e26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e26"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e37_test(doc) -> [{userdata,[{""}]}];
 sub_e37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e48_test(doc) -> [{userdata,[{""}]}];
 sub_e48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e59_test(doc) -> [{userdata,[{""}]}];
 sub_e59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e10_test(doc) -> [{userdata,[{""}]}];
 sub_e10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e21_test(doc) -> [{userdata,[{""}]}];
 sub_e21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e21"),
   Expected="3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e32_test(doc) -> [{userdata,[{""}]}];
 sub_e32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e43_test(doc) -> [{userdata,[{""}]}];
 sub_e43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e43"),
   Expected="3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e54_test(doc) -> [{userdata,[{""}]}];
 sub_e54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_e65_test(doc) -> [{userdata,[{""}]}];
 sub_e65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","e65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p5_test(doc) -> [{userdata,[{""}]}];
 sub_p5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p5"),
   Expected="-2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p16_test(doc) -> [{userdata,[{""}]}];
 sub_p16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p16"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p27_test(doc) -> [{userdata,[{""}]}];
 sub_p27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p27"),
   Expected="-2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p38_test(doc) -> [{userdata,[{""}]}];
 sub_p38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p38"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p49_test(doc) -> [{userdata,[{""}]}];
 sub_p49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p60_test(doc) -> [{userdata,[{""}]}];
 sub_p60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p11_test(doc) -> [{userdata,[{""}]}];
 sub_p11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p22_test(doc) -> [{userdata,[{""}]}];
 sub_p22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p22"),
   Expected="36190.5",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p33_test(doc) -> [{userdata,[{""}]}];
 sub_p33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p44_test(doc) -> [{userdata,[{""}]}];
 sub_p44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p44"),
   Expected="36190.5",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p55_test(doc) -> [{userdata,[{""}]}];
 sub_p55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p66_test(doc) -> [{userdata,[{""}]}];
 sub_p66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p6_test(doc) -> [{userdata,[{""}]}];
 sub_p6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p17_test(doc) -> [{userdata,[{""}]}];
 sub_p17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p17"),
   Expected="0.84",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p28_test(doc) -> [{userdata,[{""}]}];
 sub_p28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p39_test(doc) -> [{userdata,[{""}]}];
 sub_p39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p39"),
   Expected="0.84",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p50_test(doc) -> [{userdata,[{""}]}];
 sub_p50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p61_test(doc) -> [{userdata,[{""}]}];
 sub_p61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p1_test(doc) -> [{userdata,[{""}]}];
 sub_p1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p1"),
   Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p12_test(doc) -> [{userdata,[{""}]}];
 sub_p12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p34_test(doc) -> [{userdata,[{""}]}];
 sub_p34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p56_test(doc) -> [{userdata,[{""}]}];
 sub_p56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p7_test(doc) -> [{userdata,[{""}]}];
 sub_p7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p18_test(doc) -> [{userdata,[{""}]}];
 sub_p18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p18"),
   Expected="36189.3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p29_test(doc) -> [{userdata,[{""}]}];
 sub_p29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p40_test(doc) -> [{userdata,[{""}]}];
 sub_p40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p40"),
   Expected="36189.3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p51_test(doc) -> [{userdata,[{""}]}];
 sub_p51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p62_test(doc) -> [{userdata,[{""}]}];
 sub_p62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p2_test(doc) -> [{userdata,[{""}]}];
 sub_p2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p2"),
   Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p13_test(doc) -> [{userdata,[{""}]}];
 sub_p13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p35_test(doc) -> [{userdata,[{""}]}];
 sub_p35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p57_test(doc) -> [{userdata,[{""}]}];
 sub_p57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p8_test(doc) -> [{userdata,[{""}]}];
 sub_p8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p19_test(doc) -> [{userdata,[{""}]}];
 sub_p19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p19"),
   Expected="36190.3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p30_test(doc) -> [{userdata,[{""}]}];
 sub_p30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p41_test(doc) -> [{userdata,[{""}]}];
 sub_p41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p41"),
   Expected="36190.3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p52_test(doc) -> [{userdata,[{""}]}];
 sub_p52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p63_test(doc) -> [{userdata,[{""}]}];
 sub_p63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p3_test(doc) -> [{userdata,[{""}]}];
 sub_p3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p3"),
   Expected="-2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p14_test(doc) -> [{userdata,[{""}]}];
 sub_p14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p25_test(doc) -> [{userdata,[{""}]}];
 sub_p25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p25"),
   Expected="-2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p36_test(doc) -> [{userdata,[{""}]}];
 sub_p36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p47_test(doc) -> [{userdata,[{""}]}];
 sub_p47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p58_test(doc) -> [{userdata,[{""}]}];
 sub_p58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p9_test(doc) -> [{userdata,[{""}]}];
 sub_p9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p20_test(doc) -> [{userdata,[{""}]}];
 sub_p20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p20"),
   Expected="-2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p31_test(doc) -> [{userdata,[{""}]}];
 sub_p31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p42_test(doc) -> [{userdata,[{""}]}];
 sub_p42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p42"),
   Expected="-2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p53_test(doc) -> [{userdata,[{""}]}];
 sub_p53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p64_test(doc) -> [{userdata,[{""}]}];
 sub_p64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p4_test(doc) -> [{userdata,[{""}]}];
 sub_p4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p4"),
   Expected="-1.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p15_test(doc) -> [{userdata,[{""}]}];
 sub_p15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p26_test(doc) -> [{userdata,[{""}]}];
 sub_p26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p26"),
   Expected="-1.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p37_test(doc) -> [{userdata,[{""}]}];
 sub_p37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p48_test(doc) -> [{userdata,[{""}]}];
 sub_p48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p59_test(doc) -> [{userdata,[{""}]}];
 sub_p59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p10_test(doc) -> [{userdata,[{""}]}];
 sub_p10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p21_test(doc) -> [{userdata,[{""}]}];
 sub_p21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p21"),
   Expected="0.4415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p32_test(doc) -> [{userdata,[{""}]}];
 sub_p32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p43_test(doc) -> [{userdata,[{""}]}];
 sub_p43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p43"),
   Expected="0.4415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p54_test(doc) -> [{userdata,[{""}]}];
 sub_p54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_p65_test(doc) -> [{userdata,[{""}]}];
 sub_p65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","p65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f5_test(doc) -> [{userdata,[{""}]}];
 sub_f5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f5"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f16_test(doc) -> [{userdata,[{""}]}];
 sub_f16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f16"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f27_test(doc) -> [{userdata,[{""}]}];
 sub_f27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f27"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f38_test(doc) -> [{userdata,[{""}]}];
 sub_f38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f38"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f49_test(doc) -> [{userdata,[{""}]}];
 sub_f49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f60_test(doc) -> [{userdata,[{""}]}];
 sub_f60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f11_test(doc) -> [{userdata,[{""}]}];
 sub_f11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f22_test(doc) -> [{userdata,[{""}]}];
 sub_f22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f22"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f33_test(doc) -> [{userdata,[{""}]}];
 sub_f33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f44_test(doc) -> [{userdata,[{""}]}];
 sub_f44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f44"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f55_test(doc) -> [{userdata,[{""}]}];
 sub_f55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f66_test(doc) -> [{userdata,[{""}]}];
 sub_f66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f6_test(doc) -> [{userdata,[{""}]}];
 sub_f6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f17_test(doc) -> [{userdata,[{""}]}];
 sub_f17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f17"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f28_test(doc) -> [{userdata,[{""}]}];
 sub_f28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f39_test(doc) -> [{userdata,[{""}]}];
 sub_f39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f39"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f50_test(doc) -> [{userdata,[{""}]}];
 sub_f50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f61_test(doc) -> [{userdata,[{""}]}];
 sub_f61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f1_test(doc) -> [{userdata,[{""}]}];
 sub_f1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f12_test(doc) -> [{userdata,[{""}]}];
 sub_f12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f34_test(doc) -> [{userdata,[{""}]}];
 sub_f34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f56_test(doc) -> [{userdata,[{""}]}];
 sub_f56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f7_test(doc) -> [{userdata,[{""}]}];
 sub_f7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f18_test(doc) -> [{userdata,[{""}]}];
 sub_f18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f18"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f29_test(doc) -> [{userdata,[{""}]}];
 sub_f29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f40_test(doc) -> [{userdata,[{""}]}];
 sub_f40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f40"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f51_test(doc) -> [{userdata,[{""}]}];
 sub_f51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f62_test(doc) -> [{userdata,[{""}]}];
 sub_f62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f2_test(doc) -> [{userdata,[{""}]}];
 sub_f2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f2"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f13_test(doc) -> [{userdata,[{""}]}];
 sub_f13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f35_test(doc) -> [{userdata,[{""}]}];
 sub_f35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f57_test(doc) -> [{userdata,[{""}]}];
 sub_f57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f8_test(doc) -> [{userdata,[{""}]}];
 sub_f8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f19_test(doc) -> [{userdata,[{""}]}];
 sub_f19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f19"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f30_test(doc) -> [{userdata,[{""}]}];
 sub_f30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f41_test(doc) -> [{userdata,[{""}]}];
 sub_f41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f41"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f52_test(doc) -> [{userdata,[{""}]}];
 sub_f52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f63_test(doc) -> [{userdata,[{""}]}];
 sub_f63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f3_test(doc) -> [{userdata,[{""}]}];
 sub_f3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f3"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f14_test(doc) -> [{userdata,[{""}]}];
 sub_f14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f25_test(doc) -> [{userdata,[{""}]}];
 sub_f25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f25"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f36_test(doc) -> [{userdata,[{""}]}];
 sub_f36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f47_test(doc) -> [{userdata,[{""}]}];
 sub_f47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f58_test(doc) -> [{userdata,[{""}]}];
 sub_f58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f9_test(doc) -> [{userdata,[{""}]}];
 sub_f9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f20_test(doc) -> [{userdata,[{""}]}];
 sub_f20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f20"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f31_test(doc) -> [{userdata,[{""}]}];
 sub_f31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f42_test(doc) -> [{userdata,[{""}]}];
 sub_f42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f42"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f53_test(doc) -> [{userdata,[{""}]}];
 sub_f53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f64_test(doc) -> [{userdata,[{""}]}];
 sub_f64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f4_test(doc) -> [{userdata,[{""}]}];
 sub_f4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f4"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f15_test(doc) -> [{userdata,[{""}]}];
 sub_f15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f26_test(doc) -> [{userdata,[{""}]}];
 sub_f26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f26"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f37_test(doc) -> [{userdata,[{""}]}];
 sub_f37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f48_test(doc) -> [{userdata,[{""}]}];
 sub_f48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f59_test(doc) -> [{userdata,[{""}]}];
 sub_f59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f10_test(doc) -> [{userdata,[{""}]}];
 sub_f10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f21_test(doc) -> [{userdata,[{""}]}];
 sub_f21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f21"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f32_test(doc) -> [{userdata,[{""}]}];
 sub_f32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f43_test(doc) -> [{userdata,[{""}]}];
 sub_f43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f43"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f54_test(doc) -> [{userdata,[{""}]}];
 sub_f54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_f65_test(doc) -> [{userdata,[{""}]}];
 sub_f65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","f65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q5_test(doc) -> [{userdata,[{""}]}];
 sub_q5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q5"),
   Expected="-3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q16_test(doc) -> [{userdata,[{""}]}];
 sub_q16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q16"),
   Expected="-0.84",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q27_test(doc) -> [{userdata,[{""}]}];
 sub_q27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q27"),
   Expected="-3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q38_test(doc) -> [{userdata,[{""}]}];
 sub_q38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q38"),
   Expected="-0.84",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q49_test(doc) -> [{userdata,[{""}]}];
 sub_q49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q60_test(doc) -> [{userdata,[{""}]}];
 sub_q60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q11_test(doc) -> [{userdata,[{""}]}];
 sub_q11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q22_test(doc) -> [{userdata,[{""}]}];
 sub_q22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q22"),
   Expected="36189.66",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q33_test(doc) -> [{userdata,[{""}]}];
 sub_q33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q44_test(doc) -> [{userdata,[{""}]}];
 sub_q44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q44"),
   Expected="36189.66",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q55_test(doc) -> [{userdata,[{""}]}];
 sub_q55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q66_test(doc) -> [{userdata,[{""}]}];
 sub_q66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q6_test(doc) -> [{userdata,[{""}]}];
 sub_q6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q17_test(doc) -> [{userdata,[{""}]}];
 sub_q17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q17"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q28_test(doc) -> [{userdata,[{""}]}];
 sub_q28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q39_test(doc) -> [{userdata,[{""}]}];
 sub_q39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q39"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q50_test(doc) -> [{userdata,[{""}]}];
 sub_q50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q61_test(doc) -> [{userdata,[{""}]}];
 sub_q61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q1_test(doc) -> [{userdata,[{""}]}];
 sub_q1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q1"),
   Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q12_test(doc) -> [{userdata,[{""}]}];
 sub_q12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q34_test(doc) -> [{userdata,[{""}]}];
 sub_q34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q56_test(doc) -> [{userdata,[{""}]}];
 sub_q56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q7_test(doc) -> [{userdata,[{""}]}];
 sub_q7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q18_test(doc) -> [{userdata,[{""}]}];
 sub_q18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q18"),
   Expected="36188.46",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q29_test(doc) -> [{userdata,[{""}]}];
 sub_q29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q40_test(doc) -> [{userdata,[{""}]}];
 sub_q40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q40"),
   Expected="36188.46",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q51_test(doc) -> [{userdata,[{""}]}];
 sub_q51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q62_test(doc) -> [{userdata,[{""}]}];
 sub_q62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q2_test(doc) -> [{userdata,[{""}]}];
 sub_q2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q2"),
   Expected="3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q13_test(doc) -> [{userdata,[{""}]}];
 sub_q13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q35_test(doc) -> [{userdata,[{""}]}];
 sub_q35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q57_test(doc) -> [{userdata,[{""}]}];
 sub_q57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q8_test(doc) -> [{userdata,[{""}]}];
 sub_q8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q19_test(doc) -> [{userdata,[{""}]}];
 sub_q19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q19"),
   Expected="36189.46",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q30_test(doc) -> [{userdata,[{""}]}];
 sub_q30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q41_test(doc) -> [{userdata,[{""}]}];
 sub_q41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q41"),
   Expected="36189.46",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q52_test(doc) -> [{userdata,[{""}]}];
 sub_q52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q63_test(doc) -> [{userdata,[{""}]}];
 sub_q63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q3_test(doc) -> [{userdata,[{""}]}];
 sub_q3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q3"),
   Expected="-3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q14_test(doc) -> [{userdata,[{""}]}];
 sub_q14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q25_test(doc) -> [{userdata,[{""}]}];
 sub_q25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q25"),
   Expected="-3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q36_test(doc) -> [{userdata,[{""}]}];
 sub_q36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q47_test(doc) -> [{userdata,[{""}]}];
 sub_q47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q58_test(doc) -> [{userdata,[{""}]}];
 sub_q58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q9_test(doc) -> [{userdata,[{""}]}];
 sub_q9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q20_test(doc) -> [{userdata,[{""}]}];
 sub_q20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q20"),
   Expected="-3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q31_test(doc) -> [{userdata,[{""}]}];
 sub_q31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q42_test(doc) -> [{userdata,[{""}]}];
 sub_q42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q42"),
   Expected="-3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q53_test(doc) -> [{userdata,[{""}]}];
 sub_q53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q64_test(doc) -> [{userdata,[{""}]}];
 sub_q64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q4_test(doc) -> [{userdata,[{""}]}];
 sub_q4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q4"),
   Expected="-2.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q15_test(doc) -> [{userdata,[{""}]}];
 sub_q15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q26_test(doc) -> [{userdata,[{""}]}];
 sub_q26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q26"),
   Expected="-2.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q37_test(doc) -> [{userdata,[{""}]}];
 sub_q37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q48_test(doc) -> [{userdata,[{""}]}];
 sub_q48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q59_test(doc) -> [{userdata,[{""}]}];
 sub_q59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q10_test(doc) -> [{userdata,[{""}]}];
 sub_q10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q21_test(doc) -> [{userdata,[{""}]}];
 sub_q21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q21"),
   Expected="-0.3985",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q32_test(doc) -> [{userdata,[{""}]}];
 sub_q32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q43_test(doc) -> [{userdata,[{""}]}];
 sub_q43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q43"),
   Expected="-0.3985",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q54_test(doc) -> [{userdata,[{""}]}];
 sub_q54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_q65_test(doc) -> [{userdata,[{""}]}];
 sub_q65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","q65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g5_test(doc) -> [{userdata,[{""}]}];
 sub_g5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g5"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g16_test(doc) -> [{userdata,[{""}]}];
 sub_g16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g16"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g27_test(doc) -> [{userdata,[{""}]}];
 sub_g27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g27"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g38_test(doc) -> [{userdata,[{""}]}];
 sub_g38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g38"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g49_test(doc) -> [{userdata,[{""}]}];
 sub_g49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g60_test(doc) -> [{userdata,[{""}]}];
 sub_g60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g11_test(doc) -> [{userdata,[{""}]}];
 sub_g11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g22_test(doc) -> [{userdata,[{""}]}];
 sub_g22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g22"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g33_test(doc) -> [{userdata,[{""}]}];
 sub_g33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g44_test(doc) -> [{userdata,[{""}]}];
 sub_g44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g44"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g55_test(doc) -> [{userdata,[{""}]}];
 sub_g55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g66_test(doc) -> [{userdata,[{""}]}];
 sub_g66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g6_test(doc) -> [{userdata,[{""}]}];
 sub_g6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g17_test(doc) -> [{userdata,[{""}]}];
 sub_g17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g17"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g28_test(doc) -> [{userdata,[{""}]}];
 sub_g28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g39_test(doc) -> [{userdata,[{""}]}];
 sub_g39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g39"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g50_test(doc) -> [{userdata,[{""}]}];
 sub_g50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g61_test(doc) -> [{userdata,[{""}]}];
 sub_g61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g1_test(doc) -> [{userdata,[{""}]}];
 sub_g1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g12_test(doc) -> [{userdata,[{""}]}];
 sub_g12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g34_test(doc) -> [{userdata,[{""}]}];
 sub_g34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g56_test(doc) -> [{userdata,[{""}]}];
 sub_g56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g7_test(doc) -> [{userdata,[{""}]}];
 sub_g7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g18_test(doc) -> [{userdata,[{""}]}];
 sub_g18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g18"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g29_test(doc) -> [{userdata,[{""}]}];
 sub_g29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g40_test(doc) -> [{userdata,[{""}]}];
 sub_g40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g40"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g51_test(doc) -> [{userdata,[{""}]}];
 sub_g51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g62_test(doc) -> [{userdata,[{""}]}];
 sub_g62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g2_test(doc) -> [{userdata,[{""}]}];
 sub_g2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g2"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g13_test(doc) -> [{userdata,[{""}]}];
 sub_g13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g35_test(doc) -> [{userdata,[{""}]}];
 sub_g35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g57_test(doc) -> [{userdata,[{""}]}];
 sub_g57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g8_test(doc) -> [{userdata,[{""}]}];
 sub_g8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g19_test(doc) -> [{userdata,[{""}]}];
 sub_g19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g19"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g30_test(doc) -> [{userdata,[{""}]}];
 sub_g30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g41_test(doc) -> [{userdata,[{""}]}];
 sub_g41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g41"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g52_test(doc) -> [{userdata,[{""}]}];
 sub_g52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g63_test(doc) -> [{userdata,[{""}]}];
 sub_g63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g3_test(doc) -> [{userdata,[{""}]}];
 sub_g3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g3"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g14_test(doc) -> [{userdata,[{""}]}];
 sub_g14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g25_test(doc) -> [{userdata,[{""}]}];
 sub_g25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g25"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g36_test(doc) -> [{userdata,[{""}]}];
 sub_g36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g47_test(doc) -> [{userdata,[{""}]}];
 sub_g47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g58_test(doc) -> [{userdata,[{""}]}];
 sub_g58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g9_test(doc) -> [{userdata,[{""}]}];
 sub_g9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g20_test(doc) -> [{userdata,[{""}]}];
 sub_g20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g20"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g31_test(doc) -> [{userdata,[{""}]}];
 sub_g31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g42_test(doc) -> [{userdata,[{""}]}];
 sub_g42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g42"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g53_test(doc) -> [{userdata,[{""}]}];
 sub_g53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g64_test(doc) -> [{userdata,[{""}]}];
 sub_g64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g4_test(doc) -> [{userdata,[{""}]}];
 sub_g4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g4"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g15_test(doc) -> [{userdata,[{""}]}];
 sub_g15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g26_test(doc) -> [{userdata,[{""}]}];
 sub_g26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g26"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g37_test(doc) -> [{userdata,[{""}]}];
 sub_g37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g48_test(doc) -> [{userdata,[{""}]}];
 sub_g48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g59_test(doc) -> [{userdata,[{""}]}];
 sub_g59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g10_test(doc) -> [{userdata,[{""}]}];
 sub_g10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g21_test(doc) -> [{userdata,[{""}]}];
 sub_g21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g21"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g32_test(doc) -> [{userdata,[{""}]}];
 sub_g32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g43_test(doc) -> [{userdata,[{""}]}];
 sub_g43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g43"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g54_test(doc) -> [{userdata,[{""}]}];
 sub_g54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_g65_test(doc) -> [{userdata,[{""}]}];
 sub_g65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","g65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r5_test(doc) -> [{userdata,[{""}]}];
 sub_r5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r5"),
   Expected="-36192.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r16_test(doc) -> [{userdata,[{""}]}];
 sub_r16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r16"),
   Expected="-36189.3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r27_test(doc) -> [{userdata,[{""}]}];
 sub_r27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r27"),
   Expected="-36192.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r38_test(doc) -> [{userdata,[{""}]}];
 sub_r38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r38"),
   Expected="-36189.3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r49_test(doc) -> [{userdata,[{""}]}];
 sub_r49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r60_test(doc) -> [{userdata,[{""}]}];
 sub_r60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r11_test(doc) -> [{userdata,[{""}]}];
 sub_r11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r22_test(doc) -> [{userdata,[{""}]}];
 sub_r22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r22"),
   Expected="1.19999999999709",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r33_test(doc) -> [{userdata,[{""}]}];
 sub_r33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r44_test(doc) -> [{userdata,[{""}]}];
 sub_r44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r44"),
   Expected="1.19999999999709",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r55_test(doc) -> [{userdata,[{""}]}];
 sub_r55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r66_test(doc) -> [{userdata,[{""}]}];
 sub_r66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r6_test(doc) -> [{userdata,[{""}]}];
 sub_r6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r17_test(doc) -> [{userdata,[{""}]}];
 sub_r17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r17"),
   Expected="-36188.46",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r28_test(doc) -> [{userdata,[{""}]}];
 sub_r28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r39_test(doc) -> [{userdata,[{""}]}];
 sub_r39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r39"),
   Expected="-36188.46",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r50_test(doc) -> [{userdata,[{""}]}];
 sub_r50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r61_test(doc) -> [{userdata,[{""}]}];
 sub_r61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r1_test(doc) -> [{userdata,[{""}]}];
 sub_r1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r1"),
   Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r12_test(doc) -> [{userdata,[{""}]}];
 sub_r12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r34_test(doc) -> [{userdata,[{""}]}];
 sub_r34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r56_test(doc) -> [{userdata,[{""}]}];
 sub_r56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r7_test(doc) -> [{userdata,[{""}]}];
 sub_r7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r18_test(doc) -> [{userdata,[{""}]}];
 sub_r18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r18"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r29_test(doc) -> [{userdata,[{""}]}];
 sub_r29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r40_test(doc) -> [{userdata,[{""}]}];
 sub_r40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r40"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r51_test(doc) -> [{userdata,[{""}]}];
 sub_r51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r62_test(doc) -> [{userdata,[{""}]}];
 sub_r62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r2_test(doc) -> [{userdata,[{""}]}];
 sub_r2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r2"),
   Expected="1999/02/01 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r13_test(doc) -> [{userdata,[{""}]}];
 sub_r13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r35_test(doc) -> [{userdata,[{""}]}];
 sub_r35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r57_test(doc) -> [{userdata,[{""}]}];
 sub_r57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r8_test(doc) -> [{userdata,[{""}]}];
 sub_r8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r19_test(doc) -> [{userdata,[{""}]}];
 sub_r19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r19"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r30_test(doc) -> [{userdata,[{""}]}];
 sub_r30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r41_test(doc) -> [{userdata,[{""}]}];
 sub_r41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r41"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r52_test(doc) -> [{userdata,[{""}]}];
 sub_r52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r63_test(doc) -> [{userdata,[{""}]}];
 sub_r63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r3_test(doc) -> [{userdata,[{""}]}];
 sub_r3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r3"),
   Expected="-36192.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r14_test(doc) -> [{userdata,[{""}]}];
 sub_r14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r25_test(doc) -> [{userdata,[{""}]}];
 sub_r25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r25"),
   Expected="-36192.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r36_test(doc) -> [{userdata,[{""}]}];
 sub_r36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r47_test(doc) -> [{userdata,[{""}]}];
 sub_r47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r58_test(doc) -> [{userdata,[{""}]}];
 sub_r58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r9_test(doc) -> [{userdata,[{""}]}];
 sub_r9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r20_test(doc) -> [{userdata,[{""}]}];
 sub_r20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r20"),
   Expected="-36192.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r31_test(doc) -> [{userdata,[{""}]}];
 sub_r31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r42_test(doc) -> [{userdata,[{""}]}];
 sub_r42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r42"),
   Expected="-36192.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r53_test(doc) -> [{userdata,[{""}]}];
 sub_r53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r64_test(doc) -> [{userdata,[{""}]}];
 sub_r64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r4_test(doc) -> [{userdata,[{""}]}];
 sub_r4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r4"),
   Expected="-36191.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r15_test(doc) -> [{userdata,[{""}]}];
 sub_r15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r26_test(doc) -> [{userdata,[{""}]}];
 sub_r26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r26"),
   Expected="-36191.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r37_test(doc) -> [{userdata,[{""}]}];
 sub_r37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r48_test(doc) -> [{userdata,[{""}]}];
 sub_r48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r59_test(doc) -> [{userdata,[{""}]}];
 sub_r59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r10_test(doc) -> [{userdata,[{""}]}];
 sub_r10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r21_test(doc) -> [{userdata,[{""}]}];
 sub_r21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r21"),
   Expected="-36188.8585",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r32_test(doc) -> [{userdata,[{""}]}];
 sub_r32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r43_test(doc) -> [{userdata,[{""}]}];
 sub_r43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r43"),
   Expected="-36188.8585",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r54_test(doc) -> [{userdata,[{""}]}];
 sub_r54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_r65_test(doc) -> [{userdata,[{""}]}];
 sub_r65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","r65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h5_test(doc) -> [{userdata,[{""}]}];
 sub_h5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h5"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h16_test(doc) -> [{userdata,[{""}]}];
 sub_h16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h16"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h27_test(doc) -> [{userdata,[{""}]}];
 sub_h27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h27"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h38_test(doc) -> [{userdata,[{""}]}];
 sub_h38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h38"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h49_test(doc) -> [{userdata,[{""}]}];
 sub_h49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h60_test(doc) -> [{userdata,[{""}]}];
 sub_h60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h11_test(doc) -> [{userdata,[{""}]}];
 sub_h11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h22_test(doc) -> [{userdata,[{""}]}];
 sub_h22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h22"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h33_test(doc) -> [{userdata,[{""}]}];
 sub_h33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h44_test(doc) -> [{userdata,[{""}]}];
 sub_h44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h44"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h55_test(doc) -> [{userdata,[{""}]}];
 sub_h55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h66_test(doc) -> [{userdata,[{""}]}];
 sub_h66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h6_test(doc) -> [{userdata,[{""}]}];
 sub_h6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h17_test(doc) -> [{userdata,[{""}]}];
 sub_h17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h17"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h28_test(doc) -> [{userdata,[{""}]}];
 sub_h28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h39_test(doc) -> [{userdata,[{""}]}];
 sub_h39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h39"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h50_test(doc) -> [{userdata,[{""}]}];
 sub_h50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h61_test(doc) -> [{userdata,[{""}]}];
 sub_h61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h1_test(doc) -> [{userdata,[{""}]}];
 sub_h1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h12_test(doc) -> [{userdata,[{""}]}];
 sub_h12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h34_test(doc) -> [{userdata,[{""}]}];
 sub_h34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h56_test(doc) -> [{userdata,[{""}]}];
 sub_h56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h7_test(doc) -> [{userdata,[{""}]}];
 sub_h7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h18_test(doc) -> [{userdata,[{""}]}];
 sub_h18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h18"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h29_test(doc) -> [{userdata,[{""}]}];
 sub_h29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h40_test(doc) -> [{userdata,[{""}]}];
 sub_h40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h40"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h51_test(doc) -> [{userdata,[{""}]}];
 sub_h51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h62_test(doc) -> [{userdata,[{""}]}];
 sub_h62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h2_test(doc) -> [{userdata,[{""}]}];
 sub_h2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h2"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h13_test(doc) -> [{userdata,[{""}]}];
 sub_h13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h35_test(doc) -> [{userdata,[{""}]}];
 sub_h35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h57_test(doc) -> [{userdata,[{""}]}];
 sub_h57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h8_test(doc) -> [{userdata,[{""}]}];
 sub_h8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h19_test(doc) -> [{userdata,[{""}]}];
 sub_h19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h19"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h30_test(doc) -> [{userdata,[{""}]}];
 sub_h30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h41_test(doc) -> [{userdata,[{""}]}];
 sub_h41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h41"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h52_test(doc) -> [{userdata,[{""}]}];
 sub_h52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h63_test(doc) -> [{userdata,[{""}]}];
 sub_h63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h3_test(doc) -> [{userdata,[{""}]}];
 sub_h3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h3"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h14_test(doc) -> [{userdata,[{""}]}];
 sub_h14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h25_test(doc) -> [{userdata,[{""}]}];
 sub_h25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h25"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h36_test(doc) -> [{userdata,[{""}]}];
 sub_h36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h47_test(doc) -> [{userdata,[{""}]}];
 sub_h47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h58_test(doc) -> [{userdata,[{""}]}];
 sub_h58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h9_test(doc) -> [{userdata,[{""}]}];
 sub_h9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h20_test(doc) -> [{userdata,[{""}]}];
 sub_h20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h20"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h31_test(doc) -> [{userdata,[{""}]}];
 sub_h31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h42_test(doc) -> [{userdata,[{""}]}];
 sub_h42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h42"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h53_test(doc) -> [{userdata,[{""}]}];
 sub_h53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h64_test(doc) -> [{userdata,[{""}]}];
 sub_h64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h4_test(doc) -> [{userdata,[{""}]}];
 sub_h4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h4"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h15_test(doc) -> [{userdata,[{""}]}];
 sub_h15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h26_test(doc) -> [{userdata,[{""}]}];
 sub_h26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h26"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h37_test(doc) -> [{userdata,[{""}]}];
 sub_h37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h48_test(doc) -> [{userdata,[{""}]}];
 sub_h48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h59_test(doc) -> [{userdata,[{""}]}];
 sub_h59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h10_test(doc) -> [{userdata,[{""}]}];
 sub_h10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h21_test(doc) -> [{userdata,[{""}]}];
 sub_h21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h21"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h32_test(doc) -> [{userdata,[{""}]}];
 sub_h32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h43_test(doc) -> [{userdata,[{""}]}];
 sub_h43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h43"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h54_test(doc) -> [{userdata,[{""}]}];
 sub_h54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_h65_test(doc) -> [{userdata,[{""}]}];
 sub_h65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","h65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s5_test(doc) -> [{userdata,[{""}]}];
 sub_s5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s5"),
   Expected="-36193.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s16_test(doc) -> [{userdata,[{""}]}];
 sub_s16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s16"),
   Expected="-36190.3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s27_test(doc) -> [{userdata,[{""}]}];
 sub_s27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s27"),
   Expected="-36193.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s38_test(doc) -> [{userdata,[{""}]}];
 sub_s38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s38"),
   Expected="-36190.3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s49_test(doc) -> [{userdata,[{""}]}];
 sub_s49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s60_test(doc) -> [{userdata,[{""}]}];
 sub_s60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s11_test(doc) -> [{userdata,[{""}]}];
 sub_s11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s22_test(doc) -> [{userdata,[{""}]}];
 sub_s22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s22"),
   Expected="0.19999999999709",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s33_test(doc) -> [{userdata,[{""}]}];
 sub_s33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s44_test(doc) -> [{userdata,[{""}]}];
 sub_s44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s44"),
   Expected="0.19999999999709",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s55_test(doc) -> [{userdata,[{""}]}];
 sub_s55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s66_test(doc) -> [{userdata,[{""}]}];
 sub_s66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s6_test(doc) -> [{userdata,[{""}]}];
 sub_s6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s17_test(doc) -> [{userdata,[{""}]}];
 sub_s17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s17"),
   Expected="-36189.46",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s28_test(doc) -> [{userdata,[{""}]}];
 sub_s28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s39_test(doc) -> [{userdata,[{""}]}];
 sub_s39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s39"),
   Expected="-36189.46",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s50_test(doc) -> [{userdata,[{""}]}];
 sub_s50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s61_test(doc) -> [{userdata,[{""}]}];
 sub_s61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s1_test(doc) -> [{userdata,[{""}]}];
 sub_s1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s1"),
   Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s12_test(doc) -> [{userdata,[{""}]}];
 sub_s12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s34_test(doc) -> [{userdata,[{""}]}];
 sub_s34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s56_test(doc) -> [{userdata,[{""}]}];
 sub_s56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s7_test(doc) -> [{userdata,[{""}]}];
 sub_s7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s18_test(doc) -> [{userdata,[{""}]}];
 sub_s18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s18"),
   Expected="-1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s29_test(doc) -> [{userdata,[{""}]}];
 sub_s29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s40_test(doc) -> [{userdata,[{""}]}];
 sub_s40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s40"),
   Expected="-1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s51_test(doc) -> [{userdata,[{""}]}];
 sub_s51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s62_test(doc) -> [{userdata,[{""}]}];
 sub_s62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s2_test(doc) -> [{userdata,[{""}]}];
 sub_s2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s2"),
   Expected="1999/02/02 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s13_test(doc) -> [{userdata,[{""}]}];
 sub_s13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s35_test(doc) -> [{userdata,[{""}]}];
 sub_s35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s57_test(doc) -> [{userdata,[{""}]}];
 sub_s57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s8_test(doc) -> [{userdata,[{""}]}];
 sub_s8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s19_test(doc) -> [{userdata,[{""}]}];
 sub_s19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s19"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s30_test(doc) -> [{userdata,[{""}]}];
 sub_s30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s41_test(doc) -> [{userdata,[{""}]}];
 sub_s41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s41"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s52_test(doc) -> [{userdata,[{""}]}];
 sub_s52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s63_test(doc) -> [{userdata,[{""}]}];
 sub_s63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s3_test(doc) -> [{userdata,[{""}]}];
 sub_s3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s3"),
   Expected="-36193.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s14_test(doc) -> [{userdata,[{""}]}];
 sub_s14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s25_test(doc) -> [{userdata,[{""}]}];
 sub_s25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s25"),
   Expected="-36193.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s36_test(doc) -> [{userdata,[{""}]}];
 sub_s36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s47_test(doc) -> [{userdata,[{""}]}];
 sub_s47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s58_test(doc) -> [{userdata,[{""}]}];
 sub_s58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s9_test(doc) -> [{userdata,[{""}]}];
 sub_s9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s20_test(doc) -> [{userdata,[{""}]}];
 sub_s20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s20"),
   Expected="-36193.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s31_test(doc) -> [{userdata,[{""}]}];
 sub_s31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s42_test(doc) -> [{userdata,[{""}]}];
 sub_s42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s42"),
   Expected="-36193.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s53_test(doc) -> [{userdata,[{""}]}];
 sub_s53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s64_test(doc) -> [{userdata,[{""}]}];
 sub_s64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s4_test(doc) -> [{userdata,[{""}]}];
 sub_s4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s4"),
   Expected="-36192.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s15_test(doc) -> [{userdata,[{""}]}];
 sub_s15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s26_test(doc) -> [{userdata,[{""}]}];
 sub_s26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s26"),
   Expected="-36192.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s37_test(doc) -> [{userdata,[{""}]}];
 sub_s37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s48_test(doc) -> [{userdata,[{""}]}];
 sub_s48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s59_test(doc) -> [{userdata,[{""}]}];
 sub_s59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s10_test(doc) -> [{userdata,[{""}]}];
 sub_s10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s21_test(doc) -> [{userdata,[{""}]}];
 sub_s21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s21"),
   Expected="-36189.8585",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s32_test(doc) -> [{userdata,[{""}]}];
 sub_s32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s43_test(doc) -> [{userdata,[{""}]}];
 sub_s43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s43"),
   Expected="-36189.8585",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s54_test(doc) -> [{userdata,[{""}]}];
 sub_s54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_s65_test(doc) -> [{userdata,[{""}]}];
 sub_s65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","s65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i5_test(doc) -> [{userdata,[{""}]}];
 sub_i5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i5"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i16_test(doc) -> [{userdata,[{""}]}];
 sub_i16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i16"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i27_test(doc) -> [{userdata,[{""}]}];
 sub_i27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i27"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i38_test(doc) -> [{userdata,[{""}]}];
 sub_i38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i38"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i49_test(doc) -> [{userdata,[{""}]}];
 sub_i49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i60_test(doc) -> [{userdata,[{""}]}];
 sub_i60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i11_test(doc) -> [{userdata,[{""}]}];
 sub_i11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i22_test(doc) -> [{userdata,[{""}]}];
 sub_i22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i22"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i33_test(doc) -> [{userdata,[{""}]}];
 sub_i33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i44_test(doc) -> [{userdata,[{""}]}];
 sub_i44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i44"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i55_test(doc) -> [{userdata,[{""}]}];
 sub_i55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i66_test(doc) -> [{userdata,[{""}]}];
 sub_i66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i6_test(doc) -> [{userdata,[{""}]}];
 sub_i6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i17_test(doc) -> [{userdata,[{""}]}];
 sub_i17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i17"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i28_test(doc) -> [{userdata,[{""}]}];
 sub_i28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i39_test(doc) -> [{userdata,[{""}]}];
 sub_i39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i39"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i50_test(doc) -> [{userdata,[{""}]}];
 sub_i50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i61_test(doc) -> [{userdata,[{""}]}];
 sub_i61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i1_test(doc) -> [{userdata,[{""}]}];
 sub_i1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i12_test(doc) -> [{userdata,[{""}]}];
 sub_i12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i34_test(doc) -> [{userdata,[{""}]}];
 sub_i34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i56_test(doc) -> [{userdata,[{""}]}];
 sub_i56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i7_test(doc) -> [{userdata,[{""}]}];
 sub_i7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i18_test(doc) -> [{userdata,[{""}]}];
 sub_i18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i18"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i29_test(doc) -> [{userdata,[{""}]}];
 sub_i29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i40_test(doc) -> [{userdata,[{""}]}];
 sub_i40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i40"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i51_test(doc) -> [{userdata,[{""}]}];
 sub_i51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i62_test(doc) -> [{userdata,[{""}]}];
 sub_i62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i2_test(doc) -> [{userdata,[{""}]}];
 sub_i2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i2"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i13_test(doc) -> [{userdata,[{""}]}];
 sub_i13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i35_test(doc) -> [{userdata,[{""}]}];
 sub_i35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i57_test(doc) -> [{userdata,[{""}]}];
 sub_i57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i8_test(doc) -> [{userdata,[{""}]}];
 sub_i8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i19_test(doc) -> [{userdata,[{""}]}];
 sub_i19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i19"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i30_test(doc) -> [{userdata,[{""}]}];
 sub_i30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i41_test(doc) -> [{userdata,[{""}]}];
 sub_i41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i41"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i52_test(doc) -> [{userdata,[{""}]}];
 sub_i52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i63_test(doc) -> [{userdata,[{""}]}];
 sub_i63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i3_test(doc) -> [{userdata,[{""}]}];
 sub_i3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i3"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i14_test(doc) -> [{userdata,[{""}]}];
 sub_i14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i25_test(doc) -> [{userdata,[{""}]}];
 sub_i25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i25"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i36_test(doc) -> [{userdata,[{""}]}];
 sub_i36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i47_test(doc) -> [{userdata,[{""}]}];
 sub_i47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i58_test(doc) -> [{userdata,[{""}]}];
 sub_i58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i9_test(doc) -> [{userdata,[{""}]}];
 sub_i9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i20_test(doc) -> [{userdata,[{""}]}];
 sub_i20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i20"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i31_test(doc) -> [{userdata,[{""}]}];
 sub_i31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i42_test(doc) -> [{userdata,[{""}]}];
 sub_i42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i42"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i53_test(doc) -> [{userdata,[{""}]}];
 sub_i53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i64_test(doc) -> [{userdata,[{""}]}];
 sub_i64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i4_test(doc) -> [{userdata,[{""}]}];
 sub_i4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i4"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i15_test(doc) -> [{userdata,[{""}]}];
 sub_i15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i26_test(doc) -> [{userdata,[{""}]}];
 sub_i26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i26"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i37_test(doc) -> [{userdata,[{""}]}];
 sub_i37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i48_test(doc) -> [{userdata,[{""}]}];
 sub_i48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i59_test(doc) -> [{userdata,[{""}]}];
 sub_i59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i10_test(doc) -> [{userdata,[{""}]}];
 sub_i10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i21_test(doc) -> [{userdata,[{""}]}];
 sub_i21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i21"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i32_test(doc) -> [{userdata,[{""}]}];
 sub_i32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i43_test(doc) -> [{userdata,[{""}]}];
 sub_i43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i43"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i54_test(doc) -> [{userdata,[{""}]}];
 sub_i54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_i65_test(doc) -> [{userdata,[{""}]}];
 sub_i65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","i65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t5_test(doc) -> [{userdata,[{""}]}];
 sub_t5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t5"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t16_test(doc) -> [{userdata,[{""}]}];
 sub_t16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t16"),
   Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t27_test(doc) -> [{userdata,[{""}]}];
 sub_t27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t27"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t38_test(doc) -> [{userdata,[{""}]}];
 sub_t38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t38"),
   Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t49_test(doc) -> [{userdata,[{""}]}];
 sub_t49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t60_test(doc) -> [{userdata,[{""}]}];
 sub_t60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t11_test(doc) -> [{userdata,[{""}]}];
 sub_t11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t22_test(doc) -> [{userdata,[{""}]}];
 sub_t22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t22"),
   Expected="36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t33_test(doc) -> [{userdata,[{""}]}];
 sub_t33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t44_test(doc) -> [{userdata,[{""}]}];
 sub_t44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t44"),
   Expected="36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t55_test(doc) -> [{userdata,[{""}]}];
 sub_t55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t66_test(doc) -> [{userdata,[{""}]}];
 sub_t66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t6_test(doc) -> [{userdata,[{""}]}];
 sub_t6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t17_test(doc) -> [{userdata,[{""}]}];
 sub_t17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t17"),
   Expected="3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t28_test(doc) -> [{userdata,[{""}]}];
 sub_t28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t39_test(doc) -> [{userdata,[{""}]}];
 sub_t39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t39"),
   Expected="3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t50_test(doc) -> [{userdata,[{""}]}];
 sub_t50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t61_test(doc) -> [{userdata,[{""}]}];
 sub_t61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t1_test(doc) -> [{userdata,[{""}]}];
 sub_t1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t1"),
   Expected="Zero",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t12_test(doc) -> [{userdata,[{""}]}];
 sub_t12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t34_test(doc) -> [{userdata,[{""}]}];
 sub_t34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t56_test(doc) -> [{userdata,[{""}]}];
 sub_t56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t7_test(doc) -> [{userdata,[{""}]}];
 sub_t7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t18_test(doc) -> [{userdata,[{""}]}];
 sub_t18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t18"),
   Expected="36192.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t29_test(doc) -> [{userdata,[{""}]}];
 sub_t29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t40_test(doc) -> [{userdata,[{""}]}];
 sub_t40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t40"),
   Expected="36192.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t51_test(doc) -> [{userdata,[{""}]}];
 sub_t51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t62_test(doc) -> [{userdata,[{""}]}];
 sub_t62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t2_test(doc) -> [{userdata,[{""}]}];
 sub_t2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t2"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t13_test(doc) -> [{userdata,[{""}]}];
 sub_t13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t35_test(doc) -> [{userdata,[{""}]}];
 sub_t35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t57_test(doc) -> [{userdata,[{""}]}];
 sub_t57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t8_test(doc) -> [{userdata,[{""}]}];
 sub_t8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t19_test(doc) -> [{userdata,[{""}]}];
 sub_t19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t19"),
   Expected="36193.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t30_test(doc) -> [{userdata,[{""}]}];
 sub_t30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t41_test(doc) -> [{userdata,[{""}]}];
 sub_t41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t41"),
   Expected="36193.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t52_test(doc) -> [{userdata,[{""}]}];
 sub_t52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t63_test(doc) -> [{userdata,[{""}]}];
 sub_t63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t3_test(doc) -> [{userdata,[{""}]}];
 sub_t3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t3"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t14_test(doc) -> [{userdata,[{""}]}];
 sub_t14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t25_test(doc) -> [{userdata,[{""}]}];
 sub_t25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t25"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t36_test(doc) -> [{userdata,[{""}]}];
 sub_t36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t47_test(doc) -> [{userdata,[{""}]}];
 sub_t47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t58_test(doc) -> [{userdata,[{""}]}];
 sub_t58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t9_test(doc) -> [{userdata,[{""}]}];
 sub_t9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t20_test(doc) -> [{userdata,[{""}]}];
 sub_t20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t20"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t31_test(doc) -> [{userdata,[{""}]}];
 sub_t31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t42_test(doc) -> [{userdata,[{""}]}];
 sub_t42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t42"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t53_test(doc) -> [{userdata,[{""}]}];
 sub_t53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t64_test(doc) -> [{userdata,[{""}]}];
 sub_t64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t4_test(doc) -> [{userdata,[{""}]}];
 sub_t4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t4"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t15_test(doc) -> [{userdata,[{""}]}];
 sub_t15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t26_test(doc) -> [{userdata,[{""}]}];
 sub_t26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t26"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t37_test(doc) -> [{userdata,[{""}]}];
 sub_t37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t48_test(doc) -> [{userdata,[{""}]}];
 sub_t48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t59_test(doc) -> [{userdata,[{""}]}];
 sub_t59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t10_test(doc) -> [{userdata,[{""}]}];
 sub_t10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t21_test(doc) -> [{userdata,[{""}]}];
 sub_t21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t21"),
   Expected="3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t32_test(doc) -> [{userdata,[{""}]}];
 sub_t32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t43_test(doc) -> [{userdata,[{""}]}];
 sub_t43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t43"),
   Expected="3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t54_test(doc) -> [{userdata,[{""}]}];
 sub_t54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_t65_test(doc) -> [{userdata,[{""}]}];
 sub_t65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","t65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j5_test(doc) -> [{userdata,[{""}]}];
 sub_j5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j5"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j16_test(doc) -> [{userdata,[{""}]}];
 sub_j16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j16"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j27_test(doc) -> [{userdata,[{""}]}];
 sub_j27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j27"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j38_test(doc) -> [{userdata,[{""}]}];
 sub_j38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j38"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j49_test(doc) -> [{userdata,[{""}]}];
 sub_j49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j60_test(doc) -> [{userdata,[{""}]}];
 sub_j60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j11_test(doc) -> [{userdata,[{""}]}];
 sub_j11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j22_test(doc) -> [{userdata,[{""}]}];
 sub_j22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j22"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j33_test(doc) -> [{userdata,[{""}]}];
 sub_j33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j44_test(doc) -> [{userdata,[{""}]}];
 sub_j44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j44"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j55_test(doc) -> [{userdata,[{""}]}];
 sub_j55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j66_test(doc) -> [{userdata,[{""}]}];
 sub_j66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j6_test(doc) -> [{userdata,[{""}]}];
 sub_j6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j17_test(doc) -> [{userdata,[{""}]}];
 sub_j17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j17"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j28_test(doc) -> [{userdata,[{""}]}];
 sub_j28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j39_test(doc) -> [{userdata,[{""}]}];
 sub_j39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j39"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j50_test(doc) -> [{userdata,[{""}]}];
 sub_j50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j61_test(doc) -> [{userdata,[{""}]}];
 sub_j61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j1_test(doc) -> [{userdata,[{""}]}];
 sub_j1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j12_test(doc) -> [{userdata,[{""}]}];
 sub_j12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j34_test(doc) -> [{userdata,[{""}]}];
 sub_j34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j56_test(doc) -> [{userdata,[{""}]}];
 sub_j56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j7_test(doc) -> [{userdata,[{""}]}];
 sub_j7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j18_test(doc) -> [{userdata,[{""}]}];
 sub_j18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j18"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j29_test(doc) -> [{userdata,[{""}]}];
 sub_j29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j40_test(doc) -> [{userdata,[{""}]}];
 sub_j40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j40"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j51_test(doc) -> [{userdata,[{""}]}];
 sub_j51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j62_test(doc) -> [{userdata,[{""}]}];
 sub_j62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j2_test(doc) -> [{userdata,[{""}]}];
 sub_j2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j2"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j13_test(doc) -> [{userdata,[{""}]}];
 sub_j13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j35_test(doc) -> [{userdata,[{""}]}];
 sub_j35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j57_test(doc) -> [{userdata,[{""}]}];
 sub_j57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j8_test(doc) -> [{userdata,[{""}]}];
 sub_j8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j19_test(doc) -> [{userdata,[{""}]}];
 sub_j19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j19"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j30_test(doc) -> [{userdata,[{""}]}];
 sub_j30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j41_test(doc) -> [{userdata,[{""}]}];
 sub_j41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j41"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j52_test(doc) -> [{userdata,[{""}]}];
 sub_j52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j63_test(doc) -> [{userdata,[{""}]}];
 sub_j63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j3_test(doc) -> [{userdata,[{""}]}];
 sub_j3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j3"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j14_test(doc) -> [{userdata,[{""}]}];
 sub_j14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j25_test(doc) -> [{userdata,[{""}]}];
 sub_j25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j25"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j36_test(doc) -> [{userdata,[{""}]}];
 sub_j36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j47_test(doc) -> [{userdata,[{""}]}];
 sub_j47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j58_test(doc) -> [{userdata,[{""}]}];
 sub_j58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j9_test(doc) -> [{userdata,[{""}]}];
 sub_j9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j20_test(doc) -> [{userdata,[{""}]}];
 sub_j20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j20"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j31_test(doc) -> [{userdata,[{""}]}];
 sub_j31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j42_test(doc) -> [{userdata,[{""}]}];
 sub_j42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j42"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j53_test(doc) -> [{userdata,[{""}]}];
 sub_j53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j64_test(doc) -> [{userdata,[{""}]}];
 sub_j64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j4_test(doc) -> [{userdata,[{""}]}];
 sub_j4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j4"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j15_test(doc) -> [{userdata,[{""}]}];
 sub_j15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j26_test(doc) -> [{userdata,[{""}]}];
 sub_j26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j26"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j37_test(doc) -> [{userdata,[{""}]}];
 sub_j37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j48_test(doc) -> [{userdata,[{""}]}];
 sub_j48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j59_test(doc) -> [{userdata,[{""}]}];
 sub_j59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j10_test(doc) -> [{userdata,[{""}]}];
 sub_j10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j21_test(doc) -> [{userdata,[{""}]}];
 sub_j21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j21"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j32_test(doc) -> [{userdata,[{""}]}];
 sub_j32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j43_test(doc) -> [{userdata,[{""}]}];
 sub_j43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j43"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j54_test(doc) -> [{userdata,[{""}]}];
 sub_j54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_j65_test(doc) -> [{userdata,[{""}]}];
 sub_j65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","j65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u5_test(doc) -> [{userdata,[{""}]}];
 sub_u5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u5"),
   Expected="-3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u16_test(doc) -> [{userdata,[{""}]}];
 sub_u16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u16"),
   Expected="-0.4415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u27_test(doc) -> [{userdata,[{""}]}];
 sub_u27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u27"),
   Expected="-3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u38_test(doc) -> [{userdata,[{""}]}];
 sub_u38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u38"),
   Expected="-0.4415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u49_test(doc) -> [{userdata,[{""}]}];
 sub_u49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u60_test(doc) -> [{userdata,[{""}]}];
 sub_u60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u11_test(doc) -> [{userdata,[{""}]}];
 sub_u11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u22_test(doc) -> [{userdata,[{""}]}];
 sub_u22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u22"),
   Expected="36190.0585",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u33_test(doc) -> [{userdata,[{""}]}];
 sub_u33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u44_test(doc) -> [{userdata,[{""}]}];
 sub_u44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u44"),
   Expected="36190.0585",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u55_test(doc) -> [{userdata,[{""}]}];
 sub_u55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u66_test(doc) -> [{userdata,[{""}]}];
 sub_u66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u6_test(doc) -> [{userdata,[{""}]}];
 sub_u6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u17_test(doc) -> [{userdata,[{""}]}];
 sub_u17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u17"),
   Expected="0.3985",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u28_test(doc) -> [{userdata,[{""}]}];
 sub_u28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u39_test(doc) -> [{userdata,[{""}]}];
 sub_u39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u39"),
   Expected="0.3985",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u50_test(doc) -> [{userdata,[{""}]}];
 sub_u50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u61_test(doc) -> [{userdata,[{""}]}];
 sub_u61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u1_test(doc) -> [{userdata,[{""}]}];
 sub_u1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u1"),
   Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u12_test(doc) -> [{userdata,[{""}]}];
 sub_u12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u34_test(doc) -> [{userdata,[{""}]}];
 sub_u34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u56_test(doc) -> [{userdata,[{""}]}];
 sub_u56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u7_test(doc) -> [{userdata,[{""}]}];
 sub_u7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u18_test(doc) -> [{userdata,[{""}]}];
 sub_u18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u18"),
   Expected="36188.8585",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u29_test(doc) -> [{userdata,[{""}]}];
 sub_u29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u40_test(doc) -> [{userdata,[{""}]}];
 sub_u40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u40"),
   Expected="36188.8585",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u51_test(doc) -> [{userdata,[{""}]}];
 sub_u51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u62_test(doc) -> [{userdata,[{""}]}];
 sub_u62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u2_test(doc) -> [{userdata,[{""}]}];
 sub_u2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u2"),
   Expected="3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u13_test(doc) -> [{userdata,[{""}]}];
 sub_u13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u35_test(doc) -> [{userdata,[{""}]}];
 sub_u35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u57_test(doc) -> [{userdata,[{""}]}];
 sub_u57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u8_test(doc) -> [{userdata,[{""}]}];
 sub_u8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u19_test(doc) -> [{userdata,[{""}]}];
 sub_u19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u19"),
   Expected="36189.8585",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u30_test(doc) -> [{userdata,[{""}]}];
 sub_u30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u41_test(doc) -> [{userdata,[{""}]}];
 sub_u41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u41"),
   Expected="36189.8585",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u52_test(doc) -> [{userdata,[{""}]}];
 sub_u52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u63_test(doc) -> [{userdata,[{""}]}];
 sub_u63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u3_test(doc) -> [{userdata,[{""}]}];
 sub_u3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u3"),
   Expected="-3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u14_test(doc) -> [{userdata,[{""}]}];
 sub_u14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u25_test(doc) -> [{userdata,[{""}]}];
 sub_u25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u25"),
   Expected="-3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u36_test(doc) -> [{userdata,[{""}]}];
 sub_u36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u47_test(doc) -> [{userdata,[{""}]}];
 sub_u47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u58_test(doc) -> [{userdata,[{""}]}];
 sub_u58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u9_test(doc) -> [{userdata,[{""}]}];
 sub_u9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u20_test(doc) -> [{userdata,[{""}]}];
 sub_u20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u20"),
   Expected="-3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u31_test(doc) -> [{userdata,[{""}]}];
 sub_u31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u42_test(doc) -> [{userdata,[{""}]}];
 sub_u42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u42"),
   Expected="-3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u53_test(doc) -> [{userdata,[{""}]}];
 sub_u53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u64_test(doc) -> [{userdata,[{""}]}];
 sub_u64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u4_test(doc) -> [{userdata,[{""}]}];
 sub_u4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u4"),
   Expected="-2.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u15_test(doc) -> [{userdata,[{""}]}];
 sub_u15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u26_test(doc) -> [{userdata,[{""}]}];
 sub_u26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u26"),
   Expected="-2.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u37_test(doc) -> [{userdata,[{""}]}];
 sub_u37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u48_test(doc) -> [{userdata,[{""}]}];
 sub_u48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u59_test(doc) -> [{userdata,[{""}]}];
 sub_u59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u10_test(doc) -> [{userdata,[{""}]}];
 sub_u10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u21_test(doc) -> [{userdata,[{""}]}];
 sub_u21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u21"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u32_test(doc) -> [{userdata,[{""}]}];
 sub_u32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u43_test(doc) -> [{userdata,[{""}]}];
 sub_u43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u43"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u54_test(doc) -> [{userdata,[{""}]}];
 sub_u54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sub_u65_test(doc) -> [{userdata,[{""}]}];
 sub_u65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/SUB/","u65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 all() -> 
     [sub_k5_test,

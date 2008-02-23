@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_trig.xls
-% Generated on: Sun Feb 17 21:43:02 +0000 2008
+% Generated on: Fri Feb 22 19:04:34 +0000 2008
 
 -module(e_gnumeric_trig_SUITE).
 -compile(export_all).
@@ -19,8 +19,9 @@ init_per_suite(Config) ->
         {_,Data2}                                -> Data2;
         {_,number,Data2} when is_float(Data2)   -> float_to_list(Data2);
         {_,number,Data2} when is_integer(Data2) -> integer_to_list(Data2);
-        {_,boolean,true}                        -> "true";
-        {_,boolean,false}                       -> "false"
+        {_,error,Error}                          -> Error;
+        {_,boolean,true}                         -> "true";
+        {_,boolean,false}                        -> "false"
       end,
       Path="/"++Sheet++"/",
       Cell=util2:make_b26(ColIdx+1)++integer_to_list(RowIdx+1),
@@ -74,77 +75,77 @@ summary_a5_test(_Config) ->
   Got=hn_get("http://127.0.0.1:9000","/Summary/","a5"),
   Expected="ATan2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 summary_a6_test(doc) -> [{userdata,[{""}]}];
 summary_a6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","a6"),
   Expected="PI",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 summary_a4_test(doc) -> [{userdata,[{""}]}];
 summary_a4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","a4"),
   Expected="Trigonometry",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 summary_b5_test(doc) -> [{userdata,[{""}]}];
 summary_b5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","b5"),
   Expected="Success",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 summary_b6_test(doc) -> [{userdata,[{""}]}];
 summary_b6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","b6"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 summary_b4_test(doc) -> [{userdata,[{""}]}];
 summary_b4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","b4"),
   Expected="Success",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 summary_c6_test(doc) -> [{userdata,[{""}]}];
 summary_c6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","c6"),
   Expected="PI",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 summary_d6_test(doc) -> [{userdata,[{""}]}];
 summary_d6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","d6"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 summary_d2_test(doc) -> [{userdata,[{""}]}];
 summary_d2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","d2"),
   Expected="Tolerance",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 summary_e6_test(doc) -> [{userdata,[{""}]}];
 summary_e6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","e6"),
   Expected="Success",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 summary_e2_test(doc) -> [{userdata,[{""}]}];
 summary_e2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","e2"),
   Expected="1.0e-006",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 all() -> 
     [summary_a5_test,

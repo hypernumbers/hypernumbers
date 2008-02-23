@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: d_gnumeric_date_and_time.xls
-% Generated on: Sun Feb 17 21:41:58 +0000 2008
+% Generated on: Fri Feb 22 19:03:41 +0000 2008
 
 -module(d_gnumeric_date_and_time_test_SUITE).
 -compile(export_all).

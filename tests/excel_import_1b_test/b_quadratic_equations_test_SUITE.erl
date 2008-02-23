@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_quadratic_equations.xls
-% Generated on: Sun Feb 17 21:41:52 +0000 2008
+% Generated on: Fri Feb 22 19:03:33 +0000 2008
 
 -module(b_quadratic_equations_test_SUITE).
 -compile(export_all).

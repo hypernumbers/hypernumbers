@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_floats.xls
-% Generated on: Sun Feb 17 22:03:51 +0000 2008
+% Generated on: Fri Feb 22 19:03:30 +0000 2008
 
 -module(b_floats_test_SUITE).
 -compile(export_all).
@@ -65,20 +65,6 @@ sheet1_a6_test(Config) ->
     Msg -> 
       io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,0.0003}]),
       test_util:expected2(Msg, {number,0.0003})
-  after
-    500 -> io:format("timed out in test case!~n"),
-            exit("die in flames!")
-  end.
-  
-sheet1_a1_test(doc) -> [{userdata,[{""}]}];
-sheet1_a1_test(Config) -> 
-  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
-  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",0,0}]),
-  Pid ! {msg,self(),?MODULE,{"Sheet1",0,0}},
-  receive
-    Msg -> 
-      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"This test tests basic floats"}]),
-      test_util:expected2(Msg, {string,"This test tests basic floats"})
   after
     500 -> io:format("timed out in test case!~n"),
             exit("die in flames!")
@@ -224,39 +210,10 @@ sheet1_a10_test(Config) ->
             exit("die in flames!")
   end.
   
-sheet1_b13_test(doc) -> [{userdata,[{""}]}];
-sheet1_b13_test(Config) -> 
-  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
-  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",12,1}]),
-  Pid ! {msg,self(),?MODULE,{"Sheet1",12,1}},
-  receive
-    Msg -> 
-      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"<- these are to determine what floats will reverse compile identically"}]),
-      test_util:expected2(Msg, {string,"<- these are to determine what floats will reverse compile identically"})
-  after
-    500 -> io:format("timed out in test case!~n"),
-            exit("die in flames!")
-  end.
-  
-sheet1_b14_test(doc) -> [{userdata,[{""}]}];
-sheet1_b14_test(Config) -> 
-  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
-  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",13,1}]),
-  Pid ! {msg,self(),?MODULE,{"Sheet1",13,1}},
-  receive
-    Msg -> 
-      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"<- these are to determine what floats will reverse compile identically"}]),
-      test_util:expected2(Msg, {string,"<- these are to determine what floats will reverse compile identically"})
-  after
-    500 -> io:format("timed out in test case!~n"),
-            exit("die in flames!")
-  end.
-  
 all() -> 
     [sheet1_a5_test,
    sheet1_a11_test,
    sheet1_a6_test,
-   sheet1_a1_test,
    sheet1_a12_test,
    sheet1_a7_test,
    sheet1_a2_test,
@@ -266,8 +223,6 @@ all() ->
    sheet1_a14_test,
    sheet1_a9_test,
    sheet1_a4_test,
-   sheet1_a10_test,
-   sheet1_b13_test,
-   sheet1_b14_test
+   sheet1_a10_test
     ].
   

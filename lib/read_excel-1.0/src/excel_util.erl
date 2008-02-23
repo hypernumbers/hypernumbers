@@ -238,26 +238,23 @@ write(Tables,Name,[H|T])->
   {value,{Name,Tid}}=lists:keysearch(Name,1,Tables),
   ets:insert(Tid,{H,T}).
 
-%% read formula from the shared/array formula table
+%% read shared formula from the shared/array formula table
 read_shared(Tables,{{sheet,Name},{row_index,Row},{col_index,Col}})->
   TableName=sh_arr_formula,
   {value,{_,Tid}}=lists:keysearch(TableName,1,Tables),
   Fun = fun(X,Residuum)->
-      io:format("in excel_util:read_shared X is ~p~n-Name is ~p Row is ~p Col is ~p~n",
-        [X,Name,Row,Col]),
-      Item = case X of
-        {{sheet,Name},{firstrow,FirstRow},{firstcol,FirstCol},{lastrow,LastRow},
-                  {lastcol,LastCol},TokenList,TokenArray} 
-                  when Row >= FirstRow,
-                  Row =< LastRow,
-                  Col >= FirstCol,
-                  Col =< LastCol -> X;
-        _                        -> []
+      NewResiduum = case X of
+        {{{sheet,Name},{firstrow,FirstRow},{firstcol,FirstCol},{lastrow,LastRow},
+                  {lastcol,LastCol}},_Rest} 
+                  when Row >= FirstRow, Row =< LastRow,
+                  Col >= FirstCol, Col =< LastCol               -> [X|Residuum];
+        {{{sheet,Name},{row_index,Row},{col_index,Col}},_Rest} -> [X|Residuum];
+        Other                                                    -> Residuum
       end,
-    [Item|Residuum]
+    NewResiduum
     end,
     ets:foldl(Fun,[],Tid).
-   
+
 %% read values from the tables
 read(Tables,Name,Key)->
   {value,{_TableName,Tid}}=lists:keysearch(Name,1,Tables),

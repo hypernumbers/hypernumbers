@@ -83,9 +83,9 @@ read_excel(Directory,SAT,SSAT,SectorSize,ShortSectorSize,
 
 parse_substream(SubSID,Location,SubStream,Directory,SAT,SSAT,SectorSize,
 		ShortSectorSize,FileIn,Tables)->
-    io:format("Now stream ~p~n",[SubStream]),
-    {{[{_,NameBin}],_,_},Offset}=SubStream,
+    {{[{Type,NameBin}],_,_},Offset}=SubStream,
     Name=binary_to_list(NameBin),
+    io:format("Now parsing stream ~p~n",[Name]),
     Bin=case Location of 
 	    normal_stream -> get_normal_stream(SubSID,Directory,SAT,SectorSize,
 					       FileIn);
@@ -97,11 +97,14 @@ parse_substream(SubSID,Location,SubStream,Directory,SAT,SSAT,SectorSize,
     <<_Discard:Offset/binary,Rest/binary>>=Bin,
     %% pass in the actual name of the substream
     CurrentFormula="There is no current Formula yet!",
-    parse_bin(Rest,SubStream,CurrentFormula,Tables).
+    parse_bin(Rest,{Type,NameBin},CurrentFormula,Tables).
 
-parse_bin(Bin,Name,CurrentFormula,Tables)->
+parse_bin(Bin,SubStreamName,CurrentFormula,Tables)->
     <<Identifier:16/little-unsigned-integer,
-     RecordSize:16/little-unsigned-integer,Rest/binary>>=Bin,
+     RecordSize:16/little-unsigned-integer,
+     Rest/binary>>=Bin,
+    {_,NameBin}=SubStreamName,
+    Name=binary_to_list(NameBin),
     case Identifier of
  	?EOF ->	    
  	    io:format("workstream ~p read!~n",[Name]),
@@ -109,15 +112,14 @@ parse_bin(Bin,Name,CurrentFormula,Tables)->
 	?SST ->
 	    io:format("In excel:parse_bin Name is ~p~n",[Name]),
 	    {ok,BinList,Rest2}=get_single_SST(Bin),
-	    %% io:format("in excel:parse_bin SST_bin is ~p~n",[SST_bin]),
 	    {ok,NewCurrentFormula}=excel_records:parse_rec(Identifier,BinList,Name,CurrentFormula,
               Tables),
- 	    parse_bin(Rest2,Name,NewCurrentFormula,Tables);
+ 	    parse_bin(Rest2,SubStreamName,NewCurrentFormula,Tables);
 	_Other ->
  	    <<Record:RecordSize/binary,Rest3/binary>>=Rest,
 	    {ok,NewCurrentFormula}=excel_records:parse_rec(Identifier,Record,Name,CurrentFormula,
               Tables),
- 	    parse_bin(Rest3,Name,NewCurrentFormula,Tables)
+ 	    parse_bin(Rest3,SubStreamName,NewCurrentFormula,Tables)
     end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -293,23 +295,25 @@ make_formulae(Tables)->
   %% First up reverse compile the basic cells
   Fun=fun(X,_Residuum)->
     {Index,[XF,{tokens,Tokens},{tokenarrays,TokenArray}]}=X,
-    %% io:format("in excel:make_formulae Tokens are ~p~n-TokenArray is ~p~n",[Tokens,TokenArray]),
+    io:format("in excel:make_formulae Tokens are ~p~n-TokenArray is ~p~n",[Tokens,TokenArray]),
     Formula=excel_rev_comp:reverse_compile(Index,Tokens,TokenArray,Tables),
+    io:format("in excel:make_formula Formula is ~p~n",[Formula]),
     ets:insert(CellId,[{Index,[XF,{formula,Formula}]}])
   end,
-  CellList=ets:foldl(Fun,[],Cell_TokensId),
-  %% io:format("Tokens to cells transformation gives:~n~p~n",[CellList]),
-  %% Now reverse compile the shared formulae
-  {value,{sh_arr_formula,Sh_Arr_FormId}}=lists:keysearch(sh_arr_formula,1,Tables),
-  Fun2=fun(X,_Residuum)->
-    {{{sheet,SheetX},{firstrow,FirstRowX},{firstcol,FirstColX},
-    {lastrow,LastRowX},{lastcol,LastColX}},[{type,Type},TokensX,TokenArraysX]}=X,
-    %% io:format("in excel:make_formula FirstRow is ~p and FirstCol is ~p~n",[FirstRowX,FirstColX]),
-    update_cell(SheetX,TokensX,TokenArraysX,FirstRowX,FirstColX,FirstRowX,FirstColX,
-        LastRowX,LastColX,CellId,Tables)
-  end,
-  CellList2=ets:foldl(Fun2,[],Sh_Arr_FormId).
-  %% io:format("Tokens to cells transformation gives:~n~p~n",[CellList2]).
+  CellList=ets:foldl(Fun,[],Cell_TokensId).
+%%  io:format("Tokens to cells transformation gives:~n~p~n",[CellList]),
+%%  filefilters:dump([{cell,CellId}]),
+%%  %% Now reverse compile the shared formulae
+%%  {value,{sh_arr_formula,Sh_Arr_FormId}}=lists:keysearch(sh_arr_formula,1,Tables),
+%%  Fun2=fun(X,_Residuum)->
+%%    {{{sheet,SheetX},{firstrow,FirstRowX},{firstcol,FirstColX},
+%%    {lastrow,LastRowX},{lastcol,LastColX}},[{type,Type},TokensX,TokenArraysX]}=X,
+%%    %% io:format("in excel:make_formula FirstRow is ~p and FirstCol is ~p~n",[FirstRowX,FirstColX]),
+%%    update_cell(SheetX,TokensX,TokenArraysX,FirstRowX,FirstColX,FirstRowX,FirstColX,
+%%        LastRowX,LastColX,CellId,Tables)
+%%  end,
+%%  CellList2=ets:foldl(Fun2,[],Sh_Arr_FormId),
+%%  io:format("Tokens to cells transformation gives:~n~p~n",[CellList2]).
   
 update_cell(Sheet,Tokens,TokenArrays,LastRow,LastCol,FirstRow,FirstCol,LastRow,LastCol,
       CellId,Tables)->
@@ -326,11 +330,19 @@ update_cell(Sheet,Tokens,TokenArrays,Row,Col,FirstRow,FirstCol,LastRow,LastCol,C
   update_cell(Sheet,Tokens,TokenArrays,Row+1,Col,FirstRow,FirstCol,LastRow,LastCol,CellId,Tables).
   
 update_cell2(Sheet,Tokens,TokenArrays,Row,Col,CellId,TopRow,TopCol,Tables)->
-  io:format("in excel:update_cell2 Sheet is ~p Tokens is ~p~n-TokenArrays is ~p Row is ~p Col is ~p "++
-      "TopRow is ~p TopCol is ~p~n",[Sheet,Tokens,TokenArrays,Row,Col,TopRow,TopCol]),
-  %%[{Index,[XF,_T]}]=ets:lookup(CellId,{{sheet,Sheet},{row_index,Row},{col_index,Col}}),
   Index={{sheet,Sheet},{row_index,Row},{col_index,Col}},
   TopIndex={{sheet,Sheet},{row_index,TopRow},{col_index,TopCol}},
-  Formula=excel_rev_comp:reverse_compile(TopIndex,Tokens,TokenArrays,Tables),
-  ets:insert(CellId,{Index,[{xf_index,"bug?"},{formula,Formula}]}).
+  %% io:format("in excel:update_cell2 Sheet is ~p "++
+  %%   "Row is ~p Col is ~p TopRow is ~p TopCol is ~p~n",
+  %%  [Sheet,Row,Col,TopRow,TopCol]),
+  %%filefilters:dump([{cell,CellId}]),
+  FormulaExists=ets:lookup(CellId,{{sheet,Sheet},{row_index,Row},{col_index,Col}}),
+  %% io:format("in excel:update_cell2 FormulaExists is ~p~n",[FormulaExists]),
+  %% if no formula exists create it (ie don't overwrite)
+  case FormulaExists of
+    []   -> Formula=excel_rev_comp:reverse_compile(TopIndex,Tokens,TokenArrays,Tables),
+            %% io:format("in excel:reverse_compile Formula is ~p~n",[Formula]),
+            ets:insert(CellId,{Index,[{xf_index,"bug?"},{formula,Formula}]});
+    _    -> ok
+  end.
   

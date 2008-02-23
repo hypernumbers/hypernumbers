@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_made_up_fn_names.xls
-% Generated on: Sun Feb 17 21:42:34 +0000 2008
+% Generated on: Fri Feb 22 19:04:05 +0000 2008
 
 -module(b_made_up_fn_names_SUITE).
 -compile(export_all).
@@ -19,8 +19,9 @@ init_per_suite(Config) ->
         {_,Data2}                                -> Data2;
         {_,number,Data2} when is_float(Data2)   -> float_to_list(Data2);
         {_,number,Data2} when is_integer(Data2) -> integer_to_list(Data2);
-        {_,boolean,true}                        -> "true";
-        {_,boolean,false}                       -> "false"
+        {_,error,Error}                          -> Error;
+        {_,boolean,true}                         -> "true";
+        {_,boolean,false}                        -> "false"
       end,
       Path="/"++Sheet++"/",
       Cell=util2:make_b26(ColIdx+1)++integer_to_list(RowIdx+1),
@@ -74,21 +75,21 @@ tom_a5_test(_Config) ->
   Got=hn_get("http://127.0.0.1:9000","/Tom/","a5"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 tom_a3_test(doc) -> [{userdata,[{""}]}];
 tom_a3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","a3"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 tom_a4_test(doc) -> [{userdata,[{""}]}];
 tom_a4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","a4"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 all() -> 
     [tom_a5_test,

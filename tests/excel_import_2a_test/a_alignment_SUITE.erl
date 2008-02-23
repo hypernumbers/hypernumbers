@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: a_alignment.xls
-% Generated on: Sun Feb 17 21:42:26 +0000 2008
+% Generated on: Fri Feb 22 19:04:00 +0000 2008
 
 -module(a_alignment_SUITE).
 -compile(export_all).
@@ -19,8 +19,9 @@ init_per_suite(Config) ->
         {_,Data2}                                -> Data2;
         {_,number,Data2} when is_float(Data2)   -> float_to_list(Data2);
         {_,number,Data2} when is_integer(Data2) -> integer_to_list(Data2);
-        {_,boolean,true}                        -> "true";
-        {_,boolean,false}                       -> "false"
+        {_,error,Error}                          -> Error;
+        {_,boolean,true}                         -> "true";
+        {_,boolean,false}                        -> "false"
       end,
       Path="/"++Sheet++"/",
       Cell=util2:make_b26(ColIdx+1)++integer_to_list(RowIdx+1),
@@ -74,112 +75,112 @@ sheet1_a1_test(_Config) ->
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","a1"),
   Expected="This tests that the various test generated have got their columns and rows right with all fence post errors fixed for good measure",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sheet1_a2_test(doc) -> [{userdata,[{""}]}];
 sheet1_a2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","a2"),
   Expected="This is a cell A2 on Sheet1",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sheet1_a3_test(doc) -> [{userdata,[{""}]}];
 sheet1_a3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","a3"),
   Expected="This is cell A3 on Sheet1",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sheet1_b2_test(doc) -> [{userdata,[{""}]}];
 sheet1_b2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","b2"),
   Expected="This is cell B2 on Sheet1",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sheet1_b3_test(doc) -> [{userdata,[{""}]}];
 sheet1_b3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","b3"),
   Expected="This is cell B3 on Sheet1",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sheet1_b4_test(doc) -> [{userdata,[{""}]}];
 sheet1_b4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","b4"),
   Expected="This is cell B4 on Sheet1",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sheet1_d6_test(doc) -> [{userdata,[{""}]}];
 sheet1_d6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","d6"),
   Expected="This is cell D6 on Sheet1",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sheet1_h12_test(doc) -> [{userdata,[{""}]}];
 sheet1_h12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","h12"),
   Expected="This is cell H12 on Sheet1",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sheet2_a1_test(doc) -> [{userdata,[{""}]}];
 sheet2_a1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet2/","a1"),
   Expected="This tests that the various test generates have got their columns and rows right with all fence post errors fixed for good measure",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sheet2_a2_test(doc) -> [{userdata,[{""}]}];
 sheet2_a2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet2/","a2"),
   Expected="This is a cell A2 on Sheet2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sheet2_a3_test(doc) -> [{userdata,[{""}]}];
 sheet2_a3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet2/","a3"),
   Expected="This is cell A3 on Sheet2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sheet2_b2_test(doc) -> [{userdata,[{""}]}];
 sheet2_b2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet2/","b2"),
   Expected="This is cell B2 on Sheet2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sheet2_b3_test(doc) -> [{userdata,[{""}]}];
 sheet2_b3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet2/","b3"),
   Expected="This is cell B3 on Sheet2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sheet2_b4_test(doc) -> [{userdata,[{""}]}];
 sheet2_b4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet2/","b4"),
   Expected="This is cell B4 on Sheet2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sheet2_d6_test(doc) -> [{userdata,[{""}]}];
 sheet2_d6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet2/","d6"),
   Expected="This is cell D6 on Sheet2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sheet2_h12_test(doc) -> [{userdata,[{""}]}];
 sheet2_h12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet2/","h12"),
   Expected="This is cell H12 on Sheet2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 all() -> 
     [sheet1_a1_test,

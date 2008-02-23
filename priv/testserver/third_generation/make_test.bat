@@ -5,7 +5,7 @@ readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\a_should_b
 
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_abs_and_rel_addressing.xls" B4:D19
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_arithmetic_and_precedence.xls" A1:B36
-readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_array_formulae.xls" A1:B7
+readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_array_formulae.xls" A1:C7
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_basic_unicode_strings.xls" B2:B43
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_block_of_numbers.xls" A1:I5
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_booleans_and_errors.xls" A1:B9

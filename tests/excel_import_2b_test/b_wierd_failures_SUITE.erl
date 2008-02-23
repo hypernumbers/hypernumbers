@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_wierd_failures.xls
-% Generated on: Sun Feb 17 21:42:39 +0000 2008
+% Generated on: Fri Feb 22 19:04:11 +0000 2008
 
 -module(b_wierd_failures_SUITE).
 -compile(export_all).
@@ -19,8 +19,9 @@ init_per_suite(Config) ->
         {_,Data2}                                -> Data2;
         {_,number,Data2} when is_float(Data2)   -> float_to_list(Data2);
         {_,number,Data2} when is_integer(Data2) -> integer_to_list(Data2);
-        {_,boolean,true}                        -> "true";
-        {_,boolean,false}                       -> "false"
+        {_,error,Error}                          -> Error;
+        {_,boolean,true}                         -> "true";
+        {_,boolean,false}                        -> "false"
       end,
       Path="/"++Sheet++"/",
       Cell=util2:make_b26(ColIdx+1)++integer_to_list(RowIdx+1),
@@ -74,14 +75,14 @@ sheet1_a1_test(_Config) ->
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","a1"),
   Expected="12.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 sheet1_b1_test(doc) -> [{userdata,[{""}]}];
 sheet1_b1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","b1"),
   Expected="3.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 all() -> 
     [sheet1_a1_test,

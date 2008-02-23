@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_bitwise.xls
-% Generated on: Sun Feb 17 21:42:50 +0000 2008
+% Generated on: Fri Feb 22 19:04:21 +0000 2008
 
 -module(e_gnumeric_bitwise_SUITE).
 -compile(export_all).
@@ -19,8 +19,9 @@ init_per_suite(Config) ->
         {_,Data2}                                -> Data2;
         {_,number,Data2} when is_float(Data2)   -> float_to_list(Data2);
         {_,number,Data2} when is_integer(Data2) -> integer_to_list(Data2);
-        {_,boolean,true}                        -> "true";
-        {_,boolean,false}                       -> "false"
+        {_,error,Error}                          -> Error;
+        {_,boolean,true}                         -> "true";
+        {_,boolean,false}                        -> "false"
       end,
       Path="/"++Sheet++"/",
       Cell=util2:make_b26(ColIdx+1)++integer_to_list(RowIdx+1),
@@ -74,91 +75,91 @@ summary_a5_test(_Config) ->
   Got=hn_get("http://127.0.0.1:9000","/Summary/","a5"),
   Expected="Bitxor",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 summary_a6_test(doc) -> [{userdata,[{""}]}];
 summary_a6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","a6"),
   Expected="Bitrshift",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 summary_a1_test(doc) -> [{userdata,[{""}]}];
 summary_a1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","a1"),
   Expected="Bitwise",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 summary_a7_test(doc) -> [{userdata,[{""}]}];
 summary_a7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","a7"),
   Expected="Bitlshift",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 summary_a3_test(doc) -> [{userdata,[{""}]}];
 summary_a3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","a3"),
   Expected="Bitor",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 summary_a4_test(doc) -> [{userdata,[{""}]}];
 summary_a4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","a4"),
   Expected="Bitand",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 summary_b5_test(doc) -> [{userdata,[{""}]}];
 summary_b5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","b5"),
   Expected="Fail",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 summary_b6_test(doc) -> [{userdata,[{""}]}];
 summary_b6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","b6"),
   Expected="Fail",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 summary_b7_test(doc) -> [{userdata,[{""}]}];
 summary_b7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","b7"),
   Expected="Fail",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 summary_b3_test(doc) -> [{userdata,[{""}]}];
 summary_b3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","b3"),
   Expected="Fail",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 summary_b4_test(doc) -> [{userdata,[{""}]}];
 summary_b4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","b4"),
   Expected="Fail",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 summary_d2_test(doc) -> [{userdata,[{""}]}];
 summary_d2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","d2"),
   Expected="Tolerance",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 summary_e2_test(doc) -> [{userdata,[{""}]}];
 summary_e2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","e2"),
   Expected="1.0e-006",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 all() -> 
     [summary_a5_test,

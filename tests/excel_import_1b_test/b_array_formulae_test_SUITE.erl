@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_array_formulae.xls
-% Generated on: Sun Feb 17 21:41:48 +0000 2008
+% Generated on: Fri Feb 22 19:03:28 +0000 2008
 
 -module(b_array_formulae_test_SUITE).
 -compile(export_all).
@@ -168,6 +168,34 @@ sheet1_b3_test(Config) ->
             exit("die in flames!")
   end.
   
+sheet1_c2_test(doc) -> [{userdata,[{""}]}];
+sheet1_c2_test(Config) -> 
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",1,2}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",1,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=A2:A3*B2:B3"}]),
+      test_util:expected2(Msg, {formula,"=A2:A3*B2:B3"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
+  
+sheet1_c3_test(doc) -> [{userdata,[{""}]}];
+sheet1_c3_test(Config) -> 
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",2,2}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",2,2}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=A2:A3*B2:B3"}]),
+      test_util:expected2(Msg, {formula,"=A2:A3*B2:B3"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
+  
 all() -> 
     [sheet1_a5_test,
    sheet1_a6_test,
@@ -178,6 +206,8 @@ all() ->
    sheet1_b6_test,
    sheet1_b7_test,
    sheet1_b2_test,
-   sheet1_b3_test
+   sheet1_b3_test,
+   sheet1_c2_test,
+   sheet1_c3_test
     ].
   

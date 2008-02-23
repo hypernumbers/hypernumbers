@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_operators_mult.xls
-% Generated on: Sun Feb 17 21:43:01 +0000 2008
+% Generated on: Fri Feb 22 19:04:32 +0000 2008
 
 -module(e_gnumeric_operators_mult_SUITE).
 -compile(export_all).
@@ -19,8 +19,9 @@ init_per_suite(Config) ->
         {_,Data2}                                -> Data2;
         {_,number,Data2} when is_float(Data2)   -> float_to_list(Data2);
         {_,number,Data2} when is_integer(Data2) -> integer_to_list(Data2);
-        {_,boolean,true}                        -> "true";
-        {_,boolean,false}                       -> "false"
+        {_,error,Error}                          -> Error;
+        {_,boolean,true}                         -> "true";
+        {_,boolean,false}                        -> "false"
       end,
       Path="/"++Sheet++"/",
       Cell=util2:make_b26(ColIdx+1)++integer_to_list(RowIdx+1),
@@ -74,9121 +75,9121 @@ mult_k5_test(_Config) ->
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k5"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k16_test(doc) -> [{userdata,[{""}]}];
 mult_k16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k16"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k27_test(doc) -> [{userdata,[{""}]}];
 mult_k27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k27"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k38_test(doc) -> [{userdata,[{""}]}];
 mult_k38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k38"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k49_test(doc) -> [{userdata,[{""}]}];
 mult_k49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k60_test(doc) -> [{userdata,[{""}]}];
 mult_k60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k11_test(doc) -> [{userdata,[{""}]}];
 mult_k11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k22_test(doc) -> [{userdata,[{""}]}];
 mult_k22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k22"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k33_test(doc) -> [{userdata,[{""}]}];
 mult_k33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k44_test(doc) -> [{userdata,[{""}]}];
 mult_k44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k44"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k55_test(doc) -> [{userdata,[{""}]}];
 mult_k55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k66_test(doc) -> [{userdata,[{""}]}];
 mult_k66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k6_test(doc) -> [{userdata,[{""}]}];
 mult_k6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k17_test(doc) -> [{userdata,[{""}]}];
 mult_k17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k17"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k28_test(doc) -> [{userdata,[{""}]}];
 mult_k28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k39_test(doc) -> [{userdata,[{""}]}];
 mult_k39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k39"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k50_test(doc) -> [{userdata,[{""}]}];
 mult_k50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k61_test(doc) -> [{userdata,[{""}]}];
 mult_k61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k1_test(doc) -> [{userdata,[{""}]}];
 mult_k1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k12_test(doc) -> [{userdata,[{""}]}];
 mult_k12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k34_test(doc) -> [{userdata,[{""}]}];
 mult_k34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k56_test(doc) -> [{userdata,[{""}]}];
 mult_k56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k7_test(doc) -> [{userdata,[{""}]}];
 mult_k7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k18_test(doc) -> [{userdata,[{""}]}];
 mult_k18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k18"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k29_test(doc) -> [{userdata,[{""}]}];
 mult_k29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k40_test(doc) -> [{userdata,[{""}]}];
 mult_k40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k40"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k51_test(doc) -> [{userdata,[{""}]}];
 mult_k51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k62_test(doc) -> [{userdata,[{""}]}];
 mult_k62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k2_test(doc) -> [{userdata,[{""}]}];
 mult_k2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k2"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k13_test(doc) -> [{userdata,[{""}]}];
 mult_k13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k35_test(doc) -> [{userdata,[{""}]}];
 mult_k35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k57_test(doc) -> [{userdata,[{""}]}];
 mult_k57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k8_test(doc) -> [{userdata,[{""}]}];
 mult_k8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k19_test(doc) -> [{userdata,[{""}]}];
 mult_k19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k19"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k30_test(doc) -> [{userdata,[{""}]}];
 mult_k30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k41_test(doc) -> [{userdata,[{""}]}];
 mult_k41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k41"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k52_test(doc) -> [{userdata,[{""}]}];
 mult_k52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k63_test(doc) -> [{userdata,[{""}]}];
 mult_k63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k3_test(doc) -> [{userdata,[{""}]}];
 mult_k3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k3"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k14_test(doc) -> [{userdata,[{""}]}];
 mult_k14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k25_test(doc) -> [{userdata,[{""}]}];
 mult_k25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k25"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k36_test(doc) -> [{userdata,[{""}]}];
 mult_k36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k47_test(doc) -> [{userdata,[{""}]}];
 mult_k47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k58_test(doc) -> [{userdata,[{""}]}];
 mult_k58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k9_test(doc) -> [{userdata,[{""}]}];
 mult_k9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k20_test(doc) -> [{userdata,[{""}]}];
 mult_k20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k20"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k31_test(doc) -> [{userdata,[{""}]}];
 mult_k31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k42_test(doc) -> [{userdata,[{""}]}];
 mult_k42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k42"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k53_test(doc) -> [{userdata,[{""}]}];
 mult_k53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k64_test(doc) -> [{userdata,[{""}]}];
 mult_k64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k4_test(doc) -> [{userdata,[{""}]}];
 mult_k4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k4"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k15_test(doc) -> [{userdata,[{""}]}];
 mult_k15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k26_test(doc) -> [{userdata,[{""}]}];
 mult_k26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k26"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k37_test(doc) -> [{userdata,[{""}]}];
 mult_k37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k48_test(doc) -> [{userdata,[{""}]}];
 mult_k48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k59_test(doc) -> [{userdata,[{""}]}];
 mult_k59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k10_test(doc) -> [{userdata,[{""}]}];
 mult_k10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k21_test(doc) -> [{userdata,[{""}]}];
 mult_k21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k21"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k32_test(doc) -> [{userdata,[{""}]}];
 mult_k32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k43_test(doc) -> [{userdata,[{""}]}];
 mult_k43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k43"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k54_test(doc) -> [{userdata,[{""}]}];
 mult_k54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_k65_test(doc) -> [{userdata,[{""}]}];
 mult_k65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","k65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v5_test(doc) -> [{userdata,[{""}]}];
 mult_v5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v5"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v16_test(doc) -> [{userdata,[{""}]}];
 mult_v16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v16"),
   Expected="97721.64",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v27_test(doc) -> [{userdata,[{""}]}];
 mult_v27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v27"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v38_test(doc) -> [{userdata,[{""}]}];
 mult_v38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v38"),
   Expected="97721.64",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v49_test(doc) -> [{userdata,[{""}]}];
 mult_v49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v60_test(doc) -> [{userdata,[{""}]}];
 mult_v60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v11_test(doc) -> [{userdata,[{""}]}];
 mult_v11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v22_test(doc) -> [{userdata,[{""}]}];
 mult_v22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v22"),
   Expected="1309947726.24",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v33_test(doc) -> [{userdata,[{""}]}];
 mult_v33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v44_test(doc) -> [{userdata,[{""}]}];
 mult_v44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v44"),
   Expected="1309947726.24",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v55_test(doc) -> [{userdata,[{""}]}];
 mult_v55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v66_test(doc) -> [{userdata,[{""}]}];
 mult_v66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v6_test(doc) -> [{userdata,[{""}]}];
 mult_v6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v17_test(doc) -> [{userdata,[{""}]}];
 mult_v17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v17"),
   Expected="128123.928",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v28_test(doc) -> [{userdata,[{""}]}];
 mult_v28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v39_test(doc) -> [{userdata,[{""}]}];
 mult_v39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v39"),
   Expected="128123.928",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v50_test(doc) -> [{userdata,[{""}]}];
 mult_v50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v61_test(doc) -> [{userdata,[{""}]}];
 mult_v61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v1_test(doc) -> [{userdata,[{""}]}];
 mult_v1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v1"),
   Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v12_test(doc) -> [{userdata,[{""}]}];
 mult_v12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v34_test(doc) -> [{userdata,[{""}]}];
 mult_v34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v56_test(doc) -> [{userdata,[{""}]}];
 mult_v56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v7_test(doc) -> [{userdata,[{""}]}];
 mult_v7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v18_test(doc) -> [{userdata,[{""}]}];
 mult_v18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v18"),
   Expected="1309904294.4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v29_test(doc) -> [{userdata,[{""}]}];
 mult_v29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v40_test(doc) -> [{userdata,[{""}]}];
 mult_v40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v40"),
   Expected="1309904294.4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v51_test(doc) -> [{userdata,[{""}]}];
 mult_v51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v62_test(doc) -> [{userdata,[{""}]}];
 mult_v62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v2_test(doc) -> [{userdata,[{""}]}];
 mult_v2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v2"),
   Expected="36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v13_test(doc) -> [{userdata,[{""}]}];
 mult_v13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v35_test(doc) -> [{userdata,[{""}]}];
 mult_v35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v57_test(doc) -> [{userdata,[{""}]}];
 mult_v57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v8_test(doc) -> [{userdata,[{""}]}];
 mult_v8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v19_test(doc) -> [{userdata,[{""}]}];
 mult_v19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v19"),
   Expected="1309940487.6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v30_test(doc) -> [{userdata,[{""}]}];
 mult_v30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v41_test(doc) -> [{userdata,[{""}]}];
 mult_v41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v41"),
   Expected="1309940487.6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v52_test(doc) -> [{userdata,[{""}]}];
 mult_v52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v63_test(doc) -> [{userdata,[{""}]}];
 mult_v63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v3_test(doc) -> [{userdata,[{""}]}];
 mult_v3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v3"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v14_test(doc) -> [{userdata,[{""}]}];
 mult_v14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v25_test(doc) -> [{userdata,[{""}]}];
 mult_v25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v25"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v36_test(doc) -> [{userdata,[{""}]}];
 mult_v36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v47_test(doc) -> [{userdata,[{""}]}];
 mult_v47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v58_test(doc) -> [{userdata,[{""}]}];
 mult_v58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v9_test(doc) -> [{userdata,[{""}]}];
 mult_v9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v20_test(doc) -> [{userdata,[{""}]}];
 mult_v20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v20"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v31_test(doc) -> [{userdata,[{""}]}];
 mult_v31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v42_test(doc) -> [{userdata,[{""}]}];
 mult_v42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v42"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v53_test(doc) -> [{userdata,[{""}]}];
 mult_v53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v64_test(doc) -> [{userdata,[{""}]}];
 mult_v64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v4_test(doc) -> [{userdata,[{""}]}];
 mult_v4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v4"),
   Expected="36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v15_test(doc) -> [{userdata,[{""}]}];
 mult_v15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v26_test(doc) -> [{userdata,[{""}]}];
 mult_v26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v26"),
   Expected="36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v37_test(doc) -> [{userdata,[{""}]}];
 mult_v37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v48_test(doc) -> [{userdata,[{""}]}];
 mult_v48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v59_test(doc) -> [{userdata,[{""}]}];
 mult_v59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v10_test(doc) -> [{userdata,[{""}]}];
 mult_v10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v21_test(doc) -> [{userdata,[{""}]}];
 mult_v21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v21"),
   Expected="113700.9378",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v32_test(doc) -> [{userdata,[{""}]}];
 mult_v32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v43_test(doc) -> [{userdata,[{""}]}];
 mult_v43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v43"),
   Expected="113700.9378",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v54_test(doc) -> [{userdata,[{""}]}];
 mult_v54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_v65_test(doc) -> [{userdata,[{""}]}];
 mult_v65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","v65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a5_test(doc) -> [{userdata,[{""}]}];
 mult_a5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a5"),
   Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a16_test(doc) -> [{userdata,[{""}]}];
 mult_a16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a16"),
   Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a27_test(doc) -> [{userdata,[{""}]}];
 mult_a27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a27"),
   Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a38_test(doc) -> [{userdata,[{""}]}];
 mult_a38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a38"),
   Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a11_test(doc) -> [{userdata,[{""}]}];
 mult_a11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a11"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a22_test(doc) -> [{userdata,[{""}]}];
 mult_a22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a22"),
   Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a33_test(doc) -> [{userdata,[{""}]}];
 mult_a33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a33"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a44_test(doc) -> [{userdata,[{""}]}];
 mult_a44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a44"),
   Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a6_test(doc) -> [{userdata,[{""}]}];
 mult_a6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a6"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a17_test(doc) -> [{userdata,[{""}]}];
 mult_a17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a17"),
   Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a28_test(doc) -> [{userdata,[{""}]}];
 mult_a28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a28"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a39_test(doc) -> [{userdata,[{""}]}];
 mult_a39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a39"),
   Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a1_test(doc) -> [{userdata,[{""}]}];
 mult_a1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a1"),
   Expected="*",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a12_test(doc) -> [{userdata,[{""}]}];
 mult_a12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a12"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a34_test(doc) -> [{userdata,[{""}]}];
 mult_a34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a34"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a7_test(doc) -> [{userdata,[{""}]}];
 mult_a7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a7"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a18_test(doc) -> [{userdata,[{""}]}];
 mult_a18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a18"),
   Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a29_test(doc) -> [{userdata,[{""}]}];
 mult_a29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a29"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a40_test(doc) -> [{userdata,[{""}]}];
 mult_a40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a40"),
   Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a2_test(doc) -> [{userdata,[{""}]}];
 mult_a2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a2"),
   Expected="A",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a13_test(doc) -> [{userdata,[{""}]}];
 mult_a13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a13"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a35_test(doc) -> [{userdata,[{""}]}];
 mult_a35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a35"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a8_test(doc) -> [{userdata,[{""}]}];
 mult_a8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a8"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a19_test(doc) -> [{userdata,[{""}]}];
 mult_a19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a19"),
   Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a30_test(doc) -> [{userdata,[{""}]}];
 mult_a30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a30"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a41_test(doc) -> [{userdata,[{""}]}];
 mult_a41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a41"),
   Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a3_test(doc) -> [{userdata,[{""}]}];
 mult_a3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a3"),
   Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a14_test(doc) -> [{userdata,[{""}]}];
 mult_a14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a14"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a25_test(doc) -> [{userdata,[{""}]}];
 mult_a25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a25"),
   Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a36_test(doc) -> [{userdata,[{""}]}];
 mult_a36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a36"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a47_test(doc) -> [{userdata,[{""}]}];
 mult_a47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a47"),
   Expected="400.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a9_test(doc) -> [{userdata,[{""}]}];
 mult_a9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a9"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a20_test(doc) -> [{userdata,[{""}]}];
 mult_a20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a20"),
   Expected="Zero",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a31_test(doc) -> [{userdata,[{""}]}];
 mult_a31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a31"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a42_test(doc) -> [{userdata,[{""}]}];
 mult_a42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a42"),
   Expected="Zero",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a4_test(doc) -> [{userdata,[{""}]}];
 mult_a4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a4"),
   Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a15_test(doc) -> [{userdata,[{""}]}];
 mult_a15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a15"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a26_test(doc) -> [{userdata,[{""}]}];
 mult_a26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a26"),
   Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a37_test(doc) -> [{userdata,[{""}]}];
 mult_a37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a37"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a48_test(doc) -> [{userdata,[{""}]}];
 mult_a48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a48"),
   Expected="Success",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a10_test(doc) -> [{userdata,[{""}]}];
 mult_a10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a10"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a21_test(doc) -> [{userdata,[{""}]}];
 mult_a21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a21"),
   Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a32_test(doc) -> [{userdata,[{""}]}];
 mult_a32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a32"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_a43_test(doc) -> [{userdata,[{""}]}];
 mult_a43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","a43"),
   Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l5_test(doc) -> [{userdata,[{""}]}];
 mult_l5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l5"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l16_test(doc) -> [{userdata,[{""}]}];
 mult_l16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l16"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l27_test(doc) -> [{userdata,[{""}]}];
 mult_l27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l27"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l38_test(doc) -> [{userdata,[{""}]}];
 mult_l38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l49_test(doc) -> [{userdata,[{""}]}];
 mult_l49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l60_test(doc) -> [{userdata,[{""}]}];
 mult_l60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l11_test(doc) -> [{userdata,[{""}]}];
 mult_l11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l22_test(doc) -> [{userdata,[{""}]}];
 mult_l22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l22"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l33_test(doc) -> [{userdata,[{""}]}];
 mult_l33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l44_test(doc) -> [{userdata,[{""}]}];
 mult_l44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l55_test(doc) -> [{userdata,[{""}]}];
 mult_l55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l66_test(doc) -> [{userdata,[{""}]}];
 mult_l66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l6_test(doc) -> [{userdata,[{""}]}];
 mult_l6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l17_test(doc) -> [{userdata,[{""}]}];
 mult_l17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l17"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l28_test(doc) -> [{userdata,[{""}]}];
 mult_l28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l39_test(doc) -> [{userdata,[{""}]}];
 mult_l39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l50_test(doc) -> [{userdata,[{""}]}];
 mult_l50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l61_test(doc) -> [{userdata,[{""}]}];
 mult_l61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l1_test(doc) -> [{userdata,[{""}]}];
 mult_l1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l12_test(doc) -> [{userdata,[{""}]}];
 mult_l12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l34_test(doc) -> [{userdata,[{""}]}];
 mult_l34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l56_test(doc) -> [{userdata,[{""}]}];
 mult_l56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l7_test(doc) -> [{userdata,[{""}]}];
 mult_l7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l18_test(doc) -> [{userdata,[{""}]}];
 mult_l18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l18"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l29_test(doc) -> [{userdata,[{""}]}];
 mult_l29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l40_test(doc) -> [{userdata,[{""}]}];
 mult_l40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l40"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l51_test(doc) -> [{userdata,[{""}]}];
 mult_l51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l62_test(doc) -> [{userdata,[{""}]}];
 mult_l62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l2_test(doc) -> [{userdata,[{""}]}];
 mult_l2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l2"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l13_test(doc) -> [{userdata,[{""}]}];
 mult_l13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l35_test(doc) -> [{userdata,[{""}]}];
 mult_l35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l57_test(doc) -> [{userdata,[{""}]}];
 mult_l57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l8_test(doc) -> [{userdata,[{""}]}];
 mult_l8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l19_test(doc) -> [{userdata,[{""}]}];
 mult_l19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l19"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l30_test(doc) -> [{userdata,[{""}]}];
 mult_l30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l41_test(doc) -> [{userdata,[{""}]}];
 mult_l41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l52_test(doc) -> [{userdata,[{""}]}];
 mult_l52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l63_test(doc) -> [{userdata,[{""}]}];
 mult_l63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l3_test(doc) -> [{userdata,[{""}]}];
 mult_l3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l3"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l14_test(doc) -> [{userdata,[{""}]}];
 mult_l14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l25_test(doc) -> [{userdata,[{""}]}];
 mult_l25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l25"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l36_test(doc) -> [{userdata,[{""}]}];
 mult_l36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l47_test(doc) -> [{userdata,[{""}]}];
 mult_l47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l58_test(doc) -> [{userdata,[{""}]}];
 mult_l58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l9_test(doc) -> [{userdata,[{""}]}];
 mult_l9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l20_test(doc) -> [{userdata,[{""}]}];
 mult_l20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l20"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l31_test(doc) -> [{userdata,[{""}]}];
 mult_l31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l42_test(doc) -> [{userdata,[{""}]}];
 mult_l42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l53_test(doc) -> [{userdata,[{""}]}];
 mult_l53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l64_test(doc) -> [{userdata,[{""}]}];
 mult_l64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l4_test(doc) -> [{userdata,[{""}]}];
 mult_l4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l4"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l15_test(doc) -> [{userdata,[{""}]}];
 mult_l15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l26_test(doc) -> [{userdata,[{""}]}];
 mult_l26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l26"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l37_test(doc) -> [{userdata,[{""}]}];
 mult_l37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l48_test(doc) -> [{userdata,[{""}]}];
 mult_l48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l59_test(doc) -> [{userdata,[{""}]}];
 mult_l59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l10_test(doc) -> [{userdata,[{""}]}];
 mult_l10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l21_test(doc) -> [{userdata,[{""}]}];
 mult_l21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l21"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l32_test(doc) -> [{userdata,[{""}]}];
 mult_l32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l43_test(doc) -> [{userdata,[{""}]}];
 mult_l43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l54_test(doc) -> [{userdata,[{""}]}];
 mult_l54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_l65_test(doc) -> [{userdata,[{""}]}];
 mult_l65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","l65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_b5_test(doc) -> [{userdata,[{""}]}];
 mult_b5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","b5"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_b16_test(doc) -> [{userdata,[{""}]}];
 mult_b16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","b16"),
   Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_b11_test(doc) -> [{userdata,[{""}]}];
 mult_b11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","b11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_b22_test(doc) -> [{userdata,[{""}]}];
 mult_b22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","b22"),
   Expected="36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_b6_test(doc) -> [{userdata,[{""}]}];
 mult_b6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","b6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_b17_test(doc) -> [{userdata,[{""}]}];
 mult_b17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","b17"),
   Expected="3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_b1_test(doc) -> [{userdata,[{""}]}];
 mult_b1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","b1"),
   Expected="B",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_b12_test(doc) -> [{userdata,[{""}]}];
 mult_b12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","b12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_b7_test(doc) -> [{userdata,[{""}]}];
 mult_b7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","b7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_b18_test(doc) -> [{userdata,[{""}]}];
 mult_b18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","b18"),
   Expected="1999/02/01 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_b13_test(doc) -> [{userdata,[{""}]}];
 mult_b13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","b13"),
   Expected="Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_b8_test(doc) -> [{userdata,[{""}]}];
 mult_b8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","b8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_b19_test(doc) -> [{userdata,[{""}]}];
 mult_b19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","b19"),
   Expected="1999/02/02 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_b14_test(doc) -> [{userdata,[{""}]}];
 mult_b14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","b14"),
   Expected="Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_b9_test(doc) -> [{userdata,[{""}]}];
 mult_b9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","b9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_b20_test(doc) -> [{userdata,[{""}]}];
 mult_b20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","b20"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_b4_test(doc) -> [{userdata,[{""}]}];
 mult_b4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","b4"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_b15_test(doc) -> [{userdata,[{""}]}];
 mult_b15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","b15"),
   Expected="Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_b10_test(doc) -> [{userdata,[{""}]}];
 mult_b10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","b10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_b21_test(doc) -> [{userdata,[{""}]}];
 mult_b21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","b21"),
   Expected="3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m5_test(doc) -> [{userdata,[{""}]}];
 mult_m5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m5"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m16_test(doc) -> [{userdata,[{""}]}];
 mult_m16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m16"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m27_test(doc) -> [{userdata,[{""}]}];
 mult_m27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m27"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m38_test(doc) -> [{userdata,[{""}]}];
 mult_m38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m49_test(doc) -> [{userdata,[{""}]}];
 mult_m49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m60_test(doc) -> [{userdata,[{""}]}];
 mult_m60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m11_test(doc) -> [{userdata,[{""}]}];
 mult_m11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m22_test(doc) -> [{userdata,[{""}]}];
 mult_m22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m22"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m33_test(doc) -> [{userdata,[{""}]}];
 mult_m33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m44_test(doc) -> [{userdata,[{""}]}];
 mult_m44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m55_test(doc) -> [{userdata,[{""}]}];
 mult_m55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m66_test(doc) -> [{userdata,[{""}]}];
 mult_m66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m6_test(doc) -> [{userdata,[{""}]}];
 mult_m6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m17_test(doc) -> [{userdata,[{""}]}];
 mult_m17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m17"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m28_test(doc) -> [{userdata,[{""}]}];
 mult_m28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m39_test(doc) -> [{userdata,[{""}]}];
 mult_m39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m50_test(doc) -> [{userdata,[{""}]}];
 mult_m50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m61_test(doc) -> [{userdata,[{""}]}];
 mult_m61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m1_test(doc) -> [{userdata,[{""}]}];
 mult_m1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m1"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m12_test(doc) -> [{userdata,[{""}]}];
 mult_m12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m34_test(doc) -> [{userdata,[{""}]}];
 mult_m34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m56_test(doc) -> [{userdata,[{""}]}];
 mult_m56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m7_test(doc) -> [{userdata,[{""}]}];
 mult_m7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m18_test(doc) -> [{userdata,[{""}]}];
 mult_m18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m18"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m29_test(doc) -> [{userdata,[{""}]}];
 mult_m29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m40_test(doc) -> [{userdata,[{""}]}];
 mult_m40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m40"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m51_test(doc) -> [{userdata,[{""}]}];
 mult_m51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m62_test(doc) -> [{userdata,[{""}]}];
 mult_m62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m2_test(doc) -> [{userdata,[{""}]}];
 mult_m2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m2"),
   Expected="Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m13_test(doc) -> [{userdata,[{""}]}];
 mult_m13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m35_test(doc) -> [{userdata,[{""}]}];
 mult_m35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m57_test(doc) -> [{userdata,[{""}]}];
 mult_m57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m8_test(doc) -> [{userdata,[{""}]}];
 mult_m8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m19_test(doc) -> [{userdata,[{""}]}];
 mult_m19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m19"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m30_test(doc) -> [{userdata,[{""}]}];
 mult_m30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m41_test(doc) -> [{userdata,[{""}]}];
 mult_m41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m52_test(doc) -> [{userdata,[{""}]}];
 mult_m52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m63_test(doc) -> [{userdata,[{""}]}];
 mult_m63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m3_test(doc) -> [{userdata,[{""}]}];
 mult_m3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m3"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m14_test(doc) -> [{userdata,[{""}]}];
 mult_m14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m25_test(doc) -> [{userdata,[{""}]}];
 mult_m25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m25"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m36_test(doc) -> [{userdata,[{""}]}];
 mult_m36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m47_test(doc) -> [{userdata,[{""}]}];
 mult_m47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m58_test(doc) -> [{userdata,[{""}]}];
 mult_m58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m9_test(doc) -> [{userdata,[{""}]}];
 mult_m9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m20_test(doc) -> [{userdata,[{""}]}];
 mult_m20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m20"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m31_test(doc) -> [{userdata,[{""}]}];
 mult_m31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m42_test(doc) -> [{userdata,[{""}]}];
 mult_m42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m53_test(doc) -> [{userdata,[{""}]}];
 mult_m53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m64_test(doc) -> [{userdata,[{""}]}];
 mult_m64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m4_test(doc) -> [{userdata,[{""}]}];
 mult_m4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m4"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m15_test(doc) -> [{userdata,[{""}]}];
 mult_m15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m26_test(doc) -> [{userdata,[{""}]}];
 mult_m26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m26"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m37_test(doc) -> [{userdata,[{""}]}];
 mult_m37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m48_test(doc) -> [{userdata,[{""}]}];
 mult_m48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m59_test(doc) -> [{userdata,[{""}]}];
 mult_m59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m10_test(doc) -> [{userdata,[{""}]}];
 mult_m10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m21_test(doc) -> [{userdata,[{""}]}];
 mult_m21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m21"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m32_test(doc) -> [{userdata,[{""}]}];
 mult_m32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m43_test(doc) -> [{userdata,[{""}]}];
 mult_m43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m54_test(doc) -> [{userdata,[{""}]}];
 mult_m54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_m65_test(doc) -> [{userdata,[{""}]}];
 mult_m65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","m65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c5_test(doc) -> [{userdata,[{""}]}];
 mult_c5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c5"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c16_test(doc) -> [{userdata,[{""}]}];
 mult_c16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c16"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c27_test(doc) -> [{userdata,[{""}]}];
 mult_c27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c27"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c38_test(doc) -> [{userdata,[{""}]}];
 mult_c38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c38"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c49_test(doc) -> [{userdata,[{""}]}];
 mult_c49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c60_test(doc) -> [{userdata,[{""}]}];
 mult_c60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c11_test(doc) -> [{userdata,[{""}]}];
 mult_c11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c22_test(doc) -> [{userdata,[{""}]}];
 mult_c22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c22"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c33_test(doc) -> [{userdata,[{""}]}];
 mult_c33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c44_test(doc) -> [{userdata,[{""}]}];
 mult_c44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c44"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c55_test(doc) -> [{userdata,[{""}]}];
 mult_c55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c66_test(doc) -> [{userdata,[{""}]}];
 mult_c66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c6_test(doc) -> [{userdata,[{""}]}];
 mult_c6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c17_test(doc) -> [{userdata,[{""}]}];
 mult_c17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c17"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c28_test(doc) -> [{userdata,[{""}]}];
 mult_c28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c39_test(doc) -> [{userdata,[{""}]}];
 mult_c39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c39"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c50_test(doc) -> [{userdata,[{""}]}];
 mult_c50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c61_test(doc) -> [{userdata,[{""}]}];
 mult_c61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c1_test(doc) -> [{userdata,[{""}]}];
 mult_c1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c1"),
   Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c12_test(doc) -> [{userdata,[{""}]}];
 mult_c12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c34_test(doc) -> [{userdata,[{""}]}];
 mult_c34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c56_test(doc) -> [{userdata,[{""}]}];
 mult_c56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c7_test(doc) -> [{userdata,[{""}]}];
 mult_c7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c18_test(doc) -> [{userdata,[{""}]}];
 mult_c18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c18"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c29_test(doc) -> [{userdata,[{""}]}];
 mult_c29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c40_test(doc) -> [{userdata,[{""}]}];
 mult_c40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c40"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c51_test(doc) -> [{userdata,[{""}]}];
 mult_c51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c62_test(doc) -> [{userdata,[{""}]}];
 mult_c62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c13_test(doc) -> [{userdata,[{""}]}];
 mult_c13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c35_test(doc) -> [{userdata,[{""}]}];
 mult_c35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c57_test(doc) -> [{userdata,[{""}]}];
 mult_c57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c8_test(doc) -> [{userdata,[{""}]}];
 mult_c8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c19_test(doc) -> [{userdata,[{""}]}];
 mult_c19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c19"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c30_test(doc) -> [{userdata,[{""}]}];
 mult_c30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c41_test(doc) -> [{userdata,[{""}]}];
 mult_c41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c41"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c52_test(doc) -> [{userdata,[{""}]}];
 mult_c52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c63_test(doc) -> [{userdata,[{""}]}];
 mult_c63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c3_test(doc) -> [{userdata,[{""}]}];
 mult_c3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c3"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c14_test(doc) -> [{userdata,[{""}]}];
 mult_c14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c25_test(doc) -> [{userdata,[{""}]}];
 mult_c25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c25"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c36_test(doc) -> [{userdata,[{""}]}];
 mult_c36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c47_test(doc) -> [{userdata,[{""}]}];
 mult_c47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c58_test(doc) -> [{userdata,[{""}]}];
 mult_c58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c9_test(doc) -> [{userdata,[{""}]}];
 mult_c9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c20_test(doc) -> [{userdata,[{""}]}];
 mult_c20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c20"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c31_test(doc) -> [{userdata,[{""}]}];
 mult_c31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c42_test(doc) -> [{userdata,[{""}]}];
 mult_c42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c42"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c53_test(doc) -> [{userdata,[{""}]}];
 mult_c53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c64_test(doc) -> [{userdata,[{""}]}];
 mult_c64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c4_test(doc) -> [{userdata,[{""}]}];
 mult_c4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c4"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c15_test(doc) -> [{userdata,[{""}]}];
 mult_c15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c26_test(doc) -> [{userdata,[{""}]}];
 mult_c26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c26"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c37_test(doc) -> [{userdata,[{""}]}];
 mult_c37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c48_test(doc) -> [{userdata,[{""}]}];
 mult_c48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c59_test(doc) -> [{userdata,[{""}]}];
 mult_c59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c10_test(doc) -> [{userdata,[{""}]}];
 mult_c10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c21_test(doc) -> [{userdata,[{""}]}];
 mult_c21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c21"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c32_test(doc) -> [{userdata,[{""}]}];
 mult_c32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c43_test(doc) -> [{userdata,[{""}]}];
 mult_c43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c43"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c54_test(doc) -> [{userdata,[{""}]}];
 mult_c54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_c65_test(doc) -> [{userdata,[{""}]}];
 mult_c65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","c65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n5_test(doc) -> [{userdata,[{""}]}];
 mult_n5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n5"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n16_test(doc) -> [{userdata,[{""}]}];
 mult_n16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n16"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n27_test(doc) -> [{userdata,[{""}]}];
 mult_n27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n27"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n38_test(doc) -> [{userdata,[{""}]}];
 mult_n38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n49_test(doc) -> [{userdata,[{""}]}];
 mult_n49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n60_test(doc) -> [{userdata,[{""}]}];
 mult_n60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n11_test(doc) -> [{userdata,[{""}]}];
 mult_n11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n22_test(doc) -> [{userdata,[{""}]}];
 mult_n22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n22"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n33_test(doc) -> [{userdata,[{""}]}];
 mult_n33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n44_test(doc) -> [{userdata,[{""}]}];
 mult_n44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n55_test(doc) -> [{userdata,[{""}]}];
 mult_n55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n66_test(doc) -> [{userdata,[{""}]}];
 mult_n66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n6_test(doc) -> [{userdata,[{""}]}];
 mult_n6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n17_test(doc) -> [{userdata,[{""}]}];
 mult_n17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n17"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n28_test(doc) -> [{userdata,[{""}]}];
 mult_n28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n39_test(doc) -> [{userdata,[{""}]}];
 mult_n39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n50_test(doc) -> [{userdata,[{""}]}];
 mult_n50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n61_test(doc) -> [{userdata,[{""}]}];
 mult_n61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n1_test(doc) -> [{userdata,[{""}]}];
 mult_n1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n1"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n12_test(doc) -> [{userdata,[{""}]}];
 mult_n12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n34_test(doc) -> [{userdata,[{""}]}];
 mult_n34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n56_test(doc) -> [{userdata,[{""}]}];
 mult_n56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n7_test(doc) -> [{userdata,[{""}]}];
 mult_n7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n18_test(doc) -> [{userdata,[{""}]}];
 mult_n18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n18"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n29_test(doc) -> [{userdata,[{""}]}];
 mult_n29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n40_test(doc) -> [{userdata,[{""}]}];
 mult_n40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n40"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n51_test(doc) -> [{userdata,[{""}]}];
 mult_n51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n62_test(doc) -> [{userdata,[{""}]}];
 mult_n62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n2_test(doc) -> [{userdata,[{""}]}];
 mult_n2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n2"),
   Expected="Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n13_test(doc) -> [{userdata,[{""}]}];
 mult_n13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n35_test(doc) -> [{userdata,[{""}]}];
 mult_n35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n57_test(doc) -> [{userdata,[{""}]}];
 mult_n57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n8_test(doc) -> [{userdata,[{""}]}];
 mult_n8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n19_test(doc) -> [{userdata,[{""}]}];
 mult_n19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n19"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n30_test(doc) -> [{userdata,[{""}]}];
 mult_n30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n41_test(doc) -> [{userdata,[{""}]}];
 mult_n41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n52_test(doc) -> [{userdata,[{""}]}];
 mult_n52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n63_test(doc) -> [{userdata,[{""}]}];
 mult_n63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n3_test(doc) -> [{userdata,[{""}]}];
 mult_n3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n3"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n14_test(doc) -> [{userdata,[{""}]}];
 mult_n14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n25_test(doc) -> [{userdata,[{""}]}];
 mult_n25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n25"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n36_test(doc) -> [{userdata,[{""}]}];
 mult_n36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n47_test(doc) -> [{userdata,[{""}]}];
 mult_n47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n58_test(doc) -> [{userdata,[{""}]}];
 mult_n58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n9_test(doc) -> [{userdata,[{""}]}];
 mult_n9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n20_test(doc) -> [{userdata,[{""}]}];
 mult_n20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n20"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n31_test(doc) -> [{userdata,[{""}]}];
 mult_n31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n42_test(doc) -> [{userdata,[{""}]}];
 mult_n42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n53_test(doc) -> [{userdata,[{""}]}];
 mult_n53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n64_test(doc) -> [{userdata,[{""}]}];
 mult_n64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n4_test(doc) -> [{userdata,[{""}]}];
 mult_n4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n4"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n15_test(doc) -> [{userdata,[{""}]}];
 mult_n15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n26_test(doc) -> [{userdata,[{""}]}];
 mult_n26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n26"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n37_test(doc) -> [{userdata,[{""}]}];
 mult_n37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n48_test(doc) -> [{userdata,[{""}]}];
 mult_n48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n59_test(doc) -> [{userdata,[{""}]}];
 mult_n59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n10_test(doc) -> [{userdata,[{""}]}];
 mult_n10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n21_test(doc) -> [{userdata,[{""}]}];
 mult_n21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n21"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n32_test(doc) -> [{userdata,[{""}]}];
 mult_n32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n43_test(doc) -> [{userdata,[{""}]}];
 mult_n43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n54_test(doc) -> [{userdata,[{""}]}];
 mult_n54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_n65_test(doc) -> [{userdata,[{""}]}];
 mult_n65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","n65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d5_test(doc) -> [{userdata,[{""}]}];
 mult_d5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d5"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d16_test(doc) -> [{userdata,[{""}]}];
 mult_d16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d16"),
   Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d27_test(doc) -> [{userdata,[{""}]}];
 mult_d27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d27"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d38_test(doc) -> [{userdata,[{""}]}];
 mult_d38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d38"),
   Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d49_test(doc) -> [{userdata,[{""}]}];
 mult_d49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d60_test(doc) -> [{userdata,[{""}]}];
 mult_d60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d11_test(doc) -> [{userdata,[{""}]}];
 mult_d11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d22_test(doc) -> [{userdata,[{""}]}];
 mult_d22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d22"),
   Expected="36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d33_test(doc) -> [{userdata,[{""}]}];
 mult_d33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d44_test(doc) -> [{userdata,[{""}]}];
 mult_d44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d44"),
   Expected="36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d55_test(doc) -> [{userdata,[{""}]}];
 mult_d55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d66_test(doc) -> [{userdata,[{""}]}];
 mult_d66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d6_test(doc) -> [{userdata,[{""}]}];
 mult_d6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d17_test(doc) -> [{userdata,[{""}]}];
 mult_d17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d17"),
   Expected="3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d28_test(doc) -> [{userdata,[{""}]}];
 mult_d28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d39_test(doc) -> [{userdata,[{""}]}];
 mult_d39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d39"),
   Expected="3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d50_test(doc) -> [{userdata,[{""}]}];
 mult_d50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d61_test(doc) -> [{userdata,[{""}]}];
 mult_d61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d1_test(doc) -> [{userdata,[{""}]}];
 mult_d1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d1"),
   Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d12_test(doc) -> [{userdata,[{""}]}];
 mult_d12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d34_test(doc) -> [{userdata,[{""}]}];
 mult_d34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d56_test(doc) -> [{userdata,[{""}]}];
 mult_d56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d7_test(doc) -> [{userdata,[{""}]}];
 mult_d7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d18_test(doc) -> [{userdata,[{""}]}];
 mult_d18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d18"),
   Expected="36192.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d29_test(doc) -> [{userdata,[{""}]}];
 mult_d29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d40_test(doc) -> [{userdata,[{""}]}];
 mult_d40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d40"),
   Expected="36192.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d51_test(doc) -> [{userdata,[{""}]}];
 mult_d51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d62_test(doc) -> [{userdata,[{""}]}];
 mult_d62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d2_test(doc) -> [{userdata,[{""}]}];
 mult_d2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d2"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d13_test(doc) -> [{userdata,[{""}]}];
 mult_d13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d35_test(doc) -> [{userdata,[{""}]}];
 mult_d35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d57_test(doc) -> [{userdata,[{""}]}];
 mult_d57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d8_test(doc) -> [{userdata,[{""}]}];
 mult_d8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d19_test(doc) -> [{userdata,[{""}]}];
 mult_d19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d19"),
   Expected="36193.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d30_test(doc) -> [{userdata,[{""}]}];
 mult_d30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d41_test(doc) -> [{userdata,[{""}]}];
 mult_d41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d41"),
   Expected="36193.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d52_test(doc) -> [{userdata,[{""}]}];
 mult_d52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d63_test(doc) -> [{userdata,[{""}]}];
 mult_d63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d3_test(doc) -> [{userdata,[{""}]}];
 mult_d3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d3"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d14_test(doc) -> [{userdata,[{""}]}];
 mult_d14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d25_test(doc) -> [{userdata,[{""}]}];
 mult_d25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d25"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d36_test(doc) -> [{userdata,[{""}]}];
 mult_d36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d47_test(doc) -> [{userdata,[{""}]}];
 mult_d47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d58_test(doc) -> [{userdata,[{""}]}];
 mult_d58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d9_test(doc) -> [{userdata,[{""}]}];
 mult_d9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d20_test(doc) -> [{userdata,[{""}]}];
 mult_d20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d20"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d31_test(doc) -> [{userdata,[{""}]}];
 mult_d31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d42_test(doc) -> [{userdata,[{""}]}];
 mult_d42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d42"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d53_test(doc) -> [{userdata,[{""}]}];
 mult_d53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d64_test(doc) -> [{userdata,[{""}]}];
 mult_d64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d4_test(doc) -> [{userdata,[{""}]}];
 mult_d4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d4"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d15_test(doc) -> [{userdata,[{""}]}];
 mult_d15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d26_test(doc) -> [{userdata,[{""}]}];
 mult_d26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d26"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d37_test(doc) -> [{userdata,[{""}]}];
 mult_d37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d48_test(doc) -> [{userdata,[{""}]}];
 mult_d48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d59_test(doc) -> [{userdata,[{""}]}];
 mult_d59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d10_test(doc) -> [{userdata,[{""}]}];
 mult_d10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d21_test(doc) -> [{userdata,[{""}]}];
 mult_d21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d21"),
   Expected="3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d32_test(doc) -> [{userdata,[{""}]}];
 mult_d32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d43_test(doc) -> [{userdata,[{""}]}];
 mult_d43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d43"),
   Expected="3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d54_test(doc) -> [{userdata,[{""}]}];
 mult_d54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_d65_test(doc) -> [{userdata,[{""}]}];
 mult_d65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","d65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o5_test(doc) -> [{userdata,[{""}]}];
 mult_o5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o5"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o16_test(doc) -> [{userdata,[{""}]}];
 mult_o16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o16"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o27_test(doc) -> [{userdata,[{""}]}];
 mult_o27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o27"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o38_test(doc) -> [{userdata,[{""}]}];
 mult_o38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o49_test(doc) -> [{userdata,[{""}]}];
 mult_o49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o60_test(doc) -> [{userdata,[{""}]}];
 mult_o60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o11_test(doc) -> [{userdata,[{""}]}];
 mult_o11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o22_test(doc) -> [{userdata,[{""}]}];
 mult_o22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o22"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o33_test(doc) -> [{userdata,[{""}]}];
 mult_o33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o44_test(doc) -> [{userdata,[{""}]}];
 mult_o44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o55_test(doc) -> [{userdata,[{""}]}];
 mult_o55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o66_test(doc) -> [{userdata,[{""}]}];
 mult_o66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o6_test(doc) -> [{userdata,[{""}]}];
 mult_o6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o17_test(doc) -> [{userdata,[{""}]}];
 mult_o17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o17"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o28_test(doc) -> [{userdata,[{""}]}];
 mult_o28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o39_test(doc) -> [{userdata,[{""}]}];
 mult_o39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o50_test(doc) -> [{userdata,[{""}]}];
 mult_o50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o61_test(doc) -> [{userdata,[{""}]}];
 mult_o61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o1_test(doc) -> [{userdata,[{""}]}];
 mult_o1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o1"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o12_test(doc) -> [{userdata,[{""}]}];
 mult_o12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o34_test(doc) -> [{userdata,[{""}]}];
 mult_o34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o56_test(doc) -> [{userdata,[{""}]}];
 mult_o56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o7_test(doc) -> [{userdata,[{""}]}];
 mult_o7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o18_test(doc) -> [{userdata,[{""}]}];
 mult_o18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o18"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o29_test(doc) -> [{userdata,[{""}]}];
 mult_o29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o40_test(doc) -> [{userdata,[{""}]}];
 mult_o40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o40"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o51_test(doc) -> [{userdata,[{""}]}];
 mult_o51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o62_test(doc) -> [{userdata,[{""}]}];
 mult_o62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o2_test(doc) -> [{userdata,[{""}]}];
 mult_o2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o2"),
   Expected="Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o13_test(doc) -> [{userdata,[{""}]}];
 mult_o13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o35_test(doc) -> [{userdata,[{""}]}];
 mult_o35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o57_test(doc) -> [{userdata,[{""}]}];
 mult_o57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o8_test(doc) -> [{userdata,[{""}]}];
 mult_o8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o19_test(doc) -> [{userdata,[{""}]}];
 mult_o19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o19"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o30_test(doc) -> [{userdata,[{""}]}];
 mult_o30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o41_test(doc) -> [{userdata,[{""}]}];
 mult_o41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o41"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o52_test(doc) -> [{userdata,[{""}]}];
 mult_o52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o63_test(doc) -> [{userdata,[{""}]}];
 mult_o63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o3_test(doc) -> [{userdata,[{""}]}];
 mult_o3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o3"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o14_test(doc) -> [{userdata,[{""}]}];
 mult_o14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o25_test(doc) -> [{userdata,[{""}]}];
 mult_o25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o25"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o36_test(doc) -> [{userdata,[{""}]}];
 mult_o36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o47_test(doc) -> [{userdata,[{""}]}];
 mult_o47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o58_test(doc) -> [{userdata,[{""}]}];
 mult_o58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o9_test(doc) -> [{userdata,[{""}]}];
 mult_o9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o20_test(doc) -> [{userdata,[{""}]}];
 mult_o20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o20"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o31_test(doc) -> [{userdata,[{""}]}];
 mult_o31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o42_test(doc) -> [{userdata,[{""}]}];
 mult_o42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o42"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o53_test(doc) -> [{userdata,[{""}]}];
 mult_o53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o64_test(doc) -> [{userdata,[{""}]}];
 mult_o64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o4_test(doc) -> [{userdata,[{""}]}];
 mult_o4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o4"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o15_test(doc) -> [{userdata,[{""}]}];
 mult_o15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o26_test(doc) -> [{userdata,[{""}]}];
 mult_o26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o26"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o37_test(doc) -> [{userdata,[{""}]}];
 mult_o37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o48_test(doc) -> [{userdata,[{""}]}];
 mult_o48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o59_test(doc) -> [{userdata,[{""}]}];
 mult_o59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o10_test(doc) -> [{userdata,[{""}]}];
 mult_o10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o21_test(doc) -> [{userdata,[{""}]}];
 mult_o21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o21"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o32_test(doc) -> [{userdata,[{""}]}];
 mult_o32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o43_test(doc) -> [{userdata,[{""}]}];
 mult_o43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o43"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o54_test(doc) -> [{userdata,[{""}]}];
 mult_o54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_o65_test(doc) -> [{userdata,[{""}]}];
 mult_o65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","o65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e5_test(doc) -> [{userdata,[{""}]}];
 mult_e5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e5"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e16_test(doc) -> [{userdata,[{""}]}];
 mult_e16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e16"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e27_test(doc) -> [{userdata,[{""}]}];
 mult_e27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e27"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e38_test(doc) -> [{userdata,[{""}]}];
 mult_e38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e38"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e49_test(doc) -> [{userdata,[{""}]}];
 mult_e49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e60_test(doc) -> [{userdata,[{""}]}];
 mult_e60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e11_test(doc) -> [{userdata,[{""}]}];
 mult_e11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e22_test(doc) -> [{userdata,[{""}]}];
 mult_e22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e22"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e33_test(doc) -> [{userdata,[{""}]}];
 mult_e33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e44_test(doc) -> [{userdata,[{""}]}];
 mult_e44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e44"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e55_test(doc) -> [{userdata,[{""}]}];
 mult_e55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e66_test(doc) -> [{userdata,[{""}]}];
 mult_e66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e6_test(doc) -> [{userdata,[{""}]}];
 mult_e6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e17_test(doc) -> [{userdata,[{""}]}];
 mult_e17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e17"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e28_test(doc) -> [{userdata,[{""}]}];
 mult_e28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e39_test(doc) -> [{userdata,[{""}]}];
 mult_e39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e39"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e50_test(doc) -> [{userdata,[{""}]}];
 mult_e50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e61_test(doc) -> [{userdata,[{""}]}];
 mult_e61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e1_test(doc) -> [{userdata,[{""}]}];
 mult_e1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e1"),
   Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e12_test(doc) -> [{userdata,[{""}]}];
 mult_e12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e34_test(doc) -> [{userdata,[{""}]}];
 mult_e34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e56_test(doc) -> [{userdata,[{""}]}];
 mult_e56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e7_test(doc) -> [{userdata,[{""}]}];
 mult_e7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e18_test(doc) -> [{userdata,[{""}]}];
 mult_e18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e18"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e29_test(doc) -> [{userdata,[{""}]}];
 mult_e29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e40_test(doc) -> [{userdata,[{""}]}];
 mult_e40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e40"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e51_test(doc) -> [{userdata,[{""}]}];
 mult_e51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e62_test(doc) -> [{userdata,[{""}]}];
 mult_e62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e2_test(doc) -> [{userdata,[{""}]}];
 mult_e2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e2"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e13_test(doc) -> [{userdata,[{""}]}];
 mult_e13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e35_test(doc) -> [{userdata,[{""}]}];
 mult_e35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e57_test(doc) -> [{userdata,[{""}]}];
 mult_e57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e8_test(doc) -> [{userdata,[{""}]}];
 mult_e8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e19_test(doc) -> [{userdata,[{""}]}];
 mult_e19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e19"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e30_test(doc) -> [{userdata,[{""}]}];
 mult_e30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e41_test(doc) -> [{userdata,[{""}]}];
 mult_e41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e41"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e52_test(doc) -> [{userdata,[{""}]}];
 mult_e52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e63_test(doc) -> [{userdata,[{""}]}];
 mult_e63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e3_test(doc) -> [{userdata,[{""}]}];
 mult_e3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e3"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e14_test(doc) -> [{userdata,[{""}]}];
 mult_e14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e25_test(doc) -> [{userdata,[{""}]}];
 mult_e25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e25"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e36_test(doc) -> [{userdata,[{""}]}];
 mult_e36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e47_test(doc) -> [{userdata,[{""}]}];
 mult_e47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e58_test(doc) -> [{userdata,[{""}]}];
 mult_e58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e9_test(doc) -> [{userdata,[{""}]}];
 mult_e9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e20_test(doc) -> [{userdata,[{""}]}];
 mult_e20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e20"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e31_test(doc) -> [{userdata,[{""}]}];
 mult_e31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e42_test(doc) -> [{userdata,[{""}]}];
 mult_e42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e42"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e53_test(doc) -> [{userdata,[{""}]}];
 mult_e53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e64_test(doc) -> [{userdata,[{""}]}];
 mult_e64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e4_test(doc) -> [{userdata,[{""}]}];
 mult_e4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e4"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e15_test(doc) -> [{userdata,[{""}]}];
 mult_e15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e26_test(doc) -> [{userdata,[{""}]}];
 mult_e26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e26"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e37_test(doc) -> [{userdata,[{""}]}];
 mult_e37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e48_test(doc) -> [{userdata,[{""}]}];
 mult_e48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e59_test(doc) -> [{userdata,[{""}]}];
 mult_e59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e10_test(doc) -> [{userdata,[{""}]}];
 mult_e10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e21_test(doc) -> [{userdata,[{""}]}];
 mult_e21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e21"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e32_test(doc) -> [{userdata,[{""}]}];
 mult_e32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e43_test(doc) -> [{userdata,[{""}]}];
 mult_e43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e43"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e54_test(doc) -> [{userdata,[{""}]}];
 mult_e54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_e65_test(doc) -> [{userdata,[{""}]}];
 mult_e65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","e65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p5_test(doc) -> [{userdata,[{""}]}];
 mult_p5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p5"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p16_test(doc) -> [{userdata,[{""}]}];
 mult_p16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p16"),
   Expected="7.29",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p27_test(doc) -> [{userdata,[{""}]}];
 mult_p27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p27"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p38_test(doc) -> [{userdata,[{""}]}];
 mult_p38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p38"),
   Expected="7.29",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p49_test(doc) -> [{userdata,[{""}]}];
 mult_p49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p60_test(doc) -> [{userdata,[{""}]}];
 mult_p60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p11_test(doc) -> [{userdata,[{""}]}];
 mult_p11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p22_test(doc) -> [{userdata,[{""}]}];
 mult_p22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p22"),
   Expected="97721.64",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p33_test(doc) -> [{userdata,[{""}]}];
 mult_p33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p44_test(doc) -> [{userdata,[{""}]}];
 mult_p44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p44"),
   Expected="97721.64",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p55_test(doc) -> [{userdata,[{""}]}];
 mult_p55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p66_test(doc) -> [{userdata,[{""}]}];
 mult_p66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p6_test(doc) -> [{userdata,[{""}]}];
 mult_p6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p17_test(doc) -> [{userdata,[{""}]}];
 mult_p17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p17"),
   Expected="9.558",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p28_test(doc) -> [{userdata,[{""}]}];
 mult_p28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p39_test(doc) -> [{userdata,[{""}]}];
 mult_p39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p39"),
   Expected="9.558",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p50_test(doc) -> [{userdata,[{""}]}];
 mult_p50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p61_test(doc) -> [{userdata,[{""}]}];
 mult_p61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p1_test(doc) -> [{userdata,[{""}]}];
 mult_p1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p1"),
   Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p12_test(doc) -> [{userdata,[{""}]}];
 mult_p12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p34_test(doc) -> [{userdata,[{""}]}];
 mult_p34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p56_test(doc) -> [{userdata,[{""}]}];
 mult_p56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p7_test(doc) -> [{userdata,[{""}]}];
 mult_p7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p18_test(doc) -> [{userdata,[{""}]}];
 mult_p18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p18"),
   Expected="97718.4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p29_test(doc) -> [{userdata,[{""}]}];
 mult_p29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p40_test(doc) -> [{userdata,[{""}]}];
 mult_p40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p40"),
   Expected="97718.4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p51_test(doc) -> [{userdata,[{""}]}];
 mult_p51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p62_test(doc) -> [{userdata,[{""}]}];
 mult_p62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p2_test(doc) -> [{userdata,[{""}]}];
 mult_p2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p2"),
   Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p13_test(doc) -> [{userdata,[{""}]}];
 mult_p13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p35_test(doc) -> [{userdata,[{""}]}];
 mult_p35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p57_test(doc) -> [{userdata,[{""}]}];
 mult_p57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p8_test(doc) -> [{userdata,[{""}]}];
 mult_p8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p19_test(doc) -> [{userdata,[{""}]}];
 mult_p19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p19"),
   Expected="97721.1",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p30_test(doc) -> [{userdata,[{""}]}];
 mult_p30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p41_test(doc) -> [{userdata,[{""}]}];
 mult_p41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p41"),
   Expected="97721.1",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p52_test(doc) -> [{userdata,[{""}]}];
 mult_p52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p63_test(doc) -> [{userdata,[{""}]}];
 mult_p63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p3_test(doc) -> [{userdata,[{""}]}];
 mult_p3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p3"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p14_test(doc) -> [{userdata,[{""}]}];
 mult_p14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p25_test(doc) -> [{userdata,[{""}]}];
 mult_p25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p25"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p36_test(doc) -> [{userdata,[{""}]}];
 mult_p36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p47_test(doc) -> [{userdata,[{""}]}];
 mult_p47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p58_test(doc) -> [{userdata,[{""}]}];
 mult_p58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p9_test(doc) -> [{userdata,[{""}]}];
 mult_p9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p20_test(doc) -> [{userdata,[{""}]}];
 mult_p20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p20"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p31_test(doc) -> [{userdata,[{""}]}];
 mult_p31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p42_test(doc) -> [{userdata,[{""}]}];
 mult_p42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p42"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p53_test(doc) -> [{userdata,[{""}]}];
 mult_p53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p64_test(doc) -> [{userdata,[{""}]}];
 mult_p64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p4_test(doc) -> [{userdata,[{""}]}];
 mult_p4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p4"),
   Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p15_test(doc) -> [{userdata,[{""}]}];
 mult_p15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p26_test(doc) -> [{userdata,[{""}]}];
 mult_p26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p26"),
   Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p37_test(doc) -> [{userdata,[{""}]}];
 mult_p37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p48_test(doc) -> [{userdata,[{""}]}];
 mult_p48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p59_test(doc) -> [{userdata,[{""}]}];
 mult_p59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p10_test(doc) -> [{userdata,[{""}]}];
 mult_p10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p21_test(doc) -> [{userdata,[{""}]}];
 mult_p21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p21"),
   Expected="8.48205",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p32_test(doc) -> [{userdata,[{""}]}];
 mult_p32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p43_test(doc) -> [{userdata,[{""}]}];
 mult_p43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p43"),
   Expected="8.48205",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p54_test(doc) -> [{userdata,[{""}]}];
 mult_p54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_p65_test(doc) -> [{userdata,[{""}]}];
 mult_p65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","p65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f5_test(doc) -> [{userdata,[{""}]}];
 mult_f5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f5"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f16_test(doc) -> [{userdata,[{""}]}];
 mult_f16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f16"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f27_test(doc) -> [{userdata,[{""}]}];
 mult_f27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f27"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f38_test(doc) -> [{userdata,[{""}]}];
 mult_f38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f38"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f49_test(doc) -> [{userdata,[{""}]}];
 mult_f49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f60_test(doc) -> [{userdata,[{""}]}];
 mult_f60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f11_test(doc) -> [{userdata,[{""}]}];
 mult_f11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f22_test(doc) -> [{userdata,[{""}]}];
 mult_f22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f22"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f33_test(doc) -> [{userdata,[{""}]}];
 mult_f33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f44_test(doc) -> [{userdata,[{""}]}];
 mult_f44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f44"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f55_test(doc) -> [{userdata,[{""}]}];
 mult_f55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f66_test(doc) -> [{userdata,[{""}]}];
 mult_f66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f6_test(doc) -> [{userdata,[{""}]}];
 mult_f6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f17_test(doc) -> [{userdata,[{""}]}];
 mult_f17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f17"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f28_test(doc) -> [{userdata,[{""}]}];
 mult_f28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f39_test(doc) -> [{userdata,[{""}]}];
 mult_f39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f39"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f50_test(doc) -> [{userdata,[{""}]}];
 mult_f50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f61_test(doc) -> [{userdata,[{""}]}];
 mult_f61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f1_test(doc) -> [{userdata,[{""}]}];
 mult_f1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f12_test(doc) -> [{userdata,[{""}]}];
 mult_f12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f34_test(doc) -> [{userdata,[{""}]}];
 mult_f34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f56_test(doc) -> [{userdata,[{""}]}];
 mult_f56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f7_test(doc) -> [{userdata,[{""}]}];
 mult_f7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f18_test(doc) -> [{userdata,[{""}]}];
 mult_f18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f18"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f29_test(doc) -> [{userdata,[{""}]}];
 mult_f29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f40_test(doc) -> [{userdata,[{""}]}];
 mult_f40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f40"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f51_test(doc) -> [{userdata,[{""}]}];
 mult_f51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f62_test(doc) -> [{userdata,[{""}]}];
 mult_f62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f2_test(doc) -> [{userdata,[{""}]}];
 mult_f2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f2"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f13_test(doc) -> [{userdata,[{""}]}];
 mult_f13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f35_test(doc) -> [{userdata,[{""}]}];
 mult_f35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f57_test(doc) -> [{userdata,[{""}]}];
 mult_f57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f8_test(doc) -> [{userdata,[{""}]}];
 mult_f8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f19_test(doc) -> [{userdata,[{""}]}];
 mult_f19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f19"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f30_test(doc) -> [{userdata,[{""}]}];
 mult_f30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f41_test(doc) -> [{userdata,[{""}]}];
 mult_f41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f41"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f52_test(doc) -> [{userdata,[{""}]}];
 mult_f52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f63_test(doc) -> [{userdata,[{""}]}];
 mult_f63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f3_test(doc) -> [{userdata,[{""}]}];
 mult_f3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f3"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f14_test(doc) -> [{userdata,[{""}]}];
 mult_f14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f25_test(doc) -> [{userdata,[{""}]}];
 mult_f25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f25"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f36_test(doc) -> [{userdata,[{""}]}];
 mult_f36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f47_test(doc) -> [{userdata,[{""}]}];
 mult_f47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f58_test(doc) -> [{userdata,[{""}]}];
 mult_f58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f9_test(doc) -> [{userdata,[{""}]}];
 mult_f9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f20_test(doc) -> [{userdata,[{""}]}];
 mult_f20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f20"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f31_test(doc) -> [{userdata,[{""}]}];
 mult_f31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f42_test(doc) -> [{userdata,[{""}]}];
 mult_f42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f42"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f53_test(doc) -> [{userdata,[{""}]}];
 mult_f53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f64_test(doc) -> [{userdata,[{""}]}];
 mult_f64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f4_test(doc) -> [{userdata,[{""}]}];
 mult_f4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f4"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f15_test(doc) -> [{userdata,[{""}]}];
 mult_f15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f26_test(doc) -> [{userdata,[{""}]}];
 mult_f26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f26"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f37_test(doc) -> [{userdata,[{""}]}];
 mult_f37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f48_test(doc) -> [{userdata,[{""}]}];
 mult_f48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f59_test(doc) -> [{userdata,[{""}]}];
 mult_f59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f10_test(doc) -> [{userdata,[{""}]}];
 mult_f10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f21_test(doc) -> [{userdata,[{""}]}];
 mult_f21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f21"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f32_test(doc) -> [{userdata,[{""}]}];
 mult_f32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f43_test(doc) -> [{userdata,[{""}]}];
 mult_f43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f43"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f54_test(doc) -> [{userdata,[{""}]}];
 mult_f54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_f65_test(doc) -> [{userdata,[{""}]}];
 mult_f65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","f65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q5_test(doc) -> [{userdata,[{""}]}];
 mult_q5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q5"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q16_test(doc) -> [{userdata,[{""}]}];
 mult_q16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q16"),
   Expected="9.558",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q27_test(doc) -> [{userdata,[{""}]}];
 mult_q27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q27"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q38_test(doc) -> [{userdata,[{""}]}];
 mult_q38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q38"),
   Expected="9.558",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q49_test(doc) -> [{userdata,[{""}]}];
 mult_q49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q60_test(doc) -> [{userdata,[{""}]}];
 mult_q60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q11_test(doc) -> [{userdata,[{""}]}];
 mult_q11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q22_test(doc) -> [{userdata,[{""}]}];
 mult_q22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q22"),
   Expected="128123.928",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q33_test(doc) -> [{userdata,[{""}]}];
 mult_q33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q44_test(doc) -> [{userdata,[{""}]}];
 mult_q44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q44"),
   Expected="128123.928",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q55_test(doc) -> [{userdata,[{""}]}];
 mult_q55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q66_test(doc) -> [{userdata,[{""}]}];
 mult_q66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q6_test(doc) -> [{userdata,[{""}]}];
 mult_q6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q17_test(doc) -> [{userdata,[{""}]}];
 mult_q17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q17"),
   Expected="12.5316",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q28_test(doc) -> [{userdata,[{""}]}];
 mult_q28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q39_test(doc) -> [{userdata,[{""}]}];
 mult_q39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q39"),
   Expected="12.5316",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q50_test(doc) -> [{userdata,[{""}]}];
 mult_q50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q61_test(doc) -> [{userdata,[{""}]}];
 mult_q61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q1_test(doc) -> [{userdata,[{""}]}];
 mult_q1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q1"),
   Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q12_test(doc) -> [{userdata,[{""}]}];
 mult_q12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q34_test(doc) -> [{userdata,[{""}]}];
 mult_q34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q56_test(doc) -> [{userdata,[{""}]}];
 mult_q56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q7_test(doc) -> [{userdata,[{""}]}];
 mult_q7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q18_test(doc) -> [{userdata,[{""}]}];
 mult_q18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q18"),
   Expected="128119.68",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q29_test(doc) -> [{userdata,[{""}]}];
 mult_q29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q40_test(doc) -> [{userdata,[{""}]}];
 mult_q40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q40"),
   Expected="128119.68",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q51_test(doc) -> [{userdata,[{""}]}];
 mult_q51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q62_test(doc) -> [{userdata,[{""}]}];
 mult_q62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q2_test(doc) -> [{userdata,[{""}]}];
 mult_q2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q2"),
   Expected="3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q13_test(doc) -> [{userdata,[{""}]}];
 mult_q13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q35_test(doc) -> [{userdata,[{""}]}];
 mult_q35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q57_test(doc) -> [{userdata,[{""}]}];
 mult_q57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q8_test(doc) -> [{userdata,[{""}]}];
 mult_q8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q19_test(doc) -> [{userdata,[{""}]}];
 mult_q19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q19"),
   Expected="128123.22",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q30_test(doc) -> [{userdata,[{""}]}];
 mult_q30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q41_test(doc) -> [{userdata,[{""}]}];
 mult_q41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q41"),
   Expected="128123.22",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q52_test(doc) -> [{userdata,[{""}]}];
 mult_q52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q63_test(doc) -> [{userdata,[{""}]}];
 mult_q63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q3_test(doc) -> [{userdata,[{""}]}];
 mult_q3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q3"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q14_test(doc) -> [{userdata,[{""}]}];
 mult_q14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q25_test(doc) -> [{userdata,[{""}]}];
 mult_q25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q25"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q36_test(doc) -> [{userdata,[{""}]}];
 mult_q36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q47_test(doc) -> [{userdata,[{""}]}];
 mult_q47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q58_test(doc) -> [{userdata,[{""}]}];
 mult_q58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q9_test(doc) -> [{userdata,[{""}]}];
 mult_q9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q20_test(doc) -> [{userdata,[{""}]}];
 mult_q20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q20"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q31_test(doc) -> [{userdata,[{""}]}];
 mult_q31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q42_test(doc) -> [{userdata,[{""}]}];
 mult_q42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q42"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q53_test(doc) -> [{userdata,[{""}]}];
 mult_q53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q64_test(doc) -> [{userdata,[{""}]}];
 mult_q64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q4_test(doc) -> [{userdata,[{""}]}];
 mult_q4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q4"),
   Expected="3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q15_test(doc) -> [{userdata,[{""}]}];
 mult_q15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q26_test(doc) -> [{userdata,[{""}]}];
 mult_q26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q26"),
   Expected="3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q37_test(doc) -> [{userdata,[{""}]}];
 mult_q37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q48_test(doc) -> [{userdata,[{""}]}];
 mult_q48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q59_test(doc) -> [{userdata,[{""}]}];
 mult_q59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q10_test(doc) -> [{userdata,[{""}]}];
 mult_q10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q21_test(doc) -> [{userdata,[{""}]}];
 mult_q21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q21"),
   Expected="11.12091",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q32_test(doc) -> [{userdata,[{""}]}];
 mult_q32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q43_test(doc) -> [{userdata,[{""}]}];
 mult_q43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q43"),
   Expected="11.12091",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q54_test(doc) -> [{userdata,[{""}]}];
 mult_q54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_q65_test(doc) -> [{userdata,[{""}]}];
 mult_q65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","q65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g5_test(doc) -> [{userdata,[{""}]}];
 mult_g5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g5"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g16_test(doc) -> [{userdata,[{""}]}];
 mult_g16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g16"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g27_test(doc) -> [{userdata,[{""}]}];
 mult_g27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g27"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g38_test(doc) -> [{userdata,[{""}]}];
 mult_g38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g38"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g49_test(doc) -> [{userdata,[{""}]}];
 mult_g49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g60_test(doc) -> [{userdata,[{""}]}];
 mult_g60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g11_test(doc) -> [{userdata,[{""}]}];
 mult_g11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g22_test(doc) -> [{userdata,[{""}]}];
 mult_g22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g22"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g33_test(doc) -> [{userdata,[{""}]}];
 mult_g33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g44_test(doc) -> [{userdata,[{""}]}];
 mult_g44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g44"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g55_test(doc) -> [{userdata,[{""}]}];
 mult_g55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g66_test(doc) -> [{userdata,[{""}]}];
 mult_g66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g6_test(doc) -> [{userdata,[{""}]}];
 mult_g6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g17_test(doc) -> [{userdata,[{""}]}];
 mult_g17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g17"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g28_test(doc) -> [{userdata,[{""}]}];
 mult_g28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g39_test(doc) -> [{userdata,[{""}]}];
 mult_g39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g39"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g50_test(doc) -> [{userdata,[{""}]}];
 mult_g50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g61_test(doc) -> [{userdata,[{""}]}];
 mult_g61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g1_test(doc) -> [{userdata,[{""}]}];
 mult_g1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g12_test(doc) -> [{userdata,[{""}]}];
 mult_g12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g34_test(doc) -> [{userdata,[{""}]}];
 mult_g34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g56_test(doc) -> [{userdata,[{""}]}];
 mult_g56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g7_test(doc) -> [{userdata,[{""}]}];
 mult_g7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g18_test(doc) -> [{userdata,[{""}]}];
 mult_g18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g18"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g29_test(doc) -> [{userdata,[{""}]}];
 mult_g29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g40_test(doc) -> [{userdata,[{""}]}];
 mult_g40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g40"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g51_test(doc) -> [{userdata,[{""}]}];
 mult_g51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g62_test(doc) -> [{userdata,[{""}]}];
 mult_g62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g2_test(doc) -> [{userdata,[{""}]}];
 mult_g2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g2"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g13_test(doc) -> [{userdata,[{""}]}];
 mult_g13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g35_test(doc) -> [{userdata,[{""}]}];
 mult_g35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g57_test(doc) -> [{userdata,[{""}]}];
 mult_g57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g8_test(doc) -> [{userdata,[{""}]}];
 mult_g8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g19_test(doc) -> [{userdata,[{""}]}];
 mult_g19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g19"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g30_test(doc) -> [{userdata,[{""}]}];
 mult_g30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g41_test(doc) -> [{userdata,[{""}]}];
 mult_g41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g41"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g52_test(doc) -> [{userdata,[{""}]}];
 mult_g52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g63_test(doc) -> [{userdata,[{""}]}];
 mult_g63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g3_test(doc) -> [{userdata,[{""}]}];
 mult_g3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g3"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g14_test(doc) -> [{userdata,[{""}]}];
 mult_g14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g25_test(doc) -> [{userdata,[{""}]}];
 mult_g25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g25"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g36_test(doc) -> [{userdata,[{""}]}];
 mult_g36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g47_test(doc) -> [{userdata,[{""}]}];
 mult_g47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g58_test(doc) -> [{userdata,[{""}]}];
 mult_g58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g9_test(doc) -> [{userdata,[{""}]}];
 mult_g9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g20_test(doc) -> [{userdata,[{""}]}];
 mult_g20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g20"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g31_test(doc) -> [{userdata,[{""}]}];
 mult_g31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g42_test(doc) -> [{userdata,[{""}]}];
 mult_g42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g42"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g53_test(doc) -> [{userdata,[{""}]}];
 mult_g53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g64_test(doc) -> [{userdata,[{""}]}];
 mult_g64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g4_test(doc) -> [{userdata,[{""}]}];
 mult_g4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g4"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g15_test(doc) -> [{userdata,[{""}]}];
 mult_g15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g26_test(doc) -> [{userdata,[{""}]}];
 mult_g26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g26"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g37_test(doc) -> [{userdata,[{""}]}];
 mult_g37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g48_test(doc) -> [{userdata,[{""}]}];
 mult_g48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g59_test(doc) -> [{userdata,[{""}]}];
 mult_g59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g10_test(doc) -> [{userdata,[{""}]}];
 mult_g10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g21_test(doc) -> [{userdata,[{""}]}];
 mult_g21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g21"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g32_test(doc) -> [{userdata,[{""}]}];
 mult_g32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g43_test(doc) -> [{userdata,[{""}]}];
 mult_g43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g43"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g54_test(doc) -> [{userdata,[{""}]}];
 mult_g54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_g65_test(doc) -> [{userdata,[{""}]}];
 mult_g65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","g65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r5_test(doc) -> [{userdata,[{""}]}];
 mult_r5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r5"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r16_test(doc) -> [{userdata,[{""}]}];
 mult_r16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r16"),
   Expected="97718.4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r27_test(doc) -> [{userdata,[{""}]}];
 mult_r27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r27"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r38_test(doc) -> [{userdata,[{""}]}];
 mult_r38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r38"),
   Expected="97718.4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r49_test(doc) -> [{userdata,[{""}]}];
 mult_r49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r60_test(doc) -> [{userdata,[{""}]}];
 mult_r60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r11_test(doc) -> [{userdata,[{""}]}];
 mult_r11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r22_test(doc) -> [{userdata,[{""}]}];
 mult_r22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r22"),
   Expected="1309904294.4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r33_test(doc) -> [{userdata,[{""}]}];
 mult_r33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r44_test(doc) -> [{userdata,[{""}]}];
 mult_r44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r44"),
   Expected="1309904294.4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r55_test(doc) -> [{userdata,[{""}]}];
 mult_r55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r66_test(doc) -> [{userdata,[{""}]}];
 mult_r66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r6_test(doc) -> [{userdata,[{""}]}];
 mult_r6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r17_test(doc) -> [{userdata,[{""}]}];
 mult_r17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r17"),
   Expected="128119.68",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r28_test(doc) -> [{userdata,[{""}]}];
 mult_r28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r39_test(doc) -> [{userdata,[{""}]}];
 mult_r39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r39"),
   Expected="128119.68",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r50_test(doc) -> [{userdata,[{""}]}];
 mult_r50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r61_test(doc) -> [{userdata,[{""}]}];
 mult_r61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r1_test(doc) -> [{userdata,[{""}]}];
 mult_r1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r1"),
   Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r12_test(doc) -> [{userdata,[{""}]}];
 mult_r12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r34_test(doc) -> [{userdata,[{""}]}];
 mult_r34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r56_test(doc) -> [{userdata,[{""}]}];
 mult_r56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r7_test(doc) -> [{userdata,[{""}]}];
 mult_r7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r18_test(doc) -> [{userdata,[{""}]}];
 mult_r18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r18"),
   Expected="1309860864.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r29_test(doc) -> [{userdata,[{""}]}];
 mult_r29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r40_test(doc) -> [{userdata,[{""}]}];
 mult_r40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r40"),
   Expected="1309860864.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r51_test(doc) -> [{userdata,[{""}]}];
 mult_r51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r62_test(doc) -> [{userdata,[{""}]}];
 mult_r62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r2_test(doc) -> [{userdata,[{""}]}];
 mult_r2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r2"),
   Expected="1999/02/01 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r13_test(doc) -> [{userdata,[{""}]}];
 mult_r13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r35_test(doc) -> [{userdata,[{""}]}];
 mult_r35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r57_test(doc) -> [{userdata,[{""}]}];
 mult_r57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r8_test(doc) -> [{userdata,[{""}]}];
 mult_r8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r19_test(doc) -> [{userdata,[{""}]}];
 mult_r19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r19"),
   Expected="1309897056.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r30_test(doc) -> [{userdata,[{""}]}];
 mult_r30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r41_test(doc) -> [{userdata,[{""}]}];
 mult_r41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r41"),
   Expected="1309897056.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r52_test(doc) -> [{userdata,[{""}]}];
 mult_r52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r63_test(doc) -> [{userdata,[{""}]}];
 mult_r63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r3_test(doc) -> [{userdata,[{""}]}];
 mult_r3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r3"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r14_test(doc) -> [{userdata,[{""}]}];
 mult_r14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r25_test(doc) -> [{userdata,[{""}]}];
 mult_r25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r25"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r36_test(doc) -> [{userdata,[{""}]}];
 mult_r36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r47_test(doc) -> [{userdata,[{""}]}];
 mult_r47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r58_test(doc) -> [{userdata,[{""}]}];
 mult_r58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r9_test(doc) -> [{userdata,[{""}]}];
 mult_r9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r20_test(doc) -> [{userdata,[{""}]}];
 mult_r20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r20"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r31_test(doc) -> [{userdata,[{""}]}];
 mult_r31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r42_test(doc) -> [{userdata,[{""}]}];
 mult_r42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r42"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r53_test(doc) -> [{userdata,[{""}]}];
 mult_r53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r64_test(doc) -> [{userdata,[{""}]}];
 mult_r64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r4_test(doc) -> [{userdata,[{""}]}];
 mult_r4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r4"),
   Expected="36192.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r15_test(doc) -> [{userdata,[{""}]}];
 mult_r15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r26_test(doc) -> [{userdata,[{""}]}];
 mult_r26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r26"),
   Expected="36192.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r37_test(doc) -> [{userdata,[{""}]}];
 mult_r37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r48_test(doc) -> [{userdata,[{""}]}];
 mult_r48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r59_test(doc) -> [{userdata,[{""}]}];
 mult_r59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r10_test(doc) -> [{userdata,[{""}]}];
 mult_r10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r21_test(doc) -> [{userdata,[{""}]}];
 mult_r21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r21"),
   Expected="113697.168",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r32_test(doc) -> [{userdata,[{""}]}];
 mult_r32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r43_test(doc) -> [{userdata,[{""}]}];
 mult_r43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r43"),
   Expected="113697.168",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r54_test(doc) -> [{userdata,[{""}]}];
 mult_r54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_r65_test(doc) -> [{userdata,[{""}]}];
 mult_r65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","r65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h5_test(doc) -> [{userdata,[{""}]}];
 mult_h5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h5"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h16_test(doc) -> [{userdata,[{""}]}];
 mult_h16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h16"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h27_test(doc) -> [{userdata,[{""}]}];
 mult_h27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h27"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h38_test(doc) -> [{userdata,[{""}]}];
 mult_h38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h38"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h49_test(doc) -> [{userdata,[{""}]}];
 mult_h49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h60_test(doc) -> [{userdata,[{""}]}];
 mult_h60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h11_test(doc) -> [{userdata,[{""}]}];
 mult_h11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h22_test(doc) -> [{userdata,[{""}]}];
 mult_h22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h22"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h33_test(doc) -> [{userdata,[{""}]}];
 mult_h33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h44_test(doc) -> [{userdata,[{""}]}];
 mult_h44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h44"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h55_test(doc) -> [{userdata,[{""}]}];
 mult_h55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h66_test(doc) -> [{userdata,[{""}]}];
 mult_h66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h6_test(doc) -> [{userdata,[{""}]}];
 mult_h6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h17_test(doc) -> [{userdata,[{""}]}];
 mult_h17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h17"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h28_test(doc) -> [{userdata,[{""}]}];
 mult_h28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h39_test(doc) -> [{userdata,[{""}]}];
 mult_h39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h39"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h50_test(doc) -> [{userdata,[{""}]}];
 mult_h50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h61_test(doc) -> [{userdata,[{""}]}];
 mult_h61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h1_test(doc) -> [{userdata,[{""}]}];
 mult_h1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h12_test(doc) -> [{userdata,[{""}]}];
 mult_h12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h34_test(doc) -> [{userdata,[{""}]}];
 mult_h34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h56_test(doc) -> [{userdata,[{""}]}];
 mult_h56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h7_test(doc) -> [{userdata,[{""}]}];
 mult_h7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h18_test(doc) -> [{userdata,[{""}]}];
 mult_h18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h18"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h29_test(doc) -> [{userdata,[{""}]}];
 mult_h29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h40_test(doc) -> [{userdata,[{""}]}];
 mult_h40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h40"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h51_test(doc) -> [{userdata,[{""}]}];
 mult_h51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h62_test(doc) -> [{userdata,[{""}]}];
 mult_h62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h2_test(doc) -> [{userdata,[{""}]}];
 mult_h2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h2"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h13_test(doc) -> [{userdata,[{""}]}];
 mult_h13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h35_test(doc) -> [{userdata,[{""}]}];
 mult_h35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h57_test(doc) -> [{userdata,[{""}]}];
 mult_h57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h8_test(doc) -> [{userdata,[{""}]}];
 mult_h8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h19_test(doc) -> [{userdata,[{""}]}];
 mult_h19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h19"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h30_test(doc) -> [{userdata,[{""}]}];
 mult_h30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h41_test(doc) -> [{userdata,[{""}]}];
 mult_h41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h41"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h52_test(doc) -> [{userdata,[{""}]}];
 mult_h52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h63_test(doc) -> [{userdata,[{""}]}];
 mult_h63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h3_test(doc) -> [{userdata,[{""}]}];
 mult_h3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h3"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h14_test(doc) -> [{userdata,[{""}]}];
 mult_h14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h25_test(doc) -> [{userdata,[{""}]}];
 mult_h25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h25"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h36_test(doc) -> [{userdata,[{""}]}];
 mult_h36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h47_test(doc) -> [{userdata,[{""}]}];
 mult_h47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h58_test(doc) -> [{userdata,[{""}]}];
 mult_h58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h9_test(doc) -> [{userdata,[{""}]}];
 mult_h9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h20_test(doc) -> [{userdata,[{""}]}];
 mult_h20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h20"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h31_test(doc) -> [{userdata,[{""}]}];
 mult_h31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h42_test(doc) -> [{userdata,[{""}]}];
 mult_h42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h42"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h53_test(doc) -> [{userdata,[{""}]}];
 mult_h53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h64_test(doc) -> [{userdata,[{""}]}];
 mult_h64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h4_test(doc) -> [{userdata,[{""}]}];
 mult_h4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h4"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h15_test(doc) -> [{userdata,[{""}]}];
 mult_h15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h26_test(doc) -> [{userdata,[{""}]}];
 mult_h26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h26"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h37_test(doc) -> [{userdata,[{""}]}];
 mult_h37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h48_test(doc) -> [{userdata,[{""}]}];
 mult_h48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h59_test(doc) -> [{userdata,[{""}]}];
 mult_h59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h10_test(doc) -> [{userdata,[{""}]}];
 mult_h10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h21_test(doc) -> [{userdata,[{""}]}];
 mult_h21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h21"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h32_test(doc) -> [{userdata,[{""}]}];
 mult_h32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h43_test(doc) -> [{userdata,[{""}]}];
 mult_h43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h43"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h54_test(doc) -> [{userdata,[{""}]}];
 mult_h54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_h65_test(doc) -> [{userdata,[{""}]}];
 mult_h65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","h65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s5_test(doc) -> [{userdata,[{""}]}];
 mult_s5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s5"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s16_test(doc) -> [{userdata,[{""}]}];
 mult_s16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s16"),
   Expected="97721.1",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s27_test(doc) -> [{userdata,[{""}]}];
 mult_s27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s27"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s38_test(doc) -> [{userdata,[{""}]}];
 mult_s38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s38"),
   Expected="97721.1",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s49_test(doc) -> [{userdata,[{""}]}];
 mult_s49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s60_test(doc) -> [{userdata,[{""}]}];
 mult_s60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s11_test(doc) -> [{userdata,[{""}]}];
 mult_s11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s22_test(doc) -> [{userdata,[{""}]}];
 mult_s22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s22"),
   Expected="1309940487.6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s33_test(doc) -> [{userdata,[{""}]}];
 mult_s33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s44_test(doc) -> [{userdata,[{""}]}];
 mult_s44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s44"),
   Expected="1309940487.6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s55_test(doc) -> [{userdata,[{""}]}];
 mult_s55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s66_test(doc) -> [{userdata,[{""}]}];
 mult_s66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s6_test(doc) -> [{userdata,[{""}]}];
 mult_s6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s17_test(doc) -> [{userdata,[{""}]}];
 mult_s17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s17"),
   Expected="128123.22",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s28_test(doc) -> [{userdata,[{""}]}];
 mult_s28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s39_test(doc) -> [{userdata,[{""}]}];
 mult_s39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s39"),
   Expected="128123.22",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s50_test(doc) -> [{userdata,[{""}]}];
 mult_s50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s61_test(doc) -> [{userdata,[{""}]}];
 mult_s61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s1_test(doc) -> [{userdata,[{""}]}];
 mult_s1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s1"),
   Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s12_test(doc) -> [{userdata,[{""}]}];
 mult_s12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s34_test(doc) -> [{userdata,[{""}]}];
 mult_s34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s56_test(doc) -> [{userdata,[{""}]}];
 mult_s56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s7_test(doc) -> [{userdata,[{""}]}];
 mult_s7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s18_test(doc) -> [{userdata,[{""}]}];
 mult_s18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s18"),
   Expected="1309897056.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s29_test(doc) -> [{userdata,[{""}]}];
 mult_s29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s40_test(doc) -> [{userdata,[{""}]}];
 mult_s40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s40"),
   Expected="1309897056.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s51_test(doc) -> [{userdata,[{""}]}];
 mult_s51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s62_test(doc) -> [{userdata,[{""}]}];
 mult_s62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s2_test(doc) -> [{userdata,[{""}]}];
 mult_s2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s2"),
   Expected="1999/02/02 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s13_test(doc) -> [{userdata,[{""}]}];
 mult_s13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s35_test(doc) -> [{userdata,[{""}]}];
 mult_s35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s57_test(doc) -> [{userdata,[{""}]}];
 mult_s57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s8_test(doc) -> [{userdata,[{""}]}];
 mult_s8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s19_test(doc) -> [{userdata,[{""}]}];
 mult_s19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s19"),
   Expected="1309933249.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s30_test(doc) -> [{userdata,[{""}]}];
 mult_s30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s41_test(doc) -> [{userdata,[{""}]}];
 mult_s41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s41"),
   Expected="1309933249.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s52_test(doc) -> [{userdata,[{""}]}];
 mult_s52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s63_test(doc) -> [{userdata,[{""}]}];
 mult_s63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s3_test(doc) -> [{userdata,[{""}]}];
 mult_s3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s3"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s14_test(doc) -> [{userdata,[{""}]}];
 mult_s14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s25_test(doc) -> [{userdata,[{""}]}];
 mult_s25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s25"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s36_test(doc) -> [{userdata,[{""}]}];
 mult_s36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s47_test(doc) -> [{userdata,[{""}]}];
 mult_s47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s58_test(doc) -> [{userdata,[{""}]}];
 mult_s58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s9_test(doc) -> [{userdata,[{""}]}];
 mult_s9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s20_test(doc) -> [{userdata,[{""}]}];
 mult_s20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s20"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s31_test(doc) -> [{userdata,[{""}]}];
 mult_s31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s42_test(doc) -> [{userdata,[{""}]}];
 mult_s42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s42"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s53_test(doc) -> [{userdata,[{""}]}];
 mult_s53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s64_test(doc) -> [{userdata,[{""}]}];
 mult_s64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s4_test(doc) -> [{userdata,[{""}]}];
 mult_s4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s4"),
   Expected="36193.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s15_test(doc) -> [{userdata,[{""}]}];
 mult_s15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s26_test(doc) -> [{userdata,[{""}]}];
 mult_s26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s26"),
   Expected="36193.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s37_test(doc) -> [{userdata,[{""}]}];
 mult_s37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s48_test(doc) -> [{userdata,[{""}]}];
 mult_s48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s59_test(doc) -> [{userdata,[{""}]}];
 mult_s59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s10_test(doc) -> [{userdata,[{""}]}];
 mult_s10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s21_test(doc) -> [{userdata,[{""}]}];
 mult_s21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s21"),
   Expected="113700.3095",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s32_test(doc) -> [{userdata,[{""}]}];
 mult_s32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s43_test(doc) -> [{userdata,[{""}]}];
 mult_s43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s43"),
   Expected="113700.3095",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s54_test(doc) -> [{userdata,[{""}]}];
 mult_s54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_s65_test(doc) -> [{userdata,[{""}]}];
 mult_s65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","s65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i5_test(doc) -> [{userdata,[{""}]}];
 mult_i5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i5"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i16_test(doc) -> [{userdata,[{""}]}];
 mult_i16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i16"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i27_test(doc) -> [{userdata,[{""}]}];
 mult_i27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i27"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i38_test(doc) -> [{userdata,[{""}]}];
 mult_i38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i38"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i49_test(doc) -> [{userdata,[{""}]}];
 mult_i49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i60_test(doc) -> [{userdata,[{""}]}];
 mult_i60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i11_test(doc) -> [{userdata,[{""}]}];
 mult_i11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i22_test(doc) -> [{userdata,[{""}]}];
 mult_i22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i22"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i33_test(doc) -> [{userdata,[{""}]}];
 mult_i33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i44_test(doc) -> [{userdata,[{""}]}];
 mult_i44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i44"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i55_test(doc) -> [{userdata,[{""}]}];
 mult_i55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i66_test(doc) -> [{userdata,[{""}]}];
 mult_i66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i6_test(doc) -> [{userdata,[{""}]}];
 mult_i6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i17_test(doc) -> [{userdata,[{""}]}];
 mult_i17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i17"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i28_test(doc) -> [{userdata,[{""}]}];
 mult_i28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i39_test(doc) -> [{userdata,[{""}]}];
 mult_i39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i39"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i50_test(doc) -> [{userdata,[{""}]}];
 mult_i50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i61_test(doc) -> [{userdata,[{""}]}];
 mult_i61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i1_test(doc) -> [{userdata,[{""}]}];
 mult_i1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i12_test(doc) -> [{userdata,[{""}]}];
 mult_i12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i34_test(doc) -> [{userdata,[{""}]}];
 mult_i34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i56_test(doc) -> [{userdata,[{""}]}];
 mult_i56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i7_test(doc) -> [{userdata,[{""}]}];
 mult_i7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i18_test(doc) -> [{userdata,[{""}]}];
 mult_i18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i18"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i29_test(doc) -> [{userdata,[{""}]}];
 mult_i29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i40_test(doc) -> [{userdata,[{""}]}];
 mult_i40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i40"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i51_test(doc) -> [{userdata,[{""}]}];
 mult_i51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i62_test(doc) -> [{userdata,[{""}]}];
 mult_i62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i2_test(doc) -> [{userdata,[{""}]}];
 mult_i2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i2"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i13_test(doc) -> [{userdata,[{""}]}];
 mult_i13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i35_test(doc) -> [{userdata,[{""}]}];
 mult_i35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i57_test(doc) -> [{userdata,[{""}]}];
 mult_i57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i8_test(doc) -> [{userdata,[{""}]}];
 mult_i8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i19_test(doc) -> [{userdata,[{""}]}];
 mult_i19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i19"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i30_test(doc) -> [{userdata,[{""}]}];
 mult_i30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i41_test(doc) -> [{userdata,[{""}]}];
 mult_i41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i41"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i52_test(doc) -> [{userdata,[{""}]}];
 mult_i52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i63_test(doc) -> [{userdata,[{""}]}];
 mult_i63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i3_test(doc) -> [{userdata,[{""}]}];
 mult_i3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i3"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i14_test(doc) -> [{userdata,[{""}]}];
 mult_i14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i25_test(doc) -> [{userdata,[{""}]}];
 mult_i25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i25"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i36_test(doc) -> [{userdata,[{""}]}];
 mult_i36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i47_test(doc) -> [{userdata,[{""}]}];
 mult_i47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i58_test(doc) -> [{userdata,[{""}]}];
 mult_i58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i9_test(doc) -> [{userdata,[{""}]}];
 mult_i9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i20_test(doc) -> [{userdata,[{""}]}];
 mult_i20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i20"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i31_test(doc) -> [{userdata,[{""}]}];
 mult_i31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i42_test(doc) -> [{userdata,[{""}]}];
 mult_i42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i42"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i53_test(doc) -> [{userdata,[{""}]}];
 mult_i53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i64_test(doc) -> [{userdata,[{""}]}];
 mult_i64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i4_test(doc) -> [{userdata,[{""}]}];
 mult_i4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i4"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i15_test(doc) -> [{userdata,[{""}]}];
 mult_i15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i26_test(doc) -> [{userdata,[{""}]}];
 mult_i26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i26"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i37_test(doc) -> [{userdata,[{""}]}];
 mult_i37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i48_test(doc) -> [{userdata,[{""}]}];
 mult_i48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i59_test(doc) -> [{userdata,[{""}]}];
 mult_i59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i10_test(doc) -> [{userdata,[{""}]}];
 mult_i10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i21_test(doc) -> [{userdata,[{""}]}];
 mult_i21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i21"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i32_test(doc) -> [{userdata,[{""}]}];
 mult_i32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i43_test(doc) -> [{userdata,[{""}]}];
 mult_i43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i43"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i54_test(doc) -> [{userdata,[{""}]}];
 mult_i54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_i65_test(doc) -> [{userdata,[{""}]}];
 mult_i65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","i65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t5_test(doc) -> [{userdata,[{""}]}];
 mult_t5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t5"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t16_test(doc) -> [{userdata,[{""}]}];
 mult_t16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t16"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t27_test(doc) -> [{userdata,[{""}]}];
 mult_t27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t27"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t38_test(doc) -> [{userdata,[{""}]}];
 mult_t38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t38"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t49_test(doc) -> [{userdata,[{""}]}];
 mult_t49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t60_test(doc) -> [{userdata,[{""}]}];
 mult_t60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t11_test(doc) -> [{userdata,[{""}]}];
 mult_t11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t22_test(doc) -> [{userdata,[{""}]}];
 mult_t22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t22"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t33_test(doc) -> [{userdata,[{""}]}];
 mult_t33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t44_test(doc) -> [{userdata,[{""}]}];
 mult_t44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t44"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t55_test(doc) -> [{userdata,[{""}]}];
 mult_t55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t66_test(doc) -> [{userdata,[{""}]}];
 mult_t66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t6_test(doc) -> [{userdata,[{""}]}];
 mult_t6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t17_test(doc) -> [{userdata,[{""}]}];
 mult_t17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t17"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t28_test(doc) -> [{userdata,[{""}]}];
 mult_t28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t39_test(doc) -> [{userdata,[{""}]}];
 mult_t39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t39"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t50_test(doc) -> [{userdata,[{""}]}];
 mult_t50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t61_test(doc) -> [{userdata,[{""}]}];
 mult_t61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t1_test(doc) -> [{userdata,[{""}]}];
 mult_t1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t1"),
   Expected="Zero",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t12_test(doc) -> [{userdata,[{""}]}];
 mult_t12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t34_test(doc) -> [{userdata,[{""}]}];
 mult_t34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t56_test(doc) -> [{userdata,[{""}]}];
 mult_t56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t7_test(doc) -> [{userdata,[{""}]}];
 mult_t7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t18_test(doc) -> [{userdata,[{""}]}];
 mult_t18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t18"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t29_test(doc) -> [{userdata,[{""}]}];
 mult_t29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t40_test(doc) -> [{userdata,[{""}]}];
 mult_t40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t40"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t51_test(doc) -> [{userdata,[{""}]}];
 mult_t51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t62_test(doc) -> [{userdata,[{""}]}];
 mult_t62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t2_test(doc) -> [{userdata,[{""}]}];
 mult_t2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t2"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t13_test(doc) -> [{userdata,[{""}]}];
 mult_t13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t35_test(doc) -> [{userdata,[{""}]}];
 mult_t35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t57_test(doc) -> [{userdata,[{""}]}];
 mult_t57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t8_test(doc) -> [{userdata,[{""}]}];
 mult_t8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t19_test(doc) -> [{userdata,[{""}]}];
 mult_t19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t19"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t30_test(doc) -> [{userdata,[{""}]}];
 mult_t30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t41_test(doc) -> [{userdata,[{""}]}];
 mult_t41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t41"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t52_test(doc) -> [{userdata,[{""}]}];
 mult_t52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t63_test(doc) -> [{userdata,[{""}]}];
 mult_t63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t3_test(doc) -> [{userdata,[{""}]}];
 mult_t3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t3"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t14_test(doc) -> [{userdata,[{""}]}];
 mult_t14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t25_test(doc) -> [{userdata,[{""}]}];
 mult_t25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t25"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t36_test(doc) -> [{userdata,[{""}]}];
 mult_t36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t47_test(doc) -> [{userdata,[{""}]}];
 mult_t47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t58_test(doc) -> [{userdata,[{""}]}];
 mult_t58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t9_test(doc) -> [{userdata,[{""}]}];
 mult_t9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t20_test(doc) -> [{userdata,[{""}]}];
 mult_t20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t20"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t31_test(doc) -> [{userdata,[{""}]}];
 mult_t31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t42_test(doc) -> [{userdata,[{""}]}];
 mult_t42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t42"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t53_test(doc) -> [{userdata,[{""}]}];
 mult_t53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t64_test(doc) -> [{userdata,[{""}]}];
 mult_t64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t4_test(doc) -> [{userdata,[{""}]}];
 mult_t4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t4"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t15_test(doc) -> [{userdata,[{""}]}];
 mult_t15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t26_test(doc) -> [{userdata,[{""}]}];
 mult_t26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t26"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t37_test(doc) -> [{userdata,[{""}]}];
 mult_t37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t48_test(doc) -> [{userdata,[{""}]}];
 mult_t48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t59_test(doc) -> [{userdata,[{""}]}];
 mult_t59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t10_test(doc) -> [{userdata,[{""}]}];
 mult_t10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t21_test(doc) -> [{userdata,[{""}]}];
 mult_t21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t21"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t32_test(doc) -> [{userdata,[{""}]}];
 mult_t32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t43_test(doc) -> [{userdata,[{""}]}];
 mult_t43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t43"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t54_test(doc) -> [{userdata,[{""}]}];
 mult_t54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_t65_test(doc) -> [{userdata,[{""}]}];
 mult_t65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","t65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j5_test(doc) -> [{userdata,[{""}]}];
 mult_j5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j5"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j16_test(doc) -> [{userdata,[{""}]}];
 mult_j16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j16"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j27_test(doc) -> [{userdata,[{""}]}];
 mult_j27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j27"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j38_test(doc) -> [{userdata,[{""}]}];
 mult_j38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j38"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j49_test(doc) -> [{userdata,[{""}]}];
 mult_j49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j60_test(doc) -> [{userdata,[{""}]}];
 mult_j60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j11_test(doc) -> [{userdata,[{""}]}];
 mult_j11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j22_test(doc) -> [{userdata,[{""}]}];
 mult_j22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j22"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j33_test(doc) -> [{userdata,[{""}]}];
 mult_j33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j44_test(doc) -> [{userdata,[{""}]}];
 mult_j44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j44"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j55_test(doc) -> [{userdata,[{""}]}];
 mult_j55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j66_test(doc) -> [{userdata,[{""}]}];
 mult_j66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j6_test(doc) -> [{userdata,[{""}]}];
 mult_j6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j17_test(doc) -> [{userdata,[{""}]}];
 mult_j17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j17"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j28_test(doc) -> [{userdata,[{""}]}];
 mult_j28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j39_test(doc) -> [{userdata,[{""}]}];
 mult_j39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j39"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j50_test(doc) -> [{userdata,[{""}]}];
 mult_j50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j61_test(doc) -> [{userdata,[{""}]}];
 mult_j61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j1_test(doc) -> [{userdata,[{""}]}];
 mult_j1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j12_test(doc) -> [{userdata,[{""}]}];
 mult_j12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j34_test(doc) -> [{userdata,[{""}]}];
 mult_j34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j56_test(doc) -> [{userdata,[{""}]}];
 mult_j56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j7_test(doc) -> [{userdata,[{""}]}];
 mult_j7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j18_test(doc) -> [{userdata,[{""}]}];
 mult_j18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j18"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j29_test(doc) -> [{userdata,[{""}]}];
 mult_j29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j40_test(doc) -> [{userdata,[{""}]}];
 mult_j40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j40"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j51_test(doc) -> [{userdata,[{""}]}];
 mult_j51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j62_test(doc) -> [{userdata,[{""}]}];
 mult_j62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j2_test(doc) -> [{userdata,[{""}]}];
 mult_j2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j2"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j13_test(doc) -> [{userdata,[{""}]}];
 mult_j13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j35_test(doc) -> [{userdata,[{""}]}];
 mult_j35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j57_test(doc) -> [{userdata,[{""}]}];
 mult_j57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j8_test(doc) -> [{userdata,[{""}]}];
 mult_j8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j19_test(doc) -> [{userdata,[{""}]}];
 mult_j19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j19"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j30_test(doc) -> [{userdata,[{""}]}];
 mult_j30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j41_test(doc) -> [{userdata,[{""}]}];
 mult_j41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j41"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j52_test(doc) -> [{userdata,[{""}]}];
 mult_j52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j63_test(doc) -> [{userdata,[{""}]}];
 mult_j63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j3_test(doc) -> [{userdata,[{""}]}];
 mult_j3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j3"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j14_test(doc) -> [{userdata,[{""}]}];
 mult_j14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j25_test(doc) -> [{userdata,[{""}]}];
 mult_j25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j25"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j36_test(doc) -> [{userdata,[{""}]}];
 mult_j36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j47_test(doc) -> [{userdata,[{""}]}];
 mult_j47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j58_test(doc) -> [{userdata,[{""}]}];
 mult_j58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j9_test(doc) -> [{userdata,[{""}]}];
 mult_j9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j20_test(doc) -> [{userdata,[{""}]}];
 mult_j20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j20"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j31_test(doc) -> [{userdata,[{""}]}];
 mult_j31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j42_test(doc) -> [{userdata,[{""}]}];
 mult_j42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j42"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j53_test(doc) -> [{userdata,[{""}]}];
 mult_j53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j64_test(doc) -> [{userdata,[{""}]}];
 mult_j64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j4_test(doc) -> [{userdata,[{""}]}];
 mult_j4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j4"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j15_test(doc) -> [{userdata,[{""}]}];
 mult_j15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j26_test(doc) -> [{userdata,[{""}]}];
 mult_j26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j26"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j37_test(doc) -> [{userdata,[{""}]}];
 mult_j37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j48_test(doc) -> [{userdata,[{""}]}];
 mult_j48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j59_test(doc) -> [{userdata,[{""}]}];
 mult_j59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j10_test(doc) -> [{userdata,[{""}]}];
 mult_j10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j21_test(doc) -> [{userdata,[{""}]}];
 mult_j21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j21"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j32_test(doc) -> [{userdata,[{""}]}];
 mult_j32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j43_test(doc) -> [{userdata,[{""}]}];
 mult_j43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j43"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j54_test(doc) -> [{userdata,[{""}]}];
 mult_j54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_j65_test(doc) -> [{userdata,[{""}]}];
 mult_j65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","j65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u5_test(doc) -> [{userdata,[{""}]}];
 mult_u5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u5"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u16_test(doc) -> [{userdata,[{""}]}];
 mult_u16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u16"),
   Expected="8.48205",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u27_test(doc) -> [{userdata,[{""}]}];
 mult_u27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u27"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u38_test(doc) -> [{userdata,[{""}]}];
 mult_u38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u38"),
   Expected="8.48205",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u49_test(doc) -> [{userdata,[{""}]}];
 mult_u49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u49"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u60_test(doc) -> [{userdata,[{""}]}];
 mult_u60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u60"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u11_test(doc) -> [{userdata,[{""}]}];
 mult_u11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u22_test(doc) -> [{userdata,[{""}]}];
 mult_u22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u22"),
   Expected="113700.9378",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u33_test(doc) -> [{userdata,[{""}]}];
 mult_u33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u44_test(doc) -> [{userdata,[{""}]}];
 mult_u44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u44"),
   Expected="113700.9378",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u55_test(doc) -> [{userdata,[{""}]}];
 mult_u55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u55"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u66_test(doc) -> [{userdata,[{""}]}];
 mult_u66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u6_test(doc) -> [{userdata,[{""}]}];
 mult_u6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u17_test(doc) -> [{userdata,[{""}]}];
 mult_u17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u17"),
   Expected="11.12091",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u28_test(doc) -> [{userdata,[{""}]}];
 mult_u28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u39_test(doc) -> [{userdata,[{""}]}];
 mult_u39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u39"),
   Expected="11.12091",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u50_test(doc) -> [{userdata,[{""}]}];
 mult_u50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u50"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u61_test(doc) -> [{userdata,[{""}]}];
 mult_u61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u61"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u1_test(doc) -> [{userdata,[{""}]}];
 mult_u1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u1"),
   Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u12_test(doc) -> [{userdata,[{""}]}];
 mult_u12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u34_test(doc) -> [{userdata,[{""}]}];
 mult_u34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u56_test(doc) -> [{userdata,[{""}]}];
 mult_u56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u56"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u7_test(doc) -> [{userdata,[{""}]}];
 mult_u7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u18_test(doc) -> [{userdata,[{""}]}];
 mult_u18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u18"),
   Expected="113697.168",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u29_test(doc) -> [{userdata,[{""}]}];
 mult_u29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u40_test(doc) -> [{userdata,[{""}]}];
 mult_u40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u40"),
   Expected="113697.168",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u51_test(doc) -> [{userdata,[{""}]}];
 mult_u51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u51"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u62_test(doc) -> [{userdata,[{""}]}];
 mult_u62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u62"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u2_test(doc) -> [{userdata,[{""}]}];
 mult_u2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u2"),
   Expected="3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u13_test(doc) -> [{userdata,[{""}]}];
 mult_u13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u13"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u35_test(doc) -> [{userdata,[{""}]}];
 mult_u35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u57_test(doc) -> [{userdata,[{""}]}];
 mult_u57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u57"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u8_test(doc) -> [{userdata,[{""}]}];
 mult_u8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u19_test(doc) -> [{userdata,[{""}]}];
 mult_u19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u19"),
   Expected="113700.3095",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u30_test(doc) -> [{userdata,[{""}]}];
 mult_u30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u41_test(doc) -> [{userdata,[{""}]}];
 mult_u41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u41"),
   Expected="113700.3095",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u52_test(doc) -> [{userdata,[{""}]}];
 mult_u52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u52"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u63_test(doc) -> [{userdata,[{""}]}];
 mult_u63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u63"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u3_test(doc) -> [{userdata,[{""}]}];
 mult_u3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u3"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u14_test(doc) -> [{userdata,[{""}]}];
 mult_u14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u25_test(doc) -> [{userdata,[{""}]}];
 mult_u25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u25"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u36_test(doc) -> [{userdata,[{""}]}];
 mult_u36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u47_test(doc) -> [{userdata,[{""}]}];
 mult_u47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u47"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u58_test(doc) -> [{userdata,[{""}]}];
 mult_u58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u58"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u9_test(doc) -> [{userdata,[{""}]}];
 mult_u9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u20_test(doc) -> [{userdata,[{""}]}];
 mult_u20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u20"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u31_test(doc) -> [{userdata,[{""}]}];
 mult_u31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u42_test(doc) -> [{userdata,[{""}]}];
 mult_u42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u42"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u53_test(doc) -> [{userdata,[{""}]}];
 mult_u53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u53"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u64_test(doc) -> [{userdata,[{""}]}];
 mult_u64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u64"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u4_test(doc) -> [{userdata,[{""}]}];
 mult_u4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u4"),
   Expected="3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u15_test(doc) -> [{userdata,[{""}]}];
 mult_u15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u26_test(doc) -> [{userdata,[{""}]}];
 mult_u26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u26"),
   Expected="3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u37_test(doc) -> [{userdata,[{""}]}];
 mult_u37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u48_test(doc) -> [{userdata,[{""}]}];
 mult_u48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u48"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u59_test(doc) -> [{userdata,[{""}]}];
 mult_u59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u59"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u10_test(doc) -> [{userdata,[{""}]}];
 mult_u10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u21_test(doc) -> [{userdata,[{""}]}];
 mult_u21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u21"),
   Expected="9.86902225",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u32_test(doc) -> [{userdata,[{""}]}];
 mult_u32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u43_test(doc) -> [{userdata,[{""}]}];
 mult_u43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u43"),
   Expected="9.86902225",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u54_test(doc) -> [{userdata,[{""}]}];
 mult_u54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u54"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 mult_u65_test(doc) -> [{userdata,[{""}]}];
 mult_u65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/MULT/","u65"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 all() -> 
     [mult_k5_test,

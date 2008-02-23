@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_three_dee_ref.xls
-% Generated on: Sun Feb 17 21:42:39 +0000 2008
+% Generated on: Fri Feb 22 19:04:10 +0000 2008
 
 -module(b_three_dee_ref_SUITE).
 -compile(export_all).
@@ -19,8 +19,9 @@ init_per_suite(Config) ->
         {_,Data2}                                -> Data2;
         {_,number,Data2} when is_float(Data2)   -> float_to_list(Data2);
         {_,number,Data2} when is_integer(Data2) -> integer_to_list(Data2);
-        {_,boolean,true}                        -> "true";
-        {_,boolean,false}                       -> "false"
+        {_,error,Error}                          -> Error;
+        {_,boolean,true}                         -> "true";
+        {_,boolean,false}                        -> "false"
       end,
       Path="/"++Sheet++"/",
       Cell=util2:make_b26(ColIdx+1)++integer_to_list(RowIdx+1),
@@ -74,84 +75,84 @@ tom_a6_test(_Config) ->
   Got=hn_get("http://127.0.0.1:9000","/Tom/","a6"),
   Expected="And now some errors - the sheet bob has been deleted",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 tom_a1_test(doc) -> [{userdata,[{""}]}];
 tom_a1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","a1"),
   Expected="This Spreadsheet tests 3D references",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 tom_a7_test(doc) -> [{userdata,[{""}]}];
 tom_a7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","a7"),
   Expected="Simple Ref",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 tom_a2_test(doc) -> [{userdata,[{""}]}];
 tom_a2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","a2"),
   Expected="Simple Ref",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 tom_a8_test(doc) -> [{userdata,[{""}]}];
 tom_a8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","a8"),
   Expected="Simple Range",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 tom_a3_test(doc) -> [{userdata,[{""}]}];
 tom_a3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","a3"),
   Expected="Simple Range",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 tom_a4_test(doc) -> [{userdata,[{""}]}];
 tom_a4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","a4"),
   Expected="3D Range",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 tom_b7_test(doc) -> [{userdata,[{""}]}];
 tom_b7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","b7"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 tom_b2_test(doc) -> [{userdata,[{""}]}];
 tom_b2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","b2"),
   Expected="444.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 tom_b8_test(doc) -> [{userdata,[{""}]}];
 tom_b8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","b8"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 tom_b3_test(doc) -> [{userdata,[{""}]}];
 tom_b3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","b3"),
   Expected="10.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 tom_b4_test(doc) -> [{userdata,[{""}]}];
 tom_b4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","b4"),
   Expected="999.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 all() -> 
     [tom_a6_test,

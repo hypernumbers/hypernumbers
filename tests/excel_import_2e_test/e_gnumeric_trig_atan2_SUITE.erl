@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_trig_atan2.xls
-% Generated on: Sun Feb 17 21:43:04 +0000 2008
+% Generated on: Fri Feb 22 19:04:35 +0000 2008
 
 -module(e_gnumeric_trig_atan2_SUITE).
 -compile(export_all).
@@ -19,8 +19,9 @@ init_per_suite(Config) ->
         {_,Data2}                                -> Data2;
         {_,number,Data2} when is_float(Data2)   -> float_to_list(Data2);
         {_,number,Data2} when is_integer(Data2) -> integer_to_list(Data2);
-        {_,boolean,true}                        -> "true";
-        {_,boolean,false}                       -> "false"
+        {_,error,Error}                          -> Error;
+        {_,boolean,true}                         -> "true";
+        {_,boolean,false}                        -> "false"
       end,
       Path="/"++Sheet++"/",
       Cell=util2:make_b26(ColIdx+1)++integer_to_list(RowIdx+1),
@@ -74,13139 +75,13139 @@ atan2_k18_test(_Config) ->
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k18"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k55_test(doc) -> [{userdata,[{""}]}];
 atan2_k55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k55"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k92_test(doc) -> [{userdata,[{""}]}];
 atan2_k92_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k92"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k37_test(doc) -> [{userdata,[{""}]}];
 atan2_k37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k74_test(doc) -> [{userdata,[{""}]}];
 atan2_k74_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k74"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k111_test(doc) -> [{userdata,[{""}]}];
 atan2_k111_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k111"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k56_test(doc) -> [{userdata,[{""}]}];
 atan2_k56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k56"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k93_test(doc) -> [{userdata,[{""}]}];
 atan2_k93_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k93"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k19_test(doc) -> [{userdata,[{""}]}];
 atan2_k19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k19"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k75_test(doc) -> [{userdata,[{""}]}];
 atan2_k75_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k75"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k112_test(doc) -> [{userdata,[{""}]}];
 atan2_k112_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k112"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k1_test(doc) -> [{userdata,[{""}]}];
 atan2_k1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k38_test(doc) -> [{userdata,[{""}]}];
 atan2_k38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k94_test(doc) -> [{userdata,[{""}]}];
 atan2_k94_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k94"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k20_test(doc) -> [{userdata,[{""}]}];
 atan2_k20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k20"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k57_test(doc) -> [{userdata,[{""}]}];
 atan2_k57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k57"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k113_test(doc) -> [{userdata,[{""}]}];
 atan2_k113_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k113"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k2_test(doc) -> [{userdata,[{""}]}];
 atan2_k2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k2"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k39_test(doc) -> [{userdata,[{""}]}];
 atan2_k39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k76_test(doc) -> [{userdata,[{""}]}];
 atan2_k76_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k76"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k21_test(doc) -> [{userdata,[{""}]}];
 atan2_k21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k21"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k58_test(doc) -> [{userdata,[{""}]}];
 atan2_k58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k58"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k95_test(doc) -> [{userdata,[{""}]}];
 atan2_k95_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k95"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k3_test(doc) -> [{userdata,[{""}]}];
 atan2_k3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k3"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k77_test(doc) -> [{userdata,[{""}]}];
 atan2_k77_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k77"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k114_test(doc) -> [{userdata,[{""}]}];
 atan2_k114_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k114"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k22_test(doc) -> [{userdata,[{""}]}];
 atan2_k22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k22"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k59_test(doc) -> [{userdata,[{""}]}];
 atan2_k59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k59"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k96_test(doc) -> [{userdata,[{""}]}];
 atan2_k96_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k96"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k4_test(doc) -> [{userdata,[{""}]}];
 atan2_k4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k4"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k78_test(doc) -> [{userdata,[{""}]}];
 atan2_k78_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k78"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k115_test(doc) -> [{userdata,[{""}]}];
 atan2_k115_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k115"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k23_test(doc) -> [{userdata,[{""}]}];
 atan2_k23_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k23"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k60_test(doc) -> [{userdata,[{""}]}];
 atan2_k60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k60"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k97_test(doc) -> [{userdata,[{""}]}];
 atan2_k97_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k97"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k5_test(doc) -> [{userdata,[{""}]}];
 atan2_k5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k5"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k79_test(doc) -> [{userdata,[{""}]}];
 atan2_k79_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k79"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k116_test(doc) -> [{userdata,[{""}]}];
 atan2_k116_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k116"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k24_test(doc) -> [{userdata,[{""}]}];
 atan2_k24_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k24"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k61_test(doc) -> [{userdata,[{""}]}];
 atan2_k61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k61"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k98_test(doc) -> [{userdata,[{""}]}];
 atan2_k98_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k98"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k6_test(doc) -> [{userdata,[{""}]}];
 atan2_k6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k43_test(doc) -> [{userdata,[{""}]}];
 atan2_k43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k43"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k80_test(doc) -> [{userdata,[{""}]}];
 atan2_k80_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k80"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k117_test(doc) -> [{userdata,[{""}]}];
 atan2_k117_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k117"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k25_test(doc) -> [{userdata,[{""}]}];
 atan2_k25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k25"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k62_test(doc) -> [{userdata,[{""}]}];
 atan2_k62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k62"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k99_test(doc) -> [{userdata,[{""}]}];
 atan2_k99_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k99"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k7_test(doc) -> [{userdata,[{""}]}];
 atan2_k7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k44_test(doc) -> [{userdata,[{""}]}];
 atan2_k44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k44"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k81_test(doc) -> [{userdata,[{""}]}];
 atan2_k81_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k81"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k118_test(doc) -> [{userdata,[{""}]}];
 atan2_k118_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k118"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k26_test(doc) -> [{userdata,[{""}]}];
 atan2_k26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k26"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k63_test(doc) -> [{userdata,[{""}]}];
 atan2_k63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k63"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k100_test(doc) -> [{userdata,[{""}]}];
 atan2_k100_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k100"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k8_test(doc) -> [{userdata,[{""}]}];
 atan2_k8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k45_test(doc) -> [{userdata,[{""}]}];
 atan2_k45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k45"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k119_test(doc) -> [{userdata,[{""}]}];
 atan2_k119_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k119"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k27_test(doc) -> [{userdata,[{""}]}];
 atan2_k27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k27"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k64_test(doc) -> [{userdata,[{""}]}];
 atan2_k64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k64"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k101_test(doc) -> [{userdata,[{""}]}];
 atan2_k101_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k101"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k46_test(doc) -> [{userdata,[{""}]}];
 atan2_k46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k46"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k120_test(doc) -> [{userdata,[{""}]}];
 atan2_k120_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k120"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k9_test(doc) -> [{userdata,[{""}]}];
 atan2_k9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k65_test(doc) -> [{userdata,[{""}]}];
 atan2_k65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k65"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k102_test(doc) -> [{userdata,[{""}]}];
 atan2_k102_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k102"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k28_test(doc) -> [{userdata,[{""}]}];
 atan2_k28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k28"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k84_test(doc) -> [{userdata,[{""}]}];
 atan2_k84_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k84"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k10_test(doc) -> [{userdata,[{""}]}];
 atan2_k10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k47_test(doc) -> [{userdata,[{""}]}];
 atan2_k47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k47"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k103_test(doc) -> [{userdata,[{""}]}];
 atan2_k103_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k103"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k29_test(doc) -> [{userdata,[{""}]}];
 atan2_k29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k29"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k66_test(doc) -> [{userdata,[{""}]}];
 atan2_k66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k66"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k11_test(doc) -> [{userdata,[{""}]}];
 atan2_k11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k48_test(doc) -> [{userdata,[{""}]}];
 atan2_k48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k48"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k85_test(doc) -> [{userdata,[{""}]}];
 atan2_k85_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k85"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k30_test(doc) -> [{userdata,[{""}]}];
 atan2_k30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k30"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k67_test(doc) -> [{userdata,[{""}]}];
 atan2_k67_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k67"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k104_test(doc) -> [{userdata,[{""}]}];
 atan2_k104_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k104"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k12_test(doc) -> [{userdata,[{""}]}];
 atan2_k12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k49_test(doc) -> [{userdata,[{""}]}];
 atan2_k49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k49"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k86_test(doc) -> [{userdata,[{""}]}];
 atan2_k86_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k86"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k31_test(doc) -> [{userdata,[{""}]}];
 atan2_k31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k31"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k68_test(doc) -> [{userdata,[{""}]}];
 atan2_k68_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k68"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k105_test(doc) -> [{userdata,[{""}]}];
 atan2_k105_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k105"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k13_test(doc) -> [{userdata,[{""}]}];
 atan2_k13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k13"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k50_test(doc) -> [{userdata,[{""}]}];
 atan2_k50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k50"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k87_test(doc) -> [{userdata,[{""}]}];
 atan2_k87_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k87"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k32_test(doc) -> [{userdata,[{""}]}];
 atan2_k32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k32"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k69_test(doc) -> [{userdata,[{""}]}];
 atan2_k69_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k69"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k106_test(doc) -> [{userdata,[{""}]}];
 atan2_k106_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k106"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k14_test(doc) -> [{userdata,[{""}]}];
 atan2_k14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k51_test(doc) -> [{userdata,[{""}]}];
 atan2_k51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k51"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k88_test(doc) -> [{userdata,[{""}]}];
 atan2_k88_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k88"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k33_test(doc) -> [{userdata,[{""}]}];
 atan2_k33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k33"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k70_test(doc) -> [{userdata,[{""}]}];
 atan2_k70_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k70"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k107_test(doc) -> [{userdata,[{""}]}];
 atan2_k107_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k107"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k15_test(doc) -> [{userdata,[{""}]}];
 atan2_k15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k15"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k52_test(doc) -> [{userdata,[{""}]}];
 atan2_k52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k52"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k89_test(doc) -> [{userdata,[{""}]}];
 atan2_k89_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k89"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k34_test(doc) -> [{userdata,[{""}]}];
 atan2_k34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k71_test(doc) -> [{userdata,[{""}]}];
 atan2_k71_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k71"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k108_test(doc) -> [{userdata,[{""}]}];
 atan2_k108_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k108"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k16_test(doc) -> [{userdata,[{""}]}];
 atan2_k16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k16"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k53_test(doc) -> [{userdata,[{""}]}];
 atan2_k53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k53"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k90_test(doc) -> [{userdata,[{""}]}];
 atan2_k90_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k90"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k35_test(doc) -> [{userdata,[{""}]}];
 atan2_k35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k72_test(doc) -> [{userdata,[{""}]}];
 atan2_k72_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k72"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k109_test(doc) -> [{userdata,[{""}]}];
 atan2_k109_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k109"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k17_test(doc) -> [{userdata,[{""}]}];
 atan2_k17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k17"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k54_test(doc) -> [{userdata,[{""}]}];
 atan2_k54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k54"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k91_test(doc) -> [{userdata,[{""}]}];
 atan2_k91_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k91"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k110_test(doc) -> [{userdata,[{""}]}];
 atan2_k110_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k110"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k36_test(doc) -> [{userdata,[{""}]}];
 atan2_k36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_k73_test(doc) -> [{userdata,[{""}]}];
 atan2_k73_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","k73"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a9_test(doc) -> [{userdata,[{""}]}];
 atan2_a9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a9"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a47_test(doc) -> [{userdata,[{""}]}];
 atan2_a47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a47"),
   Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a85_test(doc) -> [{userdata,[{""}]}];
 atan2_a85_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a85"),
   Expected="1369.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a28_test(doc) -> [{userdata,[{""}]}];
 atan2_a28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a28"),
   Expected="-PI/2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a66_test(doc) -> [{userdata,[{""}]}];
 atan2_a66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a66"),
   Expected="Number",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a76_test(doc) -> [{userdata,[{""}]}];
 atan2_a76_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a76"),
   Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a19_test(doc) -> [{userdata,[{""}]}];
 atan2_a19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a19"),
   Expected="Number",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a57_test(doc) -> [{userdata,[{""}]}];
 atan2_a57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a57"),
   Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a38_test(doc) -> [{userdata,[{""}]}];
 atan2_a38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a38"),
   Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a10_test(doc) -> [{userdata,[{""}]}];
 atan2_a10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a10"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a48_test(doc) -> [{userdata,[{""}]}];
 atan2_a48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a48"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a29_test(doc) -> [{userdata,[{""}]}];
 atan2_a29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a29"),
   Expected="Zero",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a67_test(doc) -> [{userdata,[{""}]}];
 atan2_a67_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a67"),
   Expected="-2PI",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a20_test(doc) -> [{userdata,[{""}]}];
 atan2_a20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a20"),
   Expected="Small Negative Number",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a58_test(doc) -> [{userdata,[{""}]}];
 atan2_a58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a58"),
   Expected="String number Leading space",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a1_test(doc) -> [{userdata,[{""}]}];
 atan2_a1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a1"),
   Expected="ATAN2(x, y)",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a39_test(doc) -> [{userdata,[{""}]}];
 atan2_a39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a39"),
   Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a77_test(doc) -> [{userdata,[{""}]}];
 atan2_a77_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a77"),
   Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a30_test(doc) -> [{userdata,[{""}]}];
 atan2_a30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a30"),
   Expected="PI/2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a68_test(doc) -> [{userdata,[{""}]}];
 atan2_a68_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a68"),
   Expected="-3PI/2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a11_test(doc) -> [{userdata,[{""}]}];
 atan2_a11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a11"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a49_test(doc) -> [{userdata,[{""}]}];
 atan2_a49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a49"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a21_test(doc) -> [{userdata,[{""}]}];
 atan2_a21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a21"),
   Expected="Number",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a59_test(doc) -> [{userdata,[{""}]}];
 atan2_a59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a59"),
   Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a2_test(doc) -> [{userdata,[{""}]}];
 atan2_a2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a2"),
   Expected="y -->",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a78_test(doc) -> [{userdata,[{""}]}];
 atan2_a78_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a78"),
   Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a31_test(doc) -> [{userdata,[{""}]}];
 atan2_a31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a31"),
   Expected="PI",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a69_test(doc) -> [{userdata,[{""}]}];
 atan2_a69_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a69"),
   Expected="-PI",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a12_test(doc) -> [{userdata,[{""}]}];
 atan2_a12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a12"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a50_test(doc) -> [{userdata,[{""}]}];
 atan2_a50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a50"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a3_test(doc) -> [{userdata,[{""}]}];
 atan2_a3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a3"),
   Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a79_test(doc) -> [{userdata,[{""}]}];
 atan2_a79_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a79"),
   Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a22_test(doc) -> [{userdata,[{""}]}];
 atan2_a22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a22"),
   Expected="Small Number",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a60_test(doc) -> [{userdata,[{""}]}];
 atan2_a60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a60"),
   Expected="Number",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a32_test(doc) -> [{userdata,[{""}]}];
 atan2_a32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a32"),
   Expected="3PI/2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a70_test(doc) -> [{userdata,[{""}]}];
 atan2_a70_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a70"),
   Expected="-PI/2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a13_test(doc) -> [{userdata,[{""}]}];
 atan2_a13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a13"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a51_test(doc) -> [{userdata,[{""}]}];
 atan2_a51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a51"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a4_test(doc) -> [{userdata,[{""}]}];
 atan2_a4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a4"),
   Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a80_test(doc) -> [{userdata,[{""}]}];
 atan2_a80_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a80"),
   Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a23_test(doc) -> [{userdata,[{""}]}];
 atan2_a23_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a23"),
   Expected="Number",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a61_test(doc) -> [{userdata,[{""}]}];
 atan2_a61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a61"),
   Expected="Number",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a14_test(doc) -> [{userdata,[{""}]}];
 atan2_a14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a14"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a52_test(doc) -> [{userdata,[{""}]}];
 atan2_a52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a52"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a33_test(doc) -> [{userdata,[{""}]}];
 atan2_a33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a33"),
   Expected="2PI",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a71_test(doc) -> [{userdata,[{""}]}];
 atan2_a71_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a71"),
   Expected="Zero",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a43_test(doc) -> [{userdata,[{""}]}];
 atan2_a43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a43"),
   Expected="ATAN2(x, y)",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a81_test(doc) -> [{userdata,[{""}]}];
 atan2_a81_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a81"),
   Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a24_test(doc) -> [{userdata,[{""}]}];
 atan2_a24_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a24"),
   Expected="Number",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a62_test(doc) -> [{userdata,[{""}]}];
 atan2_a62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a62"),
   Expected="Small Negative Number",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a5_test(doc) -> [{userdata,[{""}]}];
 atan2_a5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a5"),
   Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a15_test(doc) -> [{userdata,[{""}]}];
 atan2_a15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a15"),
   Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a53_test(doc) -> [{userdata,[{""}]}];
 atan2_a53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a53"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a34_test(doc) -> [{userdata,[{""}]}];
 atan2_a34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a34"),
   Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a72_test(doc) -> [{userdata,[{""}]}];
 atan2_a72_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a72"),
   Expected="PI/2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a25_test(doc) -> [{userdata,[{""}]}];
 atan2_a25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a25"),
   Expected="-2PI",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a63_test(doc) -> [{userdata,[{""}]}];
 atan2_a63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a63"),
   Expected="Number",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a6_test(doc) -> [{userdata,[{""}]}];
 atan2_a6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a6"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a44_test(doc) -> [{userdata,[{""}]}];
 atan2_a44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a44"),
   Expected="y -->",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a54_test(doc) -> [{userdata,[{""}]}];
 atan2_a54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a54"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a35_test(doc) -> [{userdata,[{""}]}];
 atan2_a35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a35"),
   Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a73_test(doc) -> [{userdata,[{""}]}];
 atan2_a73_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a73"),
   Expected="PI",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a16_test(doc) -> [{userdata,[{""}]}];
 atan2_a16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a16"),
   Expected="String number Leading space",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a45_test(doc) -> [{userdata,[{""}]}];
 atan2_a45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a45"),
   Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a26_test(doc) -> [{userdata,[{""}]}];
 atan2_a26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a26"),
   Expected="-3PI/2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a64_test(doc) -> [{userdata,[{""}]}];
 atan2_a64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a64"),
   Expected="Small Number",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a7_test(doc) -> [{userdata,[{""}]}];
 atan2_a7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a7"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a55_test(doc) -> [{userdata,[{""}]}];
 atan2_a55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a55"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a17_test(doc) -> [{userdata,[{""}]}];
 atan2_a17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a17"),
   Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a36_test(doc) -> [{userdata,[{""}]}];
 atan2_a36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a36"),
   Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a74_test(doc) -> [{userdata,[{""}]}];
 atan2_a74_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a74"),
   Expected="3PI/2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a27_test(doc) -> [{userdata,[{""}]}];
 atan2_a27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a27"),
   Expected="-PI",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a46_test(doc) -> [{userdata,[{""}]}];
 atan2_a46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a46"),
   Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a8_test(doc) -> [{userdata,[{""}]}];
 atan2_a8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a8"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a65_test(doc) -> [{userdata,[{""}]}];
 atan2_a65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a65"),
   Expected="Number",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a84_test(doc) -> [{userdata,[{""}]}];
 atan2_a84_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a84"),
   Expected="1369.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a56_test(doc) -> [{userdata,[{""}]}];
 atan2_a56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a56"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a18_test(doc) -> [{userdata,[{""}]}];
 atan2_a18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a18"),
   Expected="Number",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a37_test(doc) -> [{userdata,[{""}]}];
 atan2_a37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a37"),
   Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_a75_test(doc) -> [{userdata,[{""}]}];
 atan2_a75_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","a75"),
   Expected="2PI",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l18_test(doc) -> [{userdata,[{""}]}];
 atan2_l18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l18"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l55_test(doc) -> [{userdata,[{""}]}];
 atan2_l55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l55"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l92_test(doc) -> [{userdata,[{""}]}];
 atan2_l92_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l92"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l37_test(doc) -> [{userdata,[{""}]}];
 atan2_l37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l74_test(doc) -> [{userdata,[{""}]}];
 atan2_l74_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l74"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l111_test(doc) -> [{userdata,[{""}]}];
 atan2_l111_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l111"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l56_test(doc) -> [{userdata,[{""}]}];
 atan2_l56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l56"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l93_test(doc) -> [{userdata,[{""}]}];
 atan2_l93_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l93"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l19_test(doc) -> [{userdata,[{""}]}];
 atan2_l19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l19"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l75_test(doc) -> [{userdata,[{""}]}];
 atan2_l75_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l75"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l112_test(doc) -> [{userdata,[{""}]}];
 atan2_l112_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l112"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l1_test(doc) -> [{userdata,[{""}]}];
 atan2_l1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l38_test(doc) -> [{userdata,[{""}]}];
 atan2_l38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l94_test(doc) -> [{userdata,[{""}]}];
 atan2_l94_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l94"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l20_test(doc) -> [{userdata,[{""}]}];
 atan2_l20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l20"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l57_test(doc) -> [{userdata,[{""}]}];
 atan2_l57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l57"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l113_test(doc) -> [{userdata,[{""}]}];
 atan2_l113_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l113"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l2_test(doc) -> [{userdata,[{""}]}];
 atan2_l2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l2"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l39_test(doc) -> [{userdata,[{""}]}];
 atan2_l39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l76_test(doc) -> [{userdata,[{""}]}];
 atan2_l76_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l76"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l21_test(doc) -> [{userdata,[{""}]}];
 atan2_l21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l21"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l58_test(doc) -> [{userdata,[{""}]}];
 atan2_l58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l58"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l95_test(doc) -> [{userdata,[{""}]}];
 atan2_l95_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l95"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l3_test(doc) -> [{userdata,[{""}]}];
 atan2_l3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l3"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l77_test(doc) -> [{userdata,[{""}]}];
 atan2_l77_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l77"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l114_test(doc) -> [{userdata,[{""}]}];
 atan2_l114_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l114"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l22_test(doc) -> [{userdata,[{""}]}];
 atan2_l22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l22"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l59_test(doc) -> [{userdata,[{""}]}];
 atan2_l59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l59"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l96_test(doc) -> [{userdata,[{""}]}];
 atan2_l96_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l96"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l4_test(doc) -> [{userdata,[{""}]}];
 atan2_l4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l4"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l78_test(doc) -> [{userdata,[{""}]}];
 atan2_l78_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l78"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l115_test(doc) -> [{userdata,[{""}]}];
 atan2_l115_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l115"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l23_test(doc) -> [{userdata,[{""}]}];
 atan2_l23_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l23"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l60_test(doc) -> [{userdata,[{""}]}];
 atan2_l60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l60"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l97_test(doc) -> [{userdata,[{""}]}];
 atan2_l97_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l97"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l5_test(doc) -> [{userdata,[{""}]}];
 atan2_l5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l5"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l79_test(doc) -> [{userdata,[{""}]}];
 atan2_l79_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l79"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l116_test(doc) -> [{userdata,[{""}]}];
 atan2_l116_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l116"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l24_test(doc) -> [{userdata,[{""}]}];
 atan2_l24_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l24"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l61_test(doc) -> [{userdata,[{""}]}];
 atan2_l61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l61"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l98_test(doc) -> [{userdata,[{""}]}];
 atan2_l98_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l98"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l6_test(doc) -> [{userdata,[{""}]}];
 atan2_l6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l43_test(doc) -> [{userdata,[{""}]}];
 atan2_l43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l43"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l80_test(doc) -> [{userdata,[{""}]}];
 atan2_l80_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l80"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l117_test(doc) -> [{userdata,[{""}]}];
 atan2_l117_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l117"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l25_test(doc) -> [{userdata,[{""}]}];
 atan2_l25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l25"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l62_test(doc) -> [{userdata,[{""}]}];
 atan2_l62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l62"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l99_test(doc) -> [{userdata,[{""}]}];
 atan2_l99_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l99"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l7_test(doc) -> [{userdata,[{""}]}];
 atan2_l7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l44_test(doc) -> [{userdata,[{""}]}];
 atan2_l44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l44"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l81_test(doc) -> [{userdata,[{""}]}];
 atan2_l81_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l81"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l118_test(doc) -> [{userdata,[{""}]}];
 atan2_l118_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l118"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l26_test(doc) -> [{userdata,[{""}]}];
 atan2_l26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l26"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l63_test(doc) -> [{userdata,[{""}]}];
 atan2_l63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l63"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l100_test(doc) -> [{userdata,[{""}]}];
 atan2_l100_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l100"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l8_test(doc) -> [{userdata,[{""}]}];
 atan2_l8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l45_test(doc) -> [{userdata,[{""}]}];
 atan2_l45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l45"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l119_test(doc) -> [{userdata,[{""}]}];
 atan2_l119_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l119"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l27_test(doc) -> [{userdata,[{""}]}];
 atan2_l27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l27"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l64_test(doc) -> [{userdata,[{""}]}];
 atan2_l64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l64"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l101_test(doc) -> [{userdata,[{""}]}];
 atan2_l101_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l101"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l46_test(doc) -> [{userdata,[{""}]}];
 atan2_l46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l46"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l120_test(doc) -> [{userdata,[{""}]}];
 atan2_l120_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l120"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l9_test(doc) -> [{userdata,[{""}]}];
 atan2_l9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l65_test(doc) -> [{userdata,[{""}]}];
 atan2_l65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l65"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l102_test(doc) -> [{userdata,[{""}]}];
 atan2_l102_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l102"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l28_test(doc) -> [{userdata,[{""}]}];
 atan2_l28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l28"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l84_test(doc) -> [{userdata,[{""}]}];
 atan2_l84_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l84"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l10_test(doc) -> [{userdata,[{""}]}];
 atan2_l10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l47_test(doc) -> [{userdata,[{""}]}];
 atan2_l47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l47"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l103_test(doc) -> [{userdata,[{""}]}];
 atan2_l103_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l103"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l29_test(doc) -> [{userdata,[{""}]}];
 atan2_l29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l29"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l66_test(doc) -> [{userdata,[{""}]}];
 atan2_l66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l66"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l11_test(doc) -> [{userdata,[{""}]}];
 atan2_l11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l48_test(doc) -> [{userdata,[{""}]}];
 atan2_l48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l48"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l85_test(doc) -> [{userdata,[{""}]}];
 atan2_l85_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l85"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l30_test(doc) -> [{userdata,[{""}]}];
 atan2_l30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l30"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l67_test(doc) -> [{userdata,[{""}]}];
 atan2_l67_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l67"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l104_test(doc) -> [{userdata,[{""}]}];
 atan2_l104_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l104"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l12_test(doc) -> [{userdata,[{""}]}];
 atan2_l12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l49_test(doc) -> [{userdata,[{""}]}];
 atan2_l49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l49"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l86_test(doc) -> [{userdata,[{""}]}];
 atan2_l86_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l86"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l31_test(doc) -> [{userdata,[{""}]}];
 atan2_l31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l31"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l68_test(doc) -> [{userdata,[{""}]}];
 atan2_l68_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l68"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l105_test(doc) -> [{userdata,[{""}]}];
 atan2_l105_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l105"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l13_test(doc) -> [{userdata,[{""}]}];
 atan2_l13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l13"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l50_test(doc) -> [{userdata,[{""}]}];
 atan2_l50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l50"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l87_test(doc) -> [{userdata,[{""}]}];
 atan2_l87_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l87"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l32_test(doc) -> [{userdata,[{""}]}];
 atan2_l32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l32"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l69_test(doc) -> [{userdata,[{""}]}];
 atan2_l69_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l69"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l106_test(doc) -> [{userdata,[{""}]}];
 atan2_l106_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l106"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l14_test(doc) -> [{userdata,[{""}]}];
 atan2_l14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l51_test(doc) -> [{userdata,[{""}]}];
 atan2_l51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l51"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l88_test(doc) -> [{userdata,[{""}]}];
 atan2_l88_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l88"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l33_test(doc) -> [{userdata,[{""}]}];
 atan2_l33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l33"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l70_test(doc) -> [{userdata,[{""}]}];
 atan2_l70_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l70"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l107_test(doc) -> [{userdata,[{""}]}];
 atan2_l107_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l107"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l15_test(doc) -> [{userdata,[{""}]}];
 atan2_l15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l52_test(doc) -> [{userdata,[{""}]}];
 atan2_l52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l52"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l89_test(doc) -> [{userdata,[{""}]}];
 atan2_l89_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l89"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l34_test(doc) -> [{userdata,[{""}]}];
 atan2_l34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l71_test(doc) -> [{userdata,[{""}]}];
 atan2_l71_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l71"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l108_test(doc) -> [{userdata,[{""}]}];
 atan2_l108_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l108"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l16_test(doc) -> [{userdata,[{""}]}];
 atan2_l16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l16"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l53_test(doc) -> [{userdata,[{""}]}];
 atan2_l53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l53"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l90_test(doc) -> [{userdata,[{""}]}];
 atan2_l90_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l90"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l35_test(doc) -> [{userdata,[{""}]}];
 atan2_l35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l72_test(doc) -> [{userdata,[{""}]}];
 atan2_l72_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l72"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l109_test(doc) -> [{userdata,[{""}]}];
 atan2_l109_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l109"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l17_test(doc) -> [{userdata,[{""}]}];
 atan2_l17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l17"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l54_test(doc) -> [{userdata,[{""}]}];
 atan2_l54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l54"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l91_test(doc) -> [{userdata,[{""}]}];
 atan2_l91_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l91"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l110_test(doc) -> [{userdata,[{""}]}];
 atan2_l110_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l110"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l36_test(doc) -> [{userdata,[{""}]}];
 atan2_l36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_l73_test(doc) -> [{userdata,[{""}]}];
 atan2_l73_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","l73"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b9_test(doc) -> [{userdata,[{""}]}];
 atan2_b9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b47_test(doc) -> [{userdata,[{""}]}];
 atan2_b47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b47"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b28_test(doc) -> [{userdata,[{""}]}];
 atan2_b28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b28"),
   Expected="-1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b66_test(doc) -> [{userdata,[{""}]}];
 atan2_b66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b66"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b76_test(doc) -> [{userdata,[{""}]}];
 atan2_b76_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b76"),
   Expected="AL3:AM3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b19_test(doc) -> [{userdata,[{""}]}];
 atan2_b19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b19"),
   Expected="-0.5",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b57_test(doc) -> [{userdata,[{""}]}];
 atan2_b57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b57"),
   Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b38_test(doc) -> [{userdata,[{""}]}];
 atan2_b38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b38"),
   Expected="AL3:AL4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b10_test(doc) -> [{userdata,[{""}]}];
 atan2_b10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b48_test(doc) -> [{userdata,[{""}]}];
 atan2_b48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b48"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b29_test(doc) -> [{userdata,[{""}]}];
 atan2_b29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b29"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b67_test(doc) -> [{userdata,[{""}]}];
 atan2_b67_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b67"),
   Expected="-6.28318530717959",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b20_test(doc) -> [{userdata,[{""}]}];
 atan2_b20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b20"),
   Expected="-1.33524941816449e-021",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b58_test(doc) -> [{userdata,[{""}]}];
 atan2_b58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b58"),
   Expected=" 24",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b1_test(doc) -> [{userdata,[{""}]}];
 atan2_b1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b1"),
   Expected="x",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b39_test(doc) -> [{userdata,[{""}]}];
 atan2_b39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b39"),
   Expected="AL3:AL6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b77_test(doc) -> [{userdata,[{""}]}];
 atan2_b77_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b77"),
   Expected="AL3:AA3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b30_test(doc) -> [{userdata,[{""}]}];
 atan2_b30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b30"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b68_test(doc) -> [{userdata,[{""}]}];
 atan2_b68_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b68"),
   Expected="-4.71238898038469",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b11_test(doc) -> [{userdata,[{""}]}];
 atan2_b11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b49_test(doc) -> [{userdata,[{""}]}];
 atan2_b49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b49"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b21_test(doc) -> [{userdata,[{""}]}];
 atan2_b21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b21"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b59_test(doc) -> [{userdata,[{""}]}];
 atan2_b59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b59"),
   Expected="36192.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b78_test(doc) -> [{userdata,[{""}]}];
 atan2_b78_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b78"),
   Expected="AL3:AM4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b31_test(doc) -> [{userdata,[{""}]}];
 atan2_b31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b31"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b69_test(doc) -> [{userdata,[{""}]}];
 atan2_b69_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b69"),
   Expected="-3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b12_test(doc) -> [{userdata,[{""}]}];
 atan2_b12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b50_test(doc) -> [{userdata,[{""}]}];
 atan2_b50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b50"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b79_test(doc) -> [{userdata,[{""}]}];
 atan2_b79_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b79"),
   Expected="AL3:AA6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b22_test(doc) -> [{userdata,[{""}]}];
 atan2_b22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b22"),
   Expected="1.33524941816449e-021",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b60_test(doc) -> [{userdata,[{""}]}];
 atan2_b60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b60"),
   Expected="-1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b32_test(doc) -> [{userdata,[{""}]}];
 atan2_b32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b32"),
   Expected="4.71238898038469",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b70_test(doc) -> [{userdata,[{""}]}];
 atan2_b70_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b70"),
   Expected="-1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b13_test(doc) -> [{userdata,[{""}]}];
 atan2_b13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b13"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b51_test(doc) -> [{userdata,[{""}]}];
 atan2_b51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b51"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b4_test(doc) -> [{userdata,[{""}]}];
 atan2_b4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b4"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b80_test(doc) -> [{userdata,[{""}]}];
 atan2_b80_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b80"),
   Expected="AL3:AL4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b23_test(doc) -> [{userdata,[{""}]}];
 atan2_b23_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b23"),
   Expected="0.5",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b61_test(doc) -> [{userdata,[{""}]}];
 atan2_b61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b61"),
   Expected="-0.5",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b14_test(doc) -> [{userdata,[{""}]}];
 atan2_b14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b14"),
   Expected="Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b52_test(doc) -> [{userdata,[{""}]}];
 atan2_b52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b52"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b33_test(doc) -> [{userdata,[{""}]}];
 atan2_b33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b33"),
   Expected="6.28318530717959",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b71_test(doc) -> [{userdata,[{""}]}];
 atan2_b71_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b71"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b43_test(doc) -> [{userdata,[{""}]}];
 atan2_b43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b43"),
   Expected="x",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b81_test(doc) -> [{userdata,[{""}]}];
 atan2_b81_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b81"),
   Expected="AL3:AL6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b24_test(doc) -> [{userdata,[{""}]}];
 atan2_b24_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b24"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b62_test(doc) -> [{userdata,[{""}]}];
 atan2_b62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b62"),
   Expected="-1.33524941816449e-021",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b5_test(doc) -> [{userdata,[{""}]}];
 atan2_b5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b5"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b15_test(doc) -> [{userdata,[{""}]}];
 atan2_b15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b15"),
   Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b53_test(doc) -> [{userdata,[{""}]}];
 atan2_b53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b53"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b34_test(doc) -> [{userdata,[{""}]}];
 atan2_b34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b34"),
   Expected="AL3:AM3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b72_test(doc) -> [{userdata,[{""}]}];
 atan2_b72_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b72"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b25_test(doc) -> [{userdata,[{""}]}];
 atan2_b25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b25"),
   Expected="-6.28318530717959",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b63_test(doc) -> [{userdata,[{""}]}];
 atan2_b63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b63"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b6_test(doc) -> [{userdata,[{""}]}];
 atan2_b6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b54_test(doc) -> [{userdata,[{""}]}];
 atan2_b54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b54"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b35_test(doc) -> [{userdata,[{""}]}];
 atan2_b35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b35"),
   Expected="AL3:AA3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b73_test(doc) -> [{userdata,[{""}]}];
 atan2_b73_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b73"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b16_test(doc) -> [{userdata,[{""}]}];
 atan2_b16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b16"),
   Expected=" 24",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b26_test(doc) -> [{userdata,[{""}]}];
 atan2_b26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b26"),
   Expected="-4.71238898038469",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b64_test(doc) -> [{userdata,[{""}]}];
 atan2_b64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b64"),
   Expected="1.33524941816449e-021",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b7_test(doc) -> [{userdata,[{""}]}];
 atan2_b7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b36_test(doc) -> [{userdata,[{""}]}];
 atan2_b36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b36"),
   Expected="AL3:AM4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b74_test(doc) -> [{userdata,[{""}]}];
 atan2_b74_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b74"),
   Expected="4.71238898038469",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b17_test(doc) -> [{userdata,[{""}]}];
 atan2_b17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b17"),
   Expected="36192.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b55_test(doc) -> [{userdata,[{""}]}];
 atan2_b55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b55"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b27_test(doc) -> [{userdata,[{""}]}];
 atan2_b27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b27"),
   Expected="-3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b46_test(doc) -> [{userdata,[{""}]}];
 atan2_b46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b46"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b8_test(doc) -> [{userdata,[{""}]}];
 atan2_b8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b65_test(doc) -> [{userdata,[{""}]}];
 atan2_b65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b65"),
   Expected="0.5",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b56_test(doc) -> [{userdata,[{""}]}];
 atan2_b56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b56"),
   Expected="Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b18_test(doc) -> [{userdata,[{""}]}];
 atan2_b18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b18"),
   Expected="-1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b37_test(doc) -> [{userdata,[{""}]}];
 atan2_b37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b37"),
   Expected="AL3:AA6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_b75_test(doc) -> [{userdata,[{""}]}];
 atan2_b75_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","b75"),
   Expected="6.28318530717959",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m18_test(doc) -> [{userdata,[{""}]}];
 atan2_m18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m18"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m55_test(doc) -> [{userdata,[{""}]}];
 atan2_m55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m55"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m92_test(doc) -> [{userdata,[{""}]}];
 atan2_m92_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m92"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m37_test(doc) -> [{userdata,[{""}]}];
 atan2_m37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m74_test(doc) -> [{userdata,[{""}]}];
 atan2_m74_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m74"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m111_test(doc) -> [{userdata,[{""}]}];
 atan2_m111_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m111"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m56_test(doc) -> [{userdata,[{""}]}];
 atan2_m56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m56"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m93_test(doc) -> [{userdata,[{""}]}];
 atan2_m93_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m93"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m19_test(doc) -> [{userdata,[{""}]}];
 atan2_m19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m19"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m75_test(doc) -> [{userdata,[{""}]}];
 atan2_m75_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m75"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m112_test(doc) -> [{userdata,[{""}]}];
 atan2_m112_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m112"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m1_test(doc) -> [{userdata,[{""}]}];
 atan2_m1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m38_test(doc) -> [{userdata,[{""}]}];
 atan2_m38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m94_test(doc) -> [{userdata,[{""}]}];
 atan2_m94_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m94"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m20_test(doc) -> [{userdata,[{""}]}];
 atan2_m20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m20"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m57_test(doc) -> [{userdata,[{""}]}];
 atan2_m57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m57"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m113_test(doc) -> [{userdata,[{""}]}];
 atan2_m113_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m113"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m2_test(doc) -> [{userdata,[{""}]}];
 atan2_m2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m2"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m39_test(doc) -> [{userdata,[{""}]}];
 atan2_m39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m76_test(doc) -> [{userdata,[{""}]}];
 atan2_m76_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m76"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m21_test(doc) -> [{userdata,[{""}]}];
 atan2_m21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m21"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m58_test(doc) -> [{userdata,[{""}]}];
 atan2_m58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m58"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m95_test(doc) -> [{userdata,[{""}]}];
 atan2_m95_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m95"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m3_test(doc) -> [{userdata,[{""}]}];
 atan2_m3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m3"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m77_test(doc) -> [{userdata,[{""}]}];
 atan2_m77_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m77"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m114_test(doc) -> [{userdata,[{""}]}];
 atan2_m114_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m114"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m22_test(doc) -> [{userdata,[{""}]}];
 atan2_m22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m22"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m59_test(doc) -> [{userdata,[{""}]}];
 atan2_m59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m59"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m96_test(doc) -> [{userdata,[{""}]}];
 atan2_m96_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m96"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m4_test(doc) -> [{userdata,[{""}]}];
 atan2_m4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m4"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m78_test(doc) -> [{userdata,[{""}]}];
 atan2_m78_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m78"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m115_test(doc) -> [{userdata,[{""}]}];
 atan2_m115_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m115"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m23_test(doc) -> [{userdata,[{""}]}];
 atan2_m23_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m23"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m60_test(doc) -> [{userdata,[{""}]}];
 atan2_m60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m60"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m97_test(doc) -> [{userdata,[{""}]}];
 atan2_m97_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m97"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m5_test(doc) -> [{userdata,[{""}]}];
 atan2_m5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m5"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m79_test(doc) -> [{userdata,[{""}]}];
 atan2_m79_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m79"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m116_test(doc) -> [{userdata,[{""}]}];
 atan2_m116_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m116"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m24_test(doc) -> [{userdata,[{""}]}];
 atan2_m24_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m24"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m61_test(doc) -> [{userdata,[{""}]}];
 atan2_m61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m61"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m98_test(doc) -> [{userdata,[{""}]}];
 atan2_m98_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m98"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m6_test(doc) -> [{userdata,[{""}]}];
 atan2_m6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m43_test(doc) -> [{userdata,[{""}]}];
 atan2_m43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m43"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m80_test(doc) -> [{userdata,[{""}]}];
 atan2_m80_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m80"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m117_test(doc) -> [{userdata,[{""}]}];
 atan2_m117_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m117"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m25_test(doc) -> [{userdata,[{""}]}];
 atan2_m25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m25"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m62_test(doc) -> [{userdata,[{""}]}];
 atan2_m62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m62"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m99_test(doc) -> [{userdata,[{""}]}];
 atan2_m99_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m99"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m7_test(doc) -> [{userdata,[{""}]}];
 atan2_m7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m44_test(doc) -> [{userdata,[{""}]}];
 atan2_m44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m44"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m81_test(doc) -> [{userdata,[{""}]}];
 atan2_m81_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m81"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m118_test(doc) -> [{userdata,[{""}]}];
 atan2_m118_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m118"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m26_test(doc) -> [{userdata,[{""}]}];
 atan2_m26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m26"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m63_test(doc) -> [{userdata,[{""}]}];
 atan2_m63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m63"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m100_test(doc) -> [{userdata,[{""}]}];
 atan2_m100_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m100"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m8_test(doc) -> [{userdata,[{""}]}];
 atan2_m8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m45_test(doc) -> [{userdata,[{""}]}];
 atan2_m45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m45"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m119_test(doc) -> [{userdata,[{""}]}];
 atan2_m119_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m119"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m27_test(doc) -> [{userdata,[{""}]}];
 atan2_m27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m27"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m64_test(doc) -> [{userdata,[{""}]}];
 atan2_m64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m64"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m101_test(doc) -> [{userdata,[{""}]}];
 atan2_m101_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m101"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m46_test(doc) -> [{userdata,[{""}]}];
 atan2_m46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m46"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m120_test(doc) -> [{userdata,[{""}]}];
 atan2_m120_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m120"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m9_test(doc) -> [{userdata,[{""}]}];
 atan2_m9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m65_test(doc) -> [{userdata,[{""}]}];
 atan2_m65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m65"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m102_test(doc) -> [{userdata,[{""}]}];
 atan2_m102_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m102"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m28_test(doc) -> [{userdata,[{""}]}];
 atan2_m28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m28"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m84_test(doc) -> [{userdata,[{""}]}];
 atan2_m84_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m84"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m10_test(doc) -> [{userdata,[{""}]}];
 atan2_m10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m47_test(doc) -> [{userdata,[{""}]}];
 atan2_m47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m47"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m103_test(doc) -> [{userdata,[{""}]}];
 atan2_m103_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m103"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m29_test(doc) -> [{userdata,[{""}]}];
 atan2_m29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m66_test(doc) -> [{userdata,[{""}]}];
 atan2_m66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m66"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m11_test(doc) -> [{userdata,[{""}]}];
 atan2_m11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m48_test(doc) -> [{userdata,[{""}]}];
 atan2_m48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m48"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m85_test(doc) -> [{userdata,[{""}]}];
 atan2_m85_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m85"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m30_test(doc) -> [{userdata,[{""}]}];
 atan2_m30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m30"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m67_test(doc) -> [{userdata,[{""}]}];
 atan2_m67_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m67"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m104_test(doc) -> [{userdata,[{""}]}];
 atan2_m104_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m104"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m12_test(doc) -> [{userdata,[{""}]}];
 atan2_m12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m49_test(doc) -> [{userdata,[{""}]}];
 atan2_m49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m49"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m86_test(doc) -> [{userdata,[{""}]}];
 atan2_m86_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m86"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m31_test(doc) -> [{userdata,[{""}]}];
 atan2_m31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m31"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m68_test(doc) -> [{userdata,[{""}]}];
 atan2_m68_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m68"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m105_test(doc) -> [{userdata,[{""}]}];
 atan2_m105_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m105"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m13_test(doc) -> [{userdata,[{""}]}];
 atan2_m13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m13"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m50_test(doc) -> [{userdata,[{""}]}];
 atan2_m50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m50"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m87_test(doc) -> [{userdata,[{""}]}];
 atan2_m87_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m87"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m32_test(doc) -> [{userdata,[{""}]}];
 atan2_m32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m32"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m69_test(doc) -> [{userdata,[{""}]}];
 atan2_m69_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m69"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m106_test(doc) -> [{userdata,[{""}]}];
 atan2_m106_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m106"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m14_test(doc) -> [{userdata,[{""}]}];
 atan2_m14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m51_test(doc) -> [{userdata,[{""}]}];
 atan2_m51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m51"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m88_test(doc) -> [{userdata,[{""}]}];
 atan2_m88_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m88"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m33_test(doc) -> [{userdata,[{""}]}];
 atan2_m33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m33"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m70_test(doc) -> [{userdata,[{""}]}];
 atan2_m70_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m70"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m107_test(doc) -> [{userdata,[{""}]}];
 atan2_m107_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m107"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m15_test(doc) -> [{userdata,[{""}]}];
 atan2_m15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m15"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m52_test(doc) -> [{userdata,[{""}]}];
 atan2_m52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m52"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m89_test(doc) -> [{userdata,[{""}]}];
 atan2_m89_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m89"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m34_test(doc) -> [{userdata,[{""}]}];
 atan2_m34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m71_test(doc) -> [{userdata,[{""}]}];
 atan2_m71_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m71"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m108_test(doc) -> [{userdata,[{""}]}];
 atan2_m108_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m108"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m16_test(doc) -> [{userdata,[{""}]}];
 atan2_m16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m16"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m53_test(doc) -> [{userdata,[{""}]}];
 atan2_m53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m53"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m90_test(doc) -> [{userdata,[{""}]}];
 atan2_m90_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m90"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m35_test(doc) -> [{userdata,[{""}]}];
 atan2_m35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m72_test(doc) -> [{userdata,[{""}]}];
 atan2_m72_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m72"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m109_test(doc) -> [{userdata,[{""}]}];
 atan2_m109_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m109"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m17_test(doc) -> [{userdata,[{""}]}];
 atan2_m17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m17"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m54_test(doc) -> [{userdata,[{""}]}];
 atan2_m54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m54"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m91_test(doc) -> [{userdata,[{""}]}];
 atan2_m91_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m91"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m110_test(doc) -> [{userdata,[{""}]}];
 atan2_m110_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m110"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m36_test(doc) -> [{userdata,[{""}]}];
 atan2_m36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_m73_test(doc) -> [{userdata,[{""}]}];
 atan2_m73_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","m73"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c9_test(doc) -> [{userdata,[{""}]}];
 atan2_c9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c47_test(doc) -> [{userdata,[{""}]}];
 atan2_c47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c47"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c85_test(doc) -> [{userdata,[{""}]}];
 atan2_c85_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c85"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c28_test(doc) -> [{userdata,[{""}]}];
 atan2_c28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c28"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c66_test(doc) -> [{userdata,[{""}]}];
 atan2_c66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c66"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c104_test(doc) -> [{userdata,[{""}]}];
 atan2_c104_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c104"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c76_test(doc) -> [{userdata,[{""}]}];
 atan2_c76_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c76"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c114_test(doc) -> [{userdata,[{""}]}];
 atan2_c114_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c114"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c19_test(doc) -> [{userdata,[{""}]}];
 atan2_c19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c19"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c57_test(doc) -> [{userdata,[{""}]}];
 atan2_c57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c57"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c95_test(doc) -> [{userdata,[{""}]}];
 atan2_c95_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c95"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c38_test(doc) -> [{userdata,[{""}]}];
 atan2_c38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c10_test(doc) -> [{userdata,[{""}]}];
 atan2_c10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c48_test(doc) -> [{userdata,[{""}]}];
 atan2_c48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c48"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c86_test(doc) -> [{userdata,[{""}]}];
 atan2_c86_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c86"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c29_test(doc) -> [{userdata,[{""}]}];
 atan2_c29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c29"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c67_test(doc) -> [{userdata,[{""}]}];
 atan2_c67_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c67"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c105_test(doc) -> [{userdata,[{""}]}];
 atan2_c105_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c105"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c20_test(doc) -> [{userdata,[{""}]}];
 atan2_c20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c20"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c58_test(doc) -> [{userdata,[{""}]}];
 atan2_c58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c58"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c96_test(doc) -> [{userdata,[{""}]}];
 atan2_c96_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c96"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c1_test(doc) -> [{userdata,[{""}]}];
 atan2_c1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c1"),
   Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c39_test(doc) -> [{userdata,[{""}]}];
 atan2_c39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c77_test(doc) -> [{userdata,[{""}]}];
 atan2_c77_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c77"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c115_test(doc) -> [{userdata,[{""}]}];
 atan2_c115_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c115"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c87_test(doc) -> [{userdata,[{""}]}];
 atan2_c87_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c87"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c30_test(doc) -> [{userdata,[{""}]}];
 atan2_c30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c30"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c68_test(doc) -> [{userdata,[{""}]}];
 atan2_c68_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c68"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c106_test(doc) -> [{userdata,[{""}]}];
 atan2_c106_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c106"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c11_test(doc) -> [{userdata,[{""}]}];
 atan2_c11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c49_test(doc) -> [{userdata,[{""}]}];
 atan2_c49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c49"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c21_test(doc) -> [{userdata,[{""}]}];
 atan2_c21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c21"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c59_test(doc) -> [{userdata,[{""}]}];
 atan2_c59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c59"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c97_test(doc) -> [{userdata,[{""}]}];
 atan2_c97_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c97"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c78_test(doc) -> [{userdata,[{""}]}];
 atan2_c78_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c78"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c116_test(doc) -> [{userdata,[{""}]}];
 atan2_c116_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c116"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c31_test(doc) -> [{userdata,[{""}]}];
 atan2_c31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c31"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c69_test(doc) -> [{userdata,[{""}]}];
 atan2_c69_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c69"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c107_test(doc) -> [{userdata,[{""}]}];
 atan2_c107_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c107"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c12_test(doc) -> [{userdata,[{""}]}];
 atan2_c12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c50_test(doc) -> [{userdata,[{""}]}];
 atan2_c50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c50"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c88_test(doc) -> [{userdata,[{""}]}];
 atan2_c88_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c88"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c98_test(doc) -> [{userdata,[{""}]}];
 atan2_c98_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c98"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c3_test(doc) -> [{userdata,[{""}]}];
 atan2_c3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c3"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c79_test(doc) -> [{userdata,[{""}]}];
 atan2_c79_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c79"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c117_test(doc) -> [{userdata,[{""}]}];
 atan2_c117_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c117"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c22_test(doc) -> [{userdata,[{""}]}];
 atan2_c22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c22"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c60_test(doc) -> [{userdata,[{""}]}];
 atan2_c60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c60"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c32_test(doc) -> [{userdata,[{""}]}];
 atan2_c32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c32"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c70_test(doc) -> [{userdata,[{""}]}];
 atan2_c70_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c70"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c108_test(doc) -> [{userdata,[{""}]}];
 atan2_c108_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c108"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c13_test(doc) -> [{userdata,[{""}]}];
 atan2_c13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c13"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c51_test(doc) -> [{userdata,[{""}]}];
 atan2_c51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c51"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c89_test(doc) -> [{userdata,[{""}]}];
 atan2_c89_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c89"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c4_test(doc) -> [{userdata,[{""}]}];
 atan2_c4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c4"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c80_test(doc) -> [{userdata,[{""}]}];
 atan2_c80_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c80"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c118_test(doc) -> [{userdata,[{""}]}];
 atan2_c118_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c118"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c23_test(doc) -> [{userdata,[{""}]}];
 atan2_c23_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c23"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c61_test(doc) -> [{userdata,[{""}]}];
 atan2_c61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c61"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c99_test(doc) -> [{userdata,[{""}]}];
 atan2_c99_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c99"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c109_test(doc) -> [{userdata,[{""}]}];
 atan2_c109_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c109"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c14_test(doc) -> [{userdata,[{""}]}];
 atan2_c14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c52_test(doc) -> [{userdata,[{""}]}];
 atan2_c52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c52"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c90_test(doc) -> [{userdata,[{""}]}];
 atan2_c90_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c90"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c33_test(doc) -> [{userdata,[{""}]}];
 atan2_c33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c33"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c71_test(doc) -> [{userdata,[{""}]}];
 atan2_c71_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c71"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c5_test(doc) -> [{userdata,[{""}]}];
 atan2_c5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c5"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c62_test(doc) -> [{userdata,[{""}]}];
 atan2_c62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c62"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c24_test(doc) -> [{userdata,[{""}]}];
 atan2_c24_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c24"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c43_test(doc) -> [{userdata,[{""}]}];
 atan2_c43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c43"),
   Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c81_test(doc) -> [{userdata,[{""}]}];
 atan2_c81_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c81"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c100_test(doc) -> [{userdata,[{""}]}];
 atan2_c100_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c100"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c119_test(doc) -> [{userdata,[{""}]}];
 atan2_c119_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c119"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c34_test(doc) -> [{userdata,[{""}]}];
 atan2_c34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c53_test(doc) -> [{userdata,[{""}]}];
 atan2_c53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c53"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c15_test(doc) -> [{userdata,[{""}]}];
 atan2_c15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c15"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c72_test(doc) -> [{userdata,[{""}]}];
 atan2_c72_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c72"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c91_test(doc) -> [{userdata,[{""}]}];
 atan2_c91_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c91"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c110_test(doc) -> [{userdata,[{""}]}];
 atan2_c110_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c110"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c6_test(doc) -> [{userdata,[{""}]}];
 atan2_c6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c63_test(doc) -> [{userdata,[{""}]}];
 atan2_c63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c63"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c25_test(doc) -> [{userdata,[{""}]}];
 atan2_c25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c25"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c101_test(doc) -> [{userdata,[{""}]}];
 atan2_c101_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c101"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c120_test(doc) -> [{userdata,[{""}]}];
 atan2_c120_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c120"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c16_test(doc) -> [{userdata,[{""}]}];
 atan2_c16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c16"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c35_test(doc) -> [{userdata,[{""}]}];
 atan2_c35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c54_test(doc) -> [{userdata,[{""}]}];
 atan2_c54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c54"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c73_test(doc) -> [{userdata,[{""}]}];
 atan2_c73_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c73"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c92_test(doc) -> [{userdata,[{""}]}];
 atan2_c92_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c92"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c111_test(doc) -> [{userdata,[{""}]}];
 atan2_c111_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c111"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c45_test(doc) -> [{userdata,[{""}]}];
 atan2_c45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c45"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c7_test(doc) -> [{userdata,[{""}]}];
 atan2_c7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c64_test(doc) -> [{userdata,[{""}]}];
 atan2_c64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c64"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c26_test(doc) -> [{userdata,[{""}]}];
 atan2_c26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c26"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c102_test(doc) -> [{userdata,[{""}]}];
 atan2_c102_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c102"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c55_test(doc) -> [{userdata,[{""}]}];
 atan2_c55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c55"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c17_test(doc) -> [{userdata,[{""}]}];
 atan2_c17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c17"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c36_test(doc) -> [{userdata,[{""}]}];
 atan2_c36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c74_test(doc) -> [{userdata,[{""}]}];
 atan2_c74_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c74"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c93_test(doc) -> [{userdata,[{""}]}];
 atan2_c93_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c93"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c112_test(doc) -> [{userdata,[{""}]}];
 atan2_c112_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c112"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c27_test(doc) -> [{userdata,[{""}]}];
 atan2_c27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c27"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c46_test(doc) -> [{userdata,[{""}]}];
 atan2_c46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c46"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c8_test(doc) -> [{userdata,[{""}]}];
 atan2_c8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c65_test(doc) -> [{userdata,[{""}]}];
 atan2_c65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c65"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c84_test(doc) -> [{userdata,[{""}]}];
 atan2_c84_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c84"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c103_test(doc) -> [{userdata,[{""}]}];
 atan2_c103_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c103"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c56_test(doc) -> [{userdata,[{""}]}];
 atan2_c56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c56"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c18_test(doc) -> [{userdata,[{""}]}];
 atan2_c18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c18"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c37_test(doc) -> [{userdata,[{""}]}];
 atan2_c37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c75_test(doc) -> [{userdata,[{""}]}];
 atan2_c75_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c75"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c94_test(doc) -> [{userdata,[{""}]}];
 atan2_c94_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c94"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_c113_test(doc) -> [{userdata,[{""}]}];
 atan2_c113_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","c113"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n18_test(doc) -> [{userdata,[{""}]}];
 atan2_n18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n18"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n55_test(doc) -> [{userdata,[{""}]}];
 atan2_n55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n55"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n92_test(doc) -> [{userdata,[{""}]}];
 atan2_n92_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n92"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n37_test(doc) -> [{userdata,[{""}]}];
 atan2_n37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n74_test(doc) -> [{userdata,[{""}]}];
 atan2_n74_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n74"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n111_test(doc) -> [{userdata,[{""}]}];
 atan2_n111_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n111"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n56_test(doc) -> [{userdata,[{""}]}];
 atan2_n56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n56"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n93_test(doc) -> [{userdata,[{""}]}];
 atan2_n93_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n93"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n19_test(doc) -> [{userdata,[{""}]}];
 atan2_n19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n19"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n75_test(doc) -> [{userdata,[{""}]}];
 atan2_n75_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n75"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n112_test(doc) -> [{userdata,[{""}]}];
 atan2_n112_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n112"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n1_test(doc) -> [{userdata,[{""}]}];
 atan2_n1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n1"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n38_test(doc) -> [{userdata,[{""}]}];
 atan2_n38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n94_test(doc) -> [{userdata,[{""}]}];
 atan2_n94_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n94"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n20_test(doc) -> [{userdata,[{""}]}];
 atan2_n20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n20"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n57_test(doc) -> [{userdata,[{""}]}];
 atan2_n57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n57"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n113_test(doc) -> [{userdata,[{""}]}];
 atan2_n113_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n113"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n2_test(doc) -> [{userdata,[{""}]}];
 atan2_n2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n2"),
   Expected="Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n39_test(doc) -> [{userdata,[{""}]}];
 atan2_n39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n76_test(doc) -> [{userdata,[{""}]}];
 atan2_n76_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n76"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n21_test(doc) -> [{userdata,[{""}]}];
 atan2_n21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n21"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n58_test(doc) -> [{userdata,[{""}]}];
 atan2_n58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n58"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n95_test(doc) -> [{userdata,[{""}]}];
 atan2_n95_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n95"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n3_test(doc) -> [{userdata,[{""}]}];
 atan2_n3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n3"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n77_test(doc) -> [{userdata,[{""}]}];
 atan2_n77_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n77"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n114_test(doc) -> [{userdata,[{""}]}];
 atan2_n114_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n114"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n22_test(doc) -> [{userdata,[{""}]}];
 atan2_n22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n22"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n59_test(doc) -> [{userdata,[{""}]}];
 atan2_n59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n59"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n96_test(doc) -> [{userdata,[{""}]}];
 atan2_n96_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n96"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n4_test(doc) -> [{userdata,[{""}]}];
 atan2_n4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n4"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n78_test(doc) -> [{userdata,[{""}]}];
 atan2_n78_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n78"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n115_test(doc) -> [{userdata,[{""}]}];
 atan2_n115_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n115"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n23_test(doc) -> [{userdata,[{""}]}];
 atan2_n23_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n23"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n60_test(doc) -> [{userdata,[{""}]}];
 atan2_n60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n60"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n97_test(doc) -> [{userdata,[{""}]}];
 atan2_n97_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n97"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n5_test(doc) -> [{userdata,[{""}]}];
 atan2_n5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n5"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n79_test(doc) -> [{userdata,[{""}]}];
 atan2_n79_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n79"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n116_test(doc) -> [{userdata,[{""}]}];
 atan2_n116_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n116"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n24_test(doc) -> [{userdata,[{""}]}];
 atan2_n24_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n24"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n61_test(doc) -> [{userdata,[{""}]}];
 atan2_n61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n61"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n98_test(doc) -> [{userdata,[{""}]}];
 atan2_n98_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n98"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n6_test(doc) -> [{userdata,[{""}]}];
 atan2_n6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n43_test(doc) -> [{userdata,[{""}]}];
 atan2_n43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n43"),
   Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n80_test(doc) -> [{userdata,[{""}]}];
 atan2_n80_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n80"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n117_test(doc) -> [{userdata,[{""}]}];
 atan2_n117_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n117"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n25_test(doc) -> [{userdata,[{""}]}];
 atan2_n25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n25"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n62_test(doc) -> [{userdata,[{""}]}];
 atan2_n62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n62"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n99_test(doc) -> [{userdata,[{""}]}];
 atan2_n99_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n99"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n7_test(doc) -> [{userdata,[{""}]}];
 atan2_n7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n44_test(doc) -> [{userdata,[{""}]}];
 atan2_n44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n44"),
   Expected="Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n81_test(doc) -> [{userdata,[{""}]}];
 atan2_n81_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n81"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n118_test(doc) -> [{userdata,[{""}]}];
 atan2_n118_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n118"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n26_test(doc) -> [{userdata,[{""}]}];
 atan2_n26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n26"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n63_test(doc) -> [{userdata,[{""}]}];
 atan2_n63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n63"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n100_test(doc) -> [{userdata,[{""}]}];
 atan2_n100_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n100"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n8_test(doc) -> [{userdata,[{""}]}];
 atan2_n8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n45_test(doc) -> [{userdata,[{""}]}];
 atan2_n45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n45"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n119_test(doc) -> [{userdata,[{""}]}];
 atan2_n119_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n119"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n27_test(doc) -> [{userdata,[{""}]}];
 atan2_n27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n27"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n64_test(doc) -> [{userdata,[{""}]}];
 atan2_n64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n64"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n101_test(doc) -> [{userdata,[{""}]}];
 atan2_n101_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n101"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n46_test(doc) -> [{userdata,[{""}]}];
 atan2_n46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n46"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n120_test(doc) -> [{userdata,[{""}]}];
 atan2_n120_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n120"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n9_test(doc) -> [{userdata,[{""}]}];
 atan2_n9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n65_test(doc) -> [{userdata,[{""}]}];
 atan2_n65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n65"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n102_test(doc) -> [{userdata,[{""}]}];
 atan2_n102_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n102"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n28_test(doc) -> [{userdata,[{""}]}];
 atan2_n28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n28"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n84_test(doc) -> [{userdata,[{""}]}];
 atan2_n84_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n84"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n10_test(doc) -> [{userdata,[{""}]}];
 atan2_n10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n47_test(doc) -> [{userdata,[{""}]}];
 atan2_n47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n47"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n103_test(doc) -> [{userdata,[{""}]}];
 atan2_n103_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n103"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n29_test(doc) -> [{userdata,[{""}]}];
 atan2_n29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n29"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n66_test(doc) -> [{userdata,[{""}]}];
 atan2_n66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n66"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n11_test(doc) -> [{userdata,[{""}]}];
 atan2_n11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n48_test(doc) -> [{userdata,[{""}]}];
 atan2_n48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n48"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n85_test(doc) -> [{userdata,[{""}]}];
 atan2_n85_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n85"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n30_test(doc) -> [{userdata,[{""}]}];
 atan2_n30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n30"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n67_test(doc) -> [{userdata,[{""}]}];
 atan2_n67_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n67"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n104_test(doc) -> [{userdata,[{""}]}];
 atan2_n104_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n104"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n12_test(doc) -> [{userdata,[{""}]}];
 atan2_n12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n49_test(doc) -> [{userdata,[{""}]}];
 atan2_n49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n49"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n86_test(doc) -> [{userdata,[{""}]}];
 atan2_n86_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n86"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n31_test(doc) -> [{userdata,[{""}]}];
 atan2_n31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n31"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n68_test(doc) -> [{userdata,[{""}]}];
 atan2_n68_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n68"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n105_test(doc) -> [{userdata,[{""}]}];
 atan2_n105_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n105"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n13_test(doc) -> [{userdata,[{""}]}];
 atan2_n13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n13"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n50_test(doc) -> [{userdata,[{""}]}];
 atan2_n50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n50"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n87_test(doc) -> [{userdata,[{""}]}];
 atan2_n87_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n87"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n32_test(doc) -> [{userdata,[{""}]}];
 atan2_n32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n32"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n69_test(doc) -> [{userdata,[{""}]}];
 atan2_n69_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n69"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n106_test(doc) -> [{userdata,[{""}]}];
 atan2_n106_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n106"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n14_test(doc) -> [{userdata,[{""}]}];
 atan2_n14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n51_test(doc) -> [{userdata,[{""}]}];
 atan2_n51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n51"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n88_test(doc) -> [{userdata,[{""}]}];
 atan2_n88_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n88"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n33_test(doc) -> [{userdata,[{""}]}];
 atan2_n33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n33"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n70_test(doc) -> [{userdata,[{""}]}];
 atan2_n70_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n70"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n107_test(doc) -> [{userdata,[{""}]}];
 atan2_n107_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n107"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n15_test(doc) -> [{userdata,[{""}]}];
 atan2_n15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n15"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n52_test(doc) -> [{userdata,[{""}]}];
 atan2_n52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n52"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n89_test(doc) -> [{userdata,[{""}]}];
 atan2_n89_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n89"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n34_test(doc) -> [{userdata,[{""}]}];
 atan2_n34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n71_test(doc) -> [{userdata,[{""}]}];
 atan2_n71_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n71"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n108_test(doc) -> [{userdata,[{""}]}];
 atan2_n108_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n108"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n16_test(doc) -> [{userdata,[{""}]}];
 atan2_n16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n16"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n53_test(doc) -> [{userdata,[{""}]}];
 atan2_n53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n53"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n90_test(doc) -> [{userdata,[{""}]}];
 atan2_n90_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n90"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n35_test(doc) -> [{userdata,[{""}]}];
 atan2_n35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n72_test(doc) -> [{userdata,[{""}]}];
 atan2_n72_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n72"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n109_test(doc) -> [{userdata,[{""}]}];
 atan2_n109_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n109"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n17_test(doc) -> [{userdata,[{""}]}];
 atan2_n17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n17"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n54_test(doc) -> [{userdata,[{""}]}];
 atan2_n54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n54"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n91_test(doc) -> [{userdata,[{""}]}];
 atan2_n91_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n91"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n110_test(doc) -> [{userdata,[{""}]}];
 atan2_n110_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n110"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n36_test(doc) -> [{userdata,[{""}]}];
 atan2_n36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_n73_test(doc) -> [{userdata,[{""}]}];
 atan2_n73_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","n73"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d18_test(doc) -> [{userdata,[{""}]}];
 atan2_d18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d18"),
   Expected="2.35619449019234",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d55_test(doc) -> [{userdata,[{""}]}];
 atan2_d55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d55"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d92_test(doc) -> [{userdata,[{""}]}];
 atan2_d92_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d92"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d37_test(doc) -> [{userdata,[{""}]}];
 atan2_d37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d74_test(doc) -> [{userdata,[{""}]}];
 atan2_d74_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d74"),
   Expected="0.209104643823733",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d111_test(doc) -> [{userdata,[{""}]}];
 atan2_d111_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d111"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d56_test(doc) -> [{userdata,[{""}]}];
 atan2_d56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d56"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d93_test(doc) -> [{userdata,[{""}]}];
 atan2_d93_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d93"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d19_test(doc) -> [{userdata,[{""}]}];
 atan2_d19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d19"),
   Expected="2.0344439357957",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d75_test(doc) -> [{userdata,[{""}]}];
 atan2_d75_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d75"),
   Expected="0.157831190288159",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d112_test(doc) -> [{userdata,[{""}]}];
 atan2_d112_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d112"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d1_test(doc) -> [{userdata,[{""}]}];
 atan2_d1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d1"),
   Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d38_test(doc) -> [{userdata,[{""}]}];
 atan2_d38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d94_test(doc) -> [{userdata,[{""}]}];
 atan2_d94_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d94"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d20_test(doc) -> [{userdata,[{""}]}];
 atan2_d20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d20"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d57_test(doc) -> [{userdata,[{""}]}];
 atan2_d57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d57"),
   Expected="0.35470565201094",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d113_test(doc) -> [{userdata,[{""}]}];
 atan2_d113_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d113"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d2_test(doc) -> [{userdata,[{""}]}];
 atan2_d2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d2"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d39_test(doc) -> [{userdata,[{""}]}];
 atan2_d39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d76_test(doc) -> [{userdata,[{""}]}];
 atan2_d76_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d76"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d21_test(doc) -> [{userdata,[{""}]}];
 atan2_d21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d21"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d58_test(doc) -> [{userdata,[{""}]}];
 atan2_d58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d58"),
   Expected="0.0416425790985884",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d95_test(doc) -> [{userdata,[{""}]}];
 atan2_d95_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d95"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d3_test(doc) -> [{userdata,[{""}]}];
 atan2_d3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d3"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d77_test(doc) -> [{userdata,[{""}]}];
 atan2_d77_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d77"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d114_test(doc) -> [{userdata,[{""}]}];
 atan2_d114_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d114"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d22_test(doc) -> [{userdata,[{""}]}];
 atan2_d22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d22"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d59_test(doc) -> [{userdata,[{""}]}];
 atan2_d59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d59"),
   Expected="2.76304155544187e-005",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d96_test(doc) -> [{userdata,[{""}]}];
 atan2_d96_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d96"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d4_test(doc) -> [{userdata,[{""}]}];
 atan2_d4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d4"),
   Expected="0.785398163397448",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d78_test(doc) -> [{userdata,[{""}]}];
 atan2_d78_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d78"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d115_test(doc) -> [{userdata,[{""}]}];
 atan2_d115_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d115"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d23_test(doc) -> [{userdata,[{""}]}];
 atan2_d23_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d23"),
   Expected="1.10714871779409",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d60_test(doc) -> [{userdata,[{""}]}];
 atan2_d60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d60"),
   Expected="2.35619449019234",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d97_test(doc) -> [{userdata,[{""}]}];
 atan2_d97_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d97"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d5_test(doc) -> [{userdata,[{""}]}];
 atan2_d5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d5"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d79_test(doc) -> [{userdata,[{""}]}];
 atan2_d79_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d79"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d116_test(doc) -> [{userdata,[{""}]}];
 atan2_d116_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d116"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d24_test(doc) -> [{userdata,[{""}]}];
 atan2_d24_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d24"),
   Expected="0.785398163397448",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d61_test(doc) -> [{userdata,[{""}]}];
 atan2_d61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d61"),
   Expected="2.0344439357957",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d98_test(doc) -> [{userdata,[{""}]}];
 atan2_d98_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d98"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d6_test(doc) -> [{userdata,[{""}]}];
 atan2_d6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d43_test(doc) -> [{userdata,[{""}]}];
 atan2_d43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d43"),
   Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d80_test(doc) -> [{userdata,[{""}]}];
 atan2_d80_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d80"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d117_test(doc) -> [{userdata,[{""}]}];
 atan2_d117_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d117"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d25_test(doc) -> [{userdata,[{""}]}];
 atan2_d25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d25"),
   Expected="2.98376146330163",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d62_test(doc) -> [{userdata,[{""}]}];
 atan2_d62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d62"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d99_test(doc) -> [{userdata,[{""}]}];
 atan2_d99_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d99"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d7_test(doc) -> [{userdata,[{""}]}];
 atan2_d7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d44_test(doc) -> [{userdata,[{""}]}];
 atan2_d44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d44"),
   Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d81_test(doc) -> [{userdata,[{""}]}];
 atan2_d81_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d81"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d118_test(doc) -> [{userdata,[{""}]}];
 atan2_d118_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d118"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d26_test(doc) -> [{userdata,[{""}]}];
 atan2_d26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d26"),
   Expected="2.93248800976606",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d63_test(doc) -> [{userdata,[{""}]}];
 atan2_d63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d63"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d100_test(doc) -> [{userdata,[{""}]}];
 atan2_d100_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d100"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d8_test(doc) -> [{userdata,[{""}]}];
 atan2_d8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d45_test(doc) -> [{userdata,[{""}]}];
 atan2_d45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d45"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d119_test(doc) -> [{userdata,[{""}]}];
 atan2_d119_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d119"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d27_test(doc) -> [{userdata,[{""}]}];
 atan2_d27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d27"),
   Expected="2.83342358247381",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d64_test(doc) -> [{userdata,[{""}]}];
 atan2_d64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d64"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d101_test(doc) -> [{userdata,[{""}]}];
 atan2_d101_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d101"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d46_test(doc) -> [{userdata,[{""}]}];
 atan2_d46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d46"),
   Expected="0.785398163397448",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d120_test(doc) -> [{userdata,[{""}]}];
 atan2_d120_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d120"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d9_test(doc) -> [{userdata,[{""}]}];
 atan2_d9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d65_test(doc) -> [{userdata,[{""}]}];
 atan2_d65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d65"),
   Expected="1.10714871779409",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d102_test(doc) -> [{userdata,[{""}]}];
 atan2_d102_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d102"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d28_test(doc) -> [{userdata,[{""}]}];
 atan2_d28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d28"),
   Expected="2.57468114864878",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d84_test(doc) -> [{userdata,[{""}]}];
 atan2_d84_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d84"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d10_test(doc) -> [{userdata,[{""}]}];
 atan2_d10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d47_test(doc) -> [{userdata,[{""}]}];
 atan2_d47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d47"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d103_test(doc) -> [{userdata,[{""}]}];
 atan2_d103_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d103"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d29_test(doc) -> [{userdata,[{""}]}];
 atan2_d29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d29"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d66_test(doc) -> [{userdata,[{""}]}];
 atan2_d66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d66"),
   Expected="0.785398163397448",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d11_test(doc) -> [{userdata,[{""}]}];
 atan2_d11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d48_test(doc) -> [{userdata,[{""}]}];
 atan2_d48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d48"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d85_test(doc) -> [{userdata,[{""}]}];
 atan2_d85_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d85"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d30_test(doc) -> [{userdata,[{""}]}];
 atan2_d30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d30"),
   Expected="0.566911504941009",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d67_test(doc) -> [{userdata,[{""}]}];
 atan2_d67_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d67"),
   Expected="2.98376146330163",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d104_test(doc) -> [{userdata,[{""}]}];
 atan2_d104_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d104"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d12_test(doc) -> [{userdata,[{""}]}];
 atan2_d12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d49_test(doc) -> [{userdata,[{""}]}];
 atan2_d49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d49"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d86_test(doc) -> [{userdata,[{""}]}];
 atan2_d86_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d86"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d31_test(doc) -> [{userdata,[{""}]}];
 atan2_d31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d31"),
   Expected="0.308169071115985",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d68_test(doc) -> [{userdata,[{""}]}];
 atan2_d68_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d68"),
   Expected="2.93248800976606",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d105_test(doc) -> [{userdata,[{""}]}];
 atan2_d105_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d105"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d13_test(doc) -> [{userdata,[{""}]}];
 atan2_d13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d13"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d50_test(doc) -> [{userdata,[{""}]}];
 atan2_d50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d50"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d87_test(doc) -> [{userdata,[{""}]}];
 atan2_d87_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d87"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d32_test(doc) -> [{userdata,[{""}]}];
 atan2_d32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d32"),
   Expected="0.209104643823733",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d69_test(doc) -> [{userdata,[{""}]}];
 atan2_d69_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d69"),
   Expected="2.83342358247381",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d106_test(doc) -> [{userdata,[{""}]}];
 atan2_d106_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d106"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d14_test(doc) -> [{userdata,[{""}]}];
 atan2_d14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d51_test(doc) -> [{userdata,[{""}]}];
 atan2_d51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d51"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d88_test(doc) -> [{userdata,[{""}]}];
 atan2_d88_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d88"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d33_test(doc) -> [{userdata,[{""}]}];
 atan2_d33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d33"),
   Expected="0.157831190288159",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d70_test(doc) -> [{userdata,[{""}]}];
 atan2_d70_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d70"),
   Expected="2.57468114864878",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d107_test(doc) -> [{userdata,[{""}]}];
 atan2_d107_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d107"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d15_test(doc) -> [{userdata,[{""}]}];
 atan2_d15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d15"),
   Expected="0.35470565201094",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d52_test(doc) -> [{userdata,[{""}]}];
 atan2_d52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d52"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d89_test(doc) -> [{userdata,[{""}]}];
 atan2_d89_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d89"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d34_test(doc) -> [{userdata,[{""}]}];
 atan2_d34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d71_test(doc) -> [{userdata,[{""}]}];
 atan2_d71_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d71"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d108_test(doc) -> [{userdata,[{""}]}];
 atan2_d108_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d108"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d16_test(doc) -> [{userdata,[{""}]}];
 atan2_d16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d16"),
   Expected="0.0416425790985884",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d53_test(doc) -> [{userdata,[{""}]}];
 atan2_d53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d53"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d90_test(doc) -> [{userdata,[{""}]}];
 atan2_d90_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d90"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d35_test(doc) -> [{userdata,[{""}]}];
 atan2_d35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d72_test(doc) -> [{userdata,[{""}]}];
 atan2_d72_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d72"),
   Expected="0.566911504941009",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d109_test(doc) -> [{userdata,[{""}]}];
 atan2_d109_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d109"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d17_test(doc) -> [{userdata,[{""}]}];
 atan2_d17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d17"),
   Expected="2.76304155544187e-005",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d54_test(doc) -> [{userdata,[{""}]}];
 atan2_d54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d54"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d91_test(doc) -> [{userdata,[{""}]}];
 atan2_d91_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d91"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d110_test(doc) -> [{userdata,[{""}]}];
 atan2_d110_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d110"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d36_test(doc) -> [{userdata,[{""}]}];
 atan2_d36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_d73_test(doc) -> [{userdata,[{""}]}];
 atan2_d73_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","d73"),
   Expected="0.308169071115985",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o18_test(doc) -> [{userdata,[{""}]}];
 atan2_o18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o18"),
   Expected="1.92550197880584",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o55_test(doc) -> [{userdata,[{""}]}];
 atan2_o55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o55"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o92_test(doc) -> [{userdata,[{""}]}];
 atan2_o92_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o92"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o37_test(doc) -> [{userdata,[{""}]}];
 atan2_o37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o74_test(doc) -> [{userdata,[{""}]}];
 atan2_o74_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o74"),
   Expected="0.520298154245109",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o111_test(doc) -> [{userdata,[{""}]}];
 atan2_o111_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o111"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o56_test(doc) -> [{userdata,[{""}]}];
 atan2_o56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o56"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o93_test(doc) -> [{userdata,[{""}]}];
 atan2_o93_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o93"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o19_test(doc) -> [{userdata,[{""}]}];
 atan2_o19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o19"),
   Expected="1.75390714405738",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o75_test(doc) -> [{userdata,[{""}]}];
 atan2_o75_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o75"),
   Expected="0.40586033155762",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o112_test(doc) -> [{userdata,[{""}]}];
 atan2_o112_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o112"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o1_test(doc) -> [{userdata,[{""}]}];
 atan2_o1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o1"),
   Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o38_test(doc) -> [{userdata,[{""}]}];
 atan2_o38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o94_test(doc) -> [{userdata,[{""}]}];
 atan2_o94_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o94"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o20_test(doc) -> [{userdata,[{""}]}];
 atan2_o20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o20"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o57_test(doc) -> [{userdata,[{""}]}];
 atan2_o57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o57"),
   Expected="0.785398163397448",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o113_test(doc) -> [{userdata,[{""}]}];
 atan2_o113_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o113"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o2_test(doc) -> [{userdata,[{""}]}];
 atan2_o2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o2"),
   Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o39_test(doc) -> [{userdata,[{""}]}];
 atan2_o39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o76_test(doc) -> [{userdata,[{""}]}];
 atan2_o76_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o76"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o21_test(doc) -> [{userdata,[{""}]}];
 atan2_o21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o21"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o58_test(doc) -> [{userdata,[{""}]}];
 atan2_o58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o58"),
   Expected="0.112028962425988",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o95_test(doc) -> [{userdata,[{""}]}];
 atan2_o95_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o95"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o3_test(doc) -> [{userdata,[{""}]}];
 atan2_o3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o3"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o77_test(doc) -> [{userdata,[{""}]}];
 atan2_o77_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o77"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o114_test(doc) -> [{userdata,[{""}]}];
 atan2_o114_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o114"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o22_test(doc) -> [{userdata,[{""}]}];
 atan2_o22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o22"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o59_test(doc) -> [{userdata,[{""}]}];
 atan2_o59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o59"),
   Expected="7.46021218775163e-005",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o96_test(doc) -> [{userdata,[{""}]}];
 atan2_o96_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o96"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o4_test(doc) -> [{userdata,[{""}]}];
 atan2_o4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o4"),
   Expected="1.21609067478396",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o78_test(doc) -> [{userdata,[{""}]}];
 atan2_o78_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o78"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o115_test(doc) -> [{userdata,[{""}]}];
 atan2_o115_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o115"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o23_test(doc) -> [{userdata,[{""}]}];
 atan2_o23_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o23"),
   Expected="1.38768550953241",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o60_test(doc) -> [{userdata,[{""}]}];
 atan2_o60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o60"),
   Expected="1.92550197880584",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o97_test(doc) -> [{userdata,[{""}]}];
 atan2_o97_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o97"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o5_test(doc) -> [{userdata,[{""}]}];
 atan2_o5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o5"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o79_test(doc) -> [{userdata,[{""}]}];
 atan2_o79_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o79"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o116_test(doc) -> [{userdata,[{""}]}];
 atan2_o116_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o116"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o24_test(doc) -> [{userdata,[{""}]}];
 atan2_o24_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o24"),
   Expected="1.21609067478396",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o61_test(doc) -> [{userdata,[{""}]}];
 atan2_o61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o61"),
   Expected="1.75390714405738",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o98_test(doc) -> [{userdata,[{""}]}];
 atan2_o98_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o98"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o6_test(doc) -> [{userdata,[{""}]}];
 atan2_o6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o43_test(doc) -> [{userdata,[{""}]}];
 atan2_o43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o43"),
   Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o80_test(doc) -> [{userdata,[{""}]}];
 atan2_o80_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o80"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o117_test(doc) -> [{userdata,[{""}]}];
 atan2_o117_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o117"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o25_test(doc) -> [{userdata,[{""}]}];
 atan2_o25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o25"),
   Expected="2.73573232203217",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o62_test(doc) -> [{userdata,[{""}]}];
 atan2_o62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o62"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o99_test(doc) -> [{userdata,[{""}]}];
 atan2_o99_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o99"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o7_test(doc) -> [{userdata,[{""}]}];
 atan2_o7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o44_test(doc) -> [{userdata,[{""}]}];
 atan2_o44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o44"),
   Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o81_test(doc) -> [{userdata,[{""}]}];
 atan2_o81_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o81"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o118_test(doc) -> [{userdata,[{""}]}];
 atan2_o118_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o118"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o26_test(doc) -> [{userdata,[{""}]}];
 atan2_o26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o26"),
   Expected="2.62129449934468",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o63_test(doc) -> [{userdata,[{""}]}];
 atan2_o63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o63"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o100_test(doc) -> [{userdata,[{""}]}];
 atan2_o100_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o100"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o8_test(doc) -> [{userdata,[{""}]}];
 atan2_o8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o45_test(doc) -> [{userdata,[{""}]}];
 atan2_o45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o45"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o119_test(doc) -> [{userdata,[{""}]}];
 atan2_o119_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o119"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o27_test(doc) -> [{userdata,[{""}]}];
 atan2_o27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o27"),
   Expected="2.4316455505626",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o64_test(doc) -> [{userdata,[{""}]}];
 atan2_o64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o64"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o101_test(doc) -> [{userdata,[{""}]}];
 atan2_o101_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o101"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o46_test(doc) -> [{userdata,[{""}]}];
 atan2_o46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o46"),
   Expected="1.21609067478396",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o120_test(doc) -> [{userdata,[{""}]}];
 atan2_o120_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o120"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o9_test(doc) -> [{userdata,[{""}]}];
 atan2_o9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o65_test(doc) -> [{userdata,[{""}]}];
 atan2_o65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o65"),
   Expected="1.38768550953241",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o102_test(doc) -> [{userdata,[{""}]}];
 atan2_o102_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o102"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o28_test(doc) -> [{userdata,[{""}]}];
 atan2_o28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o28"),
   Expected="2.09770835125133",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o84_test(doc) -> [{userdata,[{""}]}];
 atan2_o84_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o84"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o10_test(doc) -> [{userdata,[{""}]}];
 atan2_o10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o47_test(doc) -> [{userdata,[{""}]}];
 atan2_o47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o47"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o103_test(doc) -> [{userdata,[{""}]}];
 atan2_o103_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o103"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o29_test(doc) -> [{userdata,[{""}]}];
 atan2_o29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o29"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o66_test(doc) -> [{userdata,[{""}]}];
 atan2_o66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o66"),
   Expected="1.21609067478396",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o11_test(doc) -> [{userdata,[{""}]}];
 atan2_o11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o48_test(doc) -> [{userdata,[{""}]}];
 atan2_o48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o48"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o85_test(doc) -> [{userdata,[{""}]}];
 atan2_o85_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o85"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o30_test(doc) -> [{userdata,[{""}]}];
 atan2_o30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o30"),
   Expected="1.04388430233847",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o67_test(doc) -> [{userdata,[{""}]}];
 atan2_o67_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o67"),
   Expected="2.73573232203217",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o104_test(doc) -> [{userdata,[{""}]}];
 atan2_o104_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o104"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o12_test(doc) -> [{userdata,[{""}]}];
 atan2_o12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o49_test(doc) -> [{userdata,[{""}]}];
 atan2_o49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o49"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o86_test(doc) -> [{userdata,[{""}]}];
 atan2_o86_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o86"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o31_test(doc) -> [{userdata,[{""}]}];
 atan2_o31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o31"),
   Expected="0.709947103027196",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o68_test(doc) -> [{userdata,[{""}]}];
 atan2_o68_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o68"),
   Expected="2.62129449934468",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o105_test(doc) -> [{userdata,[{""}]}];
 atan2_o105_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o105"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o13_test(doc) -> [{userdata,[{""}]}];
 atan2_o13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o13"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o50_test(doc) -> [{userdata,[{""}]}];
 atan2_o50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o50"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o87_test(doc) -> [{userdata,[{""}]}];
 atan2_o87_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o87"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o32_test(doc) -> [{userdata,[{""}]}];
 atan2_o32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o32"),
   Expected="0.520298154245109",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o69_test(doc) -> [{userdata,[{""}]}];
 atan2_o69_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o69"),
   Expected="2.4316455505626",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o106_test(doc) -> [{userdata,[{""}]}];
 atan2_o106_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o106"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o14_test(doc) -> [{userdata,[{""}]}];
 atan2_o14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o51_test(doc) -> [{userdata,[{""}]}];
 atan2_o51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o51"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o88_test(doc) -> [{userdata,[{""}]}];
 atan2_o88_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o88"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o33_test(doc) -> [{userdata,[{""}]}];
 atan2_o33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o33"),
   Expected="0.40586033155762",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o70_test(doc) -> [{userdata,[{""}]}];
 atan2_o70_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o70"),
   Expected="2.09770835125133",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o107_test(doc) -> [{userdata,[{""}]}];
 atan2_o107_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o107"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o15_test(doc) -> [{userdata,[{""}]}];
 atan2_o15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o15"),
   Expected="0.785398163397448",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o52_test(doc) -> [{userdata,[{""}]}];
 atan2_o52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o52"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o89_test(doc) -> [{userdata,[{""}]}];
 atan2_o89_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o89"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o34_test(doc) -> [{userdata,[{""}]}];
 atan2_o34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o71_test(doc) -> [{userdata,[{""}]}];
 atan2_o71_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o71"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o108_test(doc) -> [{userdata,[{""}]}];
 atan2_o108_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o108"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o16_test(doc) -> [{userdata,[{""}]}];
 atan2_o16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o16"),
   Expected="0.112028962425988",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o53_test(doc) -> [{userdata,[{""}]}];
 atan2_o53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o53"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o90_test(doc) -> [{userdata,[{""}]}];
 atan2_o90_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o90"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o35_test(doc) -> [{userdata,[{""}]}];
 atan2_o35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o72_test(doc) -> [{userdata,[{""}]}];
 atan2_o72_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o72"),
   Expected="1.04388430233847",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o109_test(doc) -> [{userdata,[{""}]}];
 atan2_o109_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o109"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o17_test(doc) -> [{userdata,[{""}]}];
 atan2_o17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o17"),
   Expected="7.46021218775163e-005",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o54_test(doc) -> [{userdata,[{""}]}];
 atan2_o54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o54"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o91_test(doc) -> [{userdata,[{""}]}];
 atan2_o91_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o91"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o110_test(doc) -> [{userdata,[{""}]}];
 atan2_o110_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o110"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o36_test(doc) -> [{userdata,[{""}]}];
 atan2_o36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_o73_test(doc) -> [{userdata,[{""}]}];
 atan2_o73_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","o73"),
   Expected="0.709947103027196",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e18_test(doc) -> [{userdata,[{""}]}];
 atan2_e18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e18"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e55_test(doc) -> [{userdata,[{""}]}];
 atan2_e55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e55"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e92_test(doc) -> [{userdata,[{""}]}];
 atan2_e92_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e92"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e37_test(doc) -> [{userdata,[{""}]}];
 atan2_e37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e74_test(doc) -> [{userdata,[{""}]}];
 atan2_e74_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e74"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e111_test(doc) -> [{userdata,[{""}]}];
 atan2_e111_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e111"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e56_test(doc) -> [{userdata,[{""}]}];
 atan2_e56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e56"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e93_test(doc) -> [{userdata,[{""}]}];
 atan2_e93_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e93"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e19_test(doc) -> [{userdata,[{""}]}];
 atan2_e19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e19"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e75_test(doc) -> [{userdata,[{""}]}];
 atan2_e75_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e75"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e112_test(doc) -> [{userdata,[{""}]}];
 atan2_e112_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e112"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e1_test(doc) -> [{userdata,[{""}]}];
 atan2_e1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e1"),
   Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e38_test(doc) -> [{userdata,[{""}]}];
 atan2_e38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e94_test(doc) -> [{userdata,[{""}]}];
 atan2_e94_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e94"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e20_test(doc) -> [{userdata,[{""}]}];
 atan2_e20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e20"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e57_test(doc) -> [{userdata,[{""}]}];
 atan2_e57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e57"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e113_test(doc) -> [{userdata,[{""}]}];
 atan2_e113_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e113"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e2_test(doc) -> [{userdata,[{""}]}];
 atan2_e2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e2"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e39_test(doc) -> [{userdata,[{""}]}];
 atan2_e39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e76_test(doc) -> [{userdata,[{""}]}];
 atan2_e76_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e76"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e21_test(doc) -> [{userdata,[{""}]}];
 atan2_e21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e21"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e58_test(doc) -> [{userdata,[{""}]}];
 atan2_e58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e58"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e95_test(doc) -> [{userdata,[{""}]}];
 atan2_e95_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e95"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e3_test(doc) -> [{userdata,[{""}]}];
 atan2_e3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e3"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e77_test(doc) -> [{userdata,[{""}]}];
 atan2_e77_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e77"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e114_test(doc) -> [{userdata,[{""}]}];
 atan2_e114_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e114"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e22_test(doc) -> [{userdata,[{""}]}];
 atan2_e22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e22"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e59_test(doc) -> [{userdata,[{""}]}];
 atan2_e59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e59"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e96_test(doc) -> [{userdata,[{""}]}];
 atan2_e96_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e96"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e4_test(doc) -> [{userdata,[{""}]}];
 atan2_e4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e4"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e78_test(doc) -> [{userdata,[{""}]}];
 atan2_e78_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e78"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e115_test(doc) -> [{userdata,[{""}]}];
 atan2_e115_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e115"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e23_test(doc) -> [{userdata,[{""}]}];
 atan2_e23_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e23"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e60_test(doc) -> [{userdata,[{""}]}];
 atan2_e60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e60"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e97_test(doc) -> [{userdata,[{""}]}];
 atan2_e97_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e97"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e5_test(doc) -> [{userdata,[{""}]}];
 atan2_e5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e5"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e79_test(doc) -> [{userdata,[{""}]}];
 atan2_e79_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e79"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e116_test(doc) -> [{userdata,[{""}]}];
 atan2_e116_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e116"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e24_test(doc) -> [{userdata,[{""}]}];
 atan2_e24_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e24"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e61_test(doc) -> [{userdata,[{""}]}];
 atan2_e61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e61"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e98_test(doc) -> [{userdata,[{""}]}];
 atan2_e98_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e98"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e6_test(doc) -> [{userdata,[{""}]}];
 atan2_e6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e43_test(doc) -> [{userdata,[{""}]}];
 atan2_e43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e43"),
   Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e80_test(doc) -> [{userdata,[{""}]}];
 atan2_e80_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e80"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e117_test(doc) -> [{userdata,[{""}]}];
 atan2_e117_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e117"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e25_test(doc) -> [{userdata,[{""}]}];
 atan2_e25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e25"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e62_test(doc) -> [{userdata,[{""}]}];
 atan2_e62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e62"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e99_test(doc) -> [{userdata,[{""}]}];
 atan2_e99_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e99"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e7_test(doc) -> [{userdata,[{""}]}];
 atan2_e7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e44_test(doc) -> [{userdata,[{""}]}];
 atan2_e44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e44"),
   Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e81_test(doc) -> [{userdata,[{""}]}];
 atan2_e81_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e81"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e118_test(doc) -> [{userdata,[{""}]}];
 atan2_e118_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e118"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e26_test(doc) -> [{userdata,[{""}]}];
 atan2_e26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e26"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e63_test(doc) -> [{userdata,[{""}]}];
 atan2_e63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e63"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e100_test(doc) -> [{userdata,[{""}]}];
 atan2_e100_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e100"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e8_test(doc) -> [{userdata,[{""}]}];
 atan2_e8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e45_test(doc) -> [{userdata,[{""}]}];
 atan2_e45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e45"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e119_test(doc) -> [{userdata,[{""}]}];
 atan2_e119_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e119"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e27_test(doc) -> [{userdata,[{""}]}];
 atan2_e27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e27"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e64_test(doc) -> [{userdata,[{""}]}];
 atan2_e64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e64"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e101_test(doc) -> [{userdata,[{""}]}];
 atan2_e101_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e101"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e46_test(doc) -> [{userdata,[{""}]}];
 atan2_e46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e46"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e120_test(doc) -> [{userdata,[{""}]}];
 atan2_e120_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e120"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e9_test(doc) -> [{userdata,[{""}]}];
 atan2_e9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e65_test(doc) -> [{userdata,[{""}]}];
 atan2_e65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e65"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e102_test(doc) -> [{userdata,[{""}]}];
 atan2_e102_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e102"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e28_test(doc) -> [{userdata,[{""}]}];
 atan2_e28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e28"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e84_test(doc) -> [{userdata,[{""}]}];
 atan2_e84_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e84"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e10_test(doc) -> [{userdata,[{""}]}];
 atan2_e10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e47_test(doc) -> [{userdata,[{""}]}];
 atan2_e47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e47"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e103_test(doc) -> [{userdata,[{""}]}];
 atan2_e103_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e103"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e29_test(doc) -> [{userdata,[{""}]}];
 atan2_e29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e29"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e66_test(doc) -> [{userdata,[{""}]}];
 atan2_e66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e66"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e11_test(doc) -> [{userdata,[{""}]}];
 atan2_e11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e48_test(doc) -> [{userdata,[{""}]}];
 atan2_e48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e48"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e85_test(doc) -> [{userdata,[{""}]}];
 atan2_e85_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e85"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e30_test(doc) -> [{userdata,[{""}]}];
 atan2_e30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e30"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e67_test(doc) -> [{userdata,[{""}]}];
 atan2_e67_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e67"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e104_test(doc) -> [{userdata,[{""}]}];
 atan2_e104_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e104"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e12_test(doc) -> [{userdata,[{""}]}];
 atan2_e12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e49_test(doc) -> [{userdata,[{""}]}];
 atan2_e49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e49"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e86_test(doc) -> [{userdata,[{""}]}];
 atan2_e86_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e86"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e31_test(doc) -> [{userdata,[{""}]}];
 atan2_e31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e31"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e68_test(doc) -> [{userdata,[{""}]}];
 atan2_e68_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e68"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e105_test(doc) -> [{userdata,[{""}]}];
 atan2_e105_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e105"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e13_test(doc) -> [{userdata,[{""}]}];
 atan2_e13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e13"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e50_test(doc) -> [{userdata,[{""}]}];
 atan2_e50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e50"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e87_test(doc) -> [{userdata,[{""}]}];
 atan2_e87_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e87"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e32_test(doc) -> [{userdata,[{""}]}];
 atan2_e32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e32"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e69_test(doc) -> [{userdata,[{""}]}];
 atan2_e69_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e69"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e106_test(doc) -> [{userdata,[{""}]}];
 atan2_e106_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e106"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e14_test(doc) -> [{userdata,[{""}]}];
 atan2_e14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e51_test(doc) -> [{userdata,[{""}]}];
 atan2_e51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e51"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e88_test(doc) -> [{userdata,[{""}]}];
 atan2_e88_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e88"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e33_test(doc) -> [{userdata,[{""}]}];
 atan2_e33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e33"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e70_test(doc) -> [{userdata,[{""}]}];
 atan2_e70_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e70"),
   Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e107_test(doc) -> [{userdata,[{""}]}];
 atan2_e107_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e107"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e15_test(doc) -> [{userdata,[{""}]}];
 atan2_e15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e15"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e52_test(doc) -> [{userdata,[{""}]}];
 atan2_e52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e52"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e89_test(doc) -> [{userdata,[{""}]}];
 atan2_e89_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e89"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e34_test(doc) -> [{userdata,[{""}]}];
 atan2_e34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e71_test(doc) -> [{userdata,[{""}]}];
 atan2_e71_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e71"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e108_test(doc) -> [{userdata,[{""}]}];
 atan2_e108_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e108"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e16_test(doc) -> [{userdata,[{""}]}];
 atan2_e16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e16"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e53_test(doc) -> [{userdata,[{""}]}];
 atan2_e53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e53"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e90_test(doc) -> [{userdata,[{""}]}];
 atan2_e90_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e90"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e35_test(doc) -> [{userdata,[{""}]}];
 atan2_e35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e72_test(doc) -> [{userdata,[{""}]}];
 atan2_e72_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e72"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e109_test(doc) -> [{userdata,[{""}]}];
 atan2_e109_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e109"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e17_test(doc) -> [{userdata,[{""}]}];
 atan2_e17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e17"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e54_test(doc) -> [{userdata,[{""}]}];
 atan2_e54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e54"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e91_test(doc) -> [{userdata,[{""}]}];
 atan2_e91_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e91"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e110_test(doc) -> [{userdata,[{""}]}];
 atan2_e110_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e110"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e36_test(doc) -> [{userdata,[{""}]}];
 atan2_e36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_e73_test(doc) -> [{userdata,[{""}]}];
 atan2_e73_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","e73"),
   Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p18_test(doc) -> [{userdata,[{""}]}];
 atan2_p18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p18"),
   Expected="1.61243890589348",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p55_test(doc) -> [{userdata,[{""}]}];
 atan2_p55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p55"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p92_test(doc) -> [{userdata,[{""}]}];
 atan2_p92_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p92"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p37_test(doc) -> [{userdata,[{""}]}];
 atan2_p37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p74_test(doc) -> [{userdata,[{""}]}];
 atan2_p74_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p74"),
   Expected="1.37691327520601",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p111_test(doc) -> [{userdata,[{""}]}];
 atan2_p111_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p111"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p56_test(doc) -> [{userdata,[{""}]}];
 atan2_p56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p56"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p93_test(doc) -> [{userdata,[{""}]}];
 atan2_p93_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p93"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p19_test(doc) -> [{userdata,[{""}]}];
 atan2_p19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p19"),
   Expected="1.59162664683111",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p75_test(doc) -> [{userdata,[{""}]}];
 atan2_p75_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p75"),
   Expected="1.31474355681414",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p112_test(doc) -> [{userdata,[{""}]}];
 atan2_p112_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p112"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p1_test(doc) -> [{userdata,[{""}]}];
 atan2_p1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p1"),
   Expected="String number Leading space",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p38_test(doc) -> [{userdata,[{""}]}];
 atan2_p38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p94_test(doc) -> [{userdata,[{""}]}];
 atan2_p94_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p94"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p20_test(doc) -> [{userdata,[{""}]}];
 atan2_p20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p20"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p57_test(doc) -> [{userdata,[{""}]}];
 atan2_p57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p57"),
   Expected="1.45876736436891",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p113_test(doc) -> [{userdata,[{""}]}];
 atan2_p113_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p113"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p2_test(doc) -> [{userdata,[{""}]}];
 atan2_p2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p2"),
   Expected=" 24",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p39_test(doc) -> [{userdata,[{""}]}];
 atan2_p39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p76_test(doc) -> [{userdata,[{""}]}];
 atan2_p76_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p76"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p21_test(doc) -> [{userdata,[{""}]}];
 atan2_p21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p21"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p58_test(doc) -> [{userdata,[{""}]}];
 atan2_p58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p58"),
   Expected="0.785398163397448",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p95_test(doc) -> [{userdata,[{""}]}];
 atan2_p95_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p95"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p3_test(doc) -> [{userdata,[{""}]}];
 atan2_p3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p3"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p77_test(doc) -> [{userdata,[{""}]}];
 atan2_p77_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p77"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p114_test(doc) -> [{userdata,[{""}]}];
 atan2_p114_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p114"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p22_test(doc) -> [{userdata,[{""}]}];
 atan2_p22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p22"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p59_test(doc) -> [{userdata,[{""}]}];
 atan2_p59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p59"),
   Expected="0.000663129876272934",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p96_test(doc) -> [{userdata,[{""}]}];
 atan2_p96_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p96"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p4_test(doc) -> [{userdata,[{""}]}];
 atan2_p4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p4"),
   Expected="1.52915374769631",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p78_test(doc) -> [{userdata,[{""}]}];
 atan2_p78_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p78"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p115_test(doc) -> [{userdata,[{""}]}];
 atan2_p115_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p115"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p23_test(doc) -> [{userdata,[{""}]}];
 atan2_p23_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p23"),
   Expected="1.54996600675868",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p60_test(doc) -> [{userdata,[{""}]}];
 atan2_p60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p60"),
   Expected="1.61243890589348",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p97_test(doc) -> [{userdata,[{""}]}];
 atan2_p97_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p97"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p5_test(doc) -> [{userdata,[{""}]}];
 atan2_p5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p5"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p79_test(doc) -> [{userdata,[{""}]}];
 atan2_p79_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p79"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p116_test(doc) -> [{userdata,[{""}]}];
 atan2_p116_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p116"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p24_test(doc) -> [{userdata,[{""}]}];
 atan2_p24_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p24"),
   Expected="1.52915374769631",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p61_test(doc) -> [{userdata,[{""}]}];
 atan2_p61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p61"),
   Expected="1.59162664683111",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p98_test(doc) -> [{userdata,[{""}]}];
 atan2_p98_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p98"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p6_test(doc) -> [{userdata,[{""}]}];
 atan2_p6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p43_test(doc) -> [{userdata,[{""}]}];
 atan2_p43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p43"),
   Expected="String number Leading space",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p80_test(doc) -> [{userdata,[{""}]}];
 atan2_p80_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p80"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p117_test(doc) -> [{userdata,[{""}]}];
 atan2_p117_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p117"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p25_test(doc) -> [{userdata,[{""}]}];
 atan2_p25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p25"),
   Expected="1.82684909677565",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p62_test(doc) -> [{userdata,[{""}]}];
 atan2_p62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p62"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p99_test(doc) -> [{userdata,[{""}]}];
 atan2_p99_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p99"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p7_test(doc) -> [{userdata,[{""}]}];
 atan2_p7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p44_test(doc) -> [{userdata,[{""}]}];
 atan2_p44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p44"),
   Expected=" 24",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p81_test(doc) -> [{userdata,[{""}]}];
 atan2_p81_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p81"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p118_test(doc) -> [{userdata,[{""}]}];
 atan2_p118_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p118"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p26_test(doc) -> [{userdata,[{""}]}];
 atan2_p26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p26"),
   Expected="1.76467937838378",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p63_test(doc) -> [{userdata,[{""}]}];
 atan2_p63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p63"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p100_test(doc) -> [{userdata,[{""}]}];
 atan2_p100_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p100"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p8_test(doc) -> [{userdata,[{""}]}];
 atan2_p8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p45_test(doc) -> [{userdata,[{""}]}];
 atan2_p45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p45"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p119_test(doc) -> [{userdata,[{""}]}];
 atan2_p119_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p119"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p27_test(doc) -> [{userdata,[{""}]}];
 atan2_p27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p27"),
   Expected="1.7009559706279",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p64_test(doc) -> [{userdata,[{""}]}];
 atan2_p64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p64"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p101_test(doc) -> [{userdata,[{""}]}];
 atan2_p101_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p101"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p46_test(doc) -> [{userdata,[{""}]}];
 atan2_p46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p46"),
   Expected="1.52915374769631",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p120_test(doc) -> [{userdata,[{""}]}];
 atan2_p120_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p120"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p9_test(doc) -> [{userdata,[{""}]}];
 atan2_p9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p65_test(doc) -> [{userdata,[{""}]}];
 atan2_p65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p65"),
   Expected="1.54996600675868",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p102_test(doc) -> [{userdata,[{""}]}];
 atan2_p102_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p102"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p28_test(doc) -> [{userdata,[{""}]}];
 atan2_p28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p28"),
   Expected="1.63615295775834",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p84_test(doc) -> [{userdata,[{""}]}];
 atan2_p84_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p84"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p10_test(doc) -> [{userdata,[{""}]}];
 atan2_p10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p47_test(doc) -> [{userdata,[{""}]}];
 atan2_p47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p47"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p103_test(doc) -> [{userdata,[{""}]}];
 atan2_p103_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p103"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p29_test(doc) -> [{userdata,[{""}]}];
 atan2_p29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p29"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p66_test(doc) -> [{userdata,[{""}]}];
 atan2_p66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p66"),
   Expected="1.52915374769631",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p11_test(doc) -> [{userdata,[{""}]}];
 atan2_p11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p48_test(doc) -> [{userdata,[{""}]}];
 atan2_p48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p48"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p85_test(doc) -> [{userdata,[{""}]}];
 atan2_p85_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p85"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p30_test(doc) -> [{userdata,[{""}]}];
 atan2_p30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p30"),
   Expected="1.50543969583145",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p67_test(doc) -> [{userdata,[{""}]}];
 atan2_p67_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p67"),
   Expected="1.82684909677565",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p104_test(doc) -> [{userdata,[{""}]}];
 atan2_p104_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p104"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p12_test(doc) -> [{userdata,[{""}]}];
 atan2_p12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p49_test(doc) -> [{userdata,[{""}]}];
 atan2_p49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p49"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p86_test(doc) -> [{userdata,[{""}]}];
 atan2_p86_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p86"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p31_test(doc) -> [{userdata,[{""}]}];
 atan2_p31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p31"),
   Expected="1.44063668296189",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p68_test(doc) -> [{userdata,[{""}]}];
 atan2_p68_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p68"),
   Expected="1.76467937838378",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p105_test(doc) -> [{userdata,[{""}]}];
 atan2_p105_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p105"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p13_test(doc) -> [{userdata,[{""}]}];
 atan2_p13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p13"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p50_test(doc) -> [{userdata,[{""}]}];
 atan2_p50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p50"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p87_test(doc) -> [{userdata,[{""}]}];
 atan2_p87_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p87"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p32_test(doc) -> [{userdata,[{""}]}];
 atan2_p32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p32"),
   Expected="1.37691327520601",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p69_test(doc) -> [{userdata,[{""}]}];
 atan2_p69_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p69"),
   Expected="1.7009559706279",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p106_test(doc) -> [{userdata,[{""}]}];
 atan2_p106_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p106"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p14_test(doc) -> [{userdata,[{""}]}];
 atan2_p14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p51_test(doc) -> [{userdata,[{""}]}];
 atan2_p51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p51"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p88_test(doc) -> [{userdata,[{""}]}];
 atan2_p88_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p88"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p33_test(doc) -> [{userdata,[{""}]}];
 atan2_p33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p33"),
   Expected="1.31474355681414",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p70_test(doc) -> [{userdata,[{""}]}];
 atan2_p70_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p70"),
   Expected="1.63615295775834",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p107_test(doc) -> [{userdata,[{""}]}];
 atan2_p107_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p107"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p15_test(doc) -> [{userdata,[{""}]}];
 atan2_p15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p15"),
   Expected="1.45876736436891",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p52_test(doc) -> [{userdata,[{""}]}];
 atan2_p52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p52"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p89_test(doc) -> [{userdata,[{""}]}];
 atan2_p89_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p89"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p34_test(doc) -> [{userdata,[{""}]}];
 atan2_p34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p71_test(doc) -> [{userdata,[{""}]}];
 atan2_p71_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p71"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p108_test(doc) -> [{userdata,[{""}]}];
 atan2_p108_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p108"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p16_test(doc) -> [{userdata,[{""}]}];
 atan2_p16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p16"),
   Expected="0.785398163397448",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p53_test(doc) -> [{userdata,[{""}]}];
 atan2_p53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p53"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p90_test(doc) -> [{userdata,[{""}]}];
 atan2_p90_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p90"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p35_test(doc) -> [{userdata,[{""}]}];
 atan2_p35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p72_test(doc) -> [{userdata,[{""}]}];
 atan2_p72_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p72"),
   Expected="1.50543969583145",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p109_test(doc) -> [{userdata,[{""}]}];
 atan2_p109_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p109"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p17_test(doc) -> [{userdata,[{""}]}];
 atan2_p17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p17"),
   Expected="0.000663129876272934",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p54_test(doc) -> [{userdata,[{""}]}];
 atan2_p54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p54"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p91_test(doc) -> [{userdata,[{""}]}];
 atan2_p91_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p91"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p110_test(doc) -> [{userdata,[{""}]}];
 atan2_p110_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p110"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p36_test(doc) -> [{userdata,[{""}]}];
 atan2_p36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_p73_test(doc) -> [{userdata,[{""}]}];
 atan2_p73_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","p73"),
   Expected="1.44063668296189",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f18_test(doc) -> [{userdata,[{""}]}];
 atan2_f18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f18"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f55_test(doc) -> [{userdata,[{""}]}];
 atan2_f55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f55"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f92_test(doc) -> [{userdata,[{""}]}];
 atan2_f92_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f92"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f37_test(doc) -> [{userdata,[{""}]}];
 atan2_f37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f74_test(doc) -> [{userdata,[{""}]}];
 atan2_f74_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f74"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f111_test(doc) -> [{userdata,[{""}]}];
 atan2_f111_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f111"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f56_test(doc) -> [{userdata,[{""}]}];
 atan2_f56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f56"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f93_test(doc) -> [{userdata,[{""}]}];
 atan2_f93_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f93"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f19_test(doc) -> [{userdata,[{""}]}];
 atan2_f19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f19"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f75_test(doc) -> [{userdata,[{""}]}];
 atan2_f75_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f75"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f112_test(doc) -> [{userdata,[{""}]}];
 atan2_f112_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f112"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f1_test(doc) -> [{userdata,[{""}]}];
 atan2_f1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f38_test(doc) -> [{userdata,[{""}]}];
 atan2_f38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f94_test(doc) -> [{userdata,[{""}]}];
 atan2_f94_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f94"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f20_test(doc) -> [{userdata,[{""}]}];
 atan2_f20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f20"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f57_test(doc) -> [{userdata,[{""}]}];
 atan2_f57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f57"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f113_test(doc) -> [{userdata,[{""}]}];
 atan2_f113_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f113"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f2_test(doc) -> [{userdata,[{""}]}];
 atan2_f2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f2"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f39_test(doc) -> [{userdata,[{""}]}];
 atan2_f39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f76_test(doc) -> [{userdata,[{""}]}];
 atan2_f76_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f76"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f21_test(doc) -> [{userdata,[{""}]}];
 atan2_f21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f21"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f58_test(doc) -> [{userdata,[{""}]}];
 atan2_f58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f58"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f95_test(doc) -> [{userdata,[{""}]}];
 atan2_f95_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f95"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f3_test(doc) -> [{userdata,[{""}]}];
 atan2_f3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f3"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f77_test(doc) -> [{userdata,[{""}]}];
 atan2_f77_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f77"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f114_test(doc) -> [{userdata,[{""}]}];
 atan2_f114_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f114"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f22_test(doc) -> [{userdata,[{""}]}];
 atan2_f22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f22"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f59_test(doc) -> [{userdata,[{""}]}];
 atan2_f59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f59"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f96_test(doc) -> [{userdata,[{""}]}];
 atan2_f96_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f96"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f4_test(doc) -> [{userdata,[{""}]}];
 atan2_f4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f4"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f78_test(doc) -> [{userdata,[{""}]}];
 atan2_f78_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f78"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f115_test(doc) -> [{userdata,[{""}]}];
 atan2_f115_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f115"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f23_test(doc) -> [{userdata,[{""}]}];
 atan2_f23_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f23"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f60_test(doc) -> [{userdata,[{""}]}];
 atan2_f60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f60"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f97_test(doc) -> [{userdata,[{""}]}];
 atan2_f97_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f97"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f5_test(doc) -> [{userdata,[{""}]}];
 atan2_f5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f5"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f79_test(doc) -> [{userdata,[{""}]}];
 atan2_f79_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f79"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f116_test(doc) -> [{userdata,[{""}]}];
 atan2_f116_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f116"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f24_test(doc) -> [{userdata,[{""}]}];
 atan2_f24_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f24"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f61_test(doc) -> [{userdata,[{""}]}];
 atan2_f61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f61"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f98_test(doc) -> [{userdata,[{""}]}];
 atan2_f98_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f98"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f6_test(doc) -> [{userdata,[{""}]}];
 atan2_f6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f43_test(doc) -> [{userdata,[{""}]}];
 atan2_f43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f43"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f80_test(doc) -> [{userdata,[{""}]}];
 atan2_f80_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f80"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f117_test(doc) -> [{userdata,[{""}]}];
 atan2_f117_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f117"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f25_test(doc) -> [{userdata,[{""}]}];
 atan2_f25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f25"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f62_test(doc) -> [{userdata,[{""}]}];
 atan2_f62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f62"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f99_test(doc) -> [{userdata,[{""}]}];
 atan2_f99_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f99"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f7_test(doc) -> [{userdata,[{""}]}];
 atan2_f7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f44_test(doc) -> [{userdata,[{""}]}];
 atan2_f44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f44"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f81_test(doc) -> [{userdata,[{""}]}];
 atan2_f81_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f81"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f118_test(doc) -> [{userdata,[{""}]}];
 atan2_f118_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f118"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f26_test(doc) -> [{userdata,[{""}]}];
 atan2_f26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f26"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f63_test(doc) -> [{userdata,[{""}]}];
 atan2_f63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f63"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f100_test(doc) -> [{userdata,[{""}]}];
 atan2_f100_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f100"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f8_test(doc) -> [{userdata,[{""}]}];
 atan2_f8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f45_test(doc) -> [{userdata,[{""}]}];
 atan2_f45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f45"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f119_test(doc) -> [{userdata,[{""}]}];
 atan2_f119_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f119"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f27_test(doc) -> [{userdata,[{""}]}];
 atan2_f27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f27"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f64_test(doc) -> [{userdata,[{""}]}];
 atan2_f64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f64"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f101_test(doc) -> [{userdata,[{""}]}];
 atan2_f101_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f101"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f46_test(doc) -> [{userdata,[{""}]}];
 atan2_f46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f46"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f120_test(doc) -> [{userdata,[{""}]}];
 atan2_f120_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f120"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f9_test(doc) -> [{userdata,[{""}]}];
 atan2_f9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f65_test(doc) -> [{userdata,[{""}]}];
 atan2_f65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f65"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f102_test(doc) -> [{userdata,[{""}]}];
 atan2_f102_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f102"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f28_test(doc) -> [{userdata,[{""}]}];
 atan2_f28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f28"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f84_test(doc) -> [{userdata,[{""}]}];
 atan2_f84_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f84"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f10_test(doc) -> [{userdata,[{""}]}];
 atan2_f10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f47_test(doc) -> [{userdata,[{""}]}];
 atan2_f47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f47"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f103_test(doc) -> [{userdata,[{""}]}];
 atan2_f103_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f103"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f29_test(doc) -> [{userdata,[{""}]}];
 atan2_f29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f29"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f66_test(doc) -> [{userdata,[{""}]}];
 atan2_f66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f66"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f11_test(doc) -> [{userdata,[{""}]}];
 atan2_f11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f48_test(doc) -> [{userdata,[{""}]}];
 atan2_f48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f48"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f85_test(doc) -> [{userdata,[{""}]}];
 atan2_f85_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f85"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f30_test(doc) -> [{userdata,[{""}]}];
 atan2_f30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f30"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f67_test(doc) -> [{userdata,[{""}]}];
 atan2_f67_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f67"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f104_test(doc) -> [{userdata,[{""}]}];
 atan2_f104_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f104"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f12_test(doc) -> [{userdata,[{""}]}];
 atan2_f12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f49_test(doc) -> [{userdata,[{""}]}];
 atan2_f49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f49"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f86_test(doc) -> [{userdata,[{""}]}];
 atan2_f86_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f86"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f31_test(doc) -> [{userdata,[{""}]}];
 atan2_f31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f31"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f68_test(doc) -> [{userdata,[{""}]}];
 atan2_f68_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f68"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f105_test(doc) -> [{userdata,[{""}]}];
 atan2_f105_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f105"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f13_test(doc) -> [{userdata,[{""}]}];
 atan2_f13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f13"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f50_test(doc) -> [{userdata,[{""}]}];
 atan2_f50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f50"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f87_test(doc) -> [{userdata,[{""}]}];
 atan2_f87_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f87"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f32_test(doc) -> [{userdata,[{""}]}];
 atan2_f32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f32"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f69_test(doc) -> [{userdata,[{""}]}];
 atan2_f69_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f69"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f106_test(doc) -> [{userdata,[{""}]}];
 atan2_f106_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f106"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f14_test(doc) -> [{userdata,[{""}]}];
 atan2_f14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f51_test(doc) -> [{userdata,[{""}]}];
 atan2_f51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f51"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f88_test(doc) -> [{userdata,[{""}]}];
 atan2_f88_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f88"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f33_test(doc) -> [{userdata,[{""}]}];
 atan2_f33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f33"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f70_test(doc) -> [{userdata,[{""}]}];
 atan2_f70_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f70"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f107_test(doc) -> [{userdata,[{""}]}];
 atan2_f107_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f107"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f15_test(doc) -> [{userdata,[{""}]}];
 atan2_f15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f15"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f52_test(doc) -> [{userdata,[{""}]}];
 atan2_f52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f52"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f89_test(doc) -> [{userdata,[{""}]}];
 atan2_f89_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f89"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f34_test(doc) -> [{userdata,[{""}]}];
 atan2_f34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f71_test(doc) -> [{userdata,[{""}]}];
 atan2_f71_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f71"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f108_test(doc) -> [{userdata,[{""}]}];
 atan2_f108_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f108"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f16_test(doc) -> [{userdata,[{""}]}];
 atan2_f16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f16"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f53_test(doc) -> [{userdata,[{""}]}];
 atan2_f53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f53"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f90_test(doc) -> [{userdata,[{""}]}];
 atan2_f90_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f90"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f35_test(doc) -> [{userdata,[{""}]}];
 atan2_f35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f72_test(doc) -> [{userdata,[{""}]}];
 atan2_f72_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f72"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f109_test(doc) -> [{userdata,[{""}]}];
 atan2_f109_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f109"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f17_test(doc) -> [{userdata,[{""}]}];
 atan2_f17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f17"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f54_test(doc) -> [{userdata,[{""}]}];
 atan2_f54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f54"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f91_test(doc) -> [{userdata,[{""}]}];
 atan2_f91_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f91"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f110_test(doc) -> [{userdata,[{""}]}];
 atan2_f110_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f110"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f36_test(doc) -> [{userdata,[{""}]}];
 atan2_f36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_f73_test(doc) -> [{userdata,[{""}]}];
 atan2_f73_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","f73"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q18_test(doc) -> [{userdata,[{""}]}];
 atan2_q18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q18"),
   Expected="1.57082395721045",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q55_test(doc) -> [{userdata,[{""}]}];
 atan2_q55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q55"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q92_test(doc) -> [{userdata,[{""}]}];
 atan2_q92_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q92"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q37_test(doc) -> [{userdata,[{""}]}];
 atan2_q37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q74_test(doc) -> [{userdata,[{""}]}];
 atan2_q74_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q74"),
   Expected="1.57066612152982",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q111_test(doc) -> [{userdata,[{""}]}];
 atan2_q111_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q111"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q56_test(doc) -> [{userdata,[{""}]}];
 atan2_q56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q56"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q93_test(doc) -> [{userdata,[{""}]}];
 atan2_q93_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q93"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q19_test(doc) -> [{userdata,[{""}]}];
 atan2_q19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q19"),
   Expected="1.57081014200268",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q75_test(doc) -> [{userdata,[{""}]}];
 atan2_q75_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q75"),
   Expected="1.57062271977555",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q112_test(doc) -> [{userdata,[{""}]}];
 atan2_q112_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q112"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q1_test(doc) -> [{userdata,[{""}]}];
 atan2_q1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q1"),
   Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q38_test(doc) -> [{userdata,[{""}]}];
 atan2_q38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q94_test(doc) -> [{userdata,[{""}]}];
 atan2_q94_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q94"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q20_test(doc) -> [{userdata,[{""}]}];
 atan2_q20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q20"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q57_test(doc) -> [{userdata,[{""}]}];
 atan2_q57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q57"),
   Expected="1.57072172467302",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q113_test(doc) -> [{userdata,[{""}]}];
 atan2_q113_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q113"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q2_test(doc) -> [{userdata,[{""}]}];
 atan2_q2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q2"),
   Expected="36192.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q39_test(doc) -> [{userdata,[{""}]}];
 atan2_q39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q76_test(doc) -> [{userdata,[{""}]}];
 atan2_q76_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q76"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q21_test(doc) -> [{userdata,[{""}]}];
 atan2_q21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q21"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q58_test(doc) -> [{userdata,[{""}]}];
 atan2_q58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q58"),
   Expected="1.57013319691862",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q95_test(doc) -> [{userdata,[{""}]}];
 atan2_q95_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q95"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q3_test(doc) -> [{userdata,[{""}]}];
 atan2_q3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q3"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q77_test(doc) -> [{userdata,[{""}]}];
 atan2_q77_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q77"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q114_test(doc) -> [{userdata,[{""}]}];
 atan2_q114_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q114"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q22_test(doc) -> [{userdata,[{""}]}];
 atan2_q22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q22"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q59_test(doc) -> [{userdata,[{""}]}];
 atan2_q59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q59"),
   Expected="0.785398163397448",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q96_test(doc) -> [{userdata,[{""}]}];
 atan2_q96_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q96"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q4_test(doc) -> [{userdata,[{""}]}];
 atan2_q4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q4"),
   Expected="1.57076869637934",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q78_test(doc) -> [{userdata,[{""}]}];
 atan2_q78_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q78"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q115_test(doc) -> [{userdata,[{""}]}];
 atan2_q115_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q115"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q23_test(doc) -> [{userdata,[{""}]}];
 atan2_q23_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q23"),
   Expected="1.57078251158712",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q60_test(doc) -> [{userdata,[{""}]}];
 atan2_q60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q60"),
   Expected="1.57082395721045",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q97_test(doc) -> [{userdata,[{""}]}];
 atan2_q97_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q97"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q5_test(doc) -> [{userdata,[{""}]}];
 atan2_q5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q5"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q79_test(doc) -> [{userdata,[{""}]}];
 atan2_q79_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q79"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q116_test(doc) -> [{userdata,[{""}]}];
 atan2_q116_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q116"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q24_test(doc) -> [{userdata,[{""}]}];
 atan2_q24_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q24"),
   Expected="1.57076869637934",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q61_test(doc) -> [{userdata,[{""}]}];
 atan2_q61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q61"),
   Expected="1.57081014200268",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q98_test(doc) -> [{userdata,[{""}]}];
 atan2_q98_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q98"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q6_test(doc) -> [{userdata,[{""}]}];
 atan2_q6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q43_test(doc) -> [{userdata,[{""}]}];
 atan2_q43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q43"),
   Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q80_test(doc) -> [{userdata,[{""}]}];
 atan2_q80_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q80"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q117_test(doc) -> [{userdata,[{""}]}];
 atan2_q117_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q117"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q25_test(doc) -> [{userdata,[{""}]}];
 atan2_q25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q25"),
   Expected="1.57096993381424",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q62_test(doc) -> [{userdata,[{""}]}];
 atan2_q62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q62"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q99_test(doc) -> [{userdata,[{""}]}];
 atan2_q99_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q99"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q7_test(doc) -> [{userdata,[{""}]}];
 atan2_q7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q44_test(doc) -> [{userdata,[{""}]}];
 atan2_q44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q44"),
   Expected="36192.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q81_test(doc) -> [{userdata,[{""}]}];
 atan2_q81_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q81"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q118_test(doc) -> [{userdata,[{""}]}];
 atan2_q118_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q118"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q26_test(doc) -> [{userdata,[{""}]}];
 atan2_q26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q26"),
   Expected="1.57092653205998",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q63_test(doc) -> [{userdata,[{""}]}];
 atan2_q63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q63"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q100_test(doc) -> [{userdata,[{""}]}];
 atan2_q100_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q100"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q8_test(doc) -> [{userdata,[{""}]}];
 atan2_q8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q45_test(doc) -> [{userdata,[{""}]}];
 atan2_q45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q45"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q119_test(doc) -> [{userdata,[{""}]}];
 atan2_q119_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q119"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q27_test(doc) -> [{userdata,[{""}]}];
 atan2_q27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q27"),
   Expected="1.57088313030522",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q64_test(doc) -> [{userdata,[{""}]}];
 atan2_q64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q64"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q101_test(doc) -> [{userdata,[{""}]}];
 atan2_q101_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q101"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q46_test(doc) -> [{userdata,[{""}]}];
 atan2_q46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q46"),
   Expected="1.57076869637934",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q120_test(doc) -> [{userdata,[{""}]}];
 atan2_q120_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q120"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q9_test(doc) -> [{userdata,[{""}]}];
 atan2_q9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q65_test(doc) -> [{userdata,[{""}]}];
 atan2_q65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q65"),
   Expected="1.57078251158712",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q102_test(doc) -> [{userdata,[{""}]}];
 atan2_q102_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q102"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q28_test(doc) -> [{userdata,[{""}]}];
 atan2_q28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q28"),
   Expected="1.57083972855014",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q84_test(doc) -> [{userdata,[{""}]}];
 atan2_q84_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q84"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q10_test(doc) -> [{userdata,[{""}]}];
 atan2_q10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q47_test(doc) -> [{userdata,[{""}]}];
 atan2_q47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q47"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q103_test(doc) -> [{userdata,[{""}]}];
 atan2_q103_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q103"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q29_test(doc) -> [{userdata,[{""}]}];
 atan2_q29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q29"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q66_test(doc) -> [{userdata,[{""}]}];
 atan2_q66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q66"),
   Expected="1.57076869637934",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q11_test(doc) -> [{userdata,[{""}]}];
 atan2_q11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q48_test(doc) -> [{userdata,[{""}]}];
 atan2_q48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q48"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q85_test(doc) -> [{userdata,[{""}]}];
 atan2_q85_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q85"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q30_test(doc) -> [{userdata,[{""}]}];
 atan2_q30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q30"),
   Expected="1.57075292503965",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q67_test(doc) -> [{userdata,[{""}]}];
 atan2_q67_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q67"),
   Expected="1.57096993381424",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q104_test(doc) -> [{userdata,[{""}]}];
 atan2_q104_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q104"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q12_test(doc) -> [{userdata,[{""}]}];
 atan2_q12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q49_test(doc) -> [{userdata,[{""}]}];
 atan2_q49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q49"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q86_test(doc) -> [{userdata,[{""}]}];
 atan2_q86_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q86"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q31_test(doc) -> [{userdata,[{""}]}];
 atan2_q31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q31"),
   Expected="1.57070952328457",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q68_test(doc) -> [{userdata,[{""}]}];
 atan2_q68_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q68"),
   Expected="1.57092653205998",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q105_test(doc) -> [{userdata,[{""}]}];
 atan2_q105_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q105"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q13_test(doc) -> [{userdata,[{""}]}];
 atan2_q13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q13"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q50_test(doc) -> [{userdata,[{""}]}];
 atan2_q50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q50"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q87_test(doc) -> [{userdata,[{""}]}];
 atan2_q87_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q87"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q32_test(doc) -> [{userdata,[{""}]}];
 atan2_q32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q32"),
   Expected="1.57066612152982",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q69_test(doc) -> [{userdata,[{""}]}];
 atan2_q69_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q69"),
   Expected="1.57088313030522",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q106_test(doc) -> [{userdata,[{""}]}];
 atan2_q106_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q106"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q14_test(doc) -> [{userdata,[{""}]}];
 atan2_q14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q51_test(doc) -> [{userdata,[{""}]}];
 atan2_q51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q51"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q88_test(doc) -> [{userdata,[{""}]}];
 atan2_q88_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q88"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q33_test(doc) -> [{userdata,[{""}]}];
 atan2_q33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q33"),
   Expected="1.57062271977555",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q70_test(doc) -> [{userdata,[{""}]}];
 atan2_q70_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q70"),
   Expected="1.57083972855014",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q107_test(doc) -> [{userdata,[{""}]}];
 atan2_q107_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q107"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q15_test(doc) -> [{userdata,[{""}]}];
 atan2_q15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q15"),
   Expected="1.57072172467302",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q52_test(doc) -> [{userdata,[{""}]}];
 atan2_q52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q52"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q89_test(doc) -> [{userdata,[{""}]}];
 atan2_q89_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q89"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q34_test(doc) -> [{userdata,[{""}]}];
 atan2_q34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q71_test(doc) -> [{userdata,[{""}]}];
 atan2_q71_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q71"),
   Expected="1.5707963267949",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q108_test(doc) -> [{userdata,[{""}]}];
 atan2_q108_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q108"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q16_test(doc) -> [{userdata,[{""}]}];
 atan2_q16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q16"),
   Expected="1.57013319691862",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q53_test(doc) -> [{userdata,[{""}]}];
 atan2_q53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q53"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q90_test(doc) -> [{userdata,[{""}]}];
 atan2_q90_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q90"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q35_test(doc) -> [{userdata,[{""}]}];
 atan2_q35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q72_test(doc) -> [{userdata,[{""}]}];
 atan2_q72_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q72"),
   Expected="1.57075292503965",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q109_test(doc) -> [{userdata,[{""}]}];
 atan2_q109_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q109"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q17_test(doc) -> [{userdata,[{""}]}];
 atan2_q17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q17"),
   Expected="0.785398163397448",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q54_test(doc) -> [{userdata,[{""}]}];
 atan2_q54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q54"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q91_test(doc) -> [{userdata,[{""}]}];
 atan2_q91_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q91"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q110_test(doc) -> [{userdata,[{""}]}];
 atan2_q110_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q110"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q36_test(doc) -> [{userdata,[{""}]}];
 atan2_q36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_q73_test(doc) -> [{userdata,[{""}]}];
 atan2_q73_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","q73"),
   Expected="1.57070952328457",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g18_test(doc) -> [{userdata,[{""}]}];
 atan2_g18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g18"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g55_test(doc) -> [{userdata,[{""}]}];
 atan2_g55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g55"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g92_test(doc) -> [{userdata,[{""}]}];
 atan2_g92_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g92"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g37_test(doc) -> [{userdata,[{""}]}];
 atan2_g37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g74_test(doc) -> [{userdata,[{""}]}];
 atan2_g74_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g74"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g111_test(doc) -> [{userdata,[{""}]}];
 atan2_g111_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g111"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g56_test(doc) -> [{userdata,[{""}]}];
 atan2_g56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g56"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g93_test(doc) -> [{userdata,[{""}]}];
 atan2_g93_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g93"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g19_test(doc) -> [{userdata,[{""}]}];
 atan2_g19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g19"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g75_test(doc) -> [{userdata,[{""}]}];
 atan2_g75_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g75"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g112_test(doc) -> [{userdata,[{""}]}];
 atan2_g112_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g112"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g1_test(doc) -> [{userdata,[{""}]}];
 atan2_g1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g38_test(doc) -> [{userdata,[{""}]}];
 atan2_g38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g94_test(doc) -> [{userdata,[{""}]}];
 atan2_g94_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g94"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g20_test(doc) -> [{userdata,[{""}]}];
 atan2_g20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g20"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g57_test(doc) -> [{userdata,[{""}]}];
 atan2_g57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g57"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g113_test(doc) -> [{userdata,[{""}]}];
 atan2_g113_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g113"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g2_test(doc) -> [{userdata,[{""}]}];
 atan2_g2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g2"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g39_test(doc) -> [{userdata,[{""}]}];
 atan2_g39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g76_test(doc) -> [{userdata,[{""}]}];
 atan2_g76_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g76"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g21_test(doc) -> [{userdata,[{""}]}];
 atan2_g21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g21"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g58_test(doc) -> [{userdata,[{""}]}];
 atan2_g58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g58"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g95_test(doc) -> [{userdata,[{""}]}];
 atan2_g95_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g95"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g3_test(doc) -> [{userdata,[{""}]}];
 atan2_g3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g3"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g77_test(doc) -> [{userdata,[{""}]}];
 atan2_g77_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g77"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g114_test(doc) -> [{userdata,[{""}]}];
 atan2_g114_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g114"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g22_test(doc) -> [{userdata,[{""}]}];
 atan2_g22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g22"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g59_test(doc) -> [{userdata,[{""}]}];
 atan2_g59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g59"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g96_test(doc) -> [{userdata,[{""}]}];
 atan2_g96_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g96"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g4_test(doc) -> [{userdata,[{""}]}];
 atan2_g4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g4"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g78_test(doc) -> [{userdata,[{""}]}];
 atan2_g78_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g78"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g115_test(doc) -> [{userdata,[{""}]}];
 atan2_g115_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g115"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g23_test(doc) -> [{userdata,[{""}]}];
 atan2_g23_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g23"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g60_test(doc) -> [{userdata,[{""}]}];
 atan2_g60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g60"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g97_test(doc) -> [{userdata,[{""}]}];
 atan2_g97_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g97"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g5_test(doc) -> [{userdata,[{""}]}];
 atan2_g5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g5"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g79_test(doc) -> [{userdata,[{""}]}];
 atan2_g79_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g79"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g116_test(doc) -> [{userdata,[{""}]}];
 atan2_g116_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g116"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g24_test(doc) -> [{userdata,[{""}]}];
 atan2_g24_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g24"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g61_test(doc) -> [{userdata,[{""}]}];
 atan2_g61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g61"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g98_test(doc) -> [{userdata,[{""}]}];
 atan2_g98_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g98"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g6_test(doc) -> [{userdata,[{""}]}];
 atan2_g6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g43_test(doc) -> [{userdata,[{""}]}];
 atan2_g43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g43"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g80_test(doc) -> [{userdata,[{""}]}];
 atan2_g80_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g80"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g117_test(doc) -> [{userdata,[{""}]}];
 atan2_g117_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g117"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g25_test(doc) -> [{userdata,[{""}]}];
 atan2_g25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g25"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g62_test(doc) -> [{userdata,[{""}]}];
 atan2_g62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g62"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g99_test(doc) -> [{userdata,[{""}]}];
 atan2_g99_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g99"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g7_test(doc) -> [{userdata,[{""}]}];
 atan2_g7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g44_test(doc) -> [{userdata,[{""}]}];
 atan2_g44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g44"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g81_test(doc) -> [{userdata,[{""}]}];
 atan2_g81_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g81"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g118_test(doc) -> [{userdata,[{""}]}];
 atan2_g118_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g118"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g26_test(doc) -> [{userdata,[{""}]}];
 atan2_g26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g26"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g63_test(doc) -> [{userdata,[{""}]}];
 atan2_g63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g63"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g100_test(doc) -> [{userdata,[{""}]}];
 atan2_g100_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g100"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g8_test(doc) -> [{userdata,[{""}]}];
 atan2_g8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g45_test(doc) -> [{userdata,[{""}]}];
 atan2_g45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g45"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g119_test(doc) -> [{userdata,[{""}]}];
 atan2_g119_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g119"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g27_test(doc) -> [{userdata,[{""}]}];
 atan2_g27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g27"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g64_test(doc) -> [{userdata,[{""}]}];
 atan2_g64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g64"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g101_test(doc) -> [{userdata,[{""}]}];
 atan2_g101_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g101"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g46_test(doc) -> [{userdata,[{""}]}];
 atan2_g46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g46"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g120_test(doc) -> [{userdata,[{""}]}];
 atan2_g120_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g120"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g9_test(doc) -> [{userdata,[{""}]}];
 atan2_g9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g65_test(doc) -> [{userdata,[{""}]}];
 atan2_g65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g65"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g102_test(doc) -> [{userdata,[{""}]}];
 atan2_g102_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g102"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g28_test(doc) -> [{userdata,[{""}]}];
 atan2_g28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g28"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g84_test(doc) -> [{userdata,[{""}]}];
 atan2_g84_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g84"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g10_test(doc) -> [{userdata,[{""}]}];
 atan2_g10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g47_test(doc) -> [{userdata,[{""}]}];
 atan2_g47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g47"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g103_test(doc) -> [{userdata,[{""}]}];
 atan2_g103_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g103"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g29_test(doc) -> [{userdata,[{""}]}];
 atan2_g29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g29"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g66_test(doc) -> [{userdata,[{""}]}];
 atan2_g66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g66"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g11_test(doc) -> [{userdata,[{""}]}];
 atan2_g11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g48_test(doc) -> [{userdata,[{""}]}];
 atan2_g48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g48"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g85_test(doc) -> [{userdata,[{""}]}];
 atan2_g85_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g85"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g30_test(doc) -> [{userdata,[{""}]}];
 atan2_g30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g30"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g67_test(doc) -> [{userdata,[{""}]}];
 atan2_g67_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g67"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g104_test(doc) -> [{userdata,[{""}]}];
 atan2_g104_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g104"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g12_test(doc) -> [{userdata,[{""}]}];
 atan2_g12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g49_test(doc) -> [{userdata,[{""}]}];
 atan2_g49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g49"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g86_test(doc) -> [{userdata,[{""}]}];
 atan2_g86_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g86"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g31_test(doc) -> [{userdata,[{""}]}];
 atan2_g31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g31"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g68_test(doc) -> [{userdata,[{""}]}];
 atan2_g68_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g68"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g105_test(doc) -> [{userdata,[{""}]}];
 atan2_g105_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g105"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g13_test(doc) -> [{userdata,[{""}]}];
 atan2_g13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g13"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g50_test(doc) -> [{userdata,[{""}]}];
 atan2_g50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g50"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g87_test(doc) -> [{userdata,[{""}]}];
 atan2_g87_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g87"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g32_test(doc) -> [{userdata,[{""}]}];
 atan2_g32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g32"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g69_test(doc) -> [{userdata,[{""}]}];
 atan2_g69_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g69"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g106_test(doc) -> [{userdata,[{""}]}];
 atan2_g106_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g106"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g14_test(doc) -> [{userdata,[{""}]}];
 atan2_g14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g51_test(doc) -> [{userdata,[{""}]}];
 atan2_g51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g51"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g88_test(doc) -> [{userdata,[{""}]}];
 atan2_g88_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g88"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g33_test(doc) -> [{userdata,[{""}]}];
 atan2_g33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g33"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g70_test(doc) -> [{userdata,[{""}]}];
 atan2_g70_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g70"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g107_test(doc) -> [{userdata,[{""}]}];
 atan2_g107_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g107"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g15_test(doc) -> [{userdata,[{""}]}];
 atan2_g15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g15"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g52_test(doc) -> [{userdata,[{""}]}];
 atan2_g52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g52"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g89_test(doc) -> [{userdata,[{""}]}];
 atan2_g89_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g89"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g34_test(doc) -> [{userdata,[{""}]}];
 atan2_g34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g71_test(doc) -> [{userdata,[{""}]}];
 atan2_g71_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g71"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g108_test(doc) -> [{userdata,[{""}]}];
 atan2_g108_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g108"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g16_test(doc) -> [{userdata,[{""}]}];
 atan2_g16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g16"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g53_test(doc) -> [{userdata,[{""}]}];
 atan2_g53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g53"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g90_test(doc) -> [{userdata,[{""}]}];
 atan2_g90_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g90"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g35_test(doc) -> [{userdata,[{""}]}];
 atan2_g35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g72_test(doc) -> [{userdata,[{""}]}];
 atan2_g72_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g72"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g109_test(doc) -> [{userdata,[{""}]}];
 atan2_g109_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g109"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g17_test(doc) -> [{userdata,[{""}]}];
 atan2_g17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g17"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g54_test(doc) -> [{userdata,[{""}]}];
 atan2_g54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g54"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g91_test(doc) -> [{userdata,[{""}]}];
 atan2_g91_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g91"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g110_test(doc) -> [{userdata,[{""}]}];
 atan2_g110_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g110"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g36_test(doc) -> [{userdata,[{""}]}];
 atan2_g36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_g73_test(doc) -> [{userdata,[{""}]}];
 atan2_g73_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","g73"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h18_test(doc) -> [{userdata,[{""}]}];
 atan2_h18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h18"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h55_test(doc) -> [{userdata,[{""}]}];
 atan2_h55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h55"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h92_test(doc) -> [{userdata,[{""}]}];
 atan2_h92_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h92"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h37_test(doc) -> [{userdata,[{""}]}];
 atan2_h37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h74_test(doc) -> [{userdata,[{""}]}];
 atan2_h74_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h74"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h111_test(doc) -> [{userdata,[{""}]}];
 atan2_h111_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h111"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h56_test(doc) -> [{userdata,[{""}]}];
 atan2_h56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h56"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h93_test(doc) -> [{userdata,[{""}]}];
 atan2_h93_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h93"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h19_test(doc) -> [{userdata,[{""}]}];
 atan2_h19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h19"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h75_test(doc) -> [{userdata,[{""}]}];
 atan2_h75_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h75"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h112_test(doc) -> [{userdata,[{""}]}];
 atan2_h112_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h112"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h1_test(doc) -> [{userdata,[{""}]}];
 atan2_h1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h38_test(doc) -> [{userdata,[{""}]}];
 atan2_h38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h94_test(doc) -> [{userdata,[{""}]}];
 atan2_h94_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h94"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h20_test(doc) -> [{userdata,[{""}]}];
 atan2_h20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h20"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h57_test(doc) -> [{userdata,[{""}]}];
 atan2_h57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h57"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h113_test(doc) -> [{userdata,[{""}]}];
 atan2_h113_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h113"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h2_test(doc) -> [{userdata,[{""}]}];
 atan2_h2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h2"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h39_test(doc) -> [{userdata,[{""}]}];
 atan2_h39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h76_test(doc) -> [{userdata,[{""}]}];
 atan2_h76_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h76"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h21_test(doc) -> [{userdata,[{""}]}];
 atan2_h21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h21"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h58_test(doc) -> [{userdata,[{""}]}];
 atan2_h58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h58"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h95_test(doc) -> [{userdata,[{""}]}];
 atan2_h95_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h95"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h3_test(doc) -> [{userdata,[{""}]}];
 atan2_h3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h3"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h77_test(doc) -> [{userdata,[{""}]}];
 atan2_h77_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h77"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h114_test(doc) -> [{userdata,[{""}]}];
 atan2_h114_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h114"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h22_test(doc) -> [{userdata,[{""}]}];
 atan2_h22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h22"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h59_test(doc) -> [{userdata,[{""}]}];
 atan2_h59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h59"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h96_test(doc) -> [{userdata,[{""}]}];
 atan2_h96_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h96"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h4_test(doc) -> [{userdata,[{""}]}];
 atan2_h4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h4"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h78_test(doc) -> [{userdata,[{""}]}];
 atan2_h78_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h78"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h115_test(doc) -> [{userdata,[{""}]}];
 atan2_h115_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h115"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h23_test(doc) -> [{userdata,[{""}]}];
 atan2_h23_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h23"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h60_test(doc) -> [{userdata,[{""}]}];
 atan2_h60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h60"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h97_test(doc) -> [{userdata,[{""}]}];
 atan2_h97_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h97"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h5_test(doc) -> [{userdata,[{""}]}];
 atan2_h5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h5"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h79_test(doc) -> [{userdata,[{""}]}];
 atan2_h79_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h79"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h116_test(doc) -> [{userdata,[{""}]}];
 atan2_h116_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h116"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h24_test(doc) -> [{userdata,[{""}]}];
 atan2_h24_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h24"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h61_test(doc) -> [{userdata,[{""}]}];
 atan2_h61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h61"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h98_test(doc) -> [{userdata,[{""}]}];
 atan2_h98_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h98"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h6_test(doc) -> [{userdata,[{""}]}];
 atan2_h6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h43_test(doc) -> [{userdata,[{""}]}];
 atan2_h43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h43"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h80_test(doc) -> [{userdata,[{""}]}];
 atan2_h80_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h80"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h117_test(doc) -> [{userdata,[{""}]}];
 atan2_h117_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h117"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h25_test(doc) -> [{userdata,[{""}]}];
 atan2_h25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h25"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h62_test(doc) -> [{userdata,[{""}]}];
 atan2_h62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h62"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h99_test(doc) -> [{userdata,[{""}]}];
 atan2_h99_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h99"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h7_test(doc) -> [{userdata,[{""}]}];
 atan2_h7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h44_test(doc) -> [{userdata,[{""}]}];
 atan2_h44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h44"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h81_test(doc) -> [{userdata,[{""}]}];
 atan2_h81_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h81"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h118_test(doc) -> [{userdata,[{""}]}];
 atan2_h118_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h118"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h26_test(doc) -> [{userdata,[{""}]}];
 atan2_h26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h26"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h63_test(doc) -> [{userdata,[{""}]}];
 atan2_h63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h63"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h100_test(doc) -> [{userdata,[{""}]}];
 atan2_h100_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h100"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h8_test(doc) -> [{userdata,[{""}]}];
 atan2_h8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h45_test(doc) -> [{userdata,[{""}]}];
 atan2_h45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h45"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h119_test(doc) -> [{userdata,[{""}]}];
 atan2_h119_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h119"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h27_test(doc) -> [{userdata,[{""}]}];
 atan2_h27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h27"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h64_test(doc) -> [{userdata,[{""}]}];
 atan2_h64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h64"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h101_test(doc) -> [{userdata,[{""}]}];
 atan2_h101_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h101"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h46_test(doc) -> [{userdata,[{""}]}];
 atan2_h46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h46"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h120_test(doc) -> [{userdata,[{""}]}];
 atan2_h120_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h120"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h9_test(doc) -> [{userdata,[{""}]}];
 atan2_h9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h65_test(doc) -> [{userdata,[{""}]}];
 atan2_h65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h65"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h102_test(doc) -> [{userdata,[{""}]}];
 atan2_h102_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h102"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h28_test(doc) -> [{userdata,[{""}]}];
 atan2_h28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h28"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h84_test(doc) -> [{userdata,[{""}]}];
 atan2_h84_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h84"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h10_test(doc) -> [{userdata,[{""}]}];
 atan2_h10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h47_test(doc) -> [{userdata,[{""}]}];
 atan2_h47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h47"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h103_test(doc) -> [{userdata,[{""}]}];
 atan2_h103_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h103"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h29_test(doc) -> [{userdata,[{""}]}];
 atan2_h29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h29"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h66_test(doc) -> [{userdata,[{""}]}];
 atan2_h66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h66"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h11_test(doc) -> [{userdata,[{""}]}];
 atan2_h11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h48_test(doc) -> [{userdata,[{""}]}];
 atan2_h48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h48"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h85_test(doc) -> [{userdata,[{""}]}];
 atan2_h85_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h85"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h30_test(doc) -> [{userdata,[{""}]}];
 atan2_h30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h30"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h67_test(doc) -> [{userdata,[{""}]}];
 atan2_h67_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h67"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h104_test(doc) -> [{userdata,[{""}]}];
 atan2_h104_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h104"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h12_test(doc) -> [{userdata,[{""}]}];
 atan2_h12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h49_test(doc) -> [{userdata,[{""}]}];
 atan2_h49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h49"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h86_test(doc) -> [{userdata,[{""}]}];
 atan2_h86_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h86"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h31_test(doc) -> [{userdata,[{""}]}];
 atan2_h31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h31"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h68_test(doc) -> [{userdata,[{""}]}];
 atan2_h68_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h68"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h105_test(doc) -> [{userdata,[{""}]}];
 atan2_h105_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h105"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h13_test(doc) -> [{userdata,[{""}]}];
 atan2_h13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h13"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h50_test(doc) -> [{userdata,[{""}]}];
 atan2_h50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h50"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h87_test(doc) -> [{userdata,[{""}]}];
 atan2_h87_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h87"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h32_test(doc) -> [{userdata,[{""}]}];
 atan2_h32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h32"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h69_test(doc) -> [{userdata,[{""}]}];
 atan2_h69_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h69"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h106_test(doc) -> [{userdata,[{""}]}];
 atan2_h106_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h106"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h14_test(doc) -> [{userdata,[{""}]}];
 atan2_h14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h51_test(doc) -> [{userdata,[{""}]}];
 atan2_h51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h51"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h88_test(doc) -> [{userdata,[{""}]}];
 atan2_h88_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h88"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h33_test(doc) -> [{userdata,[{""}]}];
 atan2_h33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h33"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h70_test(doc) -> [{userdata,[{""}]}];
 atan2_h70_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h70"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h107_test(doc) -> [{userdata,[{""}]}];
 atan2_h107_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h107"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h15_test(doc) -> [{userdata,[{""}]}];
 atan2_h15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h15"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h52_test(doc) -> [{userdata,[{""}]}];
 atan2_h52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h52"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h89_test(doc) -> [{userdata,[{""}]}];
 atan2_h89_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h89"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h34_test(doc) -> [{userdata,[{""}]}];
 atan2_h34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h71_test(doc) -> [{userdata,[{""}]}];
 atan2_h71_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h71"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h108_test(doc) -> [{userdata,[{""}]}];
 atan2_h108_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h108"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h16_test(doc) -> [{userdata,[{""}]}];
 atan2_h16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h16"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h53_test(doc) -> [{userdata,[{""}]}];
 atan2_h53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h53"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h90_test(doc) -> [{userdata,[{""}]}];
 atan2_h90_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h90"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h35_test(doc) -> [{userdata,[{""}]}];
 atan2_h35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h72_test(doc) -> [{userdata,[{""}]}];
 atan2_h72_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h72"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h109_test(doc) -> [{userdata,[{""}]}];
 atan2_h109_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h109"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h17_test(doc) -> [{userdata,[{""}]}];
 atan2_h17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h17"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h54_test(doc) -> [{userdata,[{""}]}];
 atan2_h54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h54"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h91_test(doc) -> [{userdata,[{""}]}];
 atan2_h91_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h91"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h110_test(doc) -> [{userdata,[{""}]}];
 atan2_h110_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h110"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h36_test(doc) -> [{userdata,[{""}]}];
 atan2_h36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_h73_test(doc) -> [{userdata,[{""}]}];
 atan2_h73_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","h73"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i18_test(doc) -> [{userdata,[{""}]}];
 atan2_i18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i18"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i55_test(doc) -> [{userdata,[{""}]}];
 atan2_i55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i55"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i92_test(doc) -> [{userdata,[{""}]}];
 atan2_i92_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i92"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i37_test(doc) -> [{userdata,[{""}]}];
 atan2_i37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i74_test(doc) -> [{userdata,[{""}]}];
 atan2_i74_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i74"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i111_test(doc) -> [{userdata,[{""}]}];
 atan2_i111_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i111"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i56_test(doc) -> [{userdata,[{""}]}];
 atan2_i56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i56"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i93_test(doc) -> [{userdata,[{""}]}];
 atan2_i93_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i93"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i19_test(doc) -> [{userdata,[{""}]}];
 atan2_i19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i19"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i75_test(doc) -> [{userdata,[{""}]}];
 atan2_i75_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i75"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i112_test(doc) -> [{userdata,[{""}]}];
 atan2_i112_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i112"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i1_test(doc) -> [{userdata,[{""}]}];
 atan2_i1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i38_test(doc) -> [{userdata,[{""}]}];
 atan2_i38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i94_test(doc) -> [{userdata,[{""}]}];
 atan2_i94_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i94"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i20_test(doc) -> [{userdata,[{""}]}];
 atan2_i20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i20"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i57_test(doc) -> [{userdata,[{""}]}];
 atan2_i57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i57"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i113_test(doc) -> [{userdata,[{""}]}];
 atan2_i113_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i113"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i2_test(doc) -> [{userdata,[{""}]}];
 atan2_i2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i2"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i39_test(doc) -> [{userdata,[{""}]}];
 atan2_i39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i76_test(doc) -> [{userdata,[{""}]}];
 atan2_i76_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i76"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i21_test(doc) -> [{userdata,[{""}]}];
 atan2_i21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i21"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i58_test(doc) -> [{userdata,[{""}]}];
 atan2_i58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i58"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i95_test(doc) -> [{userdata,[{""}]}];
 atan2_i95_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i95"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i3_test(doc) -> [{userdata,[{""}]}];
 atan2_i3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i3"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i77_test(doc) -> [{userdata,[{""}]}];
 atan2_i77_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i77"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i114_test(doc) -> [{userdata,[{""}]}];
 atan2_i114_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i114"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i22_test(doc) -> [{userdata,[{""}]}];
 atan2_i22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i22"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i59_test(doc) -> [{userdata,[{""}]}];
 atan2_i59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i59"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i96_test(doc) -> [{userdata,[{""}]}];
 atan2_i96_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i96"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i4_test(doc) -> [{userdata,[{""}]}];
 atan2_i4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i4"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i78_test(doc) -> [{userdata,[{""}]}];
 atan2_i78_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i78"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i115_test(doc) -> [{userdata,[{""}]}];
 atan2_i115_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i115"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i23_test(doc) -> [{userdata,[{""}]}];
 atan2_i23_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i23"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i60_test(doc) -> [{userdata,[{""}]}];
 atan2_i60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i60"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i97_test(doc) -> [{userdata,[{""}]}];
 atan2_i97_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i97"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i5_test(doc) -> [{userdata,[{""}]}];
 atan2_i5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i5"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i79_test(doc) -> [{userdata,[{""}]}];
 atan2_i79_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i79"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i116_test(doc) -> [{userdata,[{""}]}];
 atan2_i116_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i116"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i24_test(doc) -> [{userdata,[{""}]}];
 atan2_i24_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i24"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i61_test(doc) -> [{userdata,[{""}]}];
 atan2_i61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i61"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i98_test(doc) -> [{userdata,[{""}]}];
 atan2_i98_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i98"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i6_test(doc) -> [{userdata,[{""}]}];
 atan2_i6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i43_test(doc) -> [{userdata,[{""}]}];
 atan2_i43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i43"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i80_test(doc) -> [{userdata,[{""}]}];
 atan2_i80_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i80"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i117_test(doc) -> [{userdata,[{""}]}];
 atan2_i117_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i117"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i25_test(doc) -> [{userdata,[{""}]}];
 atan2_i25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i25"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i62_test(doc) -> [{userdata,[{""}]}];
 atan2_i62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i62"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i99_test(doc) -> [{userdata,[{""}]}];
 atan2_i99_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i99"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i7_test(doc) -> [{userdata,[{""}]}];
 atan2_i7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i44_test(doc) -> [{userdata,[{""}]}];
 atan2_i44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i44"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i81_test(doc) -> [{userdata,[{""}]}];
 atan2_i81_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i81"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i118_test(doc) -> [{userdata,[{""}]}];
 atan2_i118_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i118"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i26_test(doc) -> [{userdata,[{""}]}];
 atan2_i26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i26"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i63_test(doc) -> [{userdata,[{""}]}];
 atan2_i63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i63"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i100_test(doc) -> [{userdata,[{""}]}];
 atan2_i100_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i100"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i8_test(doc) -> [{userdata,[{""}]}];
 atan2_i8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i45_test(doc) -> [{userdata,[{""}]}];
 atan2_i45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i45"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i119_test(doc) -> [{userdata,[{""}]}];
 atan2_i119_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i119"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i27_test(doc) -> [{userdata,[{""}]}];
 atan2_i27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i27"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i64_test(doc) -> [{userdata,[{""}]}];
 atan2_i64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i64"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i101_test(doc) -> [{userdata,[{""}]}];
 atan2_i101_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i101"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i46_test(doc) -> [{userdata,[{""}]}];
 atan2_i46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i46"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i120_test(doc) -> [{userdata,[{""}]}];
 atan2_i120_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i120"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i9_test(doc) -> [{userdata,[{""}]}];
 atan2_i9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i65_test(doc) -> [{userdata,[{""}]}];
 atan2_i65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i65"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i102_test(doc) -> [{userdata,[{""}]}];
 atan2_i102_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i102"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i28_test(doc) -> [{userdata,[{""}]}];
 atan2_i28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i28"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i84_test(doc) -> [{userdata,[{""}]}];
 atan2_i84_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i84"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i10_test(doc) -> [{userdata,[{""}]}];
 atan2_i10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i47_test(doc) -> [{userdata,[{""}]}];
 atan2_i47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i47"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i103_test(doc) -> [{userdata,[{""}]}];
 atan2_i103_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i103"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i29_test(doc) -> [{userdata,[{""}]}];
 atan2_i29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i29"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i66_test(doc) -> [{userdata,[{""}]}];
 atan2_i66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i66"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i11_test(doc) -> [{userdata,[{""}]}];
 atan2_i11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i48_test(doc) -> [{userdata,[{""}]}];
 atan2_i48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i48"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i85_test(doc) -> [{userdata,[{""}]}];
 atan2_i85_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i85"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i30_test(doc) -> [{userdata,[{""}]}];
 atan2_i30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i30"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i67_test(doc) -> [{userdata,[{""}]}];
 atan2_i67_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i67"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i104_test(doc) -> [{userdata,[{""}]}];
 atan2_i104_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i104"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i12_test(doc) -> [{userdata,[{""}]}];
 atan2_i12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i49_test(doc) -> [{userdata,[{""}]}];
 atan2_i49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i49"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i86_test(doc) -> [{userdata,[{""}]}];
 atan2_i86_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i86"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i31_test(doc) -> [{userdata,[{""}]}];
 atan2_i31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i31"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i68_test(doc) -> [{userdata,[{""}]}];
 atan2_i68_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i68"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i105_test(doc) -> [{userdata,[{""}]}];
 atan2_i105_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i105"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i13_test(doc) -> [{userdata,[{""}]}];
 atan2_i13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i13"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i50_test(doc) -> [{userdata,[{""}]}];
 atan2_i50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i50"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i87_test(doc) -> [{userdata,[{""}]}];
 atan2_i87_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i87"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i32_test(doc) -> [{userdata,[{""}]}];
 atan2_i32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i32"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i69_test(doc) -> [{userdata,[{""}]}];
 atan2_i69_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i69"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i106_test(doc) -> [{userdata,[{""}]}];
 atan2_i106_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i106"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i14_test(doc) -> [{userdata,[{""}]}];
 atan2_i14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i51_test(doc) -> [{userdata,[{""}]}];
 atan2_i51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i51"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i88_test(doc) -> [{userdata,[{""}]}];
 atan2_i88_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i88"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i33_test(doc) -> [{userdata,[{""}]}];
 atan2_i33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i33"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i70_test(doc) -> [{userdata,[{""}]}];
 atan2_i70_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i70"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i107_test(doc) -> [{userdata,[{""}]}];
 atan2_i107_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i107"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i15_test(doc) -> [{userdata,[{""}]}];
 atan2_i15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i15"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i52_test(doc) -> [{userdata,[{""}]}];
 atan2_i52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i52"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i89_test(doc) -> [{userdata,[{""}]}];
 atan2_i89_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i89"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i34_test(doc) -> [{userdata,[{""}]}];
 atan2_i34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i71_test(doc) -> [{userdata,[{""}]}];
 atan2_i71_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i71"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i108_test(doc) -> [{userdata,[{""}]}];
 atan2_i108_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i108"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i16_test(doc) -> [{userdata,[{""}]}];
 atan2_i16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i16"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i53_test(doc) -> [{userdata,[{""}]}];
 atan2_i53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i53"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i90_test(doc) -> [{userdata,[{""}]}];
 atan2_i90_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i90"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i35_test(doc) -> [{userdata,[{""}]}];
 atan2_i35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i72_test(doc) -> [{userdata,[{""}]}];
 atan2_i72_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i72"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i109_test(doc) -> [{userdata,[{""}]}];
 atan2_i109_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i109"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i17_test(doc) -> [{userdata,[{""}]}];
 atan2_i17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i17"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i54_test(doc) -> [{userdata,[{""}]}];
 atan2_i54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i54"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i91_test(doc) -> [{userdata,[{""}]}];
 atan2_i91_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i91"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i110_test(doc) -> [{userdata,[{""}]}];
 atan2_i110_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i110"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i36_test(doc) -> [{userdata,[{""}]}];
 atan2_i36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_i73_test(doc) -> [{userdata,[{""}]}];
 atan2_i73_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","i73"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j18_test(doc) -> [{userdata,[{""}]}];
 atan2_j18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j18"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j55_test(doc) -> [{userdata,[{""}]}];
 atan2_j55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j55"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j92_test(doc) -> [{userdata,[{""}]}];
 atan2_j92_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j92"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j37_test(doc) -> [{userdata,[{""}]}];
 atan2_j37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j37"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j74_test(doc) -> [{userdata,[{""}]}];
 atan2_j74_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j74"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j111_test(doc) -> [{userdata,[{""}]}];
 atan2_j111_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j111"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j56_test(doc) -> [{userdata,[{""}]}];
 atan2_j56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j56"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j93_test(doc) -> [{userdata,[{""}]}];
 atan2_j93_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j93"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j19_test(doc) -> [{userdata,[{""}]}];
 atan2_j19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j19"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j75_test(doc) -> [{userdata,[{""}]}];
 atan2_j75_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j75"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j112_test(doc) -> [{userdata,[{""}]}];
 atan2_j112_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j112"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j1_test(doc) -> [{userdata,[{""}]}];
 atan2_j1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j1"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j38_test(doc) -> [{userdata,[{""}]}];
 atan2_j38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j38"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j94_test(doc) -> [{userdata,[{""}]}];
 atan2_j94_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j94"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j20_test(doc) -> [{userdata,[{""}]}];
 atan2_j20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j20"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j57_test(doc) -> [{userdata,[{""}]}];
 atan2_j57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j57"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j113_test(doc) -> [{userdata,[{""}]}];
 atan2_j113_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j113"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j2_test(doc) -> [{userdata,[{""}]}];
 atan2_j2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j2"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j39_test(doc) -> [{userdata,[{""}]}];
 atan2_j39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j39"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j76_test(doc) -> [{userdata,[{""}]}];
 atan2_j76_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j76"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j21_test(doc) -> [{userdata,[{""}]}];
 atan2_j21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j21"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j58_test(doc) -> [{userdata,[{""}]}];
 atan2_j58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j58"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j95_test(doc) -> [{userdata,[{""}]}];
 atan2_j95_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j95"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j3_test(doc) -> [{userdata,[{""}]}];
 atan2_j3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j3"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j77_test(doc) -> [{userdata,[{""}]}];
 atan2_j77_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j77"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j114_test(doc) -> [{userdata,[{""}]}];
 atan2_j114_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j114"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j22_test(doc) -> [{userdata,[{""}]}];
 atan2_j22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j22"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j59_test(doc) -> [{userdata,[{""}]}];
 atan2_j59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j59"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j96_test(doc) -> [{userdata,[{""}]}];
 atan2_j96_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j96"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j4_test(doc) -> [{userdata,[{""}]}];
 atan2_j4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j4"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j78_test(doc) -> [{userdata,[{""}]}];
 atan2_j78_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j78"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j115_test(doc) -> [{userdata,[{""}]}];
 atan2_j115_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j115"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j23_test(doc) -> [{userdata,[{""}]}];
 atan2_j23_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j23"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j60_test(doc) -> [{userdata,[{""}]}];
 atan2_j60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j60"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j97_test(doc) -> [{userdata,[{""}]}];
 atan2_j97_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j97"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j5_test(doc) -> [{userdata,[{""}]}];
 atan2_j5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j5"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j79_test(doc) -> [{userdata,[{""}]}];
 atan2_j79_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j79"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j116_test(doc) -> [{userdata,[{""}]}];
 atan2_j116_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j116"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j24_test(doc) -> [{userdata,[{""}]}];
 atan2_j24_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j24"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j61_test(doc) -> [{userdata,[{""}]}];
 atan2_j61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j61"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j98_test(doc) -> [{userdata,[{""}]}];
 atan2_j98_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j98"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j6_test(doc) -> [{userdata,[{""}]}];
 atan2_j6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j6"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j43_test(doc) -> [{userdata,[{""}]}];
 atan2_j43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j43"),
   Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j80_test(doc) -> [{userdata,[{""}]}];
 atan2_j80_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j80"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j117_test(doc) -> [{userdata,[{""}]}];
 atan2_j117_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j117"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j25_test(doc) -> [{userdata,[{""}]}];
 atan2_j25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j25"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j62_test(doc) -> [{userdata,[{""}]}];
 atan2_j62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j62"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j99_test(doc) -> [{userdata,[{""}]}];
 atan2_j99_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j99"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j7_test(doc) -> [{userdata,[{""}]}];
 atan2_j7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j7"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j44_test(doc) -> [{userdata,[{""}]}];
 atan2_j44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j44"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j81_test(doc) -> [{userdata,[{""}]}];
 atan2_j81_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j81"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j118_test(doc) -> [{userdata,[{""}]}];
 atan2_j118_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j118"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j26_test(doc) -> [{userdata,[{""}]}];
 atan2_j26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j26"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j63_test(doc) -> [{userdata,[{""}]}];
 atan2_j63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j63"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j100_test(doc) -> [{userdata,[{""}]}];
 atan2_j100_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j100"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j8_test(doc) -> [{userdata,[{""}]}];
 atan2_j8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j8"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j45_test(doc) -> [{userdata,[{""}]}];
 atan2_j45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j45"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j119_test(doc) -> [{userdata,[{""}]}];
 atan2_j119_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j119"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j27_test(doc) -> [{userdata,[{""}]}];
 atan2_j27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j27"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j64_test(doc) -> [{userdata,[{""}]}];
 atan2_j64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j64"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j101_test(doc) -> [{userdata,[{""}]}];
 atan2_j101_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j101"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j46_test(doc) -> [{userdata,[{""}]}];
 atan2_j46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j46"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j120_test(doc) -> [{userdata,[{""}]}];
 atan2_j120_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j120"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j9_test(doc) -> [{userdata,[{""}]}];
 atan2_j9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j9"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j65_test(doc) -> [{userdata,[{""}]}];
 atan2_j65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j65"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j102_test(doc) -> [{userdata,[{""}]}];
 atan2_j102_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j102"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j28_test(doc) -> [{userdata,[{""}]}];
 atan2_j28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j28"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j84_test(doc) -> [{userdata,[{""}]}];
 atan2_j84_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j84"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j10_test(doc) -> [{userdata,[{""}]}];
 atan2_j10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j10"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j47_test(doc) -> [{userdata,[{""}]}];
 atan2_j47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j47"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j103_test(doc) -> [{userdata,[{""}]}];
 atan2_j103_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j103"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j29_test(doc) -> [{userdata,[{""}]}];
 atan2_j29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j29"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j66_test(doc) -> [{userdata,[{""}]}];
 atan2_j66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j66"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j11_test(doc) -> [{userdata,[{""}]}];
 atan2_j11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j11"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j48_test(doc) -> [{userdata,[{""}]}];
 atan2_j48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j48"),
   Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j85_test(doc) -> [{userdata,[{""}]}];
 atan2_j85_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j85"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j30_test(doc) -> [{userdata,[{""}]}];
 atan2_j30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j30"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j67_test(doc) -> [{userdata,[{""}]}];
 atan2_j67_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j67"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j104_test(doc) -> [{userdata,[{""}]}];
 atan2_j104_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j104"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j12_test(doc) -> [{userdata,[{""}]}];
 atan2_j12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j12"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j49_test(doc) -> [{userdata,[{""}]}];
 atan2_j49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j49"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j86_test(doc) -> [{userdata,[{""}]}];
 atan2_j86_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j86"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j31_test(doc) -> [{userdata,[{""}]}];
 atan2_j31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j31"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j68_test(doc) -> [{userdata,[{""}]}];
 atan2_j68_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j68"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j105_test(doc) -> [{userdata,[{""}]}];
 atan2_j105_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j105"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j13_test(doc) -> [{userdata,[{""}]}];
 atan2_j13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j13"),
   Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j50_test(doc) -> [{userdata,[{""}]}];
 atan2_j50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j50"),
   Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j87_test(doc) -> [{userdata,[{""}]}];
 atan2_j87_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j87"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j32_test(doc) -> [{userdata,[{""}]}];
 atan2_j32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j32"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j69_test(doc) -> [{userdata,[{""}]}];
 atan2_j69_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j69"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j106_test(doc) -> [{userdata,[{""}]}];
 atan2_j106_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j106"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j14_test(doc) -> [{userdata,[{""}]}];
 atan2_j14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j14"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j51_test(doc) -> [{userdata,[{""}]}];
 atan2_j51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j51"),
   Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j88_test(doc) -> [{userdata,[{""}]}];
 atan2_j88_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j88"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j33_test(doc) -> [{userdata,[{""}]}];
 atan2_j33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j33"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j70_test(doc) -> [{userdata,[{""}]}];
 atan2_j70_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j70"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j107_test(doc) -> [{userdata,[{""}]}];
 atan2_j107_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j107"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j15_test(doc) -> [{userdata,[{""}]}];
 atan2_j15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j15"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j52_test(doc) -> [{userdata,[{""}]}];
 atan2_j52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j52"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j89_test(doc) -> [{userdata,[{""}]}];
 atan2_j89_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j89"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j34_test(doc) -> [{userdata,[{""}]}];
 atan2_j34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j34"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j71_test(doc) -> [{userdata,[{""}]}];
 atan2_j71_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j71"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j108_test(doc) -> [{userdata,[{""}]}];
 atan2_j108_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j108"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j16_test(doc) -> [{userdata,[{""}]}];
 atan2_j16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j16"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j53_test(doc) -> [{userdata,[{""}]}];
 atan2_j53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j53"),
   Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j90_test(doc) -> [{userdata,[{""}]}];
 atan2_j90_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j90"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j35_test(doc) -> [{userdata,[{""}]}];
 atan2_j35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j35"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j72_test(doc) -> [{userdata,[{""}]}];
 atan2_j72_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j72"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j109_test(doc) -> [{userdata,[{""}]}];
 atan2_j109_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j109"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j17_test(doc) -> [{userdata,[{""}]}];
 atan2_j17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j17"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j54_test(doc) -> [{userdata,[{""}]}];
 atan2_j54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j54"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j91_test(doc) -> [{userdata,[{""}]}];
 atan2_j91_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j91"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j110_test(doc) -> [{userdata,[{""}]}];
 atan2_j110_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j110"),
   Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j36_test(doc) -> [{userdata,[{""}]}];
 atan2_j36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j36"),
   Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 atan2_j73_test(doc) -> [{userdata,[{""}]}];
 atan2_j73_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/ATan2/","j73"),
   Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected(Expected,Got).
+  test_util:expected2(Expected,Got).
   
 all() -> 
     [atan2_k18_test,
