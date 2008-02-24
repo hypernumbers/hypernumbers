@@ -1,5 +1,0 @@
-SUM = СУММА
-ROUNDUP = ОКРВВЕРХ
-ROUNDDOWN = ОКРВНИЗ
-EVEN = ЧЕТН
-ODD= НЕЧЕТ
