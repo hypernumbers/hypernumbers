@@ -5,7 +5,7 @@
 
 -module(generate).
 -export([gen/0]).
--import(file, [delete/1, rename/2]).
+-import(file, [copy/2, delete/1, get_cwd/0, rename/2]).
 -define(P(X), io:format("*****" ++ X ++ "~n")).
 
 gen() ->
@@ -17,23 +17,27 @@ gen() ->
 
     %% Generate main lexers & parser.
     leex:gen(lexer_desc, muin_lexer),
-    ?P("Compiled main lexer."),
+    ?P("Generated main lexer."),
     yecc:yecc(parser_desc, muin_parser),
-    ?P("Compiled main parser."),
+    ?P("Generated main parser."),
 
-    %% Generate other stuff.
-    leex:gen(supd_lexer, muin_supd_lexer),
-    ?P("Compiled structural updates lexer."),
-    leex:gen(ru_fe, ru_fe),
-    ?P("Compiled Russian front-end"),
+    %% Generate Russian front-end.
+    {ok, CurrDir} = get_cwd(),
+    copy(CurrDir ++ "/language_frontends/russian_lexer.xrl",
+         CurrDir ++ "/russian_lexer.xrl"),
+    leex:gen(russian_lexer, russian_lexer),
+    ?P("Generated Russian front-end"),
 
     %% Move the generated files to the right directory.
     delete(DestDir ++ "muin_lexer.erl"),
     delete(DestDir ++ "muin_parser.erl"),
     delete(DestDir ++ "muin_supd_lexer.erl"),
+    delete(DestDir ++ "russian_lexer.erl"),
     rename("muin_lexer.erl", DestDir ++ "muin_lexer.erl"),
     rename("muin_parser.erl", DestDir ++ "muin_parser.erl"),
     rename("muin_supd_lexer.erl", DestDir ++ "muin_supd_lexer.erl"),
-    rename("ru_fe.erl", DestDir ++ "ru_fe.erl"),
+    rename("russian_lexer.erl", DestDir ++ "russian_lexer.erl"),
+
+    delete("russian_lexer.erl"),
     
-    ?P("OK"). % Cheeky, cos one or more commands above could've failed.
+    ?P("OK").
