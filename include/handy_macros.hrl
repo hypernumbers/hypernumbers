@@ -9,6 +9,7 @@
                 dropwhile/2,
                 filter/2,
                 flatten/1,
+                flatmap/2,
                 foldl/3,
                 foreach/2,
                 keysearch/3,
@@ -27,7 +28,6 @@
 %% Shortcut for if.
 -define(IF(Test, TrueVal),
         ?COND(Test, TrueVal, nothing)).
-
 
 %% Simpler lists:keysearch(). Returns the associated value directly, no messing
 %% with pattern matching.
