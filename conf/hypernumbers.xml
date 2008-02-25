@@ -26,8 +26,7 @@
         <tmpdir>/tmp</tmpdir>
 
         <servers>
-            <group port="9000">      
-               
+            <group port="9000">           
                 <server name="127.0.0.1">
                     <listen>127.0.0.1</listen>
                     <docroot><reldir>include/docroot</reldir></docroot>
@@ -35,13 +34,15 @@
                         <mod path="/" module="spriki" />
                     </appmods>
                 </server>
-
             </group>
 
             <group port="9001">
                 <server name="127.0.0.1">
                     <listen>127.0.0.1</listen>
-                    <docroot><reldir>include/docroot/charts</reldir></docroot>
+                    <docroot><reldir>include/docroot</reldir></docroot>
+                    <appmods>
+                        <mod path="/" module="spriki" />
+                    </appmods>
                 </server>
             </group>
             

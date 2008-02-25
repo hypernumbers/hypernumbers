@@ -28,78 +28,23 @@ init_per_testcase(_TestCase, Config) -> bits:clear_db(),Config.
 end_per_testcase(_TestCase, _Config) -> ok.
 
 all() ->
-    [hn1,hn2,hn3,hn4,hn5].
+    [hn1,hn2].
 
 %% Test cases starts here.
 %%------------------------------------------------------------------------------
 hn1() -> [{userdata,[{doc,"Description here"}]}].
 hn1(Config) when is_list(Config) ->
-    hn_util:post("http://127.0.0.1:9000/a1","action=create&value=99"),
-    hn_util:post("http://gordonguthrie.org:9000/a1",
-        "action=create&value="++yaws_api:url_encode(
-        "=hypernumber(\"http://127.0.0.1:9000/a1?hypernumber\")")),
-    test_util:expected("99",hn_util:req("http://gordonguthrie.org:9000/a1")).
+    Hn = "=hypernumber(\""++?HN_URL1++"/a1?hypernumber\")",
+    hn_util:post(?HN_URL1++"/a1","<create><value>99</value></create>","text/xml"),
+    hn_util:post(?HN_URL2++"/a1","<create><value>"++Hn++"</value></create>","text/xml"),
+    Expected = "<cell><value>99</value></cell>",
+    test_util:expected(Expected,hn_util:req(?HN_URL2++"/a1")).
 
-hn2() ->[{userdata,[{doc,"Description here"}]}].
+hn2() -> [{userdata,[{doc,"Description here"}]}].
 hn2(Config) when is_list(Config) ->
-    hn_util:post("http://127.0.0.1:9000/a1","action=create&value=99"),
-    hn_util:post("http://gordonguthrie.org:9000/a1",
-        "action=create&value="++yaws_api:url_encode(
-        "=hypernumber(\"http://127.0.0.1:9000/a1?hypernumber\")")),
-    hn_util:post("http://127.0.0.1:9000/a1","action=create&value=543"),
-    timer:sleep(1000),
-    test_util:expected("543",hn_util:req("http://gordonguthrie.org:9000/a1")).
-
-hn3() -> [{userdata,[{doc,"Description here"}]}].
-hn3(Config) when is_list(Config) ->
-
-    hn_util:post("http://127.0.0.1:9000/a1","action=create&value=99"),
-    hn_util:post("http://127.0.0.1:9000/a2",
-        "action=create&value="++yaws_api:url_encode(
-        "=hypernumber(\"http://127.0.0.1:9000/a1?hypernumber\")")),
-    hn_util:post("http://gordonguthrie.org:9000/a1",
-        "action=create&value="++yaws_api:url_encode(
-        "=hypernumber(\"http://127.0.0.1:9000/a1?hypernumber\")")),
-    hn_util:post("http://127.0.0.1:9000/a1","action=create&value=543"),
-
-    timer:sleep(1000),
-
-    test_util:expected(["543","543"],
-        [hn_util:req("http://gordonguthrie.org:9000/a1"),
-        hn_util:req("http://127.0.0.1:9000/a2")]).
-
-hn4() -> [{userdata,[{doc,"Description here"}]}].
-hn4(Config) when is_list(Config) ->
-
-    hn_util:post("http://127.0.0.1:9000/a1","action=create&value=99"),
-    hn_util:post("http://gordonguthrie.org:9000/a1",
-        "action=create&value="++yaws_api:url_encode(
-        "=hypernumber(\"http://127.0.0.1:9000/a1?hypernumber\")")),
-    hn_util:post("http://127.0.0.1:9000/a2",
-        "action=create&value="++yaws_api:url_encode(
-        "=hypernumber(\"http://127.0.0.1:9000/a1?hypernumber\")")),
-    hn_util:post("http://127.0.0.1:9000/a1","action=create&value=543"),
-
-    timer:sleep(1000),
-
-    test_util:expected(["543","543"],
-        [hn_util:req("http://gordonguthrie.org:9000/a1"),
-        hn_util:req("http://127.0.0.1:9000/a2")]).
-
-hn5() ->  [{userdata,[{doc,"Description here"}]}].
-hn5(Config) when is_list(Config) ->
-
-    hn_util:post("http://127.0.0.1:9000/a1","action=create&value=99"),
-    hn_util:post("http://gordonguthrie.org:9000/a1",
-        "action=create&value="++yaws_api:url_encode(
-        "=hypernumber(\"http://127.0.0.1:9000/a1?hypernumber\")")),
-    hn_util:post("http://127.0.0.1:9000/a2",
-        "action=create&value="++yaws_api:url_encode(
-        "=hypernumber(\"http://gordonguthrie.org:9000/a1?hypernumber\")")),
-    hn_util:post("http://127.0.0.1:9000/a1","action=create&value=543"),
-
-    timer:sleep(1000),
-
-    test_util:expected(["543","543"],
-        [hn_util:req("http://gordonguthrie.org:9000/a1"),
-        hn_util:req("http://127.0.0.1:9000/a2")]).
+    Hn = "=hypernumber(\""++?HN_URL1++"/a1?hypernumber\")",
+    hn_util:post(?HN_URL1++"/a1","<create><value>99</value></create>","text/xml"),
+    hn_util:post(?HN_URL2++"/a1","<create><value>"++Hn++"</value></create>","text/xml"),
+    hn_util:post(?HN_URL1++"/a1","<create><value>66</value></create>","text/xml"),
+    Expected = "<cell><value>66</value></cell>",
+    test_util:expected(Expected,hn_util:req(?HN_URL2++"/a1")).

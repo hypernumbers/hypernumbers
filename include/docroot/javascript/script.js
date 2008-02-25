@@ -50,7 +50,10 @@ $(function()
         var cellurl = document.location.href+to_b26((selectedCol-1))
             + (selectedRow-1);
         if(this.value != "=")
-            $.post(cellurl,{action:"create",value:this.value});
+        {
+            $.post(cellurl,"<create><value>"+this.value
+                +"</value></create>",null,"xml");
+        }
     });
 
     setupRange(_view);
@@ -105,7 +108,7 @@ $(function()
     
                 if(z == 0)
                 {
-                row.append("<th "+((n ==0 ) ? "class='rowindex'" : "")+
+                    row.append("<th "+((n ==0 ) ? "class='rowindex'" : "")+
                         ">"+ ((n ==0 ) ? "&nbsp;" : col)+"</th>");
                 }
                 else
@@ -121,9 +124,9 @@ $(function()
     
         $("#hn tr > td > div.cell").each(function() 
         {
-            $(this).mousedown(function() 
+            $(this).mousedown(function(e) 
             { 
-                if(currentview != views.DRAG)
+                if(currentview != views.DRAG && e.button == 0)
                 {
                     resetSelection();
                     startSelection(this.parentNode.cellIndex,
@@ -190,7 +193,11 @@ $(function()
                 $(this).parent().empty().text(newval);
     
                 if(_val != newval)
-                    $.post(_url,{action:"create",value:newval});
+                {
+                    $.post(_url+"?format=xml",
+                        "<create><value>"+newval+"</value></create>",
+                        null,"xml");
+                }
     
             }).appendTo(cell).focus();
     
@@ -243,7 +250,8 @@ $(function()
 
     function startSelection(x,y)
     {
-        $(".selected").removeClass("selected");   
+        $(".selected").removeClass("selected"); 
+        $(".dragselected").removeClass("dragselected");
         currentview = views.SELECT;
         
         selection.initx = selection.startx = selection.endx = x;
@@ -390,19 +398,6 @@ $(function()
     
     function highlightDragSelection()
     {
-        /*
-        $("table tr:lt("+(dragselection.endy+1)+"):gt("+(dragselection.starty-1)+")"
-            ).find("td:eq("+(dragselection.endx)+")").addClass("dragend");
-    
-        $("table tr:lt("+(dragselection.endy+1)+"):gt("+(dragselection.starty-1)+")"
-            ).find("td:eq("+(dragselection.startx)+")").addClass("dragstart");
-    
-        $("table tr:eq("+(dragselection.starty)+")"
-            ).find("td:lt("+(dragselection.endx+1)+"):gt("+(dragselection.startx-1)+")").addClass("dragtop");
-    
-        $("table tr:eq("+(dragselection.endy)+")"
-            ).find("td:lt("+(dragselection.endx+1)+"):gt("+(dragselection.startx-1)+")").addClass("dragbottom");
-        */
         $(".dragselected").removeClass("dragselected");   
 
         $("table tr:lt("+(dragselection.endy+1)+"):gt("+(dragselection.starty-1)+")"
@@ -523,6 +518,7 @@ function copy(inElement) {
     // Called when socket connects
     function soc_connect()
     {
+        console.log("connecting");
         $("#debug img").attr("src","/images/connect.png");
         _jssocket.write("register "+document.location.href+"A1:J30");
     }

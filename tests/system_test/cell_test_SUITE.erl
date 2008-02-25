@@ -13,99 +13,185 @@
 -include("ct.hrl").
 -include("../../include/spriki.hrl").
 
+-define(FXML,"?format=xml").
+-define(FJSON,"?format=json").
+
 %% Test server callback functions
 %%------------------------------------------------------------------------------
 init_per_suite(Config) ->
     code:add_path("../../../../../ebin"),
     production_boot:start(),
-    bits:clear_db(),
     Config.
 
 end_per_suite(_Config) ->
     production_boot:stop(),
     ok.
 
-init_per_testcase(_TestCase, Config) -> Config.
+init_per_testcase(_TestCase, Config) -> bits:clear_db(),Config.
 end_per_testcase(_TestCase, _Config) -> ok.
 
-all() ->
-    [cell1,cell2,cell3,cell4,cell5,cell6,cell7,cell8,cell9].
+all() -> [
+    string_xml,  string_json,
+    formula_xml, formula_json, 
+    formula2_xml,formula2_json,
+    ref_xml,     ref_json,
+    ref2_xml,    ref2_json,
+    ref3_xml,    ref3_json,
+    ref4_xml,    ref4_json,
+    xml_parse,   toolbar ].
 
 %% Test cases starts here.
 %%------------------------------------------------------------------------------
-cell1() -> [{userdata,[{doc,"Set /private to be private"}]}].
-cell1(Config) when is_list(Config) ->
-    test_util:expected(["abc","abc","abc"],post_data("a1",{"post",
-        [{"action","create"},{"value","abc"}]})).
+string_xml() -> [{userdata,[{doc,"Test Basic Post of a string, xml encoding"}]}].
+string_xml(Config) when is_list(Config) -> 
+    Value    = "abc",
+    Data     = "<create><value>"++Value++"</value></create>",
+    Expected = {cell,[],[{value,[],[Value]}]},
+    Post   = hn_util:post(?HN_URL1++"/a1?format=xml",Data,"text/xml"),
+    Result = simplexml:from_xml_string(Post),  
+    test_util:expected(Expected,Result).
 
-cell2() ->  [{userdata,[{doc,"Set /private to be private"}]}].
-cell2(Config) when is_list(Config) ->
-    test_util:expected(["5","5","5"],post_data("a1",{"post",
-        [{"action","create"},{"value","5"}]})).
+string_json() -> [{userdata,[{doc,"Test Basic Post of a string, json encoding"}]}].
+string_json(Config) when is_list(Config) -> 
+    Value    = "abc",
+    Data     = "[\"create\",[[\"value\",[\""++Value++"\"]]]]",
+    Expected = {cell,[],[{value,[],[Value]}]},
+    Post   = hn_util:post(?HN_URL1++"/a1?format=json",Data,"text/plain"),
+    ?F("test ~p~n",[Post]),
+    Result = simplexml:from_json_string(Post),
+    test_util:expected(Expected,Result).
 
-cell3() -> [{userdata,[{doc,"Set /private to be private"}]}].
-cell3(Config) when is_list(Config) ->
-    test_util:expected(["24","24","24"],post_data("a1",{"post",
-        [{"action","create"},{"value","=12+12"}]})).
+formula_xml() -> [{userdata,[{doc,"Test Basic Post of a formula, xml encoding"}]}].
+formula_xml(Config) when is_list(Config) -> 
+    Value    = "=12+12",
+    Data     = "<create><value>"++Value++"</value></create>",
+    Expected = {cell,[],[{value,[],["24"]}]},
+    Post   = hn_util:post(?HN_URL1++"/a1?format=xml",Data,"text/xml"),
+    Result = simplexml:from_xml_string(Post),  
+    test_util:expected(Expected,Result).
 
-cell4() -> [{userdata,[{doc,"Set /private to be private"}]}].
-cell4(Config) when is_list(Config) ->
-    hn_util:post("http://127.0.0.1:9000/mypage/a1?format=xml",
-        "<post><action>create</action><value>10</value></post>","text/xml"),
-    test_util:expected(["10","10","10"],post_data("a1",{"post",
-        [{"action","create"},{"value","=/mypage/a1bas"}]})).
+formula_json() -> [{userdata,[{doc,"Test Basic Post of a formula, json encoding"}]}].
+formula_json(Config) when is_list(Config) -> 
+    Value    = "=12+12",
+    Data     = "[\"create\",[[\"value\",[\""++Value++"\"]]]]",
+    Expected = {cell,[],[{value,[],["24"]}]},
+    Post   = hn_util:post(?HN_URL1++"/a1?format=json",Data,"text/plain"),
+    Result = simplexml:from_json_string(Post),
+    test_util:expected(Expected,Result).
 
-cell5() ->  [{userdata,[{doc,"Set /private to be private"}]}].
-cell5(Config) when is_list(Config) ->
-    test_util:expected(["24","24","24"],post_data("a1",{"post",
-        [{"action","create"},{"value","=12 + 12"}]})).
+formula2_xml() -> [{userdata,[{doc,"Test Basic Post of a formula, xml encoding"}]}].
+formula2_xml(Config) when is_list(Config) -> 
+    Value    = "=12 + 12",
+    Data     = "<create><value>"++Value++"</value></create>",
+    Expected = {cell,[],[{value,[],["24"]}]},
+    Post   = hn_util:post(?HN_URL1++"/a1?format=xml",Data,"text/xml"),
+    Result = simplexml:from_xml_string(Post),  
+    test_util:expected(Expected,Result).
 
-cell6() -> [{userdata,[{doc,"Set /private to be private"}]}].
-cell6(Config) when is_list(Config) ->
-    hn_util:post("http://127.0.0.1:9000/a1?format=xml",
-        "<post><action>create</action><value>99</value></post>","text/xml"),
-    test_util:expected(["99","99","99"],post_data("a1",{"post",
-        [{"action","create"},{"value","=/a1"}]})).
+formula2_json() -> [{userdata,[{doc,"Test Basic Post of a formula, json encoding"}]}].
+formula2_json(Config) when is_list(Config) -> 
+    Value    = "=12 + 12",
+    Data     = "[\"create\",[[\"value\",[\""++Value++"\"]]]]",
+    Expected = {cell,[],[{value,[],["24"]}]},
+    Post   = hn_util:post(?HN_URL1++"/a1?format=json",Data,"text/plain"),
+    Result = simplexml:from_json_string(Post),
+    test_util:expected(Expected,Result).
 
-cell7() -> [{userdata,[{doc,"Set /private to be private"}]}].
-cell7(Config) when is_list(Config) ->
-    test_util:expected(["divide by 0","divide by 0","divide by 0"],
-        post_data("/testing/a1",{"post",[{"action","create"},{"value","=5/0"}]})).
+ref_xml() -> [{userdata,[{doc,"Test Basic Post of a formula, xml encoding"}]}].
+ref_xml(Config) when is_list(Config) -> 
+    Value    = "=a1",
+    Value2   = "99",
+    hn_util:post(?HN_URL1++"/a1?format=xml","<create><value>"
+        ++Value2++"</value></create>","text/xml"),
+    Data     = "<create><value>"++Value++"</value></create>",
+    Expected = {cell,[],[{value,[],[Value2]}]},
+    Post   = hn_util:post(?HN_URL1++"/a2?format=xml",Data,"text/xml"),
+    Result = simplexml:from_xml_string(Post),  
+    test_util:expected(Expected,Result).
 
-cell8() -> [{userdata,[{doc,"Set /private to be private"}]}].
-cell8(Config) when is_list(Config) ->
-    Url = "http://127.0.0.1:9000/a1?format=xml",
-    XML = "<post> <action>create</action> <value>5</value> </post>",
-    {ok, {{_Version, 200, _ReasonPhrase}, _Headers, Body}} =
-         http:request(post,{Url,[],"text/xml",XML},[],[]),
-    test_util:expected("5",util2:flatten_data({xml},Body)).
+ref_json() -> [{userdata,[{doc,"Test Basic Post of a formula, json encoding"}]}].
+ref_json(Config) when is_list(Config) -> 
+    Value    = "=a1",
+    Value2   = "99",
+    hn_util:post(?HN_URL1++"/a1?format=xml",
+        "<create><value>"++Value2++"</value></create>","text/xml"),
+    Data     = "[\"create\",[[\"value\",[\""++Value++"\"]]]]",
+    Expected = {cell,[],[{value,[],[Value2]}]},
+    Post   = hn_util:post(?HN_URL1++"/a2?format=json",Data,"text/plain"),
+    Result = simplexml:from_json_string(Post),
+    test_util:expected(Expected,Result).
 
-cell9() ->  [{userdata,[{doc,"Set /private to be private"}]}].
-cell9(Config) when is_list(Config) ->
-    hn_util:post("http://127.0.0.1:9000/test/a1","action=create&value=99"),
-    hn_util:post("http://127.0.0.1:9000/a1","action=create&value=%3D/test/a1"),
-    hn_util:post("http://127.0.0.1:9000/test/a1","action=create&value=50"),
-    test_util:expected("50",hn_util:req("http://127.0.0.1:9000/a1")).
+ref2_xml() -> [{userdata,[{doc,"Test Basic Post of a formula, xml encoding"}]}].
+ref2_xml(Config) when is_list(Config) -> 
+    Value    = "=/test/a1",
+    Value2   = "99",
+    hn_util:post(?HN_URL1++"/test/a1?format=xml","<create><value>"
+        ++Value2++"</value></create>","text/xml"),
+    Data     = "<create><value>"++Value++"</value></create>",
+    Expected = {cell,[],[{value,[],[Value2]}]},
+    Post   = hn_util:post(?HN_URL1++"/a2?format=xml",Data,"text/xml"),
+    Result = simplexml:from_xml_string(Post),  
+    test_util:expected(Expected,Result).
 
-%% Utilities
-%%------------------------------------------------------------------------------
-post_data(Cell,Data) ->
-    [post_data(Cell,Data,{xml}),post_data(Cell,Data,{list}),
-     post_data(Cell,Data,{json})].
+ref2_json() -> [{userdata,[{doc,"Test Basic Post of a formula, json encoding"}]}].
+ref2_json(Config) when is_list(Config) -> 
+    Value    = "=/test/a1",
+    Value2   = "99",
+    hn_util:post(?HN_URL1++"/test/a1?format=xml",
+        "<create><value>"++Value2++"</value></create>","text/xml"),
+    Data     = "[\"create\",[[\"value\",[\""++Value++"\"]]]]",
+    Expected = {cell,[],[{value,[],[Value2]}]},
+    Post   = hn_util:post(?HN_URL1++"/a2?format=json",Data,"text/plain"),
+    Result = simplexml:from_json_string(Post),
+    test_util:expected(Expected,Result).
 
-post_data(Cell,Data,Format) ->
+ref3_json() -> [{userdata,[{doc,"Test Basic Post of a formula, json encoding"}]}].
+ref3_json(Config) when is_list(Config) -> 
+    Value    = "=a1",
+    Data     = "[\"create\",[[\"value\",[\""++Value++"\"]]]]",
+    Expected = {cell,[],[{value,[],["24"]}]},
+    Post   = hn_util:post(?HN_URL1++"/a1?format=json",Data,"text/plain"),
+    Result = simplexml:from_json_string(Post),
+    test_util:expected(Expected,Result).
 
-    {PData,Type,FormatStr} = case Format of
-        {list} -> {spriki:to_post(Data),"text/plain","list"};
-        {xml}  -> {spriki:to_xml(Data), "text/xml",  "xml"};
-        {json} -> {spriki:to_json(Data),"text/plain","json"}
-    end,
+ref3_xml() -> [{userdata,[{doc,"Test Basic Post of a formula, xml encoding"}]}].
+ref3_xml(Config) when is_list(Config) -> 
+    Value    = "=a1",
+    Data     = "<create><value>"++Value++"</value></create>",
+    Expected = {cell,[],[{value,[],["24"]}]},
+    Post   = hn_util:post(?HN_URL1++"/a1?format=xml",Data,"text/xml"),
+    Result = simplexml:from_xml_string(Post),  
+    test_util:expected(Expected,Result).
 
-    Url = "http://127.0.0.1:9000/"++Cell++"?format="++FormatStr,
+ref4_json() -> [{userdata,[{doc,"Test Basic Post of a formula, json encoding"}]}].
+ref4_json(Config) when is_list(Config) -> 
+    Value    = "=5/0",
+    Data     = "[\"create\",[[\"value\",[\""++Value++"\"]]]]",
+    Expected = {cell,[],[{value,[],["24"]}]},
+    Post   = hn_util:post(?HN_URL1++"/a1?format=json",Data,"text/plain"),
+    Result = simplexml:from_json_string(Post),
+    test_util:expected(Expected,Result).
 
-    D = hn_util:post(Url,PData,Type),
+ref4_xml() -> [{userdata,[{doc,"Test Basic Post of a formula, xml encoding"}]}].
+ref4_xml(Config) when is_list(Config) -> 
+    Value    = "=5/0",
+    Data     = "<create><value>"++Value++"</value></create>",
+    Expected = {cell,[],[{value,[],["24"]}]},
+    Post   = hn_util:post(?HN_URL1++"/a1?format=xml",Data,"text/xml"),
+    Result = simplexml:from_xml_string(Post),  
+    test_util:expected(Expected,Result).
 
-    ?F("test output ~p~n",[D]),
+xml_parse() -> [{userdata,[{doc,"Test Basic Post of a formula, xml encoding"}]}].
+xml_parse(Config) when is_list(Config) -> 
+    Value    = "abc",
+    Data     = "<create> <value>"++Value++"</value> </create>",
+    Expected = {cell,[],[{value,[],[Value]}]},
+    Post   = hn_util:post(?HN_URL1++"/a1?format=xml",Data,"text/xml"),
+    Result = simplexml:from_xml_string(Post),  
+    test_util:expected(Expected,Result).
 
-    util2:flatten_data(Format,D).
-
+toolbar() -> [{userdata,[{doc,"Test Basic Post of a formula, xml encoding"}]}].
+toolbar(Config) when is_list(Config) -> 
+    Result     = hn_util:req("http://127.0.0.1:9000/a1?toolbar"),
+    Expected = "<toolbar><value>0</value><formula></formula><reftree></reftree><errors/></toolbar>", 
+    test_util:expected(Expected,Result).

@@ -28,59 +28,83 @@ end_per_suite(_Config) ->
 init_per_testcase(_TestCase, Config) -> bits:clear_db(),Config.
 end_per_testcase(_TestCase, _Config) -> ok.
 
-all() ->
-    [column1,column2,columnlast,columnlast2].
+all() -> [
+    col_xml,col_json,
+    last_xml,
+    last2_xml
+    ].
 
 %% Test cases starts here.
 %%------------------------------------------------------------------------------
-column1() ->  [{userdata,[{doc,"Description here"}]}].
-column1(Config) when is_list(Config) ->
-   test_util:expected(lists:duplicate(3,"a\nb\n1\n2"),post_data("1",{"post",
-        [{"action","create"},{"value",[{"cell","a"},{"cell","b"},{"cell","1"},{"cell","2"}]}]},"")).
+col_xml() -> [{userdata,[{doc,"Test Basic Post of a string, xml encoding"}]}].
+col_xml(Config) when is_list(Config) -> 
 
-column2() -> [{userdata,[{doc,"Description here"}]}].
-column2(Config) when is_list(Config) ->
-    hn_util:post("http://127.0.0.1:9000/test/a1?format=xml",
-        "<post><action>create</action><value>99</value></post>","text/xml"),
-    test_util:expected(lists:duplicate(3,"10\n99\n104\nError: divide by 0"),post_data("f",{"post",
-        [{"action","create"},{"value",[{"cell","=5+5"},{"cell","=/test/a1"},
-        {"cell","=/test/a1+5"},{"cell","=4/0"}]}]},"")).
+    V1 = "abc",V2 = "99",V3 = "=12 + 12",V4 = "=/test/a1",
+    Data = "<create><value>"++V1++"</value><value>"++V2++"</value>"
+        ++"<value>"++V3++"</value><value>"++V4++"</value></create>",
+    Expected = {column,[{label,"a"}],[
+        {row,[{label,"1"}],[V1]},
+        {row,[{label,"2"}],[V2]},
+        {row,[{label,"3"}],["24"]},
+        {row,[{label,"4"}],["0"]}]},
+    Post   = hn_util:post(?HN_URL1++"/a?format=xml",Data,"text/xml"),
+    Result = simplexml:from_xml_string(Post),  
+    test_util:expected(Expected,Result).
 
+col_json() -> [{userdata,[{doc,"Test Basic Post of a string, xml encoding"}]}].
+col_json(Config) when is_list(Config) -> 
 
-columnlast() -> [{userdata,[{doc,"Description here"}]}].
-columnlast(Config) when is_list(Config) ->
-    post_data("a",{"post",[{"action","create"},{"value",[
-        {"cell","1"},{"cell","2"},{"cell","3"},{"cell","4"}]}]},"&last"),
+    V1 = "abc",V2 = "99",V3 = "=12 + 12",V4 = "=/test/a1",
+    Data = "[\"create\",[[\"value\",[\""++V1++"\"]],[\"value\",[\""++V2++"\"]],"
+        ++"[\"value\",[\""++V3++"\"]],[\"value\",[\""++V4++"\"]]]]",
 
-    D = util2:flatten_data({list},hn_util:req("http://127.0.0.1:9000/a1:g10")),    
-    test_util:expected("1\n1\n1\n2\n2\n2\n3\n3\n3\n4\n4\n4",D).
+    Expected = {column,[{label,"a"}],[
+        {row,[{label,"1"}],[V1]},
+        {row,[{label,"2"}],[V2]},
+        {row,[{label,"3"}],["24"]},
+        {row,[{label,"4"}],["0"]}]},
 
-columnlast2() -> [{userdata,[{doc,"Description here"}]}].
-columnlast2(Config) when is_list(Config) ->
-    hn_util:post("http://127.0.0.1:9000/a1?format=xml",
-        "<post><action>create</action><value>99</value></post>","text/xml"),
-    post_data("a",{"post",[{"action","create"},{"value",[{"cell","1"}]}]},"&last"),
+    Post   = hn_util:post(?HN_URL1++"/a?format=json",Data,"text/plain"),
+    Result = simplexml:from_json_string(Post),  
+    test_util:expected(Expected,Result).
 
-    D = util2:flatten_data({list},hn_util:req("http://127.0.0.1:9000/a")),    
-    test_util:expected("99\n1\n1\n1",D).
+last_xml() -> [{userdata,[{doc,"Test Basic Post of a string, xml encoding"}]}].
+last_xml(Config) when is_list(Config) -> 
 
-%% Utilities
-%%------------------------------------------------------------------------------
-post_data(Cell,Data,Last) ->
-    [post_data(Cell,Data,{list},Last),post_data(Cell,Data,{xml},Last),
-     post_data(Cell,Data,{json},Last)].
+    V1 = "abc",V2 = "99",V3 = "=12 + 12",
 
-post_data(Cell,Data,Format,Last) ->
+    hn_util:post(?HN_URL1++"/a?format=xml&last",
+        "<create><value>"++V1++"</value></create>","text/xml"),
+    hn_util:post(?HN_URL1++"/a?format=xml&last",
+        "<create><value>"++V2++"</value></create>","text/xml"),
+    hn_util:post(?HN_URL1++"/a?format=xml&last",
+        "<create><value>"++V3++"</value></create>","text/xml"),
 
-    {PData,Type,FormatStr} = case Format of
-        {list} -> {spriki:to_post(Data),"text/plain","list"};
-        {xml}  -> {spriki:to_xml(Data), "text/xml",  "xml"};
-        {json} -> {spriki:to_json(Data),"text/plain","json"}
-    end,
+    Expected = {column,[{label,"a"}],[
+        {row,[{label,"1"}],[V1]},
+        {row,[{label,"2"}],[V2]},
+        {row,[{label,"3"}],["24"]}]},
 
-    Url = "http://127.0.0.1:9000/"++Cell++"?format="++FormatStr++Last,
-    D = hn_util:post(Url,PData,Type),
+    GET = hn_util:req(?HN_URL1++"/a?format=xml"),
+    Result = simplexml:from_xml_string(GET),  
+    test_util:expected(Expected,Result).
 
-    ?F("Return : ~p~n",[D]),
+last2_xml() -> [{userdata,[{doc,"Test Basic Post of a string, xml encoding"}]}].
+last2_xml(Config) when is_list(Config) -> 
 
-    util2:flatten_data(Format,D).
+    V1 = "abc",V2 = "99",V3 = "=12 + 12",
+
+    hn_util:post(?HN_URL1++"/a?format=xml&last",
+        "<create><value>"++V1++"</value><value>"++V3++"</value></create>","text/xml"),
+    hn_util:post(?HN_URL1++"/a?format=xml&last",
+        "<create><value>"++V2++"</value><value>"++V2++"</value></create>","text/xml"),
+    hn_util:post(?HN_URL1++"/a?format=xml&last",
+        "<create><value>"++V3++"</value><value>"++V1++"</value></create>","text/xml"),
+
+    Expected = {column,[{label,"c"}],[
+        {row,[{label,"1"}],["24"]},
+        {row,[{label,"2"}],["abc"]}]},
+
+    GET = hn_util:req(?HN_URL1++"/c?format=xml"),
+    Result = simplexml:from_xml_string(GET),  
+    test_util:expected(Expected,Result).

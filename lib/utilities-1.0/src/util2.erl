@@ -10,7 +10,6 @@
 -include("spriki.hrl").
 
 -export([
-	 parse_hypns/2,
 	 get_timestamp/0,
 	 get_biccie/0,
 	 remove_auth/1,
@@ -35,8 +34,7 @@
 	 make_b26/1,
 	 mk_int_frm_b26/1,
 	 relative_error/2,
-	 sloppy_equals/2,
-	 flatten_data/2]).
+	 sloppy_equals/2]).
 
 %%%-----------------------------------------------------------------------------
 %%%
@@ -51,29 +49,6 @@
 %%% These functions are all utility functions                                %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%% used to parse a hypernumber returned as a list value
-parse_hypns(Hyper,From)->
-
-    Ref = {From#index.site,From#index.path,From#index.column,From#index.row},
-
-    {B,R1,E,R2} = case string:tokens(Hyper,"\n") of
-    [Body] ->
-        {Body,[Ref],[],[Ref]};
-    [Body,RefTree] ->
-		RefTree=lists:umerge([[Ref],unpack_text(RefTree)]),
-		{Body,RefTree,[],[Ref]};
-	[Body,RefTree,Error] ->
-		RefTree=lists:umerge([[Ref],unpack_text(RefTree)]),
-		{Body,RefTree,Error,[Ref]}
-	end,
-    
-    Val = case hn_util:is_numeric(B) of
-	    true -> make_num(B);
-	    _    -> make_text(B)
-	end,
-
-    #hypernumbers{value=Val,reftree=R1,errors=E,refs=R2}.
 
 get_timestamp()->
     {Mega,Sec,Micro}=now(),
@@ -267,38 +242,3 @@ relative_error(0, 0) -> 0.0000000001;
 relative_error(Result, ExpectedResult) -> erlang:abs((Result - ExpectedResult) / ExpectedResult).
 
 sloppy_equals(N1, N2) -> relative_error(N1, N2) =< 0.0001.
-
-flatten_data({list},Data) -> Data;
-flatten_data({xml},Data) ->
-    {Xml,_Misc} = xmerl_scan:string(Data,[{space,normalize}]),
-    {_Root,_Attr,SimpleXML} = xmerl_lib:simplify_element(Xml),
-    flatten_xml(SimpleXML);
-flatten_data({json},Data) ->
-    {ok,JSon} = json:decode_string(Data),
-    string:strip(flatten_json(JSon),both,$\n).
-
-flatten_xml([]) -> "";
-flatten_xml([{_Name,_Attr,Child}|T]) ->
-    H = lists:flatten(Child),
-    Rtn = case io_lib:char_list(H) of
-        true -> H;
-        false -> flatten_xml(Child)
-    end,
-    case T of
-    [] -> Rtn;
-    _  -> Rtn++"\n"++flatten_xml(T)
-    end;
-flatten_xml(List) -> lists:flatten(List).
-
-flatten_json([]) -> "";
-flatten_json(Value) when is_integer(Value) ->  integer_to_list(Value) ++ "\n";
-flatten_json({_Object,Value}) -> flatten_json(Value);
-flatten_json(Value) when is_list(Value) ->
-    case io_lib:char_list(Value) of
-    true -> Value ++ "\n";
-    false ->
-        [H|T] = Value,
-        flatten_json(H) ++ flatten_json(T)
-    end.
-
-

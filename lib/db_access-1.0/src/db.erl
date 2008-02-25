@@ -29,7 +29,7 @@
      read_site/2,
 	 read_column/3,
 	 read_spriki_and_bindings/4,
-     read_websheets_from_page/1,
+     read_pages/1,
 	 read_range/3,
 	 write/8,
 	 del_spriki/4,
@@ -135,10 +135,10 @@ get_first_dirty(Table)->
 %%               value by making an external call
 %%
 %%               Having got a value it then writes it to the
-%%               table and marks it a dirty reference
+%%               table and marks it a dirhttp://mail.google.com/mail/ty reference
 %%
 %%--------------------------------------------------------------------
-get_hypnum(URL,To,From)->
+get_hypnum(Url,To,From)->
 
     call(fun() ->
 
@@ -147,13 +147,17 @@ get_hypnum(URL,To,From)->
 		[]->
             Bic     = util2:get_biccie(),
             PUrl    = hn_util:index_to_url(To), 
-            Actions = lists:append(["action=register&registered_URL=",
-                PUrl,"&biccie=",Bic,"&proxy_URL=",PUrl]),
-            Post    = hn_util:post(URL,Actions),
-            HNumber = (util2:parse_hypns(Post,From))#hypernumbers{
-                ref_from=From},
+            Actions = simplexml:to_xml_string(
+                {register,[],[
+                    {biccie,[],[Bic]},
+                    {proxy, [],[PUrl]},
+                    {url,   [],[PUrl]}
+                ]}),
+            
+            HNumber  = get_hn_record(Url,Actions),
+            NHNumber = HNumber#hypernumbers{ref_from=From},
 
-            mnesia:write(HNumber),
+            mnesia:write(NHNumber),
 
             %% Now the ref table will already exist if both
             %% the sites are being served from the same server
@@ -173,13 +177,33 @@ get_hypnum(URL,To,From)->
                 mnesia:write(Ref#ref{details_to=R#ref.details_to})
             end,
 
-            HNumber;
+            NHNumber;
 
-        [HyperNumber] -> HyperNumber
+        [HyperNumber] -> 
+            HyperNumber
             
         end
     end).
 
+get_hn_record(Url,Actions) ->
+
+    XML  = hn_util:post(Url++"?hypernumber",Actions,"text/xml"),
+    SXML = simplexml:from_xml_string(XML),
+
+    {cell,[],[{value,[],[Val]},
+        {references,[],Ref},
+        {reftree,[],Tree},
+        {errors,[],Errors}]} = SXML,
+
+    V = case hn_util:is_numeric(Val) of
+        true -> util2:make_num(Val);
+        _    -> util2:make_text(Val)
+    end,
+
+    #hypernumbers{
+        value= V, reftree=Tree,
+        errors=Errors,refs=Ref}.
+        
 %%--------------------------------------------------------------------
 %% Function    : write_ref
 %%
@@ -358,8 +382,11 @@ read_spriki_and_bindings(Site,Path,X,Y) ->
 %%
 %% Description :
 %%--------------------------------------------------------------------
-read_websheets_from_page(_Page) ->
-	[].
+read_pages(Site) ->
+	call(fun() ->
+        mnesia:match_object(spriki, {spriki,{index,Site,'_','_','_'},
+            '_','_','_','_','_'}, read)
+    end).
 
 %%--------------------------------------------------------------------
 %% Function    : write/8
@@ -467,13 +494,24 @@ trigger_update(dirty_refs, From, To, Details) ->
 trigger_update(dirty_hypernumbers, _From, To, _Details) ->
     spriki:recalc(To).
 
-
 remote_recalc(Details,From) ->
-    [#spriki{value=Value}] = mnesia:read({spriki,From}),
-    #details_to{proxy_URL=Proxy,reg_URL=Reg,biccie=Bic} = Details,
 
-    Actions = lists:append(["action=notify&biccie=",Bic,"&notifying_URL=",
-        hn_util:index_to_url(From),"&registered_URL=",Reg,
-        "&type=change&value=",hn_util:text(Value),"&version=1"]),
+    call(fun() ->
+    
+        [#spriki{value=Value}] = mnesia:read({spriki,From}),   
+        #details_to{proxy_URL=Proxy,reg_URL=Reg,biccie=Bic} = Details,
 
-    hn_util:post(Proxy,Actions).
+        Actions = simplexml:to_xml_string(
+            {notify,[],[
+                {biccie,      [],[Bic]},
+                {notifyurl,   [],[hn_util:index_to_url(From)]},
+                {registerurl, [],[Reg]},
+                {type,        [],["change"]},
+                {value,       [],[hn_util:text(Value)]},
+                {version,     [],["1"]}
+            ]
+        }),
+    
+        hn_util:post(Proxy,Actions,"text/xml")
+
+    end).

@@ -18,7 +18,7 @@
 -export([req/1,post/2,post/3,parse_url/1]).
 %% XML Utils
 -export([xml_to_string/1,readxml_string/1,readxml_file/1,
-          xmlsearch/3,values/2]).
+          xmlsearch/3,values/2,clear_whitespace/1]).
 %% File Utils
 -export([read/1]).
 %% List Utils
@@ -101,7 +101,7 @@ parse_url(Url) when is_record(Url,url) ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 readxml_string(String) ->
     {Xml,_Misc} = xmerl_scan:string(String,[{space,normalize}]),
-    clear_whitespace(xmerl_lib:simplify_element(Xml)).
+    xmerl_lib:simplify_element(Xml).
 
 readxml_file(File) ->
     readxml_string(binary_to_list(element(2,file:read_file(File)))).
@@ -320,17 +320,16 @@ parse_reference(Cell) ->
         range
     end.
 
-get_format([{format,"list"}|_],_)-> list;
 get_format([{format,"json"}|_],_)-> json;
 get_format([{format,"xml"}|_],_)-> xml;
 get_format([_N|Tail],Def)-> get_format(Tail,Def);
 get_format([],Def)-> Def.
 
-format_vars([]) -> {{list},[]};
+format_vars([]) -> {{xml},[]};
 format_vars(Query) ->
 
     %% list of valid vars
-    Valid = ["incoming","outgoing","format","last","nocallback","loggedin","info",
+    Valid = ["links","format","last","nocallback","loggedin","info",
          "toolbar","last","hypernumber","pages","login","admin","import"],
 
     F = fun({K,V}) ->
@@ -356,8 +355,8 @@ format_vars(Query) ->
     Vars = lists:map(F,lists:map(Split,string:tokens(Query,"&"))),
 
     Format = case lists:member(nocallback,Vars) of
-         true -> {get_format(Vars,list),nocallback};
-         _    -> {get_format(Vars,list)}
+         true -> {get_format(Vars,xml),nocallback};
+         _    -> {get_format(Vars,xml)}
          end,
 
     %% Remove the invalid posts and format

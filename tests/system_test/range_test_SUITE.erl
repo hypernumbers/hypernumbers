@@ -28,39 +28,44 @@ end_per_suite(_Config) ->
 init_per_testcase(_TestCase, Config) -> Config.
 end_per_testcase(_TestCase, _Config) -> ok.
 
-all() -> [range1,range2].
+all() -> [range_xml,range_json].
 
 %% Test cases starts here.
 %%------------------------------------------------------------------------------
-range1() ->      [{userdata,[{doc,"Description here"}]}].
-range1(Config) when is_list(Config) ->
-    test_util:expected(lists:duplicate(3,"a\nb\n1\n2"),post_data("a1:b2",{"post",
-        [{"action","create"},{"value",[{"cell","a"},{"cell","b"},{"cell","1"},{"cell","2"}]}]})).
+range_xml() ->  [{userdata,[{doc,"Description here"}]}].
+range_xml(Config) when is_list(Config) ->
 
-range2() ->      [{userdata,[{doc,"Description here"}]}].
-range2(Config) when is_list(Config) ->
-    hn_util:post("http://127.0.0.1:9000/test/a1?format=xml",
-        "<post><action>create</action><value>99</value></post>","text/xml"),
-    test_util:expected(lists:duplicate(3,"10\n99\n104\nError: divide by 0"),post_data("a1:b2",{"post",
-        [{"action","create"},{"value",[{"cell","=5+5"},{"cell","=/test/a1"},
-        {"cell","=/test/a1+5"},{"cell","=4/0"}]}]})).
+    Data = "<create><row><value>abc</value><value>=12+12</value><value>"
+        ++"99</value><value>99</value></row><row><value>abc</value><value>"
+        ++"=12+12</value><value>99</value><value>99</value></row></create>",
 
-%% Utilities
-%%------------------------------------------------------------------------------
-post_data(Cell,Data) ->
-    [post_data(Cell,Data,{list}),post_data(Cell,Data,{xml}),
-     post_data(Cell,Data,{json})].
+    Expected = {range,[],
+        [{row,[{label,"2"}],[
+            {column,[{label,"b"}],["abc"]},{column,[{label,"c"}],["24"]},
+            {column,[{label,"d"}],["99"]},{column,[{label,"e"}],["99"]}]},
+        {row,[{label,"3"}],[
+            {column,[{label,"b"}],["abc"]},{column,[{label,"c"}],["24"]},
+            {column,[{label,"d"}],["99"]},{column,[{label,"e"}],["99"]}]}]},
 
-post_data(Cell,Data,Format) ->
+    Post   = hn_util:post(?HN_URL1++"/b2:e3?format=xml",Data,"text/xml"),
+    Result = simplexml:from_xml_string(Post),  
+    test_util:expected(Expected,Result).
 
-    {PData,Type,FormatStr} = case Format of
-        {list} -> {spriki:to_post(Data),"text/plain","list"};
-        {xml}  -> {spriki:to_xml(Data), "text/xml",  "xml"};
-        {json} -> {spriki:to_json(Data),"text/plain","json"}
-    end,
+range_json() ->  [{userdata,[{doc,"Description here"}]}].
+range_json(Config) when is_list(Config) ->
 
-    Url = "http://127.0.0.1:9000/"++Cell++"?format="++FormatStr,
-    D = hn_util:post(Url,PData,Type),
-    
-    util2:flatten_data(Format,D).
+    Data = "[\"create\",[[\"row\",[[\"value\",[\"abc\"]],[\"value\",[\"=12+12\"]]"
+        ++",[\"value\",[\"99\"]],[\"value\",[\"99\"]]]],[\"row\",[[\"value\",[\"abc"
+        ++"\"]],[\"value\",[\"=12+12\"]],[\"value\",[\"99\"]],[\"value\",[\"99\"]]]]]]",
 
+    Expected = {range,[],
+        [{row,[{label,"2"}],[
+            {column,[{label,"b"}],["abc"]},{column,[{label,"c"}],["24"]},
+            {column,[{label,"d"}],["99"]},{column,[{label,"e"}],["99"]}]},
+        {row,[{label,"3"}],[
+            {column,[{label,"b"}],["abc"]},{column,[{label,"c"}],["24"]},
+            {column,[{label,"d"}],["99"]},{column,[{label,"e"}],["99"]}]}]},
+
+    Post   = hn_util:post(?HN_URL1++"/b2:e3?format=json",Data,"text/plain"),
+    Result = simplexml:from_json_string(Post),  
+    test_util:expected(Expected,Result).

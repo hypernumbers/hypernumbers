@@ -21,6 +21,7 @@ accept(Listen) ->
         spawn(fun() -> loop(Soc) end)),
     
     %% Start Listening for another connection
+    ?F("tcp open ~n"),
     remoting_soc:accept(Listen).
 
 loop(Socket)->
@@ -43,7 +44,6 @@ loop(Socket)->
         loop(Socket);
 
     {tcp, Socket, Msg} ->
-        ?F("Got Message ~s ~n",[Msg]),
         loop(Socket);
 
     %% Recieved a Message to send back to client
@@ -52,6 +52,7 @@ loop(Socket)->
         loop(Socket);
 
     {tcp_closed, _Port} ->
+        ?F("tcp closed ~n"),
         gen_server:call(remoting_reg,{unregister}),
         exit(normal)
     

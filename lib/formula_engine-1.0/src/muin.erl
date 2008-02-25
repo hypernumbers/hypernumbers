@@ -288,7 +288,9 @@ do_cells(Funs, Bindings) ->
 %% @doc Calls supplied fun to get value and dependencies, stashes dependencies
 %% away, and returns the value.
 fetch_update_return(FetchFun) ->
+
     {Value, RefTree, Errors, References} = FetchFun(),
+    ?F("Value ~p~n",[{Value, RefTree, Errors, References}]),
 
     {RefTree0, Errors0, References0} = get(retvals),
     put(retvals,
