@@ -39,8 +39,9 @@ reverse_compile(Index,[{expr_formula_range,{tExp,[{sheet,Name},{row_index,Row},
     {col_index,Col}],{return,none}}}|T],TokenArray,Stack,Residuum,Tables) ->
     %% io:format("in excel_rev_comp:reverse_compile in tExp~n"),
   Return=excel_util:read_shared(Tables,{{sheet,Name},{row_index,Row},{col_index,Col}}),
-  %% io:format("in excel_rev_comp:reverse_compile Return is ~p~n",[Return]),
-  [{Index2,[Type,{tokens,Tokens},{tokenarrays,TokenArray2}]}]=Return,    
+  io:format("in excel_rev_comp:reverse_compile Return is ~p~n",[Return]),
+  io:format("in excel_rev_comp:reverse_compile for tExp - duplicate returned from shared....~n"),
+  [{Index2,[Type,{tokens,Tokens},{tokenarrays,TokenArray2}]}|_Tail]=Return,    
   %% tExp is a placeholder for a shared or array formula so first we read the array/shared formula
   %% then we push the shared formula onto the Stack in place of the tExp one and carry on
   NewTokens=lists:append(Tokens,T),

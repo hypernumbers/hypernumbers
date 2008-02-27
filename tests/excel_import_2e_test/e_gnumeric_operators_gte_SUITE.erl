@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_operators_gte.xls
-% Generated on: Fri Feb 22 19:04:30 +0000 2008
+% Generated on: Mon Feb 25 21:57:45 +0000 2008
 
 -module(e_gnumeric_operators_gte_SUITE).
 -compile(export_all).

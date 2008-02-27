@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_wierd_failures.xls
-% Generated on: Fri Feb 22 19:04:11 +0000 2008
+% Generated on: Mon Feb 25 21:57:24 +0000 2008
 
 -module(b_wierd_failures_SUITE).
 -compile(export_all).

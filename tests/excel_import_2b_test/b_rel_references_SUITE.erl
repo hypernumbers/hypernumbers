@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_rel_references.xls
-% Generated on: Fri Feb 22 19:04:08 +0000 2008
+% Generated on: Mon Feb 25 21:57:21 +0000 2008
 
 -module(b_rel_references_SUITE).
 -compile(export_all).

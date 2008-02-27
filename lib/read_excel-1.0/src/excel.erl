@@ -301,19 +301,6 @@ make_formulae(Tables)->
     ets:insert(CellId,[{Index,[XF,{formula,Formula}]}])
   end,
   CellList=ets:foldl(Fun,[],Cell_TokensId).
-%%  io:format("Tokens to cells transformation gives:~n~p~n",[CellList]),
-%%  filefilters:dump([{cell,CellId}]),
-%%  %% Now reverse compile the shared formulae
-%%  {value,{sh_arr_formula,Sh_Arr_FormId}}=lists:keysearch(sh_arr_formula,1,Tables),
-%%  Fun2=fun(X,_Residuum)->
-%%    {{{sheet,SheetX},{firstrow,FirstRowX},{firstcol,FirstColX},
-%%    {lastrow,LastRowX},{lastcol,LastColX}},[{type,Type},TokensX,TokenArraysX]}=X,
-%%    %% io:format("in excel:make_formula FirstRow is ~p and FirstCol is ~p~n",[FirstRowX,FirstColX]),
-%%    update_cell(SheetX,TokensX,TokenArraysX,FirstRowX,FirstColX,FirstRowX,FirstColX,
-%%        LastRowX,LastColX,CellId,Tables)
-%%  end,
-%%  CellList2=ets:foldl(Fun2,[],Sh_Arr_FormId),
-%%  io:format("Tokens to cells transformation gives:~n~p~n",[CellList2]).
   
 update_cell(Sheet,Tokens,TokenArrays,LastRow,LastCol,FirstRow,FirstCol,LastRow,LastCol,
       CellId,Tables)->

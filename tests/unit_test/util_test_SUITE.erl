@@ -71,10 +71,7 @@ end_per_testcase(_TestCase, _Config) ->
 %%   Name of a test case.
 %% Description: Returns a list of all test cases in this test suite
 %%------------------------------------------------------------------------------
-all(doc) -> 
-    ["Basic tests for utility functions"];
-
-all(suite) -> 
+all() -> 
     [parse_url_test1,
      parse_url_test2,
      parse_url_test3,
@@ -94,12 +91,6 @@ all(suite) ->
 
 %% Tests for valid URL's
 
-parse_url_test1(doc) -> 
-    ["Tests the function parse_url"];
-
-parse_url_test1(suite) -> 
-    [];
-
 parse_url_test1(Config) when is_list(Config) -> 
     URL="http://user:password@subbie.dom.tld:1234/some/path/to/valid/cell/aa44",
     Expected={valid,{cell,{"http://","user:password@","subbie.dom.tld:1234",
@@ -108,11 +99,8 @@ parse_url_test1(Config) when is_list(Config) ->
     test_util:expected(Expected,Got).
 
 
-parse_url_test2(doc) -> 
-    ["Tests the function parse_url"];
-
-parse_url_test2(suite) -> 
-    [];
+parse_url_test2() -> 
+    [{userdata,[{doc,"Tests the function parse_url"}]}].
 
 parse_url_test2(Config) when is_list(Config) -> 
     URL="https://user:password@subbie.dom.tld:1234/some/path/to/valid/cell/aa44",
@@ -122,11 +110,8 @@ parse_url_test2(Config) when is_list(Config) ->
     test_util:expected(Expected,Got).
 
 
-parse_url_test3(doc) -> 
-    ["Tests the function parse_url"];
-
-parse_url_test3(suite) -> 
-    [];
+parse_url_test3() -> 
+    [{userdata,[{doc,"Tests the function parse_url"}]}].
 
 parse_url_test3(Config) when is_list(Config) -> 
     URL="http://user:password@subbie.dom.tld/some/path/to/valid/cell/aa44",
@@ -136,11 +121,8 @@ parse_url_test3(Config) when is_list(Config) ->
     test_util:expected(Expected,Got).
 
 
-parse_url_test4(doc) -> 
-    ["Tests the function parse_url"];
-
-parse_url_test4(suite) -> 
-    [];
+parse_url_test4() -> 
+    [{userdata,[{doc,"Tests the function parse_url"}]}].
 
 parse_url_test4(Config) when is_list(Config) -> 
     URL="https://user:password@subbie.dom.tld/some/path/to/valid/cell/aa44",
@@ -149,11 +131,9 @@ parse_url_test4(Config) when is_list(Config) ->
     Got=hn_util:parse_url(URL),
     test_util:expected(Expected,Got).
 
-parse_url_test4a(doc) -> 
-    ["Tests the function parse_url"];
+parse_url_test4a() -> 
+    [{userdata,[{doc,"Tests the function parse_url"}]}].
 
-parse_url_test4a(suite) -> 
-    [];
 
 parse_url_test4a(Config) when is_list(Config) -> 
     URL="https://user:password@subbie.dom.tld/some/path/to/valid/cell/aa44:b77",
@@ -163,11 +143,8 @@ parse_url_test4a(Config) when is_list(Config) ->
     test_util:expected(Expected,Got).
 
 
-parse_url_test4b(doc) -> 
-    ["Tests the function parse_url"];
-
-parse_url_test4b(suite) -> 
-    [];
+parse_url_test4b() -> 
+    [{userdata,[{doc,"Tests the function parse_url"}]}].
 
 parse_url_test4b(Config) when is_list(Config) -> 
     URL="https://user:password@subbie.dom.tld/some/path/to/valid/cell/aa44:b77?decorated_up_the_ying_yang",
@@ -177,11 +154,8 @@ parse_url_test4b(Config) when is_list(Config) ->
     Got=hn_util:parse_url(URL),
     test_util:expected(Expected,Got).
 
-parse_url_test4c(doc) -> 
-    ["Tests the function parse_url"];
-
-parse_url_test4c(suite) -> 
-    [];
+parse_url_test4c() -> 
+    [{userdata,[{doc,"Tests the function parse_url"}]}].
 
 parse_url_test4c(Config) when is_list(Config) -> 
     URL="http://jeteasy.com:9000/xxx/a1?hypernumber",
@@ -193,11 +167,8 @@ parse_url_test4c(Config) when is_list(Config) ->
 
 %% Now through some invalid ones
 
-parse_url_test5(doc) -> 
-    ["Tests the function parse_url - URL invalid wrong protocol"];
-
-parse_url_test5(suite) -> 
-    [];
+parse_url_test5() -> 
+    [{userdata,[{doc,"Tests the function parse_url - URL invalid wrong protocol"}]}].
 
 parse_url_test5(Config) when is_list(Config) -> 
     URL="junk://user:password@subbie.dom.tld/some/path/to/valid/cell/aa44",
@@ -206,11 +177,8 @@ parse_url_test5(Config) when is_list(Config) ->
     test_util:expected(Expected,Got).
 
 
-parse_url_test6(doc) -> 
-    ["Tests the function parse_url - URL invalid duff port"];
-
-parse_url_test6(suite) -> 
-    [];
+parse_url_test6() -> 
+    [{userdata,[{doc,"Tests the function parse_url - URL invalid duff port"}]}].
 
 parse_url_test6(Config) when is_list(Config) -> 
     URL="http://user:password@subbie.dom.tld:abcd/some/path/to/valid/cell/aa44",
@@ -219,11 +187,8 @@ parse_url_test6(Config) when is_list(Config) ->
     test_util:expected(Expected,Got).
 
 
-parse_url_test7(doc) -> 
-    ["Tests the function parse_url - URL invalid duff port"];
-
-parse_url_test7(suite) -> 
-    [];
+parse_url_test7() -> 
+    [{userdata,[{doc,"Tests the function parse_url - URL invalid duff port"}]}].
 
 parse_url_test7(Config) when is_list(Config) -> 
     URL="http://user:password@subbie.dom.tld:70000/some/path/to/valid/cell/aa44",
@@ -232,11 +197,8 @@ parse_url_test7(Config) when is_list(Config) ->
     test_util:expected(Expected,Got).
 
 
-parse_url_test8(doc) -> 
-    ["Tests the function parse_url - URL to a page"];
-
-parse_url_test8(suite) -> 
-    [];
+parse_url_test8() -> 
+    [{userdata,[{doc,"Tests the function parse_url - URL to a page"}]}].
 
 parse_url_test8(Config) when is_list(Config) -> 
     URL="http://user:password@subbie.dom.tld:1234/some/path/to/valid/cell/",
@@ -245,11 +207,8 @@ parse_url_test8(Config) when is_list(Config) ->
     test_util:expected(Expected,Got).
 
 
-parse_url_test9(doc) -> 
-    ["Tests the function parse_url - URL to a mutant range"];
-
-parse_url_test9(suite) -> 
-    [];
+parse_url_test9() -> 
+    [{userdata,[{doc,"Tests the function parse_url - URL to a mutant range"}]}].
 
 parse_url_test9(Config) when is_list(Config) -> 
     URL="http://user:password@subbie.dom.tld:1234/some/path/to/valid/cell/a3-:33",
@@ -258,11 +217,8 @@ parse_url_test9(Config) when is_list(Config) ->
     test_util:expected(Expected,Got).
 
 
-parse_url_test10(doc) -> 
-    ["Tests the function parse_url - fire junk in the swine!"];
-
-parse_url_test10(suite) -> 
-    [];
+parse_url_test10() -> 
+    [{userdata,[{doc,"Tests the function parse_url - fire junk in the swine!"}]}].
 
 parse_url_test10(Config) when is_list(Config) -> 
     URL="bob",

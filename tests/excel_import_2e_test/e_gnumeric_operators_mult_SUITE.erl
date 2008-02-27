@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_operators_mult.xls
-% Generated on: Fri Feb 22 19:04:32 +0000 2008
+% Generated on: Mon Feb 25 21:57:47 +0000 2008
 
 -module(e_gnumeric_operators_mult_SUITE).
 -compile(export_all).

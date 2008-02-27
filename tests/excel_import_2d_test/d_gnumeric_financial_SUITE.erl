@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: d_gnumeric_financial.xls
-% Generated on: Fri Feb 22 19:04:17 +0000 2008
+% Generated on: Mon Feb 25 21:57:31 +0000 2008
 
 -module(d_gnumeric_financial_SUITE).
 -compile(export_all).

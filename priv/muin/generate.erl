@@ -20,6 +20,8 @@ gen() ->
     ?P("Generated main lexer."),
     yecc:yecc(parser_desc, muin_parser),
     ?P("Generated main parser."),
+    leex:gen(num_format_lex, num_format_lexer),
+    ?P("Generated number format lexer."),
 
     %% Generate Russian front-end.
     {ok, CurrDir} = get_cwd(),
@@ -33,10 +35,12 @@ gen() ->
     delete(DestDir ++ "muin_parser.erl"),
     delete(DestDir ++ "muin_supd_lexer.erl"),
     delete(DestDir ++ "russian_lexer.erl"),
+    delete(DestDir ++ "num_format_lexer.erl"),
     rename("muin_lexer.erl", DestDir ++ "muin_lexer.erl"),
     rename("muin_parser.erl", DestDir ++ "muin_parser.erl"),
     rename("muin_supd_lexer.erl", DestDir ++ "muin_supd_lexer.erl"),
     rename("russian_lexer.erl", DestDir ++ "russian_lexer.erl"),
+    rename("num_format_lexer.erl", DestDir ++ "num_format_lexer.erl"),
 
     delete("russian_lexer.erl"),
     

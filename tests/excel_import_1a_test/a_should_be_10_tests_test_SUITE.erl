@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: a_should_be_10_tests.xls
-% Generated on: Fri Feb 22 19:03:26 +0000 2008
+% Generated on: Mon Feb 25 21:56:33 +0000 2008
 
 -module(a_should_be_10_tests_test_SUITE).
 -compile(export_all).

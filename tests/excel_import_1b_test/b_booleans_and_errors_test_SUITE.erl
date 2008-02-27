@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_booleans_and_errors.xls
-% Generated on: Fri Feb 22 19:03:30 +0000 2008
+% Generated on: Mon Feb 25 21:56:36 +0000 2008
 
 -module(b_booleans_and_errors_test_SUITE).
 -compile(export_all).

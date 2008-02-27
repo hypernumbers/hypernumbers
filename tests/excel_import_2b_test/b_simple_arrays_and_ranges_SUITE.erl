@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_simple_arrays_and_ranges.xls
-% Generated on: Fri Feb 22 19:04:09 +0000 2008
+% Generated on: Mon Feb 25 21:57:23 +0000 2008
 
 -module(b_simple_arrays_and_ranges_SUITE).
 -compile(export_all).

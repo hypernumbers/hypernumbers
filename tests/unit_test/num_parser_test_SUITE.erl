@@ -223,10 +223,7 @@ end_per_testcase(_TestCase, _Config) ->
 %%   Name of a test case.
 %% Description: Returns a list of all test cases in this test suite
 %%------------------------------------------------------------------------------
-all(doc) -> 
-    ["Describe the main purpose of this suite"];
-
-all(suite) -> 
+all() -> 
     [num_parser_test1,
      num_parser_test2,
      num_parser_test3,
@@ -258,8 +255,8 @@ all(suite) ->
 
 %% Test cases starts here.
 %%------------------------------------------------------------------------------
-num_parser_test1(doc) -> 
-    ["Describe the main purpose of test case"];
+num_parser_test1() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test1(suite) -> 
     [];
@@ -268,297 +265,216 @@ num_parser_test1(Config) when is_list(Config) ->
     {ok,Output,_}=num_format_lexer:string(?INPUT1),
     test_util:expected(?OUTPUT1,Output).
 
-num_parser_test2(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test2(suite) -> 
-    [];
+num_parser_test2() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test2(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT2),
     test_util:expected(?OUTPUT2,Output).
 
 
-num_parser_test3(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test3(suite) -> 
-    [];
+num_parser_test3() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test3(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT3),
     test_util:expected(?OUTPUT3,Output).
 
 
-num_parser_test4(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test4(suite) -> 
-    [];
+num_parser_test4() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test4(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT4),
     test_util:expected(?OUTPUT4,Output).
 
 
-num_parser_test5(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test5(suite) -> 
-    [];
+num_parser_test5() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test5(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT5),
     test_util:expected(?OUTPUT5,Output).
 
 
-num_parser_test6(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test6(suite) -> 
-    [];
+num_parser_test6() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test6(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT6),
     test_util:expected(?OUTPUT6,Output).
 
 
-num_parser_test7(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test7(suite) -> 
-    [];
+num_parser_test7() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test7(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT7),
     test_util:expected(?OUTPUT7,Output).
 
 
-num_parser_test8(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test8(suite) -> 
-    [];
+num_parser_test8() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test8(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT8),
     test_util:expected(?OUTPUT8,Output).
 
 
-num_parser_test9(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test9(suite) -> 
-    [];
+num_parser_test9() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test9(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT9),
     test_util:expected(?OUTPUT9,Output).
 
 
-num_parser_test10(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test10(suite) -> 
-    [];
+num_parser_test10() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test10(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT10),
     test_util:expected(?OUTPUT10,Output).
 
 
-num_parser_test11(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test11(suite) -> 
-    [];
+num_parser_test11() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test11(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT12),
     test_util:expected(?OUTPUT12,Output).
 
 
-num_parser_test12(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test12(suite) -> 
-    [];
+num_parser_test12() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test12(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT12),
     test_util:expected(?OUTPUT12,Output).
 
 
-num_parser_test13(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test13(suite) -> 
-    [];
+num_parser_test13() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test13(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT13),
     test_util:expected(?OUTPUT13,Output).
 
 
-num_parser_test14(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test14(suite) -> 
-    [];
+num_parser_test14() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test14(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT14),
     test_util:expected(?OUTPUT14,Output).
 
 
-num_parser_test15(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test15(suite) -> 
-    [];
+num_parser_test15() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test15(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT15),
     test_util:expected(?OUTPUT15,Output).
 
 
-num_parser_test16(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test16(suite) -> 
-    [];
+num_parser_test16() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test16(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT16),
     test_util:expected(?OUTPUT16,Output).
 
 
-num_parser_test17(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test17(suite) -> 
-    [];
+num_parser_test17() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test17(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT17),
     test_util:expected(?OUTPUT17,Output).
 
 
-num_parser_test18(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test18(suite) -> 
-    [];
+num_parser_test18() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test18(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT18),
     test_util:expected(?OUTPUT18,Output).
 
 
-num_parser_test19(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test19(suite) -> 
-    [];
+num_parser_test19() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test19(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT19),
     test_util:expected(?OUTPUT19,Output).
 
 
-num_parser_test20(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test20(suite) -> 
-    [];
+num_parser_test20() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test20(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT20),
     test_util:expected(?OUTPUT20,Output).
 
 
-num_parser_test21(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test21(suite) -> 
-    [];
+num_parser_test21() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test21(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT21),
     test_util:expected(?OUTPUT21,Output).
 
 
-num_parser_test22(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test22(suite) -> 
-    [];
+num_parser_test22() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test22(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT22),
     test_util:expected(?OUTPUT22,Output).
 
 
-num_parser_test23(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test23(suite) -> 
-    [];
+num_parser_test23() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test23(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT23),
     test_util:expected(?OUTPUT23,Output).
 
 
-num_parser_test24(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test24(suite) -> 
-    [];
+num_parser_test24() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test24(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT24),
     test_util:expected(?OUTPUT24,Output).
 
 
-num_parser_test25(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test25(suite) -> 
-    [];
+num_parser_test25() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test25(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT25),
     test_util:expected(?OUTPUT25,Output).
 
 
-num_parser_test26(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test26(suite) -> 
-    [];
+num_parser_test26() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test26(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT26),
     test_util:expected(?OUTPUT26,Output).
 
 
-num_parser_test27(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test27(suite) -> 
-    [];
+num_parser_test27() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test27(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT27),
     test_util:expected(?OUTPUT27,Output).
 
 
-num_parser_test28(doc) -> 
-    ["Describe the main purpose of test case"];
-
-num_parser_test28(suite) -> 
-    [];
+num_parser_test28() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test28(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT28),

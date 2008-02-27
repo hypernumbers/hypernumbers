@@ -50,6 +50,10 @@ read_excel(excel,FileIn,Fun)->
 		     SectorSize,ShortSectorSize,
 		     MinStreamSize,SubStreams,FileIn,Tables),
     Fun(Tables);
+    %% Now delete all the tables
+    %%delete_ets(Tables),
+    %%io:format("in filfilters:read_excel Return is ~p~n",[Return]),
+    %%Return;
 read_excel(_Other,_,_) ->
     {error, file_type_not_supported}.
 
@@ -263,6 +267,10 @@ print_structure(FileIn,Directory,{SubLocation,SubStreams})->
     [io:format("* substream: ~p~n",[X]) || {[{_,X}],_} <- SubStreams],
     ok.
 
+delete_ets([])    -> ok;
+delete_ets([{TableName,Tid}|T]) -> ets:delete(Tid),
+                      delete_ets(T).
+  
 create_ets()->
     [{cell,           ets:new(cell,           [ordered_set,private])},
      {cell_tokens,    ets:new(cell_tokens,    [ordered_set,private])},

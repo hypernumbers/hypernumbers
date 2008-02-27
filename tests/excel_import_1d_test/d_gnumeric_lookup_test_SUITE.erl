@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: d_gnumeric_lookup.xls
-% Generated on: Fri Feb 22 19:03:44 +0000 2008
+% Generated on: Mon Feb 25 21:56:52 +0000 2008
 
 -module(d_gnumeric_lookup_test_SUITE).
 -compile(export_all).

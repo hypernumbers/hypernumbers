@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: c_basic_functions_tests_l_t.xls
-% Generated on: Fri Feb 22 19:04:13 +0000 2008
+% Generated on: Mon Feb 25 21:57:27 +0000 2008
 
 -module(c_basic_functions_tests_l_t_SUITE).
 -compile(export_all).
@@ -843,7 +843,7 @@ sheet1_b860_test(_Config) ->
 sheet1_b719_test(doc) -> [{userdata,[{""}]}];
 sheet1_b719_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","b719"),
-  Expected="0.000159272868603288",
+  Expected="0.370408702819094",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected2(Expected,Got).
   
@@ -3979,7 +3979,7 @@ sheet1_b1059_test(_Config) ->
 sheet1_b635_test(doc) -> [{userdata,[{""}]}];
 sheet1_b635_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","b635"),
-  Expected="2008/02/22 18:57:53",
+  Expected="2008/02/25 21:50:16",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected2(Expected,Got).
   
@@ -7850,7 +7850,7 @@ sheet1_b981_test(_Config) ->
 sheet1_b1264_test(doc) -> [{userdata,[{""}]}];
 sheet1_b1264_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","b1264"),
-  Expected="2008/02/22 00:00:00",
+  Expected="2008/02/25 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected2(Expected,Got).
   

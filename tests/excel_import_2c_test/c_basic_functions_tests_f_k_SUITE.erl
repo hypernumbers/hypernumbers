@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: c_basic_functions_tests_f_k.xls
-% Generated on: Fri Feb 22 19:04:12 +0000 2008
+% Generated on: Mon Feb 25 21:57:26 +0000 2008
 
 -module(c_basic_functions_tests_f_k_SUITE).
 -compile(export_all).

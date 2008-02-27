@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_bitwise_bitxor.xls
-% Generated on: Fri Feb 22 19:03:48 +0000 2008
+% Generated on: Mon Feb 25 21:56:56 +0000 2008
 
 -module(e_gnumeric_bitwise_bitxor_test_SUITE).
 -compile(export_all).
