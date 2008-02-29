@@ -37,23 +37,26 @@
 %%% @doc Parses formula, and returns AST as an s-expression.
 %%% @spec parse(Formula :: string()) -> {ok, {Ast :: list()}}
 parse(Formula__) ->
-    io:format("[MUIN] Given ~s~n", [Formula__]),
     %% Translate the formula to English if needed.
     Formula = translator:do(Formula__),
-    io:format("[MUIN] Translated to: ~s~n", [Formula]),
     {LexMod, ParseMod} = get_frontend(),
-    {ok, Tokens, _} = erlang:apply(LexMod, string, [Formula]),
-    {ok, Ast} = erlang:apply(ParseMod, parse, [Tokens]),
-    {ok, Ast}.
 
+    case erlang:apply(LexMod, string, [Formula]) of
+        {ok, Tokens, _} ->
+            case erlang:apply(ParseMod, parse, [Tokens]) of
+                {ok, Ast} ->
+                    Ast;
+                _ ->
+                    {error, error_in_formula}
+            end;
+        _ ->
+            {error, error_in_formula}
+    end.
 
 %% @doc Runs the s-expression.
-%% TODO: Move the interpreter to muin_interpreter, which will also be
-%% spawnable?
-%% Otherwise, I can haz problems with concurrency?
 run(Ast, Bindings) ->
     put(retvals, {[], [], []}),
-    Value = eval(Ast, Bindings),
+    Value = (catch eval(Ast, Bindings)),
     {RefTree, Errors, References} = get(retvals),
     {ok, {Value, RefTree, Errors, References}}.
 
@@ -223,19 +226,19 @@ funcall(hn, [Url], Bindings) ->
 
 %% Unsupported info types: color, filename, parentheses (WTF?), prefix, width.
 
-funcall(cell, ["address", Ref], Bindings) ->
+funcall(cell, ["address", Ref], _Bindings) ->
     Ref;
-funcall(cell, ["col", Ref], Bindings) ->
+funcall(cell, ["col", Ref], _Bindings) ->
     {_Row, Col} = getxy(Ref),
     Col;
 funcall(cell, ["contents", Ref], Bindings) ->
     Val = do_cell(".", Ref, Bindings),
     ?COND(Val == blank, 0, Val);
-funcall(cell, ["format", Ref], Bindings) ->
+funcall(cell, ["format", _Ref], _Bindings) ->
     throw(tantrum); %% TODO: Implement me.
-funcall(cell, ["protect", Ref], Bindings) ->
+funcall(cell, ["protect", _Ref], _Bindings) ->
     throw(tantrum); %% TODO: Implement me.
-funcall(cell, ["row", Ref], Bindings) ->
+funcall(cell, ["row", Ref], _Bindings) ->
     {Row, _Col} = getxy(Ref),
     Row;
 funcall(cell, ["type", Ref], Bindings) ->
@@ -244,10 +247,10 @@ funcall(cell, ["type", Ref], Bindings) ->
           ?COND(is_binary(Val), "l",
                 "v"));
 
-funcall(info, _, Bindings) ->
+funcall(info, _, _Bindings) ->
     throw({error, unsupported}); %% TODO: What to do with this?
 
-funcall(isref, [MaybeRef], Bindings) ->
+funcall(isref, [_MaybeRef], _Bindings) ->
     throw(tantrum). %% TODO: Implement me. With cellref, range, and name support.
 
 
