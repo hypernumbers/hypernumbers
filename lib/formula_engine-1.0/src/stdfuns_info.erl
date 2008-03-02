@@ -40,12 +40,10 @@ error_type([{error, na}]) ->
 error_type(_) ->
     throw({error, na}).
 
-%% Returns the logical value TRUE if value refers to any error value except #N/A;
-%% otherwise it returns FALSE.
-iserr([{error, X}]) ->
-    ?COND(error_type({error, X}) =/= 7,
-          true,
-          false);
+%% Returns the logical value TRUE if value refers to any error value except
+%% #N/A; otherwise it returns FALSE.
+iserr([{error, X}]) when X =/= na ->
+    true;
 iserr(_) ->
     false.
 

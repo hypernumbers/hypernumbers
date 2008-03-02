@@ -130,6 +130,7 @@ puts(Str) ->
 
 %% Given a list of strings, returns a new string with elements of the list 
 %% separated by given separator, or by commas.
+%% RB12 has string:join()...
 join(T, Sep) when is_tuple(T) ->
     join(tuple_to_list(T), Sep);
 

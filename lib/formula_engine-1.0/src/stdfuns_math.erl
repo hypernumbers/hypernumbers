@@ -45,8 +45,6 @@
          rand/0,
          randbetween/1,
 
-         
-         
          %% Rounding numbers
          int/1
         ]).
@@ -61,6 +59,15 @@
 %%%      We don't make this distinction, and simply discard non-numeric
 %%%      values.
 %%%      Examples of such functions: SUM, PRODUCT, POWER etc.
+%%%
+%%%
+%%%   2. This one applies for functions with a fixed number of arguments, e.g.
+%%%      ABS. If the wrong number of arguments is entered, Excel displays an
+%%%      error dialog, and doesn't attempt evaluate the formula. Most of the time,
+%%%      our implementations will return #VALUE!.
+%%%
+%%%
+%%%
 
 is_error(X) when is_atom(X) ->
     ?COND(is_number(stdfuns:error_type(X)), true, false);
@@ -113,8 +120,6 @@ product(Vals_) ->
 quotient([Num, Divisor]) ->
     trunc(divide([Num, Divisor])).
 
-%% INCOMPATIBILITY NOTE:
-%% ABS(1,2) pops up "too many args" dialog in Excel. We're returning #VALUE!.
 abs([Num]) ->
     ?ensure_number(Num),
     erlang:abs(Num).
@@ -223,7 +228,6 @@ log10([Num]) ->
 rand() ->
     random:uniform().
 
-%% This SUCKS for generating several values in a short amount of times.
 randbetween([First, Last]) ->
     ?ensure_numbers([First, Last]),
     rand() * (Last - First) + First.
