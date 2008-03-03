@@ -16,8 +16,10 @@
                 last/1,
                 map/2,
                 member/2,
+                nth/2,
                 reverse/1,
                 seq/2,
+                sublist/3,
                 takewhile/2,
                 zip/2]).
 
@@ -49,6 +51,10 @@
 %% A fun that takes two arguments.
 -define(funXY(BODY),
         fun(X, Y) -> BODY end).
+
+%% Just like funXY, nicer in folds.
+-define(funXAcc(BODY),
+        fun(X, Acc) -> BODY end).
 
 %% Shorthand for ustring:pr(Ustr).
 -define(pr(Ustr),
