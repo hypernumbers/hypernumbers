@@ -30,24 +30,29 @@ loop(Socket)->
     %% Format the register message, send to remoting_reg, then
     %% send the return back to self to process
     {tcp, Socket, [?REGISTER|Rest]} ->
+        ?F("got register message~n"),
         Page = hn_util:parse_url(string:strip(Rest)),
         self() ! gen_server:call(remoting_reg,{register,Page}),
         loop(Socket);
 
     {tcp, Socket, [?UNREGISTER]} ->
+        ?F("got unregister message~n"),
         self() ! gen_server:call(remoting_reg,{unregister}),
         loop(Socket);
 
     {tcp, Socket, [$<,$p,$o,$l,$i,$c,$y|_Rest]} ->
+        ?F("got policy request message~n"),
         {ok,Msg} = hn_util:read("../include/docroot/crossdomain.xml"),
         self() ! {msg,Msg++"\0"},
         loop(Socket);
 
-    {tcp, Socket, Msg} ->
+    {tcp, Socket, _Msg} ->
+        ?F("got some unhandlable message~n"),
         loop(Socket);
 
-    %% Recieved a Message to send back to client
+    %% Received a Message to send back to client
     {msg,Msg} ->
+        ?F("got message to send back - Msg~n",[Msg]),
         gen_tcp:send(Socket, Msg++"\n"),
         loop(Socket);
 

@@ -33,10 +33,15 @@
 -include("microsoftbiff.hrl").
 -include("excel_com_rec_subs.hrl").
 
-get_utf8(Arg)->
-    {[{Type,String}],_B,_C}=Arg,
-    String2=xmerl_ucs:to_utf8(binary_to_list(String)),
-    String2.
+get_utf8({[{'uni16-8',String}],_B,_C})->
+    xmerl_ucs:to_utf8(binary_to_list(String));
+get_utf8({[{'uni16-16',String}],_B,_C})->
+    io:format("***********************************~n"),
+    io:format("* in excel_util:get_utf8          *~n"),
+    io:format("* This should not be being called *~n"),
+    io:format("***********************************~n"),
+    xmerl_ucs:to_utf8(binary_to_list(String)).
+
     
 get_bound_sheet(Bin,_Tables)->
     <<SheetBOF:32/little-unsigned-integer,
@@ -239,21 +244,61 @@ write(Tables,Name,[H|T])->
   ets:insert(Tid,{H,T}).
 
 %% read shared formula from the shared/array formula table
+%% this is a bit messy
+%%
+%% Normally the tExp token will contain the top left hand marker of the appropriate record
+%% but this is not always the case
+%%
+%% See Sectio 3.10.1 of excelfileformatV1-41.pdf
+%%
+%% There can be an overlap of shared formulae and array formulae as well 
+%% - in which case the array supercedes the shared (I think)
+%%
+%% So first read for an array - if that returns blank then 
+%% search for an exact shared match
+%% if that turns up blank then onto a range interception
+%% on a shared (ie don't check the top left but that the passed in row/col intersects
+%% the range
 read_shared(Tables,{{sheet,Name},{row_index,Row},{col_index,Col}})->
   TableName=sh_arr_formula,
   {value,{_,Tid}}=lists:keysearch(TableName,1,Tables),
-  Fun = fun(X,Residuum)->
+  %% this fun reads an array formula
+  ArrayFun = fun(X,Residuum)->
+      NewResiduum = case X of
+        {{{sheet,Name},{row_index,Row},{col_index,Col}},_Rest} -> [X|Residuum];
+        _Other                                                   -> Residuum
+      end,
+    NewResiduum
+  end,
+  %% this fun reads an shared formula which matches at the top left
+  ExactSharedFun = fun(X,Residuum)->
+      NewResiduum = case X of
+        {{{sheet,Name},{firstrow,Row},{firstcol,Col},{lastrow,LastRow},
+                  {lastcol,LastCol}},_Rest} -> [X|Residuum];
+        _Other                               -> Residuum
+      end,
+    NewResiduum
+    end,
+  %% this fun reads an shared formula which intersects with the range
+  IntersectSharedFun = fun(X,Residuum)->
       NewResiduum = case X of
         {{{sheet,Name},{firstrow,FirstRow},{firstcol,FirstCol},{lastrow,LastRow},
                   {lastcol,LastCol}},_Rest} 
                   when Row >= FirstRow, Row =< LastRow,
-                  Col >= FirstCol, Col =< LastCol               -> [X|Residuum];
-        {{{sheet,Name},{row_index,Row},{col_index,Col}},_Rest} -> [X|Residuum];
-        Other                                                    -> Residuum
+                  Col >= FirstCol, Col =< LastCol        -> [X|Residuum];
+        _Other                                            -> Residuum
       end,
     NewResiduum
     end,
-    ets:foldl(Fun,[],Tid).
+    FirstReturn = ets:foldl(ArrayFun,[],Tid),
+    SecondReturn = case FirstReturn of
+        []      -> ets:foldl(ExactSharedFun,[],Tid);
+        _Other2 -> FirstReturn
+    end,
+    case SecondReturn of
+        []      -> ets:foldl(IntersectSharedFun,[],Tid);
+        _Other3 -> SecondReturn
+    end.
 
 %% read values from the tables
 read(Tables,Name,Key)->

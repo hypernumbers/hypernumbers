@@ -268,7 +268,7 @@ print_structure(FileIn,Directory,{SubLocation,SubStreams})->
     ok.
 
 delete_ets([])    -> ok;
-delete_ets([{TableName,Tid}|T]) -> ets:delete(Tid),
+delete_ets([{_TableName,Tid}|T]) -> ets:delete(Tid),
                       delete_ets(T).
   
 create_ets()->
@@ -339,6 +339,6 @@ dump([{lacunae,_}|T])->
   dump(T);
 dump([{Name,Tid}|T])->
   io:format("~nDumping table: ~p~n",[Name]),
-  Fun = fun(X,_Y) -> io:format("~p~n",[X]) end,
+  Fun = fun(X,_Y) -> io:format("~p: ~p~n",[Name,X]) end,
   ets:foldl(Fun,[],Tid),
   dump(T).

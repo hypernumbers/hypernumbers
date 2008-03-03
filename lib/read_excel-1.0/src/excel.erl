@@ -295,7 +295,8 @@ make_formulae(Tables)->
   %% First up reverse compile the basic cells
   Fun=fun(X,_Residuum)->
     {Index,[XF,{tokens,Tokens},{tokenarrays,TokenArray}]}=X,
-    io:format("in excel:make_formulae Tokens are ~p~n-TokenArray is ~p~n",[Tokens,TokenArray]),
+    io:format("in excel:make_formulae Index is ~p~n-Tokens are ~p~n-TokenArray is ~p~n",
+        [Index,Tokens,TokenArray]),
     Formula=excel_rev_comp:reverse_compile(Index,Tokens,TokenArray,Tables),
     io:format("in excel:make_formula Formula is ~p~n",[Formula]),
     ets:insert(CellId,[{Index,[XF,{formula,Formula}]}])

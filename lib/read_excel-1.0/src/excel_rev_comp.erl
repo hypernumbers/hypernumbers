@@ -31,7 +31,7 @@ reverse_compile(Index,Tokens,TokenArray,Tables)->
   reverse_compile(Index,Tokens,TokenArray,[],[],Tables).
 
 %% When the tokens are exhausted the Stack is just flattened to a string
-reverse_compile(Index,[],_TokenArray,Stack,_Residuum,_Tables) ->
+reverse_compile(_Index,[],_TokenArray,Stack,_Residuum,_Tables) ->
   "="++to_str(Stack);
   
 %%	tExp    
@@ -39,13 +39,19 @@ reverse_compile(Index,[{expr_formula_range,{tExp,[{sheet,Name},{row_index,Row},
     {col_index,Col}],{return,none}}}|T],TokenArray,Stack,Residuum,Tables) ->
     %% io:format("in excel_rev_comp:reverse_compile in tExp~n"),
   Return=excel_util:read_shared(Tables,{{sheet,Name},{row_index,Row},{col_index,Col}}),
-  io:format("in excel_rev_comp:reverse_compile Return is ~p~n",[Return]),
-  io:format("in excel_rev_comp:reverse_compile for tExp - duplicate returned from shared....~n"),
-  [{Index2,[Type,{tokens,Tokens},{tokenarrays,TokenArray2}]}|_Tail]=Return,    
+  io:format("in excel_rev_comp:reverse_compile Index is ~p~n-Return is ~p~n",[Index,Return]),
+  %% [{_Index2,[_Type,{tokens,Tokens},{tokenarrays,_TokenArray2}]}|_Tail]=Return,    
+  [{Index2,[_Type,{tokens,Tokens},{tokenarrays,_TokenArray2}]}|T]=Return,
+  case T of
+    []     -> ok;
+    _Other -> io:format("in excel_rev_comp:reverse_compile for tExp~n "++
+        "not sure why there is a duplicate here but there is ...~p~n",[T])
+  end,
   %% tExp is a placeholder for a shared or array formula so first we read the array/shared formula
   %% then we push the shared formula onto the Stack in place of the tExp one and carry on
+  io:format("in excel_rev_comp:reverse_compile Index2 is ~p~n",[Index2]),
   NewTokens=lists:append(Tokens,T),
-  io:format("in excel_rev_comp:reverse_compile for tExp NewTokens are ~p~n",
+  io:format("in excel_rev_comp:reverse_compile for tExp~n-NewTokens are ~p~n",
     [NewTokens]),
   reverse_compile(Index,NewTokens,TokenArray,Stack,Residuum,Tables);    
     
@@ -326,27 +332,52 @@ reverse_compile(Index,[{area_error,{tAreaErr,[{type,_Type}],{return,reference}}}
 %%	tRefN   
 reverse_compile(Index,[{relative_reference,{tRefN,[{value,{Row,Col,RowType,ColType}},
       {type,_Type}],{return,reference}}}|T],TokenArray,Stack,Residuum,Tables) ->
-    %% io:format("in excel_rev_comp:reverse_compile in tRefN~n"),
-    NewStack=push(Stack,{string,make_cell({Row,Col,RowType,ColType})}),
-    reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
-
-%%	tAreaN  
-reverse_compile(Index,[{relative_area,{tAreaN,[NewDetails|{type,Type}],
-    {return,reference}}}|T],TokenArray,Stack,Residuum,Tables) ->
-    %% io:format("in excel_rev_comp:reverse_compile in tAreaN~n"),
-  {{sheet,Sheet},{row_index,TopRow},{col_index,TopCol}}=Index,
-  [{start_cell,{StartRow,StartCol,_,_}}|{end_cell,{EndRow,EndCol,_,_}}]=NewDetails,
+    io:format("in excel_rev_comp:reverse_compile in tRefN~n-Row is ~p Col is ~p RowType is ~p "++
+        "ColType is ~p~n",[Row,Col,RowType,ColType]),
   %% these addresses are relative and must be added to the top point
   %% Excel has a row limit of 65535 (2^16) rows and a column limit of
   %% 256 (2^8) columns so the relative addresses must 'overflow' those
   %% bounds
-  NewStartRow=StartRow+TopRow-65535*erlang:round((StartRow+TopRow)/65535),
-  NewStartCol=StartCol+TopCol-1-255*erlang:round((StartCol+TopCol)/255),
-  NewEndRow=EndRow+TopRow-65535*erlang:round((EndRow+TopRow)/65535),
-  NewEndCol=EndCol+TopCol-1-255*erlang:round((EndCol+TopCol)/255),
+  %%
+  %% See the column in tAreaN is an offset different from this one
+  %%
+  %% FUCK KNOWS WHY?
+  %%
+  {{sheet,_Sheet},{row_index,TopRow},{col_index,TopCol}}=Index,
+  io:format("in excel_rev_comp:reverse_compile for tRefN~n"++
+      "-Row is ~p Col is ~p~n-TopRow is ~p TopCol is ~p~n",[Row,Col,TopRow,TopCol]),
+  NewRow=Row+TopRow-65535*erlang:round((Row+TopRow)/65535),
+  NewCol=Col+TopCol-256*erlang:round((Col+TopCol)/256),
   %% by definition it is a relative address so just 'make it so'
-  StartCell=make_cell({NewStartRow,NewStartCol,rel_row,rel_col}),
-  EndCell=make_cell({NewEndRow,NewEndCol,rel_row,rel_col}),
+    NewStack=push(Stack,{string,make_cell({NewRow,NewCol,RowType,ColType})}),
+    reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
+
+%%	tAreaN  
+reverse_compile(Index,[{relative_area,{tAreaN,[NewDetails|{type,_Type}],
+    {return,reference}}}|T],TokenArray,Stack,Residuum,Tables) ->
+    %% io:format("in excel_rev_comp:reverse_compile in tAreaN~n"),
+  {{sheet,_Sheet},{row_index,TopRow},{col_index,TopCol}}=Index,
+  [{start_cell,{StartRow,StartCol,StartRowType,StartColType}}|
+       {end_cell,{EndRow,EndCol,EndRowType,EndColType}}]=NewDetails,
+  %% these addresses are relative and must be added to the top point
+  %% Excel has a row limit of 65535 (2^16) rows and a column limit of
+  %% 256 (2^8) columns so the relative addresses must 'overflow' those
+  %% bounds
+  %%
+  %% See the column in tRefN is an offset different from this one
+  %% See the column in tRefN is an offset different from this one
+  %%
+  %% FUCK KNOWS WHY?
+  %%
+  io:format("in excel_rev_comp:reverse_compile for tAreaN~n"++
+      "-StartRow is ~p StartCol is ~p~n-EndRow is ~p EndCol is ~p~n-TopRow is ~p TopCol is ~p~n",
+      [StartRow,StartCol,EndRow,EndCol,TopRow,TopCol]),
+  NewStartRow=StartRow+TopRow-65535*erlang:round((StartRow+TopRow)/65535),
+  NewStartCol=StartCol+TopCol-256*erlang:round((StartCol+TopCol)/256),
+  NewEndRow=EndRow+TopRow-65535*erlang:round((EndRow+TopRow)/65535),
+  NewEndCol=EndCol+TopCol-256*erlang:round((EndCol+TopCol)/256),
+  StartCell=make_cell({NewStartRow,NewStartCol,StartRowType,StartColType}),
+  EndCell=make_cell({NewEndRow,NewEndCol,EndRowType,EndColType}),
   NewRange=StartCell++":"++EndCell,
   NewStack=push(Stack,{string,NewRange}),
   reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
@@ -396,8 +427,8 @@ reverse_compile(Index,[{three_dee_area,{tArea3d,[{reference_index,RefIdx},
 %%%%%%%%%%%%%%%%%%%%%%
 
 %% This will catch missed out stuff...
-reverse_compile(Index,[Head|T],TokenArray,Stack,Residuum,Tables) ->
-    io:format("in reverse compile missing tokens are ~p~n",[Head]),
+reverse_compile(_Index,[Head|T],TokenArray,_Stack,_Residuum,_Tables) ->
+    io:format("in reverse compile missing tokens are ~p with a TokenArray of ~n",[Head,TokenArray]),
     exit("missing tokens in excel_rev_comp:reverse_compile").
     %% reverse_compile(Index,T,TokenArray,Stack,Residuum,Tables).
 
@@ -410,8 +441,8 @@ reverse_compile(Index,[Head|T],TokenArray,Stack,Residuum,Tables) ->
 
 %% Looks up an external reference from the Supbook
 get_ref_name(RefIndex,NameIndex,Tables)->
-  NameTable=excel_util:read(Tables,externalrefs,RefIndex),
-  io:format("in excel_rev_comp:get_ref_name NameTable is ~p~n",[NameTable]),
+  NameTab=excel_util:read(Tables,externalrefs,RefIndex),
+  io:format("in excel_rev_comp:get_ref_name NameTab is ~p~n",[NameTab]),
   "fix me!".
 
 %% Looks up a reference to an externsheet and turns it into a sheet ref
@@ -527,7 +558,7 @@ operator_to_string(divide)                 -> "/";
 operator_to_string(power)                  -> "^";
 operator_to_string(concatenate)            -> "&";
 operator_to_string(less_than)              -> "<";
-operator_to_string(less_than_or_equal)    -> "=<";
+operator_to_string(less_than_or_equal)    -> "<=";
 operator_to_string(equals)                 -> "=";
 operator_to_string(greater_than_or_equal) -> ">=";
 operator_to_string(greater_than)           -> ">";

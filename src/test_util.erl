@@ -82,9 +82,8 @@ excel_equal("-2146826265","#REF!")   -> true;
 excel_equal("-2146826273","#VALUE!") -> true;
 %% Checks that two Excel values are equal.
 excel_equal(String1,String2) when is_list(String1), is_list(String2) ->
-  %% this test is used in the full test only - not the reverse compile
-  %% fix-up the fact that we have changed the syntax for function Error.Type to ErrorType
-    Return=regexp:gsub(String2,"Error.Type","ErrorType"),
+  %% fix-up the fact that we have changed the name of the function Error.Type to ErrorType
+    Return=regexp:gsub(String2,"ERROR.TYPE","ERRORTYPE"),
     io:format("Return is ~p~n",[Return]),
     {ok,String2a,_}=Return,
     io:format("String1 is ~p and String2a is ~p~n",[String1,String2a]),
@@ -105,28 +104,37 @@ excel_equal(String1,String2) when is_list(String1), is_list(String2) ->
           _                          -> equal_to_digit(String1f,String2f,
                                             ?EXCEL_IMPORT_FLOAT_PRECISION)
         end
-    end;
-excel_equal({number, F1}, {number, F2}) ->
+    end.
+        
+excel_equal2({number, F1}, {number, F2}) ->
     equal_to_digit(F1, F2, ?EXCEL_IMPORT_FLOAT_PRECISION);
-excel_equal({formula, Fla1}, {formula, Fla2}) ->
-    Fla1 == Fla2;
-excel_equal({boolean,Boolean1},{boolean,Boolean2}) ->
+excel_equal2({formula, Fla1}, {formula, Fla2}) ->
+  %% fix-up the fact that we have changed the name of the function Error.Type to ErrorType
+    Return=regexp:gsub(Fla2,"ERROR.TYPE","ERRORTYPE"),
+    io:format("Return is ~p~n",[Return]),
+    {ok,Fla2a,_}=Return,
+    io:format("Fla1 is ~p~nFla2a is ~p~n",[Fla1,Fla2a]),
+    case Fla1 of
+      Fla2a -> true;
+      _     -> false
+    end;
+excel_equal2({boolean,Boolean1},{boolean,Boolean2}) ->
     case Boolean1 of
         Boolean2 -> true;
         _        -> false
     end;
-excel_equal({error,Error1},{number,ErrorVal}) ->
+excel_equal2({error,Error1},{number,ErrorVal}) ->
     Error2=make_err_val(ErrorVal),
     case Error1 of
         Error2 -> true;
         _      -> false
     end;
-excel_equal({error,Error1},{error,Error2}) ->
+excel_equal2({error,Error1},{error,Error2}) ->
     case Error1 of
         Error2 -> true;
         _      -> false
     end;
-excel_equal({string,String1},{string,String2}) ->
+excel_equal2({string,String1},{string,String2}) ->
     case String1 of
         String2 -> true;
         _       -> false
@@ -151,7 +159,8 @@ expected(Expected, Got) ->
     end.
 
 expected2(Expected, Got) ->
-    Result=excel_equal(Expected,Got),
+    Result=excel_equal2(Expected,Got),
+    io:format("in test_util:expected2 Result is ~p~n",[Result]),
     case Result of
         true ->
             io:format("SUCCESS~nExpected: ~p~nGot:     ~p~n",[Expected,Got]),
@@ -178,7 +187,7 @@ make_float(List) ->
               catch
                 exit:_Reason   -> "not float";
                 error:_Message -> "not float";
-                throw:Term     -> "not float"
+                throw:_Term     -> "not float"
             end,
     case Return of
       "not float" -> make_float2(List);
@@ -191,7 +200,7 @@ make_float2(List)->
     catch
       exit:_Reason   -> "not float";
       error:_Message -> "not float";
-      throw:Term     -> "not float"
+      throw:_Term     -> "not float"
     end.
 
 

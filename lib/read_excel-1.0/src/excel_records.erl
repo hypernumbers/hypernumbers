@@ -22,7 +22,7 @@
 %%% excelfileformat.pdf (V1.40)                                              %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-parse_rec(?FORMULA,Bin,Name,CurrentFormula,Tables)->
+parse_rec(?FORMULA,Bin,Name,_CurrentFormula,Tables)->
     <<RowIndex:16/little-unsigned-integer,
      ColIndex:16/little-unsigned-integer,
      XFIndex:16/little-unsigned-integer,
@@ -125,7 +125,7 @@ parse_rec(?DATEMODE,_Bin,_Name,CurrentFormula,Tables)->
   excel_util:write(Tables,lacunae,[{identifier,"DATEMODE"},{source,excel_records.erl},
     {msg,"not being processed"}]),
     {ok,CurrentFormula};
-parse_rec(?EXTERNNAME2,Bin,_Name,CurrentFormula,Tables)->
+parse_rec(?EXTERNNAME2,_Bin,_Name,CurrentFormula,Tables)->
     %% io:format("in excel_records EXTERNNAME~n"),
     %% parse_externname(Bin,Tables),
   excel_util:write(Tables,lacunae,[{identifier,"EXTERNNAME2"},{source,excel_records.erl},
@@ -529,7 +529,7 @@ parse_rec(?FORMAT2,_Bin,_Name,CurrentFormula,Tables)->
 parse_rec(?SHRFMLA,Bin,Name,CurrentFormula,Tables)->
   <<Range:6/binary,
    _NotUsed:8/little-unsigned-integer,
-   NoRecords:8/little-unsigned-integer,
+   _NoRecords:8/little-unsigned-integer,
    Rest/binary>>=Bin,
      %% io:format("in excel_records:parse_rec for SHRFMLA~n"),
   {[{FirstRow,LastRow,FirstCol,LastCol}],_}=excel_util:read_cell_range_addies(1,'8bit',Range),
@@ -542,7 +542,7 @@ parse_rec(?QUICKTIP,_Bin,_Name,CurrentFormula,Tables)->
   excel_util:write(Tables,lacunae,[{identifier,"QUICKTIP"},{source,excel_records.erl},
     {msg,"not being processed"}]),
     {ok,CurrentFormula};
-parse_rec(?BOF4,Bin,_Name,CurrentFormula,Tables)->
+parse_rec(?BOF4,Bin,_Name,CurrentFormula,_Tables)->
     %% BOF BIFF8 Section 5.8.1 excelfileformat.pdf V1.40
     <<_BiffVsn:16/little-unsigned-integer,
      _Type:16/little-unsigned-integer,
@@ -646,7 +646,7 @@ parse_XF_RK(<<XFIndex:16/little-unsigned-integer,
 %%% substructures of Section 2.5                                             %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-parse_SST(NoOfStrings,NoOfStrings,Tables,_)->
+parse_SST(NoOfStrings,NoOfStrings,_Tables,_)->
     io:format("String table parsed~n");
 parse_SST(StringNo,NoOfStrings,Tables,[BinHead|BinTail])->
     BinLen1=length(binary_to_list(BinHead)),
@@ -677,21 +677,21 @@ parse_SST(StringNo,NoOfStrings,Tables,[BinHead|BinTail])->
     end,
     Return=excel_util:parse_CRS_Uni16(ParseBin,2),
     String=excel_util:get_utf8(Return),
-    {[{Type,BinString}],StringLen,RestLen}=Return,    
+    {[{_Type,BinString}],_StringLen,_RestLen}=Return,    
     Len=string:len(binary_to_list(BinString)),
     BinLen=8*(Len+3), % add an offset for the 2 byte index and 1 byte flags
     <<_String2:BinLen/little-unsigned-integer,Rest/binary>>=NewBinHead,
     excel_util:write(Tables,strings,[{index,StringNo},{string,String}]),
     parse_SST(StringNo+1,NoOfStrings,Tables,[Rest|NewBinTail]).
 
-write_row([],_RowIndex,_FirstColIndex,_Name,Tables)->
+write_row([],_RowIndex,_FirstColIndex,_Name,_Tables)->
   {ok,ok};
 write_row([{{xf_index,XFIndex},{value,number,Number}}|T],RowIndex,FirstColIndex,Name,Tables)->
     excel_util:write(Tables,cell,[{{sheet,Name},{row_index,RowIndex},
         {col_index,FirstColIndex}},{xf_index,XFIndex},{value,number,Number}]),
     write_row(T,RowIndex,FirstColIndex+1,Name,Tables).
 
-parse_externsheet(<<>>,_N,Tables)->
+parse_externsheet(<<>>,_N,_Tables)->
   {ok,ok};
 parse_externsheet(Bin,N,Tables)->
   <<SubRec:16/little-unsigned-integer,
@@ -706,7 +706,7 @@ parse_externsheet(Bin,N,Tables)->
 %% parses external references as defined in Section 5.99.1 of excelvileformatV1.40.pdf
 %% that definition is buggy as this record doesn't contain any details of the external file
 %% name - don't know from whence that is got at the mo...
-parse_external_refs(<<NoOfSheets:16/little-unsigned-integer,Rest/binary>>,Tables)->
+parse_external_refs(<<_NoOfSheets:16/little-unsigned-integer,Rest/binary>>,Tables)->
     [RawFilename|BinaryList]=get_ext_ref_names(Rest,[]),
     io:format("in excel_records:parse_external_refs BinaryList is ~p~n",[BinaryList]),
     Names=[binary_to_list(X) || X <- BinaryList],
@@ -718,10 +718,10 @@ get_ext_ref_names(<<>>,Residuum)->
   lists:reverse(Residuum);
 get_ext_ref_names(Bin,Residuum)->
     Return=excel_util:parse_CRS_Uni16(Bin,2),
-    {[{Type,String}],StringLen,RestLen}=Return,
+    {[{_Type,String}],StringLen,_RestLen}=Return,
     Utf8String=excel_util:get_utf8(Return),
     StringLen2=StringLen*8,
-    <<String2:StringLen2/little-unsigned-integer,Rest/binary>>=Bin,
+    <<_String2:StringLen2/little-unsigned-integer,Rest/binary>>=Bin,
     get_ext_ref_names(Rest,[list_to_binary(Utf8String)|Residuum]).
 
 parse_filename(<<?chEncode:8/little-unsigned-integer,
@@ -752,7 +752,7 @@ parse_filename(Bin) -> "./"++binary_to_list(Bin)++"/".
 snip_xls(Bin)->
   FileName=binary_to_list(Bin),
   RegExp=".xls$",
-  Snipped=case regexp:gsub(FileName,RegExp,"") of
+  case regexp:gsub(FileName,RegExp,"") of
       {ok, NewString,_} -> NewString;
       {error,_}         -> FileName
   end.

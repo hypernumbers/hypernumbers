@@ -403,7 +403,7 @@ parse_tokens(0,Name,Bin,TokenArray,Residuum)->
     parse_tokens(<<>>,Name,TokenArray,Residuum);
 
 %% catch and terminate unexpected tokens
-parse_tokens(Duff,Name,Bin,_TokenArray,Residuum)->
+parse_tokens(Duff,_Name,Bin,_TokenArray,Residuum)->
     io:format("duff token parsed~p~n"++
 				      "binary is ~p~n"++
 				      "residuum is ~p~n",
