@@ -56,9 +56,13 @@ parse(Formula__) ->
 %% @doc Runs the s-expression.
 run(Ast, Bindings) ->
     put(retvals, {[], [], []}),
-    Value = (catch eval(Ast, Bindings)),
-    {RefTree, Errors, References} = get(retvals),
-    {ok, {Value, RefTree, Errors, References}}.
+    case (catch eval(Ast, Bindings)) of
+        {error, R} when R == self_reference orelse R == circular_reference ->
+            {error, R};
+        Value ->
+            {RefTree, Errors, References} = get(retvals),
+            {ok, {Value, RefTree, Errors, References}}
+    end.
 
 
 %%% @doc Updates formula for structural change.
@@ -216,7 +220,8 @@ funcall(hypernumber, [Url_], Bindings) ->
         hn_util:parse_url(Url),
 
     fetch_update_return(?fun0(spriki:get_hypernumber(MSite, MPath, MX, MY, Url,
-                                                    RSite, RPath, RX, RY)));
+                                                     RSite, RPath, RX, RY)),
+                       Bindings);
 
 
 funcall(hn, [Url], Bindings) ->
@@ -261,10 +266,13 @@ funcall(isref, [_MaybeRef], _Bindings) ->
 do_cell(RelPath, Ref, Bindings) ->
     ?CREATE_BINDINGS_VARS,
     {X, Y} = getxy(Ref),
-    ?COND(X == MX andalso Y == MY, throw(self_ref), '_'),
+    
+    ?IF(X == MX andalso Y == MY,
+        throw({error, self_reference})),
+
     Path = walk_path(MPath, RelPath),
     FetchFun = ?fun0(spriki:calc(MSite, Path, X, Y)),
-    fetch_update_return(FetchFun).
+    fetch_update_return(FetchFun, Bindings).
 
 do_cell(Path, Row, Col, Bindings) ->
     do_cell(Path, to_b26(Col) ++ to_s(Row), Bindings).
@@ -286,17 +294,16 @@ do_cells(Funs, Bindings) ->
         end,
         Funs).
 
-
-
 %% @doc Calls supplied fun to get value and dependencies, stashes dependencies
 %% away, and returns the value.
-fetch_update_return(FetchFun) ->
-
+fetch_update_return(FetchFun, Bindings) ->
+    ?CREATE_BINDINGS_VARS,
     {Value, RefTree, Errors, References} = FetchFun(),
-    ?F("Value ~p~n",[{Value, RefTree, Errors, References}]),
 
+    ?IF(member({MSite, MPath, MX, MY}, RefTree),
+        throw({error, circular_reference})),
+    
     {RefTree0, Errors0, References0} = get(retvals),
     put(retvals,
         {RefTree0 ++ RefTree, Errors0 ++ Errors, References0 ++ References}),
-
     Value.
