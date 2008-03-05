@@ -93,6 +93,10 @@ start_apps(Conf,Toolbar)->
     application:start(engine),
     application:start(inets),
 
+    file:set_cwd("../lib/starling"),
+    application:start(starling_app),
+    file:set_cwd("../../../src"),
+    
     code:add_path("../priv"),
     case Toolbar of
         true -> toolbar:start(); _ -> ok
@@ -106,7 +110,8 @@ stop() ->
     application:stop(remoting),
     application:stop(read_excel),
     application:stop(crypto),
-    application:stop(inets).
+    application:stop(inets),
+    application:stop(starling_app).
 
 stop_halt() ->
     stop(),
