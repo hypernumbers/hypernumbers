@@ -76,7 +76,7 @@ exact([Str1, Str2]) ->
     exact(new(Str1), new(Str2)).
 
 len([Str]) ->
-    len(new(Str)).
+    ustring:len(new(Str)).
 
 mid([Str, Start, Len]) ->
     substr(new(Str), Start, Len).
@@ -131,16 +131,16 @@ find([Substr, Str]) ->
 find([Substr_, Str_, Start]) ->
     Str = new(Str_),
     Substr = new(Substr_),
-    SearchStr = substr(Str, Start, len(Str) - Start + 1), %% Slice from Start to end
+    SearchStr = substr(Str, Start, ustring:len(Str) - Start + 1), %% Slice from Start to end
     Idx = index(SearchStr, Substr),
-    Idx + (len(Str) - (len(Str) - Start + 1)).
+    Idx + (ustring:len(Str) - (ustring:len(Str) - Start + 1)).
 
 left([Str, Len]) ->
     ?pr(substr(new(Str), 1, Len)).
 
 right([Str_, Len]) ->
     Str = new(Str_),
-    ?pr(substr(Str, len(Str) - Len + 1, Len)).
+    ?pr(substr(Str, ustring:len(Str) - Len + 1, Len)).
     
 concatenate([Strs_]) ->
     Strs = map(?funX(new(X)), Strs_),

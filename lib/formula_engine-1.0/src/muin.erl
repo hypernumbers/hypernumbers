@@ -45,7 +45,7 @@ parse(Formula__) ->
         {ok, Tokens, _} ->
             case erlang:apply(ParseMod, parse, [Tokens]) of
                 {ok, Ast} ->
-                    Ast;
+                    {ok, Ast};
                 _ ->
                     {error, error_in_formula}
             end;
