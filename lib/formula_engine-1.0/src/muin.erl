@@ -40,10 +40,10 @@ parse(Formula__) ->
     %% Translate the formula to English if needed.
     Formula = translator:do(Formula__),
     {LexMod, ParseMod} = get_frontend(),
-
-    case erlang:apply(LexMod, string, [Formula]) of
+    
+    case LexMod:string(Formula) of
         {ok, Tokens, _} ->
-            case erlang:apply(ParseMod, parse, [Tokens]) of
+            case ParseMod:parse(Tokens) of
                 {ok, Ast} ->
                     {ok, Ast};
                 _ ->
@@ -162,10 +162,9 @@ funcall(Fun, Args) ->
                     ?COND(member(Fun, ?STDFUNS_STATS), stdfuns_stats,
                           ?COND(member(Fun, ?STDFUNS_TEXT), stdfuns_text,
                                 userdef))),
-                           
-    erlang:apply(Modname, Fun, (?COND(length(Args) == 0,
-                                      [],
-                                      [Args]))).
+    ?COND(length(Args) == 0,
+          Modname:Fun(),
+          Modname:Fun(Args)).
 
 %%% ----- Reference functions.
 
