@@ -30,7 +30,28 @@
         []).
 
 -define(STDFUNS_TEXT,
-        []).
+        [
+         %% Comparison functions.
+         exact,
+         len,
+         mid,
+
+         %% Conversion functions.
+         clean,
+         fixed,
+         lower,
+         proper,
+         upper,
+
+         %% Locate text.
+         char,
+         find,
+         left,
+         right,
+
+         concatenate,
+         rept
+        ]).
 
 -define(STDFUNS_FINANCIAL,
         []).
