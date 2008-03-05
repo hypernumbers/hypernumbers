@@ -16,7 +16,7 @@
 
 -export([ out/1, calc/4, recalc/1, process_input/5, get_hypernumber/9 ]).
 
--import(tconv,[to_s/1,to_b26/1]).
+-import(tconv, [to_l/1, to_s/1, to_b26/1]).
 
 -compile(export_all).
 
@@ -471,10 +471,12 @@ api_logout() ->
 %%% Rest of the POST functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-process_input(Site,Path,X,Y,Val) ->
+process_input(Site, Path, X, Y, Val) ->
     case Val of
-    [$=|Formula] -> process_formula(Site,Path,X,Y,Formula);
-    _Other       -> process_value(Site,Path,X,Y,Val)
+        [$= | Formula] ->
+            process_formula(Site,Path,X,Y,Formula);
+        _Other ->
+            process_value(Site,Path,X,Y,Val)
     end.
 
 process_value(Site, Path, X, Y, Value) ->
@@ -496,24 +498,24 @@ process_value(Site, Path, X, Y, Value) ->
     write_cell("", Val, Type, {Site, Path, X, Y}, {[], [], []}, []),
     ok.
 
-%% TODO: Put error handling back in (proper).
 process_formula(Site, Path, X, Y, Formula) ->
-    %% Parse & run the formula.
-    {ok, Ast} = muin:parse("=" ++ Formula),
-    {ok, {Value, RefTree, Errors, References}} =
-        muin:run(Ast, [{site, Site}, {path, Path}, {x, X}, {y, Y}]),
-    muin_util:fdbg(Value, "Value"),
-    %% Got any circular references?
-    case lists:member({Site, Path, X, Y}, RefTree) of
-    false ->
-            write_cell(Formula, Value, number, {Site, Path, X, Y}, {RefTree, Errors, References}, []);
-    true ->
-            %% Write a duff abstract form that returns a value without references, and mark references
-            %% as null to break the link.
-            ErrMsg = "Circular Reference: " ++
-                      Site ++ Path ++ util2:make_b26(X) ++ integer_to_list(Y),
-            
-            write_cell(Formula, "Error!", error, {Site, Path, X, Y}, {RefTree, [ErrMsg | Errors],[]}, [])
+    case muin:parse("=" ++ Formula) of
+        {ok, Ast} ->
+            case muin:run(Ast, [{site, Site}, {path, Path}, {x, X}, {y, Y}]) of 
+                {ok, {Value, RefTree, Errors, References}} ->
+                    write_cell(Formula, Value, number, {Site, Path, X, Y},
+                               {RefTree, Errors, References}, []);
+                %% Self-reference or circular reference errors ONLY.
+                %% {error, div0} and the rest are handled in the clause above.
+                ErrVal= {error, Reason} ->
+                    ErrMsg = append([atom_to_list(Reason), " ", Site, Path,
+                                     util2:make_b26(X), to_l(Y)]),
+                    write_cell(Formula, ErrVal, error, {Site, Path, X, Y},
+                               {[], [ErrMsg], []}, [])
+            end;
+        ErrVal = {error, error_in_formula} ->
+            write_cell(Formula, ErrVal, error, {Site, Path, X, Y},
+                       {[], ["Invalid formula."], []}, [])
     end,
     ok.
 
