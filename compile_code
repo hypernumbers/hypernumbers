@@ -1,5 +1,13 @@
 #!/bin/sh
 
+echo "=================="
+echo "COMPILING STARLING"
+echo "=================="
+
+cd ./lib/starling/
+rake
+cd ../../
+
 echo "============================="
 echo "GENERATING LEXERS AND PARSERS"
 echo "============================="
