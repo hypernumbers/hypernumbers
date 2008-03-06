@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+        <title>Hypernumbers</title>
+
+        <script src="/js/jquery.js" language="javascript"></script>
+        <script src="/js/jquery.contextmenu.js" language="javascript"></script>
+        <script src="/js/jquery.simplemodal.js" language="javascript"></script>
+        <script src="/js/ajaxfileupload.js" language="javascript"></script>
+        <script src="/js/jquery.bgiframe.min.js" language="javascript"></script>
+        <script src="/js/jquery.clickmenu.js" language="javascript"></script>
+        <script src="/js/jquery.spreadsheet.js" language="javascript"></script>
+        <script src="/js/jquery.flash.js" language="javascript"></script>
+        <script src="/js/socket.js" language="javascript"></script>
+
+        <style type="text/css">
+            @import "/css/base.css";
+            @import "/css/modal.css";
+            @import "/css/clickmenu.css";
+            @import "/css/jquery.spreadsheet.css";
+        </style>
+
+        <script>
+            $(function()
+            {
+                var range = "a1:z50";
+                var url = document.location.href;
+
+                $('#flash').flash({
+                    src: '/swf/JsSocket.swf'
+                });
+
+                // Import SpreadSheet
+                $("#m_import").click( function()
+                {
+                    $("#filemenu ul").toggle();
+                    var x = $("#import").modal();
+                    $("#Filedata").change(function()
+                    {
+                        $.ajaxFileUpload
+                        ({
+                            url:'?import',
+                            secureuri:false,
+                            datatype: "json",
+                            fileElementId:'Filedata'
+                        })
+                        x.close();
+                    });
+                });
+            
+                $.get(url+"?pages&format=xml", function(data)
+                {
+                    var add = function(root,dir,path)
+                    {
+                        var list = $("<ul />").appendTo(root);
+                        
+                        $(dir).children().each(function()
+                        {
+                            var npath = $(this).attr("path");
+                            npath = (npath == "/") ? "" : npath;
+                            var parent = $("<li><a href=\""+path+npath+"/\">/"+npath+"</a></li>").appendTo(list);
+
+                            if($(this).children().size() > 0)
+                                add(parent,this,path+npath+"/");
+                        });
+                    }
+            
+                    add($("#browse"),$(data),"");
+
+                    $.fn.clickMenu.setDefaults({arrowSrc:"/img/arrow.png"});
+                    $("#menu").clickMenu();
+                });
+
+                var defaults = {
+                    range   : range,
+                    fmargin : 24,
+                    change  : function(x,y,val)
+                    {
+                       $.post(url+$.fn.to_b26(x)+y+"?format=xml",
+                            "<create><value>"+val+"</value></create>",null,"xml");
+                    },
+                    cellSelect : function(x,y,el)
+                    {
+                        $.get(url+$.fn.to_b26(x)+y+"?toolbar",function(data)
+                        {
+                            var form = $(data).find("formula").text();
+                            el.val( (form != "") ? "="+form : "");
+                        });
+                    } 
+                };
+
+                $("#hn").spreadsheet(defaults);
+    
+                $.getJSON(url+range+"?format=json", function(data) 
+                {
+                    $(data[1]).each(function(y)
+                    {
+                        $(this[1]).each(function(x)
+                        {
+                            if(this[0] == "column" && this[1][1] != "")
+                            {
+                                $($(".tabledata")[0].childNodes[0].childNodes[y].childNodes[x].childNodes[0]).text(this[1][1]);
+                            }
+                        });
+                    });
+                });
+            });
+        </script>
+
+    </head>
+
+    <body>
+
+    <body>
+        
+        <div id="header"><img src="/img/logo.jpg" height="50px" /></div>
+
+        <ul id="menu">
+            <li>File
+                <ul><li id="browse">Browse</li>
+                    <li class="sep"></li>
+                    <li id="m_import">Import SpreadSheet</li></ul>
+            </li>
+            <li>HyperNumbers
+                <ul><li>Incoming Links <ul><li>/<ul><li>test</li><li>test2</li></ul></li></ul></li>
+                    <li>Ougoing Links <ul><li></li><li></li></ul></li>
+                </ul>
+            </li>
+            <li>Help
+                <ul>
+                    <li>About...</li>
+                </ul>
+            </li>
+        </ul>
+        
+        <div id="hn"></div>
+
+        <div id="footer">
+            <div id="connection">
+                <img src="/img/cross.png" alt="Socket Connection" /> 
+                <span>disconnected</span>
+            </div>
+        </div>
+
+        <div id="flash"></div>
+
+
+        <div id="import" style='display:none'>
+            <h2>Import File</h2>
+            <hr />
+            <p>Import a file to this websheet (currently xls files are supported)</p>
+            <input type="file" name="Filedata" id="Filedata" value="Upload Spreadsheet" />
+        </div>
+
+
+    </body>
+
+</html>
