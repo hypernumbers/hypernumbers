@@ -1,0 +1,41 @@
+/* Overlay */
+#modalOverlay {background-color:#000; cursor:wait;}
+
+#modalContainer
+{
+    position:absolute;
+    height:100%;
+    width:100%; 
+    top:0px;
+    left:0px;    
+}
+
+/* Container */
+#import 
+{
+    position:absolute;
+    height:100px;
+    width:400px; 
+    left: 50%;
+    top: 50%;
+    margin-left:-200px;
+    margin-top: -50px;
+    background-color:#fff; 
+    border:3px solid #ccc;
+    padding:5px;
+}
+
+#modalContainer a.modalCloseImg 
+{
+    display:block;
+    position:absolute;
+    width:11px; 
+    height:11px; 
+    left: 50%;
+    top: 50%;
+    margin-left:185px;
+    margin-top: -39px;
+    background: #FFF url('/images/close_icon.gif') no-repeat; 
+    z-index:3200; 
+    cursor:pointer;
+}

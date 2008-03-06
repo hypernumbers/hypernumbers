@@ -1,0 +1,215 @@
+#hn 
+{
+}
+
+#hn table
+{
+    border-top:1px solid #aaa;
+    border-left:1px solid #aaa;
+    padding: 0;
+    margin: 0;
+    border-collapse:collapse;
+}
+
+#hn .rowindex
+{
+    width:25px;
+    padding: 3px; 
+    text-align:right;
+    background: #ddd !important;
+    border-bottom:1px solid #999;
+    border-right:1px solid #999;
+}
+
+#hn th
+{
+    border-bottom:1px solid #aaa;
+    border-right:1px solid #aaa;
+    text-align:center;
+    background:#ddd;
+    
+}
+
+#hn td
+{
+    background: #fefefe;
+    border-bottom:1px solid #ddd;
+    border-right:1px solid #ddd;
+    vertical-align:top;
+}
+
+#hn table div textarea
+{
+    border:1px solid blue;
+    display:block;
+    height:18px;
+    position:absolute;
+    overflow-x:hidden;
+}
+
+#hn table div.cell
+{
+    border:1px solid transparent;
+    height:20px;
+    overflow:hidden;
+    white-space: nowrap;
+    cursor:default;
+}
+
+#name 
+{
+    vertical-align:middle;
+    display:block;
+    font:  12px "Helvetica Neue", Palatino, sans-serif;
+    padding:3px;
+    width: 80px;
+    border: 0px;
+    text-align:center;
+    float:left;
+}
+
+#functions
+{
+    border-width: 0px 1px 0px 1px;
+    font:  12px "Helvetica Neue", Palatino, sans-serif;
+    display:block;
+    float:left;height:20px;
+    background:#eee;
+    width:40px;
+}
+
+#toolbar 
+{
+    background:#eee;
+    height:26px;
+    border-bottom:1px solid #999;
+    border-top:1px solid #ddd;
+}
+
+#formula
+{
+    margin-left:130px;
+}
+
+#formula input
+{
+    font:  12px "Helvetica Neue", Palatino, sans-serif;
+    border: 0px;
+    padding:3px;
+    width:100%;
+}
+
+#marker 
+{
+    display:none;
+    position:absolute;
+    height:100%;
+    width:2px;
+    background:#000;
+}
+
+#headers
+{
+    position:relative;
+}
+
+.datacontainer
+{
+    overflow-y:scroll;
+}
+
+.container
+{
+    overflow:hidden;
+}
+
+#drag
+{
+    display:none;
+    position:fixed;
+    cursor:pointer;
+    width:6px;
+    height:6px !important;
+    background:blue;
+    z-index:9999;
+}
+
+
+#toolbar a:hover
+{
+    border:1px solid #BBB;
+    background-color:#fff;
+}
+
+#toolbar a 
+{
+    float:left;
+    background-position:center center;
+    background-repeat:no-repeat;
+    border:1px solid transparent;
+    cursor:pointer;
+    padding:2px;
+    margin:2px;
+    display:block;
+    height:16px;
+    width:16px;
+}
+
+#toolbar a.separator
+{
+    cursor:default;
+    margin:3px;
+    padding:0px;
+    height:18px;
+    width:0px !important;
+    border-left:1px solid #999;
+    border-right:1px solid #FFF;
+}
+
+
+#toolbar .left { background-image:  url('/img/text_align_left.png'); }
+#toolbar .center { background-image:  url('/img/text_align_center.png'); }
+#toolbar .right { background-image:  url('/img/text_align_right.png'); }
+#toolbar .justify { background-image:  url('/img/text_align_justify.png'); }
+
+#toolbar .bold { background-image:  url('/img/text_bold.png'); }
+#toolbar .italic { background-image:  url('/img/text_italic.png'); }
+#toolbar .underl { background-image:  url('/img/text_underline.png'); }
+#toolbar .strike { background-image:  url('/img/text_strikethrough.png'); }
+
+
+.dragleft   { border-left:  1px dashed #000 !important; }
+.dragright  { border-right: 1px dashed #000 !important; }
+.dragtop    { border-top:   1px dashed #000 !important; }
+.dragbottom { border-bottom:1px dashed #000 !important; }
+
+.current div
+{
+    opacity: 1 !important;
+}
+
+.selected 
+{
+    opacity: .5;
+    background: #d2e9ff;
+}
+
+#hn th.highlight,#hn td.highlight
+{
+    background:#666 !important;
+}
+
+.clearfix:after {
+    content: "."; 
+    display: block; 
+    height: 0; 
+    clear: both; 
+    visibility: hidden;
+}
+
+.clearfix {display: inline-block;}
+
+/* Hides from IE-mac \*/
+* html .clearfix {height: 1%;}
+.clearfix {display: block;}
+/* End hide from IE-mac */

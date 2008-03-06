@@ -1,0 +1,81 @@
+* 
+{ 
+    font:   11px "Helvetica Neue", Palatino, sans-serif; 
+    margin: 0px; 
+    padding:0px; 
+}
+
+body
+{
+    overflow:hidden;
+}
+
+h2 
+{
+    font: bold 18px "Helvetica Neue", Palatino, sans-serif;  
+}
+
+p
+{
+    padding: 5px 0px;
+}
+
+hr 
+{
+    margin-bottom:5px;
+}
+
+#header
+{
+    background:#000;
+    border-bottom:4px solid #888;
+}
+
+#header img 
+{
+    margin:3px 10px;
+}
+
+#menu
+{
+    height:26px;
+}
+
+#menu li
+{
+    font:   11px "Helvetica Neue", Palatino, sans-serif;    
+}
+
+#footer
+{
+    position:absolute;
+    bottom:0px;
+    height:24px;
+    background:#eee;
+    width:100%;
+}
+
+#connection
+{
+    height:24px;
+    line-height:24px;
+}
+
+#footer span,#footer img
+{    
+    vertical-align:middle;
+}
+
+.sep,.sep:hover
+{
+    padding:0px 3px !important;
+    border-bottom:1px solid #999 !important;
+}
+
+#flash
+{
+    position:absolute;
+    visibility:hidden;
+    top:-1000px;
+    height:200px;
+}
