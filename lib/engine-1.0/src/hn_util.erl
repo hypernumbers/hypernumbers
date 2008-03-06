@@ -12,19 +12,38 @@
 
 -record(upload, {fd,filename, last}).
 
-%% HyperNumbers Utils
--export([index_to_url/1 ]).
-%% HTTP Utils
--export([req/1,post/2,post/3,parse_url/1]).
-%% XML Utils
--export([xml_to_string/1,readxml_string/1,readxml_file/1,
-          xmlsearch/3,values/2,clear_whitespace/1]).
-%% File Utils
--export([read/1]).
-%% List Utils
--export([implode/2,is_alpha/1,is_numeric/1,str_replace/2,text/1]).
-%% Yaws Utils
--export([create_conf/1,upload/3,get_cookie/1]).
+-export([
+    %% HyperNumbers Utils
+    index_to_url/1,
+
+    %% HTTP Utils
+    req/1,
+    post/2,
+    post/3,
+    parse_url/1,
+    %% XML Utils
+    xml_to_string/1,
+    readxml_string/1,
+    readxml_file/1,
+    xmlsearch/3,
+    values/2,
+    clear_whitespace/1,
+
+    %% File Utils
+    read/1,
+    
+    %% List Utils
+    implode/2,
+    is_alpha/1,
+    is_numeric/1,
+    str_replace/2,
+    text/1,
+    trim/1,
+
+    %% Yaws Utils
+    create_conf/1,
+    upload/3,
+    get_cookie/1]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -194,6 +213,18 @@ read(FileName) ->
 %%% List Utils                                                               %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%--------------------------------------------------------------------
+%% Function:    str_replace/2
+%%
+%% Description: Takes a list of key/value pairs, and a string, and
+%%              replaces {key} with value in the string
+%%              cleans {key} pairs that arent replaces out of the
+%%              string
+%%--------------------------------------------------------------------
+trim(String) -> strip_ws(lists:reverse(strip_ws(lists:reverse(String)))).
+
+strip_ws([H|Rest]) when H == 10; H == 13; H == 32 -> strip_ws(Rest);
+strip_ws(String) -> String.
 %%--------------------------------------------------------------------
 %% Function:    str_replace/2
 %%

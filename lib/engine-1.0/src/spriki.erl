@@ -67,9 +67,7 @@ out(Arg) -> try
 
     %% Globally catch any errors during processing
     catch
-    throw:Term -> ?F("Error:~p~n~p",[Term,erlang:get_stacktrace()]),{html,"error"};
-    exit:Res   -> ?F("Error:~p~n~p",[Res,erlang:get_stacktrace()]), {html,"error"};
-    error:Res  -> ?F("Error:~p~n~p",[Res,erlang:get_stacktrace()]), {html,"error"}
+    _:Err -> ?F("Error:~p~n~p",[Err,erlang:get_stacktrace()]),{html,"error"}
     end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -79,11 +77,7 @@ out(Arg) -> try
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Return HTML pages, for "/" , "?admin" and "?import"
 process_GET(#arg{docroot=Root},_,#page{ref={page,_},vars=[]}) ->
-    {html,element(2,hn_util:read(Root++"/html/page.html"))};
-process_GET(#arg{docroot=Root},_,#page{ref={page,_},vars=[{admin}]}) ->
-    {html,element(2,hn_util:read(Root++"/html/admin.html"))};
-process_GET(#arg{docroot=Root},_,#page{ref={page,_},vars=[{import}]}) ->
-    {html,element(2,hn_util:read(Root++"/html/upload.html"))};
+    {page,"/html/index.html"};
 
 %% unauthorised users can get access to the pages and swf's. but not
 %% the data
@@ -294,22 +288,28 @@ process_POST(Arg,PostData,_User,Page) ->
 %% cleaned up
 api_import(Arg,Page) -> 
     F = fun(X) -> 
-        filefilters:read(excel,X,"/tmp/log.txt",
-            fun(A) -> import(A,Page) end) 
+        filefilters:read(excel,X,fun(A) -> import(A,Page) end) 
     end,
     case hn_util:upload(Arg,"Filedata",F) of
-    ok ->    {ok,{"create","success"}};
-    error -> {ok,{"create","error"}}
+    ok ->    {ok,{create,[],["success"]}};
+    error -> {ok,{create,[],["error"]}}
     end.
 
 import([],_)-> ok;
 import([{_Name,Tid}|T],Page)->
     Fun = fun(X,_Y) ->
         case X of
-        {{{row_index,Row},{col_index,Col}},[_,{value,number,Val}]} ->
+        {{_,{row_index,Row},{col_index,Col}},[_,Val]} ->
             Req = lists:flatten([Page#page.site,Page#page.path,
                 util2:make_b26(Col+1),hn_util:text(Row+1)]),
-            hn_util:post(Req,"action=create&value="++hn_util:text(Val))
+            V = case Val of
+                {value,number,Num} -> Num;
+                {formula,Form}     -> Form;
+                {string,Str}       -> Str
+            end,
+            hn_util:post(Req,"<create><value>"++
+                hn_util:text(V)++"</value></create>","text/xml");
+        _ -> false
         end
     end,
     ets:foldl(Fun,[],Tid),
