@@ -85,6 +85,7 @@
                     },
                     cellSelect : function(x,y,el)
                     {
+                        $("#texttocopy").val("=hn(\""+url+$.fn.to_b26(x)+y+"?hypernumber\")");
                         $.get(url+$.fn.to_b26(x)+y+"?toolbar",function(data)
                         {
                             var form = $(data).find("formula").text();
@@ -108,7 +109,57 @@
                         });
                     });
                 });
+
+                $('#hn tr > td > div').contextMenu('myMenu1', {
+                bindings: {
+                    'hnumber': function(t) {
+                    copy(document.getElementById("texttocopy"));
+                    }
+                },
+                menuStyle: {
+                    width: '150px'
+                },
+                itemStyle: {
+                    font: '8px',
+                    border: 'none',
+                    padding: '3px'
+                },
+                itemHoverStyle: {
+                    background: '#EEE',
+                    border: 'none'
+                }
+                });
+
             });
+
+function copy(inElement) {
+
+  if (inElement.createTextRange) {
+    
+    var range = inElement.createTextRange();
+    
+    if (range && BodyLoaded==1)
+     range.execCommand('Copy');
+
+  } else {
+    
+    var flashcopier = 'flashcopier';
+    
+    if(!document.getElementById(flashcopier)) {
+    
+      var divholder = document.createElement('div');
+      divholder.id = flashcopier;
+      document.body.appendChild(divholder);
+    }
+    
+    document.getElementById(flashcopier).innerHTML = '';
+
+    var divinfo = '<embed src="/swf/_clipboard.swf" FlashVars="clipboard='+escape(inElement.value)+'" width="0" height="0" type="application/x-shockwave-flash"></embed>';
+    
+    document.getElementById(flashcopier).innerHTML = divinfo;
+  }
+}
+
         </script>
 
     </head>
@@ -148,6 +199,13 @@
 
         <div id="flash"></div>
 
+        <textarea id="texttocopy" readonly="readonly" onclick="this.select()">gwesd</textarea>
+
+        <div class="contextMenu" id="myMenu1">
+            <ul>
+                <li id="hnumber">Copy as Hypernumber</li>
+            </ul>
+        </div>
 
         <div id="import" style='display:none'>
             <h2>Import File</h2>

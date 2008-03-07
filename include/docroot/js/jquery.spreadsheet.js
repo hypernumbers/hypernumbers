@@ -88,7 +88,7 @@
             if(typeof o.cellSelect != "function")
                 formula.val(val);
             else
-                o.cellSelect($sel.x,$sel.y+1,formula),
+                o.cellSelect($sel.x,$sel.y+1,formula);
     
             $(document.createElement("textarea")).val(val).keyup(function (e) 
             {              
@@ -118,7 +118,7 @@
                     }
                     edit_mode  = $.fn.modes.NOT_EDITING;
                 }
-            }).appendTo(cell).width(cell.width()).height(cell.height()).focus(); 
+            }).appendTo(cell).width(cell.width()).height(cell.height()).focus();
 
             edit_mode = $.fn.modes.CELL_EDIT;              
         };
