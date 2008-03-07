@@ -338,18 +338,16 @@ reverse_compile(Index,[{relative_reference,{tRefN,[{value,{Row,Col,RowType,ColTy
   %% Excel has a row limit of 65535 (2^16) rows and a column limit of
   %% 256 (2^8) columns so the relative addresses must 'overflow' those
   %% bounds
-  %%
-  %% See the column in tAreaN is an offset different from this one
-  %%
-  %% FUCK KNOWS WHY?
-  %%
   {{sheet,_Sheet},{row_index,TopRow},{col_index,TopCol}}=Index,
   io:format("in excel_rev_comp:reverse_compile for tRefN~n"++
       "-Row is ~p Col is ~p~n-TopRow is ~p TopCol is ~p~n",[Row,Col,TopRow,TopCol]),
-  NewRow=Row+TopRow-65535*erlang:round((Row+TopRow)/65535),
+  NewRow=Row+TopRow-65536*erlang:round((Row+TopRow)/65536),
   NewCol=Col+TopCol-256*erlang:round((Col+TopCol)/256),
+  NewCell=make_cell({NewRow,NewCol,RowType,ColType}),
+  io:format("in excel_rev_comp:reverse_compile for tRefN~n-NewRow is ~p NewCol is ~p NewCell is ~p~n",
+    [NewRow,NewCol,NewCell]),
   %% by definition it is a relative address so just 'make it so'
-    NewStack=push(Stack,{string,make_cell({NewRow,NewCol,RowType,ColType})}),
+    NewStack=push(Stack,{string,NewCell}),
     reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
 
 %%	tAreaN  
@@ -363,18 +361,12 @@ reverse_compile(Index,[{relative_area,{tAreaN,[NewDetails|{type,_Type}],
   %% Excel has a row limit of 65535 (2^16) rows and a column limit of
   %% 256 (2^8) columns so the relative addresses must 'overflow' those
   %% bounds
-  %%
-  %% See the column in tRefN is an offset different from this one
-  %% See the column in tRefN is an offset different from this one
-  %%
-  %% FUCK KNOWS WHY?
-  %%
   io:format("in excel_rev_comp:reverse_compile for tAreaN~n"++
       "-StartRow is ~p StartCol is ~p~n-EndRow is ~p EndCol is ~p~n-TopRow is ~p TopCol is ~p~n",
       [StartRow,StartCol,EndRow,EndCol,TopRow,TopCol]),
-  NewStartRow=StartRow+TopRow-65535*erlang:round((StartRow+TopRow)/65535),
+  NewStartRow=StartRow+TopRow-65536*erlang:round((StartRow+TopRow)/65536),
   NewStartCol=StartCol+TopCol-256*erlang:round((StartCol+TopCol)/256),
-  NewEndRow=EndRow+TopRow-65535*erlang:round((EndRow+TopRow)/65535),
+  NewEndRow=EndRow+TopRow-65536*erlang:round((EndRow+TopRow)/65536),
   NewEndCol=EndCol+TopCol-256*erlang:round((EndCol+TopCol)/256),
   StartCell=make_cell({NewStartRow,NewStartCol,StartRowType,StartColType}),
   EndCell=make_cell({NewEndRow,NewEndCol,EndRowType,EndColType}),
@@ -442,8 +434,7 @@ reverse_compile(_Index,[Head|T],TokenArray,_Stack,_Residuum,_Tables) ->
 %% Looks up an external reference from the Supbook
 get_ref_name(RefIndex,NameIndex,Tables)->
   NameTab=excel_util:read(Tables,externalrefs,RefIndex),
-  io:format("in excel_rev_comp:get_ref_name NameTab is ~p~n",[NameTab]),
-  "fix me!".
+  lists:nth(RefIndex,NameTab).
 
 %% Looks up a reference to an externsheet and turns it into a sheet ref
 get_sheet_ref(Index,Tables)->
@@ -636,10 +627,14 @@ make_range(StartCell,EndCell)->
 
 %% make a cell from 0-Indexed Row and Column indices
 %% - this means adding a 1 to the Indices
-make_cell({Row,Col,rel_row,rel_col}) -> string:to_upper(util2:make_b26(Col+1)++integer_to_list(Row+1));
-make_cell({Row,Col,abs_row,rel_col}) -> string:to_upper(util2:make_b26(Col+1)++"$"++integer_to_list(Row+1));
-make_cell({Row,Col,rel_row,abs_col}) -> string:to_upper("$"++util2:make_b26(Col+1)++integer_to_list(Row+1));
-make_cell({Row,Col,abs_row,abs_col}) -> string:to_upper("$"++util2:make_b26(Col+1)++"$"++integer_to_list(Row+1)).
+make_cell({Row,Col,rel_row,rel_col}) ->
+  string:to_upper(util2:make_b26(Col+1)++integer_to_list(Row+1));
+make_cell({Row,Col,abs_row,rel_col}) ->
+  string:to_upper(util2:make_b26(Col+1)++"$"++integer_to_list(Row+1));
+make_cell({Row,Col,rel_row,abs_col}) ->
+  string:to_upper("$"++util2:make_b26(Col+1)++integer_to_list(Row+1));
+make_cell({Row,Col,abs_row,abs_col}) ->
+  string:to_upper("$"++util2:make_b26(Col+1)++"$"++integer_to_list(Row+1)).
 
 %% this function looks up the Func ID and converts it to a name
 %%

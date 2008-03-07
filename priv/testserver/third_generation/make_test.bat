@@ -15,10 +15,10 @@ readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_just_num
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_made_up_fn_names.xls" A3:A5
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_multiple_sheets.xls" A1:A1 A1:A1 A1:A1
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_nested_functions.xls" B4:B1
-#readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_ping.xls" B2:B12
+readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_ping.xls" B2:B12
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_quadratic_equations.xls" A1:F8
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_rel_references.xls" B3:B5
-readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_shared_formulae.xls" A2:F11
+readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_shared_formulae.xls" A2:K20
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_simple.xls" A1:B6
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_simple_arrays_and_ranges.xls" A1:I11
 readexcel "c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\b_sum_with_one_arg.xls" A1:I12
@@ -84,7 +84,7 @@ gen_rev_comp_test "b_multiple_sheets_test.yaml"
 gen_rev_comp_test "b_nested_functions_test.yaml"
 gen_rev_comp_test "b_quadratic_equations_test.yaml"
 gen_rev_comp_test "b_rel_references_test.yaml"
-#gen_rev_comp_test "b_ping_test.yaml"
+gen_rev_comp_test "b_ping_test.yaml"
 gen_rev_comp_test "b_shared_formulae_test.yaml"
 gen_rev_comp_test "b_simple_test.yaml"
 gen_rev_comp_test "b_simple_arrays_and_ranges_test.yaml"
@@ -156,7 +156,7 @@ gen_full_test "b_nested_functions_test.yaml"            "b_nested_functions_load
 gen_full_test "b_nested_functions_spaces_crs_test.yaml" "b_nested_functions_spaces_crs_load.yaml"
 gen_full_test "b_quadratic_equations_test.yaml"         "b_quadratic_equations_load.yaml"
 gen_full_test "b_rel_references_test.yaml"              "b_rel_references_load.yaml"
-#gen_full_test "b_ping_test.yaml"                        "b_ping_load.yaml"
+gen_full_test "b_ping_test.yaml"                        "b_ping_load.yaml"
 gen_full_test "b_shared_formulae_test.yaml"             "b_shared_formulae_load.yaml"
 gen_full_test "b_simple_test.yaml"                      "b_simple_load.yaml"
 gen_full_test "b_simple_arrays_and_ranges_test.yaml"    "b_simple_arrays_and_ranges_load.yaml"

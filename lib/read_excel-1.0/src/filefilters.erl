@@ -334,9 +334,9 @@ dump([])-> io:format("All tables dumped~n");
 %% dump([{cell_tokens,_}|T])->
 %%  io:format("~nSkipping out cell_tokens in dump~n"),
 %% dump(T);
-dump([{lacunae,_}|T])->
-  io:format("~nSkipping out lacunae in dump~n"),
-  dump(T);
+%%dump([{lacunae,_}|T])->
+%%  io:format("~nSkipping out lacunae in dump~n"),
+%%  dump(T);
 dump([{Name,Tid}|T])->
   io:format("~nDumping table: ~p~n",[Name]),
   Fun = fun(X,_Y) -> io:format("~p: ~p~n",[Name,X]) end,

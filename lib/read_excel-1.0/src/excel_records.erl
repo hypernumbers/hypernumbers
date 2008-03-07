@@ -12,7 +12,7 @@
 -include("excel_records.hrl").
 -include("excel_errors.hrl").
 -include("excel_supbook.hrl").
-%%-include("excel_externname.hrl").
+-include("excel_externname.hrl").
 
 -export([parse_rec/5]).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -125,11 +125,9 @@ parse_rec(?DATEMODE,_Bin,_Name,CurrentFormula,Tables)->
   excel_util:write(Tables,lacunae,[{identifier,"DATEMODE"},{source,excel_records.erl},
     {msg,"not being processed"}]),
     {ok,CurrentFormula};
-parse_rec(?EXTERNNAME2,_Bin,_Name,CurrentFormula,Tables)->
-    %% io:format("in excel_records EXTERNNAME~n"),
-    %% parse_externname(Bin,Tables),
-  excel_util:write(Tables,lacunae,[{identifier,"EXTERNNAME2"},{source,excel_records.erl},
-    {msg,"not being processed"}]),
+parse_rec(?EXTERNNAME2,Bin,_Name,CurrentFormula,Tables)->
+    io:format("in excel_records EXTERNNAME~n"),
+    parse_externname(Bin,Tables),
     {ok,CurrentFormula};
 parse_rec(?LEFTMARGIN,_Bin,_Name,CurrentFormula,Tables)->
   excel_util:write(Tables,lacunae,[{identifier,"LEFTMARGIN"},{source,excel_records.erl},
@@ -359,7 +357,6 @@ parse_rec(?DSF,_Bin,_Name,CurrentFormula,Tables)->
     {msg,"not being processed"}]),
     {ok,CurrentFormula};
 parse_rec(?SUPBOOK,Bin,_Name,CurrentFormula,Tables)->
-     %% io:format("in excel_records:parse_rec for SUPBOOK~n"),
     case Bin of
         <<NoSheets:16/little-unsigned-integer,
             ?InternalReferences:16/little-unsigned-integer>> ->
@@ -368,7 +365,7 @@ parse_rec(?SUPBOOK,Bin,_Name,CurrentFormula,Tables)->
             ?Add_In_Fns2:16/little-unsigned-integer>> ->
                   excel_util:write(Tables,lacunae,[{identifier,"Add_In_Fns"},
                         {source,excel_records.erl}]);
-          <<?DDE_OLE:16/little-unsigned-integer,_Rest/binary>> ->
+        <<?DDE_OLE:16/little-unsigned-integer,_Rest/binary>> ->
                   excel_util:write(Tables,lacunae,
                         [{identifier,"DDE and OLE links"},
                         {source,excel_records.erl}]);
@@ -565,7 +562,7 @@ parse_rec(?RANGEPROTECTION,_Bin,_Name,CurrentFormula,Tables)->
     {msg,"not being processed"}]),
     {ok,CurrentFormula};
 parse_rec(Other,_Bin,_Name,CurrentFormula,Tables)->
-  excel_util:write(Tables,lacunae,[{identifier,Other},{source,excel_records.erl},
+  excel_util:write(Tables,lacunae,[{identifier,{"undocumented record type",Other}},{source,excel_records.erl},
     {msg,"not being checked for and processed"}]),
     {ok,CurrentFormula}.
 
@@ -651,7 +648,7 @@ parse_SST(NoOfStrings,NoOfStrings,_Tables,_)->
 parse_SST(StringNo,NoOfStrings,Tables,[BinHead|BinTail])->
     BinLen1=length(binary_to_list(BinHead)),
     <<BinLen2:16/little-unsigned-integer,_Rest/binary>>=BinHead,
-    %% This clause handles the case where a record falls over a contination
+    %% This clause handles the case where a record falls over a continuation
     %% if it does it rejigs parse_SST to move down the Binary List
     if
 	(BinLen1 > BinLen2+3) ->NewBinHead = BinHead,
@@ -704,13 +701,12 @@ parse_externsheet(Bin,N,Tables)->
     parse_externsheet(Rest,N+1,Tables).
 
 %% parses external references as defined in Section 5.99.1 of excelvileformatV1.40.pdf
-%% that definition is buggy as this record doesn't contain any details of the external file
-%% name - don't know from whence that is got at the mo...
+%% only covers the sheet reference used and not the URL or file part of it which is somewhere else
+%% fuck knows where!
 parse_external_refs(<<_NoOfSheets:16/little-unsigned-integer,Rest/binary>>,Tables)->
-    [RawFilename|BinaryList]=get_ext_ref_names(Rest,[]),
-    io:format("in excel_records:parse_external_refs BinaryList is ~p~n",[BinaryList]),
+    [RawFileName|BinaryList]=get_ext_ref_names(Rest,[]),
     Names=[binary_to_list(X) || X <- BinaryList],
-    ParsedFileName=parse_filename(RawFilename),
+    ParsedFileName=parse_filename(RawFileName),
     Index=excel_util:get_length(Tables,externalrefs),
     excel_util:write(Tables,externalrefs,[{index,Index},{file,ParsedFileName},Names]).
     
@@ -721,7 +717,7 @@ get_ext_ref_names(Bin,Residuum)->
     {[{_Type,String}],StringLen,_RestLen}=Return,
     Utf8String=excel_util:get_utf8(Return),
     StringLen2=StringLen*8,
-    <<_String2:StringLen2/little-unsigned-integer,Rest/binary>>=Bin,
+    <<String2:StringLen2/little-unsigned-integer,Rest/binary>>=Bin,
     get_ext_ref_names(Rest,[list_to_binary(Utf8String)|Residuum]).
 
 parse_filename(<<?chEncode:8/little-unsigned-integer,
@@ -757,26 +753,28 @@ snip_xls(Bin)->
       {error,_}         -> FileName
   end.
 
-%% parse_externname(Bin,Tables)->
+parse_externname(Bin,Tables)->
+  io:format("in excel_records:parse_externname Bin is ~p~n",[Bin]),
   %% we dont care mostly but for the first 4 bits (the minioptions) and we chuck the remaining 12 bits
   %% away (the discard) mostly - except when we don't :(
-%%  <<MiniOptions:4/little-unsigned-integer,Discard:12/little-unsigned-integer,Rest/binary>>=Bin,
-%%  case MiniOptions of
-%%    ?STANDARD   -> case Discard of
-%%                        0 -> excel_util:write(Tables,lacunae,[{identifier,"Built-in functions"},
-%%                                {source,excel_records.erl},{msg,"not being processed"}]);
-%%                        Other -> write_externname(Rest,Tables)
-%%                    end;
-%%    ?BUILT_IN   -> write_externname(Rest,Tables);
-%%    ?MANUAL_DDE -> excel_util:write(Tables,lacunae,[{identifier,"MANUAL_DDE"},
-%%                        {source,excel_records.erl},{msg,"not being processed"}]);
-%%    ?AUTO_DDE   -> excel_util:write(Tables,lacunae,[{identifier,"AUTO_DDE"},
-%%                        {source,excel_records.erl},{msg,"not being processed"}]);
-%%    ?MANUAL_OLE -> excel_util:write(Tables,lacunae,[{identifier,"MANUAL_OLE"},
-%%                        {source,excel_records.erl},{msg,"not being processed"}]);
-%%    ?AUTO_OLE   -> excel_util:write(Tables,lacunae,[{identifier,"AUTO_OLE"},
-%%                        {source,excel_records.erl},{msg,"not being processed"}])
-%%    end.
+  <<MiniOptions:4/little-unsigned-integer,Discard:12/little-unsigned-integer,Rest/binary>>=Bin,
+  case MiniOptions of
+    ?STANDARD   -> case Discard of
+                        0 -> excel_util:write(Tables,lacunae,[{identifier,"Built-in functions"},
+                                {source,excel_records.erl},{msg,"not being processed"}]);
+                        Other -> write_externname(Rest,Tables)
+                    end;
+    ?BUILT_IN   -> write_externname(Rest,Tables);
+    ?MANUAL_DDE -> excel_util:write(Tables,lacunae,[{identifier,"MANUAL_DDE"},
+                        {source,excel_records.erl},{msg,"not being processed"}]);
+    ?AUTO_DDE   -> excel_util:write(Tables,lacunae,[{identifier,"AUTO_DDE"},
+                        {source,excel_records.erl},{msg,"not being processed"}]);
+    ?MANUAL_OLE -> excel_util:write(Tables,lacunae,[{identifier,"MANUAL_OLE"},
+                        {source,excel_records.erl},{msg,"not being processed"}]);
+    ?AUTO_OLE   -> excel_util:write(Tables,lacunae,[{identifier,"AUTO_OLE"},
+                        {source,excel_records.erl},{msg,"not being processed"}])
+    end.
 
-%% write_externname(<<_NotUsed:16/little-unsigned-integer,Rest/binary>>,Tables)->
-%%  ok.
+write_externname(<<_NotUsed:16/little-unsigned-integer,Rest/binary>>,Tables)->
+  io:format("in excel_records DUNNO WHAT TO DO...~n"),
+  ok.

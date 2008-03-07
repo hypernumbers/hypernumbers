@@ -46,7 +46,8 @@ loop(Socket)->
 
     %% Received a Message to send back to client
     {msg,Msg} ->
-        gen_tcp:send(Socket, Msg++"\0"),
+        ?F("got message to send back - Msg~p~n",[Msg]),
+        gen_tcp:send(Socket, Msg++"\n"),
         loop(Socket);
 
     {tcp_closed, _Port} ->

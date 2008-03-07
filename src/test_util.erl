@@ -113,7 +113,7 @@ excel_equal2({formula, Fla1}, {formula, Fla2}) ->
     Return=regexp:gsub(Fla2,"ERROR.TYPE","ERRORTYPE"),
     io:format("Return is ~p~n",[Return]),
     {ok,Fla2a,_}=Return,
-    io:format("Fla1 is ~p~nFla2a is ~p~n",[Fla1,Fla2a]),
+    io:format("Fla1 is  ~p~nFla2a is ~p~n",[Fla1,Fla2a]),
     case Fla1 of
       Fla2a -> true;
       _     -> false
