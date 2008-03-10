@@ -1,0 +1,3 @@
+#!/bin/bash
+
+./run_test -dir ../../../../tests/system_test/ ../../../../tests/unit_test/
