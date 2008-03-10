@@ -353,6 +353,7 @@ parse_rec(?USESELFS,_Bin,_Name,CurrentFormula,Tables)->
     {msg,"not being processed"}]),
     {ok,CurrentFormula};
 parse_rec(?DSF,_Bin,_Name,CurrentFormula,Tables)->
+
   excel_util:write(Tables,lacunae,[{identifier,"DSF"},{source,excel_records.erl},
     {msg,"not being processed"}]),
     {ok,CurrentFormula};
@@ -360,17 +361,20 @@ parse_rec(?SUPBOOK,Bin,_Name,CurrentFormula,Tables)->
     case Bin of
         <<NoSheets:16/little-unsigned-integer,
             ?InternalReferences:16/little-unsigned-integer>> ->
+                  write_externalref({this_file,placeholder},[],Tables),
                   excel_util:write(Tables,misc,[{noofsheets,NoSheets}]);
         <<?Add_In_Fns1:16/little-unsigned-integer,
             ?Add_In_Fns2:16/little-unsigned-integer>> ->
-                  excel_util:write(Tables,lacunae,[{identifier,"Add_In_Fns"},
+                  write_externalref({skipped,add_ins},[],Tables),
+                  excel_util:write(Tables,lacunae,[{identifier,"Add_In_Fns",Tables},
                         {source,excel_records.erl}]);
         <<?DDE_OLE:16/little-unsigned-integer,_Rest/binary>> ->
+                  write_externalref({skipped,dde_ole},[],Tables),
                   excel_util:write(Tables,lacunae,
-                        [{identifier,"DDE and OLE links"},
+                        [{identifier,"DDE and OLE links",Tables},
                         {source,excel_records.erl}]);
         _ -> 
-                  parse_external_refs(Bin,Tables)
+                  parse_externalrefs(Bin,Tables)
     end,
     {ok,CurrentFormula};
 parse_rec(?CONDFMT,_Bin,_Name,CurrentFormula,Tables)->
@@ -700,15 +704,19 @@ parse_externsheet(Bin,N,Tables)->
     excel_util:write(Tables,externsheets,Record),
     parse_externsheet(Rest,N+1,Tables).
 
+
+
 %% parses external references as defined in Section 5.99.1 of excelvileformatV1.40.pdf
-%% only covers the sheet reference used and not the URL or file part of it which is somewhere else
-%% fuck knows where!
-parse_external_refs(<<_NoOfSheets:16/little-unsigned-integer,Rest/binary>>,Tables)->
+%% only covers the sheet reference used and not the URL or file part of it
+parse_externalrefs(<<_NoOfSheets:16/little-unsigned-integer,Rest/binary>>,Tables)->
     [RawFileName|BinaryList]=get_ext_ref_names(Rest,[]),
     Names=[binary_to_list(X) || X <- BinaryList],
     ParsedFileName=parse_filename(RawFileName),
-    Index=excel_util:get_length(Tables,externalrefs),
-    excel_util:write(Tables,externalrefs,[{index,Index},{file,ParsedFileName},Names]).
+    write_externalref({name,ParsedFileName},Names,Tables).
+
+write_externalref(Entry,List,Tables)->
+  Index=excel_util:get_length(Tables,externalrefs),
+  excel_util:write(Tables,externalrefs,[{index,Index},Entry,List]).
     
 get_ext_ref_names(<<>>,Residuum)->
   lists:reverse(Residuum);
@@ -722,28 +730,28 @@ get_ext_ref_names(Bin,Residuum)->
 
 parse_filename(<<?chEncode:8/little-unsigned-integer,
                chVolume:8/little-unsigned-integer,
-               Rest/binary>>) -> "./"++snip_xls(Rest)++"/";
+               Rest/binary>>) -> "../"++snip_xls(Rest)++"/";
 parse_filename(<<?chEncode:8/little-unsigned-integer,
                chSameVolume:8/little-unsigned-integer,
-               Rest/binary>>) -> "./"++snip_xls(Rest)++"/";
+               Rest/binary>>) -> "../"++snip_xls(Rest)++"/";
 parse_filename(<<?chEncode:8/little-unsigned-integer,
                chDownDir:8/little-unsigned-integer,
                Rest/binary>>) -> "./"++snip_xls(Rest)++"/";
 parse_filename(<<?chEncode:8/little-unsigned-integer,
                chUpDir:8/little-unsigned-integer,
-               Rest/binary>>) -> "../"++snip_xls(Rest)++"/";
+               Rest/binary>>) -> "../../"++snip_xls(Rest)++"/";
 parse_filename(<<?chEncode:8/little-unsigned-integer,
                chStartUpDir:8/little-unsigned-integer,
                Rest/binary>>) -> "./"++snip_xls(Rest)++"/";
 parse_filename(<<?chEncode:8/little-unsigned-integer,
                chAltStartUpDir:8/little-unsigned-integer,
-               Rest/binary>>) -> "./"++snip_xls(Rest)++"/";
+               Rest/binary>>) -> "../"++snip_xls(Rest)++"/";
 parse_filename(<<?chEncode:8/little-unsigned-integer,
                chLibDir:8/little-unsigned-integer,
-               Rest/binary>>) -> "./"++snip_xls(Rest)++"/";
+               Rest/binary>>) -> "../"++snip_xls(Rest)++"/";
 parse_filename(<<?chEncode:8/little-unsigned-integer,
-               Rest/binary>>) -> "./"++snip_xls(Rest)++"/";
-parse_filename(Bin) -> "./"++binary_to_list(Bin)++"/".
+               Rest/binary>>) -> "../"++snip_xls(Rest)++"/";
+parse_filename(Bin) -> "../"++binary_to_list(Bin)++"/".
 
 snip_xls(Bin)->
   FileName=binary_to_list(Bin),

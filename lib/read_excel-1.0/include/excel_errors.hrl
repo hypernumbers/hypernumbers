@@ -27,6 +27,11 @@
 %% 2AH #N/A
 -define(NAError,42).
 
+%% The records that manage references to sheets other than the
+%% current one (both internal and external) uses 'FF' as a marker
+%% of a deleted reference
+-define(FF_Ref,65535).
+
 %% Excel stores errors as negative integers
 %% here is the def of them
 -define(ErrDiv0Int,-2146826281).

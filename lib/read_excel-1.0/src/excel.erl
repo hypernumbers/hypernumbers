@@ -79,7 +79,7 @@ read_excel(Directory,SAT,SSAT,SectorSize,ShortSectorSize,
 		     ShortSectorSize,FileIn,Tables) || X <- SubStreams],
     %% Now that the complete file is read reverse_compile the token stream
     %%    
-    make_formulae(Tables).
+    post_process_tables(Tables).
 
 parse_substream(SubSID,Location,SubStream,Directory,SAT,SSAT,SectorSize,
 		ShortSectorSize,FileIn,Tables)->
@@ -258,6 +258,81 @@ get_short_bin(Bin,[H|T],SectorSize,Residuum) ->
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                     %%%
+%%% The excel file is processed on record at a time into a set of ets   %%%
+%%% tables. Some of the entries in these records cannot be properly     %%%
+%%% handled at read time because they depend on as yet unread records.  %%%
+%%% These tables are then post-processed by these functions             %%%
+%%%                                                                     %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
+post_process_tables(Tables)->
+  %%io:format("Output Tables are ~p~n",[Tables]),
+  %%filefilters:dump(Tables),
+  fix_up_externalrefs(Tables),
+  fix_up_cells(Tables),
+  io:format("Post-processed Tables are ~p~n",[Tables]),
+  filefilters:dump(Tables),
+  ok.
+
+%% reverse compile the basic cells
+%% this fun reverse compiles all the tokens in the table 'cell_tokens' and then injects them
+%% into the table 'cells' which is prepopulated with all the non-formulae cell values
+fix_up_cells(Tables)->
+  {value,{cell_tokens,Cell_TokensId}}=lists:keysearch(cell_tokens,1,Tables),
+  {value,{cell,CellId}}              =lists:keysearch(cell,1,Tables),
+  Fun2=fun(X,_Residuum)->
+    {Index,[XF,{tokens,Tokens},{tokenarrays,TokenArray}]}=X,
+    Formula=excel_rev_comp:reverse_compile(Index,Tokens,TokenArray,Tables),
+    ets:insert(CellId,[{Index,[XF,{formula,Formula}]}])
+  end,
+  CellList=ets:foldl(Fun2,[],Cell_TokensId).
+
+%% This function merges the contents of the ets table 'sheetnames' into 'externalrefs'
+fix_up_externalrefs(Tables)->
+  {value,{externalrefs,ExternalRefs}}=lists:keysearch(externalrefs,1,Tables),
+  Fun=fun(X,Y) -> 
+    case X of
+      {Index,[{this_file,placeholder},[]]} -> [Index|Y];
+      _                                              -> Y
+    end
+  end,
+  case ets:info(ExternalRefs,size) of
+    0 -> io:format("in excel:post_process_tables no records in file ExternalRefs~n"),
+         ok;
+    _ -> [Index]=ets:foldl(Fun,[],ExternalRefs),
+         SheetNames=lists:reverse(get_sheetnames(Tables)),
+         excel_util:write(Tables,externalrefs,[Index,{this_file,expanded},SheetNames])
+  end.
+
+get_sheetnames(Tables)->
+  Fun = fun({_Index,[{name,SheetName}]},Y) ->
+    [SheetName|Y]
+  end,
+  {value,{sheetnames,SheetNames}}=lists:keysearch(sheetnames,1,Tables),
+  ets:foldl(Fun,[],SheetNames).
+
+update_cell(Sheet,Tokens,TokenArrays,LastRow,LastCol,FirstRow,FirstCol,LastRow,LastCol,
+      CellId,Tables)->
+  update_cell2(Sheet,Tokens,TokenArrays,LastRow,LastCol,CellId,FirstRow,FirstCol,Tables),
+  ok;
+update_cell(Sheet,Tokens,TokenArrays,LastRow,Col,FirstRow,FirstCol,LastRow,LastCol,CellId,Tables)->
+  update_cell2(Sheet,Tokens,TokenArrays,LastRow,Col,CellId,FirstRow,FirstCol,Tables),
+  update_cell(Sheet,Tokens,TokenArrays,FirstRow,Col+1,FirstRow,FirstCol,LastRow,LastCol,CellId,Tables);
+update_cell(Sheet,Tokens,TokenArrays,Row,Col,FirstRow,FirstCol,LastRow,LastCol,CellId,Tables)->
+  update_cell2(Sheet,Tokens,TokenArrays,Row,Col,CellId,FirstRow,FirstCol,Tables),
+  update_cell(Sheet,Tokens,TokenArrays,Row+1,Col,FirstRow,FirstCol,LastRow,LastCol,CellId,Tables).
+  
+update_cell2(Sheet,Tokens,TokenArrays,Row,Col,CellId,TopRow,TopCol,Tables)->
+  Index={{sheet,Sheet},{row_index,Row},{col_index,Col}},
+  TopIndex={{sheet,Sheet},{row_index,TopRow},{col_index,TopCol}},
+  FormulaExists=ets:lookup(CellId,{{sheet,Sheet},{row_index,Row},{col_index,Col}}),
+  case FormulaExists of
+    []   -> Formula=excel_rev_comp:reverse_compile(TopIndex,Tokens,TokenArrays,Tables),
+            ets:insert(CellId,{Index,[{xf_index,"bug?"},{formula,Formula}]});
+    _    -> ok
+  end.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                     %%%
 %%% Utility functions                                                   %%%
 %%%                                                                     %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -286,51 +361,3 @@ read_storage_stream(FileHandle,SIDList,SectorSize,Position,Size)->
 	    {ok,Bin}=file:read(FileHandle,Size)
     end,
     Bin.
-    
-make_formulae(Tables)->
-  io:format("Tables are ~p~n",[Tables]),
-  filefilters:dump(Tables),
-  {value,{cell_tokens,Cell_TokensId}}=lists:keysearch(cell_tokens,1,Tables),
-  {value,{cell,CellId}}              =lists:keysearch(cell,1,Tables),
-  %% First up reverse compile the basic cells
-  Fun=fun(X,_Residuum)->
-    {Index,[XF,{tokens,Tokens},{tokenarrays,TokenArray}]}=X,
-    io:format("in excel:make_formulae Index is ~p~n-Tokens are ~p~n-TokenArray is ~p~n",
-        [Index,Tokens,TokenArray]),
-    Formula=excel_rev_comp:reverse_compile(Index,Tokens,TokenArray,Tables),
-    io:format("in excel:make_formula Formula is ~p~n",[Formula]),
-    ets:insert(CellId,[{Index,[XF,{formula,Formula}]}])
-  end,
-  CellList=ets:foldl(Fun,[],Cell_TokensId).
-  
-update_cell(Sheet,Tokens,TokenArrays,LastRow,LastCol,FirstRow,FirstCol,LastRow,LastCol,
-      CellId,Tables)->
-  %% io:format("updating cell (1) with Row of ~p and Col of ~p~n",[LastRow,LastCol]),
-  update_cell2(Sheet,Tokens,TokenArrays,LastRow,LastCol,CellId,FirstRow,FirstCol,Tables),
-  ok;
-update_cell(Sheet,Tokens,TokenArrays,LastRow,Col,FirstRow,FirstCol,LastRow,LastCol,CellId,Tables)->
-  %% io:format("updating cell (2) with Row of ~p and Col of ~p~n",[LastRow,Col]),
-  update_cell2(Sheet,Tokens,TokenArrays,LastRow,Col,CellId,FirstRow,FirstCol,Tables),
-  update_cell(Sheet,Tokens,TokenArrays,FirstRow,Col+1,FirstRow,FirstCol,LastRow,LastCol,CellId,Tables);
-update_cell(Sheet,Tokens,TokenArrays,Row,Col,FirstRow,FirstCol,LastRow,LastCol,CellId,Tables)->
-  %% io:format("updating cell (3) with Row of ~p and Col of ~p~n",[Row,Col]),
-  update_cell2(Sheet,Tokens,TokenArrays,Row,Col,CellId,FirstRow,FirstCol,Tables),
-  update_cell(Sheet,Tokens,TokenArrays,Row+1,Col,FirstRow,FirstCol,LastRow,LastCol,CellId,Tables).
-  
-update_cell2(Sheet,Tokens,TokenArrays,Row,Col,CellId,TopRow,TopCol,Tables)->
-  Index={{sheet,Sheet},{row_index,Row},{col_index,Col}},
-  TopIndex={{sheet,Sheet},{row_index,TopRow},{col_index,TopCol}},
-  %% io:format("in excel:update_cell2 Sheet is ~p "++
-  %%   "Row is ~p Col is ~p TopRow is ~p TopCol is ~p~n",
-  %%  [Sheet,Row,Col,TopRow,TopCol]),
-  %%filefilters:dump([{cell,CellId}]),
-  FormulaExists=ets:lookup(CellId,{{sheet,Sheet},{row_index,Row},{col_index,Col}}),
-  %% io:format("in excel:update_cell2 FormulaExists is ~p~n",[FormulaExists]),
-  %% if no formula exists create it (ie don't overwrite)
-  case FormulaExists of
-    []   -> Formula=excel_rev_comp:reverse_compile(TopIndex,Tokens,TokenArrays,Tables),
-            %% io:format("in excel:reverse_compile Formula is ~p~n",[Formula]),
-            ets:insert(CellId,{Index,[{xf_index,"bug?"},{formula,Formula}]});
-    _    -> ok
-  end.
-  

@@ -37,10 +37,7 @@ reverse_compile(_Index,[],_TokenArray,Stack,_Residuum,_Tables) ->
 %%	tExp    
 reverse_compile(Index,[{expr_formula_range,{tExp,[{sheet,Name},{row_index,Row},
     {col_index,Col}],{return,none}}}|T],TokenArray,Stack,Residuum,Tables) ->
-    %% io:format("in excel_rev_comp:reverse_compile in tExp~n"),
   Return=excel_util:read_shared(Tables,{{sheet,Name},{row_index,Row},{col_index,Col}}),
-  io:format("in excel_rev_comp:reverse_compile Index is ~p~n-Return is ~p~n",[Index,Return]),
-  %% [{_Index2,[_Type,{tokens,Tokens},{tokenarrays,_TokenArray2}]}|_Tail]=Return,    
   [{Index2,[_Type,{tokens,Tokens},{tokenarrays,_TokenArray2}]}|T]=Return,
   case T of
     []     -> ok;
@@ -49,10 +46,7 @@ reverse_compile(Index,[{expr_formula_range,{tExp,[{sheet,Name},{row_index,Row},
   end,
   %% tExp is a placeholder for a shared or array formula so first we read the array/shared formula
   %% then we push the shared formula onto the Stack in place of the tExp one and carry on
-  io:format("in excel_rev_comp:reverse_compile Index2 is ~p~n",[Index2]),
   NewTokens=lists:append(Tokens,T),
-  io:format("in excel_rev_comp:reverse_compile for tExp~n-NewTokens are ~p~n",
-    [NewTokens]),
   reverse_compile(Index,NewTokens,TokenArray,Stack,Residuum,Tables);    
     
 %%	tTbl    
@@ -332,23 +326,17 @@ reverse_compile(Index,[{area_error,{tAreaErr,[{type,_Type}],{return,reference}}}
 %%	tRefN   
 reverse_compile(Index,[{relative_reference,{tRefN,[{value,{Row,Col,RowType,ColType}},
       {type,_Type}],{return,reference}}}|T],TokenArray,Stack,Residuum,Tables) ->
-    io:format("in excel_rev_comp:reverse_compile in tRefN~n-Row is ~p Col is ~p RowType is ~p "++
-        "ColType is ~p~n",[Row,Col,RowType,ColType]),
-  %% these addresses are relative and must be added to the top point
+  %% these addresses may or may not be relative and must be added to the top point
   %% Excel has a row limit of 65535 (2^16) rows and a column limit of
   %% 256 (2^8) columns so the relative addresses must 'overflow' those
   %% bounds
   {{sheet,_Sheet},{row_index,TopRow},{col_index,TopCol}}=Index,
-  io:format("in excel_rev_comp:reverse_compile for tRefN~n"++
-      "-Row is ~p Col is ~p~n-TopRow is ~p TopCol is ~p~n",[Row,Col,TopRow,TopCol]),
-  NewRow=Row+TopRow-65536*erlang:round((Row+TopRow)/65536),
-  NewCol=Col+TopCol-256*erlang:round((Col+TopCol)/256),
+  NewRow=get_row(Row,TopRow,RowType),
+  NewCol=get_col(Col,TopCol,ColType),
   NewCell=make_cell({NewRow,NewCol,RowType,ColType}),
-  io:format("in excel_rev_comp:reverse_compile for tRefN~n-NewRow is ~p NewCol is ~p NewCell is ~p~n",
-    [NewRow,NewCol,NewCell]),
   %% by definition it is a relative address so just 'make it so'
-    NewStack=push(Stack,{string,NewCell}),
-    reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
+  NewStack=push(Stack,{string,NewCell}),
+  reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
 
 %%	tAreaN  
 reverse_compile(Index,[{relative_area,{tAreaN,[NewDetails|{type,_Type}],
@@ -361,13 +349,10 @@ reverse_compile(Index,[{relative_area,{tAreaN,[NewDetails|{type,_Type}],
   %% Excel has a row limit of 65535 (2^16) rows and a column limit of
   %% 256 (2^8) columns so the relative addresses must 'overflow' those
   %% bounds
-  io:format("in excel_rev_comp:reverse_compile for tAreaN~n"++
-      "-StartRow is ~p StartCol is ~p~n-EndRow is ~p EndCol is ~p~n-TopRow is ~p TopCol is ~p~n",
-      [StartRow,StartCol,EndRow,EndCol,TopRow,TopCol]),
-  NewStartRow=StartRow+TopRow-65536*erlang:round((StartRow+TopRow)/65536),
-  NewStartCol=StartCol+TopCol-256*erlang:round((StartCol+TopCol)/256),
-  NewEndRow=EndRow+TopRow-65536*erlang:round((EndRow+TopRow)/65536),
-  NewEndCol=EndCol+TopCol-256*erlang:round((EndCol+TopCol)/256),
+  NewStartRow=get_row(StartRow,TopRow,StartRowType),
+  NewStartCol=get_col(StartCol,TopCol,StartColType),
+  NewEndRow=get_row(EndRow,TopRow,EndRowType),
+  NewEndCol=get_col(EndCol,TopCol,EndColType),
   StartCell=make_cell({NewStartRow,NewStartCol,StartRowType,StartColType}),
   EndCell=make_cell({NewEndRow,NewEndCol,EndRowType,EndColType}),
   NewRange=StartCell++":"++EndCell,
@@ -383,8 +368,8 @@ reverse_compile(Index,[{relative_area,{tAreaN,[NewDetails|{type,_Type}],
 %%	tNameX  
 reverse_compile(Index,[{name_xref,{tNameX,[{reference_index,RefIndex},{name_index,NameIndex},
     {type,reference}],{return,reference}}}|T],
-    TokenArray,Stack,Residuum,Tables) ->
-    %% io:format("in excel_rev_comp:reverse_compile in tNameX~n"),
+  TokenArray,Stack,Residuum,Tables) ->
+  %% io:format("in excel_rev_comp:reverse_compile in tNameX~n"),
   Name=get_ref_name(RefIndex,NameIndex,Tables),
   NewStack = push(Stack,{string,Name}),
   reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
@@ -393,24 +378,22 @@ reverse_compile(Index,[{name_xref,{tNameX,[{reference_index,RefIndex},{name_inde
 reverse_compile(Index,[{three_dee_reference,{tRef3d,[{reference_index,RefIdx},
       Reference,{type,_Type}],{return,_ReturnType}}}|T],
       TokenArray,Stack,Residuum,Tables) ->
-    %% io:format("in excel_rev_comp:reverse_compile in tRef3d~n"),
-    SheetRef=get_sheet_ref(RefIdx,Tables),
-    Cell=make_cell(Reference),
-    ThreeDRef=SheetRef++"!"++Cell,
-    NewStack=push(Stack,{string,ThreeDRef}),
-    reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
+  SheetRef=get_sheet_ref(RefIdx,Tables),
+  Cell=make_cell(Reference),
+  ThreeDRef=SheetRef++"!"++Cell,
+  NewStack=push(Stack,{string,ThreeDRef}),
+  reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
   
 %%	tArea3d 
 reverse_compile(Index,[{three_dee_area,{tArea3d,[{reference_index,RefIdx},
       Reference,{type,_Type}],{return,_ReturnType}}}|T],
       TokenArray,Stack,Residuum,Tables) ->
-    %% io:format("in excel_rev_comp:reverse_compile in tArea3d~n"),
-    SheetRef=get_sheet_ref(RefIdx,Tables),
-    [{start_cell,Ref1}|{end_cell,Ref2}]=Reference,
-    Range=make_range(Ref1,Ref2),
-    ThreeDRef=SheetRef++"!"++Range,
-    NewStack=push(Stack,{string,ThreeDRef}),
-    reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
+  SheetRef=get_sheet_ref(RefIdx,Tables),
+  [{start_cell,Ref1}|{end_cell,Ref2}]=Reference,
+  Range=make_range(Ref1,Ref2),
+  ThreeDRef=SheetRef++"!"++Range,
+  NewStack=push(Stack,{string,ThreeDRef}),
+  reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
 
 %%	tRefErr3d
 	
@@ -430,26 +413,73 @@ reverse_compile(_Index,[Head|T],TokenArray,_Stack,_Residuum,_Tables) ->
 %%% Internal functions                                                      %%%
 %%%                                                                         %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+get_row(Row,TopRow,RowType)->
+  case RowType of
+      rel_row -> Row+TopRow-65536*erlang:round((Row+TopRow)/65536);
+      abs_row -> Row
+  end.
+
+get_col(Col,TopCol,ColType)->
+  case ColType of
+      rel_col -> NewCol=Col+TopCol-256*erlang:round((Col+TopCol)/256);
+      abs_col -> Col
+  end.
 
 %% Looks up an external reference from the Supbook
 get_ref_name(RefIndex,NameIndex,Tables)->
-  NameTab=excel_util:read(Tables,externalrefs,RefIndex),
-  lists:nth(RefIndex,NameTab).
-
+  "Excel_rev_comp:get_rev_name external names not being handled yet!".
+  
 %% Looks up a reference to an externsheet and turns it into a sheet ref
 get_sheet_ref(Index,Tables)->
-  [{{_,_},RefList}]=excel_util:read(Tables,externsheets,Index),
-  {_,{_,FirstSheet}}=lists:keysearch(firstsheet,1,RefList),
-  {_,{_,LastSheet}} =lists:keysearch(lastsheet,1,RefList),
-  SheetRef = case FirstSheet of
-    65535     -> "#REF";
-    LastSheet -> [{{_,_},[{_,FirstSheetRef}]}]=excel_util:read(Tables,sheetnames,FirstSheet),
-                  FirstSheetRef;
-    _Other    -> [{{_,_},[{_,FirstSheetRef}]}]=excel_util:read(Tables,sheetnames,FirstSheet),
-                 [{{_,_},[{_,LastSheetRef}]}] =excel_util:read(Tables,sheetnames,LastSheet),
-                  FirstSheetRef++":"++LastSheetRef
+  Record1=excel_util:read(Tables,externsheets,Index),
+  case Record1 of
+    [{_,[{subrec,SR},{firstsheet,?FF_Ref},{lastsheet,_}]}]  -> "#REF";
+    [{_,[{subrec,SR},{firstsheet,FS},{lastsheet,FS}]}]       -> get_ref(SR,FS,Tables);
+    [{_,[{subrec,SR},{firstsheet,FS},{lastsheet,LS}]}]       -> get_range(SR,FS,LS,Tables)
+  end.
+  
+get_ref(SubRec,FirstSheet,Tables)->
+  Record=excel_util:read(Tables,externalrefs,SubRec),
+  [{{index,SubRec},[Location,SheetList]}]=Record,
+  Prefix=case Location of
+    {this_file,expanded} -> [];
+    {name,Name}          -> Name
   end,
-  SheetRef.
+  Sheet=lists:nth(FirstSheet+1,SheetList), % lists:nth is '1' based but the index is 'zero' based!
+  lists:concat([Prefix,Sheet]).
+  
+get_range(SubRec,FirstSheet,LastSheet,Tables)->
+  Record=excel_util:read(Tables,externalrefs,SubRec),
+  [{{index,SubRec},[Location,SheetList]}]=Record,
+  Prefix=case Location of
+    {this_file,expanded} -> [];
+    {name,Name}          -> Name
+  end,
+  Sheet1=lists:nth(FirstSheet+1,SheetList), % lists:nth is '1' based but the index is 'zero' based!
+  Sheet2=lists:nth(LastSheet+1, SheetList), % lists:nth is '1' based but the index is 'zero' based!
+  lists:concat([Prefix,Sheet1,";",Sheet2]).
+
+%% Looks up a reference to an externsheet and turns it into a sheet ref
+%% get_sheet_ref(Index,Tables)->
+%%   [{{_,_},RefList}]=excel_util:read(Tables,externsheets,Index),
+%%   {_,{_,FirstSheet}}=lists:keysearch(firstsheet,1,RefList),
+%%   {_,{_,LastSheet}} =lists:keysearch(lastsheet,1,RefList),
+%%   SheetRef = case FirstSheet of
+%%     65535     -> "#REF";
+%%     LastSheet -> Return=excel_util:read(Tables,sheetnames,FirstSheet),
+%%                   io:format("in excel_rev_comp:get_sheet_ref Return is ~p~n",[Return]),
+%%                   [{{_,_},[{_,FirstSheetRef}]}]=Return,
+%%                   FirstSheetRef;
+%%     _Other    -> Return1=excel_util:read(Tables,sheetnames,FirstSheet),
+%%                  Return2=excel_util:read(Tables,sheetnames,LastSheet),
+%%                   io:format("in excel_rev_comp:get_sheet_ref~n-Return1 is ~p~n-Return2 is ~p",
+%%                       [Return1,Return2]),
+%%                  [{{_,_},[{_,FirstSheetRef}]}]=Return1,
+%%                  [{{_,_},[{_,LastSheetRef}]}]=Return2,
+%%                   FirstSheetRef++":"++LastSheetRef
+%%   end,
+%%   SheetRef.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                         %%%

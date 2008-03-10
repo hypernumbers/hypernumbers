@@ -185,7 +185,8 @@ get_bits_CRS_Uni16(Len,IndexSize,Bin,NFlags)->
       no_match -> {Len,  'uni16-8'}
     end,
     BinLen=1+IndexSize+LenRichTextIdx+LenAsianIdx+LenStr+LenRichText*4+LenAsian,
-    {LenStr,Encoding,BinLen,{RICH_TEXT,LenRichText,LenRichTextIdx},{ASIAN,LenAsian,LenAsianIdx},Rest3}.
+    {LenStr,Encoding,BinLen,{RICH_TEXT,LenRichText,LenRichTextIdx},
+        {ASIAN,LenAsian,LenAsianIdx},Rest3}.
 
 %% Read a Cell Range Address List
 %% defined in Section 2.5.15 of excelfileformatV1-40.pdf
