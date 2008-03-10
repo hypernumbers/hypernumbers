@@ -13,21 +13,37 @@
 
 #hn .rowindex
 {
-    width:25px;
-    padding: 3px; 
-    text-align:right;
+    width:30px;
     background: #ddd !important;
-    border-bottom:1px solid #999;
-    border-right:1px solid #999;
+}
+
+#hn .rowindex div
+{
+    height:17px; 
+    padding-top:4px;
+    padding-right:3px;
+    text-align:right;
+    border-bottom:1px solid #aaa;
+    border-right:1px solid #aaa;
+}
+
+.ssinner
+{
+    margin-left:25px;
+}
+
+.rowindex.first div
+{
+    height:16px !important;
 }
 
 #hn th
 {
+    padding: 3px 0px; 
     border-bottom:1px solid #aaa;
     border-right:1px solid #aaa;
     text-align:center;
-    background:#ddd;
-    
+    background:#ddd;    
 }
 
 #hn td
@@ -52,7 +68,6 @@
     border:1px solid transparent;
     height:20px;
     overflow:hidden;
-    white-space: nowrap;
     cursor:default;
 }
 
@@ -108,7 +123,7 @@
     background:#000;
 }
 
-#headers
+#headers,.indexes
 {
     position:relative;
 }
@@ -166,6 +181,21 @@
     border-right:1px solid #FFF;
 }
 
+.indexes
+{
+    width:25px;
+    float:left;
+    height:100%;
+}
+
+#box 
+{
+    position:absolute;
+    background: #ddd !important;
+    width:24px;
+    height:20px;
+    z-index:999;
+}
 
 #toolbar .left { background-image:  url('/img/text_align_left.png'); }
 #toolbar .center { background-image:  url('/img/text_align_center.png'); }

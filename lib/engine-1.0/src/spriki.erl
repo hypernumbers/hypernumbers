@@ -121,7 +121,6 @@ show_ref(#page{site=Site,path=Path,ref={row,X}}) ->
 
     {row,[{label,to_s(X)}],Vals};
 
-
 %% Cell
 show_ref(#page{site=Site,path=Path,ref={cell,{X,Y}},vars=[]}) ->
     {cell,[],[{value,[],[hn_util:text(get_value(Site,Path,X,Y))]}]};

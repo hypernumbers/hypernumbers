@@ -78,15 +78,15 @@
                 var defaults = {
                     range   : range,
                     fmargin : 24,
-                    change  : function(x,y,val)
+                    cellChange  : function(x,y,val)
                     {
-                       $.post(url+$.fn.to_b26(x)+y+"?format=xml",
+                       $.post(url+$.fn.to_b26(x+1)+y+"?format=xml",
                             "<create><value>"+val+"</value></create>",null,"xml");
                     },
                     cellSelect : function(x,y,el)
                     {
-                        $("#texttocopy").val("=hn(\""+url+$.fn.to_b26(x)+y+"?hypernumber\")");
-                        $.get(url+$.fn.to_b26(x)+y+"?toolbar",function(data)
+                        $("#texttocopy").val("=hn(\""+url+$.fn.to_b26(x+1)+y+"?hypernumber\")");
+                        $.get(url+$.fn.to_b26(x+1)+y+"?toolbar",function(data)
                         {
                             var form = $(data).find("formula").text();
                             el.val( (form != "") ? "="+form : "");
@@ -104,7 +104,7 @@
                         {
                             if(this[0] == "column" && this[1][1] != "")
                             {
-                                $($(".tabledata")[0].childNodes[0].childNodes[y].childNodes[x].childNodes[0]).text(this[1][1]);
+                                $($(".tabledata")[0].childNodes[0].childNodes[y].childNodes[x-1].childNodes[0]).text(this[1][1]);
                             }
                         });
                     });

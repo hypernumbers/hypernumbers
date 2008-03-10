@@ -41,11 +41,16 @@ function soc_closed()
             // Called when socket receives message
 function soc_msg(msg)
 {
-    var arr = msg.split(" ");
-    if(arr[0] == "change")
+    var x = msg.split("\n");
+    $.each(x,function(i)
     {
-        var urlarr = arr[1].split("/");
-        var cell = $.fn.parse_cell(urlarr[urlarr.length-1]);
-        $("#hn tr:nth-child("+(cell[1])+") td:nth-child("+(cell[0]+1)+") div").html(arr[2]);
-    }
+        var arr = x[i].split(" ");
+
+        if(arr.shift() == "change")
+        {
+            var urlarr = (arr.shift()).split("/");
+            var cell = $.fn.parse_cell(urlarr[urlarr.length-1]);
+            $("#hn tr:nth-child("+(cell[1])+") td:nth-child("+(cell[0])+") div").html(arr.join(" "));
+        }        
+    });
 }

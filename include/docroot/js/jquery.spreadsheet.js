@@ -29,17 +29,17 @@
         
         $.fn.spreadsheet.defaults = 
         {
-            range: "a1:z50",    // Default Range that is loaded
-            fmargin: 0,
-            cellSelect:null,
-            change:null
+            range: "a1:z100",   // Default Range that is loaded
+            fmargin: 0,         // Footer Margin
+            cellSelect:null,    // Callback on a cell being selected
+            cellChange:null     // Callback for a cell Changing
         };
 
         $.fn.modes =
         { 
-            CELL_EDIT:0,        
-            FORMULA_EDIT:1,
-            NOT_EDITING:2       
+            CELL_EDIT:0,        // Currently Editing a cell         
+            FORMULA_EDIT:1,     // Editing in the formula bar
+            NOT_EDITING:2       // Not Editing
         };
     
         $.fn.states =           // Keep track of states during selection
@@ -70,7 +70,6 @@
         };
 
         var o = $.extend({}, $.fn.spreadsheet.defaults, options);
-
         var edit_mode = $.fn.modes.NOT_EDITING;
 
         /**
@@ -79,10 +78,12 @@
         */    
         var select_cell = function($this,$sel)
         {
-            var cell    = $(getcell($this,$sel.x,$sel.y)).find("div");
+            var oldtime = (new Date()).getTime();
+
+            var cell    = $(getcell($sel.tbl,$sel.x,$sel.y)).children("div");
             var val     = $(cell).text();
             var formula = $this.find("#formula input");
-    
+
             $(cell).empty();
 
             if(typeof o.cellSelect != "function")
@@ -102,9 +103,10 @@
             }).keydown(function(e)
             {
                 if(e.keyCode == $.fn.keys.RETURN)
-                {
                     return false;
-                }
+                    
+                return true;
+
             }).blur(function()
             {
                 if(edit_mode  != $.fn.modes.FORMULA_EDIT)
@@ -112,15 +114,15 @@
                     var newval = $(this).val();
                     $(this).parent().empty().text(newval);
             
-                    if(val != newval && typeof o.change == "function") 
+                    if(val != newval && typeof o.cellChange == "function") 
                     {
-                        o.change($sel.x,$sel.y+1,newval); 
+                        o.cellChange($sel.x,$sel.y+1,newval); 
                     }
                     edit_mode  = $.fn.modes.NOT_EDITING;
                 }
             }).appendTo(cell).width(cell.width()).height(cell.height()).focus();
 
-            edit_mode = $.fn.modes.CELL_EDIT;              
+            edit_mode = $.fn.modes.CELL_EDIT;
         };
 
         /**
@@ -138,6 +140,7 @@
                 case $.fn.keys.RETURN : return [$sel.x,$sel.y+1];  break;
                 default : return false; break;
             }
+            return false;
         };
                 
         /**
@@ -145,7 +148,7 @@
         */   
         var key_pressed = function($this, $sel, i, e)
         {
-            var cell = $(getcell($this,i[0],i[1])).find("div");
+            var cell = $(getcell($sel.tbl,i[0],i[1])).children("div");
     
             if($(cell).size() > 0)
             {
@@ -174,7 +177,7 @@
         */  
         var getcell = function($this,x,y)
         {
-            return $this.find("tr:nth-child("+(y+1)+") > td:nth-child("+(x+1)+")");    
+            return $this[0].childNodes[0].childNodes[y].childNodes[x];
         };
     
         /**
@@ -191,8 +194,8 @@
             {
                 edit_mode = $.fn.modes.NOT_EDITING;
 
-                if(typeof o.change == "function")
-                    o.change(x,y,val);            
+                if(typeof o.cellChange == "function")
+                    o.cellChange(x,y,val);            
             }
     
             $("#formula input").click(function(e)
@@ -216,10 +219,10 @@
                     }
                     else
                     {
-                        var cell = $(getcell(root,$sel.x,$sel.y));
+                        var cell = $(getcell($sel.tbl,$sel.x,$sel.y));
             
                         if(cell.size() > 0)
-                            cell.find("div").text($(this).val());
+                            cell.children("div").text($(this).val());
                     }
                 }
             }
@@ -252,6 +255,7 @@
     
         /**
         * Toggles a css attribute on an element between 2 values
+        * Used for toolbar
         */    
         var toggle_css = function(el,attr,off,on)
         {
@@ -264,23 +268,33 @@
         */  
         var set_display_values = function(root,cols,fmargin)
         {
-            root.find("tr th:not(:nth-child(1)),tr td:not(:nth-child(1))").width(100);
-            root.find(".ssinner,#datainner").width(((cols - 1) * 100) + 25);
+            var width = 100;
+            var total_width = cols * width;
+            
+            var x = root.children("div.container").children("div.ssinner");
+            var y = x.children("div.datacontainer").children("div.datainner");
+                        
+            x.children("table").find("tr th").width(width);
+            y.children("table").find("tr td").width(width);
+
+            x.width(total_width);
+            y.width(total_width);               
     
-            $(".datacontainer").scroll(function (e) 
+            x.children("div.datacontainer").scroll(function (e) 
             {
-                $("#headers").css("left","-"+e.target.scrollLeft+"px");            
+                x.children("table").css("left","-"+e.target.scrollLeft+"px"); 
+                root.children("div.container").children("div.indexes").css("top","-"+e.target.scrollTop+"px");
             });
     
             $(window).resize(function()
             {
                 var height = ($(window).height() - 
-                    root.find(".datacontainer").offset().top) - fmargin;
+                    x.children("div.datacontainer").offset().top) - fmargin;
     
-                var width = $(root).width();
+                var width = $(root).width() - 25;
     
-                root.find(".datacontainer").height(height).width(width);
-                $("#marker").height(height-15);
+                x.children("div.datacontainer").height(height).width(width);
+                root.find("#marker").height(height-15);
             });
     
             $(window).resize();
@@ -292,10 +306,10 @@
         */  
         var set_name = function(root,$s)
         {
-            var range = $.fn.to_b26($s.startx) + "" + ($s.starty+1);
+            var range = $.fn.to_b26($s.startx+1) + "" + ($s.starty+1);
     
             if($s.startx != $s.endx && $s.starty != $s.endy)
-                range += ":"+$.fn.to_b26($s.endx)+""+($s.endy+1);
+                range += ":"+$.fn.to_b26($s.endx+1)+""+($s.endy+1);
     
             root.find("#name").val(range);
         };
@@ -305,19 +319,23 @@
         */  
         var resize_columns = function(root,$sel)
         {
-            var marker = $("<div id=\"marker\" />").appendTo(root);
-            marker.css("top",root.find(".datacontainer").offset().top+"px");
-            var headers = $("#headers th:not(:first)");
+            var x = root.children("div.container").children("div.ssinner");
+            var y = x.children("div.datacontainer").children("div.datainner");
+            
+            var headers = x.children("table").find("tr th");
             var header,newwidth;
             var resize = false;
+            
+            var marker = $("<div id=\"marker\" />").appendTo(root);
+            marker.css("top",x.children("div.datacontainer").offset().top+"px");
     
             endresize = function()
             {
                 if(resize == true && header != null)
                 {
-                    root.find("#datainner").width($(".ssinner").width());
-                    var child = $.fn.from_b26($(header).text()) + 1;
-                    var td = $(".tabledata tr td:nth-child("+child+")");
+                    y.width(x.width());
+                    var child = $.fn.from_b26($(header).text());
+                    var td = y.children("table.tabledata").find("tr td:nth-child("+child+")");
                     td.width(newwidth);
                     td.find("textarea").width(newwidth-4);
                     marker.css("display","none");
@@ -329,30 +347,29 @@
     
             headers.mousemove(function(e)
             {
-                var x = (e.clientX - root.offset().left);
+                var left = (e.clientX - root.offset().left);
     
                 if(resize)
                 {
-                    var width = x - (header.offset().left - root.offset().left);
+                    var width = left - (header.offset().left - root.offset().left);
     
                     if(width > 1)
                     {
-                        var cont = root.find("div.container > div.ssinner");
-                        cont.width(cont.width() + ((width - header.width())));
+                        x.width(x.width() + ((width - header.width())));
                         header.width(width);
-                        marker.css("left",x+"px");
+                        marker.css("left",left+"px");
                         newwidth = width;
                     }
                 }
                 else
                 {
                     headers.css("cursor",
-                        (x-($(this).offset().left-root.offset().left) > $(this).width()-4)
+                        (left-($(this).offset().left-root.offset().left) > $(this).width()-4)
                         ? "col-resize" : "");
                 }                  
             });
     
-            $("#headers").bind("mouseleave",function(e)
+            x.children("table").bind("mouseleave",function(e)
             {
                 endresize();
                 return false; 
@@ -383,8 +400,10 @@
         */  
         var resize_rows = function(root,$sel)
         {
-            var row;
-            var rows = $("td.rowindex");
+            var x = root.children("div.container").children("div.ssinner");
+            
+            var row,newheight;
+            var rows = root.children("div.container").children("div.indexes").find("td");
             var resize = false;
             var top = root.offset().top;
     
@@ -395,14 +414,16 @@
                 if(resize)
                 {
                     var height = x - ($(row).offset().top - top);
-                    $(row).height(height);
-                    $(row).parent().find("div,textarea").height(height);
+                    $(row).find("div").height(height);
+                    newheight = height;
                 }
     
                 else
+                {
                     rows.css("cursor",
-                        (x - ($(this).offset().top - top) > $(this).height() - 4) 
+                        (x - ($(this).offset().top - top) > $(this).height() - 5) 
                         ? "row-resize" : "");
+                }
             });
     
             rows.each(function()
@@ -418,6 +439,11 @@
     
                 }).mouseup(function(e) 
                 {
+                    var child = parseInt($(row).text());
+                    var td = x.children("div.datacontainer").children("div.datainner").children("table.tabledata").find("tr:nth-child("+(child)+")");
+                    $(td).find("div,textarea").height(newheight+3);
+                    $(row).find("div").height(newheight);
+
                     row = null;
                     resize = false;
                     
@@ -432,34 +458,35 @@
         */  
         var create_table = function(root,rows,cols)
         {
-            var cont = $("<div class=\"ssinner\" />").appendTo(
-                $("<div class=\"container\" />").appendTo(root));
-    
+            // wrapper for most things
+            var home = $("<div class=\"container\"></div>").appendTo(root);
+
+            // Set up the row indexes (1,2,3,4,5 ...)
+            var ind = $("<div id=\"box\" /><div class=\"indexes\"><table><tr><td class=\"rowindex first\"><div /></td></tr></table></div>").appendTo(home);
+
+            for(var z = 1; z < rows+1; z++)
+                ind.find("table").append("<tr><td class=\"rowindex\"><div>"+z+"</div></td></tr>");
+
+            
+            var cont = $("<div class=\"ssinner\" />").appendTo(home);
             var tr = $("<tr />").appendTo($("<table id=\"headers\" />").appendTo(cont));
+            
+            // Setup Table Headers (a,b,c,d,e ....)
+            for(var n = 1; n < cols+1; n++) 
+                tr.append("<th>"+ $.fn.to_b26(n)+"</th>");
     
-            for(var n = 0; n < cols; n++) 
-            {
-                tr.append((n == 0)
-                    ? "<th class='rowindex'>&nbsp;</th>"
-                    : "<th>"+ $.fn.to_b26(n)+"</th>" );
-            }
-    
-            var table = $("<table cellspacing=\"0\" class=\"tabledata\" />").appendTo(
-                $("<div id=\"datainner\" />").appendTo(
+            var table = $("<table class=\"tabledata\" />").appendTo(
+                $("<div class=\"datainner\" />").appendTo(
                 $("<div class=\"datacontainer\" />").appendTo(cont)));                       
     
+            // Rest of table data
             for(var z = 1; z < rows+1; z++)
             {
-                var row =  $("<tr/>").appendTo(table);
+                var row = $("<tr/>").appendTo(table);
                 
-                for(var n = 0; n < cols; n++) 
-                {
-                    var col = $.fn.to_b26(n);
-                    
-                    row.append((n == 0)
-                        ? "<td class='rowindex'>"+z+"</td>"
-                        : "<td><div class='"+(col+z)+" cell'></div></td>");
-                }
+                for(var n = 0; n < cols; n++)
+                    row.append("<td><div class='"+($.fn.to_b26(n)+z)
+                        + " cell'></div></td>");
             }
         }
     
@@ -497,7 +524,7 @@
     
                 this.state = $.fn.states.INIT;
                 this.root  = root;
-                this.tbl   = root.find("#datainner table");
+                this.tbl   = root.find(".datainner table");
                 this.drag  = new Object();         
     
                 // Store the current selection / borders etc
@@ -531,6 +558,7 @@
                         $this.start($.fn.addr.CELL,e.target);
                         return false;
                     }
+                    return true;
         
                 }).bind('mouseover',function(e) 
                 { 
@@ -539,6 +567,7 @@
                         $this.hover(e.target);
                         return false;
                     }
+                    return true;
         
                 }).bind('mouseup',function(e) 
                 { 
@@ -602,7 +631,7 @@
             */        
             this.blurcell = function(cell)
             {
-                $(getcell(root,this.x,this.y)).find("textarea").blur();
+                $(getcell(this.tbl,this.x,this.y)).children("div").children("textarea").blur();
             };
     
             /**
@@ -634,6 +663,7 @@
                         if(x >= x3 && y <= y3) return [x3,y,x,y3];
                         if(x <= x3 && y >= y3) return [x,y3,x3,y];
                         if(x <= x3 && y <= y3) return [x,y,x3,y3];
+                        return false;
                     };
     
                     var i = cell_index(cell);
@@ -651,15 +681,14 @@
                         this.startx = refs[0];
                         this.starty = refs[1];
                         this.endx = refs[2];
-                        this.endy = refs[3];                 
-    
-                        this.range = this.tbl.find("tr:lt("+(this.endy+1)+"):gt("+(this.starty-1)
-                            + ")").find("td:lt("+(this.endx+1)+"):gt("+(this.startx-1)+") div");
-                        this.rows_highlight = this.tbl.find("tr td.rowindex:lt("
-                            + (this.endy+1)+"):gt("+(this.starty-1)+")")
-                        this.cols_highlight = root.find("tr th:lt("+(this.endx+1)
-                            + "):gt("+(this.startx-1)+")");
-    
+                        this.endy = refs[3];
+
+                        var c =  root.children("div.container");
+
+                        this.range = this.tbl.find("tr:lt("+(this.endy+1)+"):gt("+(this.starty-1) + ")").find("td:lt("+(this.endx+1)+"):gt("+(this.startx-1)+")").children("div");
+                        this.rows_highlight = c.children("div.indexes").children("table").find("tr td.rowindex:lt("+(this.endy+2)+"):gt("+(this.starty)+")");
+                        this.cols_highlight = c.children("div.ssinner").children("table").find("tr th:lt("+(this.endx+1)+"):gt("+(this.startx-1)+")");
+
                         this.show_selection();
                     }
                 }
@@ -700,18 +729,15 @@
                         this.drag.endx = refs[2];
                         this.drag.endy = refs[3]
     
-                        this.drag.right = this.tbl.find("tr:lt("+(this.drag.endy+1)+"):gt(" 
-                            + (this.drag.starty-1)+")").find("td:eq("+(this.drag.endx)+") div");   
-                        this.drag.left = this.tbl.find("tr:lt("+(this.drag.endy+1)+"):gt("
-                            + (this.drag.starty-1)+")").find("td:eq("+(this.drag.startx)+") div");          
-                        this.drag.top = this.tbl.find("tr:eq("+(this.drag.starty)+")"
-                            ).find("td:lt("+(this.drag.endx+1)+"):gt("+(this.drag.startx-1)+") div");
-                        this.drag.bottom = this.tbl.find("tr:eq("+(this.drag.endy)+")"
-                            ).find("td:lt("+(this.drag.endx+1)+"):gt("+(this.drag.startx-1)+") div");
+                        this.drag.right = this.tbl.find("tr:lt("+(this.drag.endy+1)+"):gt("+(this.drag.starty-1)+")").find("td:eq("+(this.drag.endx)+")").children("div");   
+                        this.drag.left = this.tbl.find("tr:lt("+(this.drag.endy+1)+"):gt("+(this.drag.starty-1)+")").find("td:eq("+(this.drag.startx)+")").children("div");          
+                        this.drag.top = this.tbl.find("tr:eq("+(this.drag.starty)+")").find("td:lt("+(this.drag.endx+1)+"):gt("+(this.drag.startx-1)+")").children("div");
+                        this.drag.bottom = this.tbl.find("tr:eq("+(this.drag.endy)+")").find("td:lt("+(this.drag.endx+1)+"):gt("+(this.drag.startx-1)+")").children("div");
     
                         this.show_drag();
                     }
                 }
+                return false;
             };
     
             /**
@@ -723,16 +749,16 @@
                 this.rows_highlight.addClass("highlight");
                 this.cols_highlight.addClass("highlight");
                 this.range.addClass("selected");
-    
+                    
                 if(this.state != $.fn.states.INIT)
                 {
-                    var c = $(getcell(root,this.endx,this.endy));
+                    var c = $(getcell(this.tbl,this.endx,this.endy));
                     var off = c.offset();
-    
-                    $(getcell(root,this.x,this.y)).addClass("current");
-    
+
+                    $(getcell(this.tbl,this.x,this.y)).addClass("current");
+  
                     // Hide of displayed above the table
-                    if(off.top+c.height() < this.root.find(".datacontainer").offset().top)
+                    if(off.top+c.height() < this.tbl.parent().parent().offset().top)
                         this.drag.div.css("display","none");
                     
                     else
@@ -756,7 +782,7 @@
     
                 if(this.state != $.fn.states.INIT)
                 {
-                    $(getcell(root,this.x,this.y)).removeClass("current");
+                    $(getcell(this.tbl,this.x,this.y)).removeClass("current");
                 }            
             };
     
