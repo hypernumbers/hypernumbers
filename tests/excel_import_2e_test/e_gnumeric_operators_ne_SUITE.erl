@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_operators_ne.xls
-% Generated on: Mon Feb 25 21:57:47 +0000 2008
+% Generated on: Tue Mar 11 09:11:35 +0000 2008
 
 -module(e_gnumeric_operators_ne_SUITE).
 -compile(export_all).
@@ -12,7 +12,9 @@ init_per_suite(Config) ->
     code:add_patha("../../../../../ebin"),
     production_boot:start(),
     test_util:wait(),
-    Data = test_util:read_excel_file("/Win Excel 2007 (as 97)/e_gnumeric_operators_ne.xls"),
+    io:format("dumping current path next: "),
+    c:pwd(),
+    Data = test_util:read_excel_file("../../excel_files/Win Excel 2007 (as 97)/e_gnumeric_operators_ne.xls"),
     Fun =fun({{{sheet,Sheet},{row_index,RowIdx},{col_index,ColIdx}},Input}) ->
       io:format("Sheet is ~p RowIdx is ~p and ColIdx is ~p~n",[Sheet,RowIdx,ColIdx]),
       Data1 = case Input of
@@ -46,7 +48,7 @@ read_from_excel_data(Config,{Sheet,Row,Col}) ->
 
 hn_post(Site, Path, Cell, Data) ->
     Url=Site++Path++Cell,
-    PostData = "action=create&value=" ++ yaws_api:url_encode(Data),
+    PostData = "<create><value>" ++Data++"</value></create>",
     Data2 = {Url, [], "text/plain", PostData},
     io:format("in hn_post Data is ~p~n",[Data2]),
     Return = http:request(post, Data2, [], []),
@@ -73,9123 +75,9123 @@ assert_eql(X, Y) ->
 not_equal_k5_test(doc) -> [{userdata,[{""}]}];
 not_equal_k5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k5"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k16_test(doc) -> [{userdata,[{""}]}];
 not_equal_k16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k16"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k27_test(doc) -> [{userdata,[{""}]}];
 not_equal_k27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k27"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k38_test(doc) -> [{userdata,[{""}]}];
 not_equal_k38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k38"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k49_test(doc) -> [{userdata,[{""}]}];
 not_equal_k49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k60_test(doc) -> [{userdata,[{""}]}];
 not_equal_k60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k11_test(doc) -> [{userdata,[{""}]}];
 not_equal_k11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k22_test(doc) -> [{userdata,[{""}]}];
 not_equal_k22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k22"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k33_test(doc) -> [{userdata,[{""}]}];
 not_equal_k33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k44_test(doc) -> [{userdata,[{""}]}];
 not_equal_k44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k44"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k55_test(doc) -> [{userdata,[{""}]}];
 not_equal_k55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k66_test(doc) -> [{userdata,[{""}]}];
 not_equal_k66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k6_test(doc) -> [{userdata,[{""}]}];
 not_equal_k6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k17_test(doc) -> [{userdata,[{""}]}];
 not_equal_k17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k17"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k28_test(doc) -> [{userdata,[{""}]}];
 not_equal_k28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k39_test(doc) -> [{userdata,[{""}]}];
 not_equal_k39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k39"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k50_test(doc) -> [{userdata,[{""}]}];
 not_equal_k50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k61_test(doc) -> [{userdata,[{""}]}];
 not_equal_k61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k1_test(doc) -> [{userdata,[{""}]}];
 not_equal_k1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k1"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k12_test(doc) -> [{userdata,[{""}]}];
 not_equal_k12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k34_test(doc) -> [{userdata,[{""}]}];
 not_equal_k34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k56_test(doc) -> [{userdata,[{""}]}];
 not_equal_k56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k7_test(doc) -> [{userdata,[{""}]}];
 not_equal_k7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k18_test(doc) -> [{userdata,[{""}]}];
 not_equal_k18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k18"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k29_test(doc) -> [{userdata,[{""}]}];
 not_equal_k29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k40_test(doc) -> [{userdata,[{""}]}];
 not_equal_k40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k40"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k51_test(doc) -> [{userdata,[{""}]}];
 not_equal_k51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k62_test(doc) -> [{userdata,[{""}]}];
 not_equal_k62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k2_test(doc) -> [{userdata,[{""}]}];
 not_equal_k2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k2"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k13_test(doc) -> [{userdata,[{""}]}];
 not_equal_k13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k13"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k35_test(doc) -> [{userdata,[{""}]}];
 not_equal_k35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k35"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k57_test(doc) -> [{userdata,[{""}]}];
 not_equal_k57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k8_test(doc) -> [{userdata,[{""}]}];
 not_equal_k8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k19_test(doc) -> [{userdata,[{""}]}];
 not_equal_k19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k19"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k30_test(doc) -> [{userdata,[{""}]}];
 not_equal_k30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k41_test(doc) -> [{userdata,[{""}]}];
 not_equal_k41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k41"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k52_test(doc) -> [{userdata,[{""}]}];
 not_equal_k52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k63_test(doc) -> [{userdata,[{""}]}];
 not_equal_k63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k3_test(doc) -> [{userdata,[{""}]}];
 not_equal_k3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k3"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k14_test(doc) -> [{userdata,[{""}]}];
 not_equal_k14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k14"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k25_test(doc) -> [{userdata,[{""}]}];
 not_equal_k25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k25"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k36_test(doc) -> [{userdata,[{""}]}];
 not_equal_k36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k36"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k47_test(doc) -> [{userdata,[{""}]}];
 not_equal_k47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k58_test(doc) -> [{userdata,[{""}]}];
 not_equal_k58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k9_test(doc) -> [{userdata,[{""}]}];
 not_equal_k9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k20_test(doc) -> [{userdata,[{""}]}];
 not_equal_k20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k20"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k31_test(doc) -> [{userdata,[{""}]}];
 not_equal_k31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k42_test(doc) -> [{userdata,[{""}]}];
 not_equal_k42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k42"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k53_test(doc) -> [{userdata,[{""}]}];
 not_equal_k53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k64_test(doc) -> [{userdata,[{""}]}];
 not_equal_k64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k4_test(doc) -> [{userdata,[{""}]}];
 not_equal_k4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k4"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k15_test(doc) -> [{userdata,[{""}]}];
 not_equal_k15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k15"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k26_test(doc) -> [{userdata,[{""}]}];
 not_equal_k26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k26"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k37_test(doc) -> [{userdata,[{""}]}];
 not_equal_k37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k37"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k48_test(doc) -> [{userdata,[{""}]}];
 not_equal_k48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k59_test(doc) -> [{userdata,[{""}]}];
 not_equal_k59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k10_test(doc) -> [{userdata,[{""}]}];
 not_equal_k10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k21_test(doc) -> [{userdata,[{""}]}];
 not_equal_k21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k21"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k32_test(doc) -> [{userdata,[{""}]}];
 not_equal_k32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k43_test(doc) -> [{userdata,[{""}]}];
 not_equal_k43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k43"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k54_test(doc) -> [{userdata,[{""}]}];
 not_equal_k54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_k65_test(doc) -> [{userdata,[{""}]}];
 not_equal_k65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","k65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v5_test(doc) -> [{userdata,[{""}]}];
 not_equal_v5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v5"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v16_test(doc) -> [{userdata,[{""}]}];
 not_equal_v16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v16"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v27_test(doc) -> [{userdata,[{""}]}];
 not_equal_v27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v27"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v38_test(doc) -> [{userdata,[{""}]}];
 not_equal_v38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v38"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v49_test(doc) -> [{userdata,[{""}]}];
 not_equal_v49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v60_test(doc) -> [{userdata,[{""}]}];
 not_equal_v60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v11_test(doc) -> [{userdata,[{""}]}];
 not_equal_v11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v22_test(doc) -> [{userdata,[{""}]}];
 not_equal_v22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v22"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v33_test(doc) -> [{userdata,[{""}]}];
 not_equal_v33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v44_test(doc) -> [{userdata,[{""}]}];
 not_equal_v44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v44"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v55_test(doc) -> [{userdata,[{""}]}];
 not_equal_v55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v66_test(doc) -> [{userdata,[{""}]}];
 not_equal_v66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v6_test(doc) -> [{userdata,[{""}]}];
 not_equal_v6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v17_test(doc) -> [{userdata,[{""}]}];
 not_equal_v17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v17"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v28_test(doc) -> [{userdata,[{""}]}];
 not_equal_v28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v39_test(doc) -> [{userdata,[{""}]}];
 not_equal_v39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v39"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v50_test(doc) -> [{userdata,[{""}]}];
 not_equal_v50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v61_test(doc) -> [{userdata,[{""}]}];
 not_equal_v61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v1_test(doc) -> [{userdata,[{""}]}];
 not_equal_v1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v1"),
-  Expected="Float",
+  Expected="<cell><value>"++"Float"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v12_test(doc) -> [{userdata,[{""}]}];
 not_equal_v12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v34_test(doc) -> [{userdata,[{""}]}];
 not_equal_v34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v56_test(doc) -> [{userdata,[{""}]}];
 not_equal_v56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v7_test(doc) -> [{userdata,[{""}]}];
 not_equal_v7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v18_test(doc) -> [{userdata,[{""}]}];
 not_equal_v18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v18"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v29_test(doc) -> [{userdata,[{""}]}];
 not_equal_v29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v40_test(doc) -> [{userdata,[{""}]}];
 not_equal_v40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v40"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v51_test(doc) -> [{userdata,[{""}]}];
 not_equal_v51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v62_test(doc) -> [{userdata,[{""}]}];
 not_equal_v62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v2_test(doc) -> [{userdata,[{""}]}];
 not_equal_v2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v2"),
-  Expected="36193.2",
+  Expected="<cell><value>"++"36193.2"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v13_test(doc) -> [{userdata,[{""}]}];
 not_equal_v13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v13"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v35_test(doc) -> [{userdata,[{""}]}];
 not_equal_v35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v35"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v57_test(doc) -> [{userdata,[{""}]}];
 not_equal_v57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v8_test(doc) -> [{userdata,[{""}]}];
 not_equal_v8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v19_test(doc) -> [{userdata,[{""}]}];
 not_equal_v19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v19"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v30_test(doc) -> [{userdata,[{""}]}];
 not_equal_v30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v41_test(doc) -> [{userdata,[{""}]}];
 not_equal_v41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v41"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v52_test(doc) -> [{userdata,[{""}]}];
 not_equal_v52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v63_test(doc) -> [{userdata,[{""}]}];
 not_equal_v63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v3_test(doc) -> [{userdata,[{""}]}];
 not_equal_v3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v3"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v14_test(doc) -> [{userdata,[{""}]}];
 not_equal_v14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v14"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v25_test(doc) -> [{userdata,[{""}]}];
 not_equal_v25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v25"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v36_test(doc) -> [{userdata,[{""}]}];
 not_equal_v36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v36"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v47_test(doc) -> [{userdata,[{""}]}];
 not_equal_v47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v58_test(doc) -> [{userdata,[{""}]}];
 not_equal_v58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v9_test(doc) -> [{userdata,[{""}]}];
 not_equal_v9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v20_test(doc) -> [{userdata,[{""}]}];
 not_equal_v20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v20"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v31_test(doc) -> [{userdata,[{""}]}];
 not_equal_v31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v42_test(doc) -> [{userdata,[{""}]}];
 not_equal_v42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v42"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v53_test(doc) -> [{userdata,[{""}]}];
 not_equal_v53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v64_test(doc) -> [{userdata,[{""}]}];
 not_equal_v64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v4_test(doc) -> [{userdata,[{""}]}];
 not_equal_v4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v4"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v15_test(doc) -> [{userdata,[{""}]}];
 not_equal_v15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v15"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v26_test(doc) -> [{userdata,[{""}]}];
 not_equal_v26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v26"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v37_test(doc) -> [{userdata,[{""}]}];
 not_equal_v37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v37"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v48_test(doc) -> [{userdata,[{""}]}];
 not_equal_v48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v59_test(doc) -> [{userdata,[{""}]}];
 not_equal_v59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v10_test(doc) -> [{userdata,[{""}]}];
 not_equal_v10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v21_test(doc) -> [{userdata,[{""}]}];
 not_equal_v21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v21"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v32_test(doc) -> [{userdata,[{""}]}];
 not_equal_v32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v43_test(doc) -> [{userdata,[{""}]}];
 not_equal_v43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v43"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v54_test(doc) -> [{userdata,[{""}]}];
 not_equal_v54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_v65_test(doc) -> [{userdata,[{""}]}];
 not_equal_v65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","v65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a5_test(doc) -> [{userdata,[{""}]}];
 not_equal_a5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a5"),
-  Expected="Boolean",
+  Expected="<cell><value>"++"Boolean"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a16_test(doc) -> [{userdata,[{""}]}];
 not_equal_a16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a16"),
-  Expected="Str Num",
+  Expected="<cell><value>"++"Str Num"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a27_test(doc) -> [{userdata,[{""}]}];
 not_equal_a27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a27"),
-  Expected="Boolean",
+  Expected="<cell><value>"++"Boolean"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a38_test(doc) -> [{userdata,[{""}]}];
 not_equal_a38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a38"),
-  Expected="Str Num",
+  Expected="<cell><value>"++"Str Num"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a11_test(doc) -> [{userdata,[{""}]}];
 not_equal_a11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a11"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a22_test(doc) -> [{userdata,[{""}]}];
 not_equal_a22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a22"),
-  Expected="Float",
+  Expected="<cell><value>"++"Float"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a33_test(doc) -> [{userdata,[{""}]}];
 not_equal_a33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a33"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a44_test(doc) -> [{userdata,[{""}]}];
 not_equal_a44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a44"),
-  Expected="Float",
+  Expected="<cell><value>"++"Float"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a6_test(doc) -> [{userdata,[{""}]}];
 not_equal_a6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a6"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a17_test(doc) -> [{userdata,[{""}]}];
 not_equal_a17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a17"),
-  Expected="Str Num",
+  Expected="<cell><value>"++"Str Num"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a28_test(doc) -> [{userdata,[{""}]}];
 not_equal_a28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a28"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a39_test(doc) -> [{userdata,[{""}]}];
 not_equal_a39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a39"),
-  Expected="Str Num",
+  Expected="<cell><value>"++"Str Num"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a1_test(doc) -> [{userdata,[{""}]}];
 not_equal_a1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a1"),
-  Expected="<>",
+  Expected="<cell><value>"++"<>"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a12_test(doc) -> [{userdata,[{""}]}];
 not_equal_a12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a12"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a34_test(doc) -> [{userdata,[{""}]}];
 not_equal_a34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a34"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a7_test(doc) -> [{userdata,[{""}]}];
 not_equal_a7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a7"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a18_test(doc) -> [{userdata,[{""}]}];
 not_equal_a18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a18"),
-  Expected="Integer",
+  Expected="<cell><value>"++"Integer"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a29_test(doc) -> [{userdata,[{""}]}];
 not_equal_a29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a29"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a40_test(doc) -> [{userdata,[{""}]}];
 not_equal_a40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a40"),
-  Expected="Integer",
+  Expected="<cell><value>"++"Integer"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a2_test(doc) -> [{userdata,[{""}]}];
 not_equal_a2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a2"),
-  Expected="A",
+  Expected="<cell><value>"++"A"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a13_test(doc) -> [{userdata,[{""}]}];
 not_equal_a13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a13"),
-  Expected="String",
+  Expected="<cell><value>"++"String"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a35_test(doc) -> [{userdata,[{""}]}];
 not_equal_a35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a35"),
-  Expected="String",
+  Expected="<cell><value>"++"String"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a8_test(doc) -> [{userdata,[{""}]}];
 not_equal_a8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a8"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a19_test(doc) -> [{userdata,[{""}]}];
 not_equal_a19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a19"),
-  Expected="Integer",
+  Expected="<cell><value>"++"Integer"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a30_test(doc) -> [{userdata,[{""}]}];
 not_equal_a30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a30"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a41_test(doc) -> [{userdata,[{""}]}];
 not_equal_a41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a41"),
-  Expected="Integer",
+  Expected="<cell><value>"++"Integer"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a3_test(doc) -> [{userdata,[{""}]}];
 not_equal_a3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a3"),
-  Expected="Blank",
+  Expected="<cell><value>"++"Blank"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a14_test(doc) -> [{userdata,[{""}]}];
 not_equal_a14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a14"),
-  Expected="String",
+  Expected="<cell><value>"++"String"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a25_test(doc) -> [{userdata,[{""}]}];
 not_equal_a25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a25"),
-  Expected="Blank",
+  Expected="<cell><value>"++"Blank"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a36_test(doc) -> [{userdata,[{""}]}];
 not_equal_a36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a36"),
-  Expected="String",
+  Expected="<cell><value>"++"String"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a47_test(doc) -> [{userdata,[{""}]}];
 not_equal_a47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a47"),
-  Expected="400.0",
+  Expected="<cell><value>"++"400.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a9_test(doc) -> [{userdata,[{""}]}];
 not_equal_a9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a9"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a20_test(doc) -> [{userdata,[{""}]}];
 not_equal_a20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a20"),
-  Expected="Zero",
+  Expected="<cell><value>"++"Zero"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a31_test(doc) -> [{userdata,[{""}]}];
 not_equal_a31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a31"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a42_test(doc) -> [{userdata,[{""}]}];
 not_equal_a42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a42"),
-  Expected="Zero",
+  Expected="<cell><value>"++"Zero"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a4_test(doc) -> [{userdata,[{""}]}];
 not_equal_a4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a4"),
-  Expected="Boolean",
+  Expected="<cell><value>"++"Boolean"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a15_test(doc) -> [{userdata,[{""}]}];
 not_equal_a15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a15"),
-  Expected="String",
+  Expected="<cell><value>"++"String"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a26_test(doc) -> [{userdata,[{""}]}];
 not_equal_a26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a26"),
-  Expected="Boolean",
+  Expected="<cell><value>"++"Boolean"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a37_test(doc) -> [{userdata,[{""}]}];
 not_equal_a37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a37"),
-  Expected="String",
+  Expected="<cell><value>"++"String"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a48_test(doc) -> [{userdata,[{""}]}];
 not_equal_a48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a48"),
-  Expected="Success",
+  Expected="<cell><value>"++"Success"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a10_test(doc) -> [{userdata,[{""}]}];
 not_equal_a10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a10"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a21_test(doc) -> [{userdata,[{""}]}];
 not_equal_a21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a21"),
-  Expected="Float",
+  Expected="<cell><value>"++"Float"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a32_test(doc) -> [{userdata,[{""}]}];
 not_equal_a32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a32"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_a43_test(doc) -> [{userdata,[{""}]}];
 not_equal_a43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","a43"),
-  Expected="Float",
+  Expected="<cell><value>"++"Float"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l5_test(doc) -> [{userdata,[{""}]}];
 not_equal_l5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l5"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l16_test(doc) -> [{userdata,[{""}]}];
 not_equal_l16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l16"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l27_test(doc) -> [{userdata,[{""}]}];
 not_equal_l27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l27"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l38_test(doc) -> [{userdata,[{""}]}];
 not_equal_l38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l38"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l49_test(doc) -> [{userdata,[{""}]}];
 not_equal_l49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l60_test(doc) -> [{userdata,[{""}]}];
 not_equal_l60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l11_test(doc) -> [{userdata,[{""}]}];
 not_equal_l11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l22_test(doc) -> [{userdata,[{""}]}];
 not_equal_l22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l22"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l33_test(doc) -> [{userdata,[{""}]}];
 not_equal_l33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l44_test(doc) -> [{userdata,[{""}]}];
 not_equal_l44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l44"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l55_test(doc) -> [{userdata,[{""}]}];
 not_equal_l55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l66_test(doc) -> [{userdata,[{""}]}];
 not_equal_l66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l6_test(doc) -> [{userdata,[{""}]}];
 not_equal_l6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l17_test(doc) -> [{userdata,[{""}]}];
 not_equal_l17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l17"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l28_test(doc) -> [{userdata,[{""}]}];
 not_equal_l28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l39_test(doc) -> [{userdata,[{""}]}];
 not_equal_l39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l39"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l50_test(doc) -> [{userdata,[{""}]}];
 not_equal_l50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l61_test(doc) -> [{userdata,[{""}]}];
 not_equal_l61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l1_test(doc) -> [{userdata,[{""}]}];
 not_equal_l1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l1"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l12_test(doc) -> [{userdata,[{""}]}];
 not_equal_l12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l34_test(doc) -> [{userdata,[{""}]}];
 not_equal_l34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l56_test(doc) -> [{userdata,[{""}]}];
 not_equal_l56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l7_test(doc) -> [{userdata,[{""}]}];
 not_equal_l7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l18_test(doc) -> [{userdata,[{""}]}];
 not_equal_l18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l18"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l29_test(doc) -> [{userdata,[{""}]}];
 not_equal_l29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l40_test(doc) -> [{userdata,[{""}]}];
 not_equal_l40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l40"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l51_test(doc) -> [{userdata,[{""}]}];
 not_equal_l51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l62_test(doc) -> [{userdata,[{""}]}];
 not_equal_l62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l2_test(doc) -> [{userdata,[{""}]}];
 not_equal_l2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l2"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l13_test(doc) -> [{userdata,[{""}]}];
 not_equal_l13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l13"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l35_test(doc) -> [{userdata,[{""}]}];
 not_equal_l35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l57_test(doc) -> [{userdata,[{""}]}];
 not_equal_l57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l8_test(doc) -> [{userdata,[{""}]}];
 not_equal_l8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l19_test(doc) -> [{userdata,[{""}]}];
 not_equal_l19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l19"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l30_test(doc) -> [{userdata,[{""}]}];
 not_equal_l30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l41_test(doc) -> [{userdata,[{""}]}];
 not_equal_l41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l41"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l52_test(doc) -> [{userdata,[{""}]}];
 not_equal_l52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l63_test(doc) -> [{userdata,[{""}]}];
 not_equal_l63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l3_test(doc) -> [{userdata,[{""}]}];
 not_equal_l3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l3"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l14_test(doc) -> [{userdata,[{""}]}];
 not_equal_l14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l14"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l25_test(doc) -> [{userdata,[{""}]}];
 not_equal_l25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l25"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l36_test(doc) -> [{userdata,[{""}]}];
 not_equal_l36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l47_test(doc) -> [{userdata,[{""}]}];
 not_equal_l47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l58_test(doc) -> [{userdata,[{""}]}];
 not_equal_l58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l9_test(doc) -> [{userdata,[{""}]}];
 not_equal_l9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l20_test(doc) -> [{userdata,[{""}]}];
 not_equal_l20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l20"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l31_test(doc) -> [{userdata,[{""}]}];
 not_equal_l31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l42_test(doc) -> [{userdata,[{""}]}];
 not_equal_l42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l42"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l53_test(doc) -> [{userdata,[{""}]}];
 not_equal_l53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l64_test(doc) -> [{userdata,[{""}]}];
 not_equal_l64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l4_test(doc) -> [{userdata,[{""}]}];
 not_equal_l4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l4"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l15_test(doc) -> [{userdata,[{""}]}];
 not_equal_l15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l15"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l26_test(doc) -> [{userdata,[{""}]}];
 not_equal_l26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l26"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l37_test(doc) -> [{userdata,[{""}]}];
 not_equal_l37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l48_test(doc) -> [{userdata,[{""}]}];
 not_equal_l48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l59_test(doc) -> [{userdata,[{""}]}];
 not_equal_l59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l10_test(doc) -> [{userdata,[{""}]}];
 not_equal_l10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l21_test(doc) -> [{userdata,[{""}]}];
 not_equal_l21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l21"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l32_test(doc) -> [{userdata,[{""}]}];
 not_equal_l32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l43_test(doc) -> [{userdata,[{""}]}];
 not_equal_l43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l43"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l54_test(doc) -> [{userdata,[{""}]}];
 not_equal_l54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_l65_test(doc) -> [{userdata,[{""}]}];
 not_equal_l65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","l65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_b5_test(doc) -> [{userdata,[{""}]}];
 not_equal_b5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","b5"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_b16_test(doc) -> [{userdata,[{""}]}];
 not_equal_b16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","b16"),
-  Expected="2.7",
+  Expected="<cell><value>"++"2.7"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_b11_test(doc) -> [{userdata,[{""}]}];
 not_equal_b11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","b11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_b22_test(doc) -> [{userdata,[{""}]}];
 not_equal_b22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","b22"),
-  Expected="36193.2",
+  Expected="<cell><value>"++"36193.2"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_b6_test(doc) -> [{userdata,[{""}]}];
 not_equal_b6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","b6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_b17_test(doc) -> [{userdata,[{""}]}];
 not_equal_b17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","b17"),
-  Expected="3.54",
+  Expected="<cell><value>"++"3.54"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_b1_test(doc) -> [{userdata,[{""}]}];
 not_equal_b1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","b1"),
-  Expected="B",
+  Expected="<cell><value>"++"B"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_b12_test(doc) -> [{userdata,[{""}]}];
 not_equal_b12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","b12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_b7_test(doc) -> [{userdata,[{""}]}];
 not_equal_b7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","b7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_b18_test(doc) -> [{userdata,[{""}]}];
 not_equal_b18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","b18"),
-  Expected="1999/02/01 00:00:00",
+  Expected="<cell><value>"++"1999/02/01 00:00:00"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_b13_test(doc) -> [{userdata,[{""}]}];
 not_equal_b13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","b13"),
-  Expected="Liz",
+  Expected="<cell><value>"++"Liz"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_b8_test(doc) -> [{userdata,[{""}]}];
 not_equal_b8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","b8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_b19_test(doc) -> [{userdata,[{""}]}];
 not_equal_b19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","b19"),
-  Expected="1999/02/02 00:00:00",
+  Expected="<cell><value>"++"1999/02/02 00:00:00"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_b14_test(doc) -> [{userdata,[{""}]}];
 not_equal_b14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","b14"),
-  Expected="Doug",
+  Expected="<cell><value>"++"Doug"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_b9_test(doc) -> [{userdata,[{""}]}];
 not_equal_b9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","b9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_b20_test(doc) -> [{userdata,[{""}]}];
 not_equal_b20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","b20"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_b4_test(doc) -> [{userdata,[{""}]}];
 not_equal_b4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","b4"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_b15_test(doc) -> [{userdata,[{""}]}];
 not_equal_b15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","b15"),
-  Expected="Bob",
+  Expected="<cell><value>"++"Bob"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_b10_test(doc) -> [{userdata,[{""}]}];
 not_equal_b10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","b10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_b21_test(doc) -> [{userdata,[{""}]}];
 not_equal_b21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","b21"),
-  Expected="3.1415",
+  Expected="<cell><value>"++"3.1415"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m5_test(doc) -> [{userdata,[{""}]}];
 not_equal_m5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m5"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m16_test(doc) -> [{userdata,[{""}]}];
 not_equal_m16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m16"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m27_test(doc) -> [{userdata,[{""}]}];
 not_equal_m27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m27"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m38_test(doc) -> [{userdata,[{""}]}];
 not_equal_m38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m38"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m49_test(doc) -> [{userdata,[{""}]}];
 not_equal_m49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m60_test(doc) -> [{userdata,[{""}]}];
 not_equal_m60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m11_test(doc) -> [{userdata,[{""}]}];
 not_equal_m11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m22_test(doc) -> [{userdata,[{""}]}];
 not_equal_m22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m22"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m33_test(doc) -> [{userdata,[{""}]}];
 not_equal_m33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m44_test(doc) -> [{userdata,[{""}]}];
 not_equal_m44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m44"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m55_test(doc) -> [{userdata,[{""}]}];
 not_equal_m55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m66_test(doc) -> [{userdata,[{""}]}];
 not_equal_m66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m6_test(doc) -> [{userdata,[{""}]}];
 not_equal_m6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m17_test(doc) -> [{userdata,[{""}]}];
 not_equal_m17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m17"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m28_test(doc) -> [{userdata,[{""}]}];
 not_equal_m28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m39_test(doc) -> [{userdata,[{""}]}];
 not_equal_m39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m39"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m50_test(doc) -> [{userdata,[{""}]}];
 not_equal_m50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m61_test(doc) -> [{userdata,[{""}]}];
 not_equal_m61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m1_test(doc) -> [{userdata,[{""}]}];
 not_equal_m1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m1"),
-  Expected="String",
+  Expected="<cell><value>"++"String"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m12_test(doc) -> [{userdata,[{""}]}];
 not_equal_m12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m34_test(doc) -> [{userdata,[{""}]}];
 not_equal_m34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m56_test(doc) -> [{userdata,[{""}]}];
 not_equal_m56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m7_test(doc) -> [{userdata,[{""}]}];
 not_equal_m7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m18_test(doc) -> [{userdata,[{""}]}];
 not_equal_m18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m18"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m29_test(doc) -> [{userdata,[{""}]}];
 not_equal_m29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m40_test(doc) -> [{userdata,[{""}]}];
 not_equal_m40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m40"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m51_test(doc) -> [{userdata,[{""}]}];
 not_equal_m51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m62_test(doc) -> [{userdata,[{""}]}];
 not_equal_m62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m2_test(doc) -> [{userdata,[{""}]}];
 not_equal_m2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m2"),
-  Expected="Liz",
+  Expected="<cell><value>"++"Liz"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m13_test(doc) -> [{userdata,[{""}]}];
 not_equal_m13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m13"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m35_test(doc) -> [{userdata,[{""}]}];
 not_equal_m35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m35"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m57_test(doc) -> [{userdata,[{""}]}];
 not_equal_m57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m8_test(doc) -> [{userdata,[{""}]}];
 not_equal_m8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m19_test(doc) -> [{userdata,[{""}]}];
 not_equal_m19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m19"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m30_test(doc) -> [{userdata,[{""}]}];
 not_equal_m30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m41_test(doc) -> [{userdata,[{""}]}];
 not_equal_m41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m41"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m52_test(doc) -> [{userdata,[{""}]}];
 not_equal_m52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m63_test(doc) -> [{userdata,[{""}]}];
 not_equal_m63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m3_test(doc) -> [{userdata,[{""}]}];
 not_equal_m3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m3"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m14_test(doc) -> [{userdata,[{""}]}];
 not_equal_m14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m14"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m25_test(doc) -> [{userdata,[{""}]}];
 not_equal_m25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m25"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m36_test(doc) -> [{userdata,[{""}]}];
 not_equal_m36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m36"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m47_test(doc) -> [{userdata,[{""}]}];
 not_equal_m47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m58_test(doc) -> [{userdata,[{""}]}];
 not_equal_m58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m9_test(doc) -> [{userdata,[{""}]}];
 not_equal_m9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m20_test(doc) -> [{userdata,[{""}]}];
 not_equal_m20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m20"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m31_test(doc) -> [{userdata,[{""}]}];
 not_equal_m31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m42_test(doc) -> [{userdata,[{""}]}];
 not_equal_m42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m42"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m53_test(doc) -> [{userdata,[{""}]}];
 not_equal_m53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m64_test(doc) -> [{userdata,[{""}]}];
 not_equal_m64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m4_test(doc) -> [{userdata,[{""}]}];
 not_equal_m4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m4"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m15_test(doc) -> [{userdata,[{""}]}];
 not_equal_m15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m15"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m26_test(doc) -> [{userdata,[{""}]}];
 not_equal_m26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m26"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m37_test(doc) -> [{userdata,[{""}]}];
 not_equal_m37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m37"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m48_test(doc) -> [{userdata,[{""}]}];
 not_equal_m48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m59_test(doc) -> [{userdata,[{""}]}];
 not_equal_m59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m10_test(doc) -> [{userdata,[{""}]}];
 not_equal_m10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m21_test(doc) -> [{userdata,[{""}]}];
 not_equal_m21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m21"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m32_test(doc) -> [{userdata,[{""}]}];
 not_equal_m32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m43_test(doc) -> [{userdata,[{""}]}];
 not_equal_m43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m43"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m54_test(doc) -> [{userdata,[{""}]}];
 not_equal_m54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_m65_test(doc) -> [{userdata,[{""}]}];
 not_equal_m65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","m65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c5_test(doc) -> [{userdata,[{""}]}];
 not_equal_c5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c5"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c16_test(doc) -> [{userdata,[{""}]}];
 not_equal_c16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c16"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c27_test(doc) -> [{userdata,[{""}]}];
 not_equal_c27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c27"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c38_test(doc) -> [{userdata,[{""}]}];
 not_equal_c38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c38"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c49_test(doc) -> [{userdata,[{""}]}];
 not_equal_c49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c60_test(doc) -> [{userdata,[{""}]}];
 not_equal_c60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c11_test(doc) -> [{userdata,[{""}]}];
 not_equal_c11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c22_test(doc) -> [{userdata,[{""}]}];
 not_equal_c22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c22"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c33_test(doc) -> [{userdata,[{""}]}];
 not_equal_c33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c44_test(doc) -> [{userdata,[{""}]}];
 not_equal_c44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c44"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c55_test(doc) -> [{userdata,[{""}]}];
 not_equal_c55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c66_test(doc) -> [{userdata,[{""}]}];
 not_equal_c66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c6_test(doc) -> [{userdata,[{""}]}];
 not_equal_c6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c17_test(doc) -> [{userdata,[{""}]}];
 not_equal_c17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c17"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c28_test(doc) -> [{userdata,[{""}]}];
 not_equal_c28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c39_test(doc) -> [{userdata,[{""}]}];
 not_equal_c39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c39"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c50_test(doc) -> [{userdata,[{""}]}];
 not_equal_c50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c61_test(doc) -> [{userdata,[{""}]}];
 not_equal_c61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c1_test(doc) -> [{userdata,[{""}]}];
 not_equal_c1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c1"),
-  Expected="Blank",
+  Expected="<cell><value>"++"Blank"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c12_test(doc) -> [{userdata,[{""}]}];
 not_equal_c12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c34_test(doc) -> [{userdata,[{""}]}];
 not_equal_c34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c56_test(doc) -> [{userdata,[{""}]}];
 not_equal_c56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c7_test(doc) -> [{userdata,[{""}]}];
 not_equal_c7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c18_test(doc) -> [{userdata,[{""}]}];
 not_equal_c18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c18"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c29_test(doc) -> [{userdata,[{""}]}];
 not_equal_c29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c40_test(doc) -> [{userdata,[{""}]}];
 not_equal_c40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c40"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c51_test(doc) -> [{userdata,[{""}]}];
 not_equal_c51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c62_test(doc) -> [{userdata,[{""}]}];
 not_equal_c62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c13_test(doc) -> [{userdata,[{""}]}];
 not_equal_c13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c13"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c35_test(doc) -> [{userdata,[{""}]}];
 not_equal_c35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c35"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c57_test(doc) -> [{userdata,[{""}]}];
 not_equal_c57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c8_test(doc) -> [{userdata,[{""}]}];
 not_equal_c8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c19_test(doc) -> [{userdata,[{""}]}];
 not_equal_c19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c19"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c30_test(doc) -> [{userdata,[{""}]}];
 not_equal_c30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c41_test(doc) -> [{userdata,[{""}]}];
 not_equal_c41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c41"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c52_test(doc) -> [{userdata,[{""}]}];
 not_equal_c52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c63_test(doc) -> [{userdata,[{""}]}];
 not_equal_c63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c3_test(doc) -> [{userdata,[{""}]}];
 not_equal_c3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c3"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c14_test(doc) -> [{userdata,[{""}]}];
 not_equal_c14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c14"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c25_test(doc) -> [{userdata,[{""}]}];
 not_equal_c25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c25"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c36_test(doc) -> [{userdata,[{""}]}];
 not_equal_c36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c36"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c47_test(doc) -> [{userdata,[{""}]}];
 not_equal_c47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c58_test(doc) -> [{userdata,[{""}]}];
 not_equal_c58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c9_test(doc) -> [{userdata,[{""}]}];
 not_equal_c9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c20_test(doc) -> [{userdata,[{""}]}];
 not_equal_c20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c20"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c31_test(doc) -> [{userdata,[{""}]}];
 not_equal_c31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c42_test(doc) -> [{userdata,[{""}]}];
 not_equal_c42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c42"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c53_test(doc) -> [{userdata,[{""}]}];
 not_equal_c53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c64_test(doc) -> [{userdata,[{""}]}];
 not_equal_c64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c4_test(doc) -> [{userdata,[{""}]}];
 not_equal_c4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c4"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c15_test(doc) -> [{userdata,[{""}]}];
 not_equal_c15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c15"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c26_test(doc) -> [{userdata,[{""}]}];
 not_equal_c26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c26"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c37_test(doc) -> [{userdata,[{""}]}];
 not_equal_c37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c37"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c48_test(doc) -> [{userdata,[{""}]}];
 not_equal_c48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c59_test(doc) -> [{userdata,[{""}]}];
 not_equal_c59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c10_test(doc) -> [{userdata,[{""}]}];
 not_equal_c10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c21_test(doc) -> [{userdata,[{""}]}];
 not_equal_c21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c21"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c32_test(doc) -> [{userdata,[{""}]}];
 not_equal_c32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c43_test(doc) -> [{userdata,[{""}]}];
 not_equal_c43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c43"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c54_test(doc) -> [{userdata,[{""}]}];
 not_equal_c54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_c65_test(doc) -> [{userdata,[{""}]}];
 not_equal_c65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","c65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n5_test(doc) -> [{userdata,[{""}]}];
 not_equal_n5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n5"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n16_test(doc) -> [{userdata,[{""}]}];
 not_equal_n16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n16"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n27_test(doc) -> [{userdata,[{""}]}];
 not_equal_n27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n27"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n38_test(doc) -> [{userdata,[{""}]}];
 not_equal_n38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n38"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n49_test(doc) -> [{userdata,[{""}]}];
 not_equal_n49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n60_test(doc) -> [{userdata,[{""}]}];
 not_equal_n60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n11_test(doc) -> [{userdata,[{""}]}];
 not_equal_n11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n22_test(doc) -> [{userdata,[{""}]}];
 not_equal_n22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n22"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n33_test(doc) -> [{userdata,[{""}]}];
 not_equal_n33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n44_test(doc) -> [{userdata,[{""}]}];
 not_equal_n44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n44"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n55_test(doc) -> [{userdata,[{""}]}];
 not_equal_n55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n66_test(doc) -> [{userdata,[{""}]}];
 not_equal_n66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n6_test(doc) -> [{userdata,[{""}]}];
 not_equal_n6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n17_test(doc) -> [{userdata,[{""}]}];
 not_equal_n17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n17"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n28_test(doc) -> [{userdata,[{""}]}];
 not_equal_n28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n39_test(doc) -> [{userdata,[{""}]}];
 not_equal_n39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n39"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n50_test(doc) -> [{userdata,[{""}]}];
 not_equal_n50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n61_test(doc) -> [{userdata,[{""}]}];
 not_equal_n61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n1_test(doc) -> [{userdata,[{""}]}];
 not_equal_n1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n1"),
-  Expected="String",
+  Expected="<cell><value>"++"String"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n12_test(doc) -> [{userdata,[{""}]}];
 not_equal_n12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n34_test(doc) -> [{userdata,[{""}]}];
 not_equal_n34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n56_test(doc) -> [{userdata,[{""}]}];
 not_equal_n56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n7_test(doc) -> [{userdata,[{""}]}];
 not_equal_n7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n18_test(doc) -> [{userdata,[{""}]}];
 not_equal_n18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n18"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n29_test(doc) -> [{userdata,[{""}]}];
 not_equal_n29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n40_test(doc) -> [{userdata,[{""}]}];
 not_equal_n40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n40"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n51_test(doc) -> [{userdata,[{""}]}];
 not_equal_n51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n62_test(doc) -> [{userdata,[{""}]}];
 not_equal_n62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n2_test(doc) -> [{userdata,[{""}]}];
 not_equal_n2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n2"),
-  Expected="Doug",
+  Expected="<cell><value>"++"Doug"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n13_test(doc) -> [{userdata,[{""}]}];
 not_equal_n13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n13"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n35_test(doc) -> [{userdata,[{""}]}];
 not_equal_n35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n35"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n57_test(doc) -> [{userdata,[{""}]}];
 not_equal_n57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n8_test(doc) -> [{userdata,[{""}]}];
 not_equal_n8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n19_test(doc) -> [{userdata,[{""}]}];
 not_equal_n19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n19"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n30_test(doc) -> [{userdata,[{""}]}];
 not_equal_n30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n41_test(doc) -> [{userdata,[{""}]}];
 not_equal_n41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n41"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n52_test(doc) -> [{userdata,[{""}]}];
 not_equal_n52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n63_test(doc) -> [{userdata,[{""}]}];
 not_equal_n63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n3_test(doc) -> [{userdata,[{""}]}];
 not_equal_n3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n3"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n14_test(doc) -> [{userdata,[{""}]}];
 not_equal_n14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n14"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n25_test(doc) -> [{userdata,[{""}]}];
 not_equal_n25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n25"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n36_test(doc) -> [{userdata,[{""}]}];
 not_equal_n36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n36"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n47_test(doc) -> [{userdata,[{""}]}];
 not_equal_n47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n58_test(doc) -> [{userdata,[{""}]}];
 not_equal_n58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n9_test(doc) -> [{userdata,[{""}]}];
 not_equal_n9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n20_test(doc) -> [{userdata,[{""}]}];
 not_equal_n20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n20"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n31_test(doc) -> [{userdata,[{""}]}];
 not_equal_n31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n42_test(doc) -> [{userdata,[{""}]}];
 not_equal_n42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n42"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n53_test(doc) -> [{userdata,[{""}]}];
 not_equal_n53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n64_test(doc) -> [{userdata,[{""}]}];
 not_equal_n64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n4_test(doc) -> [{userdata,[{""}]}];
 not_equal_n4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n4"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n15_test(doc) -> [{userdata,[{""}]}];
 not_equal_n15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n15"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n26_test(doc) -> [{userdata,[{""}]}];
 not_equal_n26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n26"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n37_test(doc) -> [{userdata,[{""}]}];
 not_equal_n37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n37"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n48_test(doc) -> [{userdata,[{""}]}];
 not_equal_n48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n59_test(doc) -> [{userdata,[{""}]}];
 not_equal_n59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n10_test(doc) -> [{userdata,[{""}]}];
 not_equal_n10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n21_test(doc) -> [{userdata,[{""}]}];
 not_equal_n21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n21"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n32_test(doc) -> [{userdata,[{""}]}];
 not_equal_n32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n43_test(doc) -> [{userdata,[{""}]}];
 not_equal_n43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n43"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n54_test(doc) -> [{userdata,[{""}]}];
 not_equal_n54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_n65_test(doc) -> [{userdata,[{""}]}];
 not_equal_n65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","n65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d5_test(doc) -> [{userdata,[{""}]}];
 not_equal_d5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d5"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d16_test(doc) -> [{userdata,[{""}]}];
 not_equal_d16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d16"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d27_test(doc) -> [{userdata,[{""}]}];
 not_equal_d27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d27"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d38_test(doc) -> [{userdata,[{""}]}];
 not_equal_d38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d38"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d49_test(doc) -> [{userdata,[{""}]}];
 not_equal_d49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d60_test(doc) -> [{userdata,[{""}]}];
 not_equal_d60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d11_test(doc) -> [{userdata,[{""}]}];
 not_equal_d11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d22_test(doc) -> [{userdata,[{""}]}];
 not_equal_d22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d22"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d33_test(doc) -> [{userdata,[{""}]}];
 not_equal_d33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d44_test(doc) -> [{userdata,[{""}]}];
 not_equal_d44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d44"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d55_test(doc) -> [{userdata,[{""}]}];
 not_equal_d55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d66_test(doc) -> [{userdata,[{""}]}];
 not_equal_d66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d6_test(doc) -> [{userdata,[{""}]}];
 not_equal_d6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d17_test(doc) -> [{userdata,[{""}]}];
 not_equal_d17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d17"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d28_test(doc) -> [{userdata,[{""}]}];
 not_equal_d28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d39_test(doc) -> [{userdata,[{""}]}];
 not_equal_d39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d39"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d50_test(doc) -> [{userdata,[{""}]}];
 not_equal_d50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d61_test(doc) -> [{userdata,[{""}]}];
 not_equal_d61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d1_test(doc) -> [{userdata,[{""}]}];
 not_equal_d1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d1"),
-  Expected="Boolean",
+  Expected="<cell><value>"++"Boolean"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d12_test(doc) -> [{userdata,[{""}]}];
 not_equal_d12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d34_test(doc) -> [{userdata,[{""}]}];
 not_equal_d34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d56_test(doc) -> [{userdata,[{""}]}];
 not_equal_d56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d7_test(doc) -> [{userdata,[{""}]}];
 not_equal_d7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d18_test(doc) -> [{userdata,[{""}]}];
 not_equal_d18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d18"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d29_test(doc) -> [{userdata,[{""}]}];
 not_equal_d29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d40_test(doc) -> [{userdata,[{""}]}];
 not_equal_d40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d40"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d51_test(doc) -> [{userdata,[{""}]}];
 not_equal_d51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d62_test(doc) -> [{userdata,[{""}]}];
 not_equal_d62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d2_test(doc) -> [{userdata,[{""}]}];
 not_equal_d2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d2"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d13_test(doc) -> [{userdata,[{""}]}];
 not_equal_d13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d13"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d35_test(doc) -> [{userdata,[{""}]}];
 not_equal_d35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d35"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d57_test(doc) -> [{userdata,[{""}]}];
 not_equal_d57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d8_test(doc) -> [{userdata,[{""}]}];
 not_equal_d8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d19_test(doc) -> [{userdata,[{""}]}];
 not_equal_d19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d19"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d30_test(doc) -> [{userdata,[{""}]}];
 not_equal_d30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d41_test(doc) -> [{userdata,[{""}]}];
 not_equal_d41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d41"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d52_test(doc) -> [{userdata,[{""}]}];
 not_equal_d52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d63_test(doc) -> [{userdata,[{""}]}];
 not_equal_d63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d3_test(doc) -> [{userdata,[{""}]}];
 not_equal_d3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d3"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d14_test(doc) -> [{userdata,[{""}]}];
 not_equal_d14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d14"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d25_test(doc) -> [{userdata,[{""}]}];
 not_equal_d25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d25"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d36_test(doc) -> [{userdata,[{""}]}];
 not_equal_d36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d36"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d47_test(doc) -> [{userdata,[{""}]}];
 not_equal_d47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d58_test(doc) -> [{userdata,[{""}]}];
 not_equal_d58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d9_test(doc) -> [{userdata,[{""}]}];
 not_equal_d9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d20_test(doc) -> [{userdata,[{""}]}];
 not_equal_d20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d20"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d31_test(doc) -> [{userdata,[{""}]}];
 not_equal_d31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d42_test(doc) -> [{userdata,[{""}]}];
 not_equal_d42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d42"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d53_test(doc) -> [{userdata,[{""}]}];
 not_equal_d53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d64_test(doc) -> [{userdata,[{""}]}];
 not_equal_d64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d4_test(doc) -> [{userdata,[{""}]}];
 not_equal_d4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d4"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d15_test(doc) -> [{userdata,[{""}]}];
 not_equal_d15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d15"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d26_test(doc) -> [{userdata,[{""}]}];
 not_equal_d26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d26"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d37_test(doc) -> [{userdata,[{""}]}];
 not_equal_d37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d37"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d48_test(doc) -> [{userdata,[{""}]}];
 not_equal_d48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d59_test(doc) -> [{userdata,[{""}]}];
 not_equal_d59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d10_test(doc) -> [{userdata,[{""}]}];
 not_equal_d10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d21_test(doc) -> [{userdata,[{""}]}];
 not_equal_d21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d21"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d32_test(doc) -> [{userdata,[{""}]}];
 not_equal_d32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d43_test(doc) -> [{userdata,[{""}]}];
 not_equal_d43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d43"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d54_test(doc) -> [{userdata,[{""}]}];
 not_equal_d54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_d65_test(doc) -> [{userdata,[{""}]}];
 not_equal_d65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","d65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o5_test(doc) -> [{userdata,[{""}]}];
 not_equal_o5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o5"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o16_test(doc) -> [{userdata,[{""}]}];
 not_equal_o16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o16"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o27_test(doc) -> [{userdata,[{""}]}];
 not_equal_o27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o27"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o38_test(doc) -> [{userdata,[{""}]}];
 not_equal_o38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o38"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o49_test(doc) -> [{userdata,[{""}]}];
 not_equal_o49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o60_test(doc) -> [{userdata,[{""}]}];
 not_equal_o60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o11_test(doc) -> [{userdata,[{""}]}];
 not_equal_o11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o22_test(doc) -> [{userdata,[{""}]}];
 not_equal_o22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o22"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o33_test(doc) -> [{userdata,[{""}]}];
 not_equal_o33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o44_test(doc) -> [{userdata,[{""}]}];
 not_equal_o44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o44"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o55_test(doc) -> [{userdata,[{""}]}];
 not_equal_o55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o66_test(doc) -> [{userdata,[{""}]}];
 not_equal_o66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o6_test(doc) -> [{userdata,[{""}]}];
 not_equal_o6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o17_test(doc) -> [{userdata,[{""}]}];
 not_equal_o17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o17"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o28_test(doc) -> [{userdata,[{""}]}];
 not_equal_o28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o39_test(doc) -> [{userdata,[{""}]}];
 not_equal_o39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o39"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o50_test(doc) -> [{userdata,[{""}]}];
 not_equal_o50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o61_test(doc) -> [{userdata,[{""}]}];
 not_equal_o61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o1_test(doc) -> [{userdata,[{""}]}];
 not_equal_o1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o1"),
-  Expected="String",
+  Expected="<cell><value>"++"String"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o12_test(doc) -> [{userdata,[{""}]}];
 not_equal_o12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o34_test(doc) -> [{userdata,[{""}]}];
 not_equal_o34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o56_test(doc) -> [{userdata,[{""}]}];
 not_equal_o56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o7_test(doc) -> [{userdata,[{""}]}];
 not_equal_o7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o18_test(doc) -> [{userdata,[{""}]}];
 not_equal_o18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o18"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o29_test(doc) -> [{userdata,[{""}]}];
 not_equal_o29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o40_test(doc) -> [{userdata,[{""}]}];
 not_equal_o40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o40"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o51_test(doc) -> [{userdata,[{""}]}];
 not_equal_o51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o62_test(doc) -> [{userdata,[{""}]}];
 not_equal_o62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o2_test(doc) -> [{userdata,[{""}]}];
 not_equal_o2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o2"),
-  Expected="Bob",
+  Expected="<cell><value>"++"Bob"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o13_test(doc) -> [{userdata,[{""}]}];
 not_equal_o13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o13"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o35_test(doc) -> [{userdata,[{""}]}];
 not_equal_o35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o35"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o57_test(doc) -> [{userdata,[{""}]}];
 not_equal_o57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o8_test(doc) -> [{userdata,[{""}]}];
 not_equal_o8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o19_test(doc) -> [{userdata,[{""}]}];
 not_equal_o19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o19"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o30_test(doc) -> [{userdata,[{""}]}];
 not_equal_o30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o41_test(doc) -> [{userdata,[{""}]}];
 not_equal_o41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o41"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o52_test(doc) -> [{userdata,[{""}]}];
 not_equal_o52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o63_test(doc) -> [{userdata,[{""}]}];
 not_equal_o63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o3_test(doc) -> [{userdata,[{""}]}];
 not_equal_o3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o3"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o14_test(doc) -> [{userdata,[{""}]}];
 not_equal_o14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o14"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o25_test(doc) -> [{userdata,[{""}]}];
 not_equal_o25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o25"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o36_test(doc) -> [{userdata,[{""}]}];
 not_equal_o36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o36"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o47_test(doc) -> [{userdata,[{""}]}];
 not_equal_o47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o58_test(doc) -> [{userdata,[{""}]}];
 not_equal_o58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o9_test(doc) -> [{userdata,[{""}]}];
 not_equal_o9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o20_test(doc) -> [{userdata,[{""}]}];
 not_equal_o20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o20"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o31_test(doc) -> [{userdata,[{""}]}];
 not_equal_o31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o42_test(doc) -> [{userdata,[{""}]}];
 not_equal_o42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o42"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o53_test(doc) -> [{userdata,[{""}]}];
 not_equal_o53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o64_test(doc) -> [{userdata,[{""}]}];
 not_equal_o64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o4_test(doc) -> [{userdata,[{""}]}];
 not_equal_o4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o4"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o15_test(doc) -> [{userdata,[{""}]}];
 not_equal_o15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o15"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o26_test(doc) -> [{userdata,[{""}]}];
 not_equal_o26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o26"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o37_test(doc) -> [{userdata,[{""}]}];
 not_equal_o37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o37"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o48_test(doc) -> [{userdata,[{""}]}];
 not_equal_o48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o59_test(doc) -> [{userdata,[{""}]}];
 not_equal_o59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o10_test(doc) -> [{userdata,[{""}]}];
 not_equal_o10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o21_test(doc) -> [{userdata,[{""}]}];
 not_equal_o21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o21"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o32_test(doc) -> [{userdata,[{""}]}];
 not_equal_o32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o43_test(doc) -> [{userdata,[{""}]}];
 not_equal_o43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o43"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o54_test(doc) -> [{userdata,[{""}]}];
 not_equal_o54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_o65_test(doc) -> [{userdata,[{""}]}];
 not_equal_o65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","o65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e5_test(doc) -> [{userdata,[{""}]}];
 not_equal_e5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e5"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e16_test(doc) -> [{userdata,[{""}]}];
 not_equal_e16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e16"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e27_test(doc) -> [{userdata,[{""}]}];
 not_equal_e27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e27"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e38_test(doc) -> [{userdata,[{""}]}];
 not_equal_e38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e38"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e49_test(doc) -> [{userdata,[{""}]}];
 not_equal_e49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e60_test(doc) -> [{userdata,[{""}]}];
 not_equal_e60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e11_test(doc) -> [{userdata,[{""}]}];
 not_equal_e11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e22_test(doc) -> [{userdata,[{""}]}];
 not_equal_e22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e22"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e33_test(doc) -> [{userdata,[{""}]}];
 not_equal_e33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e44_test(doc) -> [{userdata,[{""}]}];
 not_equal_e44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e44"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e55_test(doc) -> [{userdata,[{""}]}];
 not_equal_e55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e66_test(doc) -> [{userdata,[{""}]}];
 not_equal_e66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e6_test(doc) -> [{userdata,[{""}]}];
 not_equal_e6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e17_test(doc) -> [{userdata,[{""}]}];
 not_equal_e17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e17"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e28_test(doc) -> [{userdata,[{""}]}];
 not_equal_e28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e39_test(doc) -> [{userdata,[{""}]}];
 not_equal_e39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e39"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e50_test(doc) -> [{userdata,[{""}]}];
 not_equal_e50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e61_test(doc) -> [{userdata,[{""}]}];
 not_equal_e61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e1_test(doc) -> [{userdata,[{""}]}];
 not_equal_e1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e1"),
-  Expected="Boolean",
+  Expected="<cell><value>"++"Boolean"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e12_test(doc) -> [{userdata,[{""}]}];
 not_equal_e12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e34_test(doc) -> [{userdata,[{""}]}];
 not_equal_e34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e56_test(doc) -> [{userdata,[{""}]}];
 not_equal_e56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e7_test(doc) -> [{userdata,[{""}]}];
 not_equal_e7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e18_test(doc) -> [{userdata,[{""}]}];
 not_equal_e18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e18"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e29_test(doc) -> [{userdata,[{""}]}];
 not_equal_e29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e40_test(doc) -> [{userdata,[{""}]}];
 not_equal_e40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e40"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e51_test(doc) -> [{userdata,[{""}]}];
 not_equal_e51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e62_test(doc) -> [{userdata,[{""}]}];
 not_equal_e62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e2_test(doc) -> [{userdata,[{""}]}];
 not_equal_e2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e2"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e13_test(doc) -> [{userdata,[{""}]}];
 not_equal_e13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e13"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e35_test(doc) -> [{userdata,[{""}]}];
 not_equal_e35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e35"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e57_test(doc) -> [{userdata,[{""}]}];
 not_equal_e57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e8_test(doc) -> [{userdata,[{""}]}];
 not_equal_e8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e19_test(doc) -> [{userdata,[{""}]}];
 not_equal_e19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e19"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e30_test(doc) -> [{userdata,[{""}]}];
 not_equal_e30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e41_test(doc) -> [{userdata,[{""}]}];
 not_equal_e41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e41"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e52_test(doc) -> [{userdata,[{""}]}];
 not_equal_e52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e63_test(doc) -> [{userdata,[{""}]}];
 not_equal_e63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e3_test(doc) -> [{userdata,[{""}]}];
 not_equal_e3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e3"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e14_test(doc) -> [{userdata,[{""}]}];
 not_equal_e14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e14"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e25_test(doc) -> [{userdata,[{""}]}];
 not_equal_e25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e25"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e36_test(doc) -> [{userdata,[{""}]}];
 not_equal_e36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e36"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e47_test(doc) -> [{userdata,[{""}]}];
 not_equal_e47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e58_test(doc) -> [{userdata,[{""}]}];
 not_equal_e58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e9_test(doc) -> [{userdata,[{""}]}];
 not_equal_e9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e20_test(doc) -> [{userdata,[{""}]}];
 not_equal_e20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e20"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e31_test(doc) -> [{userdata,[{""}]}];
 not_equal_e31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e42_test(doc) -> [{userdata,[{""}]}];
 not_equal_e42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e42"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e53_test(doc) -> [{userdata,[{""}]}];
 not_equal_e53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e64_test(doc) -> [{userdata,[{""}]}];
 not_equal_e64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e4_test(doc) -> [{userdata,[{""}]}];
 not_equal_e4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e4"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e15_test(doc) -> [{userdata,[{""}]}];
 not_equal_e15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e15"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e26_test(doc) -> [{userdata,[{""}]}];
 not_equal_e26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e26"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e37_test(doc) -> [{userdata,[{""}]}];
 not_equal_e37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e37"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e48_test(doc) -> [{userdata,[{""}]}];
 not_equal_e48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e59_test(doc) -> [{userdata,[{""}]}];
 not_equal_e59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e10_test(doc) -> [{userdata,[{""}]}];
 not_equal_e10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e21_test(doc) -> [{userdata,[{""}]}];
 not_equal_e21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e21"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e32_test(doc) -> [{userdata,[{""}]}];
 not_equal_e32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e43_test(doc) -> [{userdata,[{""}]}];
 not_equal_e43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e43"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e54_test(doc) -> [{userdata,[{""}]}];
 not_equal_e54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_e65_test(doc) -> [{userdata,[{""}]}];
 not_equal_e65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","e65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p5_test(doc) -> [{userdata,[{""}]}];
 not_equal_p5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p5"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p16_test(doc) -> [{userdata,[{""}]}];
 not_equal_p16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p16"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p27_test(doc) -> [{userdata,[{""}]}];
 not_equal_p27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p27"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p38_test(doc) -> [{userdata,[{""}]}];
 not_equal_p38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p38"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p49_test(doc) -> [{userdata,[{""}]}];
 not_equal_p49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p60_test(doc) -> [{userdata,[{""}]}];
 not_equal_p60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p11_test(doc) -> [{userdata,[{""}]}];
 not_equal_p11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p22_test(doc) -> [{userdata,[{""}]}];
 not_equal_p22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p22"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p33_test(doc) -> [{userdata,[{""}]}];
 not_equal_p33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p44_test(doc) -> [{userdata,[{""}]}];
 not_equal_p44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p44"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p55_test(doc) -> [{userdata,[{""}]}];
 not_equal_p55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p66_test(doc) -> [{userdata,[{""}]}];
 not_equal_p66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p6_test(doc) -> [{userdata,[{""}]}];
 not_equal_p6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p17_test(doc) -> [{userdata,[{""}]}];
 not_equal_p17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p17"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p28_test(doc) -> [{userdata,[{""}]}];
 not_equal_p28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p39_test(doc) -> [{userdata,[{""}]}];
 not_equal_p39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p39"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p50_test(doc) -> [{userdata,[{""}]}];
 not_equal_p50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p61_test(doc) -> [{userdata,[{""}]}];
 not_equal_p61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p1_test(doc) -> [{userdata,[{""}]}];
 not_equal_p1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p1"),
-  Expected="Str Num",
+  Expected="<cell><value>"++"Str Num"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p12_test(doc) -> [{userdata,[{""}]}];
 not_equal_p12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p34_test(doc) -> [{userdata,[{""}]}];
 not_equal_p34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p56_test(doc) -> [{userdata,[{""}]}];
 not_equal_p56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p7_test(doc) -> [{userdata,[{""}]}];
 not_equal_p7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p18_test(doc) -> [{userdata,[{""}]}];
 not_equal_p18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p18"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p29_test(doc) -> [{userdata,[{""}]}];
 not_equal_p29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p40_test(doc) -> [{userdata,[{""}]}];
 not_equal_p40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p40"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p51_test(doc) -> [{userdata,[{""}]}];
 not_equal_p51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p62_test(doc) -> [{userdata,[{""}]}];
 not_equal_p62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p2_test(doc) -> [{userdata,[{""}]}];
 not_equal_p2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p2"),
-  Expected="2.7",
+  Expected="<cell><value>"++"2.7"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p13_test(doc) -> [{userdata,[{""}]}];
 not_equal_p13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p13"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p35_test(doc) -> [{userdata,[{""}]}];
 not_equal_p35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p35"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p57_test(doc) -> [{userdata,[{""}]}];
 not_equal_p57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p8_test(doc) -> [{userdata,[{""}]}];
 not_equal_p8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p19_test(doc) -> [{userdata,[{""}]}];
 not_equal_p19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p19"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p30_test(doc) -> [{userdata,[{""}]}];
 not_equal_p30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p41_test(doc) -> [{userdata,[{""}]}];
 not_equal_p41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p41"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p52_test(doc) -> [{userdata,[{""}]}];
 not_equal_p52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p63_test(doc) -> [{userdata,[{""}]}];
 not_equal_p63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p3_test(doc) -> [{userdata,[{""}]}];
 not_equal_p3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p3"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p14_test(doc) -> [{userdata,[{""}]}];
 not_equal_p14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p14"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p25_test(doc) -> [{userdata,[{""}]}];
 not_equal_p25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p25"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p36_test(doc) -> [{userdata,[{""}]}];
 not_equal_p36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p36"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p47_test(doc) -> [{userdata,[{""}]}];
 not_equal_p47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p58_test(doc) -> [{userdata,[{""}]}];
 not_equal_p58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p9_test(doc) -> [{userdata,[{""}]}];
 not_equal_p9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p20_test(doc) -> [{userdata,[{""}]}];
 not_equal_p20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p20"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p31_test(doc) -> [{userdata,[{""}]}];
 not_equal_p31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p42_test(doc) -> [{userdata,[{""}]}];
 not_equal_p42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p42"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p53_test(doc) -> [{userdata,[{""}]}];
 not_equal_p53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p64_test(doc) -> [{userdata,[{""}]}];
 not_equal_p64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p4_test(doc) -> [{userdata,[{""}]}];
 not_equal_p4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p4"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p15_test(doc) -> [{userdata,[{""}]}];
 not_equal_p15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p15"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p26_test(doc) -> [{userdata,[{""}]}];
 not_equal_p26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p26"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p37_test(doc) -> [{userdata,[{""}]}];
 not_equal_p37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p37"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p48_test(doc) -> [{userdata,[{""}]}];
 not_equal_p48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p59_test(doc) -> [{userdata,[{""}]}];
 not_equal_p59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p10_test(doc) -> [{userdata,[{""}]}];
 not_equal_p10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p21_test(doc) -> [{userdata,[{""}]}];
 not_equal_p21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p21"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p32_test(doc) -> [{userdata,[{""}]}];
 not_equal_p32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p43_test(doc) -> [{userdata,[{""}]}];
 not_equal_p43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p43"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p54_test(doc) -> [{userdata,[{""}]}];
 not_equal_p54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_p65_test(doc) -> [{userdata,[{""}]}];
 not_equal_p65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","p65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f5_test(doc) -> [{userdata,[{""}]}];
 not_equal_f5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f5"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f16_test(doc) -> [{userdata,[{""}]}];
 not_equal_f16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f16"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f27_test(doc) -> [{userdata,[{""}]}];
 not_equal_f27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f27"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f38_test(doc) -> [{userdata,[{""}]}];
 not_equal_f38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f38"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f49_test(doc) -> [{userdata,[{""}]}];
 not_equal_f49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f60_test(doc) -> [{userdata,[{""}]}];
 not_equal_f60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f11_test(doc) -> [{userdata,[{""}]}];
 not_equal_f11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f22_test(doc) -> [{userdata,[{""}]}];
 not_equal_f22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f22"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f33_test(doc) -> [{userdata,[{""}]}];
 not_equal_f33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f44_test(doc) -> [{userdata,[{""}]}];
 not_equal_f44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f44"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f55_test(doc) -> [{userdata,[{""}]}];
 not_equal_f55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f66_test(doc) -> [{userdata,[{""}]}];
 not_equal_f66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f6_test(doc) -> [{userdata,[{""}]}];
 not_equal_f6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f17_test(doc) -> [{userdata,[{""}]}];
 not_equal_f17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f17"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f28_test(doc) -> [{userdata,[{""}]}];
 not_equal_f28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f39_test(doc) -> [{userdata,[{""}]}];
 not_equal_f39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f39"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f50_test(doc) -> [{userdata,[{""}]}];
 not_equal_f50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f61_test(doc) -> [{userdata,[{""}]}];
 not_equal_f61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f1_test(doc) -> [{userdata,[{""}]}];
 not_equal_f1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f1"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f12_test(doc) -> [{userdata,[{""}]}];
 not_equal_f12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f34_test(doc) -> [{userdata,[{""}]}];
 not_equal_f34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f56_test(doc) -> [{userdata,[{""}]}];
 not_equal_f56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f7_test(doc) -> [{userdata,[{""}]}];
 not_equal_f7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f18_test(doc) -> [{userdata,[{""}]}];
 not_equal_f18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f18"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f29_test(doc) -> [{userdata,[{""}]}];
 not_equal_f29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f40_test(doc) -> [{userdata,[{""}]}];
 not_equal_f40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f40"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f51_test(doc) -> [{userdata,[{""}]}];
 not_equal_f51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f62_test(doc) -> [{userdata,[{""}]}];
 not_equal_f62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f2_test(doc) -> [{userdata,[{""}]}];
 not_equal_f2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f2"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f13_test(doc) -> [{userdata,[{""}]}];
 not_equal_f13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f13"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f35_test(doc) -> [{userdata,[{""}]}];
 not_equal_f35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f35"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f57_test(doc) -> [{userdata,[{""}]}];
 not_equal_f57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f8_test(doc) -> [{userdata,[{""}]}];
 not_equal_f8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f19_test(doc) -> [{userdata,[{""}]}];
 not_equal_f19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f19"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f30_test(doc) -> [{userdata,[{""}]}];
 not_equal_f30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f41_test(doc) -> [{userdata,[{""}]}];
 not_equal_f41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f41"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f52_test(doc) -> [{userdata,[{""}]}];
 not_equal_f52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f63_test(doc) -> [{userdata,[{""}]}];
 not_equal_f63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f3_test(doc) -> [{userdata,[{""}]}];
 not_equal_f3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f3"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f14_test(doc) -> [{userdata,[{""}]}];
 not_equal_f14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f14"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f25_test(doc) -> [{userdata,[{""}]}];
 not_equal_f25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f25"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f36_test(doc) -> [{userdata,[{""}]}];
 not_equal_f36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f36"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f47_test(doc) -> [{userdata,[{""}]}];
 not_equal_f47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f58_test(doc) -> [{userdata,[{""}]}];
 not_equal_f58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f9_test(doc) -> [{userdata,[{""}]}];
 not_equal_f9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f20_test(doc) -> [{userdata,[{""}]}];
 not_equal_f20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f20"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f31_test(doc) -> [{userdata,[{""}]}];
 not_equal_f31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f42_test(doc) -> [{userdata,[{""}]}];
 not_equal_f42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f42"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f53_test(doc) -> [{userdata,[{""}]}];
 not_equal_f53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f64_test(doc) -> [{userdata,[{""}]}];
 not_equal_f64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f4_test(doc) -> [{userdata,[{""}]}];
 not_equal_f4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f4"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f15_test(doc) -> [{userdata,[{""}]}];
 not_equal_f15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f15"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f26_test(doc) -> [{userdata,[{""}]}];
 not_equal_f26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f26"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f37_test(doc) -> [{userdata,[{""}]}];
 not_equal_f37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f37"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f48_test(doc) -> [{userdata,[{""}]}];
 not_equal_f48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f59_test(doc) -> [{userdata,[{""}]}];
 not_equal_f59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f10_test(doc) -> [{userdata,[{""}]}];
 not_equal_f10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f21_test(doc) -> [{userdata,[{""}]}];
 not_equal_f21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f21"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f32_test(doc) -> [{userdata,[{""}]}];
 not_equal_f32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f43_test(doc) -> [{userdata,[{""}]}];
 not_equal_f43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f43"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f54_test(doc) -> [{userdata,[{""}]}];
 not_equal_f54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_f65_test(doc) -> [{userdata,[{""}]}];
 not_equal_f65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","f65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q5_test(doc) -> [{userdata,[{""}]}];
 not_equal_q5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q5"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q16_test(doc) -> [{userdata,[{""}]}];
 not_equal_q16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q16"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q27_test(doc) -> [{userdata,[{""}]}];
 not_equal_q27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q27"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q38_test(doc) -> [{userdata,[{""}]}];
 not_equal_q38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q38"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q49_test(doc) -> [{userdata,[{""}]}];
 not_equal_q49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q60_test(doc) -> [{userdata,[{""}]}];
 not_equal_q60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q11_test(doc) -> [{userdata,[{""}]}];
 not_equal_q11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q22_test(doc) -> [{userdata,[{""}]}];
 not_equal_q22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q22"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q33_test(doc) -> [{userdata,[{""}]}];
 not_equal_q33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q44_test(doc) -> [{userdata,[{""}]}];
 not_equal_q44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q44"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q55_test(doc) -> [{userdata,[{""}]}];
 not_equal_q55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q66_test(doc) -> [{userdata,[{""}]}];
 not_equal_q66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q6_test(doc) -> [{userdata,[{""}]}];
 not_equal_q6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q17_test(doc) -> [{userdata,[{""}]}];
 not_equal_q17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q17"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q28_test(doc) -> [{userdata,[{""}]}];
 not_equal_q28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q39_test(doc) -> [{userdata,[{""}]}];
 not_equal_q39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q39"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q50_test(doc) -> [{userdata,[{""}]}];
 not_equal_q50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q61_test(doc) -> [{userdata,[{""}]}];
 not_equal_q61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q1_test(doc) -> [{userdata,[{""}]}];
 not_equal_q1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q1"),
-  Expected="Str Num",
+  Expected="<cell><value>"++"Str Num"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q12_test(doc) -> [{userdata,[{""}]}];
 not_equal_q12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q34_test(doc) -> [{userdata,[{""}]}];
 not_equal_q34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q56_test(doc) -> [{userdata,[{""}]}];
 not_equal_q56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q7_test(doc) -> [{userdata,[{""}]}];
 not_equal_q7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q18_test(doc) -> [{userdata,[{""}]}];
 not_equal_q18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q18"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q29_test(doc) -> [{userdata,[{""}]}];
 not_equal_q29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q40_test(doc) -> [{userdata,[{""}]}];
 not_equal_q40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q40"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q51_test(doc) -> [{userdata,[{""}]}];
 not_equal_q51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q62_test(doc) -> [{userdata,[{""}]}];
 not_equal_q62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q2_test(doc) -> [{userdata,[{""}]}];
 not_equal_q2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q2"),
-  Expected="3.54",
+  Expected="<cell><value>"++"3.54"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q13_test(doc) -> [{userdata,[{""}]}];
 not_equal_q13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q13"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q35_test(doc) -> [{userdata,[{""}]}];
 not_equal_q35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q35"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q57_test(doc) -> [{userdata,[{""}]}];
 not_equal_q57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q8_test(doc) -> [{userdata,[{""}]}];
 not_equal_q8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q19_test(doc) -> [{userdata,[{""}]}];
 not_equal_q19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q19"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q30_test(doc) -> [{userdata,[{""}]}];
 not_equal_q30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q41_test(doc) -> [{userdata,[{""}]}];
 not_equal_q41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q41"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q52_test(doc) -> [{userdata,[{""}]}];
 not_equal_q52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q63_test(doc) -> [{userdata,[{""}]}];
 not_equal_q63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q3_test(doc) -> [{userdata,[{""}]}];
 not_equal_q3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q3"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q14_test(doc) -> [{userdata,[{""}]}];
 not_equal_q14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q14"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q25_test(doc) -> [{userdata,[{""}]}];
 not_equal_q25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q25"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q36_test(doc) -> [{userdata,[{""}]}];
 not_equal_q36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q36"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q47_test(doc) -> [{userdata,[{""}]}];
 not_equal_q47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q58_test(doc) -> [{userdata,[{""}]}];
 not_equal_q58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q9_test(doc) -> [{userdata,[{""}]}];
 not_equal_q9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q20_test(doc) -> [{userdata,[{""}]}];
 not_equal_q20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q20"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q31_test(doc) -> [{userdata,[{""}]}];
 not_equal_q31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q42_test(doc) -> [{userdata,[{""}]}];
 not_equal_q42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q42"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q53_test(doc) -> [{userdata,[{""}]}];
 not_equal_q53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q64_test(doc) -> [{userdata,[{""}]}];
 not_equal_q64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q4_test(doc) -> [{userdata,[{""}]}];
 not_equal_q4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q4"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q15_test(doc) -> [{userdata,[{""}]}];
 not_equal_q15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q15"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q26_test(doc) -> [{userdata,[{""}]}];
 not_equal_q26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q26"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q37_test(doc) -> [{userdata,[{""}]}];
 not_equal_q37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q37"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q48_test(doc) -> [{userdata,[{""}]}];
 not_equal_q48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q59_test(doc) -> [{userdata,[{""}]}];
 not_equal_q59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q10_test(doc) -> [{userdata,[{""}]}];
 not_equal_q10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q21_test(doc) -> [{userdata,[{""}]}];
 not_equal_q21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q21"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q32_test(doc) -> [{userdata,[{""}]}];
 not_equal_q32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q43_test(doc) -> [{userdata,[{""}]}];
 not_equal_q43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q43"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q54_test(doc) -> [{userdata,[{""}]}];
 not_equal_q54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_q65_test(doc) -> [{userdata,[{""}]}];
 not_equal_q65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","q65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g5_test(doc) -> [{userdata,[{""}]}];
 not_equal_g5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g5"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g16_test(doc) -> [{userdata,[{""}]}];
 not_equal_g16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g16"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g27_test(doc) -> [{userdata,[{""}]}];
 not_equal_g27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g27"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g38_test(doc) -> [{userdata,[{""}]}];
 not_equal_g38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g38"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g49_test(doc) -> [{userdata,[{""}]}];
 not_equal_g49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g60_test(doc) -> [{userdata,[{""}]}];
 not_equal_g60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g11_test(doc) -> [{userdata,[{""}]}];
 not_equal_g11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g22_test(doc) -> [{userdata,[{""}]}];
 not_equal_g22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g22"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g33_test(doc) -> [{userdata,[{""}]}];
 not_equal_g33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g44_test(doc) -> [{userdata,[{""}]}];
 not_equal_g44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g44"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g55_test(doc) -> [{userdata,[{""}]}];
 not_equal_g55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g66_test(doc) -> [{userdata,[{""}]}];
 not_equal_g66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g6_test(doc) -> [{userdata,[{""}]}];
 not_equal_g6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g17_test(doc) -> [{userdata,[{""}]}];
 not_equal_g17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g17"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g28_test(doc) -> [{userdata,[{""}]}];
 not_equal_g28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g39_test(doc) -> [{userdata,[{""}]}];
 not_equal_g39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g39"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g50_test(doc) -> [{userdata,[{""}]}];
 not_equal_g50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g61_test(doc) -> [{userdata,[{""}]}];
 not_equal_g61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g1_test(doc) -> [{userdata,[{""}]}];
 not_equal_g1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g1"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g12_test(doc) -> [{userdata,[{""}]}];
 not_equal_g12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g34_test(doc) -> [{userdata,[{""}]}];
 not_equal_g34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g56_test(doc) -> [{userdata,[{""}]}];
 not_equal_g56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g7_test(doc) -> [{userdata,[{""}]}];
 not_equal_g7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g18_test(doc) -> [{userdata,[{""}]}];
 not_equal_g18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g18"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g29_test(doc) -> [{userdata,[{""}]}];
 not_equal_g29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g40_test(doc) -> [{userdata,[{""}]}];
 not_equal_g40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g40"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g51_test(doc) -> [{userdata,[{""}]}];
 not_equal_g51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g62_test(doc) -> [{userdata,[{""}]}];
 not_equal_g62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g2_test(doc) -> [{userdata,[{""}]}];
 not_equal_g2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g2"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g13_test(doc) -> [{userdata,[{""}]}];
 not_equal_g13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g13"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g35_test(doc) -> [{userdata,[{""}]}];
 not_equal_g35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g35"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g57_test(doc) -> [{userdata,[{""}]}];
 not_equal_g57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g8_test(doc) -> [{userdata,[{""}]}];
 not_equal_g8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g19_test(doc) -> [{userdata,[{""}]}];
 not_equal_g19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g19"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g30_test(doc) -> [{userdata,[{""}]}];
 not_equal_g30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g41_test(doc) -> [{userdata,[{""}]}];
 not_equal_g41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g41"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g52_test(doc) -> [{userdata,[{""}]}];
 not_equal_g52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g63_test(doc) -> [{userdata,[{""}]}];
 not_equal_g63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g3_test(doc) -> [{userdata,[{""}]}];
 not_equal_g3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g3"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g14_test(doc) -> [{userdata,[{""}]}];
 not_equal_g14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g14"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g25_test(doc) -> [{userdata,[{""}]}];
 not_equal_g25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g25"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g36_test(doc) -> [{userdata,[{""}]}];
 not_equal_g36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g36"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g47_test(doc) -> [{userdata,[{""}]}];
 not_equal_g47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g58_test(doc) -> [{userdata,[{""}]}];
 not_equal_g58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g9_test(doc) -> [{userdata,[{""}]}];
 not_equal_g9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g20_test(doc) -> [{userdata,[{""}]}];
 not_equal_g20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g20"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g31_test(doc) -> [{userdata,[{""}]}];
 not_equal_g31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g42_test(doc) -> [{userdata,[{""}]}];
 not_equal_g42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g42"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g53_test(doc) -> [{userdata,[{""}]}];
 not_equal_g53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g64_test(doc) -> [{userdata,[{""}]}];
 not_equal_g64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g4_test(doc) -> [{userdata,[{""}]}];
 not_equal_g4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g4"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g15_test(doc) -> [{userdata,[{""}]}];
 not_equal_g15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g15"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g26_test(doc) -> [{userdata,[{""}]}];
 not_equal_g26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g26"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g37_test(doc) -> [{userdata,[{""}]}];
 not_equal_g37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g37"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g48_test(doc) -> [{userdata,[{""}]}];
 not_equal_g48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g59_test(doc) -> [{userdata,[{""}]}];
 not_equal_g59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g10_test(doc) -> [{userdata,[{""}]}];
 not_equal_g10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g21_test(doc) -> [{userdata,[{""}]}];
 not_equal_g21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g21"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g32_test(doc) -> [{userdata,[{""}]}];
 not_equal_g32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g43_test(doc) -> [{userdata,[{""}]}];
 not_equal_g43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g43"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g54_test(doc) -> [{userdata,[{""}]}];
 not_equal_g54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_g65_test(doc) -> [{userdata,[{""}]}];
 not_equal_g65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","g65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r5_test(doc) -> [{userdata,[{""}]}];
 not_equal_r5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r5"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r16_test(doc) -> [{userdata,[{""}]}];
 not_equal_r16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r16"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r27_test(doc) -> [{userdata,[{""}]}];
 not_equal_r27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r27"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r38_test(doc) -> [{userdata,[{""}]}];
 not_equal_r38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r38"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r49_test(doc) -> [{userdata,[{""}]}];
 not_equal_r49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r60_test(doc) -> [{userdata,[{""}]}];
 not_equal_r60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r11_test(doc) -> [{userdata,[{""}]}];
 not_equal_r11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r22_test(doc) -> [{userdata,[{""}]}];
 not_equal_r22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r22"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r33_test(doc) -> [{userdata,[{""}]}];
 not_equal_r33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r44_test(doc) -> [{userdata,[{""}]}];
 not_equal_r44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r44"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r55_test(doc) -> [{userdata,[{""}]}];
 not_equal_r55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r66_test(doc) -> [{userdata,[{""}]}];
 not_equal_r66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r6_test(doc) -> [{userdata,[{""}]}];
 not_equal_r6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r17_test(doc) -> [{userdata,[{""}]}];
 not_equal_r17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r17"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r28_test(doc) -> [{userdata,[{""}]}];
 not_equal_r28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r39_test(doc) -> [{userdata,[{""}]}];
 not_equal_r39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r39"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r50_test(doc) -> [{userdata,[{""}]}];
 not_equal_r50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r61_test(doc) -> [{userdata,[{""}]}];
 not_equal_r61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r1_test(doc) -> [{userdata,[{""}]}];
 not_equal_r1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r1"),
-  Expected="Integer",
+  Expected="<cell><value>"++"Integer"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r12_test(doc) -> [{userdata,[{""}]}];
 not_equal_r12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r34_test(doc) -> [{userdata,[{""}]}];
 not_equal_r34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r56_test(doc) -> [{userdata,[{""}]}];
 not_equal_r56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r7_test(doc) -> [{userdata,[{""}]}];
 not_equal_r7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r18_test(doc) -> [{userdata,[{""}]}];
 not_equal_r18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r18"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r29_test(doc) -> [{userdata,[{""}]}];
 not_equal_r29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r40_test(doc) -> [{userdata,[{""}]}];
 not_equal_r40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r40"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r51_test(doc) -> [{userdata,[{""}]}];
 not_equal_r51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r62_test(doc) -> [{userdata,[{""}]}];
 not_equal_r62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r2_test(doc) -> [{userdata,[{""}]}];
 not_equal_r2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r2"),
-  Expected="1999/02/01 00:00:00",
+  Expected="<cell><value>"++"1999/02/01 00:00:00"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r13_test(doc) -> [{userdata,[{""}]}];
 not_equal_r13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r13"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r35_test(doc) -> [{userdata,[{""}]}];
 not_equal_r35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r35"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r57_test(doc) -> [{userdata,[{""}]}];
 not_equal_r57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r8_test(doc) -> [{userdata,[{""}]}];
 not_equal_r8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r19_test(doc) -> [{userdata,[{""}]}];
 not_equal_r19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r19"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r30_test(doc) -> [{userdata,[{""}]}];
 not_equal_r30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r41_test(doc) -> [{userdata,[{""}]}];
 not_equal_r41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r41"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r52_test(doc) -> [{userdata,[{""}]}];
 not_equal_r52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r63_test(doc) -> [{userdata,[{""}]}];
 not_equal_r63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r3_test(doc) -> [{userdata,[{""}]}];
 not_equal_r3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r3"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r14_test(doc) -> [{userdata,[{""}]}];
 not_equal_r14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r14"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r25_test(doc) -> [{userdata,[{""}]}];
 not_equal_r25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r25"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r36_test(doc) -> [{userdata,[{""}]}];
 not_equal_r36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r36"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r47_test(doc) -> [{userdata,[{""}]}];
 not_equal_r47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r58_test(doc) -> [{userdata,[{""}]}];
 not_equal_r58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r9_test(doc) -> [{userdata,[{""}]}];
 not_equal_r9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r20_test(doc) -> [{userdata,[{""}]}];
 not_equal_r20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r20"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r31_test(doc) -> [{userdata,[{""}]}];
 not_equal_r31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r42_test(doc) -> [{userdata,[{""}]}];
 not_equal_r42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r42"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r53_test(doc) -> [{userdata,[{""}]}];
 not_equal_r53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r64_test(doc) -> [{userdata,[{""}]}];
 not_equal_r64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r4_test(doc) -> [{userdata,[{""}]}];
 not_equal_r4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r4"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r15_test(doc) -> [{userdata,[{""}]}];
 not_equal_r15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r15"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r26_test(doc) -> [{userdata,[{""}]}];
 not_equal_r26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r26"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r37_test(doc) -> [{userdata,[{""}]}];
 not_equal_r37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r37"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r48_test(doc) -> [{userdata,[{""}]}];
 not_equal_r48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r59_test(doc) -> [{userdata,[{""}]}];
 not_equal_r59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r10_test(doc) -> [{userdata,[{""}]}];
 not_equal_r10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r21_test(doc) -> [{userdata,[{""}]}];
 not_equal_r21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r21"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r32_test(doc) -> [{userdata,[{""}]}];
 not_equal_r32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r43_test(doc) -> [{userdata,[{""}]}];
 not_equal_r43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r43"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r54_test(doc) -> [{userdata,[{""}]}];
 not_equal_r54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_r65_test(doc) -> [{userdata,[{""}]}];
 not_equal_r65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","r65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h5_test(doc) -> [{userdata,[{""}]}];
 not_equal_h5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h5"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h16_test(doc) -> [{userdata,[{""}]}];
 not_equal_h16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h16"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h27_test(doc) -> [{userdata,[{""}]}];
 not_equal_h27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h27"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h38_test(doc) -> [{userdata,[{""}]}];
 not_equal_h38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h38"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h49_test(doc) -> [{userdata,[{""}]}];
 not_equal_h49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h60_test(doc) -> [{userdata,[{""}]}];
 not_equal_h60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h11_test(doc) -> [{userdata,[{""}]}];
 not_equal_h11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h22_test(doc) -> [{userdata,[{""}]}];
 not_equal_h22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h22"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h33_test(doc) -> [{userdata,[{""}]}];
 not_equal_h33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h44_test(doc) -> [{userdata,[{""}]}];
 not_equal_h44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h44"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h55_test(doc) -> [{userdata,[{""}]}];
 not_equal_h55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h66_test(doc) -> [{userdata,[{""}]}];
 not_equal_h66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h6_test(doc) -> [{userdata,[{""}]}];
 not_equal_h6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h17_test(doc) -> [{userdata,[{""}]}];
 not_equal_h17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h17"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h28_test(doc) -> [{userdata,[{""}]}];
 not_equal_h28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h39_test(doc) -> [{userdata,[{""}]}];
 not_equal_h39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h39"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h50_test(doc) -> [{userdata,[{""}]}];
 not_equal_h50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h61_test(doc) -> [{userdata,[{""}]}];
 not_equal_h61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h1_test(doc) -> [{userdata,[{""}]}];
 not_equal_h1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h1"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h12_test(doc) -> [{userdata,[{""}]}];
 not_equal_h12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h34_test(doc) -> [{userdata,[{""}]}];
 not_equal_h34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h56_test(doc) -> [{userdata,[{""}]}];
 not_equal_h56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h7_test(doc) -> [{userdata,[{""}]}];
 not_equal_h7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h18_test(doc) -> [{userdata,[{""}]}];
 not_equal_h18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h18"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h29_test(doc) -> [{userdata,[{""}]}];
 not_equal_h29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h40_test(doc) -> [{userdata,[{""}]}];
 not_equal_h40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h40"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h51_test(doc) -> [{userdata,[{""}]}];
 not_equal_h51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h62_test(doc) -> [{userdata,[{""}]}];
 not_equal_h62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h2_test(doc) -> [{userdata,[{""}]}];
 not_equal_h2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h2"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h13_test(doc) -> [{userdata,[{""}]}];
 not_equal_h13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h13"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h35_test(doc) -> [{userdata,[{""}]}];
 not_equal_h35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h35"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h57_test(doc) -> [{userdata,[{""}]}];
 not_equal_h57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h8_test(doc) -> [{userdata,[{""}]}];
 not_equal_h8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h19_test(doc) -> [{userdata,[{""}]}];
 not_equal_h19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h19"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h30_test(doc) -> [{userdata,[{""}]}];
 not_equal_h30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h41_test(doc) -> [{userdata,[{""}]}];
 not_equal_h41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h41"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h52_test(doc) -> [{userdata,[{""}]}];
 not_equal_h52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h63_test(doc) -> [{userdata,[{""}]}];
 not_equal_h63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h3_test(doc) -> [{userdata,[{""}]}];
 not_equal_h3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h3"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h14_test(doc) -> [{userdata,[{""}]}];
 not_equal_h14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h14"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h25_test(doc) -> [{userdata,[{""}]}];
 not_equal_h25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h25"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h36_test(doc) -> [{userdata,[{""}]}];
 not_equal_h36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h36"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h47_test(doc) -> [{userdata,[{""}]}];
 not_equal_h47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h58_test(doc) -> [{userdata,[{""}]}];
 not_equal_h58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h9_test(doc) -> [{userdata,[{""}]}];
 not_equal_h9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h20_test(doc) -> [{userdata,[{""}]}];
 not_equal_h20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h20"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h31_test(doc) -> [{userdata,[{""}]}];
 not_equal_h31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h42_test(doc) -> [{userdata,[{""}]}];
 not_equal_h42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h42"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h53_test(doc) -> [{userdata,[{""}]}];
 not_equal_h53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h64_test(doc) -> [{userdata,[{""}]}];
 not_equal_h64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h4_test(doc) -> [{userdata,[{""}]}];
 not_equal_h4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h4"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h15_test(doc) -> [{userdata,[{""}]}];
 not_equal_h15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h15"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h26_test(doc) -> [{userdata,[{""}]}];
 not_equal_h26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h26"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h37_test(doc) -> [{userdata,[{""}]}];
 not_equal_h37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h37"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h48_test(doc) -> [{userdata,[{""}]}];
 not_equal_h48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h59_test(doc) -> [{userdata,[{""}]}];
 not_equal_h59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h10_test(doc) -> [{userdata,[{""}]}];
 not_equal_h10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h21_test(doc) -> [{userdata,[{""}]}];
 not_equal_h21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h21"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h32_test(doc) -> [{userdata,[{""}]}];
 not_equal_h32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h43_test(doc) -> [{userdata,[{""}]}];
 not_equal_h43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h43"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h54_test(doc) -> [{userdata,[{""}]}];
 not_equal_h54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_h65_test(doc) -> [{userdata,[{""}]}];
 not_equal_h65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","h65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s5_test(doc) -> [{userdata,[{""}]}];
 not_equal_s5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s5"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s16_test(doc) -> [{userdata,[{""}]}];
 not_equal_s16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s16"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s27_test(doc) -> [{userdata,[{""}]}];
 not_equal_s27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s27"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s38_test(doc) -> [{userdata,[{""}]}];
 not_equal_s38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s38"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s49_test(doc) -> [{userdata,[{""}]}];
 not_equal_s49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s60_test(doc) -> [{userdata,[{""}]}];
 not_equal_s60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s11_test(doc) -> [{userdata,[{""}]}];
 not_equal_s11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s22_test(doc) -> [{userdata,[{""}]}];
 not_equal_s22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s22"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s33_test(doc) -> [{userdata,[{""}]}];
 not_equal_s33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s44_test(doc) -> [{userdata,[{""}]}];
 not_equal_s44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s44"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s55_test(doc) -> [{userdata,[{""}]}];
 not_equal_s55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s66_test(doc) -> [{userdata,[{""}]}];
 not_equal_s66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s6_test(doc) -> [{userdata,[{""}]}];
 not_equal_s6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s17_test(doc) -> [{userdata,[{""}]}];
 not_equal_s17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s17"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s28_test(doc) -> [{userdata,[{""}]}];
 not_equal_s28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s39_test(doc) -> [{userdata,[{""}]}];
 not_equal_s39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s39"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s50_test(doc) -> [{userdata,[{""}]}];
 not_equal_s50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s61_test(doc) -> [{userdata,[{""}]}];
 not_equal_s61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s1_test(doc) -> [{userdata,[{""}]}];
 not_equal_s1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s1"),
-  Expected="Integer",
+  Expected="<cell><value>"++"Integer"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s12_test(doc) -> [{userdata,[{""}]}];
 not_equal_s12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s34_test(doc) -> [{userdata,[{""}]}];
 not_equal_s34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s56_test(doc) -> [{userdata,[{""}]}];
 not_equal_s56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s7_test(doc) -> [{userdata,[{""}]}];
 not_equal_s7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s18_test(doc) -> [{userdata,[{""}]}];
 not_equal_s18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s18"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s29_test(doc) -> [{userdata,[{""}]}];
 not_equal_s29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s40_test(doc) -> [{userdata,[{""}]}];
 not_equal_s40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s40"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s51_test(doc) -> [{userdata,[{""}]}];
 not_equal_s51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s62_test(doc) -> [{userdata,[{""}]}];
 not_equal_s62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s2_test(doc) -> [{userdata,[{""}]}];
 not_equal_s2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s2"),
-  Expected="1999/02/02 00:00:00",
+  Expected="<cell><value>"++"1999/02/02 00:00:00"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s13_test(doc) -> [{userdata,[{""}]}];
 not_equal_s13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s13"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s35_test(doc) -> [{userdata,[{""}]}];
 not_equal_s35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s35"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s57_test(doc) -> [{userdata,[{""}]}];
 not_equal_s57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s8_test(doc) -> [{userdata,[{""}]}];
 not_equal_s8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s19_test(doc) -> [{userdata,[{""}]}];
 not_equal_s19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s19"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s30_test(doc) -> [{userdata,[{""}]}];
 not_equal_s30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s41_test(doc) -> [{userdata,[{""}]}];
 not_equal_s41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s41"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s52_test(doc) -> [{userdata,[{""}]}];
 not_equal_s52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s63_test(doc) -> [{userdata,[{""}]}];
 not_equal_s63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s3_test(doc) -> [{userdata,[{""}]}];
 not_equal_s3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s3"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s14_test(doc) -> [{userdata,[{""}]}];
 not_equal_s14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s14"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s25_test(doc) -> [{userdata,[{""}]}];
 not_equal_s25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s25"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s36_test(doc) -> [{userdata,[{""}]}];
 not_equal_s36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s36"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s47_test(doc) -> [{userdata,[{""}]}];
 not_equal_s47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s58_test(doc) -> [{userdata,[{""}]}];
 not_equal_s58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s9_test(doc) -> [{userdata,[{""}]}];
 not_equal_s9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s20_test(doc) -> [{userdata,[{""}]}];
 not_equal_s20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s20"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s31_test(doc) -> [{userdata,[{""}]}];
 not_equal_s31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s42_test(doc) -> [{userdata,[{""}]}];
 not_equal_s42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s42"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s53_test(doc) -> [{userdata,[{""}]}];
 not_equal_s53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s64_test(doc) -> [{userdata,[{""}]}];
 not_equal_s64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s4_test(doc) -> [{userdata,[{""}]}];
 not_equal_s4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s4"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s15_test(doc) -> [{userdata,[{""}]}];
 not_equal_s15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s15"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s26_test(doc) -> [{userdata,[{""}]}];
 not_equal_s26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s26"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s37_test(doc) -> [{userdata,[{""}]}];
 not_equal_s37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s37"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s48_test(doc) -> [{userdata,[{""}]}];
 not_equal_s48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s59_test(doc) -> [{userdata,[{""}]}];
 not_equal_s59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s10_test(doc) -> [{userdata,[{""}]}];
 not_equal_s10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s21_test(doc) -> [{userdata,[{""}]}];
 not_equal_s21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s21"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s32_test(doc) -> [{userdata,[{""}]}];
 not_equal_s32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s43_test(doc) -> [{userdata,[{""}]}];
 not_equal_s43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s43"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s54_test(doc) -> [{userdata,[{""}]}];
 not_equal_s54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_s65_test(doc) -> [{userdata,[{""}]}];
 not_equal_s65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","s65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i5_test(doc) -> [{userdata,[{""}]}];
 not_equal_i5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i5"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i16_test(doc) -> [{userdata,[{""}]}];
 not_equal_i16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i16"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i27_test(doc) -> [{userdata,[{""}]}];
 not_equal_i27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i27"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i38_test(doc) -> [{userdata,[{""}]}];
 not_equal_i38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i38"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i49_test(doc) -> [{userdata,[{""}]}];
 not_equal_i49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i60_test(doc) -> [{userdata,[{""}]}];
 not_equal_i60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i11_test(doc) -> [{userdata,[{""}]}];
 not_equal_i11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i22_test(doc) -> [{userdata,[{""}]}];
 not_equal_i22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i22"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i33_test(doc) -> [{userdata,[{""}]}];
 not_equal_i33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i44_test(doc) -> [{userdata,[{""}]}];
 not_equal_i44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i44"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i55_test(doc) -> [{userdata,[{""}]}];
 not_equal_i55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i66_test(doc) -> [{userdata,[{""}]}];
 not_equal_i66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i6_test(doc) -> [{userdata,[{""}]}];
 not_equal_i6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i17_test(doc) -> [{userdata,[{""}]}];
 not_equal_i17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i17"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i28_test(doc) -> [{userdata,[{""}]}];
 not_equal_i28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i39_test(doc) -> [{userdata,[{""}]}];
 not_equal_i39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i39"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i50_test(doc) -> [{userdata,[{""}]}];
 not_equal_i50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i61_test(doc) -> [{userdata,[{""}]}];
 not_equal_i61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i1_test(doc) -> [{userdata,[{""}]}];
 not_equal_i1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i1"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i12_test(doc) -> [{userdata,[{""}]}];
 not_equal_i12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i34_test(doc) -> [{userdata,[{""}]}];
 not_equal_i34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i56_test(doc) -> [{userdata,[{""}]}];
 not_equal_i56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i7_test(doc) -> [{userdata,[{""}]}];
 not_equal_i7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i18_test(doc) -> [{userdata,[{""}]}];
 not_equal_i18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i18"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i29_test(doc) -> [{userdata,[{""}]}];
 not_equal_i29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i40_test(doc) -> [{userdata,[{""}]}];
 not_equal_i40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i40"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i51_test(doc) -> [{userdata,[{""}]}];
 not_equal_i51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i62_test(doc) -> [{userdata,[{""}]}];
 not_equal_i62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i2_test(doc) -> [{userdata,[{""}]}];
 not_equal_i2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i2"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i13_test(doc) -> [{userdata,[{""}]}];
 not_equal_i13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i13"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i35_test(doc) -> [{userdata,[{""}]}];
 not_equal_i35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i35"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i57_test(doc) -> [{userdata,[{""}]}];
 not_equal_i57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i8_test(doc) -> [{userdata,[{""}]}];
 not_equal_i8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i19_test(doc) -> [{userdata,[{""}]}];
 not_equal_i19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i19"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i30_test(doc) -> [{userdata,[{""}]}];
 not_equal_i30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i41_test(doc) -> [{userdata,[{""}]}];
 not_equal_i41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i41"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i52_test(doc) -> [{userdata,[{""}]}];
 not_equal_i52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i63_test(doc) -> [{userdata,[{""}]}];
 not_equal_i63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i3_test(doc) -> [{userdata,[{""}]}];
 not_equal_i3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i3"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i14_test(doc) -> [{userdata,[{""}]}];
 not_equal_i14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i14"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i25_test(doc) -> [{userdata,[{""}]}];
 not_equal_i25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i25"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i36_test(doc) -> [{userdata,[{""}]}];
 not_equal_i36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i36"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i47_test(doc) -> [{userdata,[{""}]}];
 not_equal_i47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i58_test(doc) -> [{userdata,[{""}]}];
 not_equal_i58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i9_test(doc) -> [{userdata,[{""}]}];
 not_equal_i9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i20_test(doc) -> [{userdata,[{""}]}];
 not_equal_i20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i20"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i31_test(doc) -> [{userdata,[{""}]}];
 not_equal_i31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i42_test(doc) -> [{userdata,[{""}]}];
 not_equal_i42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i42"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i53_test(doc) -> [{userdata,[{""}]}];
 not_equal_i53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i64_test(doc) -> [{userdata,[{""}]}];
 not_equal_i64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i4_test(doc) -> [{userdata,[{""}]}];
 not_equal_i4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i4"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i15_test(doc) -> [{userdata,[{""}]}];
 not_equal_i15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i15"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i26_test(doc) -> [{userdata,[{""}]}];
 not_equal_i26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i26"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i37_test(doc) -> [{userdata,[{""}]}];
 not_equal_i37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i37"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i48_test(doc) -> [{userdata,[{""}]}];
 not_equal_i48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i59_test(doc) -> [{userdata,[{""}]}];
 not_equal_i59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i10_test(doc) -> [{userdata,[{""}]}];
 not_equal_i10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i21_test(doc) -> [{userdata,[{""}]}];
 not_equal_i21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i21"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i32_test(doc) -> [{userdata,[{""}]}];
 not_equal_i32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i43_test(doc) -> [{userdata,[{""}]}];
 not_equal_i43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i43"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i54_test(doc) -> [{userdata,[{""}]}];
 not_equal_i54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_i65_test(doc) -> [{userdata,[{""}]}];
 not_equal_i65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","i65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t5_test(doc) -> [{userdata,[{""}]}];
 not_equal_t5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t5"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t16_test(doc) -> [{userdata,[{""}]}];
 not_equal_t16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t16"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t27_test(doc) -> [{userdata,[{""}]}];
 not_equal_t27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t27"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t38_test(doc) -> [{userdata,[{""}]}];
 not_equal_t38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t38"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t49_test(doc) -> [{userdata,[{""}]}];
 not_equal_t49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t60_test(doc) -> [{userdata,[{""}]}];
 not_equal_t60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t11_test(doc) -> [{userdata,[{""}]}];
 not_equal_t11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t22_test(doc) -> [{userdata,[{""}]}];
 not_equal_t22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t22"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t33_test(doc) -> [{userdata,[{""}]}];
 not_equal_t33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t44_test(doc) -> [{userdata,[{""}]}];
 not_equal_t44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t44"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t55_test(doc) -> [{userdata,[{""}]}];
 not_equal_t55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t66_test(doc) -> [{userdata,[{""}]}];
 not_equal_t66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t6_test(doc) -> [{userdata,[{""}]}];
 not_equal_t6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t17_test(doc) -> [{userdata,[{""}]}];
 not_equal_t17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t17"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t28_test(doc) -> [{userdata,[{""}]}];
 not_equal_t28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t39_test(doc) -> [{userdata,[{""}]}];
 not_equal_t39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t39"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t50_test(doc) -> [{userdata,[{""}]}];
 not_equal_t50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t61_test(doc) -> [{userdata,[{""}]}];
 not_equal_t61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t1_test(doc) -> [{userdata,[{""}]}];
 not_equal_t1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t1"),
-  Expected="Zero",
+  Expected="<cell><value>"++"Zero"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t12_test(doc) -> [{userdata,[{""}]}];
 not_equal_t12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t34_test(doc) -> [{userdata,[{""}]}];
 not_equal_t34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t56_test(doc) -> [{userdata,[{""}]}];
 not_equal_t56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t7_test(doc) -> [{userdata,[{""}]}];
 not_equal_t7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t18_test(doc) -> [{userdata,[{""}]}];
 not_equal_t18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t18"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t29_test(doc) -> [{userdata,[{""}]}];
 not_equal_t29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t40_test(doc) -> [{userdata,[{""}]}];
 not_equal_t40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t40"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t51_test(doc) -> [{userdata,[{""}]}];
 not_equal_t51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t62_test(doc) -> [{userdata,[{""}]}];
 not_equal_t62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t2_test(doc) -> [{userdata,[{""}]}];
 not_equal_t2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t2"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t13_test(doc) -> [{userdata,[{""}]}];
 not_equal_t13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t13"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t35_test(doc) -> [{userdata,[{""}]}];
 not_equal_t35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t35"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t57_test(doc) -> [{userdata,[{""}]}];
 not_equal_t57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t8_test(doc) -> [{userdata,[{""}]}];
 not_equal_t8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t19_test(doc) -> [{userdata,[{""}]}];
 not_equal_t19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t19"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t30_test(doc) -> [{userdata,[{""}]}];
 not_equal_t30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t41_test(doc) -> [{userdata,[{""}]}];
 not_equal_t41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t41"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t52_test(doc) -> [{userdata,[{""}]}];
 not_equal_t52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t63_test(doc) -> [{userdata,[{""}]}];
 not_equal_t63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t3_test(doc) -> [{userdata,[{""}]}];
 not_equal_t3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t3"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t14_test(doc) -> [{userdata,[{""}]}];
 not_equal_t14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t14"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t25_test(doc) -> [{userdata,[{""}]}];
 not_equal_t25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t25"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t36_test(doc) -> [{userdata,[{""}]}];
 not_equal_t36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t36"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t47_test(doc) -> [{userdata,[{""}]}];
 not_equal_t47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t58_test(doc) -> [{userdata,[{""}]}];
 not_equal_t58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t9_test(doc) -> [{userdata,[{""}]}];
 not_equal_t9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t20_test(doc) -> [{userdata,[{""}]}];
 not_equal_t20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t20"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t31_test(doc) -> [{userdata,[{""}]}];
 not_equal_t31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t42_test(doc) -> [{userdata,[{""}]}];
 not_equal_t42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t42"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t53_test(doc) -> [{userdata,[{""}]}];
 not_equal_t53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t64_test(doc) -> [{userdata,[{""}]}];
 not_equal_t64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t4_test(doc) -> [{userdata,[{""}]}];
 not_equal_t4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t4"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t15_test(doc) -> [{userdata,[{""}]}];
 not_equal_t15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t15"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t26_test(doc) -> [{userdata,[{""}]}];
 not_equal_t26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t26"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t37_test(doc) -> [{userdata,[{""}]}];
 not_equal_t37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t37"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t48_test(doc) -> [{userdata,[{""}]}];
 not_equal_t48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t59_test(doc) -> [{userdata,[{""}]}];
 not_equal_t59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t10_test(doc) -> [{userdata,[{""}]}];
 not_equal_t10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t21_test(doc) -> [{userdata,[{""}]}];
 not_equal_t21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t21"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t32_test(doc) -> [{userdata,[{""}]}];
 not_equal_t32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t43_test(doc) -> [{userdata,[{""}]}];
 not_equal_t43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t43"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t54_test(doc) -> [{userdata,[{""}]}];
 not_equal_t54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_t65_test(doc) -> [{userdata,[{""}]}];
 not_equal_t65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","t65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j5_test(doc) -> [{userdata,[{""}]}];
 not_equal_j5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j5"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j16_test(doc) -> [{userdata,[{""}]}];
 not_equal_j16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j16"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j27_test(doc) -> [{userdata,[{""}]}];
 not_equal_j27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j27"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j38_test(doc) -> [{userdata,[{""}]}];
 not_equal_j38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j38"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j49_test(doc) -> [{userdata,[{""}]}];
 not_equal_j49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j60_test(doc) -> [{userdata,[{""}]}];
 not_equal_j60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j11_test(doc) -> [{userdata,[{""}]}];
 not_equal_j11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j22_test(doc) -> [{userdata,[{""}]}];
 not_equal_j22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j22"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j33_test(doc) -> [{userdata,[{""}]}];
 not_equal_j33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j44_test(doc) -> [{userdata,[{""}]}];
 not_equal_j44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j44"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j55_test(doc) -> [{userdata,[{""}]}];
 not_equal_j55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j66_test(doc) -> [{userdata,[{""}]}];
 not_equal_j66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j6_test(doc) -> [{userdata,[{""}]}];
 not_equal_j6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j17_test(doc) -> [{userdata,[{""}]}];
 not_equal_j17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j17"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j28_test(doc) -> [{userdata,[{""}]}];
 not_equal_j28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j39_test(doc) -> [{userdata,[{""}]}];
 not_equal_j39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j39"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j50_test(doc) -> [{userdata,[{""}]}];
 not_equal_j50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j61_test(doc) -> [{userdata,[{""}]}];
 not_equal_j61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j1_test(doc) -> [{userdata,[{""}]}];
 not_equal_j1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j1"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j12_test(doc) -> [{userdata,[{""}]}];
 not_equal_j12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j34_test(doc) -> [{userdata,[{""}]}];
 not_equal_j34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j56_test(doc) -> [{userdata,[{""}]}];
 not_equal_j56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j7_test(doc) -> [{userdata,[{""}]}];
 not_equal_j7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j18_test(doc) -> [{userdata,[{""}]}];
 not_equal_j18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j18"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j29_test(doc) -> [{userdata,[{""}]}];
 not_equal_j29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j40_test(doc) -> [{userdata,[{""}]}];
 not_equal_j40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j40"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j51_test(doc) -> [{userdata,[{""}]}];
 not_equal_j51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j62_test(doc) -> [{userdata,[{""}]}];
 not_equal_j62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j2_test(doc) -> [{userdata,[{""}]}];
 not_equal_j2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j2"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j13_test(doc) -> [{userdata,[{""}]}];
 not_equal_j13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j13"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j35_test(doc) -> [{userdata,[{""}]}];
 not_equal_j35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j35"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j57_test(doc) -> [{userdata,[{""}]}];
 not_equal_j57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j8_test(doc) -> [{userdata,[{""}]}];
 not_equal_j8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j19_test(doc) -> [{userdata,[{""}]}];
 not_equal_j19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j19"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j30_test(doc) -> [{userdata,[{""}]}];
 not_equal_j30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j41_test(doc) -> [{userdata,[{""}]}];
 not_equal_j41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j41"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j52_test(doc) -> [{userdata,[{""}]}];
 not_equal_j52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j63_test(doc) -> [{userdata,[{""}]}];
 not_equal_j63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j3_test(doc) -> [{userdata,[{""}]}];
 not_equal_j3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j3"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j14_test(doc) -> [{userdata,[{""}]}];
 not_equal_j14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j14"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j25_test(doc) -> [{userdata,[{""}]}];
 not_equal_j25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j25"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j36_test(doc) -> [{userdata,[{""}]}];
 not_equal_j36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j36"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j47_test(doc) -> [{userdata,[{""}]}];
 not_equal_j47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j58_test(doc) -> [{userdata,[{""}]}];
 not_equal_j58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j9_test(doc) -> [{userdata,[{""}]}];
 not_equal_j9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j20_test(doc) -> [{userdata,[{""}]}];
 not_equal_j20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j20"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j31_test(doc) -> [{userdata,[{""}]}];
 not_equal_j31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j42_test(doc) -> [{userdata,[{""}]}];
 not_equal_j42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j42"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j53_test(doc) -> [{userdata,[{""}]}];
 not_equal_j53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j64_test(doc) -> [{userdata,[{""}]}];
 not_equal_j64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j4_test(doc) -> [{userdata,[{""}]}];
 not_equal_j4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j4"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j15_test(doc) -> [{userdata,[{""}]}];
 not_equal_j15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j15"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j26_test(doc) -> [{userdata,[{""}]}];
 not_equal_j26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j26"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j37_test(doc) -> [{userdata,[{""}]}];
 not_equal_j37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j37"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j48_test(doc) -> [{userdata,[{""}]}];
 not_equal_j48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j59_test(doc) -> [{userdata,[{""}]}];
 not_equal_j59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j10_test(doc) -> [{userdata,[{""}]}];
 not_equal_j10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j21_test(doc) -> [{userdata,[{""}]}];
 not_equal_j21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j21"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j32_test(doc) -> [{userdata,[{""}]}];
 not_equal_j32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j43_test(doc) -> [{userdata,[{""}]}];
 not_equal_j43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j43"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j54_test(doc) -> [{userdata,[{""}]}];
 not_equal_j54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_j65_test(doc) -> [{userdata,[{""}]}];
 not_equal_j65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","j65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u5_test(doc) -> [{userdata,[{""}]}];
 not_equal_u5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u5"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u16_test(doc) -> [{userdata,[{""}]}];
 not_equal_u16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u16"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u27_test(doc) -> [{userdata,[{""}]}];
 not_equal_u27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u27"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u38_test(doc) -> [{userdata,[{""}]}];
 not_equal_u38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u38"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u49_test(doc) -> [{userdata,[{""}]}];
 not_equal_u49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u60_test(doc) -> [{userdata,[{""}]}];
 not_equal_u60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u11_test(doc) -> [{userdata,[{""}]}];
 not_equal_u11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u22_test(doc) -> [{userdata,[{""}]}];
 not_equal_u22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u22"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u33_test(doc) -> [{userdata,[{""}]}];
 not_equal_u33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u44_test(doc) -> [{userdata,[{""}]}];
 not_equal_u44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u44"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u55_test(doc) -> [{userdata,[{""}]}];
 not_equal_u55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u66_test(doc) -> [{userdata,[{""}]}];
 not_equal_u66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u6_test(doc) -> [{userdata,[{""}]}];
 not_equal_u6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u17_test(doc) -> [{userdata,[{""}]}];
 not_equal_u17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u17"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u28_test(doc) -> [{userdata,[{""}]}];
 not_equal_u28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u39_test(doc) -> [{userdata,[{""}]}];
 not_equal_u39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u39"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u50_test(doc) -> [{userdata,[{""}]}];
 not_equal_u50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u61_test(doc) -> [{userdata,[{""}]}];
 not_equal_u61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u1_test(doc) -> [{userdata,[{""}]}];
 not_equal_u1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u1"),
-  Expected="Float",
+  Expected="<cell><value>"++"Float"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u12_test(doc) -> [{userdata,[{""}]}];
 not_equal_u12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u34_test(doc) -> [{userdata,[{""}]}];
 not_equal_u34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u56_test(doc) -> [{userdata,[{""}]}];
 not_equal_u56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u7_test(doc) -> [{userdata,[{""}]}];
 not_equal_u7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u18_test(doc) -> [{userdata,[{""}]}];
 not_equal_u18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u18"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u29_test(doc) -> [{userdata,[{""}]}];
 not_equal_u29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u40_test(doc) -> [{userdata,[{""}]}];
 not_equal_u40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u40"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u51_test(doc) -> [{userdata,[{""}]}];
 not_equal_u51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u62_test(doc) -> [{userdata,[{""}]}];
 not_equal_u62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u2_test(doc) -> [{userdata,[{""}]}];
 not_equal_u2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u2"),
-  Expected="3.1415",
+  Expected="<cell><value>"++"3.1415"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u13_test(doc) -> [{userdata,[{""}]}];
 not_equal_u13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u13"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u35_test(doc) -> [{userdata,[{""}]}];
 not_equal_u35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u35"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u57_test(doc) -> [{userdata,[{""}]}];
 not_equal_u57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u8_test(doc) -> [{userdata,[{""}]}];
 not_equal_u8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u19_test(doc) -> [{userdata,[{""}]}];
 not_equal_u19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u19"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u30_test(doc) -> [{userdata,[{""}]}];
 not_equal_u30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u41_test(doc) -> [{userdata,[{""}]}];
 not_equal_u41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u41"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u52_test(doc) -> [{userdata,[{""}]}];
 not_equal_u52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u63_test(doc) -> [{userdata,[{""}]}];
 not_equal_u63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u3_test(doc) -> [{userdata,[{""}]}];
 not_equal_u3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u3"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u14_test(doc) -> [{userdata,[{""}]}];
 not_equal_u14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u14"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u25_test(doc) -> [{userdata,[{""}]}];
 not_equal_u25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u25"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u36_test(doc) -> [{userdata,[{""}]}];
 not_equal_u36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u36"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u47_test(doc) -> [{userdata,[{""}]}];
 not_equal_u47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u58_test(doc) -> [{userdata,[{""}]}];
 not_equal_u58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u9_test(doc) -> [{userdata,[{""}]}];
 not_equal_u9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u20_test(doc) -> [{userdata,[{""}]}];
 not_equal_u20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u20"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u31_test(doc) -> [{userdata,[{""}]}];
 not_equal_u31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u42_test(doc) -> [{userdata,[{""}]}];
 not_equal_u42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u42"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u53_test(doc) -> [{userdata,[{""}]}];
 not_equal_u53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u64_test(doc) -> [{userdata,[{""}]}];
 not_equal_u64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u4_test(doc) -> [{userdata,[{""}]}];
 not_equal_u4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u4"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u15_test(doc) -> [{userdata,[{""}]}];
 not_equal_u15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u15"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u26_test(doc) -> [{userdata,[{""}]}];
 not_equal_u26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u26"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u37_test(doc) -> [{userdata,[{""}]}];
 not_equal_u37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u37"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u48_test(doc) -> [{userdata,[{""}]}];
 not_equal_u48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u59_test(doc) -> [{userdata,[{""}]}];
 not_equal_u59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u10_test(doc) -> [{userdata,[{""}]}];
 not_equal_u10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u21_test(doc) -> [{userdata,[{""}]}];
 not_equal_u21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u21"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u32_test(doc) -> [{userdata,[{""}]}];
 not_equal_u32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u43_test(doc) -> [{userdata,[{""}]}];
 not_equal_u43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u43"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u54_test(doc) -> [{userdata,[{""}]}];
 not_equal_u54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 not_equal_u65_test(doc) -> [{userdata,[{""}]}];
 not_equal_u65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/NOT_EQUAL/","u65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 all() -> 
     [not_equal_k5_test,

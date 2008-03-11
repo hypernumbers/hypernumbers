@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: a_alignment.xls
-% Generated on: Mon Feb 25 21:56:32 +0000 2008
+% Generated on: Tue Mar 11 09:09:46 +0000 2008
 
 -module(a_alignment_test_SUITE).
 -compile(export_all).
@@ -12,7 +12,7 @@
 init_per_suite(Config) ->
     code:add_patha("../../../../../ebin"),
     production_boot:setup_paths(),
-    Data = test_util:read_excel_file("/Win Excel 2007 (as 97)/a_alignment.xls"),
+    Data = test_util:read_excel_file("../../../../excel_files/Win Excel 2007 (as 97)/a_alignment.xls"),
     %% io:format("in init_per_suite Data is ~p~n",[Data]),
     Pid=spawn(test_util,test_state,[Data]),
     io:format("in init_per_suite Pid is ~p~n",[Pid]),

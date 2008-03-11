@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_shared_formulae.xls
-% Generated on: Mon Mar 03 13:54:35 +0000 2008
+% Generated on: Tue Mar 11 09:10:00 +0000 2008
 
 -module(b_shared_formulae_test_SUITE).
 -compile(export_all).
@@ -12,7 +12,7 @@
 init_per_suite(Config) ->
     code:add_patha("../../../../../ebin"),
     production_boot:setup_paths(),
-    Data = test_util:read_excel_file("/Win Excel 2007 (as 97)/b_shared_formulae.xls"),
+    Data = test_util:read_excel_file("../../../../excel_files/Win Excel 2007 (as 97)/b_shared_formulae.xls"),
     %% io:format("in init_per_suite Data is ~p~n",[Data]),
     Pid=spawn(test_util,test_state,[Data]),
     io:format("in init_per_suite Pid is ~p~n",[Pid]),

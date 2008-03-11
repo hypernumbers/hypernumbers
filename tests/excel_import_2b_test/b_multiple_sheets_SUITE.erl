@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_multiple_sheets.xls
-% Generated on: Mon Feb 25 21:57:19 +0000 2008
+% Generated on: Tue Mar 11 09:10:51 +0000 2008
 
 -module(b_multiple_sheets_SUITE).
 -compile(export_all).
@@ -12,7 +12,9 @@ init_per_suite(Config) ->
     code:add_patha("../../../../../ebin"),
     production_boot:start(),
     test_util:wait(),
-    Data = test_util:read_excel_file("/Win Excel 2007 (as 97)/b_multiple_sheets.xls"),
+    io:format("dumping current path next: "),
+    c:pwd(),
+    Data = test_util:read_excel_file("../../excel_files/Win Excel 2007 (as 97)/b_multiple_sheets.xls"),
     Fun =fun({{{sheet,Sheet},{row_index,RowIdx},{col_index,ColIdx}},Input}) ->
       io:format("Sheet is ~p RowIdx is ~p and ColIdx is ~p~n",[Sheet,RowIdx,ColIdx]),
       Data1 = case Input of
@@ -46,7 +48,7 @@ read_from_excel_data(Config,{Sheet,Row,Col}) ->
 
 hn_post(Site, Path, Cell, Data) ->
     Url=Site++Path++Cell,
-    PostData = "action=create&value=" ++ yaws_api:url_encode(Data),
+    PostData = "<create><value>" ++Data++"</value></create>",
     Data2 = {Url, [], "text/plain", PostData},
     io:format("in hn_post Data is ~p~n",[Data2]),
     Return = http:request(post, Data2, [], []),
@@ -73,23 +75,23 @@ assert_eql(X, Y) ->
 harry_a1_test(doc) -> [{userdata,[{""}]}];
 harry_a1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Harry/","a1"),
-  Expected="Harry",
+  Expected="<cell><value>"++"Harry"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 dick_a1_test(doc) -> [{userdata,[{""}]}];
 dick_a1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Dick/","a1"),
-  Expected="Dick",
+  Expected="<cell><value>"++"Dick"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 tom_a1_test(doc) -> [{userdata,[{""}]}];
 tom_a1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","a1"),
-  Expected="Tom",
+  Expected="<cell><value>"++"Tom"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 all() -> 
     [harry_a1_test,

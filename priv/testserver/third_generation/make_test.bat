@@ -212,3 +212,5 @@ move "c_*SUITE.erl" "c:\opt\code\trunk\tests\excel_import_2c_test\"
 move "d_*SUITE.erl" "c:\opt\code\trunk\tests\excel_import_2d_test\"
 move "e_*SUITE.erl" "c:\opt\code\trunk\tests\excel_import_2e_test\"
 move "x_*SUITE.erl" "c:\opt\code\trunk\tests\excel_import_2x_test\"
+
+del *.yaml

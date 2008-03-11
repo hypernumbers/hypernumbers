@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_bitwise_bitand.xls
-% Generated on: Mon Feb 25 21:57:36 +0000 2008
+% Generated on: Tue Mar 11 09:11:18 +0000 2008
 
 -module(e_gnumeric_bitwise_bitand_SUITE).
 -compile(export_all).
@@ -12,7 +12,9 @@ init_per_suite(Config) ->
     code:add_patha("../../../../../ebin"),
     production_boot:start(),
     test_util:wait(),
-    Data = test_util:read_excel_file("/Win Excel 2007 (as 97)/e_gnumeric_bitwise_bitand.xls"),
+    io:format("dumping current path next: "),
+    c:pwd(),
+    Data = test_util:read_excel_file("../../excel_files/Win Excel 2007 (as 97)/e_gnumeric_bitwise_bitand.xls"),
     Fun =fun({{{sheet,Sheet},{row_index,RowIdx},{col_index,ColIdx}},Input}) ->
       io:format("Sheet is ~p RowIdx is ~p and ColIdx is ~p~n",[Sheet,RowIdx,ColIdx]),
       Data1 = case Input of
@@ -46,7 +48,7 @@ read_from_excel_data(Config,{Sheet,Row,Col}) ->
 
 hn_post(Site, Path, Cell, Data) ->
     Url=Site++Path++Cell,
-    PostData = "action=create&value=" ++ yaws_api:url_encode(Data),
+    PostData = "<create><value>" ++Data++"</value></create>",
     Data2 = {Url, [], "text/plain", PostData},
     io:format("in hn_post Data is ~p~n",[Data2]),
     Return = http:request(post, Data2, [], []),
@@ -73,8990 +75,8990 @@ assert_eql(X, Y) ->
 bitand_k5_test(doc) -> [{userdata,[{""}]}];
 bitand_k5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k5"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k16_test(doc) -> [{userdata,[{""}]}];
 bitand_k16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k16"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k27_test(doc) -> [{userdata,[{""}]}];
 bitand_k27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k27"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k38_test(doc) -> [{userdata,[{""}]}];
 bitand_k38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k38"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k49_test(doc) -> [{userdata,[{""}]}];
 bitand_k49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k49"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k60_test(doc) -> [{userdata,[{""}]}];
 bitand_k60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k60"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k11_test(doc) -> [{userdata,[{""}]}];
 bitand_k11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k11"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k22_test(doc) -> [{userdata,[{""}]}];
 bitand_k22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k22"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k33_test(doc) -> [{userdata,[{""}]}];
 bitand_k33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k33"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k44_test(doc) -> [{userdata,[{""}]}];
 bitand_k44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k44"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k55_test(doc) -> [{userdata,[{""}]}];
 bitand_k55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k55"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k6_test(doc) -> [{userdata,[{""}]}];
 bitand_k6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k6"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k17_test(doc) -> [{userdata,[{""}]}];
 bitand_k17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k17"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k28_test(doc) -> [{userdata,[{""}]}];
 bitand_k28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k28"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k39_test(doc) -> [{userdata,[{""}]}];
 bitand_k39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k39"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k50_test(doc) -> [{userdata,[{""}]}];
 bitand_k50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k50"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k61_test(doc) -> [{userdata,[{""}]}];
 bitand_k61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k61"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k1_test(doc) -> [{userdata,[{""}]}];
 bitand_k1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k1"),
-  Expected="String number Leading space",
+  Expected="<cell><value>"++"String number Leading space"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k12_test(doc) -> [{userdata,[{""}]}];
 bitand_k12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k12"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k34_test(doc) -> [{userdata,[{""}]}];
 bitand_k34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k34"),
-  Expected="8.0",
+  Expected="<cell><value>"++"8.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k45_test(doc) -> [{userdata,[{""}]}];
 bitand_k45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k45"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k56_test(doc) -> [{userdata,[{""}]}];
 bitand_k56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k56"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k7_test(doc) -> [{userdata,[{""}]}];
 bitand_k7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k7"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k18_test(doc) -> [{userdata,[{""}]}];
 bitand_k18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k18"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k29_test(doc) -> [{userdata,[{""}]}];
 bitand_k29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k29"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k40_test(doc) -> [{userdata,[{""}]}];
 bitand_k40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k40"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k51_test(doc) -> [{userdata,[{""}]}];
 bitand_k51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k51"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k62_test(doc) -> [{userdata,[{""}]}];
 bitand_k62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k62"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k2_test(doc) -> [{userdata,[{""}]}];
 bitand_k2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k2"),
-  Expected=" 24",
+  Expected="<cell><value>"++" 24"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k13_test(doc) -> [{userdata,[{""}]}];
 bitand_k13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k13"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k35_test(doc) -> [{userdata,[{""}]}];
 bitand_k35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k35"),
-  Expected="16.0",
+  Expected="<cell><value>"++"16.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k46_test(doc) -> [{userdata,[{""}]}];
 bitand_k46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k46"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k57_test(doc) -> [{userdata,[{""}]}];
 bitand_k57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k57"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k8_test(doc) -> [{userdata,[{""}]}];
 bitand_k8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k19_test(doc) -> [{userdata,[{""}]}];
 bitand_k19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k19"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k30_test(doc) -> [{userdata,[{""}]}];
 bitand_k30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k41_test(doc) -> [{userdata,[{""}]}];
 bitand_k41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k41"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k52_test(doc) -> [{userdata,[{""}]}];
 bitand_k52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k52"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k63_test(doc) -> [{userdata,[{""}]}];
 bitand_k63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k63"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k3_test(doc) -> [{userdata,[{""}]}];
 bitand_k3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k3"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k14_test(doc) -> [{userdata,[{""}]}];
 bitand_k14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k14"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k25_test(doc) -> [{userdata,[{""}]}];
 bitand_k25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k25"),
-  Expected="String number Leading space",
+  Expected="<cell><value>"++"String number Leading space"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k36_test(doc) -> [{userdata,[{""}]}];
 bitand_k36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k36"),
-  Expected="24.0",
+  Expected="<cell><value>"++"24.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k58_test(doc) -> [{userdata,[{""}]}];
 bitand_k58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k58"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k9_test(doc) -> [{userdata,[{""}]}];
 bitand_k9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k9"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k20_test(doc) -> [{userdata,[{""}]}];
 bitand_k20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k20"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k31_test(doc) -> [{userdata,[{""}]}];
 bitand_k31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k31"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k42_test(doc) -> [{userdata,[{""}]}];
 bitand_k42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k42"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k53_test(doc) -> [{userdata,[{""}]}];
 bitand_k53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k53"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k64_test(doc) -> [{userdata,[{""}]}];
 bitand_k64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k64"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k4_test(doc) -> [{userdata,[{""}]}];
 bitand_k4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k4"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k15_test(doc) -> [{userdata,[{""}]}];
 bitand_k15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k15"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k26_test(doc) -> [{userdata,[{""}]}];
 bitand_k26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k26"),
-  Expected=" 24",
+  Expected="<cell><value>"++" 24"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k37_test(doc) -> [{userdata,[{""}]}];
 bitand_k37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k37"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k59_test(doc) -> [{userdata,[{""}]}];
 bitand_k59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k59"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k10_test(doc) -> [{userdata,[{""}]}];
 bitand_k10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k10"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k21_test(doc) -> [{userdata,[{""}]}];
 bitand_k21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k21"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k32_test(doc) -> [{userdata,[{""}]}];
 bitand_k32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k32"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k43_test(doc) -> [{userdata,[{""}]}];
 bitand_k43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k43"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_k54_test(doc) -> [{userdata,[{""}]}];
 bitand_k54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","k54"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v5_test(doc) -> [{userdata,[{""}]}];
 bitand_v5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v5"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v16_test(doc) -> [{userdata,[{""}]}];
 bitand_v16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v16"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v27_test(doc) -> [{userdata,[{""}]}];
 bitand_v27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v27"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v38_test(doc) -> [{userdata,[{""}]}];
 bitand_v38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v38"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v49_test(doc) -> [{userdata,[{""}]}];
 bitand_v49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v49"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v60_test(doc) -> [{userdata,[{""}]}];
 bitand_v60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v60"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v11_test(doc) -> [{userdata,[{""}]}];
 bitand_v11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v11"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v22_test(doc) -> [{userdata,[{""}]}];
 bitand_v22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v22"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v33_test(doc) -> [{userdata,[{""}]}];
 bitand_v33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v33"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v44_test(doc) -> [{userdata,[{""}]}];
 bitand_v44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v44"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v55_test(doc) -> [{userdata,[{""}]}];
 bitand_v55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v55"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v6_test(doc) -> [{userdata,[{""}]}];
 bitand_v6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v6"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v17_test(doc) -> [{userdata,[{""}]}];
 bitand_v17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v17"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v28_test(doc) -> [{userdata,[{""}]}];
 bitand_v28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v28"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v39_test(doc) -> [{userdata,[{""}]}];
 bitand_v39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v39"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v50_test(doc) -> [{userdata,[{""}]}];
 bitand_v50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v50"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v61_test(doc) -> [{userdata,[{""}]}];
 bitand_v61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v61"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v1_test(doc) -> [{userdata,[{""}]}];
 bitand_v1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v1"),
-  Expected="Range Colunm",
+  Expected="<cell><value>"++"Range Colunm"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v12_test(doc) -> [{userdata,[{""}]}];
 bitand_v12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v12"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v34_test(doc) -> [{userdata,[{""}]}];
 bitand_v34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v45_test(doc) -> [{userdata,[{""}]}];
 bitand_v45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v45"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v56_test(doc) -> [{userdata,[{""}]}];
 bitand_v56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v56"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v7_test(doc) -> [{userdata,[{""}]}];
 bitand_v7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v7"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v18_test(doc) -> [{userdata,[{""}]}];
 bitand_v18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v18"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v29_test(doc) -> [{userdata,[{""}]}];
 bitand_v29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v29"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v40_test(doc) -> [{userdata,[{""}]}];
 bitand_v40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v40"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v51_test(doc) -> [{userdata,[{""}]}];
 bitand_v51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v51"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v62_test(doc) -> [{userdata,[{""}]}];
 bitand_v62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v62"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v2_test(doc) -> [{userdata,[{""}]}];
 bitand_v2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v2"),
-  Expected="X3:X6",
+  Expected="<cell><value>"++"X3:X6"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v13_test(doc) -> [{userdata,[{""}]}];
 bitand_v13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v13"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v35_test(doc) -> [{userdata,[{""}]}];
 bitand_v35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v46_test(doc) -> [{userdata,[{""}]}];
 bitand_v46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v46"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v57_test(doc) -> [{userdata,[{""}]}];
 bitand_v57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v57"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v8_test(doc) -> [{userdata,[{""}]}];
 bitand_v8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v19_test(doc) -> [{userdata,[{""}]}];
 bitand_v19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v19"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v30_test(doc) -> [{userdata,[{""}]}];
 bitand_v30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v41_test(doc) -> [{userdata,[{""}]}];
 bitand_v41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v41"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v52_test(doc) -> [{userdata,[{""}]}];
 bitand_v52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v52"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v63_test(doc) -> [{userdata,[{""}]}];
 bitand_v63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v63"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v3_test(doc) -> [{userdata,[{""}]}];
 bitand_v3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v3"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v14_test(doc) -> [{userdata,[{""}]}];
 bitand_v14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v14"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v25_test(doc) -> [{userdata,[{""}]}];
 bitand_v25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v25"),
-  Expected="Range Colunm",
+  Expected="<cell><value>"++"Range Colunm"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v36_test(doc) -> [{userdata,[{""}]}];
 bitand_v36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v58_test(doc) -> [{userdata,[{""}]}];
 bitand_v58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v58"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v9_test(doc) -> [{userdata,[{""}]}];
 bitand_v9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v9"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v20_test(doc) -> [{userdata,[{""}]}];
 bitand_v20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v20"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v31_test(doc) -> [{userdata,[{""}]}];
 bitand_v31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v31"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v42_test(doc) -> [{userdata,[{""}]}];
 bitand_v42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v42"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v53_test(doc) -> [{userdata,[{""}]}];
 bitand_v53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v53"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v64_test(doc) -> [{userdata,[{""}]}];
 bitand_v64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v64"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v4_test(doc) -> [{userdata,[{""}]}];
 bitand_v4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v4"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v15_test(doc) -> [{userdata,[{""}]}];
 bitand_v15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v15"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v26_test(doc) -> [{userdata,[{""}]}];
 bitand_v26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v26"),
-  Expected="X3:X6",
+  Expected="<cell><value>"++"X3:X6"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v37_test(doc) -> [{userdata,[{""}]}];
 bitand_v37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v59_test(doc) -> [{userdata,[{""}]}];
 bitand_v59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v59"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v10_test(doc) -> [{userdata,[{""}]}];
 bitand_v10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v10"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v21_test(doc) -> [{userdata,[{""}]}];
 bitand_v21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v21"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v32_test(doc) -> [{userdata,[{""}]}];
 bitand_v32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v32"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v43_test(doc) -> [{userdata,[{""}]}];
 bitand_v43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v43"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_v54_test(doc) -> [{userdata,[{""}]}];
 bitand_v54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","v54"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a5_test(doc) -> [{userdata,[{""}]}];
 bitand_a5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a5"),
-  Expected="errors",
+  Expected="<cell><value>"++"errors"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a16_test(doc) -> [{userdata,[{""}]}];
 bitand_a16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a16"),
-  Expected="Logical",
+  Expected="<cell><value>"++"Logical"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a27_test(doc) -> [{userdata,[{""}]}];
 bitand_a27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a27"),
-  Expected="errors",
+  Expected="<cell><value>"++"errors"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a38_test(doc) -> [{userdata,[{""}]}];
 bitand_a38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a38"),
-  Expected="Blank",
+  Expected="<cell><value>"++"Blank"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a49_test(doc) -> [{userdata,[{""}]}];
 bitand_a49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a49"),
-  Expected="320.0",
+  Expected="<cell><value>"++"320.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a11_test(doc) -> [{userdata,[{""}]}];
 bitand_a11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a11"),
-  Expected="String Number Leading space",
+  Expected="<cell><value>"++"String Number Leading space"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a22_test(doc) -> [{userdata,[{""}]}];
 bitand_a22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a22"),
-  Expected="Range Colunm",
+  Expected="<cell><value>"++"Range Colunm"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a33_test(doc) -> [{userdata,[{""}]}];
 bitand_a33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a33"),
-  Expected="String",
+  Expected="<cell><value>"++"String"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a44_test(doc) -> [{userdata,[{""}]}];
 bitand_a44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a44"),
-  Expected="Range Area",
+  Expected="<cell><value>"++"Range Area"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a6_test(doc) -> [{userdata,[{""}]}];
 bitand_a6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a6"),
-  Expected="errors",
+  Expected="<cell><value>"++"errors"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a17_test(doc) -> [{userdata,[{""}]}];
 bitand_a17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a17"),
-  Expected="Range Row",
+  Expected="<cell><value>"++"Range Row"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a28_test(doc) -> [{userdata,[{""}]}];
 bitand_a28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a28"),
-  Expected="errors",
+  Expected="<cell><value>"++"errors"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a39_test(doc) -> [{userdata,[{""}]}];
 bitand_a39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a39"),
-  Expected="Logical",
+  Expected="<cell><value>"++"Logical"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a50_test(doc) -> [{userdata,[{""}]}];
 bitand_a50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a50"),
-  Expected="7.0",
+  Expected="<cell><value>"++"7.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a1_test(doc) -> [{userdata,[{""}]}];
 bitand_a1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a1"),
-  Expected="bitand(A,B)",
+  Expected="<cell><value>"++"bitand(A,B)"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a12_test(doc) -> [{userdata,[{""}]}];
 bitand_a12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a12"),
-  Expected="Interger",
+  Expected="<cell><value>"++"Interger"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a34_test(doc) -> [{userdata,[{""}]}];
 bitand_a34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a34"),
-  Expected="String Number",
+  Expected="<cell><value>"++"String Number"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a45_test(doc) -> [{userdata,[{""}]}];
 bitand_a45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a45"),
-  Expected="Range Colunm",
+  Expected="<cell><value>"++"Range Colunm"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a7_test(doc) -> [{userdata,[{""}]}];
 bitand_a7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a7"),
-  Expected="errors",
+  Expected="<cell><value>"++"errors"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a18_test(doc) -> [{userdata,[{""}]}];
 bitand_a18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a18"),
-  Expected="Range Row",
+  Expected="<cell><value>"++"Range Row"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a29_test(doc) -> [{userdata,[{""}]}];
 bitand_a29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a29"),
-  Expected="errors",
+  Expected="<cell><value>"++"errors"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a40_test(doc) -> [{userdata,[{""}]}];
 bitand_a40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a40"),
-  Expected="Logical",
+  Expected="<cell><value>"++"Logical"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a2_test(doc) -> [{userdata,[{""}]}];
 bitand_a2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a2"),
-  Expected="A",
+  Expected="<cell><value>"++"A"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a13_test(doc) -> [{userdata,[{""}]}];
 bitand_a13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a13"),
-  Expected="Float",
+  Expected="<cell><value>"++"Float"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a35_test(doc) -> [{userdata,[{""}]}];
 bitand_a35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a35"),
-  Expected="String Number Leading space",
+  Expected="<cell><value>"++"String Number Leading space"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a46_test(doc) -> [{userdata,[{""}]}];
 bitand_a46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a46"),
-  Expected="Range Colunm",
+  Expected="<cell><value>"++"Range Colunm"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a8_test(doc) -> [{userdata,[{""}]}];
 bitand_a8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a8"),
-  Expected="errors",
+  Expected="<cell><value>"++"errors"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a19_test(doc) -> [{userdata,[{""}]}];
 bitand_a19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a19"),
-  Expected="Range Area",
+  Expected="<cell><value>"++"Range Area"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a30_test(doc) -> [{userdata,[{""}]}];
 bitand_a30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a30"),
-  Expected="errors",
+  Expected="<cell><value>"++"errors"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a41_test(doc) -> [{userdata,[{""}]}];
 bitand_a41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a41"),
-  Expected="Range Row",
+  Expected="<cell><value>"++"Range Row"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a3_test(doc) -> [{userdata,[{""}]}];
 bitand_a3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a3"),
-  Expected="errors",
+  Expected="<cell><value>"++"errors"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a14_test(doc) -> [{userdata,[{""}]}];
 bitand_a14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a14"),
-  Expected="Blank",
+  Expected="<cell><value>"++"Blank"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a25_test(doc) -> [{userdata,[{""}]}];
 bitand_a25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a25"),
-  Expected="bitand(A,B)",
+  Expected="<cell><value>"++"bitand(A,B)"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a36_test(doc) -> [{userdata,[{""}]}];
 bitand_a36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a36"),
-  Expected="Interger",
+  Expected="<cell><value>"++"Interger"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a9_test(doc) -> [{userdata,[{""}]}];
 bitand_a9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a9"),
-  Expected="String",
+  Expected="<cell><value>"++"String"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a20_test(doc) -> [{userdata,[{""}]}];
 bitand_a20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a20"),
-  Expected="Range Area",
+  Expected="<cell><value>"++"Range Area"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a31_test(doc) -> [{userdata,[{""}]}];
 bitand_a31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a31"),
-  Expected="errors",
+  Expected="<cell><value>"++"errors"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a42_test(doc) -> [{userdata,[{""}]}];
 bitand_a42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a42"),
-  Expected="Range Row",
+  Expected="<cell><value>"++"Range Row"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a4_test(doc) -> [{userdata,[{""}]}];
 bitand_a4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a4"),
-  Expected="errors",
+  Expected="<cell><value>"++"errors"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a15_test(doc) -> [{userdata,[{""}]}];
 bitand_a15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a15"),
-  Expected="Logical",
+  Expected="<cell><value>"++"Logical"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a26_test(doc) -> [{userdata,[{""}]}];
 bitand_a26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a26"),
-  Expected="A",
+  Expected="<cell><value>"++"A"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a37_test(doc) -> [{userdata,[{""}]}];
 bitand_a37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a37"),
-  Expected="Float",
+  Expected="<cell><value>"++"Float"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a10_test(doc) -> [{userdata,[{""}]}];
 bitand_a10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a10"),
-  Expected="String Number",
+  Expected="<cell><value>"++"String Number"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a21_test(doc) -> [{userdata,[{""}]}];
 bitand_a21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a21"),
-  Expected="Range Colunm",
+  Expected="<cell><value>"++"Range Colunm"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a32_test(doc) -> [{userdata,[{""}]}];
 bitand_a32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a32"),
-  Expected="errors",
+  Expected="<cell><value>"++"errors"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_a43_test(doc) -> [{userdata,[{""}]}];
 bitand_a43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","a43"),
-  Expected="Range Area",
+  Expected="<cell><value>"++"Range Area"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l5_test(doc) -> [{userdata,[{""}]}];
 bitand_l5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l5"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l16_test(doc) -> [{userdata,[{""}]}];
 bitand_l16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l16"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l27_test(doc) -> [{userdata,[{""}]}];
 bitand_l27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l27"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l38_test(doc) -> [{userdata,[{""}]}];
 bitand_l38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l38"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l49_test(doc) -> [{userdata,[{""}]}];
 bitand_l49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l49"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l60_test(doc) -> [{userdata,[{""}]}];
 bitand_l60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l60"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l11_test(doc) -> [{userdata,[{""}]}];
 bitand_l11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l11"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l22_test(doc) -> [{userdata,[{""}]}];
 bitand_l22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l22"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l33_test(doc) -> [{userdata,[{""}]}];
 bitand_l33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l33"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l44_test(doc) -> [{userdata,[{""}]}];
 bitand_l44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l44"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l55_test(doc) -> [{userdata,[{""}]}];
 bitand_l55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l55"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l6_test(doc) -> [{userdata,[{""}]}];
 bitand_l6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l6"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l17_test(doc) -> [{userdata,[{""}]}];
 bitand_l17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l17"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l28_test(doc) -> [{userdata,[{""}]}];
 bitand_l28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l28"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l39_test(doc) -> [{userdata,[{""}]}];
 bitand_l39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l39"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l50_test(doc) -> [{userdata,[{""}]}];
 bitand_l50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l50"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l61_test(doc) -> [{userdata,[{""}]}];
 bitand_l61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l61"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l1_test(doc) -> [{userdata,[{""}]}];
 bitand_l1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l1"),
-  Expected="Integer",
+  Expected="<cell><value>"++"Integer"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l12_test(doc) -> [{userdata,[{""}]}];
 bitand_l12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l12"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l34_test(doc) -> [{userdata,[{""}]}];
 bitand_l34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l34"),
-  Expected="8.0",
+  Expected="<cell><value>"++"8.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l45_test(doc) -> [{userdata,[{""}]}];
 bitand_l45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l45"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l56_test(doc) -> [{userdata,[{""}]}];
 bitand_l56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l56"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l7_test(doc) -> [{userdata,[{""}]}];
 bitand_l7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l7"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l18_test(doc) -> [{userdata,[{""}]}];
 bitand_l18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l18"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l29_test(doc) -> [{userdata,[{""}]}];
 bitand_l29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l29"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l40_test(doc) -> [{userdata,[{""}]}];
 bitand_l40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l40"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l51_test(doc) -> [{userdata,[{""}]}];
 bitand_l51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l51"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l62_test(doc) -> [{userdata,[{""}]}];
 bitand_l62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l62"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l2_test(doc) -> [{userdata,[{""}]}];
 bitand_l2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l2"),
-  Expected="1968/03/23 00:00:00",
+  Expected="<cell><value>"++"1968/03/23 00:00:00"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l13_test(doc) -> [{userdata,[{""}]}];
 bitand_l13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l13"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l35_test(doc) -> [{userdata,[{""}]}];
 bitand_l35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l35"),
-  Expected="16.0",
+  Expected="<cell><value>"++"16.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l46_test(doc) -> [{userdata,[{""}]}];
 bitand_l46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l46"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l57_test(doc) -> [{userdata,[{""}]}];
 bitand_l57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l57"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l8_test(doc) -> [{userdata,[{""}]}];
 bitand_l8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l19_test(doc) -> [{userdata,[{""}]}];
 bitand_l19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l19"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l30_test(doc) -> [{userdata,[{""}]}];
 bitand_l30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l41_test(doc) -> [{userdata,[{""}]}];
 bitand_l41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l41"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l52_test(doc) -> [{userdata,[{""}]}];
 bitand_l52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l52"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l63_test(doc) -> [{userdata,[{""}]}];
 bitand_l63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l63"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l3_test(doc) -> [{userdata,[{""}]}];
 bitand_l3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l3"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l14_test(doc) -> [{userdata,[{""}]}];
 bitand_l14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l14"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l25_test(doc) -> [{userdata,[{""}]}];
 bitand_l25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l25"),
-  Expected="Integer",
+  Expected="<cell><value>"++"Integer"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l36_test(doc) -> [{userdata,[{""}]}];
 bitand_l36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l36"),
-  Expected="24920.0",
+  Expected="<cell><value>"++"24920.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l58_test(doc) -> [{userdata,[{""}]}];
 bitand_l58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l58"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l9_test(doc) -> [{userdata,[{""}]}];
 bitand_l9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l9"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l20_test(doc) -> [{userdata,[{""}]}];
 bitand_l20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l20"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l31_test(doc) -> [{userdata,[{""}]}];
 bitand_l31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l31"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l42_test(doc) -> [{userdata,[{""}]}];
 bitand_l42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l42"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l53_test(doc) -> [{userdata,[{""}]}];
 bitand_l53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l53"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l64_test(doc) -> [{userdata,[{""}]}];
 bitand_l64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l64"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l4_test(doc) -> [{userdata,[{""}]}];
 bitand_l4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l4"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l15_test(doc) -> [{userdata,[{""}]}];
 bitand_l15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l15"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l26_test(doc) -> [{userdata,[{""}]}];
 bitand_l26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l26"),
-  Expected="1968/03/23 00:00:00",
+  Expected="<cell><value>"++"1968/03/23 00:00:00"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l37_test(doc) -> [{userdata,[{""}]}];
 bitand_l37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l37"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l59_test(doc) -> [{userdata,[{""}]}];
 bitand_l59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l59"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l10_test(doc) -> [{userdata,[{""}]}];
 bitand_l10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l10"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l21_test(doc) -> [{userdata,[{""}]}];
 bitand_l21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l21"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l32_test(doc) -> [{userdata,[{""}]}];
 bitand_l32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l32"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l43_test(doc) -> [{userdata,[{""}]}];
 bitand_l43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l43"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_l54_test(doc) -> [{userdata,[{""}]}];
 bitand_l54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","l54"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b5_test(doc) -> [{userdata,[{""}]}];
 bitand_b5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b5"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b16_test(doc) -> [{userdata,[{""}]}];
 bitand_b16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b16"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b27_test(doc) -> [{userdata,[{""}]}];
 bitand_b27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b27"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b11_test(doc) -> [{userdata,[{""}]}];
 bitand_b11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b11"),
-  Expected=" 23",
+  Expected="<cell><value>"++" 23"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b22_test(doc) -> [{userdata,[{""}]}];
 bitand_b22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b22"),
-  Expected="X3:X6",
+  Expected="<cell><value>"++"X3:X6"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b33_test(doc) -> [{userdata,[{""}]}];
 bitand_b33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b33"),
-  Expected="Phillip",
+  Expected="<cell><value>"++"Phillip"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b44_test(doc) -> [{userdata,[{""}]}];
 bitand_b44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b44"),
-  Expected="X3:AA6",
+  Expected="<cell><value>"++"X3:AA6"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b6_test(doc) -> [{userdata,[{""}]}];
 bitand_b6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b6"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b17_test(doc) -> [{userdata,[{""}]}];
 bitand_b17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b17"),
-  Expected="X3:Y3",
+  Expected="<cell><value>"++"X3:Y3"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b28_test(doc) -> [{userdata,[{""}]}];
 bitand_b28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b28"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b39_test(doc) -> [{userdata,[{""}]}];
 bitand_b39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b39"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b1_test(doc) -> [{userdata,[{""}]}];
 bitand_b1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b1"),
-  Expected="B",
+  Expected="<cell><value>"++"B"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b12_test(doc) -> [{userdata,[{""}]}];
 bitand_b12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b12"),
-  Expected="1968/03/23 00:00:00",
+  Expected="<cell><value>"++"1968/03/23 00:00:00"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b34_test(doc) -> [{userdata,[{""}]}];
 bitand_b34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b34"),
-  Expected="12",
+  Expected="<cell><value>"++"12"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b45_test(doc) -> [{userdata,[{""}]}];
 bitand_b45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b45"),
-  Expected="X3:X4",
+  Expected="<cell><value>"++"X3:X4"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b7_test(doc) -> [{userdata,[{""}]}];
 bitand_b7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b7"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b18_test(doc) -> [{userdata,[{""}]}];
 bitand_b18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b18"),
-  Expected="X3:AA3",
+  Expected="<cell><value>"++"X3:AA3"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b29_test(doc) -> [{userdata,[{""}]}];
 bitand_b29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b29"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b40_test(doc) -> [{userdata,[{""}]}];
 bitand_b40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b40"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b13_test(doc) -> [{userdata,[{""}]}];
 bitand_b13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b13"),
-  Expected="3.14159265358979",
+  Expected="<cell><value>"++"3.14159265358979"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b35_test(doc) -> [{userdata,[{""}]}];
 bitand_b35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b35"),
-  Expected=" 23",
+  Expected="<cell><value>"++" 23"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b46_test(doc) -> [{userdata,[{""}]}];
 bitand_b46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b46"),
-  Expected="X3:X6",
+  Expected="<cell><value>"++"X3:X6"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b8_test(doc) -> [{userdata,[{""}]}];
 bitand_b8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b8"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b19_test(doc) -> [{userdata,[{""}]}];
 bitand_b19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b19"),
-  Expected="X3:Y4",
+  Expected="<cell><value>"++"X3:Y4"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b30_test(doc) -> [{userdata,[{""}]}];
 bitand_b30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b41_test(doc) -> [{userdata,[{""}]}];
 bitand_b41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b41"),
-  Expected="X3:Y3",
+  Expected="<cell><value>"++"X3:Y3"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b3_test(doc) -> [{userdata,[{""}]}];
 bitand_b3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b3"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b25_test(doc) -> [{userdata,[{""}]}];
 bitand_b25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b25"),
-  Expected="B",
+  Expected="<cell><value>"++"B"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b36_test(doc) -> [{userdata,[{""}]}];
 bitand_b36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b36"),
-  Expected="1968/03/23 00:00:00",
+  Expected="<cell><value>"++"1968/03/23 00:00:00"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b9_test(doc) -> [{userdata,[{""}]}];
 bitand_b9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b9"),
-  Expected="Phillip",
+  Expected="<cell><value>"++"Phillip"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b20_test(doc) -> [{userdata,[{""}]}];
 bitand_b20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b20"),
-  Expected="X3:AA6",
+  Expected="<cell><value>"++"X3:AA6"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b31_test(doc) -> [{userdata,[{""}]}];
 bitand_b31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b31"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b42_test(doc) -> [{userdata,[{""}]}];
 bitand_b42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b42"),
-  Expected="X3:AA3",
+  Expected="<cell><value>"++"X3:AA3"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b4_test(doc) -> [{userdata,[{""}]}];
 bitand_b4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b4"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b15_test(doc) -> [{userdata,[{""}]}];
 bitand_b15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b15"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b37_test(doc) -> [{userdata,[{""}]}];
 bitand_b37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b37"),
-  Expected="3.14159265358979",
+  Expected="<cell><value>"++"3.14159265358979"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b10_test(doc) -> [{userdata,[{""}]}];
 bitand_b10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b10"),
-  Expected="12",
+  Expected="<cell><value>"++"12"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b21_test(doc) -> [{userdata,[{""}]}];
 bitand_b21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b21"),
-  Expected="X3:X4",
+  Expected="<cell><value>"++"X3:X4"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b32_test(doc) -> [{userdata,[{""}]}];
 bitand_b32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b32"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_b43_test(doc) -> [{userdata,[{""}]}];
 bitand_b43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","b43"),
-  Expected="X3:Y4",
+  Expected="<cell><value>"++"X3:Y4"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m5_test(doc) -> [{userdata,[{""}]}];
 bitand_m5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m5"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m16_test(doc) -> [{userdata,[{""}]}];
 bitand_m16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m16"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m27_test(doc) -> [{userdata,[{""}]}];
 bitand_m27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m27"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m38_test(doc) -> [{userdata,[{""}]}];
 bitand_m38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m38"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m49_test(doc) -> [{userdata,[{""}]}];
 bitand_m49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m49"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m60_test(doc) -> [{userdata,[{""}]}];
 bitand_m60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m60"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m11_test(doc) -> [{userdata,[{""}]}];
 bitand_m11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m11"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m22_test(doc) -> [{userdata,[{""}]}];
 bitand_m22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m22"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m33_test(doc) -> [{userdata,[{""}]}];
 bitand_m33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m33"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m44_test(doc) -> [{userdata,[{""}]}];
 bitand_m44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m44"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m55_test(doc) -> [{userdata,[{""}]}];
 bitand_m55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m55"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m6_test(doc) -> [{userdata,[{""}]}];
 bitand_m6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m6"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m17_test(doc) -> [{userdata,[{""}]}];
 bitand_m17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m17"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m28_test(doc) -> [{userdata,[{""}]}];
 bitand_m28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m28"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m39_test(doc) -> [{userdata,[{""}]}];
 bitand_m39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m39"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m50_test(doc) -> [{userdata,[{""}]}];
 bitand_m50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m50"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m61_test(doc) -> [{userdata,[{""}]}];
 bitand_m61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m61"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m1_test(doc) -> [{userdata,[{""}]}];
 bitand_m1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m1"),
-  Expected="Float",
+  Expected="<cell><value>"++"Float"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m12_test(doc) -> [{userdata,[{""}]}];
 bitand_m12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m12"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m34_test(doc) -> [{userdata,[{""}]}];
 bitand_m34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m34"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m45_test(doc) -> [{userdata,[{""}]}];
 bitand_m45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m45"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m56_test(doc) -> [{userdata,[{""}]}];
 bitand_m56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m56"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m7_test(doc) -> [{userdata,[{""}]}];
 bitand_m7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m7"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m18_test(doc) -> [{userdata,[{""}]}];
 bitand_m18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m18"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m29_test(doc) -> [{userdata,[{""}]}];
 bitand_m29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m29"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m40_test(doc) -> [{userdata,[{""}]}];
 bitand_m40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m40"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m51_test(doc) -> [{userdata,[{""}]}];
 bitand_m51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m51"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m62_test(doc) -> [{userdata,[{""}]}];
 bitand_m62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m62"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m2_test(doc) -> [{userdata,[{""}]}];
 bitand_m2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m2"),
-  Expected="3.14159265358979",
+  Expected="<cell><value>"++"3.14159265358979"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m13_test(doc) -> [{userdata,[{""}]}];
 bitand_m13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m13"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m35_test(doc) -> [{userdata,[{""}]}];
 bitand_m35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m35"),
-  Expected="3.0",
+  Expected="<cell><value>"++"3.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m46_test(doc) -> [{userdata,[{""}]}];
 bitand_m46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m46"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m57_test(doc) -> [{userdata,[{""}]}];
 bitand_m57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m57"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m8_test(doc) -> [{userdata,[{""}]}];
 bitand_m8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m19_test(doc) -> [{userdata,[{""}]}];
 bitand_m19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m19"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m30_test(doc) -> [{userdata,[{""}]}];
 bitand_m30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m41_test(doc) -> [{userdata,[{""}]}];
 bitand_m41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m41"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m52_test(doc) -> [{userdata,[{""}]}];
 bitand_m52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m52"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m63_test(doc) -> [{userdata,[{""}]}];
 bitand_m63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m63"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m3_test(doc) -> [{userdata,[{""}]}];
 bitand_m3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m3"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m14_test(doc) -> [{userdata,[{""}]}];
 bitand_m14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m14"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m25_test(doc) -> [{userdata,[{""}]}];
 bitand_m25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m25"),
-  Expected="Float",
+  Expected="<cell><value>"++"Float"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m36_test(doc) -> [{userdata,[{""}]}];
 bitand_m36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m36"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m58_test(doc) -> [{userdata,[{""}]}];
 bitand_m58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m58"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m9_test(doc) -> [{userdata,[{""}]}];
 bitand_m9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m9"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m20_test(doc) -> [{userdata,[{""}]}];
 bitand_m20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m20"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m31_test(doc) -> [{userdata,[{""}]}];
 bitand_m31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m31"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m42_test(doc) -> [{userdata,[{""}]}];
 bitand_m42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m42"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m53_test(doc) -> [{userdata,[{""}]}];
 bitand_m53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m53"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m64_test(doc) -> [{userdata,[{""}]}];
 bitand_m64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m64"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m4_test(doc) -> [{userdata,[{""}]}];
 bitand_m4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m4"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m15_test(doc) -> [{userdata,[{""}]}];
 bitand_m15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m15"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m26_test(doc) -> [{userdata,[{""}]}];
 bitand_m26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m26"),
-  Expected="3.14159265358979",
+  Expected="<cell><value>"++"3.14159265358979"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m37_test(doc) -> [{userdata,[{""}]}];
 bitand_m37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m37"),
-  Expected="3.0",
+  Expected="<cell><value>"++"3.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m59_test(doc) -> [{userdata,[{""}]}];
 bitand_m59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m59"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m10_test(doc) -> [{userdata,[{""}]}];
 bitand_m10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m10"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m21_test(doc) -> [{userdata,[{""}]}];
 bitand_m21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m21"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m32_test(doc) -> [{userdata,[{""}]}];
 bitand_m32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m32"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m43_test(doc) -> [{userdata,[{""}]}];
 bitand_m43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m43"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_m54_test(doc) -> [{userdata,[{""}]}];
 bitand_m54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","m54"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c5_test(doc) -> [{userdata,[{""}]}];
 bitand_c5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c5"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c16_test(doc) -> [{userdata,[{""}]}];
 bitand_c16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c16"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c27_test(doc) -> [{userdata,[{""}]}];
 bitand_c27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c27"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c38_test(doc) -> [{userdata,[{""}]}];
 bitand_c38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c38"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c49_test(doc) -> [{userdata,[{""}]}];
 bitand_c49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c49"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c60_test(doc) -> [{userdata,[{""}]}];
 bitand_c60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c60"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c11_test(doc) -> [{userdata,[{""}]}];
 bitand_c11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c11"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c22_test(doc) -> [{userdata,[{""}]}];
 bitand_c22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c22"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c33_test(doc) -> [{userdata,[{""}]}];
 bitand_c33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c33"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c44_test(doc) -> [{userdata,[{""}]}];
 bitand_c44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c44"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c55_test(doc) -> [{userdata,[{""}]}];
 bitand_c55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c55"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c6_test(doc) -> [{userdata,[{""}]}];
 bitand_c6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c6"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c17_test(doc) -> [{userdata,[{""}]}];
 bitand_c17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c17"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c28_test(doc) -> [{userdata,[{""}]}];
 bitand_c28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c28"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c39_test(doc) -> [{userdata,[{""}]}];
 bitand_c39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c39"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c50_test(doc) -> [{userdata,[{""}]}];
 bitand_c50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c50"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c61_test(doc) -> [{userdata,[{""}]}];
 bitand_c61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c61"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c1_test(doc) -> [{userdata,[{""}]}];
 bitand_c1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c1"),
-  Expected="errors",
+  Expected="<cell><value>"++"errors"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c12_test(doc) -> [{userdata,[{""}]}];
 bitand_c12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c12"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c34_test(doc) -> [{userdata,[{""}]}];
 bitand_c34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c34"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c45_test(doc) -> [{userdata,[{""}]}];
 bitand_c45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c45"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c56_test(doc) -> [{userdata,[{""}]}];
 bitand_c56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c56"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c7_test(doc) -> [{userdata,[{""}]}];
 bitand_c7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c7"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c18_test(doc) -> [{userdata,[{""}]}];
 bitand_c18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c18"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c29_test(doc) -> [{userdata,[{""}]}];
 bitand_c29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c29"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c40_test(doc) -> [{userdata,[{""}]}];
 bitand_c40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c40"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c51_test(doc) -> [{userdata,[{""}]}];
 bitand_c51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c51"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c62_test(doc) -> [{userdata,[{""}]}];
 bitand_c62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c62"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c2_test(doc) -> [{userdata,[{""}]}];
 bitand_c2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c2"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c13_test(doc) -> [{userdata,[{""}]}];
 bitand_c13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c13"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c35_test(doc) -> [{userdata,[{""}]}];
 bitand_c35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c35"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c46_test(doc) -> [{userdata,[{""}]}];
 bitand_c46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c46"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c57_test(doc) -> [{userdata,[{""}]}];
 bitand_c57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c57"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c8_test(doc) -> [{userdata,[{""}]}];
 bitand_c8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c19_test(doc) -> [{userdata,[{""}]}];
 bitand_c19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c19"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c30_test(doc) -> [{userdata,[{""}]}];
 bitand_c30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c41_test(doc) -> [{userdata,[{""}]}];
 bitand_c41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c41"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c52_test(doc) -> [{userdata,[{""}]}];
 bitand_c52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c52"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c63_test(doc) -> [{userdata,[{""}]}];
 bitand_c63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c63"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c3_test(doc) -> [{userdata,[{""}]}];
 bitand_c3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c3"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c14_test(doc) -> [{userdata,[{""}]}];
 bitand_c14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c14"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c25_test(doc) -> [{userdata,[{""}]}];
 bitand_c25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c25"),
-  Expected="errors",
+  Expected="<cell><value>"++"errors"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c36_test(doc) -> [{userdata,[{""}]}];
 bitand_c36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c36"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c58_test(doc) -> [{userdata,[{""}]}];
 bitand_c58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c58"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c9_test(doc) -> [{userdata,[{""}]}];
 bitand_c9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c9"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c20_test(doc) -> [{userdata,[{""}]}];
 bitand_c20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c20"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c31_test(doc) -> [{userdata,[{""}]}];
 bitand_c31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c31"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c42_test(doc) -> [{userdata,[{""}]}];
 bitand_c42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c42"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c53_test(doc) -> [{userdata,[{""}]}];
 bitand_c53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c53"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c64_test(doc) -> [{userdata,[{""}]}];
 bitand_c64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c64"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c4_test(doc) -> [{userdata,[{""}]}];
 bitand_c4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c4"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c15_test(doc) -> [{userdata,[{""}]}];
 bitand_c15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c15"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c26_test(doc) -> [{userdata,[{""}]}];
 bitand_c26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c26"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c37_test(doc) -> [{userdata,[{""}]}];
 bitand_c37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c37"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c59_test(doc) -> [{userdata,[{""}]}];
 bitand_c59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c59"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c10_test(doc) -> [{userdata,[{""}]}];
 bitand_c10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c10"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c21_test(doc) -> [{userdata,[{""}]}];
 bitand_c21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c21"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c32_test(doc) -> [{userdata,[{""}]}];
 bitand_c32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c32"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c43_test(doc) -> [{userdata,[{""}]}];
 bitand_c43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c43"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_c54_test(doc) -> [{userdata,[{""}]}];
 bitand_c54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","c54"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n5_test(doc) -> [{userdata,[{""}]}];
 bitand_n5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n5"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n16_test(doc) -> [{userdata,[{""}]}];
 bitand_n16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n16"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n27_test(doc) -> [{userdata,[{""}]}];
 bitand_n27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n27"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n38_test(doc) -> [{userdata,[{""}]}];
 bitand_n38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n38"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n49_test(doc) -> [{userdata,[{""}]}];
 bitand_n49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n49"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n60_test(doc) -> [{userdata,[{""}]}];
 bitand_n60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n60"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n11_test(doc) -> [{userdata,[{""}]}];
 bitand_n11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n11"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n22_test(doc) -> [{userdata,[{""}]}];
 bitand_n22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n22"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n33_test(doc) -> [{userdata,[{""}]}];
 bitand_n33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n33"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n44_test(doc) -> [{userdata,[{""}]}];
 bitand_n44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n44"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n55_test(doc) -> [{userdata,[{""}]}];
 bitand_n55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n55"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n6_test(doc) -> [{userdata,[{""}]}];
 bitand_n6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n6"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n17_test(doc) -> [{userdata,[{""}]}];
 bitand_n17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n17"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n28_test(doc) -> [{userdata,[{""}]}];
 bitand_n28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n28"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n39_test(doc) -> [{userdata,[{""}]}];
 bitand_n39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n39"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n50_test(doc) -> [{userdata,[{""}]}];
 bitand_n50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n50"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n61_test(doc) -> [{userdata,[{""}]}];
 bitand_n61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n61"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n1_test(doc) -> [{userdata,[{""}]}];
 bitand_n1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n1"),
-  Expected="Blank",
+  Expected="<cell><value>"++"Blank"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n12_test(doc) -> [{userdata,[{""}]}];
 bitand_n12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n12"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n34_test(doc) -> [{userdata,[{""}]}];
 bitand_n34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n34"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n45_test(doc) -> [{userdata,[{""}]}];
 bitand_n45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n45"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n56_test(doc) -> [{userdata,[{""}]}];
 bitand_n56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n56"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n7_test(doc) -> [{userdata,[{""}]}];
 bitand_n7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n7"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n18_test(doc) -> [{userdata,[{""}]}];
 bitand_n18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n18"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n29_test(doc) -> [{userdata,[{""}]}];
 bitand_n29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n29"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n40_test(doc) -> [{userdata,[{""}]}];
 bitand_n40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n40"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n51_test(doc) -> [{userdata,[{""}]}];
 bitand_n51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n51"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n62_test(doc) -> [{userdata,[{""}]}];
 bitand_n62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n62"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n13_test(doc) -> [{userdata,[{""}]}];
 bitand_n13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n13"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n35_test(doc) -> [{userdata,[{""}]}];
 bitand_n35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n35"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n46_test(doc) -> [{userdata,[{""}]}];
 bitand_n46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n46"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n57_test(doc) -> [{userdata,[{""}]}];
 bitand_n57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n57"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n8_test(doc) -> [{userdata,[{""}]}];
 bitand_n8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n19_test(doc) -> [{userdata,[{""}]}];
 bitand_n19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n19"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n30_test(doc) -> [{userdata,[{""}]}];
 bitand_n30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n41_test(doc) -> [{userdata,[{""}]}];
 bitand_n41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n41"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n52_test(doc) -> [{userdata,[{""}]}];
 bitand_n52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n52"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n63_test(doc) -> [{userdata,[{""}]}];
 bitand_n63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n63"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n3_test(doc) -> [{userdata,[{""}]}];
 bitand_n3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n3"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n14_test(doc) -> [{userdata,[{""}]}];
 bitand_n14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n14"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n25_test(doc) -> [{userdata,[{""}]}];
 bitand_n25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n25"),
-  Expected="Blank",
+  Expected="<cell><value>"++"Blank"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n36_test(doc) -> [{userdata,[{""}]}];
 bitand_n36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n36"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n58_test(doc) -> [{userdata,[{""}]}];
 bitand_n58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n58"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n9_test(doc) -> [{userdata,[{""}]}];
 bitand_n9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n9"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n20_test(doc) -> [{userdata,[{""}]}];
 bitand_n20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n20"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n31_test(doc) -> [{userdata,[{""}]}];
 bitand_n31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n31"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n42_test(doc) -> [{userdata,[{""}]}];
 bitand_n42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n42"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n53_test(doc) -> [{userdata,[{""}]}];
 bitand_n53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n53"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n64_test(doc) -> [{userdata,[{""}]}];
 bitand_n64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n64"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n4_test(doc) -> [{userdata,[{""}]}];
 bitand_n4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n4"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n15_test(doc) -> [{userdata,[{""}]}];
 bitand_n15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n15"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n37_test(doc) -> [{userdata,[{""}]}];
 bitand_n37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n37"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n59_test(doc) -> [{userdata,[{""}]}];
 bitand_n59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n59"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n10_test(doc) -> [{userdata,[{""}]}];
 bitand_n10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n10"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n21_test(doc) -> [{userdata,[{""}]}];
 bitand_n21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n21"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n32_test(doc) -> [{userdata,[{""}]}];
 bitand_n32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n32"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n43_test(doc) -> [{userdata,[{""}]}];
 bitand_n43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n43"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_n54_test(doc) -> [{userdata,[{""}]}];
 bitand_n54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","n54"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d5_test(doc) -> [{userdata,[{""}]}];
 bitand_d5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d5"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d16_test(doc) -> [{userdata,[{""}]}];
 bitand_d16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d16"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d27_test(doc) -> [{userdata,[{""}]}];
 bitand_d27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d27"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d38_test(doc) -> [{userdata,[{""}]}];
 bitand_d38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d38"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d49_test(doc) -> [{userdata,[{""}]}];
 bitand_d49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d49"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d60_test(doc) -> [{userdata,[{""}]}];
 bitand_d60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d60"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d11_test(doc) -> [{userdata,[{""}]}];
 bitand_d11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d11"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d22_test(doc) -> [{userdata,[{""}]}];
 bitand_d22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d22"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d33_test(doc) -> [{userdata,[{""}]}];
 bitand_d33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d33"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d44_test(doc) -> [{userdata,[{""}]}];
 bitand_d44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d44"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d55_test(doc) -> [{userdata,[{""}]}];
 bitand_d55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d55"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d6_test(doc) -> [{userdata,[{""}]}];
 bitand_d6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d6"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d17_test(doc) -> [{userdata,[{""}]}];
 bitand_d17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d17"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d28_test(doc) -> [{userdata,[{""}]}];
 bitand_d28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d28"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d39_test(doc) -> [{userdata,[{""}]}];
 bitand_d39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d39"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d50_test(doc) -> [{userdata,[{""}]}];
 bitand_d50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d50"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d61_test(doc) -> [{userdata,[{""}]}];
 bitand_d61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d61"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d1_test(doc) -> [{userdata,[{""}]}];
 bitand_d1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d1"),
-  Expected="errors",
+  Expected="<cell><value>"++"errors"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d12_test(doc) -> [{userdata,[{""}]}];
 bitand_d12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d12"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d34_test(doc) -> [{userdata,[{""}]}];
 bitand_d34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d45_test(doc) -> [{userdata,[{""}]}];
 bitand_d45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d45"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d56_test(doc) -> [{userdata,[{""}]}];
 bitand_d56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d56"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d7_test(doc) -> [{userdata,[{""}]}];
 bitand_d7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d7"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d18_test(doc) -> [{userdata,[{""}]}];
 bitand_d18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d18"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d29_test(doc) -> [{userdata,[{""}]}];
 bitand_d29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d29"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d40_test(doc) -> [{userdata,[{""}]}];
 bitand_d40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d40"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d51_test(doc) -> [{userdata,[{""}]}];
 bitand_d51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d51"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d62_test(doc) -> [{userdata,[{""}]}];
 bitand_d62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d62"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d2_test(doc) -> [{userdata,[{""}]}];
 bitand_d2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d2"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d13_test(doc) -> [{userdata,[{""}]}];
 bitand_d13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d13"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d35_test(doc) -> [{userdata,[{""}]}];
 bitand_d35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d46_test(doc) -> [{userdata,[{""}]}];
 bitand_d46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d46"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d57_test(doc) -> [{userdata,[{""}]}];
 bitand_d57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d57"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d8_test(doc) -> [{userdata,[{""}]}];
 bitand_d8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d19_test(doc) -> [{userdata,[{""}]}];
 bitand_d19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d19"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d30_test(doc) -> [{userdata,[{""}]}];
 bitand_d30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d41_test(doc) -> [{userdata,[{""}]}];
 bitand_d41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d41"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d52_test(doc) -> [{userdata,[{""}]}];
 bitand_d52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d52"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d63_test(doc) -> [{userdata,[{""}]}];
 bitand_d63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d63"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d3_test(doc) -> [{userdata,[{""}]}];
 bitand_d3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d3"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d14_test(doc) -> [{userdata,[{""}]}];
 bitand_d14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d14"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d25_test(doc) -> [{userdata,[{""}]}];
 bitand_d25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d25"),
-  Expected="errors",
+  Expected="<cell><value>"++"errors"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d36_test(doc) -> [{userdata,[{""}]}];
 bitand_d36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d58_test(doc) -> [{userdata,[{""}]}];
 bitand_d58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d58"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d9_test(doc) -> [{userdata,[{""}]}];
 bitand_d9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d9"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d20_test(doc) -> [{userdata,[{""}]}];
 bitand_d20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d20"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d31_test(doc) -> [{userdata,[{""}]}];
 bitand_d31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d31"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d42_test(doc) -> [{userdata,[{""}]}];
 bitand_d42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d42"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d53_test(doc) -> [{userdata,[{""}]}];
 bitand_d53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d53"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d64_test(doc) -> [{userdata,[{""}]}];
 bitand_d64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d64"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d4_test(doc) -> [{userdata,[{""}]}];
 bitand_d4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d4"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d15_test(doc) -> [{userdata,[{""}]}];
 bitand_d15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d15"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d26_test(doc) -> [{userdata,[{""}]}];
 bitand_d26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d26"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d37_test(doc) -> [{userdata,[{""}]}];
 bitand_d37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d59_test(doc) -> [{userdata,[{""}]}];
 bitand_d59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d59"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d10_test(doc) -> [{userdata,[{""}]}];
 bitand_d10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d10"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d21_test(doc) -> [{userdata,[{""}]}];
 bitand_d21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d21"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d32_test(doc) -> [{userdata,[{""}]}];
 bitand_d32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d32"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d43_test(doc) -> [{userdata,[{""}]}];
 bitand_d43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d43"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_d54_test(doc) -> [{userdata,[{""}]}];
 bitand_d54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","d54"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o5_test(doc) -> [{userdata,[{""}]}];
 bitand_o5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o5"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o16_test(doc) -> [{userdata,[{""}]}];
 bitand_o16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o16"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o27_test(doc) -> [{userdata,[{""}]}];
 bitand_o27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o27"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o38_test(doc) -> [{userdata,[{""}]}];
 bitand_o38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o38"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o49_test(doc) -> [{userdata,[{""}]}];
 bitand_o49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o49"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o60_test(doc) -> [{userdata,[{""}]}];
 bitand_o60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o60"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o11_test(doc) -> [{userdata,[{""}]}];
 bitand_o11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o11"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o22_test(doc) -> [{userdata,[{""}]}];
 bitand_o22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o22"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o33_test(doc) -> [{userdata,[{""}]}];
 bitand_o33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o33"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o44_test(doc) -> [{userdata,[{""}]}];
 bitand_o44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o44"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o55_test(doc) -> [{userdata,[{""}]}];
 bitand_o55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o55"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o6_test(doc) -> [{userdata,[{""}]}];
 bitand_o6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o6"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o17_test(doc) -> [{userdata,[{""}]}];
 bitand_o17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o17"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o28_test(doc) -> [{userdata,[{""}]}];
 bitand_o28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o28"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o39_test(doc) -> [{userdata,[{""}]}];
 bitand_o39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o39"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o50_test(doc) -> [{userdata,[{""}]}];
 bitand_o50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o50"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o61_test(doc) -> [{userdata,[{""}]}];
 bitand_o61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o61"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o1_test(doc) -> [{userdata,[{""}]}];
 bitand_o1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o1"),
-  Expected="Logical",
+  Expected="<cell><value>"++"Logical"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o12_test(doc) -> [{userdata,[{""}]}];
 bitand_o12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o12"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o34_test(doc) -> [{userdata,[{""}]}];
 bitand_o34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o34"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o45_test(doc) -> [{userdata,[{""}]}];
 bitand_o45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o45"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o56_test(doc) -> [{userdata,[{""}]}];
 bitand_o56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o56"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o7_test(doc) -> [{userdata,[{""}]}];
 bitand_o7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o7"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o18_test(doc) -> [{userdata,[{""}]}];
 bitand_o18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o18"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o29_test(doc) -> [{userdata,[{""}]}];
 bitand_o29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o29"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o40_test(doc) -> [{userdata,[{""}]}];
 bitand_o40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o40"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o51_test(doc) -> [{userdata,[{""}]}];
 bitand_o51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o51"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o62_test(doc) -> [{userdata,[{""}]}];
 bitand_o62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o62"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o2_test(doc) -> [{userdata,[{""}]}];
 bitand_o2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o2"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o13_test(doc) -> [{userdata,[{""}]}];
 bitand_o13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o13"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o35_test(doc) -> [{userdata,[{""}]}];
 bitand_o35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o35"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o46_test(doc) -> [{userdata,[{""}]}];
 bitand_o46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o46"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o57_test(doc) -> [{userdata,[{""}]}];
 bitand_o57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o57"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o8_test(doc) -> [{userdata,[{""}]}];
 bitand_o8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o19_test(doc) -> [{userdata,[{""}]}];
 bitand_o19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o19"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o30_test(doc) -> [{userdata,[{""}]}];
 bitand_o30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o41_test(doc) -> [{userdata,[{""}]}];
 bitand_o41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o41"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o52_test(doc) -> [{userdata,[{""}]}];
 bitand_o52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o52"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o63_test(doc) -> [{userdata,[{""}]}];
 bitand_o63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o63"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o3_test(doc) -> [{userdata,[{""}]}];
 bitand_o3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o3"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o14_test(doc) -> [{userdata,[{""}]}];
 bitand_o14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o14"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o25_test(doc) -> [{userdata,[{""}]}];
 bitand_o25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o25"),
-  Expected="Logical",
+  Expected="<cell><value>"++"Logical"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o36_test(doc) -> [{userdata,[{""}]}];
 bitand_o36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o36"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o58_test(doc) -> [{userdata,[{""}]}];
 bitand_o58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o58"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o9_test(doc) -> [{userdata,[{""}]}];
 bitand_o9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o9"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o20_test(doc) -> [{userdata,[{""}]}];
 bitand_o20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o20"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o31_test(doc) -> [{userdata,[{""}]}];
 bitand_o31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o31"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o42_test(doc) -> [{userdata,[{""}]}];
 bitand_o42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o42"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o53_test(doc) -> [{userdata,[{""}]}];
 bitand_o53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o53"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o64_test(doc) -> [{userdata,[{""}]}];
 bitand_o64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o64"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o4_test(doc) -> [{userdata,[{""}]}];
 bitand_o4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o4"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o15_test(doc) -> [{userdata,[{""}]}];
 bitand_o15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o15"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o26_test(doc) -> [{userdata,[{""}]}];
 bitand_o26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o26"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o37_test(doc) -> [{userdata,[{""}]}];
 bitand_o37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o37"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o59_test(doc) -> [{userdata,[{""}]}];
 bitand_o59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o59"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o10_test(doc) -> [{userdata,[{""}]}];
 bitand_o10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o10"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o21_test(doc) -> [{userdata,[{""}]}];
 bitand_o21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o21"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o32_test(doc) -> [{userdata,[{""}]}];
 bitand_o32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o32"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o43_test(doc) -> [{userdata,[{""}]}];
 bitand_o43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o43"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_o54_test(doc) -> [{userdata,[{""}]}];
 bitand_o54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","o54"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e5_test(doc) -> [{userdata,[{""}]}];
 bitand_e5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e5"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e16_test(doc) -> [{userdata,[{""}]}];
 bitand_e16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e16"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e27_test(doc) -> [{userdata,[{""}]}];
 bitand_e27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e27"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e38_test(doc) -> [{userdata,[{""}]}];
 bitand_e38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e38"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e49_test(doc) -> [{userdata,[{""}]}];
 bitand_e49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e49"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e60_test(doc) -> [{userdata,[{""}]}];
 bitand_e60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e60"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e11_test(doc) -> [{userdata,[{""}]}];
 bitand_e11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e11"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e22_test(doc) -> [{userdata,[{""}]}];
 bitand_e22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e22"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e33_test(doc) -> [{userdata,[{""}]}];
 bitand_e33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e33"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e44_test(doc) -> [{userdata,[{""}]}];
 bitand_e44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e44"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e55_test(doc) -> [{userdata,[{""}]}];
 bitand_e55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e55"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e6_test(doc) -> [{userdata,[{""}]}];
 bitand_e6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e6"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e17_test(doc) -> [{userdata,[{""}]}];
 bitand_e17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e17"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e28_test(doc) -> [{userdata,[{""}]}];
 bitand_e28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e28"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e39_test(doc) -> [{userdata,[{""}]}];
 bitand_e39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e39"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e50_test(doc) -> [{userdata,[{""}]}];
 bitand_e50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e50"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e61_test(doc) -> [{userdata,[{""}]}];
 bitand_e61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e61"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e1_test(doc) -> [{userdata,[{""}]}];
 bitand_e1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e1"),
-  Expected="errors",
+  Expected="<cell><value>"++"errors"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e12_test(doc) -> [{userdata,[{""}]}];
 bitand_e12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e12"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e34_test(doc) -> [{userdata,[{""}]}];
 bitand_e34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e34"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e45_test(doc) -> [{userdata,[{""}]}];
 bitand_e45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e45"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e56_test(doc) -> [{userdata,[{""}]}];
 bitand_e56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e56"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e7_test(doc) -> [{userdata,[{""}]}];
 bitand_e7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e7"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e18_test(doc) -> [{userdata,[{""}]}];
 bitand_e18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e18"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e29_test(doc) -> [{userdata,[{""}]}];
 bitand_e29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e29"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e40_test(doc) -> [{userdata,[{""}]}];
 bitand_e40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e40"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e51_test(doc) -> [{userdata,[{""}]}];
 bitand_e51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e51"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e62_test(doc) -> [{userdata,[{""}]}];
 bitand_e62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e62"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e2_test(doc) -> [{userdata,[{""}]}];
 bitand_e2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e2"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e13_test(doc) -> [{userdata,[{""}]}];
 bitand_e13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e13"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e35_test(doc) -> [{userdata,[{""}]}];
 bitand_e35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e35"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e46_test(doc) -> [{userdata,[{""}]}];
 bitand_e46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e46"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e57_test(doc) -> [{userdata,[{""}]}];
 bitand_e57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e57"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e8_test(doc) -> [{userdata,[{""}]}];
 bitand_e8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e19_test(doc) -> [{userdata,[{""}]}];
 bitand_e19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e19"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e30_test(doc) -> [{userdata,[{""}]}];
 bitand_e30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e41_test(doc) -> [{userdata,[{""}]}];
 bitand_e41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e41"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e52_test(doc) -> [{userdata,[{""}]}];
 bitand_e52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e52"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e63_test(doc) -> [{userdata,[{""}]}];
 bitand_e63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e63"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e3_test(doc) -> [{userdata,[{""}]}];
 bitand_e3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e3"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e14_test(doc) -> [{userdata,[{""}]}];
 bitand_e14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e14"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e25_test(doc) -> [{userdata,[{""}]}];
 bitand_e25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e25"),
-  Expected="errors",
+  Expected="<cell><value>"++"errors"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e36_test(doc) -> [{userdata,[{""}]}];
 bitand_e36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e36"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e58_test(doc) -> [{userdata,[{""}]}];
 bitand_e58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e58"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e9_test(doc) -> [{userdata,[{""}]}];
 bitand_e9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e9"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e20_test(doc) -> [{userdata,[{""}]}];
 bitand_e20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e20"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e31_test(doc) -> [{userdata,[{""}]}];
 bitand_e31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e31"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e42_test(doc) -> [{userdata,[{""}]}];
 bitand_e42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e42"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e53_test(doc) -> [{userdata,[{""}]}];
 bitand_e53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e53"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e64_test(doc) -> [{userdata,[{""}]}];
 bitand_e64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e64"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e4_test(doc) -> [{userdata,[{""}]}];
 bitand_e4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e4"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e15_test(doc) -> [{userdata,[{""}]}];
 bitand_e15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e15"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e26_test(doc) -> [{userdata,[{""}]}];
 bitand_e26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e26"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e37_test(doc) -> [{userdata,[{""}]}];
 bitand_e37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e37"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e59_test(doc) -> [{userdata,[{""}]}];
 bitand_e59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e59"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e10_test(doc) -> [{userdata,[{""}]}];
 bitand_e10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e10"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e21_test(doc) -> [{userdata,[{""}]}];
 bitand_e21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e21"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e32_test(doc) -> [{userdata,[{""}]}];
 bitand_e32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e32"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e43_test(doc) -> [{userdata,[{""}]}];
 bitand_e43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e43"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_e54_test(doc) -> [{userdata,[{""}]}];
 bitand_e54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","e54"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p5_test(doc) -> [{userdata,[{""}]}];
 bitand_p5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p5"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p16_test(doc) -> [{userdata,[{""}]}];
 bitand_p16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p16"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p27_test(doc) -> [{userdata,[{""}]}];
 bitand_p27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p27"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p38_test(doc) -> [{userdata,[{""}]}];
 bitand_p38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p38"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p49_test(doc) -> [{userdata,[{""}]}];
 bitand_p49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p49"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p60_test(doc) -> [{userdata,[{""}]}];
 bitand_p60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p60"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p11_test(doc) -> [{userdata,[{""}]}];
 bitand_p11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p11"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p22_test(doc) -> [{userdata,[{""}]}];
 bitand_p22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p22"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p33_test(doc) -> [{userdata,[{""}]}];
 bitand_p33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p33"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p44_test(doc) -> [{userdata,[{""}]}];
 bitand_p44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p44"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p55_test(doc) -> [{userdata,[{""}]}];
 bitand_p55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p55"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p6_test(doc) -> [{userdata,[{""}]}];
 bitand_p6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p6"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p17_test(doc) -> [{userdata,[{""}]}];
 bitand_p17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p17"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p28_test(doc) -> [{userdata,[{""}]}];
 bitand_p28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p28"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p39_test(doc) -> [{userdata,[{""}]}];
 bitand_p39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p39"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p50_test(doc) -> [{userdata,[{""}]}];
 bitand_p50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p50"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p61_test(doc) -> [{userdata,[{""}]}];
 bitand_p61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p61"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p1_test(doc) -> [{userdata,[{""}]}];
 bitand_p1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p1"),
-  Expected="Logical",
+  Expected="<cell><value>"++"Logical"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p12_test(doc) -> [{userdata,[{""}]}];
 bitand_p12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p12"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p34_test(doc) -> [{userdata,[{""}]}];
 bitand_p34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p34"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p45_test(doc) -> [{userdata,[{""}]}];
 bitand_p45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p45"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p56_test(doc) -> [{userdata,[{""}]}];
 bitand_p56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p56"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p7_test(doc) -> [{userdata,[{""}]}];
 bitand_p7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p7"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p18_test(doc) -> [{userdata,[{""}]}];
 bitand_p18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p18"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p29_test(doc) -> [{userdata,[{""}]}];
 bitand_p29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p29"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p40_test(doc) -> [{userdata,[{""}]}];
 bitand_p40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p40"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p51_test(doc) -> [{userdata,[{""}]}];
 bitand_p51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p51"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p62_test(doc) -> [{userdata,[{""}]}];
 bitand_p62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p62"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p2_test(doc) -> [{userdata,[{""}]}];
 bitand_p2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p2"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p13_test(doc) -> [{userdata,[{""}]}];
 bitand_p13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p13"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p35_test(doc) -> [{userdata,[{""}]}];
 bitand_p35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p35"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p46_test(doc) -> [{userdata,[{""}]}];
 bitand_p46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p46"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p57_test(doc) -> [{userdata,[{""}]}];
 bitand_p57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p57"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p8_test(doc) -> [{userdata,[{""}]}];
 bitand_p8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p19_test(doc) -> [{userdata,[{""}]}];
 bitand_p19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p19"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p30_test(doc) -> [{userdata,[{""}]}];
 bitand_p30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p41_test(doc) -> [{userdata,[{""}]}];
 bitand_p41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p41"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p52_test(doc) -> [{userdata,[{""}]}];
 bitand_p52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p52"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p63_test(doc) -> [{userdata,[{""}]}];
 bitand_p63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p63"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p3_test(doc) -> [{userdata,[{""}]}];
 bitand_p3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p3"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p14_test(doc) -> [{userdata,[{""}]}];
 bitand_p14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p14"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p25_test(doc) -> [{userdata,[{""}]}];
 bitand_p25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p25"),
-  Expected="Logical",
+  Expected="<cell><value>"++"Logical"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p36_test(doc) -> [{userdata,[{""}]}];
 bitand_p36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p36"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p58_test(doc) -> [{userdata,[{""}]}];
 bitand_p58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p58"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p9_test(doc) -> [{userdata,[{""}]}];
 bitand_p9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p9"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p20_test(doc) -> [{userdata,[{""}]}];
 bitand_p20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p20"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p31_test(doc) -> [{userdata,[{""}]}];
 bitand_p31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p31"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p42_test(doc) -> [{userdata,[{""}]}];
 bitand_p42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p42"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p53_test(doc) -> [{userdata,[{""}]}];
 bitand_p53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p53"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p64_test(doc) -> [{userdata,[{""}]}];
 bitand_p64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p64"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p4_test(doc) -> [{userdata,[{""}]}];
 bitand_p4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p4"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p15_test(doc) -> [{userdata,[{""}]}];
 bitand_p15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p15"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p26_test(doc) -> [{userdata,[{""}]}];
 bitand_p26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p26"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p37_test(doc) -> [{userdata,[{""}]}];
 bitand_p37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p37"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p59_test(doc) -> [{userdata,[{""}]}];
 bitand_p59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p59"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p10_test(doc) -> [{userdata,[{""}]}];
 bitand_p10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p10"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p21_test(doc) -> [{userdata,[{""}]}];
 bitand_p21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p21"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p32_test(doc) -> [{userdata,[{""}]}];
 bitand_p32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p32"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p43_test(doc) -> [{userdata,[{""}]}];
 bitand_p43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p43"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_p54_test(doc) -> [{userdata,[{""}]}];
 bitand_p54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","p54"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f5_test(doc) -> [{userdata,[{""}]}];
 bitand_f5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f5"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f16_test(doc) -> [{userdata,[{""}]}];
 bitand_f16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f16"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f27_test(doc) -> [{userdata,[{""}]}];
 bitand_f27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f27"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f38_test(doc) -> [{userdata,[{""}]}];
 bitand_f38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f38"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f49_test(doc) -> [{userdata,[{""}]}];
 bitand_f49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f49"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f60_test(doc) -> [{userdata,[{""}]}];
 bitand_f60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f60"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f11_test(doc) -> [{userdata,[{""}]}];
 bitand_f11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f11"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f22_test(doc) -> [{userdata,[{""}]}];
 bitand_f22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f22"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f33_test(doc) -> [{userdata,[{""}]}];
 bitand_f33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f33"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f44_test(doc) -> [{userdata,[{""}]}];
 bitand_f44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f44"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f55_test(doc) -> [{userdata,[{""}]}];
 bitand_f55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f6_test(doc) -> [{userdata,[{""}]}];
 bitand_f6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f6"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f17_test(doc) -> [{userdata,[{""}]}];
 bitand_f17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f17"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f28_test(doc) -> [{userdata,[{""}]}];
 bitand_f28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f28"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f39_test(doc) -> [{userdata,[{""}]}];
 bitand_f39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f39"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f50_test(doc) -> [{userdata,[{""}]}];
 bitand_f50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f50"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f61_test(doc) -> [{userdata,[{""}]}];
 bitand_f61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f61"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f1_test(doc) -> [{userdata,[{""}]}];
 bitand_f1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f1"),
-  Expected="errors",
+  Expected="<cell><value>"++"errors"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f12_test(doc) -> [{userdata,[{""}]}];
 bitand_f12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f12"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f34_test(doc) -> [{userdata,[{""}]}];
 bitand_f34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f34"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f45_test(doc) -> [{userdata,[{""}]}];
 bitand_f45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f45"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f56_test(doc) -> [{userdata,[{""}]}];
 bitand_f56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f7_test(doc) -> [{userdata,[{""}]}];
 bitand_f7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f7"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f18_test(doc) -> [{userdata,[{""}]}];
 bitand_f18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f18"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f29_test(doc) -> [{userdata,[{""}]}];
 bitand_f29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f29"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f40_test(doc) -> [{userdata,[{""}]}];
 bitand_f40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f40"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f51_test(doc) -> [{userdata,[{""}]}];
 bitand_f51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f51"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f62_test(doc) -> [{userdata,[{""}]}];
 bitand_f62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f62"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f2_test(doc) -> [{userdata,[{""}]}];
 bitand_f2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f2"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f13_test(doc) -> [{userdata,[{""}]}];
 bitand_f13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f13"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f35_test(doc) -> [{userdata,[{""}]}];
 bitand_f35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f35"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f46_test(doc) -> [{userdata,[{""}]}];
 bitand_f46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f46"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f57_test(doc) -> [{userdata,[{""}]}];
 bitand_f57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f8_test(doc) -> [{userdata,[{""}]}];
 bitand_f8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f19_test(doc) -> [{userdata,[{""}]}];
 bitand_f19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f19"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f30_test(doc) -> [{userdata,[{""}]}];
 bitand_f30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f41_test(doc) -> [{userdata,[{""}]}];
 bitand_f41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f41"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f52_test(doc) -> [{userdata,[{""}]}];
 bitand_f52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f63_test(doc) -> [{userdata,[{""}]}];
 bitand_f63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f63"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f3_test(doc) -> [{userdata,[{""}]}];
 bitand_f3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f3"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f14_test(doc) -> [{userdata,[{""}]}];
 bitand_f14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f14"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f25_test(doc) -> [{userdata,[{""}]}];
 bitand_f25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f25"),
-  Expected="errors",
+  Expected="<cell><value>"++"errors"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f36_test(doc) -> [{userdata,[{""}]}];
 bitand_f36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f36"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f58_test(doc) -> [{userdata,[{""}]}];
 bitand_f58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f9_test(doc) -> [{userdata,[{""}]}];
 bitand_f9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f9"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f20_test(doc) -> [{userdata,[{""}]}];
 bitand_f20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f20"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f31_test(doc) -> [{userdata,[{""}]}];
 bitand_f31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f31"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f42_test(doc) -> [{userdata,[{""}]}];
 bitand_f42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f42"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f53_test(doc) -> [{userdata,[{""}]}];
 bitand_f53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f64_test(doc) -> [{userdata,[{""}]}];
 bitand_f64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f64"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f4_test(doc) -> [{userdata,[{""}]}];
 bitand_f4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f4"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f15_test(doc) -> [{userdata,[{""}]}];
 bitand_f15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f15"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f26_test(doc) -> [{userdata,[{""}]}];
 bitand_f26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f26"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f37_test(doc) -> [{userdata,[{""}]}];
 bitand_f37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f37"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f59_test(doc) -> [{userdata,[{""}]}];
 bitand_f59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f59"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f10_test(doc) -> [{userdata,[{""}]}];
 bitand_f10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f10"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f21_test(doc) -> [{userdata,[{""}]}];
 bitand_f21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f21"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f32_test(doc) -> [{userdata,[{""}]}];
 bitand_f32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f32"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f43_test(doc) -> [{userdata,[{""}]}];
 bitand_f43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f43"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_f54_test(doc) -> [{userdata,[{""}]}];
 bitand_f54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","f54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q5_test(doc) -> [{userdata,[{""}]}];
 bitand_q5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q5"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q16_test(doc) -> [{userdata,[{""}]}];
 bitand_q16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q16"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q27_test(doc) -> [{userdata,[{""}]}];
 bitand_q27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q27"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q38_test(doc) -> [{userdata,[{""}]}];
 bitand_q38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q38"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q49_test(doc) -> [{userdata,[{""}]}];
 bitand_q49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q49"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q60_test(doc) -> [{userdata,[{""}]}];
 bitand_q60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q60"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q11_test(doc) -> [{userdata,[{""}]}];
 bitand_q11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q11"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q22_test(doc) -> [{userdata,[{""}]}];
 bitand_q22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q22"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q33_test(doc) -> [{userdata,[{""}]}];
 bitand_q33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q33"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q44_test(doc) -> [{userdata,[{""}]}];
 bitand_q44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q44"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q55_test(doc) -> [{userdata,[{""}]}];
 bitand_q55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q55"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q6_test(doc) -> [{userdata,[{""}]}];
 bitand_q6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q6"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q17_test(doc) -> [{userdata,[{""}]}];
 bitand_q17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q17"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q28_test(doc) -> [{userdata,[{""}]}];
 bitand_q28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q28"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q39_test(doc) -> [{userdata,[{""}]}];
 bitand_q39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q39"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q50_test(doc) -> [{userdata,[{""}]}];
 bitand_q50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q50"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q61_test(doc) -> [{userdata,[{""}]}];
 bitand_q61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q61"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q1_test(doc) -> [{userdata,[{""}]}];
 bitand_q1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q1"),
-  Expected="Range Row",
+  Expected="<cell><value>"++"Range Row"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q12_test(doc) -> [{userdata,[{""}]}];
 bitand_q12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q12"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q34_test(doc) -> [{userdata,[{""}]}];
 bitand_q34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q45_test(doc) -> [{userdata,[{""}]}];
 bitand_q45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q45"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q56_test(doc) -> [{userdata,[{""}]}];
 bitand_q56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q56"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q7_test(doc) -> [{userdata,[{""}]}];
 bitand_q7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q7"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q18_test(doc) -> [{userdata,[{""}]}];
 bitand_q18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q18"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q29_test(doc) -> [{userdata,[{""}]}];
 bitand_q29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q29"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q40_test(doc) -> [{userdata,[{""}]}];
 bitand_q40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q40"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q51_test(doc) -> [{userdata,[{""}]}];
 bitand_q51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q51"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q62_test(doc) -> [{userdata,[{""}]}];
 bitand_q62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q62"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q2_test(doc) -> [{userdata,[{""}]}];
 bitand_q2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q2"),
-  Expected="X3:Y3",
+  Expected="<cell><value>"++"X3:Y3"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q13_test(doc) -> [{userdata,[{""}]}];
 bitand_q13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q13"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q35_test(doc) -> [{userdata,[{""}]}];
 bitand_q35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q46_test(doc) -> [{userdata,[{""}]}];
 bitand_q46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q46"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q57_test(doc) -> [{userdata,[{""}]}];
 bitand_q57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q57"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q8_test(doc) -> [{userdata,[{""}]}];
 bitand_q8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q19_test(doc) -> [{userdata,[{""}]}];
 bitand_q19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q19"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q30_test(doc) -> [{userdata,[{""}]}];
 bitand_q30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q41_test(doc) -> [{userdata,[{""}]}];
 bitand_q41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q41"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q52_test(doc) -> [{userdata,[{""}]}];
 bitand_q52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q52"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q63_test(doc) -> [{userdata,[{""}]}];
 bitand_q63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q63"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q3_test(doc) -> [{userdata,[{""}]}];
 bitand_q3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q3"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q14_test(doc) -> [{userdata,[{""}]}];
 bitand_q14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q14"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q25_test(doc) -> [{userdata,[{""}]}];
 bitand_q25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q25"),
-  Expected="Range Row",
+  Expected="<cell><value>"++"Range Row"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q36_test(doc) -> [{userdata,[{""}]}];
 bitand_q36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q58_test(doc) -> [{userdata,[{""}]}];
 bitand_q58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q58"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q9_test(doc) -> [{userdata,[{""}]}];
 bitand_q9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q9"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q20_test(doc) -> [{userdata,[{""}]}];
 bitand_q20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q20"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q31_test(doc) -> [{userdata,[{""}]}];
 bitand_q31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q31"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q42_test(doc) -> [{userdata,[{""}]}];
 bitand_q42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q42"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q53_test(doc) -> [{userdata,[{""}]}];
 bitand_q53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q53"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q64_test(doc) -> [{userdata,[{""}]}];
 bitand_q64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q64"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q4_test(doc) -> [{userdata,[{""}]}];
 bitand_q4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q4"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q15_test(doc) -> [{userdata,[{""}]}];
 bitand_q15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q15"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q26_test(doc) -> [{userdata,[{""}]}];
 bitand_q26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q26"),
-  Expected="X3:Y3",
+  Expected="<cell><value>"++"X3:Y3"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q37_test(doc) -> [{userdata,[{""}]}];
 bitand_q37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q59_test(doc) -> [{userdata,[{""}]}];
 bitand_q59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q59"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q10_test(doc) -> [{userdata,[{""}]}];
 bitand_q10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q10"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q21_test(doc) -> [{userdata,[{""}]}];
 bitand_q21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q21"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q32_test(doc) -> [{userdata,[{""}]}];
 bitand_q32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q32"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q43_test(doc) -> [{userdata,[{""}]}];
 bitand_q43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q43"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_q54_test(doc) -> [{userdata,[{""}]}];
 bitand_q54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","q54"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g5_test(doc) -> [{userdata,[{""}]}];
 bitand_g5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g5"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g16_test(doc) -> [{userdata,[{""}]}];
 bitand_g16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g16"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g27_test(doc) -> [{userdata,[{""}]}];
 bitand_g27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g27"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g38_test(doc) -> [{userdata,[{""}]}];
 bitand_g38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g38"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g49_test(doc) -> [{userdata,[{""}]}];
 bitand_g49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g49"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g60_test(doc) -> [{userdata,[{""}]}];
 bitand_g60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g60"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g11_test(doc) -> [{userdata,[{""}]}];
 bitand_g11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g11"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g22_test(doc) -> [{userdata,[{""}]}];
 bitand_g22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g22"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g33_test(doc) -> [{userdata,[{""}]}];
 bitand_g33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g33"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g44_test(doc) -> [{userdata,[{""}]}];
 bitand_g44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g44"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g55_test(doc) -> [{userdata,[{""}]}];
 bitand_g55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g55"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g6_test(doc) -> [{userdata,[{""}]}];
 bitand_g6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g6"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g17_test(doc) -> [{userdata,[{""}]}];
 bitand_g17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g17"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g28_test(doc) -> [{userdata,[{""}]}];
 bitand_g28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g28"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g39_test(doc) -> [{userdata,[{""}]}];
 bitand_g39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g39"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g50_test(doc) -> [{userdata,[{""}]}];
 bitand_g50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g50"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g61_test(doc) -> [{userdata,[{""}]}];
 bitand_g61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g61"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g1_test(doc) -> [{userdata,[{""}]}];
 bitand_g1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g1"),
-  Expected="errors",
+  Expected="<cell><value>"++"errors"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g12_test(doc) -> [{userdata,[{""}]}];
 bitand_g12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g12"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g34_test(doc) -> [{userdata,[{""}]}];
 bitand_g34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g34"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g45_test(doc) -> [{userdata,[{""}]}];
 bitand_g45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g45"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g56_test(doc) -> [{userdata,[{""}]}];
 bitand_g56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g56"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g7_test(doc) -> [{userdata,[{""}]}];
 bitand_g7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g7"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g18_test(doc) -> [{userdata,[{""}]}];
 bitand_g18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g18"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g29_test(doc) -> [{userdata,[{""}]}];
 bitand_g29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g29"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g40_test(doc) -> [{userdata,[{""}]}];
 bitand_g40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g40"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g51_test(doc) -> [{userdata,[{""}]}];
 bitand_g51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g51"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g62_test(doc) -> [{userdata,[{""}]}];
 bitand_g62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g62"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g2_test(doc) -> [{userdata,[{""}]}];
 bitand_g2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g2"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g13_test(doc) -> [{userdata,[{""}]}];
 bitand_g13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g13"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g35_test(doc) -> [{userdata,[{""}]}];
 bitand_g35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g35"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g46_test(doc) -> [{userdata,[{""}]}];
 bitand_g46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g46"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g57_test(doc) -> [{userdata,[{""}]}];
 bitand_g57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g57"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g8_test(doc) -> [{userdata,[{""}]}];
 bitand_g8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g19_test(doc) -> [{userdata,[{""}]}];
 bitand_g19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g19"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g30_test(doc) -> [{userdata,[{""}]}];
 bitand_g30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g41_test(doc) -> [{userdata,[{""}]}];
 bitand_g41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g41"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g52_test(doc) -> [{userdata,[{""}]}];
 bitand_g52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g52"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g63_test(doc) -> [{userdata,[{""}]}];
 bitand_g63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g63"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g3_test(doc) -> [{userdata,[{""}]}];
 bitand_g3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g3"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g14_test(doc) -> [{userdata,[{""}]}];
 bitand_g14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g14"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g25_test(doc) -> [{userdata,[{""}]}];
 bitand_g25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g25"),
-  Expected="errors",
+  Expected="<cell><value>"++"errors"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g36_test(doc) -> [{userdata,[{""}]}];
 bitand_g36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g36"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g58_test(doc) -> [{userdata,[{""}]}];
 bitand_g58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g58"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g9_test(doc) -> [{userdata,[{""}]}];
 bitand_g9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g9"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g20_test(doc) -> [{userdata,[{""}]}];
 bitand_g20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g20"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g31_test(doc) -> [{userdata,[{""}]}];
 bitand_g31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g31"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g42_test(doc) -> [{userdata,[{""}]}];
 bitand_g42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g42"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g53_test(doc) -> [{userdata,[{""}]}];
 bitand_g53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g53"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g64_test(doc) -> [{userdata,[{""}]}];
 bitand_g64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g64"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g4_test(doc) -> [{userdata,[{""}]}];
 bitand_g4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g4"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g15_test(doc) -> [{userdata,[{""}]}];
 bitand_g15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g15"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g26_test(doc) -> [{userdata,[{""}]}];
 bitand_g26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g26"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g37_test(doc) -> [{userdata,[{""}]}];
 bitand_g37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g37"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g59_test(doc) -> [{userdata,[{""}]}];
 bitand_g59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g59"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g10_test(doc) -> [{userdata,[{""}]}];
 bitand_g10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g10"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g21_test(doc) -> [{userdata,[{""}]}];
 bitand_g21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g21"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g32_test(doc) -> [{userdata,[{""}]}];
 bitand_g32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g32"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g43_test(doc) -> [{userdata,[{""}]}];
 bitand_g43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g43"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_g54_test(doc) -> [{userdata,[{""}]}];
 bitand_g54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","g54"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r5_test(doc) -> [{userdata,[{""}]}];
 bitand_r5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r5"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r16_test(doc) -> [{userdata,[{""}]}];
 bitand_r16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r16"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r27_test(doc) -> [{userdata,[{""}]}];
 bitand_r27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r27"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r38_test(doc) -> [{userdata,[{""}]}];
 bitand_r38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r38"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r49_test(doc) -> [{userdata,[{""}]}];
 bitand_r49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r49"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r60_test(doc) -> [{userdata,[{""}]}];
 bitand_r60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r60"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r11_test(doc) -> [{userdata,[{""}]}];
 bitand_r11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r11"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r22_test(doc) -> [{userdata,[{""}]}];
 bitand_r22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r22"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r33_test(doc) -> [{userdata,[{""}]}];
 bitand_r33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r33"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r44_test(doc) -> [{userdata,[{""}]}];
 bitand_r44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r44"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r55_test(doc) -> [{userdata,[{""}]}];
 bitand_r55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r55"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r6_test(doc) -> [{userdata,[{""}]}];
 bitand_r6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r6"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r17_test(doc) -> [{userdata,[{""}]}];
 bitand_r17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r17"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r28_test(doc) -> [{userdata,[{""}]}];
 bitand_r28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r28"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r39_test(doc) -> [{userdata,[{""}]}];
 bitand_r39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r39"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r50_test(doc) -> [{userdata,[{""}]}];
 bitand_r50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r50"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r61_test(doc) -> [{userdata,[{""}]}];
 bitand_r61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r61"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r1_test(doc) -> [{userdata,[{""}]}];
 bitand_r1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r1"),
-  Expected="Range Row",
+  Expected="<cell><value>"++"Range Row"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r12_test(doc) -> [{userdata,[{""}]}];
 bitand_r12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r12"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r34_test(doc) -> [{userdata,[{""}]}];
 bitand_r34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r45_test(doc) -> [{userdata,[{""}]}];
 bitand_r45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r45"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r56_test(doc) -> [{userdata,[{""}]}];
 bitand_r56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r56"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r7_test(doc) -> [{userdata,[{""}]}];
 bitand_r7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r7"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r18_test(doc) -> [{userdata,[{""}]}];
 bitand_r18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r18"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r29_test(doc) -> [{userdata,[{""}]}];
 bitand_r29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r29"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r40_test(doc) -> [{userdata,[{""}]}];
 bitand_r40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r40"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r51_test(doc) -> [{userdata,[{""}]}];
 bitand_r51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r51"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r62_test(doc) -> [{userdata,[{""}]}];
 bitand_r62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r62"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r2_test(doc) -> [{userdata,[{""}]}];
 bitand_r2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r2"),
-  Expected="X3:AA3",
+  Expected="<cell><value>"++"X3:AA3"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r13_test(doc) -> [{userdata,[{""}]}];
 bitand_r13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r13"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r35_test(doc) -> [{userdata,[{""}]}];
 bitand_r35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r46_test(doc) -> [{userdata,[{""}]}];
 bitand_r46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r46"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r57_test(doc) -> [{userdata,[{""}]}];
 bitand_r57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r57"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r8_test(doc) -> [{userdata,[{""}]}];
 bitand_r8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r19_test(doc) -> [{userdata,[{""}]}];
 bitand_r19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r19"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r30_test(doc) -> [{userdata,[{""}]}];
 bitand_r30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r41_test(doc) -> [{userdata,[{""}]}];
 bitand_r41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r41"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r52_test(doc) -> [{userdata,[{""}]}];
 bitand_r52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r52"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r63_test(doc) -> [{userdata,[{""}]}];
 bitand_r63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r63"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r3_test(doc) -> [{userdata,[{""}]}];
 bitand_r3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r3"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r14_test(doc) -> [{userdata,[{""}]}];
 bitand_r14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r14"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r25_test(doc) -> [{userdata,[{""}]}];
 bitand_r25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r25"),
-  Expected="Range Row",
+  Expected="<cell><value>"++"Range Row"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r36_test(doc) -> [{userdata,[{""}]}];
 bitand_r36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r58_test(doc) -> [{userdata,[{""}]}];
 bitand_r58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r58"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r9_test(doc) -> [{userdata,[{""}]}];
 bitand_r9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r9"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r20_test(doc) -> [{userdata,[{""}]}];
 bitand_r20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r20"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r31_test(doc) -> [{userdata,[{""}]}];
 bitand_r31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r31"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r42_test(doc) -> [{userdata,[{""}]}];
 bitand_r42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r42"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r53_test(doc) -> [{userdata,[{""}]}];
 bitand_r53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r53"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r64_test(doc) -> [{userdata,[{""}]}];
 bitand_r64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r64"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r4_test(doc) -> [{userdata,[{""}]}];
 bitand_r4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r4"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r15_test(doc) -> [{userdata,[{""}]}];
 bitand_r15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r15"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r26_test(doc) -> [{userdata,[{""}]}];
 bitand_r26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r26"),
-  Expected="X3:AA3",
+  Expected="<cell><value>"++"X3:AA3"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r37_test(doc) -> [{userdata,[{""}]}];
 bitand_r37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r59_test(doc) -> [{userdata,[{""}]}];
 bitand_r59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r59"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r10_test(doc) -> [{userdata,[{""}]}];
 bitand_r10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r10"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r21_test(doc) -> [{userdata,[{""}]}];
 bitand_r21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r21"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r32_test(doc) -> [{userdata,[{""}]}];
 bitand_r32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r32"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r43_test(doc) -> [{userdata,[{""}]}];
 bitand_r43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r43"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_r54_test(doc) -> [{userdata,[{""}]}];
 bitand_r54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","r54"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h5_test(doc) -> [{userdata,[{""}]}];
 bitand_h5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h5"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h16_test(doc) -> [{userdata,[{""}]}];
 bitand_h16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h16"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h27_test(doc) -> [{userdata,[{""}]}];
 bitand_h27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h27"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h38_test(doc) -> [{userdata,[{""}]}];
 bitand_h38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h38"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h49_test(doc) -> [{userdata,[{""}]}];
 bitand_h49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h49"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h60_test(doc) -> [{userdata,[{""}]}];
 bitand_h60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h60"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h11_test(doc) -> [{userdata,[{""}]}];
 bitand_h11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h11"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h22_test(doc) -> [{userdata,[{""}]}];
 bitand_h22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h22"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h33_test(doc) -> [{userdata,[{""}]}];
 bitand_h33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h33"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h44_test(doc) -> [{userdata,[{""}]}];
 bitand_h44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h44"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h55_test(doc) -> [{userdata,[{""}]}];
 bitand_h55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h55"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h6_test(doc) -> [{userdata,[{""}]}];
 bitand_h6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h6"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h17_test(doc) -> [{userdata,[{""}]}];
 bitand_h17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h17"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h28_test(doc) -> [{userdata,[{""}]}];
 bitand_h28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h28"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h39_test(doc) -> [{userdata,[{""}]}];
 bitand_h39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h39"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h50_test(doc) -> [{userdata,[{""}]}];
 bitand_h50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h50"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h61_test(doc) -> [{userdata,[{""}]}];
 bitand_h61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h61"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h1_test(doc) -> [{userdata,[{""}]}];
 bitand_h1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h1"),
-  Expected="errors",
+  Expected="<cell><value>"++"errors"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h12_test(doc) -> [{userdata,[{""}]}];
 bitand_h12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h12"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h34_test(doc) -> [{userdata,[{""}]}];
 bitand_h34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h34"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h45_test(doc) -> [{userdata,[{""}]}];
 bitand_h45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h45"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h56_test(doc) -> [{userdata,[{""}]}];
 bitand_h56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h56"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h7_test(doc) -> [{userdata,[{""}]}];
 bitand_h7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h7"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h18_test(doc) -> [{userdata,[{""}]}];
 bitand_h18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h18"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h29_test(doc) -> [{userdata,[{""}]}];
 bitand_h29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h29"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h40_test(doc) -> [{userdata,[{""}]}];
 bitand_h40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h40"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h51_test(doc) -> [{userdata,[{""}]}];
 bitand_h51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h51"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h62_test(doc) -> [{userdata,[{""}]}];
 bitand_h62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h62"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h2_test(doc) -> [{userdata,[{""}]}];
 bitand_h2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h2"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h13_test(doc) -> [{userdata,[{""}]}];
 bitand_h13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h13"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h35_test(doc) -> [{userdata,[{""}]}];
 bitand_h35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h35"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h46_test(doc) -> [{userdata,[{""}]}];
 bitand_h46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h46"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h57_test(doc) -> [{userdata,[{""}]}];
 bitand_h57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h57"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h8_test(doc) -> [{userdata,[{""}]}];
 bitand_h8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h19_test(doc) -> [{userdata,[{""}]}];
 bitand_h19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h19"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h30_test(doc) -> [{userdata,[{""}]}];
 bitand_h30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h41_test(doc) -> [{userdata,[{""}]}];
 bitand_h41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h41"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h52_test(doc) -> [{userdata,[{""}]}];
 bitand_h52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h52"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h63_test(doc) -> [{userdata,[{""}]}];
 bitand_h63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h63"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h3_test(doc) -> [{userdata,[{""}]}];
 bitand_h3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h3"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h14_test(doc) -> [{userdata,[{""}]}];
 bitand_h14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h14"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h25_test(doc) -> [{userdata,[{""}]}];
 bitand_h25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h25"),
-  Expected="errors",
+  Expected="<cell><value>"++"errors"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h36_test(doc) -> [{userdata,[{""}]}];
 bitand_h36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h36"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h58_test(doc) -> [{userdata,[{""}]}];
 bitand_h58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h58"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h9_test(doc) -> [{userdata,[{""}]}];
 bitand_h9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h9"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h20_test(doc) -> [{userdata,[{""}]}];
 bitand_h20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h20"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h31_test(doc) -> [{userdata,[{""}]}];
 bitand_h31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h31"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h42_test(doc) -> [{userdata,[{""}]}];
 bitand_h42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h42"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h53_test(doc) -> [{userdata,[{""}]}];
 bitand_h53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h53"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h64_test(doc) -> [{userdata,[{""}]}];
 bitand_h64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h64"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h4_test(doc) -> [{userdata,[{""}]}];
 bitand_h4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h4"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h15_test(doc) -> [{userdata,[{""}]}];
 bitand_h15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h15"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h26_test(doc) -> [{userdata,[{""}]}];
 bitand_h26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h26"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h37_test(doc) -> [{userdata,[{""}]}];
 bitand_h37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h37"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h59_test(doc) -> [{userdata,[{""}]}];
 bitand_h59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h59"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h10_test(doc) -> [{userdata,[{""}]}];
 bitand_h10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h10"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h21_test(doc) -> [{userdata,[{""}]}];
 bitand_h21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h21"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h32_test(doc) -> [{userdata,[{""}]}];
 bitand_h32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h32"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h43_test(doc) -> [{userdata,[{""}]}];
 bitand_h43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h43"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_h54_test(doc) -> [{userdata,[{""}]}];
 bitand_h54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","h54"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s5_test(doc) -> [{userdata,[{""}]}];
 bitand_s5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s5"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s16_test(doc) -> [{userdata,[{""}]}];
 bitand_s16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s16"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s27_test(doc) -> [{userdata,[{""}]}];
 bitand_s27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s27"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s38_test(doc) -> [{userdata,[{""}]}];
 bitand_s38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s38"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s49_test(doc) -> [{userdata,[{""}]}];
 bitand_s49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s49"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s60_test(doc) -> [{userdata,[{""}]}];
 bitand_s60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s60"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s11_test(doc) -> [{userdata,[{""}]}];
 bitand_s11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s11"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s22_test(doc) -> [{userdata,[{""}]}];
 bitand_s22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s22"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s33_test(doc) -> [{userdata,[{""}]}];
 bitand_s33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s33"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s44_test(doc) -> [{userdata,[{""}]}];
 bitand_s44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s44"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s55_test(doc) -> [{userdata,[{""}]}];
 bitand_s55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s55"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s6_test(doc) -> [{userdata,[{""}]}];
 bitand_s6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s6"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s17_test(doc) -> [{userdata,[{""}]}];
 bitand_s17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s17"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s28_test(doc) -> [{userdata,[{""}]}];
 bitand_s28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s28"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s39_test(doc) -> [{userdata,[{""}]}];
 bitand_s39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s39"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s50_test(doc) -> [{userdata,[{""}]}];
 bitand_s50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s50"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s61_test(doc) -> [{userdata,[{""}]}];
 bitand_s61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s61"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s1_test(doc) -> [{userdata,[{""}]}];
 bitand_s1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s1"),
-  Expected="Range Area",
+  Expected="<cell><value>"++"Range Area"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s12_test(doc) -> [{userdata,[{""}]}];
 bitand_s12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s12"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s34_test(doc) -> [{userdata,[{""}]}];
 bitand_s34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s45_test(doc) -> [{userdata,[{""}]}];
 bitand_s45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s45"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s56_test(doc) -> [{userdata,[{""}]}];
 bitand_s56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s56"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s7_test(doc) -> [{userdata,[{""}]}];
 bitand_s7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s7"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s18_test(doc) -> [{userdata,[{""}]}];
 bitand_s18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s18"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s29_test(doc) -> [{userdata,[{""}]}];
 bitand_s29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s29"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s40_test(doc) -> [{userdata,[{""}]}];
 bitand_s40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s40"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s51_test(doc) -> [{userdata,[{""}]}];
 bitand_s51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s51"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s62_test(doc) -> [{userdata,[{""}]}];
 bitand_s62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s62"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s2_test(doc) -> [{userdata,[{""}]}];
 bitand_s2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s2"),
-  Expected="X3:Y4",
+  Expected="<cell><value>"++"X3:Y4"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s13_test(doc) -> [{userdata,[{""}]}];
 bitand_s13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s13"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s35_test(doc) -> [{userdata,[{""}]}];
 bitand_s35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s46_test(doc) -> [{userdata,[{""}]}];
 bitand_s46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s46"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s57_test(doc) -> [{userdata,[{""}]}];
 bitand_s57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s57"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s8_test(doc) -> [{userdata,[{""}]}];
 bitand_s8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s19_test(doc) -> [{userdata,[{""}]}];
 bitand_s19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s19"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s30_test(doc) -> [{userdata,[{""}]}];
 bitand_s30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s41_test(doc) -> [{userdata,[{""}]}];
 bitand_s41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s41"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s52_test(doc) -> [{userdata,[{""}]}];
 bitand_s52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s52"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s63_test(doc) -> [{userdata,[{""}]}];
 bitand_s63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s63"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s3_test(doc) -> [{userdata,[{""}]}];
 bitand_s3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s3"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s14_test(doc) -> [{userdata,[{""}]}];
 bitand_s14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s14"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s25_test(doc) -> [{userdata,[{""}]}];
 bitand_s25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s25"),
-  Expected="Range Area",
+  Expected="<cell><value>"++"Range Area"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s36_test(doc) -> [{userdata,[{""}]}];
 bitand_s36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s58_test(doc) -> [{userdata,[{""}]}];
 bitand_s58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s58"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s9_test(doc) -> [{userdata,[{""}]}];
 bitand_s9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s9"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s20_test(doc) -> [{userdata,[{""}]}];
 bitand_s20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s20"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s31_test(doc) -> [{userdata,[{""}]}];
 bitand_s31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s31"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s42_test(doc) -> [{userdata,[{""}]}];
 bitand_s42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s42"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s53_test(doc) -> [{userdata,[{""}]}];
 bitand_s53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s53"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s64_test(doc) -> [{userdata,[{""}]}];
 bitand_s64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s64"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s4_test(doc) -> [{userdata,[{""}]}];
 bitand_s4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s4"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s15_test(doc) -> [{userdata,[{""}]}];
 bitand_s15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s15"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s26_test(doc) -> [{userdata,[{""}]}];
 bitand_s26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s26"),
-  Expected="X3:Y4",
+  Expected="<cell><value>"++"X3:Y4"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s37_test(doc) -> [{userdata,[{""}]}];
 bitand_s37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s59_test(doc) -> [{userdata,[{""}]}];
 bitand_s59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s59"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s10_test(doc) -> [{userdata,[{""}]}];
 bitand_s10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s10"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s21_test(doc) -> [{userdata,[{""}]}];
 bitand_s21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s21"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s32_test(doc) -> [{userdata,[{""}]}];
 bitand_s32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s32"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s43_test(doc) -> [{userdata,[{""}]}];
 bitand_s43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s43"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_s54_test(doc) -> [{userdata,[{""}]}];
 bitand_s54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","s54"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i5_test(doc) -> [{userdata,[{""}]}];
 bitand_i5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i5"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i16_test(doc) -> [{userdata,[{""}]}];
 bitand_i16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i16"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i27_test(doc) -> [{userdata,[{""}]}];
 bitand_i27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i27"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i38_test(doc) -> [{userdata,[{""}]}];
 bitand_i38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i38"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i49_test(doc) -> [{userdata,[{""}]}];
 bitand_i49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i49"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i60_test(doc) -> [{userdata,[{""}]}];
 bitand_i60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i60"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i11_test(doc) -> [{userdata,[{""}]}];
 bitand_i11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i11"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i22_test(doc) -> [{userdata,[{""}]}];
 bitand_i22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i22"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i33_test(doc) -> [{userdata,[{""}]}];
 bitand_i33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i33"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i44_test(doc) -> [{userdata,[{""}]}];
 bitand_i44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i44"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i55_test(doc) -> [{userdata,[{""}]}];
 bitand_i55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i55"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i6_test(doc) -> [{userdata,[{""}]}];
 bitand_i6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i6"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i17_test(doc) -> [{userdata,[{""}]}];
 bitand_i17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i17"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i28_test(doc) -> [{userdata,[{""}]}];
 bitand_i28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i28"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i39_test(doc) -> [{userdata,[{""}]}];
 bitand_i39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i39"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i50_test(doc) -> [{userdata,[{""}]}];
 bitand_i50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i50"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i61_test(doc) -> [{userdata,[{""}]}];
 bitand_i61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i61"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i1_test(doc) -> [{userdata,[{""}]}];
 bitand_i1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i1"),
-  Expected="String",
+  Expected="<cell><value>"++"String"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i12_test(doc) -> [{userdata,[{""}]}];
 bitand_i12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i12"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i34_test(doc) -> [{userdata,[{""}]}];
 bitand_i34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i45_test(doc) -> [{userdata,[{""}]}];
 bitand_i45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i45"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i56_test(doc) -> [{userdata,[{""}]}];
 bitand_i56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i56"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i7_test(doc) -> [{userdata,[{""}]}];
 bitand_i7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i7"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i18_test(doc) -> [{userdata,[{""}]}];
 bitand_i18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i18"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i29_test(doc) -> [{userdata,[{""}]}];
 bitand_i29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i29"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i40_test(doc) -> [{userdata,[{""}]}];
 bitand_i40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i40"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i51_test(doc) -> [{userdata,[{""}]}];
 bitand_i51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i51"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i62_test(doc) -> [{userdata,[{""}]}];
 bitand_i62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i62"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i2_test(doc) -> [{userdata,[{""}]}];
 bitand_i2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i2"),
-  Expected="Phillip",
+  Expected="<cell><value>"++"Phillip"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i13_test(doc) -> [{userdata,[{""}]}];
 bitand_i13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i13"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i35_test(doc) -> [{userdata,[{""}]}];
 bitand_i35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i46_test(doc) -> [{userdata,[{""}]}];
 bitand_i46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i46"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i57_test(doc) -> [{userdata,[{""}]}];
 bitand_i57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i57"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i8_test(doc) -> [{userdata,[{""}]}];
 bitand_i8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i19_test(doc) -> [{userdata,[{""}]}];
 bitand_i19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i19"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i30_test(doc) -> [{userdata,[{""}]}];
 bitand_i30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i41_test(doc) -> [{userdata,[{""}]}];
 bitand_i41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i41"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i52_test(doc) -> [{userdata,[{""}]}];
 bitand_i52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i52"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i63_test(doc) -> [{userdata,[{""}]}];
 bitand_i63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i63"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i3_test(doc) -> [{userdata,[{""}]}];
 bitand_i3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i3"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i14_test(doc) -> [{userdata,[{""}]}];
 bitand_i14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i14"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i25_test(doc) -> [{userdata,[{""}]}];
 bitand_i25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i25"),
-  Expected="String",
+  Expected="<cell><value>"++"String"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i36_test(doc) -> [{userdata,[{""}]}];
 bitand_i36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i58_test(doc) -> [{userdata,[{""}]}];
 bitand_i58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i58"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i9_test(doc) -> [{userdata,[{""}]}];
 bitand_i9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i9"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i20_test(doc) -> [{userdata,[{""}]}];
 bitand_i20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i20"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i31_test(doc) -> [{userdata,[{""}]}];
 bitand_i31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i31"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i42_test(doc) -> [{userdata,[{""}]}];
 bitand_i42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i42"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i53_test(doc) -> [{userdata,[{""}]}];
 bitand_i53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i53"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i64_test(doc) -> [{userdata,[{""}]}];
 bitand_i64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i64"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i4_test(doc) -> [{userdata,[{""}]}];
 bitand_i4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i4"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i15_test(doc) -> [{userdata,[{""}]}];
 bitand_i15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i15"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i26_test(doc) -> [{userdata,[{""}]}];
 bitand_i26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i26"),
-  Expected="Phillip",
+  Expected="<cell><value>"++"Phillip"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i37_test(doc) -> [{userdata,[{""}]}];
 bitand_i37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i59_test(doc) -> [{userdata,[{""}]}];
 bitand_i59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i59"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i10_test(doc) -> [{userdata,[{""}]}];
 bitand_i10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i10"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i21_test(doc) -> [{userdata,[{""}]}];
 bitand_i21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i21"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i32_test(doc) -> [{userdata,[{""}]}];
 bitand_i32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i32"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i43_test(doc) -> [{userdata,[{""}]}];
 bitand_i43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i43"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_i54_test(doc) -> [{userdata,[{""}]}];
 bitand_i54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","i54"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t5_test(doc) -> [{userdata,[{""}]}];
 bitand_t5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t5"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t16_test(doc) -> [{userdata,[{""}]}];
 bitand_t16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t16"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t27_test(doc) -> [{userdata,[{""}]}];
 bitand_t27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t27"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t38_test(doc) -> [{userdata,[{""}]}];
 bitand_t38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t38"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t49_test(doc) -> [{userdata,[{""}]}];
 bitand_t49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t49"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t60_test(doc) -> [{userdata,[{""}]}];
 bitand_t60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t60"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t11_test(doc) -> [{userdata,[{""}]}];
 bitand_t11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t11"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t22_test(doc) -> [{userdata,[{""}]}];
 bitand_t22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t22"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t33_test(doc) -> [{userdata,[{""}]}];
 bitand_t33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t33"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t44_test(doc) -> [{userdata,[{""}]}];
 bitand_t44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t44"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t55_test(doc) -> [{userdata,[{""}]}];
 bitand_t55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t55"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t6_test(doc) -> [{userdata,[{""}]}];
 bitand_t6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t6"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t17_test(doc) -> [{userdata,[{""}]}];
 bitand_t17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t17"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t28_test(doc) -> [{userdata,[{""}]}];
 bitand_t28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t28"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t39_test(doc) -> [{userdata,[{""}]}];
 bitand_t39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t39"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t50_test(doc) -> [{userdata,[{""}]}];
 bitand_t50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t50"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t61_test(doc) -> [{userdata,[{""}]}];
 bitand_t61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t61"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t1_test(doc) -> [{userdata,[{""}]}];
 bitand_t1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t1"),
-  Expected="Range Area",
+  Expected="<cell><value>"++"Range Area"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t12_test(doc) -> [{userdata,[{""}]}];
 bitand_t12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t12"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t34_test(doc) -> [{userdata,[{""}]}];
 bitand_t34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t45_test(doc) -> [{userdata,[{""}]}];
 bitand_t45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t45"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t56_test(doc) -> [{userdata,[{""}]}];
 bitand_t56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t56"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t7_test(doc) -> [{userdata,[{""}]}];
 bitand_t7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t7"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t18_test(doc) -> [{userdata,[{""}]}];
 bitand_t18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t18"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t29_test(doc) -> [{userdata,[{""}]}];
 bitand_t29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t29"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t40_test(doc) -> [{userdata,[{""}]}];
 bitand_t40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t40"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t51_test(doc) -> [{userdata,[{""}]}];
 bitand_t51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t51"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t62_test(doc) -> [{userdata,[{""}]}];
 bitand_t62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t62"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t2_test(doc) -> [{userdata,[{""}]}];
 bitand_t2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t2"),
-  Expected="X3:AA6",
+  Expected="<cell><value>"++"X3:AA6"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t13_test(doc) -> [{userdata,[{""}]}];
 bitand_t13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t13"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t35_test(doc) -> [{userdata,[{""}]}];
 bitand_t35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t46_test(doc) -> [{userdata,[{""}]}];
 bitand_t46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t46"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t57_test(doc) -> [{userdata,[{""}]}];
 bitand_t57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t57"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t8_test(doc) -> [{userdata,[{""}]}];
 bitand_t8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t19_test(doc) -> [{userdata,[{""}]}];
 bitand_t19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t19"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t30_test(doc) -> [{userdata,[{""}]}];
 bitand_t30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t41_test(doc) -> [{userdata,[{""}]}];
 bitand_t41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t41"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t52_test(doc) -> [{userdata,[{""}]}];
 bitand_t52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t52"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t63_test(doc) -> [{userdata,[{""}]}];
 bitand_t63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t63"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t3_test(doc) -> [{userdata,[{""}]}];
 bitand_t3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t3"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t14_test(doc) -> [{userdata,[{""}]}];
 bitand_t14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t14"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t25_test(doc) -> [{userdata,[{""}]}];
 bitand_t25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t25"),
-  Expected="Range Area",
+  Expected="<cell><value>"++"Range Area"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t36_test(doc) -> [{userdata,[{""}]}];
 bitand_t36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t58_test(doc) -> [{userdata,[{""}]}];
 bitand_t58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t58"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t9_test(doc) -> [{userdata,[{""}]}];
 bitand_t9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t9"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t20_test(doc) -> [{userdata,[{""}]}];
 bitand_t20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t20"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t31_test(doc) -> [{userdata,[{""}]}];
 bitand_t31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t31"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t42_test(doc) -> [{userdata,[{""}]}];
 bitand_t42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t42"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t53_test(doc) -> [{userdata,[{""}]}];
 bitand_t53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t53"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t64_test(doc) -> [{userdata,[{""}]}];
 bitand_t64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t64"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t4_test(doc) -> [{userdata,[{""}]}];
 bitand_t4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t4"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t15_test(doc) -> [{userdata,[{""}]}];
 bitand_t15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t15"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t26_test(doc) -> [{userdata,[{""}]}];
 bitand_t26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t26"),
-  Expected="X3:AA6",
+  Expected="<cell><value>"++"X3:AA6"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t37_test(doc) -> [{userdata,[{""}]}];
 bitand_t37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t59_test(doc) -> [{userdata,[{""}]}];
 bitand_t59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t59"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t10_test(doc) -> [{userdata,[{""}]}];
 bitand_t10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t10"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t21_test(doc) -> [{userdata,[{""}]}];
 bitand_t21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t21"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t32_test(doc) -> [{userdata,[{""}]}];
 bitand_t32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t32"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t43_test(doc) -> [{userdata,[{""}]}];
 bitand_t43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t43"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_t54_test(doc) -> [{userdata,[{""}]}];
 bitand_t54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","t54"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j5_test(doc) -> [{userdata,[{""}]}];
 bitand_j5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j5"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j16_test(doc) -> [{userdata,[{""}]}];
 bitand_j16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j16"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j27_test(doc) -> [{userdata,[{""}]}];
 bitand_j27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j27"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j38_test(doc) -> [{userdata,[{""}]}];
 bitand_j38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j38"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j49_test(doc) -> [{userdata,[{""}]}];
 bitand_j49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j49"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j60_test(doc) -> [{userdata,[{""}]}];
 bitand_j60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j60"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j11_test(doc) -> [{userdata,[{""}]}];
 bitand_j11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j11"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j22_test(doc) -> [{userdata,[{""}]}];
 bitand_j22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j22"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j33_test(doc) -> [{userdata,[{""}]}];
 bitand_j33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j33"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j44_test(doc) -> [{userdata,[{""}]}];
 bitand_j44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j44"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j55_test(doc) -> [{userdata,[{""}]}];
 bitand_j55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j55"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j6_test(doc) -> [{userdata,[{""}]}];
 bitand_j6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j6"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j17_test(doc) -> [{userdata,[{""}]}];
 bitand_j17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j17"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j28_test(doc) -> [{userdata,[{""}]}];
 bitand_j28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j28"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j39_test(doc) -> [{userdata,[{""}]}];
 bitand_j39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j39"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j50_test(doc) -> [{userdata,[{""}]}];
 bitand_j50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j50"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j61_test(doc) -> [{userdata,[{""}]}];
 bitand_j61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j61"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j1_test(doc) -> [{userdata,[{""}]}];
 bitand_j1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j1"),
-  Expected="String Number",
+  Expected="<cell><value>"++"String Number"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j12_test(doc) -> [{userdata,[{""}]}];
 bitand_j12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j12"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j34_test(doc) -> [{userdata,[{""}]}];
 bitand_j34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j34"),
-  Expected="12.0",
+  Expected="<cell><value>"++"12.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j45_test(doc) -> [{userdata,[{""}]}];
 bitand_j45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j45"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j56_test(doc) -> [{userdata,[{""}]}];
 bitand_j56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j56"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j7_test(doc) -> [{userdata,[{""}]}];
 bitand_j7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j7"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j18_test(doc) -> [{userdata,[{""}]}];
 bitand_j18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j18"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j29_test(doc) -> [{userdata,[{""}]}];
 bitand_j29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j29"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j40_test(doc) -> [{userdata,[{""}]}];
 bitand_j40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j40"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j51_test(doc) -> [{userdata,[{""}]}];
 bitand_j51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j51"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j62_test(doc) -> [{userdata,[{""}]}];
 bitand_j62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j62"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j2_test(doc) -> [{userdata,[{""}]}];
 bitand_j2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j2"),
-  Expected="13",
+  Expected="<cell><value>"++"13"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j13_test(doc) -> [{userdata,[{""}]}];
 bitand_j13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j13"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j35_test(doc) -> [{userdata,[{""}]}];
 bitand_j35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j35"),
-  Expected="5.0",
+  Expected="<cell><value>"++"5.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j46_test(doc) -> [{userdata,[{""}]}];
 bitand_j46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j46"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j57_test(doc) -> [{userdata,[{""}]}];
 bitand_j57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j57"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j8_test(doc) -> [{userdata,[{""}]}];
 bitand_j8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j19_test(doc) -> [{userdata,[{""}]}];
 bitand_j19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j19"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j30_test(doc) -> [{userdata,[{""}]}];
 bitand_j30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j41_test(doc) -> [{userdata,[{""}]}];
 bitand_j41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j41"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j52_test(doc) -> [{userdata,[{""}]}];
 bitand_j52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j52"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j63_test(doc) -> [{userdata,[{""}]}];
 bitand_j63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j63"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j3_test(doc) -> [{userdata,[{""}]}];
 bitand_j3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j3"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j14_test(doc) -> [{userdata,[{""}]}];
 bitand_j14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j14"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j25_test(doc) -> [{userdata,[{""}]}];
 bitand_j25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j25"),
-  Expected="String Number",
+  Expected="<cell><value>"++"String Number"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j36_test(doc) -> [{userdata,[{""}]}];
 bitand_j36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j36"),
-  Expected="8.0",
+  Expected="<cell><value>"++"8.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j58_test(doc) -> [{userdata,[{""}]}];
 bitand_j58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j58"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j9_test(doc) -> [{userdata,[{""}]}];
 bitand_j9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j9"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j20_test(doc) -> [{userdata,[{""}]}];
 bitand_j20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j20"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j31_test(doc) -> [{userdata,[{""}]}];
 bitand_j31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j31"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j42_test(doc) -> [{userdata,[{""}]}];
 bitand_j42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j42"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j53_test(doc) -> [{userdata,[{""}]}];
 bitand_j53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j53"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j64_test(doc) -> [{userdata,[{""}]}];
 bitand_j64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j64"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j4_test(doc) -> [{userdata,[{""}]}];
 bitand_j4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j4"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j15_test(doc) -> [{userdata,[{""}]}];
 bitand_j15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j15"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j26_test(doc) -> [{userdata,[{""}]}];
 bitand_j26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j26"),
-  Expected="13",
+  Expected="<cell><value>"++"13"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j37_test(doc) -> [{userdata,[{""}]}];
 bitand_j37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j37"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j59_test(doc) -> [{userdata,[{""}]}];
 bitand_j59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j59"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j10_test(doc) -> [{userdata,[{""}]}];
 bitand_j10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j10"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j21_test(doc) -> [{userdata,[{""}]}];
 bitand_j21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j21"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j32_test(doc) -> [{userdata,[{""}]}];
 bitand_j32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j32"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j43_test(doc) -> [{userdata,[{""}]}];
 bitand_j43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j43"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_j54_test(doc) -> [{userdata,[{""}]}];
 bitand_j54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","j54"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u5_test(doc) -> [{userdata,[{""}]}];
 bitand_u5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u5"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u16_test(doc) -> [{userdata,[{""}]}];
 bitand_u16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u16"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u27_test(doc) -> [{userdata,[{""}]}];
 bitand_u27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u27"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u38_test(doc) -> [{userdata,[{""}]}];
 bitand_u38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u38"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u49_test(doc) -> [{userdata,[{""}]}];
 bitand_u49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u49"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u60_test(doc) -> [{userdata,[{""}]}];
 bitand_u60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u60"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u11_test(doc) -> [{userdata,[{""}]}];
 bitand_u11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u11"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u22_test(doc) -> [{userdata,[{""}]}];
 bitand_u22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u22"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u33_test(doc) -> [{userdata,[{""}]}];
 bitand_u33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u33"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u44_test(doc) -> [{userdata,[{""}]}];
 bitand_u44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u44"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u55_test(doc) -> [{userdata,[{""}]}];
 bitand_u55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u55"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u6_test(doc) -> [{userdata,[{""}]}];
 bitand_u6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u6"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u17_test(doc) -> [{userdata,[{""}]}];
 bitand_u17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u17"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u28_test(doc) -> [{userdata,[{""}]}];
 bitand_u28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u28"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u39_test(doc) -> [{userdata,[{""}]}];
 bitand_u39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u39"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u50_test(doc) -> [{userdata,[{""}]}];
 bitand_u50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u50"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u61_test(doc) -> [{userdata,[{""}]}];
 bitand_u61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u61"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u1_test(doc) -> [{userdata,[{""}]}];
 bitand_u1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u1"),
-  Expected="Range Colunm",
+  Expected="<cell><value>"++"Range Colunm"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u12_test(doc) -> [{userdata,[{""}]}];
 bitand_u12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u12"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u34_test(doc) -> [{userdata,[{""}]}];
 bitand_u34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u45_test(doc) -> [{userdata,[{""}]}];
 bitand_u45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u45"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u56_test(doc) -> [{userdata,[{""}]}];
 bitand_u56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u56"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u7_test(doc) -> [{userdata,[{""}]}];
 bitand_u7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u7"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u18_test(doc) -> [{userdata,[{""}]}];
 bitand_u18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u18"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u29_test(doc) -> [{userdata,[{""}]}];
 bitand_u29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u29"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u40_test(doc) -> [{userdata,[{""}]}];
 bitand_u40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u40"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u51_test(doc) -> [{userdata,[{""}]}];
 bitand_u51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u51"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u62_test(doc) -> [{userdata,[{""}]}];
 bitand_u62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u62"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u2_test(doc) -> [{userdata,[{""}]}];
 bitand_u2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u2"),
-  Expected="X3:X4",
+  Expected="<cell><value>"++"X3:X4"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u13_test(doc) -> [{userdata,[{""}]}];
 bitand_u13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u13"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u35_test(doc) -> [{userdata,[{""}]}];
 bitand_u35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u46_test(doc) -> [{userdata,[{""}]}];
 bitand_u46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u46"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u57_test(doc) -> [{userdata,[{""}]}];
 bitand_u57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u57"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u8_test(doc) -> [{userdata,[{""}]}];
 bitand_u8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u19_test(doc) -> [{userdata,[{""}]}];
 bitand_u19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u19"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u30_test(doc) -> [{userdata,[{""}]}];
 bitand_u30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u41_test(doc) -> [{userdata,[{""}]}];
 bitand_u41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u41"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u52_test(doc) -> [{userdata,[{""}]}];
 bitand_u52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u52"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u63_test(doc) -> [{userdata,[{""}]}];
 bitand_u63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u63"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u3_test(doc) -> [{userdata,[{""}]}];
 bitand_u3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u3"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u14_test(doc) -> [{userdata,[{""}]}];
 bitand_u14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u14"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u25_test(doc) -> [{userdata,[{""}]}];
 bitand_u25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u25"),
-  Expected="Range Colunm",
+  Expected="<cell><value>"++"Range Colunm"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u36_test(doc) -> [{userdata,[{""}]}];
 bitand_u36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u58_test(doc) -> [{userdata,[{""}]}];
 bitand_u58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u58"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u9_test(doc) -> [{userdata,[{""}]}];
 bitand_u9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u9"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u20_test(doc) -> [{userdata,[{""}]}];
 bitand_u20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u20"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u31_test(doc) -> [{userdata,[{""}]}];
 bitand_u31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u31"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u42_test(doc) -> [{userdata,[{""}]}];
 bitand_u42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u42"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u53_test(doc) -> [{userdata,[{""}]}];
 bitand_u53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u53"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u64_test(doc) -> [{userdata,[{""}]}];
 bitand_u64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u64"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u4_test(doc) -> [{userdata,[{""}]}];
 bitand_u4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u4"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u15_test(doc) -> [{userdata,[{""}]}];
 bitand_u15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u15"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u26_test(doc) -> [{userdata,[{""}]}];
 bitand_u26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u26"),
-  Expected="X3:X4",
+  Expected="<cell><value>"++"X3:X4"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u37_test(doc) -> [{userdata,[{""}]}];
 bitand_u37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u59_test(doc) -> [{userdata,[{""}]}];
 bitand_u59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u59"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u10_test(doc) -> [{userdata,[{""}]}];
 bitand_u10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u10"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u21_test(doc) -> [{userdata,[{""}]}];
 bitand_u21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u21"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u32_test(doc) -> [{userdata,[{""}]}];
 bitand_u32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u32"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u43_test(doc) -> [{userdata,[{""}]}];
 bitand_u43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u43"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 bitand_u54_test(doc) -> [{userdata,[{""}]}];
 bitand_u54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitand/","u54"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 all() -> 
     [bitand_k5_test,

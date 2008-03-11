@@ -22,9 +22,6 @@
 
 -include("excel_errors.hrl").
 
-%% scratch utility for running from the shell
--export([scratch_Arg/0]).
-
 -define(FILEDIR, "../../../../excel_files/").
 -define(EXCEL_IMPORT_FLOAT_PRECISION, 13).
 -define(DEFAULT,1000000).
@@ -51,17 +48,6 @@ read_from_excel_data(State,{Sheet,Row,Col})->
       {value,error,Error}     -> {error, Error};
       Other                   -> io:format("(in generatetest.rb - fix me Other is ~p~n",[Other])
 end.
-
-
-%% Checks that two floats are exactly the same up to
-%% a certain number of decimal places.
-%%
-%% uses the mochinum library to do so
-%%equal_to_digit(F1,F2,DigitIdx) ->
-%%  A=mochinum:digits(F1),
-%%  B=mochinum:digits(F2),
-%%  io:format("in test_util:equal_to_digit A is ~p and B is ~p~n",[A,B]),
-%%  A==B.
 
 equal_to_digit(F1,F2,DigitIdx) ->
   %% force any rogue integers to floats  
@@ -110,6 +96,7 @@ excel_equal2({number, F1}, {number, F2}) ->
     equal_to_digit(F1, F2, ?EXCEL_IMPORT_FLOAT_PRECISION);
 excel_equal2({formula, Fla1}, {formula, Fla2}) ->
   %% fix-up the fact that we have changed the name of the function Error.Type to ErrorType
+  %% Ugly bodge
     Return=regexp:gsub(Fla2,"ERROR.TYPE","ERRORTYPE"),
     io:format("Return is ~p~n",[Return]),
     {ok,Fla2a,_}=Return,
@@ -152,7 +139,7 @@ make_err_val(X)            -> X.
 expected(Expected, Got) ->
     case Got of
         Expected ->
-            io:format("SUCCESS~nExpected: ~p~nGot:       ~p~n",[Expected,Got]),
+            io:format("SUCCESS~nExpected : ~p~nGot         : ~p~n",[Expected,Got]),
             {test, ok};
         _Else ->
             exit({"E:", Expected, "G:", Got})
@@ -178,8 +165,10 @@ expected2(Expected, Got) ->
     end.
 
 %% Reads an Excel file under SVNROOT/testroot/excel_import_test/files
-read_excel_file(Filename) ->
-    filefilters:read(excel,?FILEDIR++Filename,fun dump_cells/1).
+read_excel_file(FilePathAndName) ->
+    c:pwd(),
+    io:format("in test_util:read_excel_file FilePathAndName is ~p~n",[FilePathAndName]),
+    filefilters:read(excel,FilePathAndName,fun dump_cells/1).
 
 make_float(List) ->
     Return = try
@@ -205,25 +194,9 @@ make_float2(List)->
 
 
 %% Default operation wait time, used for the test suites.
-wait() ->
-    internal_wait(?DEFAULT).
+wait()  -> internal_wait(?DEFAULT).
 
-wait(N) ->
-    internal_wait(?DEFAULT * N).
-
-%%------------------------------------------------------------------------------
-%% Just a helper functions
-%%------------------------------------------------------------------------------
-scratch_Arg()->
-    Protocol="http://",
-    Domain="127.0.0.1",
-    IP={127,0,0,1},
-    Port="9000",
-    Path="/xxx/",
-    Ref="a1",
-    FormatAndDecos="hypernumber&format=xml",
-    Site=Protocol++Domain++":"++Port,
-    test_util:get_Arg(IP,Site,Path++Ref,FormatAndDecos).
+wait(N) -> internal_wait(?DEFAULT * N).
 
 %%------------------------------------------------------------------------------
 %% Internal functions

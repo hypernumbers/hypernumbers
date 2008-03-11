@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_simple_arrays_and_ranges.xls
-% Generated on: Mon Feb 25 21:57:23 +0000 2008
+% Generated on: Tue Mar 11 09:10:58 +0000 2008
 
 -module(b_simple_arrays_and_ranges_SUITE).
 -compile(export_all).
@@ -12,7 +12,9 @@ init_per_suite(Config) ->
     code:add_patha("../../../../../ebin"),
     production_boot:start(),
     test_util:wait(),
-    Data = test_util:read_excel_file("/Win Excel 2007 (as 97)/b_simple_arrays_and_ranges.xls"),
+    io:format("dumping current path next: "),
+    c:pwd(),
+    Data = test_util:read_excel_file("../../excel_files/Win Excel 2007 (as 97)/b_simple_arrays_and_ranges.xls"),
     Fun =fun({{{sheet,Sheet},{row_index,RowIdx},{col_index,ColIdx}},Input}) ->
       io:format("Sheet is ~p RowIdx is ~p and ColIdx is ~p~n",[Sheet,RowIdx,ColIdx]),
       Data1 = case Input of
@@ -46,7 +48,7 @@ read_from_excel_data(Config,{Sheet,Row,Col}) ->
 
 hn_post(Site, Path, Cell, Data) ->
     Url=Site++Path++Cell,
-    PostData = "action=create&value=" ++ yaws_api:url_encode(Data),
+    PostData = "<create><value>" ++Data++"</value></create>",
     Data2 = {Url, [], "text/plain", PostData},
     io:format("in hn_post Data is ~p~n",[Data2]),
     Return = http:request(post, Data2, [], []),
@@ -73,289 +75,289 @@ assert_eql(X, Y) ->
 sheet1_a8_test(doc) -> [{userdata,[{""}]}];
 sheet1_a8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","a8"),
-  Expected="Bruk ->",
+  Expected="<cell><value>"++"Bruk ->"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_a9_test(doc) -> [{userdata,[{""}]}];
 sheet1_a9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","a9"),
-  Expected="Bruk ->",
+  Expected="<cell><value>"++"Bruk ->"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_b5_test(doc) -> [{userdata,[{""}]}];
 sheet1_b5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","b5"),
-  Expected="Multiple Element Array",
+  Expected="<cell><value>"++"Multiple Element Array"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_b11_test(doc) -> [{userdata,[{""}]}];
 sheet1_b11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","b11"),
-  Expected="Complex I",
+  Expected="<cell><value>"++"Complex I"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_b6_test(doc) -> [{userdata,[{""}]}];
 sheet1_b6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","b6"),
-  Expected="2D Array",
+  Expected="<cell><value>"++"2D Array"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_b1_test(doc) -> [{userdata,[{""}]}];
 sheet1_b1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","b1"),
-  Expected="Single Element Array I",
+  Expected="<cell><value>"++"Single Element Array I"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_b7_test(doc) -> [{userdata,[{""}]}];
 sheet1_b7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","b7"),
-  Expected="3D Array",
+  Expected="<cell><value>"++"3D Array"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_b2_test(doc) -> [{userdata,[{""}]}];
 sheet1_b2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","b2"),
-  Expected="Single Element Array 2",
+  Expected="<cell><value>"++"Single Element Array 2"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_b8_test(doc) -> [{userdata,[{""}]}];
 sheet1_b8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","b8"),
-  Expected="Range",
+  Expected="<cell><value>"++"Range"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_b3_test(doc) -> [{userdata,[{""}]}];
 sheet1_b3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","b3"),
-  Expected="Single Element Array 3",
+  Expected="<cell><value>"++"Single Element Array 3"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_b9_test(doc) -> [{userdata,[{""}]}];
 sheet1_b9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","b9"),
-  Expected="Intersection",
+  Expected="<cell><value>"++"Intersection"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_b4_test(doc) -> [{userdata,[{""}]}];
 sheet1_b4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","b4"),
-  Expected="Single Element Array 4",
+  Expected="<cell><value>"++"Single Element Array 4"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_b10_test(doc) -> [{userdata,[{""}]}];
 sheet1_b10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","b10"),
-  Expected="Union",
+  Expected="<cell><value>"++"Union"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_c5_test(doc) -> [{userdata,[{""}]}];
 sheet1_c5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","c5"),
-  Expected="2.0",
+  Expected="<cell><value>"++"2.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_c11_test(doc) -> [{userdata,[{""}]}];
 sheet1_c11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","c11"),
-  Expected="34.0",
+  Expected="<cell><value>"++"34.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_c6_test(doc) -> [{userdata,[{""}]}];
 sheet1_c6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","c6"),
-  Expected="33.0",
+  Expected="<cell><value>"++"33.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_c1_test(doc) -> [{userdata,[{""}]}];
 sheet1_c1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","c1"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_c7_test(doc) -> [{userdata,[{""}]}];
 sheet1_c7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","c7"),
-  Expected="44.0",
+  Expected="<cell><value>"++"44.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_c2_test(doc) -> [{userdata,[{""}]}];
 sheet1_c2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","c2"),
-  Expected="2",
+  Expected="<cell><value>"++"2"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_c8_test(doc) -> [{userdata,[{""}]}];
 sheet1_c8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","c8"),
-  Expected="6.0",
+  Expected="<cell><value>"++"6.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_c3_test(doc) -> [{userdata,[{""}]}];
 sheet1_c3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","c3"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_c9_test(doc) -> [{userdata,[{""}]}];
 sheet1_c9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","c9"),
-  Expected="555.0",
+  Expected="<cell><value>"++"555.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_c4_test(doc) -> [{userdata,[{""}]}];
 sheet1_c4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","c4"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_c10_test(doc) -> [{userdata,[{""}]}];
 sheet1_c10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","c10"),
-  Expected="2442.0",
+  Expected="<cell><value>"++"2442.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_d11_test(doc) -> [{userdata,[{""}]}];
 sheet1_d11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","d11"),
-  Expected="9.0",
+  Expected="<cell><value>"++"9.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_d8_test(doc) -> [{userdata,[{""}]}];
 sheet1_d8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","d8"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_d9_test(doc) -> [{userdata,[{""}]}];
 sheet1_d9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","d9"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_d10_test(doc) -> [{userdata,[{""}]}];
 sheet1_d10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","d10"),
-  Expected="444.0",
+  Expected="<cell><value>"++"444.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_e11_test(doc) -> [{userdata,[{""}]}];
 sheet1_e11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","e11"),
-  Expected="8.0",
+  Expected="<cell><value>"++"8.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_e8_test(doc) -> [{userdata,[{""}]}];
 sheet1_e8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","e8"),
-  Expected="2.0",
+  Expected="<cell><value>"++"2.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_e9_test(doc) -> [{userdata,[{""}]}];
 sheet1_e9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","e9"),
-  Expected="555.0",
+  Expected="<cell><value>"++"555.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_e10_test(doc) -> [{userdata,[{""}]}];
 sheet1_e10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","e10"),
-  Expected="555.0",
+  Expected="<cell><value>"++"555.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_f11_test(doc) -> [{userdata,[{""}]}];
 sheet1_f11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","f11"),
-  Expected="7.0",
+  Expected="<cell><value>"++"7.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_f8_test(doc) -> [{userdata,[{""}]}];
 sheet1_f8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","f8"),
-  Expected="3.0",
+  Expected="<cell><value>"++"3.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_f9_test(doc) -> [{userdata,[{""}]}];
 sheet1_f9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","f9"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_f10_test(doc) -> [{userdata,[{""}]}];
 sheet1_f10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","f10"),
-  Expected="666.0",
+  Expected="<cell><value>"++"666.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_g11_test(doc) -> [{userdata,[{""}]}];
 sheet1_g11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","g11"),
-  Expected="6.0",
+  Expected="<cell><value>"++"6.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_g9_test(doc) -> [{userdata,[{""}]}];
 sheet1_g9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","g9"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_g10_test(doc) -> [{userdata,[{""}]}];
 sheet1_g10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","g10"),
-  Expected="777.0",
+  Expected="<cell><value>"++"777.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_h11_test(doc) -> [{userdata,[{""}]}];
 sheet1_h11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","h11"),
-  Expected="5.0",
+  Expected="<cell><value>"++"5.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 sheet1_i11_test(doc) -> [{userdata,[{""}]}];
 sheet1_i11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","i11"),
-  Expected="4.0",
+  Expected="<cell><value>"++"4.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 all() -> 
     [sheet1_a8_test,

@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_operators_div.xls
-% Generated on: Mon Feb 25 21:57:42 +0000 2008
+% Generated on: Tue Mar 11 09:11:27 +0000 2008
 
 -module(e_gnumeric_operators_div_SUITE).
 -compile(export_all).
@@ -12,7 +12,9 @@ init_per_suite(Config) ->
     code:add_patha("../../../../../ebin"),
     production_boot:start(),
     test_util:wait(),
-    Data = test_util:read_excel_file("/Win Excel 2007 (as 97)/e_gnumeric_operators_div.xls"),
+    io:format("dumping current path next: "),
+    c:pwd(),
+    Data = test_util:read_excel_file("../../excel_files/Win Excel 2007 (as 97)/e_gnumeric_operators_div.xls"),
     Fun =fun({{{sheet,Sheet},{row_index,RowIdx},{col_index,ColIdx}},Input}) ->
       io:format("Sheet is ~p RowIdx is ~p and ColIdx is ~p~n",[Sheet,RowIdx,ColIdx]),
       Data1 = case Input of
@@ -46,7 +48,7 @@ read_from_excel_data(Config,{Sheet,Row,Col}) ->
 
 hn_post(Site, Path, Cell, Data) ->
     Url=Site++Path++Cell,
-    PostData = "action=create&value=" ++ yaws_api:url_encode(Data),
+    PostData = "<create><value>" ++Data++"</value></create>",
     Data2 = {Url, [], "text/plain", PostData},
     io:format("in hn_post Data is ~p~n",[Data2]),
     Return = http:request(post, Data2, [], []),
@@ -73,9123 +75,9123 @@ assert_eql(X, Y) ->
 div_k5_test(doc) -> [{userdata,[{""}]}];
 div_k5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k5"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k16_test(doc) -> [{userdata,[{""}]}];
 div_k16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k16"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k27_test(doc) -> [{userdata,[{""}]}];
 div_k27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k27"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k38_test(doc) -> [{userdata,[{""}]}];
 div_k38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k38"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k49_test(doc) -> [{userdata,[{""}]}];
 div_k49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k60_test(doc) -> [{userdata,[{""}]}];
 div_k60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k11_test(doc) -> [{userdata,[{""}]}];
 div_k11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k22_test(doc) -> [{userdata,[{""}]}];
 div_k22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k22"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k33_test(doc) -> [{userdata,[{""}]}];
 div_k33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k44_test(doc) -> [{userdata,[{""}]}];
 div_k44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k44"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k55_test(doc) -> [{userdata,[{""}]}];
 div_k55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k66_test(doc) -> [{userdata,[{""}]}];
 div_k66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k6_test(doc) -> [{userdata,[{""}]}];
 div_k6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k17_test(doc) -> [{userdata,[{""}]}];
 div_k17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k17"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k28_test(doc) -> [{userdata,[{""}]}];
 div_k28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k39_test(doc) -> [{userdata,[{""}]}];
 div_k39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k39"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k50_test(doc) -> [{userdata,[{""}]}];
 div_k50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k61_test(doc) -> [{userdata,[{""}]}];
 div_k61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k1_test(doc) -> [{userdata,[{""}]}];
 div_k1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k1"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k12_test(doc) -> [{userdata,[{""}]}];
 div_k12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k34_test(doc) -> [{userdata,[{""}]}];
 div_k34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k56_test(doc) -> [{userdata,[{""}]}];
 div_k56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k7_test(doc) -> [{userdata,[{""}]}];
 div_k7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k18_test(doc) -> [{userdata,[{""}]}];
 div_k18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k18"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k29_test(doc) -> [{userdata,[{""}]}];
 div_k29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k40_test(doc) -> [{userdata,[{""}]}];
 div_k40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k40"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k51_test(doc) -> [{userdata,[{""}]}];
 div_k51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k62_test(doc) -> [{userdata,[{""}]}];
 div_k62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k2_test(doc) -> [{userdata,[{""}]}];
 div_k2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k2"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k13_test(doc) -> [{userdata,[{""}]}];
 div_k13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k13"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k35_test(doc) -> [{userdata,[{""}]}];
 div_k35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k57_test(doc) -> [{userdata,[{""}]}];
 div_k57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k8_test(doc) -> [{userdata,[{""}]}];
 div_k8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k19_test(doc) -> [{userdata,[{""}]}];
 div_k19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k19"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k30_test(doc) -> [{userdata,[{""}]}];
 div_k30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k41_test(doc) -> [{userdata,[{""}]}];
 div_k41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k41"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k52_test(doc) -> [{userdata,[{""}]}];
 div_k52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k63_test(doc) -> [{userdata,[{""}]}];
 div_k63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k3_test(doc) -> [{userdata,[{""}]}];
 div_k3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k3"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k14_test(doc) -> [{userdata,[{""}]}];
 div_k14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k14"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k25_test(doc) -> [{userdata,[{""}]}];
 div_k25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k25"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k36_test(doc) -> [{userdata,[{""}]}];
 div_k36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k47_test(doc) -> [{userdata,[{""}]}];
 div_k47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k58_test(doc) -> [{userdata,[{""}]}];
 div_k58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k9_test(doc) -> [{userdata,[{""}]}];
 div_k9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k20_test(doc) -> [{userdata,[{""}]}];
 div_k20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k20"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k31_test(doc) -> [{userdata,[{""}]}];
 div_k31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k42_test(doc) -> [{userdata,[{""}]}];
 div_k42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k42"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k53_test(doc) -> [{userdata,[{""}]}];
 div_k53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k64_test(doc) -> [{userdata,[{""}]}];
 div_k64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k4_test(doc) -> [{userdata,[{""}]}];
 div_k4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k4"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k15_test(doc) -> [{userdata,[{""}]}];
 div_k15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k15"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k26_test(doc) -> [{userdata,[{""}]}];
 div_k26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k26"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k37_test(doc) -> [{userdata,[{""}]}];
 div_k37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k48_test(doc) -> [{userdata,[{""}]}];
 div_k48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k59_test(doc) -> [{userdata,[{""}]}];
 div_k59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k10_test(doc) -> [{userdata,[{""}]}];
 div_k10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k21_test(doc) -> [{userdata,[{""}]}];
 div_k21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k21"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k32_test(doc) -> [{userdata,[{""}]}];
 div_k32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k43_test(doc) -> [{userdata,[{""}]}];
 div_k43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k43"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k54_test(doc) -> [{userdata,[{""}]}];
 div_k54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_k65_test(doc) -> [{userdata,[{""}]}];
 div_k65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","k65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v5_test(doc) -> [{userdata,[{""}]}];
 div_v5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v5"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v16_test(doc) -> [{userdata,[{""}]}];
 div_v16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v16"),
-  Expected="7.45996485527668e-005",
+  Expected="<cell><value>"++"7.45996485527668e-005"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v27_test(doc) -> [{userdata,[{""}]}];
 div_v27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v27"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v38_test(doc) -> [{userdata,[{""}]}];
 div_v38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v38"),
-  Expected="7.45996485527668e-005",
+  Expected="<cell><value>"++"7.45996485527668e-005"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v49_test(doc) -> [{userdata,[{""}]}];
 div_v49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v60_test(doc) -> [{userdata,[{""}]}];
 div_v60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v11_test(doc) -> [{userdata,[{""}]}];
 div_v11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v22_test(doc) -> [{userdata,[{""}]}];
 div_v22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v22"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v33_test(doc) -> [{userdata,[{""}]}];
 div_v33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v44_test(doc) -> [{userdata,[{""}]}];
 div_v44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v44"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v55_test(doc) -> [{userdata,[{""}]}];
 div_v55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v66_test(doc) -> [{userdata,[{""}]}];
 div_v66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v6_test(doc) -> [{userdata,[{""}]}];
 div_v6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v17_test(doc) -> [{userdata,[{""}]}];
 div_v17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v17"),
-  Expected="9.78084281025165e-005",
+  Expected="<cell><value>"++"9.78084281025165e-005"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v28_test(doc) -> [{userdata,[{""}]}];
 div_v28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v39_test(doc) -> [{userdata,[{""}]}];
 div_v39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v39"),
-  Expected="9.78084281025165e-005",
+  Expected="<cell><value>"++"9.78084281025165e-005"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v50_test(doc) -> [{userdata,[{""}]}];
 div_v50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v61_test(doc) -> [{userdata,[{""}]}];
 div_v61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v1_test(doc) -> [{userdata,[{""}]}];
 div_v1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v1"),
-  Expected="Float",
+  Expected="<cell><value>"++"Float"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v12_test(doc) -> [{userdata,[{""}]}];
 div_v12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v34_test(doc) -> [{userdata,[{""}]}];
 div_v34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v56_test(doc) -> [{userdata,[{""}]}];
 div_v56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v7_test(doc) -> [{userdata,[{""}]}];
 div_v7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v18_test(doc) -> [{userdata,[{""}]}];
 div_v18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v18"),
-  Expected="0.999966844600643",
+  Expected="<cell><value>"++"0.999966844600643"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v29_test(doc) -> [{userdata,[{""}]}];
 div_v29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v40_test(doc) -> [{userdata,[{""}]}];
 div_v40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v40"),
-  Expected="0.999966844600643",
+  Expected="<cell><value>"++"0.999966844600643"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v51_test(doc) -> [{userdata,[{""}]}];
 div_v51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v62_test(doc) -> [{userdata,[{""}]}];
 div_v62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v2_test(doc) -> [{userdata,[{""}]}];
 div_v2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v2"),
-  Expected="36193.2",
+  Expected="<cell><value>"++"36193.2"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v13_test(doc) -> [{userdata,[{""}]}];
 div_v13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v13"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v35_test(doc) -> [{userdata,[{""}]}];
 div_v35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v57_test(doc) -> [{userdata,[{""}]}];
 div_v57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v8_test(doc) -> [{userdata,[{""}]}];
 div_v8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v19_test(doc) -> [{userdata,[{""}]}];
 div_v19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v19"),
-  Expected="0.999994474100107",
+  Expected="<cell><value>"++"0.999994474100107"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v30_test(doc) -> [{userdata,[{""}]}];
 div_v30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v41_test(doc) -> [{userdata,[{""}]}];
 div_v41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v41"),
-  Expected="0.999994474100107",
+  Expected="<cell><value>"++"0.999994474100107"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v52_test(doc) -> [{userdata,[{""}]}];
 div_v52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v63_test(doc) -> [{userdata,[{""}]}];
 div_v63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v3_test(doc) -> [{userdata,[{""}]}];
 div_v3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v3"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v14_test(doc) -> [{userdata,[{""}]}];
 div_v14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v14"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v25_test(doc) -> [{userdata,[{""}]}];
 div_v25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v25"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v36_test(doc) -> [{userdata,[{""}]}];
 div_v36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v47_test(doc) -> [{userdata,[{""}]}];
 div_v47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v58_test(doc) -> [{userdata,[{""}]}];
 div_v58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v9_test(doc) -> [{userdata,[{""}]}];
 div_v9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v20_test(doc) -> [{userdata,[{""}]}];
 div_v20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v20"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v31_test(doc) -> [{userdata,[{""}]}];
 div_v31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v42_test(doc) -> [{userdata,[{""}]}];
 div_v42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v42"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v53_test(doc) -> [{userdata,[{""}]}];
 div_v53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v64_test(doc) -> [{userdata,[{""}]}];
 div_v64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v4_test(doc) -> [{userdata,[{""}]}];
 div_v4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v4"),
-  Expected="2.76294994639877e-005",
+  Expected="<cell><value>"++"2.76294994639877e-005"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v15_test(doc) -> [{userdata,[{""}]}];
 div_v15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v15"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v26_test(doc) -> [{userdata,[{""}]}];
 div_v26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v26"),
-  Expected="2.76294994639877e-005",
+  Expected="<cell><value>"++"2.76294994639877e-005"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v37_test(doc) -> [{userdata,[{""}]}];
 div_v37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v48_test(doc) -> [{userdata,[{""}]}];
 div_v48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v59_test(doc) -> [{userdata,[{""}]}];
 div_v59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v10_test(doc) -> [{userdata,[{""}]}];
 div_v10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v21_test(doc) -> [{userdata,[{""}]}];
 div_v21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v21"),
-  Expected="8.67980725661174e-005",
+  Expected="<cell><value>"++"8.67980725661174e-005"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v32_test(doc) -> [{userdata,[{""}]}];
 div_v32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v43_test(doc) -> [{userdata,[{""}]}];
 div_v43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v43"),
-  Expected="8.67980725661174e-005",
+  Expected="<cell><value>"++"8.67980725661174e-005"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v54_test(doc) -> [{userdata,[{""}]}];
 div_v54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_v65_test(doc) -> [{userdata,[{""}]}];
 div_v65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","v65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a5_test(doc) -> [{userdata,[{""}]}];
 div_a5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a5"),
-  Expected="Boolean",
+  Expected="<cell><value>"++"Boolean"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a16_test(doc) -> [{userdata,[{""}]}];
 div_a16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a16"),
-  Expected="Str Num",
+  Expected="<cell><value>"++"Str Num"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a27_test(doc) -> [{userdata,[{""}]}];
 div_a27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a27"),
-  Expected="Boolean",
+  Expected="<cell><value>"++"Boolean"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a38_test(doc) -> [{userdata,[{""}]}];
 div_a38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a38"),
-  Expected="Str Num",
+  Expected="<cell><value>"++"Str Num"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a11_test(doc) -> [{userdata,[{""}]}];
 div_a11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a11"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a22_test(doc) -> [{userdata,[{""}]}];
 div_a22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a22"),
-  Expected="Float",
+  Expected="<cell><value>"++"Float"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a33_test(doc) -> [{userdata,[{""}]}];
 div_a33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a33"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a44_test(doc) -> [{userdata,[{""}]}];
 div_a44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a44"),
-  Expected="Float",
+  Expected="<cell><value>"++"Float"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a6_test(doc) -> [{userdata,[{""}]}];
 div_a6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a6"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a17_test(doc) -> [{userdata,[{""}]}];
 div_a17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a17"),
-  Expected="Str Num",
+  Expected="<cell><value>"++"Str Num"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a28_test(doc) -> [{userdata,[{""}]}];
 div_a28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a28"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a39_test(doc) -> [{userdata,[{""}]}];
 div_a39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a39"),
-  Expected="Str Num",
+  Expected="<cell><value>"++"Str Num"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a1_test(doc) -> [{userdata,[{""}]}];
 div_a1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a1"),
-  Expected="/",
+  Expected="<cell><value>"++"/"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a12_test(doc) -> [{userdata,[{""}]}];
 div_a12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a12"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a34_test(doc) -> [{userdata,[{""}]}];
 div_a34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a34"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a7_test(doc) -> [{userdata,[{""}]}];
 div_a7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a7"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a18_test(doc) -> [{userdata,[{""}]}];
 div_a18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a18"),
-  Expected="Integer",
+  Expected="<cell><value>"++"Integer"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a29_test(doc) -> [{userdata,[{""}]}];
 div_a29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a29"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a40_test(doc) -> [{userdata,[{""}]}];
 div_a40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a40"),
-  Expected="Integer",
+  Expected="<cell><value>"++"Integer"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a2_test(doc) -> [{userdata,[{""}]}];
 div_a2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a2"),
-  Expected="A",
+  Expected="<cell><value>"++"A"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a13_test(doc) -> [{userdata,[{""}]}];
 div_a13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a13"),
-  Expected="String",
+  Expected="<cell><value>"++"String"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a35_test(doc) -> [{userdata,[{""}]}];
 div_a35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a35"),
-  Expected="String",
+  Expected="<cell><value>"++"String"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a8_test(doc) -> [{userdata,[{""}]}];
 div_a8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a8"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a19_test(doc) -> [{userdata,[{""}]}];
 div_a19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a19"),
-  Expected="Integer",
+  Expected="<cell><value>"++"Integer"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a30_test(doc) -> [{userdata,[{""}]}];
 div_a30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a30"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a41_test(doc) -> [{userdata,[{""}]}];
 div_a41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a41"),
-  Expected="Integer",
+  Expected="<cell><value>"++"Integer"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a3_test(doc) -> [{userdata,[{""}]}];
 div_a3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a3"),
-  Expected="Blank",
+  Expected="<cell><value>"++"Blank"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a14_test(doc) -> [{userdata,[{""}]}];
 div_a14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a14"),
-  Expected="String",
+  Expected="<cell><value>"++"String"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a25_test(doc) -> [{userdata,[{""}]}];
 div_a25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a25"),
-  Expected="Blank",
+  Expected="<cell><value>"++"Blank"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a36_test(doc) -> [{userdata,[{""}]}];
 div_a36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a36"),
-  Expected="String",
+  Expected="<cell><value>"++"String"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a47_test(doc) -> [{userdata,[{""}]}];
 div_a47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a47"),
-  Expected="400.0",
+  Expected="<cell><value>"++"400.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a9_test(doc) -> [{userdata,[{""}]}];
 div_a9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a9"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a20_test(doc) -> [{userdata,[{""}]}];
 div_a20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a20"),
-  Expected="Zero",
+  Expected="<cell><value>"++"Zero"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a31_test(doc) -> [{userdata,[{""}]}];
 div_a31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a31"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a42_test(doc) -> [{userdata,[{""}]}];
 div_a42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a42"),
-  Expected="Zero",
+  Expected="<cell><value>"++"Zero"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a4_test(doc) -> [{userdata,[{""}]}];
 div_a4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a4"),
-  Expected="Boolean",
+  Expected="<cell><value>"++"Boolean"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a15_test(doc) -> [{userdata,[{""}]}];
 div_a15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a15"),
-  Expected="String",
+  Expected="<cell><value>"++"String"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a26_test(doc) -> [{userdata,[{""}]}];
 div_a26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a26"),
-  Expected="Boolean",
+  Expected="<cell><value>"++"Boolean"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a37_test(doc) -> [{userdata,[{""}]}];
 div_a37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a37"),
-  Expected="String",
+  Expected="<cell><value>"++"String"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a48_test(doc) -> [{userdata,[{""}]}];
 div_a48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a48"),
-  Expected="Success",
+  Expected="<cell><value>"++"Success"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a10_test(doc) -> [{userdata,[{""}]}];
 div_a10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a10"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a21_test(doc) -> [{userdata,[{""}]}];
 div_a21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a21"),
-  Expected="Float",
+  Expected="<cell><value>"++"Float"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a32_test(doc) -> [{userdata,[{""}]}];
 div_a32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a32"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_a43_test(doc) -> [{userdata,[{""}]}];
 div_a43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","a43"),
-  Expected="Float",
+  Expected="<cell><value>"++"Float"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l5_test(doc) -> [{userdata,[{""}]}];
 div_l5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l5"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l16_test(doc) -> [{userdata,[{""}]}];
 div_l16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l16"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l27_test(doc) -> [{userdata,[{""}]}];
 div_l27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l27"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l38_test(doc) -> [{userdata,[{""}]}];
 div_l38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l38"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l49_test(doc) -> [{userdata,[{""}]}];
 div_l49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l60_test(doc) -> [{userdata,[{""}]}];
 div_l60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l11_test(doc) -> [{userdata,[{""}]}];
 div_l11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l22_test(doc) -> [{userdata,[{""}]}];
 div_l22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l22"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l33_test(doc) -> [{userdata,[{""}]}];
 div_l33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l44_test(doc) -> [{userdata,[{""}]}];
 div_l44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l44"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l55_test(doc) -> [{userdata,[{""}]}];
 div_l55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l66_test(doc) -> [{userdata,[{""}]}];
 div_l66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l6_test(doc) -> [{userdata,[{""}]}];
 div_l6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l17_test(doc) -> [{userdata,[{""}]}];
 div_l17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l17"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l28_test(doc) -> [{userdata,[{""}]}];
 div_l28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l39_test(doc) -> [{userdata,[{""}]}];
 div_l39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l39"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l50_test(doc) -> [{userdata,[{""}]}];
 div_l50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l61_test(doc) -> [{userdata,[{""}]}];
 div_l61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l1_test(doc) -> [{userdata,[{""}]}];
 div_l1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l1"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l12_test(doc) -> [{userdata,[{""}]}];
 div_l12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l34_test(doc) -> [{userdata,[{""}]}];
 div_l34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l56_test(doc) -> [{userdata,[{""}]}];
 div_l56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l7_test(doc) -> [{userdata,[{""}]}];
 div_l7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l18_test(doc) -> [{userdata,[{""}]}];
 div_l18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l18"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l29_test(doc) -> [{userdata,[{""}]}];
 div_l29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l40_test(doc) -> [{userdata,[{""}]}];
 div_l40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l40"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l51_test(doc) -> [{userdata,[{""}]}];
 div_l51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l62_test(doc) -> [{userdata,[{""}]}];
 div_l62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l2_test(doc) -> [{userdata,[{""}]}];
 div_l2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l2"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l13_test(doc) -> [{userdata,[{""}]}];
 div_l13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l13"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l35_test(doc) -> [{userdata,[{""}]}];
 div_l35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l57_test(doc) -> [{userdata,[{""}]}];
 div_l57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l8_test(doc) -> [{userdata,[{""}]}];
 div_l8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l19_test(doc) -> [{userdata,[{""}]}];
 div_l19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l19"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l30_test(doc) -> [{userdata,[{""}]}];
 div_l30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l41_test(doc) -> [{userdata,[{""}]}];
 div_l41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l41"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l52_test(doc) -> [{userdata,[{""}]}];
 div_l52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l63_test(doc) -> [{userdata,[{""}]}];
 div_l63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l3_test(doc) -> [{userdata,[{""}]}];
 div_l3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l3"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l14_test(doc) -> [{userdata,[{""}]}];
 div_l14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l14"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l25_test(doc) -> [{userdata,[{""}]}];
 div_l25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l25"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l36_test(doc) -> [{userdata,[{""}]}];
 div_l36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l47_test(doc) -> [{userdata,[{""}]}];
 div_l47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l58_test(doc) -> [{userdata,[{""}]}];
 div_l58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l9_test(doc) -> [{userdata,[{""}]}];
 div_l9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l20_test(doc) -> [{userdata,[{""}]}];
 div_l20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l20"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l31_test(doc) -> [{userdata,[{""}]}];
 div_l31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l42_test(doc) -> [{userdata,[{""}]}];
 div_l42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l42"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l53_test(doc) -> [{userdata,[{""}]}];
 div_l53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l64_test(doc) -> [{userdata,[{""}]}];
 div_l64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l4_test(doc) -> [{userdata,[{""}]}];
 div_l4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l4"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l15_test(doc) -> [{userdata,[{""}]}];
 div_l15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l15"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l26_test(doc) -> [{userdata,[{""}]}];
 div_l26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l26"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l37_test(doc) -> [{userdata,[{""}]}];
 div_l37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l48_test(doc) -> [{userdata,[{""}]}];
 div_l48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l59_test(doc) -> [{userdata,[{""}]}];
 div_l59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l10_test(doc) -> [{userdata,[{""}]}];
 div_l10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l21_test(doc) -> [{userdata,[{""}]}];
 div_l21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l21"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l32_test(doc) -> [{userdata,[{""}]}];
 div_l32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l43_test(doc) -> [{userdata,[{""}]}];
 div_l43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l43"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l54_test(doc) -> [{userdata,[{""}]}];
 div_l54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_l65_test(doc) -> [{userdata,[{""}]}];
 div_l65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","l65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_b5_test(doc) -> [{userdata,[{""}]}];
 div_b5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","b5"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_b16_test(doc) -> [{userdata,[{""}]}];
 div_b16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","b16"),
-  Expected="2.7",
+  Expected="<cell><value>"++"2.7"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_b11_test(doc) -> [{userdata,[{""}]}];
 div_b11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","b11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_b22_test(doc) -> [{userdata,[{""}]}];
 div_b22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","b22"),
-  Expected="36193.2",
+  Expected="<cell><value>"++"36193.2"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_b6_test(doc) -> [{userdata,[{""}]}];
 div_b6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","b6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_b17_test(doc) -> [{userdata,[{""}]}];
 div_b17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","b17"),
-  Expected="3.54",
+  Expected="<cell><value>"++"3.54"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_b1_test(doc) -> [{userdata,[{""}]}];
 div_b1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","b1"),
-  Expected="B",
+  Expected="<cell><value>"++"B"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_b12_test(doc) -> [{userdata,[{""}]}];
 div_b12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","b12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_b7_test(doc) -> [{userdata,[{""}]}];
 div_b7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","b7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_b18_test(doc) -> [{userdata,[{""}]}];
 div_b18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","b18"),
-  Expected="1999/02/01 00:00:00",
+  Expected="<cell><value>"++"1999/02/01 00:00:00"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_b13_test(doc) -> [{userdata,[{""}]}];
 div_b13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","b13"),
-  Expected="Liz",
+  Expected="<cell><value>"++"Liz"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_b8_test(doc) -> [{userdata,[{""}]}];
 div_b8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","b8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_b19_test(doc) -> [{userdata,[{""}]}];
 div_b19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","b19"),
-  Expected="1999/02/02 00:00:00",
+  Expected="<cell><value>"++"1999/02/02 00:00:00"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_b14_test(doc) -> [{userdata,[{""}]}];
 div_b14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","b14"),
-  Expected="Doug",
+  Expected="<cell><value>"++"Doug"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_b9_test(doc) -> [{userdata,[{""}]}];
 div_b9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","b9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_b20_test(doc) -> [{userdata,[{""}]}];
 div_b20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","b20"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_b4_test(doc) -> [{userdata,[{""}]}];
 div_b4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","b4"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_b15_test(doc) -> [{userdata,[{""}]}];
 div_b15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","b15"),
-  Expected="Bob",
+  Expected="<cell><value>"++"Bob"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_b10_test(doc) -> [{userdata,[{""}]}];
 div_b10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","b10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_b21_test(doc) -> [{userdata,[{""}]}];
 div_b21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","b21"),
-  Expected="3.1415",
+  Expected="<cell><value>"++"3.1415"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m5_test(doc) -> [{userdata,[{""}]}];
 div_m5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m5"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m16_test(doc) -> [{userdata,[{""}]}];
 div_m16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m16"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m27_test(doc) -> [{userdata,[{""}]}];
 div_m27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m27"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m38_test(doc) -> [{userdata,[{""}]}];
 div_m38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m38"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m49_test(doc) -> [{userdata,[{""}]}];
 div_m49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m60_test(doc) -> [{userdata,[{""}]}];
 div_m60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m11_test(doc) -> [{userdata,[{""}]}];
 div_m11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m22_test(doc) -> [{userdata,[{""}]}];
 div_m22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m22"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m33_test(doc) -> [{userdata,[{""}]}];
 div_m33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m44_test(doc) -> [{userdata,[{""}]}];
 div_m44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m44"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m55_test(doc) -> [{userdata,[{""}]}];
 div_m55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m66_test(doc) -> [{userdata,[{""}]}];
 div_m66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m6_test(doc) -> [{userdata,[{""}]}];
 div_m6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m17_test(doc) -> [{userdata,[{""}]}];
 div_m17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m17"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m28_test(doc) -> [{userdata,[{""}]}];
 div_m28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m39_test(doc) -> [{userdata,[{""}]}];
 div_m39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m39"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m50_test(doc) -> [{userdata,[{""}]}];
 div_m50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m61_test(doc) -> [{userdata,[{""}]}];
 div_m61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m1_test(doc) -> [{userdata,[{""}]}];
 div_m1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m1"),
-  Expected="String",
+  Expected="<cell><value>"++"String"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m12_test(doc) -> [{userdata,[{""}]}];
 div_m12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m34_test(doc) -> [{userdata,[{""}]}];
 div_m34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m56_test(doc) -> [{userdata,[{""}]}];
 div_m56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m7_test(doc) -> [{userdata,[{""}]}];
 div_m7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m18_test(doc) -> [{userdata,[{""}]}];
 div_m18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m18"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m29_test(doc) -> [{userdata,[{""}]}];
 div_m29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m40_test(doc) -> [{userdata,[{""}]}];
 div_m40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m40"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m51_test(doc) -> [{userdata,[{""}]}];
 div_m51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m62_test(doc) -> [{userdata,[{""}]}];
 div_m62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m2_test(doc) -> [{userdata,[{""}]}];
 div_m2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m2"),
-  Expected="Liz",
+  Expected="<cell><value>"++"Liz"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m13_test(doc) -> [{userdata,[{""}]}];
 div_m13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m13"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m35_test(doc) -> [{userdata,[{""}]}];
 div_m35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m57_test(doc) -> [{userdata,[{""}]}];
 div_m57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m8_test(doc) -> [{userdata,[{""}]}];
 div_m8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m19_test(doc) -> [{userdata,[{""}]}];
 div_m19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m19"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m30_test(doc) -> [{userdata,[{""}]}];
 div_m30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m41_test(doc) -> [{userdata,[{""}]}];
 div_m41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m41"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m52_test(doc) -> [{userdata,[{""}]}];
 div_m52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m63_test(doc) -> [{userdata,[{""}]}];
 div_m63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m3_test(doc) -> [{userdata,[{""}]}];
 div_m3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m3"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m14_test(doc) -> [{userdata,[{""}]}];
 div_m14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m14"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m25_test(doc) -> [{userdata,[{""}]}];
 div_m25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m25"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m36_test(doc) -> [{userdata,[{""}]}];
 div_m36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m47_test(doc) -> [{userdata,[{""}]}];
 div_m47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m58_test(doc) -> [{userdata,[{""}]}];
 div_m58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m9_test(doc) -> [{userdata,[{""}]}];
 div_m9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m20_test(doc) -> [{userdata,[{""}]}];
 div_m20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m20"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m31_test(doc) -> [{userdata,[{""}]}];
 div_m31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m42_test(doc) -> [{userdata,[{""}]}];
 div_m42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m42"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m53_test(doc) -> [{userdata,[{""}]}];
 div_m53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m64_test(doc) -> [{userdata,[{""}]}];
 div_m64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m4_test(doc) -> [{userdata,[{""}]}];
 div_m4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m4"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m15_test(doc) -> [{userdata,[{""}]}];
 div_m15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m15"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m26_test(doc) -> [{userdata,[{""}]}];
 div_m26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m26"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m37_test(doc) -> [{userdata,[{""}]}];
 div_m37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m48_test(doc) -> [{userdata,[{""}]}];
 div_m48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m59_test(doc) -> [{userdata,[{""}]}];
 div_m59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m10_test(doc) -> [{userdata,[{""}]}];
 div_m10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m21_test(doc) -> [{userdata,[{""}]}];
 div_m21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m21"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m32_test(doc) -> [{userdata,[{""}]}];
 div_m32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m43_test(doc) -> [{userdata,[{""}]}];
 div_m43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m43"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m54_test(doc) -> [{userdata,[{""}]}];
 div_m54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_m65_test(doc) -> [{userdata,[{""}]}];
 div_m65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","m65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c5_test(doc) -> [{userdata,[{""}]}];
 div_c5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c5"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c16_test(doc) -> [{userdata,[{""}]}];
 div_c16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c16"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c27_test(doc) -> [{userdata,[{""}]}];
 div_c27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c27"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c38_test(doc) -> [{userdata,[{""}]}];
 div_c38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c38"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c49_test(doc) -> [{userdata,[{""}]}];
 div_c49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c60_test(doc) -> [{userdata,[{""}]}];
 div_c60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c11_test(doc) -> [{userdata,[{""}]}];
 div_c11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c22_test(doc) -> [{userdata,[{""}]}];
 div_c22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c22"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c33_test(doc) -> [{userdata,[{""}]}];
 div_c33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c44_test(doc) -> [{userdata,[{""}]}];
 div_c44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c44"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c55_test(doc) -> [{userdata,[{""}]}];
 div_c55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c66_test(doc) -> [{userdata,[{""}]}];
 div_c66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c6_test(doc) -> [{userdata,[{""}]}];
 div_c6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c17_test(doc) -> [{userdata,[{""}]}];
 div_c17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c17"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c28_test(doc) -> [{userdata,[{""}]}];
 div_c28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c39_test(doc) -> [{userdata,[{""}]}];
 div_c39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c39"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c50_test(doc) -> [{userdata,[{""}]}];
 div_c50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c61_test(doc) -> [{userdata,[{""}]}];
 div_c61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c1_test(doc) -> [{userdata,[{""}]}];
 div_c1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c1"),
-  Expected="Blank",
+  Expected="<cell><value>"++"Blank"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c12_test(doc) -> [{userdata,[{""}]}];
 div_c12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c34_test(doc) -> [{userdata,[{""}]}];
 div_c34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c56_test(doc) -> [{userdata,[{""}]}];
 div_c56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c7_test(doc) -> [{userdata,[{""}]}];
 div_c7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c18_test(doc) -> [{userdata,[{""}]}];
 div_c18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c18"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c29_test(doc) -> [{userdata,[{""}]}];
 div_c29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c40_test(doc) -> [{userdata,[{""}]}];
 div_c40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c40"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c51_test(doc) -> [{userdata,[{""}]}];
 div_c51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c62_test(doc) -> [{userdata,[{""}]}];
 div_c62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c13_test(doc) -> [{userdata,[{""}]}];
 div_c13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c13"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c35_test(doc) -> [{userdata,[{""}]}];
 div_c35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c57_test(doc) -> [{userdata,[{""}]}];
 div_c57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c8_test(doc) -> [{userdata,[{""}]}];
 div_c8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c19_test(doc) -> [{userdata,[{""}]}];
 div_c19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c19"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c30_test(doc) -> [{userdata,[{""}]}];
 div_c30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c41_test(doc) -> [{userdata,[{""}]}];
 div_c41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c41"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c52_test(doc) -> [{userdata,[{""}]}];
 div_c52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c63_test(doc) -> [{userdata,[{""}]}];
 div_c63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c3_test(doc) -> [{userdata,[{""}]}];
 div_c3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c3"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c14_test(doc) -> [{userdata,[{""}]}];
 div_c14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c14"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c25_test(doc) -> [{userdata,[{""}]}];
 div_c25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c25"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c36_test(doc) -> [{userdata,[{""}]}];
 div_c36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c47_test(doc) -> [{userdata,[{""}]}];
 div_c47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c58_test(doc) -> [{userdata,[{""}]}];
 div_c58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c9_test(doc) -> [{userdata,[{""}]}];
 div_c9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c20_test(doc) -> [{userdata,[{""}]}];
 div_c20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c20"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c31_test(doc) -> [{userdata,[{""}]}];
 div_c31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c42_test(doc) -> [{userdata,[{""}]}];
 div_c42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c42"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c53_test(doc) -> [{userdata,[{""}]}];
 div_c53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c64_test(doc) -> [{userdata,[{""}]}];
 div_c64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c4_test(doc) -> [{userdata,[{""}]}];
 div_c4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c4"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c15_test(doc) -> [{userdata,[{""}]}];
 div_c15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c15"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c26_test(doc) -> [{userdata,[{""}]}];
 div_c26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c26"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c37_test(doc) -> [{userdata,[{""}]}];
 div_c37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c48_test(doc) -> [{userdata,[{""}]}];
 div_c48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c59_test(doc) -> [{userdata,[{""}]}];
 div_c59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c10_test(doc) -> [{userdata,[{""}]}];
 div_c10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c21_test(doc) -> [{userdata,[{""}]}];
 div_c21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c21"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c32_test(doc) -> [{userdata,[{""}]}];
 div_c32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c43_test(doc) -> [{userdata,[{""}]}];
 div_c43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c43"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c54_test(doc) -> [{userdata,[{""}]}];
 div_c54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_c65_test(doc) -> [{userdata,[{""}]}];
 div_c65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","c65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n5_test(doc) -> [{userdata,[{""}]}];
 div_n5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n5"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n16_test(doc) -> [{userdata,[{""}]}];
 div_n16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n16"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n27_test(doc) -> [{userdata,[{""}]}];
 div_n27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n27"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n38_test(doc) -> [{userdata,[{""}]}];
 div_n38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n38"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n49_test(doc) -> [{userdata,[{""}]}];
 div_n49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n60_test(doc) -> [{userdata,[{""}]}];
 div_n60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n11_test(doc) -> [{userdata,[{""}]}];
 div_n11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n22_test(doc) -> [{userdata,[{""}]}];
 div_n22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n22"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n33_test(doc) -> [{userdata,[{""}]}];
 div_n33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n44_test(doc) -> [{userdata,[{""}]}];
 div_n44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n44"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n55_test(doc) -> [{userdata,[{""}]}];
 div_n55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n66_test(doc) -> [{userdata,[{""}]}];
 div_n66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n6_test(doc) -> [{userdata,[{""}]}];
 div_n6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n17_test(doc) -> [{userdata,[{""}]}];
 div_n17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n17"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n28_test(doc) -> [{userdata,[{""}]}];
 div_n28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n39_test(doc) -> [{userdata,[{""}]}];
 div_n39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n39"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n50_test(doc) -> [{userdata,[{""}]}];
 div_n50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n61_test(doc) -> [{userdata,[{""}]}];
 div_n61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n1_test(doc) -> [{userdata,[{""}]}];
 div_n1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n1"),
-  Expected="String",
+  Expected="<cell><value>"++"String"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n12_test(doc) -> [{userdata,[{""}]}];
 div_n12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n34_test(doc) -> [{userdata,[{""}]}];
 div_n34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n56_test(doc) -> [{userdata,[{""}]}];
 div_n56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n7_test(doc) -> [{userdata,[{""}]}];
 div_n7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n18_test(doc) -> [{userdata,[{""}]}];
 div_n18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n18"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n29_test(doc) -> [{userdata,[{""}]}];
 div_n29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n40_test(doc) -> [{userdata,[{""}]}];
 div_n40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n40"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n51_test(doc) -> [{userdata,[{""}]}];
 div_n51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n62_test(doc) -> [{userdata,[{""}]}];
 div_n62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n2_test(doc) -> [{userdata,[{""}]}];
 div_n2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n2"),
-  Expected="Doug",
+  Expected="<cell><value>"++"Doug"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n13_test(doc) -> [{userdata,[{""}]}];
 div_n13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n13"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n35_test(doc) -> [{userdata,[{""}]}];
 div_n35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n57_test(doc) -> [{userdata,[{""}]}];
 div_n57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n8_test(doc) -> [{userdata,[{""}]}];
 div_n8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n19_test(doc) -> [{userdata,[{""}]}];
 div_n19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n19"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n30_test(doc) -> [{userdata,[{""}]}];
 div_n30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n41_test(doc) -> [{userdata,[{""}]}];
 div_n41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n41"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n52_test(doc) -> [{userdata,[{""}]}];
 div_n52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n63_test(doc) -> [{userdata,[{""}]}];
 div_n63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n3_test(doc) -> [{userdata,[{""}]}];
 div_n3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n3"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n14_test(doc) -> [{userdata,[{""}]}];
 div_n14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n14"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n25_test(doc) -> [{userdata,[{""}]}];
 div_n25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n25"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n36_test(doc) -> [{userdata,[{""}]}];
 div_n36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n47_test(doc) -> [{userdata,[{""}]}];
 div_n47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n58_test(doc) -> [{userdata,[{""}]}];
 div_n58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n9_test(doc) -> [{userdata,[{""}]}];
 div_n9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n20_test(doc) -> [{userdata,[{""}]}];
 div_n20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n20"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n31_test(doc) -> [{userdata,[{""}]}];
 div_n31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n42_test(doc) -> [{userdata,[{""}]}];
 div_n42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n42"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n53_test(doc) -> [{userdata,[{""}]}];
 div_n53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n64_test(doc) -> [{userdata,[{""}]}];
 div_n64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n4_test(doc) -> [{userdata,[{""}]}];
 div_n4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n4"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n15_test(doc) -> [{userdata,[{""}]}];
 div_n15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n15"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n26_test(doc) -> [{userdata,[{""}]}];
 div_n26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n26"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n37_test(doc) -> [{userdata,[{""}]}];
 div_n37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n48_test(doc) -> [{userdata,[{""}]}];
 div_n48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n59_test(doc) -> [{userdata,[{""}]}];
 div_n59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n10_test(doc) -> [{userdata,[{""}]}];
 div_n10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n21_test(doc) -> [{userdata,[{""}]}];
 div_n21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n21"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n32_test(doc) -> [{userdata,[{""}]}];
 div_n32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n43_test(doc) -> [{userdata,[{""}]}];
 div_n43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n43"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n54_test(doc) -> [{userdata,[{""}]}];
 div_n54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_n65_test(doc) -> [{userdata,[{""}]}];
 div_n65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","n65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d5_test(doc) -> [{userdata,[{""}]}];
 div_d5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d5"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d16_test(doc) -> [{userdata,[{""}]}];
 div_d16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d16"),
-  Expected="2.7",
+  Expected="<cell><value>"++"2.7"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d27_test(doc) -> [{userdata,[{""}]}];
 div_d27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d27"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d38_test(doc) -> [{userdata,[{""}]}];
 div_d38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d38"),
-  Expected="2.7",
+  Expected="<cell><value>"++"2.7"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d49_test(doc) -> [{userdata,[{""}]}];
 div_d49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d60_test(doc) -> [{userdata,[{""}]}];
 div_d60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d11_test(doc) -> [{userdata,[{""}]}];
 div_d11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d22_test(doc) -> [{userdata,[{""}]}];
 div_d22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d22"),
-  Expected="36193.2",
+  Expected="<cell><value>"++"36193.2"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d33_test(doc) -> [{userdata,[{""}]}];
 div_d33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d44_test(doc) -> [{userdata,[{""}]}];
 div_d44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d44"),
-  Expected="36193.2",
+  Expected="<cell><value>"++"36193.2"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d55_test(doc) -> [{userdata,[{""}]}];
 div_d55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d66_test(doc) -> [{userdata,[{""}]}];
 div_d66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d6_test(doc) -> [{userdata,[{""}]}];
 div_d6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d17_test(doc) -> [{userdata,[{""}]}];
 div_d17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d17"),
-  Expected="3.54",
+  Expected="<cell><value>"++"3.54"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d28_test(doc) -> [{userdata,[{""}]}];
 div_d28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d39_test(doc) -> [{userdata,[{""}]}];
 div_d39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d39"),
-  Expected="3.54",
+  Expected="<cell><value>"++"3.54"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d50_test(doc) -> [{userdata,[{""}]}];
 div_d50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d61_test(doc) -> [{userdata,[{""}]}];
 div_d61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d1_test(doc) -> [{userdata,[{""}]}];
 div_d1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d1"),
-  Expected="Boolean",
+  Expected="<cell><value>"++"Boolean"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d12_test(doc) -> [{userdata,[{""}]}];
 div_d12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d34_test(doc) -> [{userdata,[{""}]}];
 div_d34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d56_test(doc) -> [{userdata,[{""}]}];
 div_d56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d7_test(doc) -> [{userdata,[{""}]}];
 div_d7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d18_test(doc) -> [{userdata,[{""}]}];
 div_d18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d18"),
-  Expected="36192.0",
+  Expected="<cell><value>"++"36192.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d29_test(doc) -> [{userdata,[{""}]}];
 div_d29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d40_test(doc) -> [{userdata,[{""}]}];
 div_d40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d40"),
-  Expected="36192.0",
+  Expected="<cell><value>"++"36192.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d51_test(doc) -> [{userdata,[{""}]}];
 div_d51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d62_test(doc) -> [{userdata,[{""}]}];
 div_d62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d2_test(doc) -> [{userdata,[{""}]}];
 div_d2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d2"),
-  Expected="true",
+  Expected="<cell><value>"++"true"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d13_test(doc) -> [{userdata,[{""}]}];
 div_d13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d13"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d35_test(doc) -> [{userdata,[{""}]}];
 div_d35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d57_test(doc) -> [{userdata,[{""}]}];
 div_d57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d8_test(doc) -> [{userdata,[{""}]}];
 div_d8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d19_test(doc) -> [{userdata,[{""}]}];
 div_d19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d19"),
-  Expected="36193.0",
+  Expected="<cell><value>"++"36193.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d30_test(doc) -> [{userdata,[{""}]}];
 div_d30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d41_test(doc) -> [{userdata,[{""}]}];
 div_d41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d41"),
-  Expected="36193.0",
+  Expected="<cell><value>"++"36193.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d52_test(doc) -> [{userdata,[{""}]}];
 div_d52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d63_test(doc) -> [{userdata,[{""}]}];
 div_d63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d3_test(doc) -> [{userdata,[{""}]}];
 div_d3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d3"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d14_test(doc) -> [{userdata,[{""}]}];
 div_d14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d14"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d25_test(doc) -> [{userdata,[{""}]}];
 div_d25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d25"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d36_test(doc) -> [{userdata,[{""}]}];
 div_d36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d47_test(doc) -> [{userdata,[{""}]}];
 div_d47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d58_test(doc) -> [{userdata,[{""}]}];
 div_d58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d9_test(doc) -> [{userdata,[{""}]}];
 div_d9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d20_test(doc) -> [{userdata,[{""}]}];
 div_d20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d20"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d31_test(doc) -> [{userdata,[{""}]}];
 div_d31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d42_test(doc) -> [{userdata,[{""}]}];
 div_d42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d42"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d53_test(doc) -> [{userdata,[{""}]}];
 div_d53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d64_test(doc) -> [{userdata,[{""}]}];
 div_d64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d4_test(doc) -> [{userdata,[{""}]}];
 div_d4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d4"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d15_test(doc) -> [{userdata,[{""}]}];
 div_d15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d15"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d26_test(doc) -> [{userdata,[{""}]}];
 div_d26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d26"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d37_test(doc) -> [{userdata,[{""}]}];
 div_d37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d48_test(doc) -> [{userdata,[{""}]}];
 div_d48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d59_test(doc) -> [{userdata,[{""}]}];
 div_d59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d10_test(doc) -> [{userdata,[{""}]}];
 div_d10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d21_test(doc) -> [{userdata,[{""}]}];
 div_d21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d21"),
-  Expected="3.1415",
+  Expected="<cell><value>"++"3.1415"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d32_test(doc) -> [{userdata,[{""}]}];
 div_d32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d43_test(doc) -> [{userdata,[{""}]}];
 div_d43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d43"),
-  Expected="3.1415",
+  Expected="<cell><value>"++"3.1415"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d54_test(doc) -> [{userdata,[{""}]}];
 div_d54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_d65_test(doc) -> [{userdata,[{""}]}];
 div_d65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","d65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o5_test(doc) -> [{userdata,[{""}]}];
 div_o5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o5"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o16_test(doc) -> [{userdata,[{""}]}];
 div_o16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o16"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o27_test(doc) -> [{userdata,[{""}]}];
 div_o27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o27"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o38_test(doc) -> [{userdata,[{""}]}];
 div_o38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o38"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o49_test(doc) -> [{userdata,[{""}]}];
 div_o49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o60_test(doc) -> [{userdata,[{""}]}];
 div_o60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o11_test(doc) -> [{userdata,[{""}]}];
 div_o11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o22_test(doc) -> [{userdata,[{""}]}];
 div_o22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o22"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o33_test(doc) -> [{userdata,[{""}]}];
 div_o33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o44_test(doc) -> [{userdata,[{""}]}];
 div_o44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o44"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o55_test(doc) -> [{userdata,[{""}]}];
 div_o55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o66_test(doc) -> [{userdata,[{""}]}];
 div_o66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o6_test(doc) -> [{userdata,[{""}]}];
 div_o6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o17_test(doc) -> [{userdata,[{""}]}];
 div_o17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o17"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o28_test(doc) -> [{userdata,[{""}]}];
 div_o28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o39_test(doc) -> [{userdata,[{""}]}];
 div_o39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o39"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o50_test(doc) -> [{userdata,[{""}]}];
 div_o50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o61_test(doc) -> [{userdata,[{""}]}];
 div_o61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o1_test(doc) -> [{userdata,[{""}]}];
 div_o1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o1"),
-  Expected="String",
+  Expected="<cell><value>"++"String"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o12_test(doc) -> [{userdata,[{""}]}];
 div_o12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o34_test(doc) -> [{userdata,[{""}]}];
 div_o34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o56_test(doc) -> [{userdata,[{""}]}];
 div_o56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o7_test(doc) -> [{userdata,[{""}]}];
 div_o7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o18_test(doc) -> [{userdata,[{""}]}];
 div_o18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o18"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o29_test(doc) -> [{userdata,[{""}]}];
 div_o29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o40_test(doc) -> [{userdata,[{""}]}];
 div_o40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o40"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o51_test(doc) -> [{userdata,[{""}]}];
 div_o51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o62_test(doc) -> [{userdata,[{""}]}];
 div_o62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o2_test(doc) -> [{userdata,[{""}]}];
 div_o2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o2"),
-  Expected="Bob",
+  Expected="<cell><value>"++"Bob"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o13_test(doc) -> [{userdata,[{""}]}];
 div_o13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o13"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o35_test(doc) -> [{userdata,[{""}]}];
 div_o35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o57_test(doc) -> [{userdata,[{""}]}];
 div_o57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o8_test(doc) -> [{userdata,[{""}]}];
 div_o8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o19_test(doc) -> [{userdata,[{""}]}];
 div_o19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o19"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o30_test(doc) -> [{userdata,[{""}]}];
 div_o30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o41_test(doc) -> [{userdata,[{""}]}];
 div_o41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o41"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o52_test(doc) -> [{userdata,[{""}]}];
 div_o52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o63_test(doc) -> [{userdata,[{""}]}];
 div_o63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o3_test(doc) -> [{userdata,[{""}]}];
 div_o3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o3"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o14_test(doc) -> [{userdata,[{""}]}];
 div_o14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o14"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o25_test(doc) -> [{userdata,[{""}]}];
 div_o25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o25"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o36_test(doc) -> [{userdata,[{""}]}];
 div_o36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o47_test(doc) -> [{userdata,[{""}]}];
 div_o47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o58_test(doc) -> [{userdata,[{""}]}];
 div_o58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o9_test(doc) -> [{userdata,[{""}]}];
 div_o9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o20_test(doc) -> [{userdata,[{""}]}];
 div_o20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o20"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o31_test(doc) -> [{userdata,[{""}]}];
 div_o31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o42_test(doc) -> [{userdata,[{""}]}];
 div_o42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o42"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o53_test(doc) -> [{userdata,[{""}]}];
 div_o53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o64_test(doc) -> [{userdata,[{""}]}];
 div_o64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o4_test(doc) -> [{userdata,[{""}]}];
 div_o4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o4"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o15_test(doc) -> [{userdata,[{""}]}];
 div_o15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o15"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o26_test(doc) -> [{userdata,[{""}]}];
 div_o26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o26"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o37_test(doc) -> [{userdata,[{""}]}];
 div_o37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o48_test(doc) -> [{userdata,[{""}]}];
 div_o48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o59_test(doc) -> [{userdata,[{""}]}];
 div_o59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o10_test(doc) -> [{userdata,[{""}]}];
 div_o10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o21_test(doc) -> [{userdata,[{""}]}];
 div_o21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o21"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o32_test(doc) -> [{userdata,[{""}]}];
 div_o32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o43_test(doc) -> [{userdata,[{""}]}];
 div_o43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o43"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o54_test(doc) -> [{userdata,[{""}]}];
 div_o54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_o65_test(doc) -> [{userdata,[{""}]}];
 div_o65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","o65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e5_test(doc) -> [{userdata,[{""}]}];
 div_e5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e5"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e16_test(doc) -> [{userdata,[{""}]}];
 div_e16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e16"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e27_test(doc) -> [{userdata,[{""}]}];
 div_e27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e27"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e38_test(doc) -> [{userdata,[{""}]}];
 div_e38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e38"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e49_test(doc) -> [{userdata,[{""}]}];
 div_e49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e60_test(doc) -> [{userdata,[{""}]}];
 div_e60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e11_test(doc) -> [{userdata,[{""}]}];
 div_e11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e22_test(doc) -> [{userdata,[{""}]}];
 div_e22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e22"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e33_test(doc) -> [{userdata,[{""}]}];
 div_e33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e44_test(doc) -> [{userdata,[{""}]}];
 div_e44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e44"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e55_test(doc) -> [{userdata,[{""}]}];
 div_e55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e66_test(doc) -> [{userdata,[{""}]}];
 div_e66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e6_test(doc) -> [{userdata,[{""}]}];
 div_e6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e17_test(doc) -> [{userdata,[{""}]}];
 div_e17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e17"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e28_test(doc) -> [{userdata,[{""}]}];
 div_e28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e39_test(doc) -> [{userdata,[{""}]}];
 div_e39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e39"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e50_test(doc) -> [{userdata,[{""}]}];
 div_e50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e61_test(doc) -> [{userdata,[{""}]}];
 div_e61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e1_test(doc) -> [{userdata,[{""}]}];
 div_e1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e1"),
-  Expected="Boolean",
+  Expected="<cell><value>"++"Boolean"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e12_test(doc) -> [{userdata,[{""}]}];
 div_e12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e34_test(doc) -> [{userdata,[{""}]}];
 div_e34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e56_test(doc) -> [{userdata,[{""}]}];
 div_e56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e7_test(doc) -> [{userdata,[{""}]}];
 div_e7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e18_test(doc) -> [{userdata,[{""}]}];
 div_e18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e18"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e29_test(doc) -> [{userdata,[{""}]}];
 div_e29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e40_test(doc) -> [{userdata,[{""}]}];
 div_e40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e40"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e51_test(doc) -> [{userdata,[{""}]}];
 div_e51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e62_test(doc) -> [{userdata,[{""}]}];
 div_e62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e2_test(doc) -> [{userdata,[{""}]}];
 div_e2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e2"),
-  Expected="false",
+  Expected="<cell><value>"++"false"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e13_test(doc) -> [{userdata,[{""}]}];
 div_e13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e13"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e35_test(doc) -> [{userdata,[{""}]}];
 div_e35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e57_test(doc) -> [{userdata,[{""}]}];
 div_e57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e8_test(doc) -> [{userdata,[{""}]}];
 div_e8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e19_test(doc) -> [{userdata,[{""}]}];
 div_e19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e19"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e30_test(doc) -> [{userdata,[{""}]}];
 div_e30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e41_test(doc) -> [{userdata,[{""}]}];
 div_e41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e41"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e52_test(doc) -> [{userdata,[{""}]}];
 div_e52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e63_test(doc) -> [{userdata,[{""}]}];
 div_e63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e3_test(doc) -> [{userdata,[{""}]}];
 div_e3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e3"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e14_test(doc) -> [{userdata,[{""}]}];
 div_e14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e14"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e25_test(doc) -> [{userdata,[{""}]}];
 div_e25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e25"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e36_test(doc) -> [{userdata,[{""}]}];
 div_e36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e47_test(doc) -> [{userdata,[{""}]}];
 div_e47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e58_test(doc) -> [{userdata,[{""}]}];
 div_e58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e9_test(doc) -> [{userdata,[{""}]}];
 div_e9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e20_test(doc) -> [{userdata,[{""}]}];
 div_e20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e20"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e31_test(doc) -> [{userdata,[{""}]}];
 div_e31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e42_test(doc) -> [{userdata,[{""}]}];
 div_e42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e42"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e53_test(doc) -> [{userdata,[{""}]}];
 div_e53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e64_test(doc) -> [{userdata,[{""}]}];
 div_e64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e4_test(doc) -> [{userdata,[{""}]}];
 div_e4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e4"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e15_test(doc) -> [{userdata,[{""}]}];
 div_e15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e15"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e26_test(doc) -> [{userdata,[{""}]}];
 div_e26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e26"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e37_test(doc) -> [{userdata,[{""}]}];
 div_e37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e48_test(doc) -> [{userdata,[{""}]}];
 div_e48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e59_test(doc) -> [{userdata,[{""}]}];
 div_e59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e10_test(doc) -> [{userdata,[{""}]}];
 div_e10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e21_test(doc) -> [{userdata,[{""}]}];
 div_e21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e21"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e32_test(doc) -> [{userdata,[{""}]}];
 div_e32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e43_test(doc) -> [{userdata,[{""}]}];
 div_e43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e43"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e54_test(doc) -> [{userdata,[{""}]}];
 div_e54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_e65_test(doc) -> [{userdata,[{""}]}];
 div_e65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","e65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p5_test(doc) -> [{userdata,[{""}]}];
 div_p5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p5"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p16_test(doc) -> [{userdata,[{""}]}];
 div_p16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p16"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p27_test(doc) -> [{userdata,[{""}]}];
 div_p27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p27"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p38_test(doc) -> [{userdata,[{""}]}];
 div_p38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p38"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p49_test(doc) -> [{userdata,[{""}]}];
 div_p49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p60_test(doc) -> [{userdata,[{""}]}];
 div_p60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p11_test(doc) -> [{userdata,[{""}]}];
 div_p11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p22_test(doc) -> [{userdata,[{""}]}];
 div_p22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p22"),
-  Expected="13404.8888888889",
+  Expected="<cell><value>"++"13404.8888888889"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p33_test(doc) -> [{userdata,[{""}]}];
 div_p33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p44_test(doc) -> [{userdata,[{""}]}];
 div_p44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p44"),
-  Expected="13404.8888888889",
+  Expected="<cell><value>"++"13404.8888888889"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p55_test(doc) -> [{userdata,[{""}]}];
 div_p55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p66_test(doc) -> [{userdata,[{""}]}];
 div_p66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p6_test(doc) -> [{userdata,[{""}]}];
 div_p6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p17_test(doc) -> [{userdata,[{""}]}];
 div_p17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p17"),
-  Expected="1.31111111111111",
+  Expected="<cell><value>"++"1.31111111111111"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p28_test(doc) -> [{userdata,[{""}]}];
 div_p28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p39_test(doc) -> [{userdata,[{""}]}];
 div_p39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p39"),
-  Expected="1.31111111111111",
+  Expected="<cell><value>"++"1.31111111111111"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p50_test(doc) -> [{userdata,[{""}]}];
 div_p50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p61_test(doc) -> [{userdata,[{""}]}];
 div_p61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p1_test(doc) -> [{userdata,[{""}]}];
 div_p1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p1"),
-  Expected="Str Num",
+  Expected="<cell><value>"++"Str Num"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p12_test(doc) -> [{userdata,[{""}]}];
 div_p12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p34_test(doc) -> [{userdata,[{""}]}];
 div_p34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p56_test(doc) -> [{userdata,[{""}]}];
 div_p56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p7_test(doc) -> [{userdata,[{""}]}];
 div_p7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p18_test(doc) -> [{userdata,[{""}]}];
 div_p18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p18"),
-  Expected="13404.4444444444",
+  Expected="<cell><value>"++"13404.4444444444"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p29_test(doc) -> [{userdata,[{""}]}];
 div_p29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p40_test(doc) -> [{userdata,[{""}]}];
 div_p40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p40"),
-  Expected="13404.4444444444",
+  Expected="<cell><value>"++"13404.4444444444"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p51_test(doc) -> [{userdata,[{""}]}];
 div_p51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p62_test(doc) -> [{userdata,[{""}]}];
 div_p62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p2_test(doc) -> [{userdata,[{""}]}];
 div_p2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p2"),
-  Expected="2.7",
+  Expected="<cell><value>"++"2.7"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p13_test(doc) -> [{userdata,[{""}]}];
 div_p13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p13"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p35_test(doc) -> [{userdata,[{""}]}];
 div_p35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p57_test(doc) -> [{userdata,[{""}]}];
 div_p57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p8_test(doc) -> [{userdata,[{""}]}];
 div_p8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p19_test(doc) -> [{userdata,[{""}]}];
 div_p19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p19"),
-  Expected="13404.8148148148",
+  Expected="<cell><value>"++"13404.8148148148"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p30_test(doc) -> [{userdata,[{""}]}];
 div_p30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p41_test(doc) -> [{userdata,[{""}]}];
 div_p41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p41"),
-  Expected="13404.8148148148",
+  Expected="<cell><value>"++"13404.8148148148"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p52_test(doc) -> [{userdata,[{""}]}];
 div_p52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p63_test(doc) -> [{userdata,[{""}]}];
 div_p63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p3_test(doc) -> [{userdata,[{""}]}];
 div_p3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p3"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p14_test(doc) -> [{userdata,[{""}]}];
 div_p14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p14"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p25_test(doc) -> [{userdata,[{""}]}];
 div_p25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p25"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p36_test(doc) -> [{userdata,[{""}]}];
 div_p36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p47_test(doc) -> [{userdata,[{""}]}];
 div_p47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p58_test(doc) -> [{userdata,[{""}]}];
 div_p58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p9_test(doc) -> [{userdata,[{""}]}];
 div_p9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p20_test(doc) -> [{userdata,[{""}]}];
 div_p20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p20"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p31_test(doc) -> [{userdata,[{""}]}];
 div_p31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p42_test(doc) -> [{userdata,[{""}]}];
 div_p42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p42"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p53_test(doc) -> [{userdata,[{""}]}];
 div_p53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p64_test(doc) -> [{userdata,[{""}]}];
 div_p64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p4_test(doc) -> [{userdata,[{""}]}];
 div_p4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p4"),
-  Expected="0.37037037037037",
+  Expected="<cell><value>"++"0.37037037037037"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p15_test(doc) -> [{userdata,[{""}]}];
 div_p15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p15"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p26_test(doc) -> [{userdata,[{""}]}];
 div_p26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p26"),
-  Expected="0.37037037037037",
+  Expected="<cell><value>"++"0.37037037037037"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p37_test(doc) -> [{userdata,[{""}]}];
 div_p37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p48_test(doc) -> [{userdata,[{""}]}];
 div_p48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p59_test(doc) -> [{userdata,[{""}]}];
 div_p59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p10_test(doc) -> [{userdata,[{""}]}];
 div_p10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p21_test(doc) -> [{userdata,[{""}]}];
 div_p21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p21"),
-  Expected="1.16351851851852",
+  Expected="<cell><value>"++"1.16351851851852"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p32_test(doc) -> [{userdata,[{""}]}];
 div_p32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p43_test(doc) -> [{userdata,[{""}]}];
 div_p43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p43"),
-  Expected="1.16351851851852",
+  Expected="<cell><value>"++"1.16351851851852"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p54_test(doc) -> [{userdata,[{""}]}];
 div_p54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_p65_test(doc) -> [{userdata,[{""}]}];
 div_p65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","p65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f5_test(doc) -> [{userdata,[{""}]}];
 div_f5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f5"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f16_test(doc) -> [{userdata,[{""}]}];
 div_f16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f16"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f27_test(doc) -> [{userdata,[{""}]}];
 div_f27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f27"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f38_test(doc) -> [{userdata,[{""}]}];
 div_f38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f38"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f49_test(doc) -> [{userdata,[{""}]}];
 div_f49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f60_test(doc) -> [{userdata,[{""}]}];
 div_f60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f11_test(doc) -> [{userdata,[{""}]}];
 div_f11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f22_test(doc) -> [{userdata,[{""}]}];
 div_f22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f22"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f33_test(doc) -> [{userdata,[{""}]}];
 div_f33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f44_test(doc) -> [{userdata,[{""}]}];
 div_f44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f44"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f55_test(doc) -> [{userdata,[{""}]}];
 div_f55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f66_test(doc) -> [{userdata,[{""}]}];
 div_f66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f6_test(doc) -> [{userdata,[{""}]}];
 div_f6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f17_test(doc) -> [{userdata,[{""}]}];
 div_f17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f17"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f28_test(doc) -> [{userdata,[{""}]}];
 div_f28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f39_test(doc) -> [{userdata,[{""}]}];
 div_f39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f39"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f50_test(doc) -> [{userdata,[{""}]}];
 div_f50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f61_test(doc) -> [{userdata,[{""}]}];
 div_f61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f1_test(doc) -> [{userdata,[{""}]}];
 div_f1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f1"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f12_test(doc) -> [{userdata,[{""}]}];
 div_f12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f34_test(doc) -> [{userdata,[{""}]}];
 div_f34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f56_test(doc) -> [{userdata,[{""}]}];
 div_f56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f7_test(doc) -> [{userdata,[{""}]}];
 div_f7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f18_test(doc) -> [{userdata,[{""}]}];
 div_f18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f18"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f29_test(doc) -> [{userdata,[{""}]}];
 div_f29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f40_test(doc) -> [{userdata,[{""}]}];
 div_f40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f40"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f51_test(doc) -> [{userdata,[{""}]}];
 div_f51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f62_test(doc) -> [{userdata,[{""}]}];
 div_f62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f2_test(doc) -> [{userdata,[{""}]}];
 div_f2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f2"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f13_test(doc) -> [{userdata,[{""}]}];
 div_f13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f13"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f35_test(doc) -> [{userdata,[{""}]}];
 div_f35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f57_test(doc) -> [{userdata,[{""}]}];
 div_f57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f8_test(doc) -> [{userdata,[{""}]}];
 div_f8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f19_test(doc) -> [{userdata,[{""}]}];
 div_f19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f19"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f30_test(doc) -> [{userdata,[{""}]}];
 div_f30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f41_test(doc) -> [{userdata,[{""}]}];
 div_f41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f41"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f52_test(doc) -> [{userdata,[{""}]}];
 div_f52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f63_test(doc) -> [{userdata,[{""}]}];
 div_f63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f3_test(doc) -> [{userdata,[{""}]}];
 div_f3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f3"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f14_test(doc) -> [{userdata,[{""}]}];
 div_f14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f14"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f25_test(doc) -> [{userdata,[{""}]}];
 div_f25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f25"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f36_test(doc) -> [{userdata,[{""}]}];
 div_f36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f47_test(doc) -> [{userdata,[{""}]}];
 div_f47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f58_test(doc) -> [{userdata,[{""}]}];
 div_f58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f9_test(doc) -> [{userdata,[{""}]}];
 div_f9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f20_test(doc) -> [{userdata,[{""}]}];
 div_f20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f20"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f31_test(doc) -> [{userdata,[{""}]}];
 div_f31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f42_test(doc) -> [{userdata,[{""}]}];
 div_f42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f42"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f53_test(doc) -> [{userdata,[{""}]}];
 div_f53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f64_test(doc) -> [{userdata,[{""}]}];
 div_f64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f4_test(doc) -> [{userdata,[{""}]}];
 div_f4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f4"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f15_test(doc) -> [{userdata,[{""}]}];
 div_f15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f15"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f26_test(doc) -> [{userdata,[{""}]}];
 div_f26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f26"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f37_test(doc) -> [{userdata,[{""}]}];
 div_f37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f48_test(doc) -> [{userdata,[{""}]}];
 div_f48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f59_test(doc) -> [{userdata,[{""}]}];
 div_f59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f10_test(doc) -> [{userdata,[{""}]}];
 div_f10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f21_test(doc) -> [{userdata,[{""}]}];
 div_f21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f21"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f32_test(doc) -> [{userdata,[{""}]}];
 div_f32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f43_test(doc) -> [{userdata,[{""}]}];
 div_f43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f43"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f54_test(doc) -> [{userdata,[{""}]}];
 div_f54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_f65_test(doc) -> [{userdata,[{""}]}];
 div_f65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","f65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q5_test(doc) -> [{userdata,[{""}]}];
 div_q5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q5"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q16_test(doc) -> [{userdata,[{""}]}];
 div_q16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q16"),
-  Expected="0.76271186440678",
+  Expected="<cell><value>"++"0.76271186440678"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q27_test(doc) -> [{userdata,[{""}]}];
 div_q27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q27"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q38_test(doc) -> [{userdata,[{""}]}];
 div_q38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q38"),
-  Expected="0.76271186440678",
+  Expected="<cell><value>"++"0.76271186440678"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q49_test(doc) -> [{userdata,[{""}]}];
 div_q49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q60_test(doc) -> [{userdata,[{""}]}];
 div_q60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q11_test(doc) -> [{userdata,[{""}]}];
 div_q11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q22_test(doc) -> [{userdata,[{""}]}];
 div_q22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q22"),
-  Expected="10224.0677966102",
+  Expected="<cell><value>"++"10224.0677966102"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q33_test(doc) -> [{userdata,[{""}]}];
 div_q33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q44_test(doc) -> [{userdata,[{""}]}];
 div_q44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q44"),
-  Expected="10224.0677966102",
+  Expected="<cell><value>"++"10224.0677966102"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q55_test(doc) -> [{userdata,[{""}]}];
 div_q55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q66_test(doc) -> [{userdata,[{""}]}];
 div_q66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q6_test(doc) -> [{userdata,[{""}]}];
 div_q6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q17_test(doc) -> [{userdata,[{""}]}];
 div_q17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q17"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q28_test(doc) -> [{userdata,[{""}]}];
 div_q28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q39_test(doc) -> [{userdata,[{""}]}];
 div_q39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q39"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q50_test(doc) -> [{userdata,[{""}]}];
 div_q50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q61_test(doc) -> [{userdata,[{""}]}];
 div_q61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q1_test(doc) -> [{userdata,[{""}]}];
 div_q1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q1"),
-  Expected="Str Num",
+  Expected="<cell><value>"++"Str Num"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q12_test(doc) -> [{userdata,[{""}]}];
 div_q12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q34_test(doc) -> [{userdata,[{""}]}];
 div_q34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q56_test(doc) -> [{userdata,[{""}]}];
 div_q56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q7_test(doc) -> [{userdata,[{""}]}];
 div_q7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q18_test(doc) -> [{userdata,[{""}]}];
 div_q18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q18"),
-  Expected="10223.7288135593",
+  Expected="<cell><value>"++"10223.7288135593"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q29_test(doc) -> [{userdata,[{""}]}];
 div_q29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q40_test(doc) -> [{userdata,[{""}]}];
 div_q40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q40"),
-  Expected="10223.7288135593",
+  Expected="<cell><value>"++"10223.7288135593"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q51_test(doc) -> [{userdata,[{""}]}];
 div_q51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q62_test(doc) -> [{userdata,[{""}]}];
 div_q62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q2_test(doc) -> [{userdata,[{""}]}];
 div_q2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q2"),
-  Expected="3.54",
+  Expected="<cell><value>"++"3.54"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q13_test(doc) -> [{userdata,[{""}]}];
 div_q13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q13"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q35_test(doc) -> [{userdata,[{""}]}];
 div_q35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q57_test(doc) -> [{userdata,[{""}]}];
 div_q57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q8_test(doc) -> [{userdata,[{""}]}];
 div_q8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q19_test(doc) -> [{userdata,[{""}]}];
 div_q19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q19"),
-  Expected="10224.011299435",
+  Expected="<cell><value>"++"10224.011299435"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q30_test(doc) -> [{userdata,[{""}]}];
 div_q30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q41_test(doc) -> [{userdata,[{""}]}];
 div_q41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q41"),
-  Expected="10224.011299435",
+  Expected="<cell><value>"++"10224.011299435"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q52_test(doc) -> [{userdata,[{""}]}];
 div_q52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q63_test(doc) -> [{userdata,[{""}]}];
 div_q63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q3_test(doc) -> [{userdata,[{""}]}];
 div_q3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q3"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q14_test(doc) -> [{userdata,[{""}]}];
 div_q14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q14"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q25_test(doc) -> [{userdata,[{""}]}];
 div_q25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q25"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q36_test(doc) -> [{userdata,[{""}]}];
 div_q36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q47_test(doc) -> [{userdata,[{""}]}];
 div_q47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q58_test(doc) -> [{userdata,[{""}]}];
 div_q58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q9_test(doc) -> [{userdata,[{""}]}];
 div_q9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q20_test(doc) -> [{userdata,[{""}]}];
 div_q20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q20"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q31_test(doc) -> [{userdata,[{""}]}];
 div_q31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q42_test(doc) -> [{userdata,[{""}]}];
 div_q42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q42"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q53_test(doc) -> [{userdata,[{""}]}];
 div_q53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q64_test(doc) -> [{userdata,[{""}]}];
 div_q64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q4_test(doc) -> [{userdata,[{""}]}];
 div_q4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q4"),
-  Expected="0.282485875706215",
+  Expected="<cell><value>"++"0.282485875706215"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q15_test(doc) -> [{userdata,[{""}]}];
 div_q15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q15"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q26_test(doc) -> [{userdata,[{""}]}];
 div_q26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q26"),
-  Expected="0.282485875706215",
+  Expected="<cell><value>"++"0.282485875706215"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q37_test(doc) -> [{userdata,[{""}]}];
 div_q37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q48_test(doc) -> [{userdata,[{""}]}];
 div_q48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q59_test(doc) -> [{userdata,[{""}]}];
 div_q59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q10_test(doc) -> [{userdata,[{""}]}];
 div_q10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q21_test(doc) -> [{userdata,[{""}]}];
 div_q21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q21"),
-  Expected="0.887429378531074",
+  Expected="<cell><value>"++"0.887429378531074"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q32_test(doc) -> [{userdata,[{""}]}];
 div_q32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q43_test(doc) -> [{userdata,[{""}]}];
 div_q43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q43"),
-  Expected="0.887429378531074",
+  Expected="<cell><value>"++"0.887429378531074"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q54_test(doc) -> [{userdata,[{""}]}];
 div_q54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_q65_test(doc) -> [{userdata,[{""}]}];
 div_q65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","q65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g5_test(doc) -> [{userdata,[{""}]}];
 div_g5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g5"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g16_test(doc) -> [{userdata,[{""}]}];
 div_g16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g16"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g27_test(doc) -> [{userdata,[{""}]}];
 div_g27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g27"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g38_test(doc) -> [{userdata,[{""}]}];
 div_g38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g38"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g49_test(doc) -> [{userdata,[{""}]}];
 div_g49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g60_test(doc) -> [{userdata,[{""}]}];
 div_g60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g11_test(doc) -> [{userdata,[{""}]}];
 div_g11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g22_test(doc) -> [{userdata,[{""}]}];
 div_g22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g22"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g33_test(doc) -> [{userdata,[{""}]}];
 div_g33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g44_test(doc) -> [{userdata,[{""}]}];
 div_g44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g44"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g55_test(doc) -> [{userdata,[{""}]}];
 div_g55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g66_test(doc) -> [{userdata,[{""}]}];
 div_g66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g6_test(doc) -> [{userdata,[{""}]}];
 div_g6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g17_test(doc) -> [{userdata,[{""}]}];
 div_g17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g17"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g28_test(doc) -> [{userdata,[{""}]}];
 div_g28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g39_test(doc) -> [{userdata,[{""}]}];
 div_g39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g39"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g50_test(doc) -> [{userdata,[{""}]}];
 div_g50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g61_test(doc) -> [{userdata,[{""}]}];
 div_g61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g1_test(doc) -> [{userdata,[{""}]}];
 div_g1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g1"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g12_test(doc) -> [{userdata,[{""}]}];
 div_g12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g34_test(doc) -> [{userdata,[{""}]}];
 div_g34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g56_test(doc) -> [{userdata,[{""}]}];
 div_g56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g7_test(doc) -> [{userdata,[{""}]}];
 div_g7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g18_test(doc) -> [{userdata,[{""}]}];
 div_g18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g18"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g29_test(doc) -> [{userdata,[{""}]}];
 div_g29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g40_test(doc) -> [{userdata,[{""}]}];
 div_g40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g40"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g51_test(doc) -> [{userdata,[{""}]}];
 div_g51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g62_test(doc) -> [{userdata,[{""}]}];
 div_g62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g2_test(doc) -> [{userdata,[{""}]}];
 div_g2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g2"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g13_test(doc) -> [{userdata,[{""}]}];
 div_g13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g13"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g35_test(doc) -> [{userdata,[{""}]}];
 div_g35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g57_test(doc) -> [{userdata,[{""}]}];
 div_g57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g8_test(doc) -> [{userdata,[{""}]}];
 div_g8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g19_test(doc) -> [{userdata,[{""}]}];
 div_g19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g19"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g30_test(doc) -> [{userdata,[{""}]}];
 div_g30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g41_test(doc) -> [{userdata,[{""}]}];
 div_g41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g41"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g52_test(doc) -> [{userdata,[{""}]}];
 div_g52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g63_test(doc) -> [{userdata,[{""}]}];
 div_g63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g3_test(doc) -> [{userdata,[{""}]}];
 div_g3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g3"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g14_test(doc) -> [{userdata,[{""}]}];
 div_g14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g14"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g25_test(doc) -> [{userdata,[{""}]}];
 div_g25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g25"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g36_test(doc) -> [{userdata,[{""}]}];
 div_g36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g47_test(doc) -> [{userdata,[{""}]}];
 div_g47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g58_test(doc) -> [{userdata,[{""}]}];
 div_g58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g9_test(doc) -> [{userdata,[{""}]}];
 div_g9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g20_test(doc) -> [{userdata,[{""}]}];
 div_g20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g20"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g31_test(doc) -> [{userdata,[{""}]}];
 div_g31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g42_test(doc) -> [{userdata,[{""}]}];
 div_g42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g42"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g53_test(doc) -> [{userdata,[{""}]}];
 div_g53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g64_test(doc) -> [{userdata,[{""}]}];
 div_g64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g4_test(doc) -> [{userdata,[{""}]}];
 div_g4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g4"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g15_test(doc) -> [{userdata,[{""}]}];
 div_g15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g15"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g26_test(doc) -> [{userdata,[{""}]}];
 div_g26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g26"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g37_test(doc) -> [{userdata,[{""}]}];
 div_g37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g48_test(doc) -> [{userdata,[{""}]}];
 div_g48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g59_test(doc) -> [{userdata,[{""}]}];
 div_g59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g10_test(doc) -> [{userdata,[{""}]}];
 div_g10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g21_test(doc) -> [{userdata,[{""}]}];
 div_g21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g21"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g32_test(doc) -> [{userdata,[{""}]}];
 div_g32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g43_test(doc) -> [{userdata,[{""}]}];
 div_g43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g43"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g54_test(doc) -> [{userdata,[{""}]}];
 div_g54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_g65_test(doc) -> [{userdata,[{""}]}];
 div_g65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","g65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r5_test(doc) -> [{userdata,[{""}]}];
 div_r5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r5"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r16_test(doc) -> [{userdata,[{""}]}];
 div_r16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r16"),
-  Expected="7.46021220159151e-005",
+  Expected="<cell><value>"++"7.46021220159151e-005"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r27_test(doc) -> [{userdata,[{""}]}];
 div_r27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r27"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r38_test(doc) -> [{userdata,[{""}]}];
 div_r38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r38"),
-  Expected="7.46021220159151e-005",
+  Expected="<cell><value>"++"7.46021220159151e-005"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r49_test(doc) -> [{userdata,[{""}]}];
 div_r49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r60_test(doc) -> [{userdata,[{""}]}];
 div_r60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r11_test(doc) -> [{userdata,[{""}]}];
 div_r11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r22_test(doc) -> [{userdata,[{""}]}];
 div_r22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r22"),
-  Expected="1.00003315649867",
+  Expected="<cell><value>"++"1.00003315649867"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r33_test(doc) -> [{userdata,[{""}]}];
 div_r33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r44_test(doc) -> [{userdata,[{""}]}];
 div_r44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r44"),
-  Expected="1.00003315649867",
+  Expected="<cell><value>"++"1.00003315649867"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r55_test(doc) -> [{userdata,[{""}]}];
 div_r55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r66_test(doc) -> [{userdata,[{""}]}];
 div_r66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r6_test(doc) -> [{userdata,[{""}]}];
 div_r6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r17_test(doc) -> [{userdata,[{""}]}];
 div_r17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r17"),
-  Expected="9.78116710875332e-005",
+  Expected="<cell><value>"++"9.78116710875332e-005"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r28_test(doc) -> [{userdata,[{""}]}];
 div_r28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r39_test(doc) -> [{userdata,[{""}]}];
 div_r39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r39"),
-  Expected="9.78116710875332e-005",
+  Expected="<cell><value>"++"9.78116710875332e-005"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r50_test(doc) -> [{userdata,[{""}]}];
 div_r50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r61_test(doc) -> [{userdata,[{""}]}];
 div_r61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r1_test(doc) -> [{userdata,[{""}]}];
 div_r1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r1"),
-  Expected="Integer",
+  Expected="<cell><value>"++"Integer"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r12_test(doc) -> [{userdata,[{""}]}];
 div_r12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r34_test(doc) -> [{userdata,[{""}]}];
 div_r34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r56_test(doc) -> [{userdata,[{""}]}];
 div_r56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r7_test(doc) -> [{userdata,[{""}]}];
 div_r7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r18_test(doc) -> [{userdata,[{""}]}];
 div_r18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r18"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r29_test(doc) -> [{userdata,[{""}]}];
 div_r29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r40_test(doc) -> [{userdata,[{""}]}];
 div_r40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r40"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r51_test(doc) -> [{userdata,[{""}]}];
 div_r51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r62_test(doc) -> [{userdata,[{""}]}];
 div_r62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r2_test(doc) -> [{userdata,[{""}]}];
 div_r2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r2"),
-  Expected="1999/02/01 00:00:00",
+  Expected="<cell><value>"++"1999/02/01 00:00:00"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r13_test(doc) -> [{userdata,[{""}]}];
 div_r13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r13"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r35_test(doc) -> [{userdata,[{""}]}];
 div_r35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r57_test(doc) -> [{userdata,[{""}]}];
 div_r57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r8_test(doc) -> [{userdata,[{""}]}];
 div_r8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r19_test(doc) -> [{userdata,[{""}]}];
 div_r19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r19"),
-  Expected="1.00002763041556",
+  Expected="<cell><value>"++"1.00002763041556"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r30_test(doc) -> [{userdata,[{""}]}];
 div_r30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r41_test(doc) -> [{userdata,[{""}]}];
 div_r41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r41"),
-  Expected="1.00002763041556",
+  Expected="<cell><value>"++"1.00002763041556"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r52_test(doc) -> [{userdata,[{""}]}];
 div_r52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r63_test(doc) -> [{userdata,[{""}]}];
 div_r63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r3_test(doc) -> [{userdata,[{""}]}];
 div_r3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r3"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r14_test(doc) -> [{userdata,[{""}]}];
 div_r14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r14"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r25_test(doc) -> [{userdata,[{""}]}];
 div_r25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r25"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r36_test(doc) -> [{userdata,[{""}]}];
 div_r36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r47_test(doc) -> [{userdata,[{""}]}];
 div_r47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r58_test(doc) -> [{userdata,[{""}]}];
 div_r58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r9_test(doc) -> [{userdata,[{""}]}];
 div_r9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r20_test(doc) -> [{userdata,[{""}]}];
 div_r20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r20"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r31_test(doc) -> [{userdata,[{""}]}];
 div_r31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r42_test(doc) -> [{userdata,[{""}]}];
 div_r42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r42"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r53_test(doc) -> [{userdata,[{""}]}];
 div_r53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r64_test(doc) -> [{userdata,[{""}]}];
 div_r64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r4_test(doc) -> [{userdata,[{""}]}];
 div_r4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r4"),
-  Expected="2.763041556145e-005",
+  Expected="<cell><value>"++"2.763041556145e-005"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r15_test(doc) -> [{userdata,[{""}]}];
 div_r15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r15"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r26_test(doc) -> [{userdata,[{""}]}];
 div_r26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r26"),
-  Expected="2.763041556145e-005",
+  Expected="<cell><value>"++"2.763041556145e-005"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r37_test(doc) -> [{userdata,[{""}]}];
 div_r37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r48_test(doc) -> [{userdata,[{""}]}];
 div_r48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r59_test(doc) -> [{userdata,[{""}]}];
 div_r59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r10_test(doc) -> [{userdata,[{""}]}];
 div_r10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r21_test(doc) -> [{userdata,[{""}]}];
 div_r21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r21"),
-  Expected="8.68009504862953e-005",
+  Expected="<cell><value>"++"8.68009504862953e-005"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r32_test(doc) -> [{userdata,[{""}]}];
 div_r32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r43_test(doc) -> [{userdata,[{""}]}];
 div_r43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r43"),
-  Expected="8.68009504862953e-005",
+  Expected="<cell><value>"++"8.68009504862953e-005"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r54_test(doc) -> [{userdata,[{""}]}];
 div_r54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_r65_test(doc) -> [{userdata,[{""}]}];
 div_r65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","r65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h5_test(doc) -> [{userdata,[{""}]}];
 div_h5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h5"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h16_test(doc) -> [{userdata,[{""}]}];
 div_h16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h16"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h27_test(doc) -> [{userdata,[{""}]}];
 div_h27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h27"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h38_test(doc) -> [{userdata,[{""}]}];
 div_h38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h38"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h49_test(doc) -> [{userdata,[{""}]}];
 div_h49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h60_test(doc) -> [{userdata,[{""}]}];
 div_h60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h11_test(doc) -> [{userdata,[{""}]}];
 div_h11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h22_test(doc) -> [{userdata,[{""}]}];
 div_h22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h22"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h33_test(doc) -> [{userdata,[{""}]}];
 div_h33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h44_test(doc) -> [{userdata,[{""}]}];
 div_h44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h44"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h55_test(doc) -> [{userdata,[{""}]}];
 div_h55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h66_test(doc) -> [{userdata,[{""}]}];
 div_h66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h6_test(doc) -> [{userdata,[{""}]}];
 div_h6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h17_test(doc) -> [{userdata,[{""}]}];
 div_h17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h17"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h28_test(doc) -> [{userdata,[{""}]}];
 div_h28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h39_test(doc) -> [{userdata,[{""}]}];
 div_h39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h39"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h50_test(doc) -> [{userdata,[{""}]}];
 div_h50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h61_test(doc) -> [{userdata,[{""}]}];
 div_h61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h1_test(doc) -> [{userdata,[{""}]}];
 div_h1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h1"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h12_test(doc) -> [{userdata,[{""}]}];
 div_h12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h34_test(doc) -> [{userdata,[{""}]}];
 div_h34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h56_test(doc) -> [{userdata,[{""}]}];
 div_h56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h7_test(doc) -> [{userdata,[{""}]}];
 div_h7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h18_test(doc) -> [{userdata,[{""}]}];
 div_h18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h18"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h29_test(doc) -> [{userdata,[{""}]}];
 div_h29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h40_test(doc) -> [{userdata,[{""}]}];
 div_h40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h40"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h51_test(doc) -> [{userdata,[{""}]}];
 div_h51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h62_test(doc) -> [{userdata,[{""}]}];
 div_h62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h2_test(doc) -> [{userdata,[{""}]}];
 div_h2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h2"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h13_test(doc) -> [{userdata,[{""}]}];
 div_h13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h13"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h35_test(doc) -> [{userdata,[{""}]}];
 div_h35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h57_test(doc) -> [{userdata,[{""}]}];
 div_h57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h8_test(doc) -> [{userdata,[{""}]}];
 div_h8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h19_test(doc) -> [{userdata,[{""}]}];
 div_h19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h19"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h30_test(doc) -> [{userdata,[{""}]}];
 div_h30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h41_test(doc) -> [{userdata,[{""}]}];
 div_h41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h41"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h52_test(doc) -> [{userdata,[{""}]}];
 div_h52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h63_test(doc) -> [{userdata,[{""}]}];
 div_h63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h3_test(doc) -> [{userdata,[{""}]}];
 div_h3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h3"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h14_test(doc) -> [{userdata,[{""}]}];
 div_h14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h14"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h25_test(doc) -> [{userdata,[{""}]}];
 div_h25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h25"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h36_test(doc) -> [{userdata,[{""}]}];
 div_h36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h47_test(doc) -> [{userdata,[{""}]}];
 div_h47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h58_test(doc) -> [{userdata,[{""}]}];
 div_h58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h9_test(doc) -> [{userdata,[{""}]}];
 div_h9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h20_test(doc) -> [{userdata,[{""}]}];
 div_h20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h20"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h31_test(doc) -> [{userdata,[{""}]}];
 div_h31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h42_test(doc) -> [{userdata,[{""}]}];
 div_h42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h42"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h53_test(doc) -> [{userdata,[{""}]}];
 div_h53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h64_test(doc) -> [{userdata,[{""}]}];
 div_h64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h4_test(doc) -> [{userdata,[{""}]}];
 div_h4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h4"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h15_test(doc) -> [{userdata,[{""}]}];
 div_h15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h15"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h26_test(doc) -> [{userdata,[{""}]}];
 div_h26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h26"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h37_test(doc) -> [{userdata,[{""}]}];
 div_h37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h48_test(doc) -> [{userdata,[{""}]}];
 div_h48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h59_test(doc) -> [{userdata,[{""}]}];
 div_h59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h10_test(doc) -> [{userdata,[{""}]}];
 div_h10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h21_test(doc) -> [{userdata,[{""}]}];
 div_h21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h21"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h32_test(doc) -> [{userdata,[{""}]}];
 div_h32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h43_test(doc) -> [{userdata,[{""}]}];
 div_h43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h43"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h54_test(doc) -> [{userdata,[{""}]}];
 div_h54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_h65_test(doc) -> [{userdata,[{""}]}];
 div_h65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","h65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s5_test(doc) -> [{userdata,[{""}]}];
 div_s5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s5"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s16_test(doc) -> [{userdata,[{""}]}];
 div_s16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s16"),
-  Expected="7.46000607852347e-005",
+  Expected="<cell><value>"++"7.46000607852347e-005"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s27_test(doc) -> [{userdata,[{""}]}];
 div_s27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s27"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s38_test(doc) -> [{userdata,[{""}]}];
 div_s38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s38"),
-  Expected="7.46000607852347e-005",
+  Expected="<cell><value>"++"7.46000607852347e-005"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s49_test(doc) -> [{userdata,[{""}]}];
 div_s49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s60_test(doc) -> [{userdata,[{""}]}];
 div_s60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s11_test(doc) -> [{userdata,[{""}]}];
 div_s11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s22_test(doc) -> [{userdata,[{""}]}];
 div_s22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s22"),
-  Expected="1.00000552593043",
+  Expected="<cell><value>"++"1.00000552593043"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s33_test(doc) -> [{userdata,[{""}]}];
 div_s33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s44_test(doc) -> [{userdata,[{""}]}];
 div_s44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s44"),
-  Expected="1.00000552593043",
+  Expected="<cell><value>"++"1.00000552593043"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s55_test(doc) -> [{userdata,[{""}]}];
 div_s55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s66_test(doc) -> [{userdata,[{""}]}];
 div_s66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s6_test(doc) -> [{userdata,[{""}]}];
 div_s6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s17_test(doc) -> [{userdata,[{""}]}];
 div_s17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s17"),
-  Expected="9.78089685850855e-005",
+  Expected="<cell><value>"++"9.78089685850855e-005"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s28_test(doc) -> [{userdata,[{""}]}];
 div_s28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s39_test(doc) -> [{userdata,[{""}]}];
 div_s39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s39"),
-  Expected="9.78089685850855e-005",
+  Expected="<cell><value>"++"9.78089685850855e-005"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s50_test(doc) -> [{userdata,[{""}]}];
 div_s50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s61_test(doc) -> [{userdata,[{""}]}];
 div_s61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s1_test(doc) -> [{userdata,[{""}]}];
 div_s1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s1"),
-  Expected="Integer",
+  Expected="<cell><value>"++"Integer"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s12_test(doc) -> [{userdata,[{""}]}];
 div_s12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s34_test(doc) -> [{userdata,[{""}]}];
 div_s34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s56_test(doc) -> [{userdata,[{""}]}];
 div_s56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s7_test(doc) -> [{userdata,[{""}]}];
 div_s7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s18_test(doc) -> [{userdata,[{""}]}];
 div_s18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s18"),
-  Expected="0.999972370347857",
+  Expected="<cell><value>"++"0.999972370347857"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s29_test(doc) -> [{userdata,[{""}]}];
 div_s29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s40_test(doc) -> [{userdata,[{""}]}];
 div_s40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s40"),
-  Expected="0.999972370347857",
+  Expected="<cell><value>"++"0.999972370347857"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s51_test(doc) -> [{userdata,[{""}]}];
 div_s51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s62_test(doc) -> [{userdata,[{""}]}];
 div_s62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s2_test(doc) -> [{userdata,[{""}]}];
 div_s2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s2"),
-  Expected="1999/02/02 00:00:00",
+  Expected="<cell><value>"++"1999/02/02 00:00:00"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s13_test(doc) -> [{userdata,[{""}]}];
 div_s13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s13"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s35_test(doc) -> [{userdata,[{""}]}];
 div_s35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s57_test(doc) -> [{userdata,[{""}]}];
 div_s57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s8_test(doc) -> [{userdata,[{""}]}];
 div_s8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s19_test(doc) -> [{userdata,[{""}]}];
 div_s19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s19"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s30_test(doc) -> [{userdata,[{""}]}];
 div_s30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s41_test(doc) -> [{userdata,[{""}]}];
 div_s41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s41"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s52_test(doc) -> [{userdata,[{""}]}];
 div_s52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s63_test(doc) -> [{userdata,[{""}]}];
 div_s63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s3_test(doc) -> [{userdata,[{""}]}];
 div_s3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s3"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s14_test(doc) -> [{userdata,[{""}]}];
 div_s14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s14"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s25_test(doc) -> [{userdata,[{""}]}];
 div_s25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s25"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s36_test(doc) -> [{userdata,[{""}]}];
 div_s36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s47_test(doc) -> [{userdata,[{""}]}];
 div_s47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s58_test(doc) -> [{userdata,[{""}]}];
 div_s58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s9_test(doc) -> [{userdata,[{""}]}];
 div_s9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s20_test(doc) -> [{userdata,[{""}]}];
 div_s20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s20"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s31_test(doc) -> [{userdata,[{""}]}];
 div_s31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s42_test(doc) -> [{userdata,[{""}]}];
 div_s42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s42"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s53_test(doc) -> [{userdata,[{""}]}];
 div_s53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s64_test(doc) -> [{userdata,[{""}]}];
 div_s64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s4_test(doc) -> [{userdata,[{""}]}];
 div_s4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s4"),
-  Expected="2.76296521426795e-005",
+  Expected="<cell><value>"++"2.76296521426795e-005"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s15_test(doc) -> [{userdata,[{""}]}];
 div_s15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s15"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s26_test(doc) -> [{userdata,[{""}]}];
 div_s26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s26"),
-  Expected="2.76296521426795e-005",
+  Expected="<cell><value>"++"2.76296521426795e-005"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s37_test(doc) -> [{userdata,[{""}]}];
 div_s37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s48_test(doc) -> [{userdata,[{""}]}];
 div_s48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s59_test(doc) -> [{userdata,[{""}]}];
 div_s59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s10_test(doc) -> [{userdata,[{""}]}];
 div_s10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s21_test(doc) -> [{userdata,[{""}]}];
 div_s21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s21"),
-  Expected="8.67985522062277e-005",
+  Expected="<cell><value>"++"8.67985522062277e-005"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s32_test(doc) -> [{userdata,[{""}]}];
 div_s32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s43_test(doc) -> [{userdata,[{""}]}];
 div_s43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s43"),
-  Expected="8.67985522062277e-005",
+  Expected="<cell><value>"++"8.67985522062277e-005"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s54_test(doc) -> [{userdata,[{""}]}];
 div_s54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_s65_test(doc) -> [{userdata,[{""}]}];
 div_s65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","s65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i5_test(doc) -> [{userdata,[{""}]}];
 div_i5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i5"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i16_test(doc) -> [{userdata,[{""}]}];
 div_i16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i16"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i27_test(doc) -> [{userdata,[{""}]}];
 div_i27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i27"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i38_test(doc) -> [{userdata,[{""}]}];
 div_i38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i38"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i49_test(doc) -> [{userdata,[{""}]}];
 div_i49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i60_test(doc) -> [{userdata,[{""}]}];
 div_i60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i11_test(doc) -> [{userdata,[{""}]}];
 div_i11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i22_test(doc) -> [{userdata,[{""}]}];
 div_i22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i22"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i33_test(doc) -> [{userdata,[{""}]}];
 div_i33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i44_test(doc) -> [{userdata,[{""}]}];
 div_i44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i44"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i55_test(doc) -> [{userdata,[{""}]}];
 div_i55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i66_test(doc) -> [{userdata,[{""}]}];
 div_i66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i6_test(doc) -> [{userdata,[{""}]}];
 div_i6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i17_test(doc) -> [{userdata,[{""}]}];
 div_i17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i17"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i28_test(doc) -> [{userdata,[{""}]}];
 div_i28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i39_test(doc) -> [{userdata,[{""}]}];
 div_i39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i39"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i50_test(doc) -> [{userdata,[{""}]}];
 div_i50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i61_test(doc) -> [{userdata,[{""}]}];
 div_i61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i1_test(doc) -> [{userdata,[{""}]}];
 div_i1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i1"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i12_test(doc) -> [{userdata,[{""}]}];
 div_i12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i34_test(doc) -> [{userdata,[{""}]}];
 div_i34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i56_test(doc) -> [{userdata,[{""}]}];
 div_i56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i7_test(doc) -> [{userdata,[{""}]}];
 div_i7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i18_test(doc) -> [{userdata,[{""}]}];
 div_i18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i18"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i29_test(doc) -> [{userdata,[{""}]}];
 div_i29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i40_test(doc) -> [{userdata,[{""}]}];
 div_i40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i40"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i51_test(doc) -> [{userdata,[{""}]}];
 div_i51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i62_test(doc) -> [{userdata,[{""}]}];
 div_i62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i2_test(doc) -> [{userdata,[{""}]}];
 div_i2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i2"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i13_test(doc) -> [{userdata,[{""}]}];
 div_i13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i13"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i35_test(doc) -> [{userdata,[{""}]}];
 div_i35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i57_test(doc) -> [{userdata,[{""}]}];
 div_i57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i8_test(doc) -> [{userdata,[{""}]}];
 div_i8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i19_test(doc) -> [{userdata,[{""}]}];
 div_i19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i19"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i30_test(doc) -> [{userdata,[{""}]}];
 div_i30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i41_test(doc) -> [{userdata,[{""}]}];
 div_i41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i41"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i52_test(doc) -> [{userdata,[{""}]}];
 div_i52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i63_test(doc) -> [{userdata,[{""}]}];
 div_i63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i3_test(doc) -> [{userdata,[{""}]}];
 div_i3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i3"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i14_test(doc) -> [{userdata,[{""}]}];
 div_i14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i14"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i25_test(doc) -> [{userdata,[{""}]}];
 div_i25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i25"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i36_test(doc) -> [{userdata,[{""}]}];
 div_i36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i47_test(doc) -> [{userdata,[{""}]}];
 div_i47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i58_test(doc) -> [{userdata,[{""}]}];
 div_i58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i9_test(doc) -> [{userdata,[{""}]}];
 div_i9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i20_test(doc) -> [{userdata,[{""}]}];
 div_i20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i20"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i31_test(doc) -> [{userdata,[{""}]}];
 div_i31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i42_test(doc) -> [{userdata,[{""}]}];
 div_i42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i42"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i53_test(doc) -> [{userdata,[{""}]}];
 div_i53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i64_test(doc) -> [{userdata,[{""}]}];
 div_i64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i4_test(doc) -> [{userdata,[{""}]}];
 div_i4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i4"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i15_test(doc) -> [{userdata,[{""}]}];
 div_i15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i15"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i26_test(doc) -> [{userdata,[{""}]}];
 div_i26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i26"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i37_test(doc) -> [{userdata,[{""}]}];
 div_i37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i48_test(doc) -> [{userdata,[{""}]}];
 div_i48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i59_test(doc) -> [{userdata,[{""}]}];
 div_i59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i10_test(doc) -> [{userdata,[{""}]}];
 div_i10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i21_test(doc) -> [{userdata,[{""}]}];
 div_i21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i21"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i32_test(doc) -> [{userdata,[{""}]}];
 div_i32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i43_test(doc) -> [{userdata,[{""}]}];
 div_i43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i43"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i54_test(doc) -> [{userdata,[{""}]}];
 div_i54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_i65_test(doc) -> [{userdata,[{""}]}];
 div_i65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","i65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t5_test(doc) -> [{userdata,[{""}]}];
 div_t5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t5"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t16_test(doc) -> [{userdata,[{""}]}];
 div_t16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t16"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t27_test(doc) -> [{userdata,[{""}]}];
 div_t27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t27"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t38_test(doc) -> [{userdata,[{""}]}];
 div_t38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t38"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t49_test(doc) -> [{userdata,[{""}]}];
 div_t49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t60_test(doc) -> [{userdata,[{""}]}];
 div_t60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t11_test(doc) -> [{userdata,[{""}]}];
 div_t11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t22_test(doc) -> [{userdata,[{""}]}];
 div_t22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t22"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t33_test(doc) -> [{userdata,[{""}]}];
 div_t33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t44_test(doc) -> [{userdata,[{""}]}];
 div_t44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t44"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t55_test(doc) -> [{userdata,[{""}]}];
 div_t55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t66_test(doc) -> [{userdata,[{""}]}];
 div_t66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t6_test(doc) -> [{userdata,[{""}]}];
 div_t6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t17_test(doc) -> [{userdata,[{""}]}];
 div_t17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t17"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t28_test(doc) -> [{userdata,[{""}]}];
 div_t28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t39_test(doc) -> [{userdata,[{""}]}];
 div_t39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t39"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t50_test(doc) -> [{userdata,[{""}]}];
 div_t50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t61_test(doc) -> [{userdata,[{""}]}];
 div_t61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t1_test(doc) -> [{userdata,[{""}]}];
 div_t1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t1"),
-  Expected="Zero",
+  Expected="<cell><value>"++"Zero"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t12_test(doc) -> [{userdata,[{""}]}];
 div_t12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t34_test(doc) -> [{userdata,[{""}]}];
 div_t34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t56_test(doc) -> [{userdata,[{""}]}];
 div_t56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t7_test(doc) -> [{userdata,[{""}]}];
 div_t7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t18_test(doc) -> [{userdata,[{""}]}];
 div_t18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t18"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t29_test(doc) -> [{userdata,[{""}]}];
 div_t29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t40_test(doc) -> [{userdata,[{""}]}];
 div_t40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t40"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t51_test(doc) -> [{userdata,[{""}]}];
 div_t51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t62_test(doc) -> [{userdata,[{""}]}];
 div_t62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t2_test(doc) -> [{userdata,[{""}]}];
 div_t2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t2"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t13_test(doc) -> [{userdata,[{""}]}];
 div_t13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t13"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t35_test(doc) -> [{userdata,[{""}]}];
 div_t35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t57_test(doc) -> [{userdata,[{""}]}];
 div_t57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t8_test(doc) -> [{userdata,[{""}]}];
 div_t8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t19_test(doc) -> [{userdata,[{""}]}];
 div_t19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t19"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t30_test(doc) -> [{userdata,[{""}]}];
 div_t30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t41_test(doc) -> [{userdata,[{""}]}];
 div_t41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t41"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t52_test(doc) -> [{userdata,[{""}]}];
 div_t52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t63_test(doc) -> [{userdata,[{""}]}];
 div_t63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t3_test(doc) -> [{userdata,[{""}]}];
 div_t3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t3"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t14_test(doc) -> [{userdata,[{""}]}];
 div_t14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t14"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t25_test(doc) -> [{userdata,[{""}]}];
 div_t25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t25"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t36_test(doc) -> [{userdata,[{""}]}];
 div_t36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t47_test(doc) -> [{userdata,[{""}]}];
 div_t47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t58_test(doc) -> [{userdata,[{""}]}];
 div_t58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t9_test(doc) -> [{userdata,[{""}]}];
 div_t9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t20_test(doc) -> [{userdata,[{""}]}];
 div_t20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t20"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t31_test(doc) -> [{userdata,[{""}]}];
 div_t31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t42_test(doc) -> [{userdata,[{""}]}];
 div_t42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t42"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t53_test(doc) -> [{userdata,[{""}]}];
 div_t53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t64_test(doc) -> [{userdata,[{""}]}];
 div_t64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t4_test(doc) -> [{userdata,[{""}]}];
 div_t4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t4"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t15_test(doc) -> [{userdata,[{""}]}];
 div_t15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t15"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t26_test(doc) -> [{userdata,[{""}]}];
 div_t26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t26"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t37_test(doc) -> [{userdata,[{""}]}];
 div_t37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t48_test(doc) -> [{userdata,[{""}]}];
 div_t48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t59_test(doc) -> [{userdata,[{""}]}];
 div_t59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t10_test(doc) -> [{userdata,[{""}]}];
 div_t10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t21_test(doc) -> [{userdata,[{""}]}];
 div_t21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t21"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t32_test(doc) -> [{userdata,[{""}]}];
 div_t32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t43_test(doc) -> [{userdata,[{""}]}];
 div_t43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t43"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t54_test(doc) -> [{userdata,[{""}]}];
 div_t54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_t65_test(doc) -> [{userdata,[{""}]}];
 div_t65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","t65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j5_test(doc) -> [{userdata,[{""}]}];
 div_j5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j5"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j16_test(doc) -> [{userdata,[{""}]}];
 div_j16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j16"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j27_test(doc) -> [{userdata,[{""}]}];
 div_j27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j27"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j38_test(doc) -> [{userdata,[{""}]}];
 div_j38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j38"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j49_test(doc) -> [{userdata,[{""}]}];
 div_j49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j60_test(doc) -> [{userdata,[{""}]}];
 div_j60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j11_test(doc) -> [{userdata,[{""}]}];
 div_j11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j22_test(doc) -> [{userdata,[{""}]}];
 div_j22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j22"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j33_test(doc) -> [{userdata,[{""}]}];
 div_j33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j44_test(doc) -> [{userdata,[{""}]}];
 div_j44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j44"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j55_test(doc) -> [{userdata,[{""}]}];
 div_j55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j66_test(doc) -> [{userdata,[{""}]}];
 div_j66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j6_test(doc) -> [{userdata,[{""}]}];
 div_j6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j17_test(doc) -> [{userdata,[{""}]}];
 div_j17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j17"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j28_test(doc) -> [{userdata,[{""}]}];
 div_j28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j39_test(doc) -> [{userdata,[{""}]}];
 div_j39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j39"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j50_test(doc) -> [{userdata,[{""}]}];
 div_j50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j61_test(doc) -> [{userdata,[{""}]}];
 div_j61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j1_test(doc) -> [{userdata,[{""}]}];
 div_j1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j1"),
-  Expected="Error",
+  Expected="<cell><value>"++"Error"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j12_test(doc) -> [{userdata,[{""}]}];
 div_j12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j34_test(doc) -> [{userdata,[{""}]}];
 div_j34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j56_test(doc) -> [{userdata,[{""}]}];
 div_j56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j7_test(doc) -> [{userdata,[{""}]}];
 div_j7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j18_test(doc) -> [{userdata,[{""}]}];
 div_j18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j18"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j29_test(doc) -> [{userdata,[{""}]}];
 div_j29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j40_test(doc) -> [{userdata,[{""}]}];
 div_j40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j40"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j51_test(doc) -> [{userdata,[{""}]}];
 div_j51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j62_test(doc) -> [{userdata,[{""}]}];
 div_j62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j2_test(doc) -> [{userdata,[{""}]}];
 div_j2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j2"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j13_test(doc) -> [{userdata,[{""}]}];
 div_j13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j13"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j35_test(doc) -> [{userdata,[{""}]}];
 div_j35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j57_test(doc) -> [{userdata,[{""}]}];
 div_j57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j8_test(doc) -> [{userdata,[{""}]}];
 div_j8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j19_test(doc) -> [{userdata,[{""}]}];
 div_j19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j19"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j30_test(doc) -> [{userdata,[{""}]}];
 div_j30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j41_test(doc) -> [{userdata,[{""}]}];
 div_j41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j41"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j52_test(doc) -> [{userdata,[{""}]}];
 div_j52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j63_test(doc) -> [{userdata,[{""}]}];
 div_j63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j3_test(doc) -> [{userdata,[{""}]}];
 div_j3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j3"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j14_test(doc) -> [{userdata,[{""}]}];
 div_j14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j14"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j25_test(doc) -> [{userdata,[{""}]}];
 div_j25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j25"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j36_test(doc) -> [{userdata,[{""}]}];
 div_j36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j47_test(doc) -> [{userdata,[{""}]}];
 div_j47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j58_test(doc) -> [{userdata,[{""}]}];
 div_j58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j9_test(doc) -> [{userdata,[{""}]}];
 div_j9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j20_test(doc) -> [{userdata,[{""}]}];
 div_j20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j20"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j31_test(doc) -> [{userdata,[{""}]}];
 div_j31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j42_test(doc) -> [{userdata,[{""}]}];
 div_j42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j42"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j53_test(doc) -> [{userdata,[{""}]}];
 div_j53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j64_test(doc) -> [{userdata,[{""}]}];
 div_j64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j4_test(doc) -> [{userdata,[{""}]}];
 div_j4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j4"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j15_test(doc) -> [{userdata,[{""}]}];
 div_j15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j15"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j26_test(doc) -> [{userdata,[{""}]}];
 div_j26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j26"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j37_test(doc) -> [{userdata,[{""}]}];
 div_j37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j48_test(doc) -> [{userdata,[{""}]}];
 div_j48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j59_test(doc) -> [{userdata,[{""}]}];
 div_j59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j10_test(doc) -> [{userdata,[{""}]}];
 div_j10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j21_test(doc) -> [{userdata,[{""}]}];
 div_j21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j21"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j32_test(doc) -> [{userdata,[{""}]}];
 div_j32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j43_test(doc) -> [{userdata,[{""}]}];
 div_j43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j43"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j54_test(doc) -> [{userdata,[{""}]}];
 div_j54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_j65_test(doc) -> [{userdata,[{""}]}];
 div_j65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","j65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u5_test(doc) -> [{userdata,[{""}]}];
 div_u5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u5"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u16_test(doc) -> [{userdata,[{""}]}];
 div_u16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u16"),
-  Expected="0.859462040426548",
+  Expected="<cell><value>"++"0.859462040426548"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u27_test(doc) -> [{userdata,[{""}]}];
 div_u27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u27"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u38_test(doc) -> [{userdata,[{""}]}];
 div_u38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u38"),
-  Expected="0.859462040426548",
+  Expected="<cell><value>"++"0.859462040426548"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u49_test(doc) -> [{userdata,[{""}]}];
 div_u49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u49"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u60_test(doc) -> [{userdata,[{""}]}];
 div_u60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u60"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u11_test(doc) -> [{userdata,[{""}]}];
 div_u11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u11"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u22_test(doc) -> [{userdata,[{""}]}];
 div_u22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u22"),
-  Expected="11520.9931561356",
+  Expected="<cell><value>"++"11520.9931561356"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u33_test(doc) -> [{userdata,[{""}]}];
 div_u33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u33"),
-  Expected="-2146826265",
+  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u44_test(doc) -> [{userdata,[{""}]}];
 div_u44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u44"),
-  Expected="11520.9931561356",
+  Expected="<cell><value>"++"11520.9931561356"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u55_test(doc) -> [{userdata,[{""}]}];
 div_u55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u55"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u66_test(doc) -> [{userdata,[{""}]}];
 div_u66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u66"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u6_test(doc) -> [{userdata,[{""}]}];
 div_u6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u6"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u17_test(doc) -> [{userdata,[{""}]}];
 div_u17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u17"),
-  Expected="1.12685023078147",
+  Expected="<cell><value>"++"1.12685023078147"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u28_test(doc) -> [{userdata,[{""}]}];
 div_u28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u28"),
-  Expected="-2146826281",
+  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u39_test(doc) -> [{userdata,[{""}]}];
 div_u39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u39"),
-  Expected="1.12685023078147",
+  Expected="<cell><value>"++"1.12685023078147"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u50_test(doc) -> [{userdata,[{""}]}];
 div_u50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u50"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u61_test(doc) -> [{userdata,[{""}]}];
 div_u61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u61"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u1_test(doc) -> [{userdata,[{""}]}];
 div_u1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u1"),
-  Expected="Float",
+  Expected="<cell><value>"++"Float"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u12_test(doc) -> [{userdata,[{""}]}];
 div_u12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u12"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u34_test(doc) -> [{userdata,[{""}]}];
 div_u34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u34"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u56_test(doc) -> [{userdata,[{""}]}];
 div_u56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u56"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u7_test(doc) -> [{userdata,[{""}]}];
 div_u7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u7"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u18_test(doc) -> [{userdata,[{""}]}];
 div_u18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u18"),
-  Expected="11520.6111730065",
+  Expected="<cell><value>"++"11520.6111730065"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u29_test(doc) -> [{userdata,[{""}]}];
 div_u29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u29"),
-  Expected="-2146826246",
+  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u40_test(doc) -> [{userdata,[{""}]}];
 div_u40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u40"),
-  Expected="11520.6111730065",
+  Expected="<cell><value>"++"11520.6111730065"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u51_test(doc) -> [{userdata,[{""}]}];
 div_u51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u51"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u62_test(doc) -> [{userdata,[{""}]}];
 div_u62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u62"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u2_test(doc) -> [{userdata,[{""}]}];
 div_u2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u2"),
-  Expected="3.1415",
+  Expected="<cell><value>"++"3.1415"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u13_test(doc) -> [{userdata,[{""}]}];
 div_u13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u13"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u35_test(doc) -> [{userdata,[{""}]}];
 div_u35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u35"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u57_test(doc) -> [{userdata,[{""}]}];
 div_u57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u57"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u8_test(doc) -> [{userdata,[{""}]}];
 div_u8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u8"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u19_test(doc) -> [{userdata,[{""}]}];
 div_u19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u19"),
-  Expected="11520.9294922808",
+  Expected="<cell><value>"++"11520.9294922808"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u30_test(doc) -> [{userdata,[{""}]}];
 div_u30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u30"),
-  Expected="-2146826259",
+  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u41_test(doc) -> [{userdata,[{""}]}];
 div_u41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u41"),
-  Expected="11520.9294922808",
+  Expected="<cell><value>"++"11520.9294922808"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u52_test(doc) -> [{userdata,[{""}]}];
 div_u52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u52"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u63_test(doc) -> [{userdata,[{""}]}];
 div_u63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u63"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u3_test(doc) -> [{userdata,[{""}]}];
 div_u3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u3"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u14_test(doc) -> [{userdata,[{""}]}];
 div_u14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u14"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u25_test(doc) -> [{userdata,[{""}]}];
 div_u25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u25"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u36_test(doc) -> [{userdata,[{""}]}];
 div_u36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u36"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u47_test(doc) -> [{userdata,[{""}]}];
 div_u47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u47"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u58_test(doc) -> [{userdata,[{""}]}];
 div_u58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u58"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u9_test(doc) -> [{userdata,[{""}]}];
 div_u9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u9"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u20_test(doc) -> [{userdata,[{""}]}];
 div_u20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u20"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u31_test(doc) -> [{userdata,[{""}]}];
 div_u31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u31"),
-  Expected="-2146826288",
+  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u42_test(doc) -> [{userdata,[{""}]}];
 div_u42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u42"),
-  Expected="0.0",
+  Expected="<cell><value>"++"0.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u53_test(doc) -> [{userdata,[{""}]}];
 div_u53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u53"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u64_test(doc) -> [{userdata,[{""}]}];
 div_u64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u64"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u4_test(doc) -> [{userdata,[{""}]}];
 div_u4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u4"),
-  Expected="0.318319274232055",
+  Expected="<cell><value>"++"0.318319274232055"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u15_test(doc) -> [{userdata,[{""}]}];
 div_u15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u15"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u26_test(doc) -> [{userdata,[{""}]}];
 div_u26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u26"),
-  Expected="0.318319274232055",
+  Expected="<cell><value>"++"0.318319274232055"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u37_test(doc) -> [{userdata,[{""}]}];
 div_u37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u37"),
-  Expected="-2146826273",
+  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u48_test(doc) -> [{userdata,[{""}]}];
 div_u48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u48"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u59_test(doc) -> [{userdata,[{""}]}];
 div_u59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u59"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u10_test(doc) -> [{userdata,[{""}]}];
 div_u10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u10"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u21_test(doc) -> [{userdata,[{""}]}];
 div_u21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u21"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u32_test(doc) -> [{userdata,[{""}]}];
 div_u32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u32"),
-  Expected="-2146826252",
+  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u43_test(doc) -> [{userdata,[{""}]}];
 div_u43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u43"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u54_test(doc) -> [{userdata,[{""}]}];
 div_u54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u54"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 div_u65_test(doc) -> [{userdata,[{""}]}];
 div_u65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/DIV/","u65"),
-  Expected="1.0",
+  Expected="<cell><value>"++"1.0"++"</value></cell>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
-  test_util:expected2(Expected,Got).
+  test_util:expected(Expected,Got).
   
 all() -> 
     [div_k5_test,

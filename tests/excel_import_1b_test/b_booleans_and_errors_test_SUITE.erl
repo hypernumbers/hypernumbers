@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_booleans_and_errors.xls
-% Generated on: Mon Feb 25 21:56:36 +0000 2008
+% Generated on: Tue Mar 11 09:09:53 +0000 2008
 
 -module(b_booleans_and_errors_test_SUITE).
 -compile(export_all).
@@ -12,7 +12,7 @@
 init_per_suite(Config) ->
     code:add_patha("../../../../../ebin"),
     production_boot:setup_paths(),
-    Data = test_util:read_excel_file("/Win Excel 2007 (as 97)/b_booleans_and_errors.xls"),
+    Data = test_util:read_excel_file("../../../../excel_files/Win Excel 2007 (as 97)/b_booleans_and_errors.xls"),
     %% io:format("in init_per_suite Data is ~p~n",[Data]),
     Pid=spawn(test_util,test_state,[Data]),
     io:format("in init_per_suite Pid is ~p~n",[Pid]),

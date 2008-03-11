@@ -269,16 +269,16 @@ get_post_data({xml},Arg,_Dec) ->
 process_POST(Arg,PostData,_User,Page) ->
     A = "action", 
     case PostData of
-    [import] ->             api_import(Arg,Page);
-    {create,[],Data} ->     api_create(Data,Page);
-    [{A,"login"}|R] ->      api_login(R);
-    [{A,"logout"}] ->       api_logout();
-    [{A,"clear"}|R] ->      api_clear(R,Page);
-    [{A,"insert"}|R] ->     api_insert(R,Page);
-    [{A,"delete"}|R] ->     api_delete(R,Page);
-    {register,[],Data} ->   api_reg(Data,Page);
+    [import]                -> api_import(Arg,Page);
+    {create,[],Data}     -> api_create(Data,Page);
+    [{A,"login"}|R]        -> api_login(R);
+    [{A,"logout"}]         -> api_logout();
+    [{A,"clear"}|R]        -> api_clear(R,Page);
+    [{A,"insert"}|R]       -> api_insert(R,Page);
+    [{A,"delete"}|R]      -> api_delete(R,Page);
+    {register,[],Data}    -> api_reg(Data,Page);
     [{A,"unregister"}|R] -> api_unreg(R,Page);
-    {notify,[],Data} ->     api_notify(Data,Page)
+    {notify,[],Data}      ->  api_notify(Data,Page)
     end.
 
 %%% API call - IMPORT

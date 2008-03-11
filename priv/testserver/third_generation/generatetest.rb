@@ -52,7 +52,7 @@ end
 def init_per_suite(source_file,mod_name)
 <<-eos
 init_per_suite(Config) ->
-    code:add_patha("../../../../../ebin"),
+    code:add_patha("../../../../ebin"),
     production_boot:setup_paths(),
     Data = test_util:read_excel_file("/Win Excel 2007 (as 97)/#{source_file}"),
     %% io:format("in init_per_suite Data is ~p~n",[Data]),
