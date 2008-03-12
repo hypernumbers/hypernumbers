@@ -1,8 +1,4 @@
-#hn 
-{
-}
-
-#hn table
+.ss_container table
 {
     border-top:1px solid #aaa;
     border-left:1px solid #aaa;
@@ -11,13 +7,13 @@
     border-collapse:collapse;
 }
 
-#hn .rowindex
+.ss_container .rowindex
 {
     width:30px;
     background: #ddd !important;
 }
 
-#hn .rowindex div
+.ss_container .rowindex div
 {
     height:17px; 
     padding-top:4px;
@@ -27,17 +23,17 @@
     border-right:1px solid #aaa;
 }
 
-.ssinner
+.ss_container .ssinner
 {
     margin-left:25px;
 }
 
-.rowindex.first div
+.ss_container .rowindex.first div
 {
     height:16px !important;
 }
 
-#hn th
+.ss_container th
 {
     padding: 3px 0px; 
     border-bottom:1px solid #aaa;
@@ -46,7 +42,7 @@
     background:#ddd;    
 }
 
-#hn td
+.ss_container td
 {
     background: #fefefe;
     border-bottom:1px solid #ddd;
@@ -54,7 +50,7 @@
     vertical-align:top;
 }
 
-#hn table div textarea
+.ss_container table div textarea
 {
     border:1px solid blue;
     display:block;
@@ -63,7 +59,7 @@
     overflow-x:hidden;
 }
 
-#hn table div.cell
+.ss_container table div.cell
 {
     border:1px solid transparent;
     height:20px;
@@ -71,7 +67,7 @@
     cursor:default;
 }
 
-#name 
+.ss_container #name 
 {
     vertical-align:middle;
     display:block;
@@ -83,7 +79,7 @@
     float:left;
 }
 
-#functions
+.ss_container #functions
 {
     border-width: 0px 1px 0px 1px;
     font:  12px "Helvetica Neue", Palatino, sans-serif;
@@ -93,7 +89,7 @@
     width:40px;
 }
 
-#toolbar 
+.ss_container #toolbar 
 {
     background:#eee;
     height:26px;
@@ -101,12 +97,12 @@
     border-top:1px solid #ddd;
 }
 
-#formula
+.ss_container #formula
 {
     margin-left:130px;
 }
 
-#formula input
+.ss_container #formula input
 {
     font:  12px "Helvetica Neue", Palatino, sans-serif;
     border: 0px;
@@ -114,7 +110,7 @@
     width:100%;
 }
 
-#marker 
+.ss_container #marker 
 {
     display:none;
     position:absolute;
@@ -123,22 +119,22 @@
     background:#000;
 }
 
-#headers,.indexes
+.ss_container #headers,.indexes
 {
     position:relative;
 }
 
-.datacontainer
+.ss_container .datacontainer
 {
     overflow-y:scroll;
 }
 
-.container
+.ss_container, .container 
 {
     overflow:hidden;
 }
 
-#drag
+.ss_container #drag
 {
     display:none;
     position:fixed;
@@ -150,13 +146,13 @@
 }
 
 
-#toolbar a:hover
+.ss_container #toolbar a:hover
 {
     border:1px solid #BBB;
     background-color:#fff;
 }
 
-#toolbar a 
+.ss_container #toolbar a 
 {
     float:left;
     background-position:center center;
@@ -170,7 +166,7 @@
     width:16px;
 }
 
-#toolbar a.separator
+.ss_container #toolbar a.separator
 {
     cursor:default;
     margin:3px;
@@ -181,14 +177,14 @@
     border-right:1px solid #FFF;
 }
 
-.indexes
+.ss_container .indexes
 {
     width:25px;
     float:left;
     height:100%;
 }
 
-#box 
+.ss_container #box 
 {
     position:absolute;
     background: #ddd !important;
@@ -197,34 +193,34 @@
     z-index:999;
 }
 
-#toolbar .left { background-image:  url('/img/text_align_left.png'); }
-#toolbar .center { background-image:  url('/img/text_align_center.png'); }
-#toolbar .right { background-image:  url('/img/text_align_right.png'); }
-#toolbar .justify { background-image:  url('/img/text_align_justify.png'); }
+.ss_container #toolbar .left { background-image:  url('/img/text_align_left.png'); }
+.ss_container #toolbar .center { background-image:  url('/img/text_align_center.png'); }
+.ss_container #toolbar .right { background-image:  url('/img/text_align_right.png'); }
+.ss_container #toolbar .justify { background-image:  url('/img/text_align_justify.png'); }
 
-#toolbar .bold { background-image:  url('/img/text_bold.png'); }
-#toolbar .italic { background-image:  url('/img/text_italic.png'); }
-#toolbar .underl { background-image:  url('/img/text_underline.png'); }
-#toolbar .strike { background-image:  url('/img/text_strikethrough.png'); }
+.ss_container #toolbar .bold { background-image:  url('/img/text_bold.png'); }
+.ss_container #toolbar .italic { background-image:  url('/img/text_italic.png'); }
+.ss_container #toolbar .underl { background-image:  url('/img/text_underline.png'); }
+.ss_container #toolbar .strike { background-image:  url('/img/text_strikethrough.png'); }
 
 
-.dragleft   { border-left:  1px dashed #000 !important; }
-.dragright  { border-right: 1px dashed #000 !important; }
-.dragtop    { border-top:   1px dashed #000 !important; }
-.dragbottom { border-bottom:1px dashed #000 !important; }
+.ss_container .dragleft   { border-left:  1px dashed #000 !important; }
+.ss_container .dragright  { border-right: 1px dashed #000 !important; }
+.ss_container .dragtop    { border-top:   1px dashed #000 !important; }
+.ss_container .dragbottom { border-bottom:1px dashed #000 !important; }
 
-.current div
+.ss_container .current div
 {
     opacity: 1 !important;
 }
 
-.selected 
+.ss_container .selected 
 {
     opacity: .5;
     background: #d2e9ff;
 }
 
-#hn th.highlight,#hn td.highlight
+.ss_container th.highlight,.ss_container td.highlight
 {
     background:#666 !important;
 }

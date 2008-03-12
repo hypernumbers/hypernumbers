@@ -15,61 +15,57 @@ create_db()->
     create_db(transient).
 
 create_db(Type)->
-    Type_attr= case Type of
-		   persistent -> disc_only_copies;
-		   transient  -> ram_copies
-	       end,
-    Result0a=mnesia:delete_schema([node()]),
-    io:format("Mnesia schema deleted ~p~n",[Result0a]),
-    Result0b=mnesia:create_schema([node()]),
-    io:format("Mnesia schema created ~p~n",[Result0b]),
-    mnesia:start(),
-    Result1=mnesia:create_table(spriki,
-				[{Type_attr, [node()]},
-				 {attributes, record_info(fields, spriki)},
-				 {type,set}]),
-    Result2=mnesia:create_table(ref,
-				[{Type_attr, [node()]},
-				 {attributes, record_info(fields, ref)},
-				 {type,bag}]),
-    Result3=mnesia:create_table(bindings,
-				[{Type_attr, [node()]},
-				 {attributes, record_info(fields, bindings)},
-				 {type,bag}]),
-    Result4=mnesia:add_table_index(ref,ref_to),
-    Result5=mnesia:add_table_index(bindings,page),
-    Result6=mnesia:create_table(users,
-				[{Type_attr, [node()]},
-				 {attributes, record_info(fields, users)},
-				 {type,bag}]),
-    Result7=mnesia:create_table(websheet,
-				[{Type_attr, [node()]},
-				 {attributes, record_info(fields, websheet)},
-				 {type,bag}]),
-    Result8=mnesia:create_table(dirty_refs,
-				[{Type_attr, [node()]},
-				 {attributes, record_info(fields, dirty_refs)},
-				 {type,set}]),
-    Result9=mnesia:create_table(dirty_hypernumbers,
-				[{Type_attr, [node()]},
-				 {attributes, record_info(fields, dirty_hypernumbers)},
-				 {type,set}]),
-    Result10=mnesia:create_table(hypernumbers,
-				[{Type_attr, [node()]},
-				 {attributes, record_info(fields, hypernumbers)},
-				 {type,set}]),
 
-    io:fwrite("Create spriki table                 : ~p~n",[Result1]),
-    io:fwrite("Create ref table                    : ~p~n",[Result2]),
-    io:fwrite("Create bindings table               : ~p~n",[Result3]),
-    io:fwrite("Create ref_to index on table ref    : ~p~n",[Result4]),
-    io:fwrite("Create page index on table bindings : ~p~n",[Result5]),
-    io:fwrite("Create users table                  : ~p~n",[Result6]),
-    io:fwrite("Create websheets table              : ~p~n",[Result7]),
-    io:fwrite("Create dirty_refs table             : ~p~n",[Result8]),
-    io:fwrite("Create dirty_hypernumbers table     : ~p~n",[Result9]),
-    io:fwrite("Create hypernumbers table           : ~p~n",[Result10]),
+    Storage = case Type of
+        persistent -> disc_only_copies;
+        transient  -> ram_copies
+    end,
+    
+    ok = mnesia:delete_schema([node()]),
+    ok = mnesia:create_schema([node()]),
+    
+    mnesia:start(),
+    
+    {atomic,ok} = mnesia:create_table(hypnum_item,
+        [{Storage, [node()]},{type,set},
+         {attributes, record_info(fields, hypnum_item)}]),
+    
+    {atomic,ok} = mnesia:create_table(spriki,
+        [{Storage, [node()]},{type,set},
+         {attributes, record_info(fields, spriki)}]),
+         
+    {atomic,ok} =mnesia:create_table(ref,
+        [{Storage, [node()]},{type,bag},
+	 {attributes, record_info(fields, ref)}]),
+         
+    {atomic,ok} = mnesia:create_table(bindings,
+        [{Storage, [node()]},{type,bag},
+	 {attributes, record_info(fields, bindings)}]),
+    
+    {atomic,ok} = mnesia:create_table(users,
+        [{Storage, [node()]},{type,bag},
+	 {attributes, record_info(fields, users)}]),
+         
+    {atomic,ok} = mnesia:create_table(websheet,
+        [{Storage, [node()]},{type,bag},
+	 {attributes, record_info(fields, websheet)}]),
+         
+    {atomic,ok} = mnesia:create_table(dirty_refs,
+    	[{Storage, [node()]},{type,set},
+    	 {attributes, record_info(fields, dirty_refs)}]),
+         
+    {atomic,ok} = mnesia:create_table(dirty_hypernumbers,
+    	[{Storage, [node()]},{type,set},
+         {attributes, record_info(fields, dirty_hypernumbers)}]),
+         
+    {atomic,ok} = mnesia:create_table(hypernumbers,
+        [{Storage, [node()]},{type,set},
+         {attributes, record_info(fields, hypernumbers)}]),
+                           
+    {atomic,ok} = mnesia:add_table_index(ref,ref_to),
+    {atomic,ok} = mnesia:add_table_index(bindings,page),
+
     users:create("admin","admin",superuser),
     users:create("user","user"),
-    io:format("Two users created~n* u:admin p:admin (superuser)~n"++
-	      "* u:user  p:user~n").
+    
+    ok.

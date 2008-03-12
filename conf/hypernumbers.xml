@@ -1,6 +1,7 @@
 <hypernumbers>
 
     <includes>
+        <reldir>ebin</reldir>
         <reldir>lib/db_access-1.0/ebin</reldir>
         <reldir>lib/read_excel-1.0/ebin</reldir>
         <reldir>lib/remoting-1.0/ebin</reldir>

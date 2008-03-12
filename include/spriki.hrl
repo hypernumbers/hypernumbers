@@ -89,6 +89,14 @@
 %% These records define tables in the database %
 %%                                             %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-record( hypnum_item, {
+    site,
+    path,
+    ref,
+    attr,
+    val
+}).
+
 -record(bindings, {
 	  index=#index{},
 	  page=#page{},

@@ -7,8 +7,15 @@
 %%%-------------------------------------------------------------------
 -module(production_boot).
 
--export([get_root/0,setup_paths/0,start/0,start/1,stop/0,
-    stop_halt/0,remote_stop/1]).
+-export([
+    get_root/0,
+    setup_paths/0,
+    start/0,
+    start/1,
+    stop/0,
+    stop_halt/0,
+    remote_stop/1
+    ]).
 
 get_root() ->
     [_File,_Ebin|Rest] = lists:reverse(
@@ -34,7 +41,9 @@ read_conf() ->
 
 setup_paths() ->
     setup_paths(read_conf()).
+    
 setup_paths(Conf) ->
+
     Abs = values([],xmlsearch([],
         xmlsearch([],Conf,includes),absdir)),
     Rel = values([],xmlsearch([],
@@ -72,7 +81,6 @@ start_apps(Conf,Toolbar)->
     application:load(mnesia),
     application:set_env(mnesia, dir, FullPath),
     application:start(mnesia),
-    application:start(mnemosyne),
 
     %% if clean startup of mnesia, create the db
     %% TODO : This is probably the wrong way to handly multiple

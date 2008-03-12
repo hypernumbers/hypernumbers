@@ -6,7 +6,7 @@ var _jssocket = null;
 function jssocket_init()
 {
     // This is the id/name of the flash object
-    _jssocket = $("#flash *").get(0);
+    _jssocket = document.getElementById("mymovie");;
 
     // Set callbacks for flash to call
     _jssocket.setCallBack("connect","soc_connect");

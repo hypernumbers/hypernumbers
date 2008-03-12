@@ -32,7 +32,8 @@
             range: "a1:z100",   // Default Range that is loaded
             fmargin: 0,         // Footer Margin
             cellSelect:null,    // Callback on a cell being selected
-            cellChange:null     // Callback for a cell Changing
+            cellChange:null,    // Callback for a cell Changing
+            fullscreen:false
         };
 
         $.fn.modes =
@@ -288,12 +289,18 @@
     
             $(window).resize(function()
             {
-                var height = ($(window).height() - 
-                    x.children("div.datacontainer").offset().top) - fmargin;
-    
+                var c =  x.children("div.datacontainer");     
+                var h = (o.fullscreen)
+                    ? $(window).height() - c.offset().top
+                    : $(root).height() - (x.offset().top - root.offset().top) - 21;                
+                                
+                var height = h - fmargin;
                 var width = $(root).width() - 25;
     
-                x.children("div.datacontainer").height(height).width(width);
+                root.children("div.container").children("div.indexes").height(height);
+                c.height(height);
+                c.width(width);
+                
                 root.find("#marker").height(height-15);
             });
     
@@ -308,7 +315,7 @@
         {
             var range = $.fn.to_b26($s.startx+1) + "" + ($s.starty+1);
     
-            if($s.startx != $s.endx && $s.starty != $s.endy)
+            if($s.startx != $s.endx || $s.starty != $s.endy)
                 range += ":"+$.fn.to_b26($s.endx+1)+""+($s.endy+1);
     
             root.find("#name").val(range);
@@ -357,7 +364,7 @@
                     {
                         x.width(x.width() + ((width - header.width())));
                         header.width(width);
-                        marker.css("left",left+"px");
+                        marker.css("left",(e.clientX)+"px");
                         newwidth = width;
                     }
                 }
@@ -822,6 +829,8 @@
         {               
             var $this = $(this);
             var range = $.fn.parse_cell(o.range.split(":")[1]);
+            
+            $this.addClass("ss_container");
             
             create_table($this,range[1],range[0]);
 

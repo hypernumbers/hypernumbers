@@ -14,7 +14,7 @@
         <script src="/js/jquery.bgiframe.min.js" language="javascript"></script>
         <script src="/js/jquery.clickmenu.js" language="javascript"></script>
         <script src="/js/jquery.spreadsheet.js" language="javascript"></script>
-        <script src="/js/jquery.flash.js" language="javascript"></script>
+        <script src="/js/swfobject.js" language="javascript"></script>
         <script src="/js/socket.js" language="javascript"></script>
 
         <style type="text/css">
@@ -25,14 +25,15 @@
         </style>
 
         <script>
+        
             $(function()
             {
                 var range = "a1:z50";
                 var url = document.location.href;
 
-                $('#flash').flash({
-                    src: '/swf/JsSocket.swf'
-                });
+                var so = new SWFObject("/swf/JsSocket.swf", "mymovie", "470", "200", "8", "#FFFFFF");
+                so.addParam("allowScriptAccess", "always");
+   				so.write("flashcontent");
 
                 // Import SpreadSheet
                 $("#m_import").click( function()
@@ -197,7 +198,9 @@ function copy(inElement) {
             </div>
         </div>
 
-        <div id="flash"></div>
+        <div id="flashcontent">
+                This text is replaced by the Flash movie.
+		</div>
 
         <textarea id="texttocopy" readonly="readonly" onclick="this.select()">gwesd</textarea>
 
