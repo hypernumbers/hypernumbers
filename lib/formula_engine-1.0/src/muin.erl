@@ -157,14 +157,15 @@ plain_eval(Value, _Bindings) ->
 
 %%% ----- Functions defined in spriki_funs or userdef.
 
-funcall(Fun, Args) ->
-    Modname = ?COND(member(Fun, ?STDFUNS_MATH), stdfuns_math,
-                    ?COND(member(Fun, ?STDFUNS_STATS), stdfuns_stats,
-                          ?COND(member(Fun, ?STDFUNS_TEXT), stdfuns_text,
-                                userdef))),
-    ?COND(length(Args) == 0,
-          Modname:Fun(),
-          Modname:Fun(Args)).
+%% Picks a module name, calls
+funcall(Fname, Args) ->
+    %% Find module name corresponding to function; default to userdef.
+    [Modname | _] = foldl(fun({M, L}, Acc) ->
+                                  ?COND(member(Fname, L), [M], Acc)
+                          end,
+                          [userdef],
+                          ?STDFUNS),
+    Modname:Fname(Args).
 
 %%% ----- Reference functions.
 

@@ -1,57 +1,56 @@
 
--define(STDFUNS_MATH,
+-define(STDFUNS,
         [
-         %% Basic arithmetics 
-         plus, minus, times, divide, negate,
+         {stdfuns_logical,
+         [
+          eq, neq, lt, gt, lte, gte
+         ]},
 
-         %% Arithmetic 
-         sum, product, average, quotient, abs, sqrt, power, sign, exp, fact,
-         %%gcd, %%lcm,
-         mod,
+         {stdfuns_math,
+          [
+           %% Basic arithmetics 
+           plus, minus, times, divide, negate,
+           
+           %% Arithmetic 
+           sum, product, average, quotient, abs, sqrt, power, sign, exp, fact,
+           %%gcd, %%lcm,
+           mod,
+           
+           %% Arrays and matrices
+           mdeterm, minverse, mmult,
+           %%multinomial
+           
+           %% Logarithms
+           ln, log, log10,
+           
+           %% Random numbers
+           rand, randbetween,
+           
+           %% Rounding numbers
+           int
+          ]},
 
-         %% Arrays and matrices
-         mdeterm, minverse, mmult,
-         %%multinomial
-
-         %% Logarithms
-         ln, log, log10,
-
-         %% Random numbers
-         rand, randbetween,
-
-         %% Rounding numbers
-         int
+         {stdfuns_text,
+          [
+           %% Comparison functions.
+           exact,
+           len,
+           mid,
+           
+           %% Conversion functions.
+           clean,
+           fixed,
+           lower,
+           proper,
+           upper,
+           
+           %% Locate text.
+           char,
+           find,
+           left,
+           right,
+           
+           concatenate,
+           rept           
+          ]}
         ]).
-
--define(STDFUNS_LOGICAL,
-        []).
-
--define(STDFUNS_STATS,
-        []).
-
--define(STDFUNS_TEXT,
-        [
-         %% Comparison functions.
-         exact,
-         len,
-         mid,
-
-         %% Conversion functions.
-         clean,
-         fixed,
-         lower,
-         proper,
-         upper,
-
-         %% Locate text.
-         char,
-         find,
-         left,
-         right,
-
-         concatenate,
-         rept
-        ]).
-
--define(STDFUNS_FINANCIAL,
-        []).
