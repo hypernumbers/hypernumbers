@@ -8,19 +8,19 @@
 -module(excel_util).
 
 -export([get_utf8/1,
-          get_bound_sheet/2,
-          parse_CRS_RK/1,
-          parse_CRS_Uni16/1,
-          parse_CRS_Uni16/2,
-          get_len_CRS_Uni16/4,
-          lookup_string/2,
-          read_cell_range_add_list/2,
-          read_cell_range_addies/3,
-          write/3,
-          read/3,
-          read_shared/2,
-          get_length/2,
-          append_sheetname/2]).
+         get_bound_sheet/2,
+         parse_CRS_RK/1,
+         parse_CRS_Uni16/1,
+         parse_CRS_Uni16/2,
+         get_len_CRS_Uni16/4,
+         lookup_string/2,
+         read_cell_range_add_list/2,
+         read_cell_range_addies/3,
+         write/3,
+         read/3,
+         read_shared/2,
+         get_length/2,
+         append_sheetname/2]).
 
 %%% Debugging exports
 -export([parse_CRS_RK_TESTING/1,shift_left2_TESTING/1]).
@@ -42,7 +42,7 @@ get_utf8({[{'uni16-16',String}],_B,_C})->
     io:format("***********************************~n"),
     xmerl_ucs:to_utf8(binary_to_list(String)).
 
-    
+
 get_bound_sheet(Bin,_Tables)->
     <<SheetBOF:32/little-unsigned-integer,
      Visibility:8/little-unsigned-integer,
@@ -129,32 +129,32 @@ parse_CRS_Uni16(Bin,IndexSize)->
      NFlags:8/little-unsigned-integer,
      Rest/binary>>=Bin,
     {LenStr,Encoding,BinLen1,
-      {RICH_TEXT,LenRichText,_LenRichTextIdx},
-      {ASIAN,LenAsian,_LenAsianIdx},Rest3}=get_bits_CRS_Uni16(Len,IndexSize,Rest,NFlags),
+     {RICH_TEXT,LenRichText,_LenRichTextIdx},
+     {ASIAN,LenAsian,_LenAsianIdx},Rest3}=get_bits_CRS_Uni16(Len,IndexSize,Rest,NFlags),
     BinLen2=erlang:size(Bin),
     %% Now we need to parse the rest of the binary
     <<String:LenStr/binary,Rest4/binary>>=Rest3,
     List1=[{Encoding,String}],
     case RICH_TEXT of
-      match    -> 
-		    <<RichText:LenRichText/binary,Rest5/binary>>=Rest4,
-		    List2=[{richtext,RichText}|List1];
-      no_match -> 
-        Rest5=Rest4,
-		    List2=List1
+        match    -> 
+            <<RichText:LenRichText/binary,Rest5/binary>>=Rest4,
+            List2=[{richtext,RichText}|List1];
+        no_match -> 
+            Rest5=Rest4,
+            List2=List1
     end,
     case ASIAN of
-      match    ->
-		    <<Asian:LenAsian/binary>>=Rest5,
-		    List3=[{asian,Asian}|List2];
-      no_match -> List3=List2
+        match    ->
+            <<Asian:LenAsian/binary>>=Rest5,
+            List3=[{asian,Asian}|List2];
+        no_match -> List3=List2
     end,
     {List3,BinLen1,BinLen2}.
 
 get_len_CRS_Uni16(Len,IndexSize,Bin,Flags)->
     {_LenStr,_Encoding,BinLen,
-      {_RICH_TEXT,_LenRichText,_LenRichTextIdx},
-      {_ASIAN,_LenAsian,_LenAsianIdx},_Rest3}=get_bits_CRS_Uni16(Len,IndexSize,Bin,Flags),
+     {_RICH_TEXT,_LenRichText,_LenRichTextIdx},
+     {_ASIAN,_LenAsian,_LenAsianIdx},_Rest3}=get_bits_CRS_Uni16(Len,IndexSize,Bin,Flags),
     BinLen.
 
 get_bits_CRS_Uni16(Len,IndexSize,Bin,NFlags)->
@@ -162,67 +162,68 @@ get_bits_CRS_Uni16(Len,IndexSize,Bin,NFlags)->
     {ok,ASIAN}    =check_flags(NFlags,?CRS_UNI16_ASIAN),
     {ok,RICH_TEXT}=check_flags(NFlags,?CRS_UNI16_RICH_TEXT),
     case RICH_TEXT of
-      match ->
-        <<LenRichText:16/little-unsigned-integer,Rest2/binary>>=Bin,
-        LenRichTextIdx=2;
-      no_match ->
-        Rest2=Bin,
-        LenRichText=0,
-        LenRichTextIdx=0
-      end,
+        match ->
+            <<LenRichText:16/little-unsigned-integer,Rest2/binary>>=Bin,
+            LenRichTextIdx=2;
+        no_match ->
+            Rest2=Bin,
+            LenRichText=0,
+            LenRichTextIdx=0
+    end,
     case ASIAN of
-      match ->
-         <<LenAsian:16/little-unsigned-integer,Rest3/binary>>=Rest2,
-         LenAsianIdx=4;
-      no_match ->
-        Rest3=Rest2,
-        LenAsian=0,
-        LenAsianIdx=0
+        match ->
+            <<LenAsian:16/little-unsigned-integer,Rest3/binary>>=Rest2,
+            LenAsianIdx=4;
+        no_match ->
+            Rest3=Rest2,
+            LenAsian=0,
+            LenAsianIdx=0
     end,
     %% We now have info to calculate the length of the binary
     {LenStr,Encoding} = case UNCOMP of
-      match    -> {Len*2,'uni16-16'};
-      no_match -> {Len,  'uni16-8'}
-    end,
+                            match    -> {Len*2,'uni16-16'};
+                            no_match -> {Len,  'uni16-8'}
+                        end,
     BinLen=1+IndexSize+LenRichTextIdx+LenAsianIdx+LenStr+LenRichText*4+LenAsian,
     {LenStr,Encoding,BinLen,{RICH_TEXT,LenRichText,LenRichTextIdx},
-        {ASIAN,LenAsian,LenAsianIdx},Rest3}.
+     {ASIAN,LenAsian,LenAsianIdx},Rest3}.
 
 %% Read a Cell Range Address List
 %% defined in Section 2.5.15 of excelfileformatV1-40.pdf
 %%
-%% Size can be either '8bit' or '16bit' depending on how the column index is stored
+%% Size can be either '8bit' or '16bit' depending on how the column index 
+%% is stored
 %%
 read_cell_range_add_list(Bin,Size)->
-  %%io:format("in excel_util:read_cell_range_add_list Bin is ~p~n",[Bin]),
-  <<NoAddies:16/little-signed-integer,
-    Rest/binary>>=Bin,
-  %%io:format("in excel_rev_comp:read_cell_range_add_list NoAddies is ~p~n",
-  %%      [NoAddies]),
-  read_cell_range_addies(NoAddies,Size,Rest).
+    %%io:format("in excel_util:read_cell_range_add_list Bin is ~p~n",[Bin]),
+    <<NoAddies:16/little-signed-integer,
+     Rest/binary>>=Bin,
+    %%io:format("in excel_rev_comp:read_cell_range_add_list NoAddies is ~p~n",
+    %%      [NoAddies]),
+    read_cell_range_addies(NoAddies,Size,Rest).
 
 %% This function pulls a set of cell_range_addies out of the list of them.
 %% the format of each addie is described in Section 2.5.14 of the
 %% excelfileformat.v1.40.pdf
 read_cell_range_addies(N,Size,Array)->
-  read_cell_range_addies(N,Size,Array,[]).
+    read_cell_range_addies(N,Size,Array,[]).
 
 read_cell_range_addies(0,_Size,Bin,Residuum)->
-  {lists:reverse(Residuum),Bin};
+    {lists:reverse(Residuum),Bin};
 read_cell_range_addies(N,'16bit',Bin,Residuum)->
-  <<FirstRowIdx:16/little-signed-integer,
-    LastRowIdx:16/little-signed-integer,
-    FirstColIdx:16/little-signed-integer,
-    LastColIdx:16/little-signed-integer,
-    Rest/binary>>=Bin,
+    <<FirstRowIdx:16/little-signed-integer,
+     LastRowIdx:16/little-signed-integer,
+     FirstColIdx:16/little-signed-integer,
+     LastColIdx:16/little-signed-integer,
+     Rest/binary>>=Bin,
     NewResiduum=[{FirstRowIdx,LastRowIdx,FirstColIdx,LastColIdx}|Residuum],
     read_cell_range_addies(N-1,'16bit',Rest,NewResiduum);
 read_cell_range_addies(N,'8bit',Bin,Residuum)->
-  <<FirstRowIdx:16/little-signed-integer,
-    LastRowIdx:16/little-signed-integer,
-    FirstColIdx:8/little-signed-integer,
-    LastColIdx:8/little-signed-integer,
-    Rest/binary>>=Bin,
+    <<FirstRowIdx:16/little-signed-integer,
+     LastRowIdx:16/little-signed-integer,
+     FirstColIdx:8/little-signed-integer,
+     LastColIdx:8/little-signed-integer,
+     Rest/binary>>=Bin,
     NewResiduum=[{FirstRowIdx,LastRowIdx,FirstColIdx,LastColIdx}|Residuum],
     read_cell_range_addies(N-1,'8bit',Rest,NewResiduum).
 
@@ -234,23 +235,23 @@ read_cell_range_addies(N,'8bit',Bin,Residuum)->
 
 %% get the current length of the table
 get_length(Tables,Name)->
-  {value,{Name,Tid}}=lists:keysearch(Name,1,Tables),
-  Info=ets:info(Tid),
-  {_,{_,Length}}=lists:keysearch(size,1,Info),
-  Length.
-  
+    {value,{Name,Tid}}=lists:keysearch(Name,1,Tables),
+    Info=ets:info(Tid),
+    {_,{_,Length}}=lists:keysearch(size,1,Info),
+    Length.
+
 %% write values to the tables
 write(Tables,Name,[H|T])->
-  {value,{Name,Tid}}=lists:keysearch(Name,1,Tables),
-  ets:insert(Tid,{H,T}).
+    {value,{Name,Tid}}=lists:keysearch(Name,1,Tables),
+    ets:insert(Tid,{H,T}).
 
 %% read shared formula from the shared/array formula table
 %% this is a bit messy
 %%
-%% Normally the tExp token will contain the top left hand marker of the appropriate record
-%% but this is not always the case
+%% Normally the tExp token will contain the top left hand marker of the 
+%% appropriate record but this is not always the case
 %%
-%% See Sectio 3.10.1 of excelfileformatV1-41.pdf
+%% See Section 3.10.1 of excelfileformatV1-41.pdf
 %%
 %% There can be an overlap of shared formulae and array formulae as well 
 %% - in which case the array supercedes the shared (I think)
@@ -258,54 +259,54 @@ write(Tables,Name,[H|T])->
 %% So first read for an array - if that returns blank then 
 %% search for an exact shared match
 %% if that turns up blank then onto a range interception
-%% on a shared (ie don't check the top left but that the passed in row/col intersects
-%% the range
+%% on a shared (ie don't check the top left but that the passed in row/col
+%% intersects the range
 read_shared(Tables,{{sheet,Name},{row_index,Row},{col_index,Col}})->
-  TableName=sh_arr_formula,
-  {value,{_,Tid}}=lists:keysearch(TableName,1,Tables),
-  %% this fun reads an array formula
-  ArrayFun = fun(X,Residuum)->
-      NewResiduum = case X of
-        {{{sheet,Name},{row_index,Row},{col_index,Col}},_Rest} -> [X|Residuum];
-        _Other                                                   -> Residuum
-      end,
-    NewResiduum
-  end,
-  %% this fun reads an shared formula which matches at the top left
-  ExactSharedFun = fun(X,Residuum)->
-      NewResiduum = case X of
-        {{{sheet,Name},{firstrow,Row},{firstcol,Col},{lastrow,LastRow},
-                  {lastcol,LastCol}},_Rest} -> [X|Residuum];
-        _Other                               -> Residuum
-      end,
-    NewResiduum
-    end,
-  %% this fun reads an shared formula which intersects with the range
-  IntersectSharedFun = fun(X,Residuum)->
-      NewResiduum = case X of
-        {{{sheet,Name},{firstrow,FirstRow},{firstcol,FirstCol},{lastrow,LastRow},
-                  {lastcol,LastCol}},_Rest} 
-                  when Row >= FirstRow, Row =< LastRow,
-                  Col >= FirstCol, Col =< LastCol        -> [X|Residuum];
-        _Other                                            -> Residuum
-      end,
-    NewResiduum
-    end,
-    FirstReturn = ets:foldl(ArrayFun,[],Tid),
+    TableName=sh_arr_formula,
+    {value,{_,Tid}}=lists:keysearch(TableName,1,Tables),
+    %% this fun reads an array formula
+    ArrayFn=fun(X,Residuum)->
+                    case X of
+                        {{{sheet,Name},{row_index,Row},
+                          {col_index,Col}},_Rest} -> [X|Residuum];
+                        _Other                    -> Residuum
+                    end
+            end,
+    %% this fun reads an shared formula which matches at the top left
+    ExShrdFn = fun(X,Residuum)->
+                       case X of
+                           {{{sheet,Name},{firstrow,Row},
+                             {firstcol,Col},{lastrow,LastRow},
+                             {lastcol,LastCol}},_Rest} -> [X|Residuum];
+                           _Other                      -> Residuum
+                       end
+               end,
+    %% this fun reads a shared formula which intersects with the range
+    IntShrdFn=fun(X,Residuum)->
+                       case X of
+                           {{{sheet,Name},{firstrow,FirstRow},
+                             {firstcol,FirstCol},{lastrow,LastRow},
+                             {lastcol,LastCol}},_Rest} 
+                           when Row >= FirstRow, Row =< LastRow,
+                           Col >= FirstCol, Col =< LastCol       -> [X|Residuum];
+                           _Other                                -> Residuum
+                       end
+               end,
+    FirstReturn = ets:foldl(ArrayFn,[],Tid),
     SecondReturn = case FirstReturn of
-        []      -> ets:foldl(ExactSharedFun,[],Tid);
-        _Other2 -> FirstReturn
-    end,
+                       []      -> ets:foldl(ExShrdFn,[],Tid);
+                       _Other2 -> FirstReturn
+                   end,
     case SecondReturn of
-        []      -> ets:foldl(IntersectSharedFun,[],Tid);
+        []      -> ets:foldl(IntShrdFn,[],Tid);
         _Other3 -> SecondReturn
     end.
 
 %% read values from the tables
 read(Tables,Name,Key)->
-  {value,{_TableName,Tid}}=lists:keysearch(Name,1,Tables),
-  %% filefilters:dump([{Name,Tid}]),
-  ets:lookup(Tid,{index,Key}).
+    {value,{_TableName,Tid}}=lists:keysearch(Name,1,Tables),
+    %% filefilters:dump([{Name,Tid}]),
+    ets:lookup(Tid,{index,Key}).
 
 %% append a sheet name to the sheetname table with a zero-based
 %% index value
@@ -355,9 +356,9 @@ check_flags(NFlags,Flag)->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 parse_RK_test_() ->
     [?_assert(parse_CRS_RK(<<63,240,0,0>>) == 1.0),       % hex 3F F0 00 00
-     ?_assert(parse_CRS_RK(<<239,240,0,1>>) == 0.01),      % hex EE F0 00 01
+     ?_assert(parse_CRS_RK(<<239,240,0,1>>) == 0.01),     % hex EE F0 00 01
      ?_assert(parse_CRS_RK(<<0,75,86,70>>) == 1234321),   % hex 00 4B 56 46
-     ?_assert(parse_CRS_RK(<<00,75,86,71>>) == 12343.21)]. % hex 00 4B 56 47
+     ?_assert(parse_CRS_RK(<<00,75,86,71>>) == 12343.21)].% hex 00 4B 56 47
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%

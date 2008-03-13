@@ -48,12 +48,12 @@
 start(_Type, _StartArgs) ->
 
     {Status, Pid} = case read_excel_sup:start_link() of
-        {ok, Pid2} -> 
-            {{ok, Pid2},Pid2};
-        Error ->
-            {{error, {"read_excel_sup failed to start", Error}},null}
-    end,
-    
+                        {ok, Pid2} -> 
+                            {{ok, Pid2},Pid2};
+                        Error ->
+                            {{error, {"read_excel_sup failed to start", Error}},null}
+                    end,
+
     case Status of
         {ok, Pid} -> Status;
         Else -> 

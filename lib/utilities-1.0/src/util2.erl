@@ -183,7 +183,6 @@ pad_list([H|T],Residuum) ->
     pad_list(T,[lists:concat(List)|Residuum]).
 
 unpack_text(Text)->
-
     {ok,Tok,_}   = erl_scan:string("Return="++lists:flatten(Text)++"."),
     {ok,Abs}     = erl_parse:parse_exprs(Tok),
     {_, List, _} = erl_eval:exprs(Abs,[]),

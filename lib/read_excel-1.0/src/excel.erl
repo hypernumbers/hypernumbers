@@ -49,14 +49,16 @@ read_excel(Directory,SAT,SSAT,SectorSize,ShortSectorSize,
     io:format("~n~nNow going to parse the Excel Workbook only!~n"),
     {Location,SID}=get_named_SID(Directory,?EXCEL_WORKBOOK),
     Bin=case Location of
-	    normal_stream -> get_normal_stream(SID,Directory,SAT,SectorSize,FileIn);
+	    normal_stream -> get_normal_stream(SID,Directory,SAT,SectorSize,
+                                               FileIn);
 	    short_stream  -> get_short_stream(SID,Directory,SAT,SSAT,SectorSize,
 					      ShortSectorSize,FileIn)
 	end,
     %% Now parsing the Excel components of the file
     %%
-    %% To understand what is going on here you need to read Section 4.1.2 of excelfileformatV1-40.pdf
-    %% Basically we first read the 'Workbook Globals SubStream' and the all the 'Sheet SubStreams'
+    %% To understand what is going on here you need to read Section 4.1.2 of
+    %% excelfileformatV1-40.pdf Basically we first read the 'Workbook Globals 
+    %% SubStream' and the all the 'Sheet SubStreams'
     %%
     %% The 'Workbook Globals Substream' contains things that are 'file wide':
     %% * string
@@ -67,13 +69,14 @@ read_excel(Directory,SAT,SSAT,SectorSize,ShortSectorSize,
     %% * etc, etc
     %% as described in Section 4.2.5 of excelfileformatV1-40.pdf
     %%
-    %% The 'Sheet Substreams' constist of things on a particular Excel tab as describe in 
-    %% Section 4.2.5 of excelfileformatV1-40.pdf
+    %% The 'Sheet Substreams' constist of things on a particular Excel tab as 
+    %% described in Section 4.2.5 of excelfileformatV1-40.pdf
     %%
 
     %% First parse the 'Workbook Globals SubStream' 
     CurrentFormula="There is no current Formula yet!",
-    parse_bin(Bin,{'utf-8',list_to_binary("Workbook Globals SubStream")},CurrentFormula,Tables),
+    parse_bin(Bin,{'utf-8',list_to_binary("Workbook Globals SubStream")},
+              CurrentFormula,Tables),
     %% Now parse all the 'Sheet Substeams'
     [parse_substream(SubSID,SubLoc,X,Directory,SAT,SSAT,SectorSize,
 		     ShortSectorSize,FileIn,Tables) || X <- SubStreams],
@@ -89,8 +92,8 @@ parse_substream(SubSID,Location,SubStream,Directory,SAT,SSAT,SectorSize,
     Bin=case Location of 
 	    normal_stream -> get_normal_stream(SubSID,Directory,SAT,SectorSize,
 					       FileIn);
-	    short_stream  -> get_short_stream(SubSID,Directory,SAT,SSAT,SectorSize,
-					      ShortSectorSize,FileIn)
+	    short_stream  -> get_short_stream(SubSID,Directory,SAT,SSAT,
+                                              SectorSize,ShortSectorSize,FileIn)
 	end,
     %% Because we are reading a substream we want to chop off the 
     %% binary up to the offset
@@ -112,13 +115,15 @@ parse_bin(Bin,SubStreamName,CurrentFormula,Tables)->
 	?SST ->
 	    io:format("In excel:parse_bin Name is ~p~n",[Name]),
 	    {ok,BinList,Rest2}=get_single_SST(Bin),
-	    {ok,NewCurrentFormula}=excel_records:parse_rec(Identifier,BinList,Name,CurrentFormula,
-              Tables),
+	    {ok,NewCurrentFormula}=excel_records:parse_rec(Identifier,BinList,
+                                                           Name,CurrentFormula,
+                                                           Tables),
  	    parse_bin(Rest2,SubStreamName,NewCurrentFormula,Tables);
 	_Other ->
  	    <<Record:RecordSize/binary,Rest3/binary>>=Rest,
-	    {ok,NewCurrentFormula}=excel_records:parse_rec(Identifier,Record,Name,CurrentFormula,
-              Tables),
+	    {ok,NewCurrentFormula}=excel_records:parse_rec(Identifier,Record,
+                                                           Name,CurrentFormula,
+                                                           Tables),
  	    parse_bin(Rest3,SubStreamName,NewCurrentFormula,Tables)
     end.
 
@@ -135,21 +140,19 @@ get_single_SST(Bin,Residuum)->
     <<Identifier:16/little-unsigned-integer,Rest/binary>>=Bin,
     case Identifier of
 	?SST      -> %%io:format("in excel_get_single_SST for SST~n"),
-		     <<RecordSize:16/little-unsigned-integer,Rest2/binary>>=Rest,
-		     <<Record:RecordSize/binary,Rest3/binary>>=Rest2,
-		     get_single_SST(Rest3,[Record|Residuum]);
+            <<RecordSize:16/little-unsigned-integer,Rest2/binary>>=Rest,
+            <<Record:RecordSize/binary,Rest3/binary>>=Rest2,
+            get_single_SST(Rest3,[Record|Residuum]);
 	?CONTINUE -> %%io:format("in excel_get_single_SST for CONTINUE~n"),
-		     <<RecordSize:16/little-unsigned-integer,Rest2/binary>>=Rest,
-		     <<Record:RecordSize/binary,Rest3/binary>>=Rest2,
-		     get_single_SST(Rest3,[Record|Residuum]);
+            <<RecordSize:16/little-unsigned-integer,Rest2/binary>>=Rest,
+            <<Record:RecordSize/binary,Rest3/binary>>=Rest2,
+            get_single_SST(Rest3,[Record|Residuum]);
 	?EXTSST   -> %%io:format("in excel_get_single_SST for EXTSST~n"),
-		     %% the EXTSST record is simply an index for fast lookup
-		     %% on the SST record so we just chuck it...
-		     <<RecordSize:16/little-unsigned-integer,Rest2/binary>>=Rest,
-		     <<_Record:RecordSize/binary,Rest3/binary>>=Rest2,
-		     {ok,lists:reverse(Residuum),Rest3}
-		     %% Other -> io:format("in excel_get_single_SST for Other of ~p~n",[Other]),
-		     %% 	 exit("oh, shit!")
+            %% the EXTSST record is simply an index for fast lookup
+            %% on the SST record so we just chuck it...
+            <<RecordSize:16/little-unsigned-integer,Rest2/binary>>=Rest,
+            <<_Record:RecordSize/binary,Rest3/binary>>=Rest2,
+            {ok,lists:reverse(Residuum),Rest3}
     end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -169,11 +172,12 @@ get_file_structure(ParsedDirectory,SAT,SSAT,SectorSize,ShortSectorSize,
 		%% First thing we are going to do is get the
 		%% normal stream that contains the short stream
 		{_,SID2}=excel:get_named_SID(ParsedDirectory,?ROOT_ENTRY),
-		Bin2=get_normal_stream(SID2,ParsedDirectory,SAT,SectorSize,FileIn),
+		Bin2=get_normal_stream(SID2,ParsedDirectory,SAT,
+                                       SectorSize,FileIn),
 		SSIDs=filefilters:get_SIDs(SSAT,SID),
 		get_short_bin(Bin2,SSIDs,ShortSectorSize)
 	end,
-  {{Location,SID},get_bound_list(Bin,Tables)}.
+    {{Location,SID},get_bound_list(Bin,Tables)}.
 
 get_named_SID(Directory,Name)->
     SIDList=[{lists:keysearch(name,1,X),lists:keysearch(sid,1,X),
@@ -215,7 +219,8 @@ get_bound_list(Bin,Residuum,Tables)->
  	    Residuum;
 	?BOUNDSHEET ->
  	    <<Record:RecordSize/binary,Rest2/binary>>=Rest,
- 	    Return=excel_util:get_bound_sheet(<<Record:RecordSize/binary>>,Tables),
+ 	    Return=excel_util:get_bound_sheet(<<Record:RecordSize/binary>>,
+                                              Tables),
 	    {SheetBOF,_Visibility,_SheetType,_Name,SheetName}=Return,
 	    NewResiduum=[{SheetName,SheetBOF}|Residuum],
  	    get_bound_list(Rest2,NewResiduum,Tables);
@@ -265,71 +270,86 @@ get_short_bin(Bin,[H|T],SectorSize,Residuum) ->
 %%%                                                                     %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
 post_process_tables(Tables)->
-  %%io:format("Output Tables are ~p~n",[Tables]),
-  %%filefilters:dump(Tables),
-  fix_up_externalrefs(Tables),
-  fix_up_cells(Tables),
-  io:format("Post-processed Tables are ~p~n",[Tables]),
-  filefilters:dump(Tables),
-  ok.
+    %%io:format("Output Tables are ~p~n",[Tables]),
+    %%filefilters:dump(Tables),
+    fix_up_externalrefs(Tables),
+    fix_up_cells(Tables),
+    io:format("Post-processed Tables are ~p~n",[Tables]),
+    filefilters:dump(Tables),
+    ok.
 
 %% reverse compile the basic cells
-%% this fun reverse compiles all the tokens in the table 'cell_tokens' and then injects them
-%% into the table 'cells' which is prepopulated with all the non-formulae cell values
+%% this fun reverse compiles all the tokens in the table 'cell_tokens' and 
+%% then injects them into the table 'cells' which is prepopulated with
+%% all the non-formulae cell values
 fix_up_cells(Tables)->
-  {value,{cell_tokens,Cell_TokensId}}=lists:keysearch(cell_tokens,1,Tables),
-  {value,{cell,CellId}}              =lists:keysearch(cell,1,Tables),
-  Fun2=fun(X,_Residuum)->
-    {Index,[XF,{tokens,Tokens},{tokenarrays,TokenArray}]}=X,
-    Formula=excel_rev_comp:reverse_compile(Index,Tokens,TokenArray,Tables),
-    ets:insert(CellId,[{Index,[XF,{formula,Formula}]}])
-  end,
-  CellList=ets:foldl(Fun2,[],Cell_TokensId).
+    {value,{cell_tokens,Cell_TokensId}}=lists:keysearch(cell_tokens,1,Tables),
+    {value,{cell,CellId}}              =lists:keysearch(cell,1,Tables),
+    Fun2=fun(X,_Residuum)->
+                 {Index,[XF,{tokens,Tokens},{tokenarrays,TokenArray}]}=X,
+                 Formula=excel_rev_comp:reverse_compile(Index,Tokens,TokenArray,
+                                                        Tables),
+                 ets:insert(CellId,[{Index,[XF,{formula,Formula}]}])
+         end,
+    CellList=ets:foldl(Fun2,[],Cell_TokensId).
 
-%% This function merges the contents of the ets table 'sheetnames' into 'externalrefs'
+%% This function merges the contents of the ets table 'sheetnames' into 
+%% 'externalrefs'
 fix_up_externalrefs(Tables)->
-  {value,{externalrefs,ExternalRefs}}=lists:keysearch(externalrefs,1,Tables),
-  Fun=fun(X,Y) -> 
-    case X of
-      {Index,[{this_file,placeholder},[]]} -> [Index|Y];
-      _                                              -> Y
-    end
-  end,
-  case ets:info(ExternalRefs,size) of
-    0 -> io:format("in excel:post_process_tables no records in file ExternalRefs~n"),
-         ok;
-    _ -> [Index]=ets:foldl(Fun,[],ExternalRefs),
-         SheetNames=lists:reverse(get_sheetnames(Tables)),
-         excel_util:write(Tables,externalrefs,[Index,{this_file,expanded},SheetNames])
-  end.
+    {value,{externalrefs,ExternalRefs}}=lists:keysearch(externalrefs,1,Tables),
+    Fun=fun(X,Y) -> 
+                case X of
+                    {Index,[{this_file,placeholder},[]]} -> [Index|Y];
+                    _                                     -> Y
+                end
+        end,
+    case ets:info(ExternalRefs,size) of
+        0 -> io:format("in excel:post_process_tables no records in file "++
+                       "ExternalRefs~n"),
+             ok;
+        _ -> [Index]=ets:foldl(Fun,[],ExternalRefs),
+             SheetNames=lists:reverse(get_sheetnames(Tables)),
+             excel_util:write(Tables,externalrefs,[Index,{this_file,expanded},
+                                                   SheetNames])
+    end.
 
 get_sheetnames(Tables)->
-  Fun = fun({_Index,[{name,SheetName}]},Y) ->
-    [SheetName|Y]
-  end,
-  {value,{sheetnames,SheetNames}}=lists:keysearch(sheetnames,1,Tables),
-  ets:foldl(Fun,[],SheetNames).
+    Fun = fun({_Index,[{name,SheetName}]},Y) ->
+                  [SheetName|Y]
+          end,
+    {value,{sheetnames,SheetNames}}=lists:keysearch(sheetnames,1,Tables),
+    ets:foldl(Fun,[],SheetNames).
 
-update_cell(Sheet,Tokens,TokenArrays,LastRow,LastCol,FirstRow,FirstCol,LastRow,LastCol,
-      CellId,Tables)->
-  update_cell2(Sheet,Tokens,TokenArrays,LastRow,LastCol,CellId,FirstRow,FirstCol,Tables),
-  ok;
-update_cell(Sheet,Tokens,TokenArrays,LastRow,Col,FirstRow,FirstCol,LastRow,LastCol,CellId,Tables)->
-  update_cell2(Sheet,Tokens,TokenArrays,LastRow,Col,CellId,FirstRow,FirstCol,Tables),
-  update_cell(Sheet,Tokens,TokenArrays,FirstRow,Col+1,FirstRow,FirstCol,LastRow,LastCol,CellId,Tables);
-update_cell(Sheet,Tokens,TokenArrays,Row,Col,FirstRow,FirstCol,LastRow,LastCol,CellId,Tables)->
-  update_cell2(Sheet,Tokens,TokenArrays,Row,Col,CellId,FirstRow,FirstCol,Tables),
-  update_cell(Sheet,Tokens,TokenArrays,Row+1,Col,FirstRow,FirstCol,LastRow,LastCol,CellId,Tables).
-  
+update_cell(Sheet,Tokens,TokenArrays,LastRow,LastCol,
+            FirstRow,FirstCol,LastRow,LastCol,
+            CellId,Tables)->
+    update_cell2(Sheet,Tokens,TokenArrays,LastRow,LastCol,CellId,
+                 FirstRow,FirstCol,Tables),
+    ok;
+update_cell(Sheet,Tokens,TokenArrays,LastRow,Col,
+            FirstRow,FirstCol,LastRow,LastCol,CellId,Tables)->
+    update_cell2(Sheet,Tokens,TokenArrays,LastRow,Col,CellId,
+                 FirstRow,FirstCol,Tables),
+    update_cell(Sheet,Tokens,TokenArrays,FirstRow,Col+1,
+                FirstRow,FirstCol,LastRow,LastCol,CellId,Tables);
+update_cell(Sheet,Tokens,TokenArrays,Row,Col,
+            FirstRow,FirstCol,LastRow,LastCol,CellId,Tables)->
+    update_cell2(Sheet,Tokens,TokenArrays,Row,Col,CellId
+                 ,FirstRow,FirstCol,Tables),
+    update_cell(Sheet,Tokens,TokenArrays,Row+1,Col,
+                FirstRow,FirstCol,LastRow,LastCol,CellId,Tables).
+
 update_cell2(Sheet,Tokens,TokenArrays,Row,Col,CellId,TopRow,TopCol,Tables)->
-  Index={{sheet,Sheet},{row_index,Row},{col_index,Col}},
-  TopIndex={{sheet,Sheet},{row_index,TopRow},{col_index,TopCol}},
-  FormulaExists=ets:lookup(CellId,{{sheet,Sheet},{row_index,Row},{col_index,Col}}),
-  case FormulaExists of
-    []   -> Formula=excel_rev_comp:reverse_compile(TopIndex,Tokens,TokenArrays,Tables),
-            ets:insert(CellId,{Index,[{xf_index,"bug?"},{formula,Formula}]});
-    _    -> ok
-  end.
+    Index={{sheet,Sheet},{row_index,Row},{col_index,Col}},
+    TopIndex={{sheet,Sheet},{row_index,TopRow},{col_index,TopCol}},
+    FormulaExists=ets:lookup(CellId,{{sheet,Sheet},{row_index,Row},
+                                     {col_index,Col}}),
+    case FormulaExists of
+        []   -> Formula=excel_rev_comp:reverse_compile(TopIndex,Tokens,
+                                                       TokenArrays,Tables),
+                ets:insert(CellId,{Index,[{xf_index,"bug?"},{formula,Formula}]});
+        _    -> ok
+    end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                     %%%

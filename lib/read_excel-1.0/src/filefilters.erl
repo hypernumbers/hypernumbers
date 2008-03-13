@@ -25,8 +25,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 read(excel,FileIn,Fun)->
     io:format("in filefilters:read/4 FileIn is ~p~n",[FileIn]),
-    
-read_excel(excel,FileIn,Fun).
+
+    read_excel(excel,FileIn,Fun).
 
 read(excel,FileIn)->
     Fun= fun(X) ->     
@@ -34,14 +34,13 @@ read(excel,FileIn)->
 		 dump(X)
 	 end,
     read_excel(excel,FileIn,Fun).
-    
+
 read_excel(excel,FileIn,Fun)->
     Tables=create_ets(),
     %% io:format("Tables created: ~p~n",[Tables]),
     {ok,Response}=filter_file(FileIn),
     {ParsedDirectory,ParsedSAT,ParsedSSAT,_SSAT_StartSID,
      SectorSize,ShortSectorSize,MinStreamSize}=Response,
-    %%io:format("in filefilters:read ParsedDirectory is ~p~n",[ParsedDirectory]),
     SubStreams=excel:get_file_structure(ParsedDirectory,ParsedSAT,ParsedSSAT,
 					SectorSize,ShortSectorSize,
 					MinStreamSize,Tables,FileIn),
@@ -50,10 +49,10 @@ read_excel(excel,FileIn,Fun)->
 		     SectorSize,ShortSectorSize,
 		     MinStreamSize,SubStreams,FileIn,Tables),
     Fun(Tables);
-    %% Now delete all the tables
-    %%delete_ets(Tables),
-    %%io:format("in filfilters:read_excel Return is ~p~n",[Return]),
-    %%Return;
+%% Now delete all the tables
+%%delete_ets(Tables),
+%%io:format("in filfilters:read_excel Return is ~p~n",[Return]),
+%%Return;
 read_excel(_Other,_,_) ->
     {error, file_type_not_supported}.
 
@@ -230,20 +229,20 @@ parse_Directory(<<Name:64/binary,
 		true                          -> short_stream
 	     end,
     DirectoryEntry=[{name,{'utf16-16',Name}},
-		     {bodge_name,bodge_string(Name,NameSize)},
-		     {location,Location},
-		     {namesize,NameSize},
-		     {type,Type},
-		     {colour,Colour},
-		     {leftDID,LeftDID},
-		     {rightDID,RightDID},
-		     {rootDID,RootDID},
-		     {uid,UID},
-		     {flags,Flags},
-		     {time_created,TimeCreated},
-		     {time_last_modified,TimeLastModified},
-		     {sid,SID},
-		     {stream_size,StreamSize}],
+                    {bodge_name,bodge_string(Name,NameSize)},
+                    {location,Location},
+                    {namesize,NameSize},
+                    {type,Type},
+                    {colour,Colour},
+                    {leftDID,LeftDID},
+                    {rightDID,RightDID},
+                    {rootDID,RootDID},
+                    {uid,UID},
+                    {flags,Flags},
+                    {time_created,TimeCreated},
+                    {time_last_modified,TimeLastModified},
+                    {sid,SID},
+                    {stream_size,StreamSize}],
     parse_Directory(Rest,MinStreamSize,
 		    [DirectoryEntry|Residuum]);
 parse_Directory(Other,_MinStreamSize,Other2)->
@@ -257,7 +256,8 @@ print_structure(FileIn,Directory,{SubLocation,SubStreams})->
     %% output that is internal to Excel I think it will still continue
     %% to come in unicode16-8 format (suck'n'see fella)
     {SubLoc,_SID}=SubLocation,
-    io:format("~nThe structure of the Microsoft Coumpound Document Object ~p is:~n",[FileIn]),
+    io:format("~nThe structure of the Microsoft Coumpound Document Object ~p "++
+              "is:~n",[FileIn]),
     List=[{lists:keysearch('bodge_name',1,X),lists:keysearch(location,1,X)} 
 	  || {_,X} <- Directory],
     [io:format("* stream ~p is in ~p~n",
@@ -269,8 +269,8 @@ print_structure(FileIn,Directory,{SubLocation,SubStreams})->
 
 delete_ets([])    -> ok;
 delete_ets([{_TableName,Tid}|T]) -> ets:delete(Tid),
-                      delete_ets(T).
-  
+                                    delete_ets(T).
+
 create_ets()->
     [{cell,           ets:new(cell,           [ordered_set,private])},
      {cell_tokens,    ets:new(cell_tokens,    [ordered_set,private])},
@@ -335,10 +335,10 @@ dump([])-> io:format("All tables dumped~n");
 %%  io:format("~nSkipping out cell_tokens in dump~n"),
 %% dump(T);
 dump([{lacunae,_}|T])->
-  io:format("~nSkipping out lacunae in dump~n"),
-  dump(T);
+    io:format("~nSkipping out lacunae in dump~n"),
+    dump(T);
 dump([{Name,Tid}|T])->
-  io:format("~nDumping table: ~p~n",[Name]),
-  Fun = fun(X,_Y) -> io:format("~p: ~p~n",[Name,X]) end,
-  ets:foldl(Fun,[],Tid),
-  dump(T).
+    io:format("~nDumping table: ~p~n",[Name]),
+    Fun = fun(X,_Y) -> io:format("~p: ~p~n",[Name,X]) end,
+    ets:foldl(Fun,[],Tid),
+    dump(T).
