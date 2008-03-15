@@ -15,6 +15,7 @@
 -export([
     %% HyperNumbers Utils
     index_to_url/1,
+    ref_to_str/1,
 
     %% HTTP Utils
     req/1,
@@ -52,6 +53,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 index_to_url(#index{site=Site,path=Path,column=X,row=Y}) ->
     lists:append([Site,Path,util2:make_b26(X),text(Y)]).
+    
+ref_to_str({cell,{X,Y}}) -> tconv:to_b26(X)++text(Y);
+ref_to_str({row,Y})      -> text(Y);
+ref_to_str({column,X})   -> tconv:to_b26(X);
+ref_to_str({range,{X1,Y1,X2,Y2}}) ->
+    tconv:to_b26(X1)++text(Y1)++":"++tconv:to_b26(X2)++text(Y2).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -78,8 +85,8 @@ parse_url(Url) when is_list(Url) ->
 parse_url(Url) when is_record(Url,url) ->
 
     Port = case {Url#url.port,Url#url.scheme} of
-        {undefined,"http"} -> "80";
-        {undefined,"https"} -> "443";
+        {undefined,http} -> "80";
+        {undefined,https} -> "443";
         {Else,_} -> integer_to_list(Else)
     end,
 
@@ -360,7 +367,7 @@ format_vars([]) -> {{xml},[]};
 format_vars(Query) ->
 
     %% list of valid vars
-    Valid = ["links","format","last","nocallback","loggedin","info",
+    Valid = ["links","format","last","nocallback","loggedin","info","attr",
          "toolbar","last","hypernumber","pages","login","admin","import"],
 
     F = fun({K,V}) ->
@@ -382,7 +389,7 @@ format_vars(Query) ->
                 {Key,Val}
         end
     end,
-
+    
     Vars = lists:map(F,lists:map(Split,string:tokens(Query,"&"))),
 
     Format = case lists:member(nocallback,Vars) of

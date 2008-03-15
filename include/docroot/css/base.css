@@ -68,14 +68,22 @@ hr
 
 .sep,.sep:hover
 {
+    overflow:hidden;
+    height:1px;
     padding:0px 3px !important;
     border-bottom:1px solid #999 !important;
+    background:none;
 }
 
-#flash
+#flashcontent
 {
     position:absolute;
     visibility:hidden;
     top:-1000px;
     height:200px;
+}
+
+#import,#texttocopy
+{
+    display:none;
 }

@@ -48,9 +48,8 @@ function soc_msg(msg)
 
         if(arr.shift() == "change")
         {
-            var urlarr = (arr.shift()).split("/");
-            var cell = $.fn.parse_cell(urlarr[urlarr.length-1]);
-            $("#hn tr:nth-child("+(cell[1])+") td:nth-child("+(cell[0])+") div").html(arr.join(" "));
+            handle_attr(arr.shift(),arr.shift(),
+                arr.shift(),arr.shift());
         }        
     });
 }

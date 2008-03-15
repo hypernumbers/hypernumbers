@@ -28,10 +28,10 @@ init([]) ->
 %% Register a new Range, From will now receive updates
 %% when a number in Page -> Range changes
 handle_call({register,Page},{Pid,_},State) ->
-    #page{site=Site,path=Path,ref=Ref} = Page,
+    #page{site=Site,path=Path} = Page,
     {reply,
         {msg,"range registered"},    
-        lists:append(State,[{Site,Path,Ref,Pid}])
+        lists:append(State,[{Site,Path,Pid}])
     };
 
 %% Unregisters a range, From will no longer
@@ -47,19 +47,12 @@ handle_call({unregister},From,State) ->
     {reply,{msg,"range unregistered"}, N};
 
 %% Change Message, find everyone listening to 
-%% that range then send them a change message
-handle_call({change,#page{site=Site,path=Path,
-        ref={cell,{X,Y}}},Value},_From,State) ->
+%% that page then send them a change message
+handle_call({change,Site,Path,Msg},_From,State) ->
     lists:foreach(
         fun(Z) ->
             case Z of
-            %% Matches site path and check the cell
-            %% is within range
-            {Site,Path,{range,{X1,Y1,X2,Y2}},Pid} when 
-                    X >= X1,Y >= Y1, X =< X2,Y =< Y2 -> 
-                Msg = lists:append(["change ",Site,Path,util2:make_b26(X),
-                    hn_util:text(Y)," ",hn_util:text(Value)]),
-                Pid ! {msg,Msg};
+            {Site,Path,Pid} -> Pid ! {msg,Msg};
             _ -> ok
             end
         end,State),

@@ -1,6 +1,4 @@
 -define(HN_NAME,    "HyperNumbers").
--define(HN_VERSION, "alpha 1.713").
--define(DEF_SWF,    "HyperNumbers.swf").
 
 -define(TIMEOUT,     1000).
 -define(HTML_ROOT,  "/html/").
@@ -19,35 +17,31 @@
 -define(HN_URL1,   "http://127.0.0.1:9000").
 -define(HN_URL2,   "http://127.0.0.1:9001").
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%                                            %
-%% These records define common indexes        %
-%%                                            %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+-record( index,
+{
+    site,
+    path,
+    row,
+    column
+}).
 
--record(index, { site, path, row, column}).
+-record( page,
+{
+    site,
+    path,
+    ref,
+    vars,
+    format,
+    auth        = undefined
+}).
 
--record(page,{ site, path, ref, vars, format, auth = undefined }).
-
-%% http://user:pass@example.org/page/a1?format=xml&admin
-%% #page{
-%%      site="http://example.org:80/",
-%%      path="/page/",
-%%      ref={cell,"a1"},
-%%      vars=[{admin}],
-%%      format={xml}},
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%                                             %
-%% These records are sub-records               %
-%%                                             %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
--record(status, {
-          formula = [],
-          reftree = [],
-          errors  = [],
-          refs    = []
-	 }).
+-record(status,
+{
+    formula     = [],
+    reftree     = [],
+    errors      = [],
+    refs        = []
+}).
 
 %% the details_from record is used by the site that has an outstanding request
 %% for a hypernumber and is used to authenticate a notification message:
@@ -59,11 +53,12 @@
 %%
 %% the 'version' field is used to check that the page structures versions
 %% are aligned and that one site is in synch with another
--record(details_from, {
-	  proxy_URL=[],
-	  biccie=[],
-	  version
-	 }).
+-record( details_from,
+{
+    proxy_URL   = [],
+    biccie      = [],
+    version
+}).
 
 %% the details_to record is used by a site that has to notify another one
 %% of a change in a hypernumber. These details are passed to authenticate
@@ -77,79 +72,102 @@
 %% - biccie  (the authentication token)
 %%
 %% The record will be formatted according to the value of 'format'
--record(details_to, {
-	  proxy_URL=[],
-	  reg_URL=[],
-	  biccie=[],
-	  format
-	 }).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%                                             %
-%% These records define tables in the database %
-%%                                             %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
--record( hypnum_item, {
-    site,
-    path,
-    ref,
-    attr,
-    val
+-record(details_to,
+{
+    proxy_URL   = [],
+    reg_URL     = [],
+    biccie      = [],
+    format
 }).
 
--record(bindings, {
-	  index=#index{},
-	  page=#page{},
-	  type,
-	  varname=[],
-	  value
-	 }).
+%% a hypnum_item is a value stored against a page , row , col , cell , range
+%% the 'ref' is an attr_ref record that specified the full address of the
+%% reference including the name of the attribute
+-record( attr_addr,
+{
+    site        = [],
+    path        = [],
+    ref         = null,
+    name        = []
+}).
 
--record(dirty_refs, {
-	  index=#index{},
-	  timestamp
-	 }).
+-record( hypnum_item,
+{
+    addr        = #attr_addr{},
+    val         = []
+}).
 
--record(dirty_hypernumbers, {
-	  index=#index{},
-	  timestamp
-	 }).
+-record(bindings,
+{
+    index       = #index{},
+	page        = #page{},
+    type,
+	varname     = [],
+	value
+}).
 
--record(ref, {
-          ref_from     = #index{},
-          ref_to       = #index{},
-          details_from = #details_from{},
-          details_to   = #details_to{}
-         }).
+-record(dirty_refs,
+{
+    index       = #index{},
+    timestamp
+}).
 
--record(spriki, {
-          index       = #index{},
-          value,
-          val_type,
-          status      = #status{},
-          num_format  = [],
-          disp_format = []
-         }).
+-record( dirty_hypernumbers,
+{
+    index       = #index{},
+    timestamp
+ }).
 
--record(hypernumbers, {
-	  ref_from=#index{},
-	  value,
-	  reftree=[],
-	  errors=[],
-	  refs=[]
-	 }).
+-record( ref,
+{
+    ref_from    = #index{},
+    ref_to      = #index{},
+    details_from= #details_from{},
+    details_to  = #details_to{}
+}).
 
--record(users, { name=[], password=[], status = user, created=calendar:local_time() }).
+-record( spriki,
+{
+    index       = #index{},
+    value,
+    val_type,
+    status      = #status{},
+    num_format  = [],
+    disp_format = []
+}).
 
--record(websheet, {
-    page=#page{},
-    permissions=[],
-    name=[],
-    version=0,
-    change=[],
-    gui="default",
-    public=default
-    }).
+-record( hypernumbers,
+{
+    ref_from    = #index{},
+    value,
+    reftree     = [],
+    errors      = [],
+    refs        = []
+}).
+
+-record( users,
+{
+    name        = [],
+    password    = [],
+    status      = user,
+    created     = calendar:local_time()
+}).
+
+-record( websheet,
+{
+    page        = #page{},
+    permissions = [],
+    name        = [],
+    version     = 0,
+    change      = [],
+    gui         = "default",
+    public      = default
+}).
 
 %% Cookie Record for logged in users
--record(user, {name, loggedin=false,state = #users{}}).
+-record( user,
+{
+    name,
+    loggedin    = false,
+    state       = #users{}
+}).

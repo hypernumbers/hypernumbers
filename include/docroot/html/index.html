@@ -1,223 +1,236 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-
-        <title>Hypernumbers</title>
-
-        <script src="/js/jquery.js" language="javascript"></script>
-        <script src="/js/jquery.contextmenu.js" language="javascript"></script>
-        <script src="/js/jquery.simplemodal.js" language="javascript"></script>
-        <script src="/js/ajaxfileupload.js" language="javascript"></script>
-        <script src="/js/jquery.bgiframe.min.js" language="javascript"></script>
-        <script src="/js/jquery.clickmenu.js" language="javascript"></script>
-        <script src="/js/jquery.spreadsheet.js" language="javascript"></script>
-        <script src="/js/swfobject.js" language="javascript"></script>
-        <script src="/js/socket.js" language="javascript"></script>
-
-        <style type="text/css">
-            @import "/css/base.css";
-            @import "/css/modal.css";
-            @import "/css/clickmenu.css";
-            @import "/css/jquery.spreadsheet.css";
-        </style>
-
-        <script>
         
-            $(function()
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+    <title>Hypernumbers</title>
+
+    <script type="text/javascript" src="/js/jquery.js"></script>
+	<script type="text/javascript" src="/js/jquery.contextmenu.js"></script>
+	<script type="text/javascript" src="/js/jquery.simplemodal.js"></script>
+	<script type="text/javascript" src="/js/ajaxfileupload.js"></script>
+	<script type="text/javascript" src="/js/jquery.bgiframe.min.js"></script>
+	<script type="text/javascript" src="/js/jquery.clickmenu.js"></script>
+	<script type="text/javascript" src="/js/jquery.spreadsheet.js"></script>
+	<script type="text/javascript" src="/js/swfobject.js"></script>
+	<script type="text/javascript" src="/js/socket.js"></script>
+
+	<style type="text/css">
+		@import "/css/base.css";
+		@import "/css/modal.css";
+		@import "/css/clickmenu.css";
+		@import "/css/jquery.spreadsheet.css";
+	</style>
+
+	<script type="text/javascript">
+    
+        var formulae = new Array();
+        var css_attrs = ["font-style","font-weight","text-align","text-decoration"];
+        
+        var handle_attr = function(type,ref,name,value)
+        {
+            if( jQuery.inArray(name, css_attrs) != -1 )
             {
-                var range = "a1:z50";
-                var url = document.location.href;
+                var ref = $.fn.parse_cell(ref);
+                $($.fn.getcell($(".tabledata"),ref[0]-1,ref[1]-1)
+                    ).children("div").css(name,value);  
+            }
+            if(name == "formula")
+                formulae[ref] = value;
+                
+            else if(name == "height")
+                $.fn.set_height($("#hn"),ref,value);
 
-                var so = new SWFObject("/swf/JsSocket.swf", "mymovie", "470", "200", "8", "#FFFFFF");
-                so.addParam("allowScriptAccess", "always");
-   				so.write("flashcontent");
+            else if(name == "width")
+                $.fn.set_width($("#hn"),ref,value);
 
-                // Import SpreadSheet
-                $("#m_import").click( function()
-                {
-                    $("#filemenu ul").toggle();
-                    var x = $("#import").modal();
-                    $("#Filedata").change(function()
-                    {
-                        $.ajaxFileUpload
-                        ({
-                            url:'?import',
-                            secureuri:false,
-                            datatype: "json",
-                            fileElementId:'Filedata'
-                        })
-                        x.close();
-                    });
-                });
+            else if(name == "value")
+            {
+             	var ref = $.fn.parse_cell(ref);
+				$($.fn.getcell($(".tabledata"),ref[0]-1,ref[1]-1)
+                    ).children("div").text(value);       
+            }
             
-                $.get(url+"?pages&format=xml", function(data)
-                {
-                    var add = function(root,dir,path)
-                    {
-                        var list = $("<ul />").appendTo(root);
-                        
-                        $(dir).children().each(function()
-                        {
-                            var npath = $(this).attr("path");
-                            npath = (npath == "/") ? "" : npath;
-                            var parent = $("<li><a href=\""+path+npath+"/\">/"+npath+"</a></li>").appendTo(list);
-
-                            if($(this).children().size() > 0)
-                                add(parent,this,path+npath+"/");
-                        });
-                    }
-            
-                    add($("#browse"),$(data),"");
-
-                    $.fn.clickMenu.setDefaults({arrowSrc:"/img/arrow.png"});
-                    $("#menu").clickMenu();
-                });
-
-                var defaults = {
-                    range   : range,
-                    fmargin : 24,
-                    cellChange  : function(x,y,val)
-                    {
-                       $.post(url+$.fn.to_b26(x+1)+y+"?format=xml",
-                            "<create><value>"+val+"</value></create>",null,"xml");
-                    },
-                    cellSelect : function(x,y,el)
-                    {
-                        $("#texttocopy").val("=hn(\""+url+$.fn.to_b26(x+1)+y+"?hypernumber\")");
-                        $.get(url+$.fn.to_b26(x+1)+y+"?toolbar",function(data)
-                        {
-                            var form = $(data).find("formula").text();
-                            el.val( (form != "") ? "="+form : "");
-                        });
-                    } 
-                };
-
-                $("#hn").spreadsheet(defaults);
+        }
     
-                $.getJSON(url+range+"?format=json", function(data) 
+		$(function()
+		{
+            var range = "a1:z50";
+            
+		    var url = document.location.href;
+		    var so = new SWFObject("/swf/JsSocket.swf", "mymovie", "470", "200", "8", "#FFFFFF");
+            
+		    so.addParam("allowScriptAccess", "always");
+            so.write("flashcontent");
+            
+			// Import SpreadSheet
+			$("#m_import").click( function()
+			{
+				$("#filemenu ul").toggle();
+				var x = $("#import").modal();
+				$("#Filedata").change(function()
+				{
+					$.ajaxFileUpload
+					({
+						url:'?import',
+						secureuri:false,
+						datatype: "json",
+						fileElementId:'Filedata'
+					})
+					x.close();
+				});
+			});
+			
+			$.get(url+"?pages&format=xml", function(data)
+			{
+                var add = function(root,dir,path)
+				{
+					var list = $("<ul />").appendTo(root);
+					
+					$(dir).children().each(function()
+					{
+						var npath = $(this).attr("path");
+						npath = (npath == "/") ? "" : npath;
+						var parent = $("<li><a href=\""+path+npath+"/\">/"+npath+"</a></li>").appendTo(list);
+						if($(this).children().size() > 0)
+					       add(parent,this,path+npath+"/");
+					});
+				}
+		
+				add($("#browse"),$(data),"");
+				$.fn.clickMenu.setDefaults({arrowSrc:"/img/arrow.png"});
+				$("#menu").clickMenu();
+			});
+            
+			var defaults =
+            {
+                fullscreen: true,
+                range   : range,
+                fmargin : 24,
+                cellChange  : function(x,y,val)
                 {
-                    $(data[1]).each(function(y)
-                    {
-                        $(this[1]).each(function(x)
-                        {
-                            if(this[0] == "column" && this[1][1] != "")
-                            {
-                                $($(".tabledata")[0].childNodes[0].childNodes[y].childNodes[x-1].childNodes[0]).text(this[1][1]);
-                            }
-                        });
-                    });
-                });
-
-                $('#hn tr > td > div').contextMenu('myMenu1', {
-                bindings: {
-                    'hnumber': function(t) {
-                    copy(document.getElementById("texttocopy"));
-                    }
+                    $.post(url+$.fn.to_b26(x+1)+y+"?attr",
+                        "<create><value>"+val+"</value></create>",null,"xml");
                 },
-                menuStyle: {
-                    width: '150px'
+                cellSelect : function(x,y,el)
+                {
+                    var f = formulae[($.fn.to_b26(x+1)+y)];
+                    el.val( (typeof f != "undefined") ? "="+f : "");
                 },
-                itemStyle: {
-                    font: '8px',
-                    border: 'none',
-                    padding: '3px'
+                colResize : function(col,width)
+                {
+                    $.post(url+$.fn.to_b26(col)+"?attr",
+                        "<create><width>"+width+"</width></create>",null,"xml");
                 },
-                itemHoverStyle: {
-                    background: '#EEE',
-                    border: 'none'
+                rowResize : function(row,height)
+                {
+                    $.post(url+row+"?attr",
+                        "<create><height>"+height+"</height></create>",null,"xml");
+                },
+                cssChange : function(el,attr,val)
+                {
+                    var ref = $.fn.cell_index(el);
+                    $.post(url+$.fn.to_b26((ref[0]+1))+(ref[1]+1)+"?attr",
+                        "<create><"+attr+">"+val+"</"+attr+"></create>",null,"xml");
                 }
-                });
+            };
+            
+			$("#hn").spreadsheet(defaults);
+            
+			$.getJSON(url+"?attr&format=json", function(data) 
+			{
+				$(data[1]).each(function(y)
+				{
+                    var t = this[1];
+                    handle_attr(t[0].type,t[1].ref,t[2][0],t[2][1][0]);
+				});
+			});
+            
+			$('#hn tr > td > div').contextMenu('myMenu1',
+            {
+				bindings:
+                {
+					'hnumber': function(t)
+                    {
+                        copy(document.getElementById("texttocopy"));
+					}
+				},
+				menuStyle:
+                {
+					width: '150px'
+				},
+				itemStyle:
+                {
+					font: '8px',
+					border: 'none',
+					padding: '3px'
+				},
+				itemHoverStyle:
+                {
+					background: '#EEE',
+					border: 'none'
+				}
+		    });
+		});
 
-            });
+    </script>
 
-function copy(inElement) {
+</head>
 
-  if (inElement.createTextRange) {
-    
-    var range = inElement.createTextRange();
-    
-    if (range && BodyLoaded==1)
-     range.execCommand('Copy');
+<body>
 
-  } else {
-    
-    var flashcopier = 'flashcopier';
-    
-    if(!document.getElementById(flashcopier)) {
-    
-      var divholder = document.createElement('div');
-      divholder.id = flashcopier;
-      document.body.appendChild(divholder);
-    }
-    
-    document.getElementById(flashcopier).innerHTML = '';
+    <div id="header"><img src="/img/logo.jpg" alt="header" /></div>
 
-    var divinfo = '<embed src="/swf/_clipboard.swf" FlashVars="clipboard='+escape(inElement.value)+'" width="0" height="0" type="application/x-shockwave-flash"></embed>';
-    
-    document.getElementById(flashcopier).innerHTML = divinfo;
-  }
-}
+		<ul id="menu">
+			<li>File
+				<ul><li id="browse">Browse</li>
+					<li class="sep">&nbsp;</li>
+					<li id="m_import">Import SpreadSheet</li></ul>
+			</li>
+			<li>HyperNumbers
+				<ul><li>Incoming Links </li>
+					<li>Ougoing Links </li>
+				</ul>
+			</li>
+			<li>Help
+				<ul>
+					<li>About...</li>
+				</ul>
+			</li>
+		</ul>
+		
+		<div id="hn"></div>
 
-        </script>
-
-    </head>
-
-    <body>
-
-    <body>
-        
-        <div id="header"><img src="/img/logo.jpg" height="50px" /></div>
-
-        <ul id="menu">
-            <li>File
-                <ul><li id="browse">Browse</li>
-                    <li class="sep"></li>
-                    <li id="m_import">Import SpreadSheet</li></ul>
-            </li>
-            <li>HyperNumbers
-                <ul><li>Incoming Links <ul><li>/<ul><li>test</li><li>test2</li></ul></li></ul></li>
-                    <li>Ougoing Links <ul><li></li><li></li></ul></li>
-                </ul>
-            </li>
-            <li>Help
-                <ul>
-                    <li>About...</li>
-                </ul>
-            </li>
-        </ul>
-        
-        <div id="hn"></div>
-
-        <div id="footer">
-            <div id="connection">
-                <img src="/img/cross.png" alt="Socket Connection" /> 
-                <span>disconnected</span>
-            </div>
-        </div>
-
-        <div id="flashcontent">
-                This text is replaced by the Flash movie.
+		<div id="footer">
+			<div id="connection">
+				<img src="/img/cross.png" alt="Socket Connection" /> 
+				<span>disconnected</span>
+			</div>
 		</div>
 
-        <textarea id="texttocopy" readonly="readonly" onclick="this.select()">gwesd</textarea>
+		<div id="flashcontent">
+				This text is replaced by the Flash movie.
+		</div>
 
-        <div class="contextMenu" id="myMenu1">
-            <ul>
-                <li id="hnumber">Copy as Hypernumber</li>
-            </ul>
-        </div>
+		<textarea id="texttocopy"></textarea>
 
-        <div id="import" style='display:none'>
-            <h2>Import File</h2>
-            <hr />
-            <p>Import a file to this websheet (currently xls files are supported)</p>
-            <input type="file" name="Filedata" id="Filedata" value="Upload Spreadsheet" />
-        </div>
+		<div class="contextMenu" id="myMenu1">
+			<ul>
+				<li id="hnumber">Copy as Hypernumber</li>
+			</ul>
+		</div>
+
+		<div id="import">
+			<h2>Import File</h2>
+			<hr />
+			<p>Import a file to this websheet (currently xls files are supported)</p>
+			<input type="file" name="Filedata" id="Filedata" value="Upload Spreadsheet" />
+		</div>
 
 
-    </body>
+	</body>
 
 </html>

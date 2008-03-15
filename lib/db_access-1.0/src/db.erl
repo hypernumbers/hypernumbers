@@ -19,53 +19,98 @@
 %%--------------------------------------------------------------------
 
 -export([
-	 update_hypnum/1,
-	 trigger_recalcs/2,
-	 get_first_dirty/1,
-	 get_hypnum/3,
-	 write_ref/4,
-	 read_spriki/4,
-	 read_row/3,
-     read_site/2,
-	 read_column/3,
-	 read_spriki_and_bindings/4,
-     read_pages/1,
-	 read_range/3,
-	 write/8,
-	 del_spriki/4,
-	 read_ref/2,
- 	 read_link_to/1,
- 	 read_link_from/1,
-	 get_websheet/1,
-	 save_websheet/1,
-	 delete_websheet/1 ]).
+    update_hypnum/1,
+    trigger_recalcs/2,
+	get_first_dirty/1,
+	get_hypnum/3,
+	write_ref/4,
+	read_spriki/4,
+	read_row/3,
+    read_site/2,
+	read_column/3,
+	read_spriki_and_bindings/4,
+	read_range/3,
+	write/8,
+	del_spriki/4,
+	read_ref/2,
+ 	read_link_to/1,
+ 	read_link_from/1,
+    add_attr/2,
+    get_attr/1
+    ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% Public User Functions                                                    %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-delete_websheet(Page) ->
-    Fun=fun() -> mnesia:delete_object(#websheet{page = Page,_='_'}) end,
-    case mnesia:transaction(Fun) of
-        {atomic,ok} -> ok;
-        Else        -> Else
-    end.
+%%--------------------------------------------------------------------
+%% Function    : add_attr/2
+%% Description : Adds an attribute to a reference addressed by Ref
+%%--------------------------------------------------------------------
+add_attr(Addr,Val) when is_record(Addr,attr_addr) ->
 
-get_websheet(_Page) ->
-	{ok,#websheet{}}.
-	
-save_websheet(Record) ->
-    case delete_websheet(Record#websheet.page) of
-        {error,Reason}  -> {error,Reason};
-        ok ->
-            Fun = fun() -> mnesia:write(Record) end,
-            case mnesia:transaction(Fun) of
-                {aborted, Reason} -> {error, Reason};
-                {atomic, ok}      -> ok
-            end
-    end.
-
+    Fun = fun() ->
+        mnesia:write(#hypnum_item{addr = Addr, val = Val})
+    end,
+    
+    {atomic, ok} = mnesia:transaction(Fun),
+    
+    #attr_addr{site=Site,path=Path,ref={Type,Ref},name=Name} = Addr,
+    
+    StrRef = hn_util:ref_to_str({Type,Ref}),
+    Msg = lists:flatten(["change ",hn_util:text(Type)," ",StrRef," ",
+        hn_util:text(Name)," ",hn_util:text(Val)]),
+        
+    gen_server:call(remoting_reg,{change,Site,Path,Msg},?TIMEOUT),
+            
+    ok.
+    
+%%--------------------------------------------------------------------
+%% Function    : get_attr/2
+%% Description : Returns the list of attributes that are contained
+%%               within the range specified by Ref, ie if Ref refers
+%%               to a cell, all atributes referring to that cell, if
+%%               ref is a page, all cells / row / columns / ranges
+%%               in that page are returned
+%%--------------------------------------------------------------------    
+get_attr(#attr_addr{site=Site,path=Path,ref=Ref}) ->
+    
+    F = fun() ->
+    
+        Attr  = #attr_addr{site=Site, path=Path , _ = '_'},
+        Match = #hypnum_item{addr = Attr, _ = '_'},
+        List  = mnesia:match_object(hypnum_item,Match,read),
+        
+        lists:filter
+        (
+            fun(#hypnum_item{addr=#attr_addr{ref=ItemRef}}) ->
+            
+                case {Ref, ItemRef} of
+                
+                {{page,_},_}            -> true; %% All Attr on that Page
+                {X,X}                   -> true; %% Same Ref
+                {{row,Y},{cell,_,Y}}    -> true; %% Cell on same row
+                {{column,X},{cell,X,_}} -> true; %% Cell on same col
+                
+                {{range,{_,Y1,_,Y2}},{row,Y}}
+                    when Y > Y1 andalso Y < Y2 -> true; 
+                {{range,{X1,_,X2,_}},{column,X}}
+                    when X > X1 andalso X < X2 -> true;
+                    
+                {{range,{X1,Y1,X2,Y2}},{cell,X,Y}}
+                    when Y > Y1 andalso Y < Y2 andalso
+                         X > X1 andalso X < X2 -> true;
+                         
+                _ -> false
+                end
+            end,
+            List
+        )
+    end,
+    
+    {atomic, List} = mnesia:transaction(F),
+    List.
 %%--------------------------------------------------------------------
 %% Function    : update_hypnum/5
 %%
@@ -84,30 +129,34 @@ update_hypnum(HNumber)->
 
 %% Gets called from dirty_srv:process() whenever a cell is updated.
 trigger_recalcs(Type, Ref) ->
+
     %% Update the value of hypernumbers from the changed cell.
     List = call(fun() ->
-                        mnesia:match_object(hypernumbers,
-                                            #hypernumbers{
-                                              ref_from = Ref, _ = '_'},
-                                            read)
-                end),
+        mnesia:match_object(hypernumbers,
+            #hypernumbers{ref_from = Ref, _ = '_'},read)
+    end),
 
-    lists:foreach(fun(Num) -> 
-                          [Rec] = read_spriki(Num#hypernumbers.ref_from),
-                          update_hypnum(Num#hypernumbers{value=Rec#spriki.value})
-                  end,
-                  List),
+    lists:foreach(
+        fun(Num) -> 
+            [Rec] = read_spriki(Num#hypernumbers.ref_from),
+            update_hypnum(Num#hypernumbers{value=Rec#spriki.value})
+        end,
+        List),
 
     %% Trigger updates on local cells that depended on the changed cell.
-    lists:foreach(fun({ref, _, RefTo, _, DetTo}) ->
-                          trigger_update(Type, Ref, RefTo, DetTo)
-                  end,
-                  read_ref(from, Ref)), % Dependent refs, may be empty. 
+    lists:foreach(
+        fun({ref, _, RefTo, _, DetTo}) ->
+            trigger_update(Type, Ref, RefTo, DetTo)
+        end,
+        read_ref(from, Ref) % Dependent refs, may be empty.
+    ), 
     
     %% And delete the dirty ref.
-    call(fun() ->
-                 mnesia:delete({Type, Ref})
-         end).
+    call(
+        fun() ->
+            mnesia:delete({Type, Ref})
+        end
+    ).
 
 %%--------------------------------------------------------------------
 %% Function    : get_first_dirty/1
@@ -277,25 +326,21 @@ read_range(Site,Path,{X1,Y1,X2,Y2}) ->
 %% Reads the pigs ear up (go from me to who refers to me).
 read_ref(from, Index) ->
     call(fun() ->
-                 mnesia:read({ref, Index})
-         end);
+        mnesia:read({ref, Index})
+     end);
 
 %% Reads the pigs ear down (go from me to who refers to me).
 read_ref(to, Index) ->
     call(fun() ->
-                 mnesia:index_read(ref, Index, #ref.ref_to)
-         end);
+        mnesia:index_read(ref, Index, #ref.ref_to)
+    end);
 
 %% Finds a particular ref that connects two particular cells (both local
 %% and remote).
 read_ref(From, To) ->
     call(fun() ->
-                 mnesia:select(ref, [{#ref{ref_from = From,
-                                           ref_to = To,
-                                           _ = '_'},
-                                      [],
-                                      ['$_']}])
-         end).
+        mnesia:select(ref,[{#ref{ref_from = From,ref_to=To,_ = '_'},[],['$_']}])
+    end).
 
 %%--------------------------------------------------------------------
 %% Function    : read_spriki/4
@@ -310,7 +355,6 @@ read_spriki(Site,Path,X,Y) ->
         Index = #index{site=Site,path=Path,column=X,row=Y},
         mnesia:read({spriki,Index})
     end).
-
 %%--------------------------------------------------------------------
 %% Function    : read_row/3
 %%
@@ -349,6 +393,7 @@ read_site(Site,Path) ->
 %% Description :
 %%--------------------------------------------------------------------
 read_column(Site,Path,X) ->
+
     Fun = fun() ->
         Index= #index{site=Site,path=Path,row='_', column=X},
         mnesia:match_object({spriki,Index,'_','_','_','_','_'})
@@ -378,17 +423,6 @@ read_spriki_and_bindings(Site,Path,X,Y) ->
 	end).
 
 %%--------------------------------------------------------------------
-%% Function    : read_websheets_from_page
-%%
-%% Description :
-%%--------------------------------------------------------------------
-read_pages(Site) ->
-	call(fun() ->
-        mnesia:match_object(spriki, {spriki,{index,Site,'_','_','_'},
-            '_','_','_','_','_'}, read)
-    end).
-
-%%--------------------------------------------------------------------
 %% Function    : write/8
 %%
 %% this function writes a cell to the table spriki
@@ -399,25 +433,25 @@ write(Site,Path,X,Y,Value,Type,Bind,Status)->
     F = fun() ->
 
         Index = #index{site=Site,path=Path,column=X,row=Y},
-
+        
         mnesia:write(#spriki{index=Index,value=Value,
             val_type=Type,status=Status}),
-
+            
         mnesia:write(#dirty_refs{timestamp=util2:get_timestamp(),
             index=Index}),
-    
+            
         case {Status#status.refs,Bind} of
-
+        
         %% No References or Bindings
         {[],[]} -> ok;
         
         _ ->
             lists:map(
-
+            
                 fun({FSite,FPath,FX,FY}) ->
-
+                
                     FIndex=#index{site=FSite,path=FPath,column=FX,row=FY},
-
+                    
                     %% read the refs
                     {DetFrom,DetTo} = 
                     case mnesia:match_object({ref,FIndex,Index,'_','_'}) of
@@ -426,23 +460,21 @@ write(Site,Path,X,Y,Value,Type,Bind,Status)->
                         mnesia:delete_object(R3),
                         {R3#ref.details_from,R3#ref.details_to}
                     end,
-
+                    
                     mnesia:write(#ref{ref_from=FIndex,ref_to=Index,
                         details_from=DetFrom,details_to=DetTo})
-
+                        
                 end,Status#status.refs),
-
+                
             %% finish up with the bindings
             mnesia:delete({bindings,Index}),
-
+            
             lists:map(
                 fun({Site3,Path3,Type3,Nm,Val}) ->
                     mnesia:write(#bindings{index=Index,page=#page{site=Site3,
                         path=Path3},type=Type3,varname=Nm,value=Val})
-                end,Bind)
-
+                end,Bind)                
         end
-
     end,
 
     case mnesia:transaction(F) of
@@ -452,13 +484,12 @@ write(Site,Path,X,Y,Value,Type,Bind,Status)->
 
 	    %% notify the registration server of the write
         Page = #page{site=Site,path=Path,ref={cell,{X,Y}}},
-	    gen_server:call(remoting_reg,{change,Page,Value},?TIMEOUT),
+	    %%gen_server:call(remoting_reg,{change,Page,Value},?TIMEOUT),
 	    ok
     end.
 
 %%--------------------------------------------------------------------
 %% Function    : del_spriki/4
-%%
 %% Description :
 %%--------------------------------------------------------------------
 del_spriki(Site,Path,X,Y) ->
@@ -479,6 +510,7 @@ del_spriki(Site,Path,X,Y) ->
 %%--------------------------------------------------------------------
 
 %% Wrapper around mnesia:transaction().
+%% TODO: defensive? should probably get rid off
 call(Fun) ->
     case mnesia:transaction(Fun) of
         {aborted, Reason} -> {error, Reason};

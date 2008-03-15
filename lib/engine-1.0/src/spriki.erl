@@ -14,7 +14,7 @@
 -include("regexp.hrl").
 -include("handy_macros.hrl").
 
--export([ out/1, calc/4, recalc/1, process_input/5, get_hypernumber/9 ]).
+-export([ out/1, calc/4, recalc/1, process_input/4, get_hypernumber/9 ]).
 
 -import(tconv, [to_l/1, to_s/1, to_b26/1]).
 
@@ -25,7 +25,7 @@
 %%% Yaws handler for all websheet requests
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-out(Arg) -> try 
+out(Arg) -> try
 
     Url      = yaws_api:request_url(Arg),
     Page     = hn_util:parse_url(Url),
@@ -37,9 +37,9 @@ out(Arg) -> try
     true -> {page,Url#url.path};
     false ->
 
-        PostData    = get_post_data(Page#page.format,Arg,Page#page.vars),
-        User        = hn_util:get_cookie((Arg#arg.headers)#headers.cookie),
-        Permissions = users:get_permissions(User,Page),
+        PostData = get_post_data(Page#page.format,Arg,Page#page.vars),
+        User     = hn_util:get_cookie((Arg#arg.headers)#headers.cookie),
+        Perms    = ok,
 
         %% Handle POST request, users need admin or edit permissions to make
         %% a post request, unless they are trying to login
@@ -49,7 +49,7 @@ out(Arg) -> try
             case true of
             true -> process_POST(Arg,PostData,User,Page);
             _    ->
-                case Permissions of 
+                case Perms of 
                 N when N == admin ; N == edit ->
                     process_POST(Arg,PostData,User,Page);
                 _ -> {ok,[{"post",[],"error"}]}
@@ -59,7 +59,7 @@ out(Arg) -> try
 
         %% If POST has nothing to return, handle GET
         case PostResult of
-        ok -> process_GET(Arg,{User,Permissions},Page);
+        ok -> process_GET(Arg,{User,Perms},Page);
         {ok,Content} ->        format_output(Page#page.format,Content);
         {ok,Content,Cookie} -> [format_output(Page#page.format,Content),Cookie]
         end
@@ -76,29 +76,50 @@ out(Arg) -> try
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Return HTML pages, for "/" , "?admin" and "?import"
-process_GET(#arg{docroot=Root},_,#page{ref={page,_},vars=[]}) ->
+process_GET(Arg,User,Page) ->
+    
+    case lists:member({attr},Page#page.vars) of
+    true ->
+    
+        #page{site=Site,path=Path,ref=Ref} = Page,
+        Addr = #attr_addr{site=Site,path=Path,ref=Ref},
+        
+        List = lists:map
+        (
+            fun(#hypnum_item{addr=R, val=Val}) ->
+                {RefType,_} = R#attr_addr.ref,
+                RefVal = hn_util:ref_to_str(R#attr_addr.ref),
+                Attr = [{type,hn_util:text(RefType)},{ref,RefVal}],
+                {ref,Attr,[{R#attr_addr.name,[],[hn_util:text(Val)]}]}
+            end,
+            db:get_attr(Addr)
+        ),
+        
+        format_output(Page#page.format,{attr,[],List});
+        
+    false ->
+        process_GET2(Arg,User,Page)
+    end.
+
+process_GET2(#arg{docroot=Root},_,#page{ref={page,_},vars=[]}) ->
     {page,"/html/index.html"};
 
 %% unauthorised users can get access to the pages and swf's. but not
 %% the data
-process_GET(_Arg,{_User,unauthorised},Page) ->
+process_GET2(_Arg,{_User,unauthorised},Page) ->
     format_output(Page#page.format,{"error","Error: unauthorised"});
 
 %% REST queries to a page
-process_GET(_Arg,{User,_},Page) when element(1,Page#page.ref) == page ->
+process_GET2(_Arg,{User,_},Page) when element(1,Page#page.ref) == page ->
     Data = case Page#page.vars of
-    [{pages}] ->  
-        create_pages_tree(db:read_pages(Page#page.site));
-    [{info}] ->
-        {ok,W} = db:get_websheet(Page),
-        {"info",[{"name",W#websheet.name},{"gui",W#websheet.gui},
-            {"public",atom_to_list(W#websheet.public)}]}
+    [{pages}] ->
+        {dir,[],[]}
+        %create_pages_tree(db:read_pages(Page#page.site))
     end,
-
     format_output(Page#page.format,Data);
 
 %% REST calls to a reference
-process_GET(_Arg,_User,Page) ->
+process_GET2(_Arg,_User,Page) ->
     format_output(Page#page.format,show_ref(Page)).
 
 %% Column
@@ -199,7 +220,6 @@ format_output(Format,Data) ->
 %% they are from and constructs a tree
 create_pages_tree(List) -> 
 
-
     Trees = lists:map(
         fun(X) ->
             create_tree(string:tokens(X,"/"))
@@ -250,7 +270,7 @@ path_list([#spriki{index=#index{path=Path}}|T],List) ->
 %%% POST handlers, 
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-get_post_data(_,#arg{req=#http_request{method='GET'}},_Dec) -> 
+get_post_data(_,#arg{req=#http_request{method='GET'}},_Dec) ->
     [];
 get_post_data(_,_Arg,[{import}]) -> 
     [import];
@@ -269,16 +289,16 @@ get_post_data({xml},Arg,_Dec) ->
 process_POST(Arg,PostData,_User,Page) ->
     A = "action", 
     case PostData of
-    [import]                -> api_import(Arg,Page);
+    [import]             -> api_import(Arg,Page);
     {create,[],Data}     -> api_create(Data,Page);
-    [{A,"login"}|R]        -> api_login(R);
-    [{A,"logout"}]         -> api_logout();
-    [{A,"clear"}|R]        -> api_clear(R,Page);
-    [{A,"insert"}|R]       -> api_insert(R,Page);
-    [{A,"delete"}|R]      -> api_delete(R,Page);
-    {register,[],Data}    -> api_reg(Data,Page);
+    [{A,"login"}|R]      -> api_login(R);
+    [{A,"logout"}]       -> api_logout();
+    [{A,"clear"}|R]      -> api_clear(R,Page);
+    [{A,"insert"}|R]     -> api_insert(R,Page);
+    [{A,"delete"}|R]     -> api_delete(R,Page);
+    {register,[],Data}   -> api_reg(Data,Page);
     [{A,"unregister"}|R] -> api_unreg(R,Page);
-    {notify,[],Data}      ->  api_notify(Data,Page)
+    {notify,[],Data}     -> api_notify(Data,Page)
     end.
 
 %%% API call - IMPORT
@@ -316,68 +336,22 @@ import([{_Name,Tid}|T],Page)->
 
 %%% API call - CREATE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% create is the only one fully implemented for row/col/range/cell
-%% pattern matching on the head is a bit verbose
-api_create([{value,[],Value}],#page{site=Site,path=Path,ref={cell,{X,Y}}}) ->
-    process_input(Site,Path,X,Y,lists:flatten(Value));
+api_create(Data, Page) ->
 
-api_create(Value,#page{site=Site,path=Path,ref={range,{X1,Y1,X2,Y2}}})->
-    lists:foldl(fun({row,[],Children},X) ->
-        lists:foldl(fun({value,[],[V]},Y) ->
-            process_input(Site,Path,Y+Y1,X+X1,V), Y+1
-        end,0,Children), X+1
-    end,0,Value),
-    ok;
-
-api_create(Value,#page{site=Site,path=Path,ref={column,Y},vars=Vars})->
-    Values = lists:map(fun({value,[],[X]}) -> X end,Value),
-    case {Vars,length(Values)} of
-    {[{last}],1} ->
-        Index = get_last_val(Site,Path,{column,Y}),
-        process_input(Site,Path,Y,Index+1,lists:last(Values));
-    {[{last}],_} -> 
-        put_col(Site,Path,get_last_col(Site,Path)+1,1,Values);
-    _ ->            
-        put_col(Site,Path,Y,1,Values)
-    end;
-
-api_create(Value,#page{site=Site,path=Path,ref={row,X},vars=Vars})->
-    Values = lists:map(fun({value,[],[X]}) -> X end,Value),
-    case {Vars,length(Values)} of
-    {[{last}],1} -> 
-        Index = get_last_val(Site,Path,{row,X}),
-        process_input(Site,Path,Index+1,X,lists:last(Values));
-    {[{last}],_} -> 
-        put_row(Site,Path,1,get_last_row(Site,Path)+1,Values);
-    _ ->            
-        put_row(Site,Path,1,X,Values)
-    end.
-
-put_row(_,_,_,_,[]) -> ok;
-put_row(Site,Path,Index,Col,[H|T]) ->
-    process_input(Site,Path,Index,Col,H),
-    put_row(Site,Path,Index+1,Col,T).
-
-put_col(_,_,_,_,[]) -> ok;
-put_col(Site,Path,Row,Index,[H|T]) ->
-    process_input(Site,Path,Row,Index,H),
-    put_col(Site,Path,Row,Index+1,T).
-
-get_last_col(Site,Path) ->
-    List = lists:sort(fun(A,B) -> (A#spriki.index)#index.column <
-      (B#spriki.index)#index.column end,db:read_site(Site,Path)),
-    case List of
-        [] -> 0;
-        List -> ((lists:last(List))#spriki.index)#index.column
-    end.
-
-get_last_row(Site,Path) ->
-    List = lists:sort(fun(A,B) -> (A#spriki.index)#index.row <
-      (B#spriki.index)#index.row end,db:read_site(Site,Path)),
-    case List of
-        [] -> 0;
-        List -> ((lists:last(List))#spriki.index)#index.row    
-    end.
+    #page{site=Site,path=Path,ref=Ref,vars=Vars} = Page,
+    
+    lists:map
+    (
+        fun({value,[],[Val]}) ->
+            process_input(Site,Path,Ref,Val);
+            
+        ({Attr,[],[Val]}) ->
+            Addr = #attr_addr{site=Site,path=Path,ref=Ref,name=Attr},
+            db:add_attr(Addr,Val)
+        end,
+        Data
+    ),
+    ok.
 
 %%% API call - CLEAR
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -470,60 +444,62 @@ api_logout() ->
 %%% Rest of the POST functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-process_input(Site, Path, X, Y, Val) ->
+process_input(Site, Path, {cell,{X,Y}}, Val) ->
     case Val of
-        [$= | Formula] ->
-            process_formula(Site,Path,X,Y,Formula);
-        _Other ->
-            process_value(Site,Path,X,Y,Val)
+    [$= | Formula] -> process_formula(Site,Path,X,Y,Formula);
+    _Other ->         process_value(Site,Path,X,Y,Val)
     end.
 
 process_value(Site, Path, X, Y, Value) ->
-    V = case Value of 
-    undefined -> [];
-    _ -> Value
-    end,
 
-    {Type, Val} = case regexp:match(V, ?RG_num) of
-                      {match, _, _} ->
-                          io:format("got a number~n"),
-                          {number, util2:make_num(V)};
-                      nomatch ->
-                          io:format("got a string~n"),
-                          muin_util:fdbg(V, "V"),
-                          {string, V}
-                  end,
-
+    {Type, Val} = case regexp:match(Value, ?RG_num) of
+        
+        {match, _, _} ->
+            {number, util2:make_num(Value)};
+        nomatch ->
+            muin_util:fdbg(Value, "V"),
+            {string, Value}
+        end,
+        
+    Addr = #attr_addr{site=Site, path=Path, ref={cell,{X,Y}}},
+    db:add_attr(Addr#attr_addr{name=value},Val),
+    
     write_cell("", Val, Type, {Site, Path, X, Y}, {[], [], []}, []),
     ok.
 
 process_formula(Site, Path, X, Y, Formula) ->
+
+    Addr = #attr_addr{site=Site, path=Path, ref={cell,{X,Y}}},
+
     case muin:parse("=" ++ Formula) of
-        {ok, Ast} ->
-            case muin:run(Ast, [{site, Site}, {path, Path}, {x, X}, {y, Y}]) of 
-                {ok, {Value, RefTree, Errors, References}} ->
-                    write_cell(Formula, Value, number, {Site, Path, X, Y},
-                               {RefTree, Errors, References}, []);
-                %% Self-reference or circular reference errors ONLY.
-                %% {error, div0} and the rest are handled in the clause above.
-                ErrVal= {error, Reason} ->
-                    ErrMsg = append([atom_to_list(Reason), " ", Site, Path,
-                                     util2:make_b26(X), to_l(Y)]),
-                    write_cell(Formula, ErrVal, error, {Site, Path, X, Y},
-                               {[], [ErrMsg], []}, [])
-            end;
-        ErrVal = {error, error_in_formula} ->
-            write_cell(Formula, ErrVal, error, {Site, Path, X, Y},
-                       {[], ["Invalid formula."], []}, [])
+    
+    {ok, Ast} ->
+        case muin:run(Ast, [{site, Site}, {path, Path}, {x, X}, {y, Y}]) of 
+
+        {ok, {Value, RefTree, Errors, References}} ->
+            db:add_attr(Addr#attr_addr{name=formula},Formula),
+            db:add_attr(Addr#attr_addr{name=value},Value),
+            write_cell(Formula, Value, number, {Site, Path, X, Y},{RefTree, Errors, References}, []);
+        
+        ErrVal = {error, Reason} ->
+            ErrMsg = append([atom_to_list(Reason), " ", Site, Path,util2:make_b26(X), to_l(Y)]),
+            db:add_attr(Addr#attr_addr{name=value},ErrMsg)
+        end;
+
+    {error, error_in_formula} ->
+        db:add_attr(Addr#attr_addr{name=value},"Invalid Formula")
+        
     end,
     ok.
 
 write_cell(Formula, Value, Type, Bindings, Dependencies, Spec) ->
+
     {RefTree, Errors, References} = Dependencies,
     {Site, Path, X, Y} = Bindings,
+    
     db:write(Site, Path, X, Y, Value, Type, make_bind_list(Site, Path, Spec),
-             #status{formula = Formula,
-                     reftree = RefTree, errors = Errors, refs = References}).
+    #status{formula = Formula,
+        reftree = RefTree, errors = Errors, refs = References}).
 
 
 get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY)->
