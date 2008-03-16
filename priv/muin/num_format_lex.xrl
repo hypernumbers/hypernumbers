@@ -9,62 +9,50 @@ RED        = (\[(R|r)(E|e)(D|d)\])
 WHITE      = (\[(W|w)(H|h)(I|i)(T|t)(E|e)\])
 YELLOW     = (\[(Y|y)(E|e)(L|l)(L|l)(O|o)(W|w)\])
 
-CONDITION1 = (\[([[><=+-]|[(=>)|(>=)|(=<)|(<=)])([0-9]+)\])
-CONDITION2 = (\[([[><=+-]|[(=>)|(>=)|(=<)|(<=)])([0-9]+\.[0-9]*)\])
-CONDITION3 = (\[([[><=+-]|[(=>)|(>=)|(=<)|(<=)])([0-9]++\.[0-9]+((E|e))(\+|\-)?[0-9]+)\])
+CONDITION1 = (\[([[><=]|((=>)|(>=)|(=<)|(<=)))(-)?([0-9]+)\])
+CONDITION2 = (\[([[><=]|((=>)|(>=)|(=<)|(<=)))(-)?([0-9]+\.[0-9])*\])
+CONDITION3 = (\[([[><=]|((=>)|(>=)|(=<)|(<=)))(-)?([0-9]+\.[0-9]+((E|e))(\+|\-)?[0-9]+)\])
 
-STRING     = (\".*\")
+STRING     = (\"[^"\n]*\")
 
-
-INTEGER   = ([0-9]+)
-FLOAT     = ([0-9]+\.[0-9]*)
-FLOAT_SCI = ([0-9]+\.[0-9]+((E|e))(\+|\-)?[0-9]+)
+FORMAT     = ((([#\?0]+,)*)([#\?0]+(\.([#\?0]+([E|e][+|-][0-9]+)?)?)?),*)
+FRACTION   = ([#\?0]+(\s)[#\?0]+/[#\?O]+)
 
 Rules.
 
+{BLACK}      : {token, {colour, black}}.
+{BLUE}       : {token, {colour, blue}}.
+{CYAN}       : {token, {colour, cyan}}.
+{GREEN}      : {token, {colour, green}}.
+{MAGENTA}    : {token, {colour, magenta}}.
+{RED}        : {token, {colour, red}}.
+{WHITE}      : {token, {colour, white}}.
+{YELLOW}     : {token, {colour, yellow}}.
 
-{BLACK}      : {token, {colour,black}}.
-{BLUE}       : {token, {colour,blue}}.
-{CYAN}       : {token, {colour,cyan}}.
-{GREEN}      : {token, {colour,green}}.
-{MAGENTA}    : {token, {colour,magenta}}.
-{RED}        : {token, {colour,red}}.
-{WHITE}      : {token, {colour,white}}.
-{YELLOW}     : {token, {colour,yellow}}.
+{STRING}     : {token, {string, YYtext}}. 
 
-{STRING}     : {token, {string,YYtext}}. 
-
-{INTEGER}    : {token, {number, YYtext}}.
-{FLOAT}      : {token, {number, YYtext}}.
-{FLOAT_SCI}  : {token, {number, YYtext}}.
+{FORMAT}     : {token, {format, YYtext}}.
+{FRACTION}   : {token, {fraction, YYtext}}.
 
 {CONDITION1} : {token, {condition, YYtext}}.
 {CONDITION2} : {token, {condition, YYtext}}.
 {CONDITION3} : {token, {condition, YYtext}}.
 
-\[           : {token, {open_sq_bk}}.
-\]           : {token, {close_sq_bk}}.
-
->            : {token, {gt}}.
-<            : {token, {lt}}.
-=            : {token, {eq}}.
-
-\s           : {token, {space}}.
-#            : {token, {hash}}.
-\?           : {token, {question}}.
-\.           : {token, {dot}}.
-\%           : {token, {percent}}.
-,            : {token, {comma}}.
-e            : {token, {exponent}}.
-E            : {token, {exponent}}.
+\$           : {token, {dollar}}.
 \-           : {token, {minus}}.
 \+           : {token, {plus}}.
-_            : {token, {underscore}}.
-\$           : {token, {dollar}}.
 /            : {token, {forwardslash}}.
 \(           : {token, {open_bra}}.
 \)           : {token, {close_ket}}.
 :            : {token, {colon}}.
+\s           : {token, {space}}.
+
+
+;            : {token, {semicolon}}.
+
+_            : {token, {underscore}}.
+\%           : {token, {percent}}.
+
 \\           : {token, {esc}}.
 @            : {token, {at}}.
 

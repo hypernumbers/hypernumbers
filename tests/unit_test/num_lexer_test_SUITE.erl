@@ -45,32 +45,32 @@
 -define(OUTPUT8,[{colour,yellow}]).
 
 %% Test 9
--define(INPUT9, "yy;yyyy").
--define(OUTPUT9,[{year,two_digit},{duff},{year,four_digit}]).
+-define(INPUT9, "yy:yyyy").
+-define(OUTPUT9,[{year,two_digit},{colon},{year,four_digit}]).
 
 %% Test 10
--define(INPUT10, "m;mm").
--define(OUTPUT10,[{mon_min,no_zero},{duff},{mon_min,zero}]).
+-define(INPUT10, "m:mm").
+-define(OUTPUT10,[{mon_min,no_zero},{colon},{mon_min,zero}]).
 
 %% Test 11
--define(INPUT11, "mmm;mmmm").
--define(OUTPUT11,[{mon,abbr},{duff},{mon,full}]).
+-define(INPUT11, "mmm:mmmm").
+-define(OUTPUT11,[{mon,abbr},{colon},{mon,full}]).
 
 %% Test 12
--define(INPUT12, "d;dd").
--define(OUTPUT12,[{day,no_zero},{duff},{day,zero}]).
+-define(INPUT12, "d:dd").
+-define(OUTPUT12,[{day,no_zero},{colon},{day,zero}]).
 
 %% Test 13
--define(INPUT13, "ddd;dddd").
--define(OUTPUT13,[{day,abbr},{duff},{day,full}]).
+-define(INPUT13, "ddd:dddd").
+-define(OUTPUT13,[{day,abbr},{colon},{day,full}]).
 
 %% Test 14
--define(INPUT14, "h;hh").
--define(OUTPUT14,[{hour,no_zero},{duff},{hour,zero}]).
+-define(INPUT14, "h:hh").
+-define(OUTPUT14,[{hour,no_zero},{colon},{hour,zero}]).
 
 %% Test 15
--define(INPUT15, "s;ss").
--define(OUTPUT15,[{sec,no_zero},{duff},{sec,zero}]).
+-define(INPUT15, "s:ss").
+-define(OUTPUT15,[{sec,no_zero},{colon},{sec,zero}]).
 
 %% Test 16
 -define(INPUT16, "AM/PM").
@@ -93,14 +93,9 @@
 -define(OUTPUT20,[{space}]).
 
 %% Test21
--define(INPUT21, "#?.%,ee-_$/(): _@").
--define(OUTPUT21,[{hash},
-		  {question},
-		  {dot},
+-define(INPUT21, "#?.%-_$/(): _@").
+-define(OUTPUT21,[{format,"#?."},
 		  {percent},
-		  {comma},
-		  {exponent},
-		  {exponent},
 		  {minus},
 		  {underscore},
 		  {dollar},
@@ -114,55 +109,85 @@
 
 %% Test22
 -define(INPUT22, "[<100]").
--define(OUTPUT22,[{open_sq_brackets},
-		  {lt},
-		  {integer,"100"},
-                  {close_sq_brackets}]).
+-define(OUTPUT22,[{condition,"[<100]"}]).
 
 %% Test23
 -define(INPUT23, "[<100.0]").
--define(OUTPUT23,[{open_sq_brackets},
-		  {lt},
-		  {float,"100.0"},
-                  {close_sq_brackets}]).
+-define(OUTPUT23,[{condition,"[<100.0]"}]).
 
 %% Test24
 -define(INPUT24, "[<100.0e-10]").
--define(OUTPUT24,[{open_sq_brackets},
-		  {lt},
-		  {float,"100.0e-10"},
-                  {close_sq_brackets}]).
+-define(OUTPUT24,[{condition,"[<100.0e-10]"}]).
 
 %% Test25
 -define(INPUT25, "[<100.0e+10]").
--define(OUTPUT25,[{open_sq_brackets},
-		  {lt},
-		  {float,"100.0e+10"},
-                  {close_sq_brackets}]).
+-define(OUTPUT25,[{condition,"[<100.0e+10]"}]).
 
 %% Test26
 -define(INPUT26, "[<=100]").
--define(OUTPUT26,[{open_sq_brackets},
-		  {lt},
-                  {eq},
-		  {integer,"100"},
-                  {close_sq_brackets}]).
+-define(OUTPUT26,[{condition,"[<=100]"}]).
 
 %% Test27
--define(INPUT27, "[>100]").
--define(OUTPUT27,[{open_sq_brackets},
-		  {gt},
-		  {integer,"100"},
-                  {close_sq_brackets}]).
-
+-define(INPUT27, "[=<100]").
+-define(OUTPUT27,[{condition,"[=<100]"}]).
 
 %% Test28
--define(INPUT28, "[>=100]").
--define(OUTPUT28,[{open_sq_brackets},
-		  {gt},
-                  {eq},
-		  {integer,"100"},
-                  {close_sq_brackets}]).
+-define(INPUT28, "[>100]").
+-define(OUTPUT28,[{condition,"[>100]"}]).
+
+%% Test29
+-define(INPUT29, "[>=100]").
+-define(OUTPUT29,[{condition,"[>=100]"}]).
+
+%% Test30
+-define(INPUT30, "[=>100]").
+-define(OUTPUT30,[{condition,"[=>100]"}]).
+
+%% Test31
+-define(INPUT31, "[<-100]").
+-define(OUTPUT31,[{condition,"[<-100]"}]).
+
+%% Test32
+-define(INPUT32, "[>=-100]").
+-define(OUTPUT32,[{condition,"[>=-100]"}]).
+
+%% Test33
+-define(INPUT33, "[=<-100]").
+-define(OUTPUT33,[{condition,"[=<-100]"}]).
+
+
+%% some format tests
+
+%% Test34
+-define(INPUT34, "0.000").
+-define(OUTPUT34,[{format,"0.000"}]).
+
+%% Test35
+-define(INPUT35, "0.0").
+-define(OUTPUT35,[{format,"0.0"}]).
+
+%% Test36
+-define(INPUT36, "0,000.00").
+-define(OUTPUT36,[{format,"0,000.00"}]).
+
+%% Test37
+-define(INPUT37, "0.00e-4").
+-define(OUTPUT37,[{format,"0.00e-4"}]).
+
+%% Test38
+-define(INPUT38, "00.00e+4").
+-define(OUTPUT38,[{format,"00.00e+4"}]).
+
+%% Test39
+-define(INPUT39, "0#?.??#,,,").
+-define(OUTPUT39,[{format,"0#?.??#,,,"}]).
+
+%% Test40
+-define(INPUT40, "\"fff\"##.??,,,\"gg\"").
+-define(OUTPUT40,[{string,"\"fff\""},
+                  {format,"##.??,,,"},
+                  {string,"\"gg\""}]).
+
 
 %% Test server callback functions
 %%------------------------------------------------------------------------------
@@ -175,7 +200,7 @@
 %% variable, but should NOT alter/remove any existing entries.
 %%------------------------------------------------------------------------------
 init_per_suite(Config) ->
-    code:add_patha("/opt/SVN/spriki/trunk/ebin"),
+    code:add_patha("../../../../../ebin"),
     production_boot:setup_paths(),
     Config.
 
@@ -251,7 +276,20 @@ all() ->
      num_lexer_test25,
      num_lexer_test26,
      num_lexer_test27,
-     num_lexer_test28].
+     num_lexer_test28,
+     num_lexer_test29,
+     num_lexer_test30,
+     num_lexer_test31,
+     num_lexer_test32,
+     num_lexer_test33,
+     num_lexer_test34,
+     num_lexer_test35,
+     num_lexer_test36,
+     num_lexer_test37,
+     num_lexer_test38,
+     num_lexer_test39,
+     num_lexer_test40
+    ].
 
 %% Test cases starts here.
 %%------------------------------------------------------------------------------
@@ -479,3 +517,88 @@ num_lexer_test28() ->
 num_lexer_test28(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT28),
     test_util:expected(?OUTPUT28,Output).
+
+num_lexer_test29() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_lexer_test29(Config) when is_list(Config) -> 
+    {ok,Output,_}=num_format_lexer:string(?INPUT29),
+    test_util:expected(?OUTPUT29,Output).
+
+num_lexer_test30() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_lexer_test30(Config) when is_list(Config) -> 
+    {ok,Output,_}=num_format_lexer:string(?INPUT30),
+    test_util:expected(?OUTPUT30,Output).
+
+num_lexer_test31() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_lexer_test31(Config) when is_list(Config) -> 
+    {ok,Output,_}=num_format_lexer:string(?INPUT31),
+    test_util:expected(?OUTPUT31,Output).
+
+num_lexer_test32() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_lexer_test32(Config) when is_list(Config) -> 
+    {ok,Output,_}=num_format_lexer:string(?INPUT32),
+    test_util:expected(?OUTPUT32,Output).
+
+num_lexer_test33() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_lexer_test33(Config) when is_list(Config) -> 
+    {ok,Output,_}=num_format_lexer:string(?INPUT33),
+    test_util:expected(?OUTPUT33,Output).
+
+num_lexer_test34() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_lexer_test34(Config) when is_list(Config) -> 
+    {ok,Output,_}=num_format_lexer:string(?INPUT34),
+    test_util:expected(?OUTPUT34,Output).
+
+num_lexer_test35() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_lexer_test35(Config) when is_list(Config) -> 
+    {ok,Output,_}=num_format_lexer:string(?INPUT35),
+    test_util:expected(?OUTPUT35,Output).
+
+num_lexer_test36() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_lexer_test36(Config) when is_list(Config) -> 
+    {ok,Output,_}=num_format_lexer:string(?INPUT36),
+    test_util:expected(?OUTPUT36,Output).
+
+num_lexer_test37() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_lexer_test37(Config) when is_list(Config) -> 
+    {ok,Output,_}=num_format_lexer:string(?INPUT37),
+    test_util:expected(?OUTPUT37,Output).
+
+num_lexer_test38() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_lexer_test38(Config) when is_list(Config) -> 
+    {ok,Output,_}=num_format_lexer:string(?INPUT38),
+    test_util:expected(?OUTPUT38,Output).
+
+num_lexer_test39() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_lexer_test39(Config) when is_list(Config) -> 
+    {ok,Output,_}=num_format_lexer:string(?INPUT39),
+    test_util:expected(?OUTPUT39,Output).
+
+num_lexer_test40() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_lexer_test40(Config) when is_list(Config) -> 
+    {ok,Output,_}=num_format_lexer:string(?INPUT40),
+    test_util:expected(?OUTPUT40,Output).
+

@@ -11,41 +11,6 @@
 %%% @type Value = [string|number|error|boolean|date]
 %%% @type InvMsg = string
 format(Value,Format)->
-    %% io:format("Got to format~n"),
-    Formats=string:tokens(Format,";"),
-    format2(Value,Formats).
-
-format2(Value,[One])->
-    %% io:format("Got to format2 (1)~n"),
-    Positive=One,
-    Negative=One,
-    Zero=One,
-    Text="",
-    format3(Value,Positive,Negative,Zero,Text);
-format2(Value,[One,Two,Three]) -> 
-    %% io:format("Got to format2 (2)~n"),
-    Positive=One,
-    Negative=Two,
-    Zero=Three,
-    Text="",
-    format3(Value,Positive,Negative,Zero,Text);
-format2(Value,[One,Two,Three,Four]) -> 
-    %% io:format("Got to format2 (3)~n"),
-    Positive=One,
-    Negative=Two,
-    Zero=Three,
-    Text=Four,
-    format3(Value,Positive,Negative,Zero,Text);
-format2(_Value,Other) -> 
-    %% io:format("Got to format2 (4)~n"),
-    {error,"wrong number of formats"}.
-
-format3(Value,Positive,Negative,Zero,Text)->
-    %% io:format("Got to format3~n"),
-    Format=choose(Value,Positive,Negative,Zero),
-    format4(Value,Format).
-
-format4(Value,Format)->
     {ok,Tokens,_}=num_format_lexer:string(Format),
     io:format("in format:format4 Tokens are ~p~n",[Tokens]),
     Output=num_format_parser:parse(Tokens),
