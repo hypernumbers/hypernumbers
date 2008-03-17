@@ -94,14 +94,15 @@ Format -> fraction     : '$1'.
 Format -> Bits         : '$1'.
 Format -> Format Bits  : concat2('$1','$2').
 
-FullFormat -> Format          : '$1'.
-FullFormat -> Format percent  : concat2('$1','$2').
-FullFormat -> Bits Format     : concat2('$1','$2').
-FullFormat -> Col FullFormat  : concat2('$1','$2').
-FullFormat -> DateFormat      : '$1'.
-FullFormat -> Bits DateFormat : concat2('$1','$2').
-FullFormat -> At              : '$1'.
-FullFormat -> Bits At         : concat2('$1','$2').
+FullFormat -> Format            : '$1'.
+FullFormat -> Format percent    : concat2('$1','$2').
+FullFormat -> Bits Format       : concat2('$1','$2').
+FullFormat -> Col FullFormat    : concat2('$1','$2').
+FullFormat -> DateFormat        : '$1'.
+FullFormat -> Bits DateFormat   : concat2('$1','$2').
+FullFormat -> format DateFormat : concat2(fix_up('$1'),'$2').
+FullFormat -> At                : '$1'.
+FullFormat -> Bits At           : concat2('$1','$2').
 
 %% Set up the numerical formats
 Tokens -> space        : '$1'.
@@ -127,6 +128,7 @@ DateFormat -> ampm         : '$1'.
 
 DateFormat -> DateFormat DateFormat : concat2('$1','$2').
 DateFormat -> DateFormat Bits       : concat2('$1','$2').
+DateFormat -> DateFormat format     : concat2('$1',fix_up('$2')).
 
 Tokens -> Tokens Tokens  : concat_tk('$1','$2').
 
@@ -144,12 +146,13 @@ dump(N,Content) ->
   io:format("in Dump for ~p Content is ~p~n",[N,Content]),
   Content.
 
-to_tk({_,A})       -> {tokens,A}.
+fix_up({format,A}) -> {tokens,A}.
+
+to_tk({_,A}) -> {tokens,A}.
 
 concat_tk({_,A},{_,B}) -> {tokens,lists:concat([A,B])}.
 
-%%concat({_,A},{_,B}) -> [A,B];
-concat(A,B)         -> [A,B].
+concat(A,B) -> [A,B].
 
 concat(A,B,C) -> [A,B,C].
 
@@ -162,7 +165,8 @@ make_cond({condition,String})->
         Str3=string:strip(Str2,right,$]),
         {condition,Str3}.
 
-strip({string,A}) -> A1 = string:strip(A,both,$"),%" syntax highlighting fix
+strip({string,A}) -> 
+        A1 = string:strip(A,both,$"),%" syntax highlighting fix
         {string2,A1}.
 
 make_src(A) when is_list(A) -> make_src2(lists:flatten(A));
@@ -170,7 +174,7 @@ make_src(A)                 -> make_src2([A]).
   
 make_src2(A) ->
   Clauses=organise_clauses(A,[],[]),
-  gen_src(Clauses,[">0","<0","0"]).
+  gen_src(Clauses,[">0","<0","=0"]).
 
 gen_src(Clauses,Defaults) -> gen_src(Clauses,Defaults,[]).
 
@@ -181,19 +185,49 @@ gen_src([],[H1|T1],Acc)      -> gen_src([],T1,[swap_cond(H1,lists:last(Acc))|Acc
 gen_src([H1|T1],[],Acc)      -> gen_src(T1,[],[make_default(H1)|Acc]);
 gen_src([H1|T1],[H2|T2],Acc) -> gen_src(T1,T2,[make_default(H1,H2)|Acc]).
 
-gen_src2(Src)->
-  io:format("in gen_src2 Src is ~p~n",[Src]),
-  Src.  
+gen_src2(Clauses)->
+  Clause1=make_clause(lists:nth(1,Clauses)),
+  Clause2=make_clause(lists:nth(2,Clauses)),
+  Clause3=make_clause(lists:nth(3,Clauses)),  
+  Clause4 = case length(Clauses) of
+    3 -> default_clause();
+    4 -> strip_semi(make_clause(lists:nth(4,Clauses)))
+  end,
+  Src=lists:flatten("fun(X) -> if "++Clause1++" "++Clause2++" "++Clause3++" "
+    ++Clause4++" end end."),
+  Src.
+
+strip_semi(String)->
+  string:strip(String,right,10). % 10 = Carriage Return
+
+make_clause([{condition,Cond},{colour,Col}|Rest])->
+  Bits=io_lib:fwrite("~p",[Rest]),
+  Bits2=lists:flatten(Bits),
+  "X"++tart_up(Cond)++" -> {"++atom_to_list(Col)++",format:format(X,"++Bits2++")};".
+  
+default_clause() -> "true -> {black,X}".
+
+%% tart_up just makes the condition clauses well behaved
+%%
+%% [32] is ' '
+%% [60] is '<'
+%% [61] is '='
+%% [62] is '>'
+tart_up(text)         -> "= text";
+tart_up([62,61|Rest]) -> [32,62,61,32|Rest];
+tart_up([61,60|Rest]) -> [32,61,60,32|Rest];
+tart_up([61|Rest])    -> [32,61,61,32|Rest]; % switch '=' to '=='
+tart_up([Op|Rest])    -> [32,Op,32|Rest].
 
 swap_cond(Cond,[{condition,_OldCond}|Rest]) -> [{condition,Cond}|Rest].
 
 make_default([{colour,Col}|Rest]) -> [{condition,text},{colour,Col}|Rest];
-make_default(Plain)               -> [{condition,text},{colour,"black"}|Plain].
+make_default(Plain)               -> [{condition,text},{colour,black}|Plain].
     
 make_default([{condition,Cond},{colour,Col}|R],_Def)-> [{condition,Cond},{colour,Col}|R];
 make_default([{colour,Col}|R],Def)                  -> [{condition,Def},{colour,Col}|R];
-make_default([{condition,Cond}|R],_Def)             -> [{condition,Cond},{colour,"black"}|R];
-make_default(Plain,Def)                             -> [{condition,Def},{colour,"black"}|Plain].
+make_default([{condition,Cond}|R],_Def)             -> [{condition,Cond},{colour,black}|R];
+make_default(Plain,Def)                             -> [{condition,Def},{colour,black}|Plain].
 
 organise_clauses([],Acc1,Acc2)                -> lists:reverse([lists:reverse(Acc1)|Acc2]);
 organise_clauses([{semicolon,_}|T],Acc1,Acc2) -> organise_clauses(T,[],[lists:reverse(Acc1)|Acc2]);

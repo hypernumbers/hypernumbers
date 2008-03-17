@@ -126,8 +126,8 @@ strip_ref(Ref) ->
     {X,Y} = lists:partition(
         fun(XX) ->         
             if XX < 97  -> false;  
-			   XX > 122 -> false;
-			   true     -> true      
+	       XX > 122 -> false;
+	       true     -> true      
             end
         end,string:to_lower(Ref)),
     

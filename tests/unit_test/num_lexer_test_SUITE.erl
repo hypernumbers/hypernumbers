@@ -124,70 +124,62 @@
 -define(OUTPUT25,[{condition,"[<100.0e+10]"}]).
 
 %% Test26
--define(INPUT26, "[<=100]").
--define(OUTPUT26,[{condition,"[<=100]"}]).
+-define(INPUT26, "[=<100]").
+-define(OUTPUT26,[{condition,"[=<100]"}]).
 
 %% Test27
--define(INPUT27, "[=<100]").
--define(OUTPUT27,[{condition,"[=<100]"}]).
+-define(INPUT27, "[>100]").
+-define(OUTPUT27,[{condition,"[>100]"}]).
 
 %% Test28
--define(INPUT28, "[>100]").
--define(OUTPUT28,[{condition,"[>100]"}]).
+-define(INPUT28, "[>=100]").
+-define(OUTPUT28,[{condition,"[>=100]"}]).
 
 %% Test29
--define(INPUT29, "[>=100]").
--define(OUTPUT29,[{condition,"[>=100]"}]).
+-define(INPUT29, "[<-100]").
+-define(OUTPUT29,[{condition,"[<-100]"}]).
 
 %% Test30
--define(INPUT30, "[=>100]").
--define(OUTPUT30,[{condition,"[=>100]"}]).
+-define(INPUT30, "[>=-100]").
+-define(OUTPUT30,[{condition,"[>=-100]"}]).
 
 %% Test31
--define(INPUT31, "[<-100]").
--define(OUTPUT31,[{condition,"[<-100]"}]).
+-define(INPUT31, "[=<-100]").
+-define(OUTPUT31,[{condition,"[=<-100]"}]).
 
 %% Test32
--define(INPUT32, "[>=-100]").
--define(OUTPUT32,[{condition,"[>=-100]"}]).
+-define(INPUT32, "0.000").
+-define(OUTPUT32,[{format,"0.000"}]).
 
 %% Test33
--define(INPUT33, "[=<-100]").
--define(OUTPUT33,[{condition,"[=<-100]"}]).
+-define(INPUT33, "0.0").
+-define(OUTPUT33,[{format,"0.0"}]).
 
 %% Test34
--define(INPUT34, "0.000").
--define(OUTPUT34,[{format,"0.000"}]).
+-define(INPUT34, "0,000.00").
+-define(OUTPUT34,[{format,"0,000.00"}]).
 
 %% Test35
--define(INPUT35, "0.0").
--define(OUTPUT35,[{format,"0.0"}]).
+-define(INPUT35, "0.00e-4").
+-define(OUTPUT35,[{format,"0.00e-4"}]).
 
 %% Test36
--define(INPUT36, "0,000.00").
--define(OUTPUT36,[{format,"0,000.00"}]).
+-define(INPUT36, "00.00e+4").
+-define(OUTPUT36,[{format,"00.00e+4"}]).
 
 %% Test37
--define(INPUT37, "0.00e-4").
--define(OUTPUT37,[{format,"0.00e-4"}]).
+-define(INPUT37, "0#?.??#,,,").
+-define(OUTPUT37,[{format,"0#?.??#,,,"}]).
 
 %% Test38
--define(INPUT38, "00.00e+4").
--define(OUTPUT38,[{format,"00.00e+4"}]).
-
-%% Test39
--define(INPUT39, "0#?.??#,,,").
--define(OUTPUT39,[{format,"0#?.??#,,,"}]).
-
-%% Test40
--define(INPUT40, "\"fff\"##.??,,,\"gg\"").
--define(OUTPUT40,[{string,"\"fff\""},
+-define(INPUT38, "\"fff\"##.??,,,\"gg\"").
+-define(OUTPUT38,[{string,"\"fff\""},
                   {format,"##.??,,,"},
                   {string,"\"gg\""}]).
 
-%% Test41
--define(INPUT41, "\x##.??,,,\g\g").
--define(OUTPUT41,[{char,"x"},
+%% Test39
+-define(INPUT39, "\x##.??,,,\g\g").
+-define(OUTPUT39,[{char,"x"},
                   {format,"##.??,,,"},
                   {char,"g"},
                   {char,"g"}]).
@@ -290,9 +282,7 @@ all() ->
      num_lexer_test36,
      num_lexer_test37,
      num_lexer_test38,
-     num_lexer_test39,
-     num_lexer_test40,
-     num_lexer_test41
+     num_lexer_test39
     ].
 
 %% Test cases starts here.
@@ -490,7 +480,6 @@ num_lexer_test24(Config) when is_list(Config) ->
     {ok,Output,_}=num_format_lexer:string(?INPUT24),
     test_util:expected(?OUTPUT24,Output).
 
-
 num_lexer_test25() -> 
     [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
@@ -599,16 +588,3 @@ num_lexer_test39(Config) when is_list(Config) ->
     {ok,Output,_}=num_format_lexer:string(?INPUT39),
     test_util:expected(?OUTPUT39,Output).
 
-num_lexer_test40() -> 
-    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
-
-num_lexer_test40(Config) when is_list(Config) -> 
-    {ok,Output,_}=num_format_lexer:string(?INPUT40),
-    test_util:expected(?OUTPUT40,Output).
-
-num_lexer_test41() -> 
-    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
-
-num_lexer_test41(Config) when is_list(Config) -> 
-    {ok,Output,_}=num_format_lexer:string(?INPUT41),
-    test_util:expected(?OUTPUT41,Output).
