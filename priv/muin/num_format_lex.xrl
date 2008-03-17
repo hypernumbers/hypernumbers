@@ -38,23 +38,23 @@ Rules.
 {CONDITION2} : {token, {condition, YYtext}}.
 {CONDITION3} : {token, {condition, YYtext}}.
 
-\$           : {token, {dollar}}.
-\-           : {token, {minus}}.
-\+           : {token, {plus}}.
-/            : {token, {forwardslash}}.
-\(           : {token, {open_bra}}.
-\)           : {token, {close_ket}}.
-:            : {token, {colon}}.
-\s           : {token, {space}}.
+\$           : {token, {dollar, "$"}}.
+\-           : {token, {minus, "-"}}.
+\+           : {token, {plus,"+"}}.
+/            : {token, {forwardslash,"/"}}.
+\(           : {token, {open_bra,"("}}.
+\)           : {token, {close_ket,")"}}.
+:            : {token, {colon,":"}}.
+\s           : {token, {space," "}}.
 
 
-;            : {token, {semicolon}}.
+;            : {token, {semicolon,";"}}.
 
-_            : {token, {underscore}}.
-\%           : {token, {percent}}.
+_            : {token, {underscore,"_"}}.
+\%           : {token, {percent,"%"}}.
 
-\\           : {token, {esc}}.
-@            : {token, {at}}.
+\\           : {token, {esc, esc}}.
+@            : {token, {at, "@"}}.
 
 yy           : {token, {year,    two_digit}}.
 yyyy         : {token, {year,    four_digit}}.

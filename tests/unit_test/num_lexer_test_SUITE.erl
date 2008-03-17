@@ -46,31 +46,31 @@
 
 %% Test 9
 -define(INPUT9, "yy:yyyy").
--define(OUTPUT9,[{year,two_digit},{colon},{year,four_digit}]).
+-define(OUTPUT9,[{year,two_digit},{colon,":"},{year,four_digit}]).
 
 %% Test 10
 -define(INPUT10, "m:mm").
--define(OUTPUT10,[{mon_min,no_zero},{colon},{mon_min,zero}]).
+-define(OUTPUT10,[{mon_min,no_zero},{colon,":"},{mon_min,zero}]).
 
 %% Test 11
 -define(INPUT11, "mmm:mmmm").
--define(OUTPUT11,[{mon,abbr},{colon},{mon,full}]).
+-define(OUTPUT11,[{mon,abbr},{colon,":"},{mon,full}]).
 
 %% Test 12
 -define(INPUT12, "d:dd").
--define(OUTPUT12,[{day,no_zero},{colon},{day,zero}]).
+-define(OUTPUT12,[{day,no_zero},{colon,":"},{day,zero}]).
 
 %% Test 13
 -define(INPUT13, "ddd:dddd").
--define(OUTPUT13,[{day,abbr},{colon},{day,full}]).
+-define(OUTPUT13,[{day,abbr},{colon,":"},{day,full}]).
 
 %% Test 14
 -define(INPUT14, "h:hh").
--define(OUTPUT14,[{hour,no_zero},{colon},{hour,zero}]).
+-define(OUTPUT14,[{hour,no_zero},{colon,":"},{hour,zero}]).
 
 %% Test 15
 -define(INPUT15, "s:ss").
--define(OUTPUT15,[{sec,no_zero},{colon},{sec,zero}]).
+-define(OUTPUT15,[{sec,no_zero},{colon,":"},{sec,zero}]).
 
 %% Test 16
 -define(INPUT16, "AM/PM").
@@ -90,22 +90,22 @@
 
 %% Test20
 -define(INPUT20, " ").
--define(OUTPUT20,[{space}]).
+-define(OUTPUT20,[{space," "}]).
 
 %% Test21
 -define(INPUT21, "#?.%-_$/(): _@").
 -define(OUTPUT21,[{format,"#?."},
-		  {percent},
-		  {minus},
-		  {underscore},
-		  {dollar},
-		  {forwardslash},
-		  {open_bra},
-		  {close_ket},
-		  {colon},
-		  {space},
-		  {underscore},
-		  {at}]).
+		  {percent,"%"},
+		  {minus,"-"},
+		  {underscore,"_"},
+		  {dollar,"$"},
+		  {forwardslash,"/"},
+		  {open_bra,"("},
+		  {close_ket,")"},
+		  {colon,":"},
+		  {space," "},
+		  {underscore,"_"},
+		  {at,"@"}]).
 
 %% Test22
 -define(INPUT22, "[<100]").
@@ -155,9 +155,6 @@
 -define(INPUT33, "[=<-100]").
 -define(OUTPUT33,[{condition,"[=<-100]"}]).
 
-
-%% some format tests
-
 %% Test34
 -define(INPUT34, "0.000").
 -define(OUTPUT34,[{format,"0.000"}]).
@@ -188,6 +185,12 @@
                   {format,"##.??,,,"},
                   {string,"\"gg\""}]).
 
+%% Test41
+-define(INPUT41, "\x##.??,,,\g\g").
+-define(OUTPUT41,[{char,"x"},
+                  {format,"##.??,,,"},
+                  {char,"g"},
+                  {char,"g"}]).
 
 %% Test server callback functions
 %%------------------------------------------------------------------------------
@@ -288,7 +291,8 @@ all() ->
      num_lexer_test37,
      num_lexer_test38,
      num_lexer_test39,
-     num_lexer_test40
+     num_lexer_test40,
+     num_lexer_test41
     ].
 
 %% Test cases starts here.
@@ -602,3 +606,9 @@ num_lexer_test40(Config) when is_list(Config) ->
     {ok,Output,_}=num_format_lexer:string(?INPUT40),
     test_util:expected(?OUTPUT40,Output).
 
+num_lexer_test41() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_lexer_test41(Config) when is_list(Config) -> 
+    {ok,Output,_}=num_format_lexer:string(?INPUT41),
+    test_util:expected(?OUTPUT41,Output).

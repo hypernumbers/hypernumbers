@@ -3,6 +3,7 @@
 
 Nonterminals
 
+Final
 FinalFormat
 CondFormat
 Col
@@ -14,6 +15,7 @@ Escaped
 Cond
 Bits
 At
+Semicolon
 .
 
 Terminals
@@ -55,7 +57,7 @@ char
 
 .
 
-Rootsymbol FinalFormat.
+Rootsymbol Final.
 Endsymbol  '$end'.
 
 %% Associativity and precedence rules for operators
@@ -64,11 +66,18 @@ Unary 100 Escaped.
 
 %% ----- Grammar definition.
 
-FinalFormat -> CondFormat semicolon FinalFormat : concat('$1','$2','$3').
-FinalFormat -> CondFormat                       : '$1'.
+Final -> FinalFormat : make_src('$1').
 
-Bits -> Escaped : mark('$1').
-Bits -> Tokens  : mark('$1').
+Semicolon -> semicolon           : '$1'.
+Semicolon -> Semicolon semicolon : concat('$1','$2').
+
+FinalFormat -> CondFormat Semicolon FinalFormat : lists:flatten(concat('$1','$2','$3')).
+
+FinalFormat -> CondFormat Semicolon  : lists:flatten(concat('$1','$2')).
+FinalFormat -> CondFormat            : '$1'.
+
+Bits -> Escaped : to_tk('$1').
+Bits -> Tokens  : to_tk('$1').
 
 %% Set up the escaped character formats
 Escaped -> esc Tokens  : esc('$2').
@@ -119,10 +128,10 @@ DateFormat -> ampm         : '$1'.
 DateFormat -> DateFormat DateFormat : concat2('$1','$2').
 DateFormat -> DateFormat Bits       : concat2('$1','$2').
 
-Tokens -> Tokens Tokens  : concat2('$1','$2').
+Tokens -> Tokens Tokens  : concat_tk('$1','$2').
 
 At -> at      : '$1'.
-At -> at Bits : mark2('$1','$2').
+At -> at Bits : concat('$1','$2').
 
 Col -> colour : '$1'.
 
@@ -131,52 +140,61 @@ Col -> colour : '$1'.
 
 Erlang code.
 
-mark(A) -> {mark,A}.
+dump(N,Content) ->
+  io:format("in Dump for ~p Content is ~p~n",[N,Content]),
+  Content.
 
-mark2(A,B) -> {mark2,[A|B]}.
+to_tk({_,A})       -> {tokens,A}.
 
-concat({_,A},{_,B}) -> [A,B];
+concat_tk({_,A},{_,B}) -> {tokens,lists:concat([A,B])}.
+
+%%concat({_,A},{_,B}) -> [A,B];
 concat(A,B)         -> [A,B].
+
+concat(A,B,C) -> [A,B,C].
 
 concat2(A,B) -> [A,B].
 
-concat(A,B,C) -> [A,B|C].
-
 esc(A) -> {char, A}.
-
-make_format(A) when is_list(A)-> 
-        B=lists:flatten(A),
-        {ok,ok}=check_nos(B),
-        B;
-make_format(A)->[A].
-
-%% If any of the numbers turns out not be zero wig out
-check_nos([]) -> {ok,ok};
-check_nos([{number,No}|T])->
-        I=make_no(No),
-        case I of
-                0   -> true;
-                0.0 -> true;
-                _   -> exit("bad format")
-            end,
-        check_nos(T);
-check_nos([_H|T]) -> check_nos(T).
 
 make_cond({condition,String})->
         Str2=string:strip(String,left,$[),
         Str3=string:strip(Str2,right,$]),
         {condition,Str3}.
 
-make_no(No)->
-    try
-	list_to_integer(No)
-    catch
-	exit:  _Reason  -> list_to_float(No);
-        error: _Message -> list_to_float(No);
-	throw: _Term    -> list_to_float(No)
-    end.
-
-get_at(A) -> A.
-
 strip({string,A}) -> A1 = string:strip(A,both,$"),%" syntax highlighting fix
-        {string2,A1}. 
+        {string2,A1}.
+
+make_src(A) when is_list(A) -> make_src2(lists:flatten(A));
+make_src(A)                 -> make_src2([A]).
+  
+make_src2(A) ->
+  Clauses=organise_clauses(A,[],[]),
+  gen_src(Clauses,[">0","<0","0"]).
+
+gen_src(Clauses,Defaults) -> gen_src(Clauses,Defaults,[]).
+
+%% generate the source from the list of clauses and the list of default clauses
+%% if there aren't enough conditions repeat the first one
+gen_src([],[],Acc)           -> gen_src2(lists:reverse(Acc));
+gen_src([],[H1|T1],Acc)      -> gen_src([],T1,[swap_cond(H1,lists:last(Acc))|Acc]); 
+gen_src([H1|T1],[],Acc)      -> gen_src(T1,[],[make_default(H1)|Acc]);
+gen_src([H1|T1],[H2|T2],Acc) -> gen_src(T1,T2,[make_default(H1,H2)|Acc]).
+
+gen_src2(Src)->
+  io:format("in gen_src2 Src is ~p~n",[Src]),
+  Src.  
+
+swap_cond(Cond,[{condition,_OldCond}|Rest]) -> [{condition,Cond}|Rest].
+
+make_default([{colour,Col}|Rest]) -> [{condition,text},{colour,Col}|Rest];
+make_default(Plain)               -> [{condition,text},{colour,"black"}|Plain].
+    
+make_default([{condition,Cond},{colour,Col}|R],_Def)-> [{condition,Cond},{colour,Col}|R];
+make_default([{colour,Col}|R],Def)                  -> [{condition,Def},{colour,Col}|R];
+make_default([{condition,Cond}|R],_Def)             -> [{condition,Cond},{colour,"black"}|R];
+make_default(Plain,Def)                             -> [{condition,Def},{colour,"black"}|Plain].
+
+organise_clauses([],Acc1,Acc2)                -> lists:reverse([lists:reverse(Acc1)|Acc2]);
+organise_clauses([{semicolon,_}|T],Acc1,Acc2) -> organise_clauses(T,[],[lists:reverse(Acc1)|Acc2]);
+organise_clauses([Other|T],Acc1,Acc2)         -> organise_clauses(T,[Other|Acc1],Acc2).
