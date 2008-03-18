@@ -444,10 +444,12 @@ api_logout() ->
 %%% Rest of the POST functions
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-process_input(Site, Path, {cell,{X,Y}}, Val) ->
-    case Val of
-    [$= | Formula] -> process_formula(Site,Path,X,Y,Formula);
-    _Other ->         process_value(Site,Path,X,Y,Val)
+process_input(Site, Path, {cell, {X, Y}}, Val) ->
+    case superparser:process(Val) of
+        {formula, Fla} ->
+            process_formula(Site, Path, X, Y, Fla);
+        {value, Value} ->
+            process_value(Site, Path, X, Y, Value)
     end.
 
 process_value(Site, Path, X, Y, Value) ->
@@ -471,7 +473,7 @@ process_formula(Site, Path, X, Y, Formula) ->
 
     Addr = #attr_addr{site=Site, path=Path, ref={cell,{X,Y}}},
 
-    case muin:parse("=" ++ Formula) of
+    case muin:compile(Formula) of
     
     {ok, Ast} ->
         case muin:run(Ast, [{site, Site}, {path, Path}, {x, X}, {y, Y}]) of 

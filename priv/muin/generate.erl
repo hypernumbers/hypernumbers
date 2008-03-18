@@ -25,6 +25,10 @@ gen() ->
     yecc:yecc(num_format, num_format_parser),
     ?P("Generated number format parser."),
 
+    %% Generate super lexer.
+    leex:gen(superlex, superlex),
+    ?P("Generated super lexer!"),
+    
     %% Generate Russian front-end.
     {ok, CurrDir} = get_cwd(),
     copy(CurrDir ++ "/language_frontends/russian_lexer.xrl",
@@ -36,12 +40,14 @@ gen() ->
     delete(DestDir ++ "muin_lexer.erl"),
     delete(DestDir ++ "muin_parser.erl"),
     delete(DestDir ++ "muin_supd_lexer.erl"),
+    delete(DestDir ++ "superlex.erl"),
     delete(DestDir ++ "russian_lexer.erl"),
     delete(DestDir ++ "num_format_lexer.erl"),
     delete(DestDir ++ "num_format_parser.erl"),
     rename("muin_lexer.erl", DestDir ++ "muin_lexer.erl"),
     rename("muin_parser.erl", DestDir ++ "muin_parser.erl"),
     rename("muin_supd_lexer.erl", DestDir ++ "muin_supd_lexer.erl"),
+    rename("superlex.erl", DestDir ++ "superlex.erl"),
     rename("russian_lexer.erl", DestDir ++ "russian_lexer.erl"),
     rename("num_format_lexer.erl", DestDir ++ "num_format_lexer.erl"),
     rename("num_format_parser.erl", DestDir ++ "num_format_parser.erl"),

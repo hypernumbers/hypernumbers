@@ -1,27 +1,26 @@
 %%% @doc        Interface to the formula engine. Also, the interpreter.
 %%% @author     Hasan Veldstra <hasan@hypernumbers.com>
 
+%%% Formulas are currently compiled into simple sexps.
+
 -module(muin).
--export([parse/1, run/2, update/2]).
--compile(export_all).
+-export([compile/1, run/2, update/2]).
 
 -include("spriki.hrl").
 -include("builtins.hrl").
 -include("handy_macros.hrl").
 
--import(muin_util, [expand_cellrange/2, fdbg/1, fdbg/2, get_frontend/0, getxy/1,
-                    init/1, join/1, join/2, just_path/1, just_ref/1, puts/1,
-                    split_ssref/1, walk_path/2]).
+-import(muin_util, [expand_cellrange/2, fdbg/1, fdbg/2, get_frontend/0,
+                    getxy/1, init/1, join/1, join/2, just_path/1,
+                    just_ref/1, split_ssref/1, walk_path/2]).
 
 -import(tconv, [to_b26/1, to_i/1, to_i/2, to_s/1]).
 
-%% Bind values from Bindings to vars in current scope. Vars repeated after
-%% creation to remove "Unused variable" warnings.
--define(CREATE_BINDINGS_VARS,
-        MSite = ?KEYSEARCH(site, Bindings), MSite,
-        MPath = ?KEYSEARCH(path, Bindings), MPath,
-        MX    = ?KEYSEARCH(x, Bindings), MX,
-        MY    = ?KEYSEARCH(y, Bindings), MY).
+%% These are read-only.
+-define(mx, get(x)).
+-define(my, get(y)).
+-define(mpath, get(path)).
+-define(msite, get(site)).
 
 %% Guard for eval() and plain_eval().
 -define(IS_FUNCALL(X),
@@ -36,28 +35,30 @@
 
 %%% @doc Parses formula, and returns AST as an s-expression.
 %%% @spec parse(Formula :: string()) -> {ok, {Ast :: list()}}
-parse(Formula__) ->
-    %% Translate the formula to English if needed.
-    Formula = translator:do(Formula__),
-    {LexMod, ParseMod} = get_frontend(),
-    
-    case LexMod:string(Formula) of
-        {ok, Tokens, _} ->
-            case ParseMod:parse(Tokens) of
-                {ok, Ast} ->
-                    {ok, Ast};
-                _ ->
-                    {error, error_in_formula}
-            end;
-        _ ->
+compile(Fla) ->
+    case (catch try_parse(Fla)) of
+        {ok, Pcode} ->
+            {ok, Pcode};
+        _Else ->
             {error, error_in_formula}
     end.
 
-%% @doc Runs the s-expression.
-run(Ast, Bindings) ->
-    put(retvals, {[], [], []}),
-    case (catch eval(Ast, Bindings)) of
-        {error, R} when R == self_reference orelse R == circular_reference ->
+try_parse(Fla) ->
+    FlaTr = translator:do(Fla),
+    io:format("~s~n", [FlaTr]),
+    {LexMod, ParseMod} = get_frontend(),
+    {ok, Tokens, _} = LexMod:string(FlaTr),
+    {ok, _Ast} = ParseMod:parse(Tokens). % Match to enforce the contract.
+    
+
+%% @doc Runs compiled formula.
+run(Pcode, Bindings) ->
+    %% Populate the process dictionary.
+    foreach(fun({K, V}) -> put(K, V) end,
+            Bindings ++ [{retvals, {[], [], []}}]),
+             
+    case (catch eval(Pcode, Bindings)) of
+        {error, R} ->
             {error, R};
         Value ->
             {RefTree, Errors, References} = get(retvals),
@@ -70,8 +71,8 @@ run(Ast, Bindings) ->
 %%%            {ok, {NewFormula :: string(), Ast :: list()}}
 update(Formula, UpdateMsg) ->
     {ok, NewFormula} = muin_supd:do(Formula, UpdateMsg),
-    {ok, Ast} = parse(NewFormula),
-    {ok, {NewFormula, Ast}}.
+    {ok, Pcode} = compile(NewFormula),
+    {ok, {NewFormula, Pcode}}.
 
 
 %%%---------------------%%%
@@ -170,20 +171,17 @@ funcall(Fname, Args) ->
 %%% ----- Reference functions.
 
 funcall(sscellref, [Ssref], Bindings) ->
-    ?CREATE_BINDINGS_VARS,
     {Path_, Ref} = split_ssref(Ssref),
-    Path = walk_path(MPath, Path_),
+    Path = walk_path(?mpath, Path_),
     do_cell(Path, Ref, Bindings);
 
 funcall(ssrcref, [{RelPath, Row, Col}], Bindings) ->
-    ?CREATE_BINDINGS_VARS,
-    Path = walk_path(MPath, RelPath),
+    Path = walk_path(?mpath, RelPath),
     do_cell(Path, Row, Col, Bindings);
 
 funcall(rcrelref, [{RelPath, RowOffset, ColOffset}], Bindings) ->
-    ?CREATE_BINDINGS_VARS,
-    Path = walk_path(MPath, RelPath),
-    do_cell(Path, MY + RowOffset, MX + ColOffset, Bindings);
+    Path = walk_path(?mpath, RelPath),
+    do_cell(Path, ?my + RowOffset, ?mx + ColOffset, Bindings);
 
 %% -- Range functions.
 
@@ -194,35 +192,33 @@ funcall(':', [{sscellref, Ref1}, {cellref, Ref2}], Bindings) ->
 
 %% Column ranges.
 funcall(':', [{sscolref, Ref1}, {col, Ref2}], Bindings) ->
-    ?CREATE_BINDINGS_VARS,
-    Path = walk_path(MPath, just_path(Ref1)),
+    Path = walk_path(?mpath, just_path(Ref1)),
     Cols = seq(to_i(just_ref(Ref1), b26), to_i(Ref2, b26)),
-    Funs = [?fun0(db:read_column(MSite, Path, X)) || X <- Cols],
+    %% generate a fun to read each column
+    Funs = [fun() -> db:read_column(?msite, Path, X) end || X <- Cols],
     do_cells(Funs, Bindings);
 
 %% Row ranges.
 funcall(':', [{ssrowref, Ref1}, {row, Ref2}], Bindings) ->
-    ?CREATE_BINDINGS_VARS,
-    FullPath = walk_path(MPath, just_path(Ref1)),
+    FullPath = walk_path(?mpath, just_path(Ref1)),
     Rows = seq(to_i(just_ref(Ref1)), to_i(Ref2)),
-    Funs = [?fun0(db:read_row(MSite, FullPath, X)) || X <- Rows],
+    Funs = [?fun0(db:read_row(?msite, FullPath, X)) || X <- Rows],
     do_cells(Funs, Bindings);
 
 %% -- Hypernumber function and its shorthand.
 
 funcall(hypernumber, [Url_], Bindings) ->
-    ?CREATE_BINDINGS_VARS,
-
     %% Remove trailing ?hypernumber if needed.
     {ok, Url, _} = regexp:gsub(Url_, "\\?hypernumber$", ""),
     
-    #page{site = RSite, path = RPath, ref = {cell, {RX, RY}}} =
-        hn_util:parse_url(Url),
+    #page{site = RSite, path = RPath,
+          ref = {cell, {RX, RY}}} = hn_util:parse_url(Url),
 
-    fetch_update_return(?fun0(spriki:get_hypernumber(MSite, MPath, MX, MY, Url,
-                                                     RSite, RPath, RX, RY)),
-                       Bindings);
-
+    get_value_and_link(fun() ->
+                               spriki:get_hypernumber(?msite, ?mpath,
+                                                      ?mx, ?my, Url,
+                                                      RSite, RPath, RX, RY)
+                       end);
 
 funcall(hn, [Url], Bindings) ->
     funcall(hypernumber, [Url], Bindings);
@@ -261,18 +257,17 @@ funcall(isref, [_MaybeRef], _Bindings) ->
 
 %%% ----- Utility functions.
 
-%% Returns value in the cell + fetch_update_return() is called behind the
+%% Returns value in the cell + get_value_and_link() is called behind the
 %% scenes.
 do_cell(RelPath, Ref, Bindings) ->
-    ?CREATE_BINDINGS_VARS,
     {X, Y} = getxy(Ref),
     
-    ?IF(X == MX andalso Y == MY,
+    ?IF(X == ?mx andalso Y == ?my,
         throw({error, self_reference})),
 
-    Path = walk_path(MPath, RelPath),
-    FetchFun = ?fun0(spriki:calc(MSite, Path, X, Y)),
-    fetch_update_return(FetchFun, Bindings).
+    Path = walk_path(?mpath, RelPath),
+    FetchFun = ?fun0(spriki:calc(?msite, Path, X, Y)),
+    get_value_and_link(FetchFun).
 
 do_cell(Path, Row, Col, Bindings) ->
     do_cell(Path, to_b26(Col) ++ to_s(Row), Bindings).
@@ -294,16 +289,15 @@ do_cells(Funs, Bindings) ->
         end,
         Funs).
 
-%% @doc Calls supplied fun to get value and dependencies, stashes dependencies
-%% away, and returns the value.
-fetch_update_return(FetchFun, Bindings) ->
-    ?CREATE_BINDINGS_VARS,
-    {Value, RefTree, Errors, References} = FetchFun(),
+%% @doc Calls supplied fun to get a cell's value and dependence information,
+%% saves the dependencies away (linking it to current cell), and returns
+%% the value to the caller (to continue the evaluation of the formula).
+get_value_and_link(FetchFun) ->
+    {Value, RefTree, Errs, Refs} = FetchFun(),
 
-    ?IF(member({MSite, MPath, MX, MY}, RefTree),
+    ?IF(member({?msite, ?mpath, ?mx, ?my}, RefTree),
         throw({error, circular_reference})),
-    
-    {RefTree0, Errors0, References0} = get(retvals),
-    put(retvals,
-        {RefTree0 ++ RefTree, Errors0 ++ Errors, References0 ++ References}),
+
+    {RefTree0, Errs0, Refs0} = get(retvals),
+    put(retvals, {RefTree0 ++ RefTree, Errs0 ++ Errs, Refs0 ++ Refs}),
     Value.
