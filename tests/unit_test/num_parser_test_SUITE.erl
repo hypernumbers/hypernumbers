@@ -14,8 +14,49 @@
 -include("test_server.hrl").
 
 %% The first 35 functions should all pass the formatting
+%% Tests 1
 -define(INPUT1,"0").
--define(OUTPUT1,33).
+
+-define(VALUE1a,33).
+-define(OUTPUT1a,{black,"33"}).
+
+-define(VALUE1b,-33).
+-define(OUTPUT1b,{black,"-33"}).
+
+-define(VALUE1c,33.333).
+-define(OUTPUT1c,{black,"33"}).
+
+-define(VALUE1d,-33.33).
+-define(OUTPUT1d,{black,"-33"}).
+
+-define(VALUE1e,0).
+-define(OUTPUT1e,{black,"0"}).
+
+-define(VALUE1f,0.0).
+-define(OUTPUT1f,{black,"0"}).
+
+-define(VALUE1g,"bob").
+-define(OUTPUT1g,{black,"bob"}).
+
+-define(VALUE1h,0.0003333).
+-define(OUTPUT1h,{black,"0"}).
+
+-define(VALUE1i,-0.000033).
+-define(OUTPUT1i,{black,"0"}).
+
+-define(VALUE1j,0.000000000000000000000000000003333).
+-define(OUTPUT1j,{black,"0"}).
+
+-define(VALUE1k,-0.00000000000000000000000000000033).
+-define(OUTPUT1k,{black,"0"}).
+
+-define(VALUE1l,33330000000000000000000000000000000000000000000).
+-define(OUTPUT1l,{black,"33330000000000000000000000000000000000000000000"}).
+
+-define(VALUE1m,-33330000000000000000000000000000000000000000000).
+-define(OUTPUT1m,{black,"-33330000000000000000000000000000000000000000000"}).
+
+%% Test 2
 -define(INPUT2,"0.00").
 -define(INPUT3,"#,##0").
 -define(INPUT4,"#,##0.00").
@@ -119,7 +160,19 @@ end_per_testcase(_TestCase, _Config) ->
 %%------------------------------------------------------------------------------
 all() -> 
     [
-     num_parser_test1,
+     num_parser_test1a,
+     num_parser_test1b,
+     num_parser_test1c,
+     num_parser_test1d,
+     num_parser_test1e,
+     num_parser_test1f,
+     num_parser_test1g,
+     num_parser_test1h,
+     num_parser_test1i,
+     num_parser_test1j,
+     num_parser_test1k,
+     num_parser_test1l,
+     num_parser_test1m,
      num_parser_test2,
      num_parser_test3,
      num_parser_test4,
@@ -163,15 +216,148 @@ all() ->
 
 %% Test cases starts here.
 %%------------------------------------------------------------------------------
-num_parser_test1() -> 
+num_parser_test1a() -> 
     [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
-num_parser_test1(suite) -> 
+num_parser_test1a(suite) -> 
     [];
 
-num_parser_test1(Config) when is_list(Config) -> 
+num_parser_test1a(Config) when is_list(Config) -> 
     {erlang,Output}=format:compile_format(?INPUT1),
-    format:run_format(33,Output).
+    Got=format:run_format(?VALUE1a,Output),
+    test_util:expected(?OUTPUT1a,Got).
+
+num_parser_test1b() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test1b(suite) -> 
+    [];
+
+num_parser_test1b(Config) when is_list(Config) -> 
+    {erlang,Output}=format:compile_format(?INPUT1),
+    Got=format:run_format(?VALUE1b,Output),
+    test_util:expected(?OUTPUT1b,Got).
+
+num_parser_test1c() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test1c(suite) -> 
+    [];
+
+num_parser_test1c(Config) when is_list(Config) -> 
+    {erlang,Output}=format:compile_format(?INPUT1),
+    Got=format:run_format(?VALUE1c,Output),
+    test_util:expected(?OUTPUT1c,Got).
+
+num_parser_test1d() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test1d(suite) -> 
+    [];
+
+num_parser_test1d(Config) when is_list(Config) -> 
+    {erlang,Output}=format:compile_format(?INPUT1),
+    Got=format:run_format(?VALUE1d,Output),
+    test_util:expected(?OUTPUT1d,Got).
+
+num_parser_test1e() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test1e(suite) -> 
+    [];
+
+num_parser_test1e(Config) when is_list(Config) -> 
+    {erlang,Output}=format:compile_format(?INPUT1),
+    Got=format:run_format(?VALUE1e,Output),
+    test_util:expected(?OUTPUT1e,Got).
+
+num_parser_test1f() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test1f(suite) -> 
+    [];
+
+num_parser_test1f(Config) when is_list(Config) -> 
+    {erlang,Output}=format:compile_format(?INPUT1),
+    Got=format:run_format(?VALUE1f,Output),
+    test_util:expected(?OUTPUT1f,Got).
+
+num_parser_test1g() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test1g(suite) -> 
+    [];
+
+num_parser_test1g(Config) when is_list(Config) -> 
+    {erlang,Output}=format:compile_format(?INPUT1),
+    Got=format:run_format(?VALUE1g,Output),
+    test_util:expected(?OUTPUT1g,Got).
+
+num_parser_test1h() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test1h(suite) -> 
+    [];
+
+num_parser_test1h(Config) when is_list(Config) -> 
+    {erlang,Output}=format:compile_format(?INPUT1),
+    Got=format:run_format(?VALUE1h,Output),
+    test_util:expected(?OUTPUT1h,Got).
+
+num_parser_test1i() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test1i(suite) -> 
+    [];
+
+num_parser_test1i(Config) when is_list(Config) -> 
+    {erlang,Output}=format:compile_format(?INPUT1),
+    Got=format:run_format(?VALUE1i,Output),
+    test_util:expected(?OUTPUT1i,Got).
+
+num_parser_test1j() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test1j(suite) -> 
+    [];
+
+num_parser_test1j(Config) when is_list(Config) -> 
+    {erlang,Output}=format:compile_format(?INPUT1),
+    Got=format:run_format(?VALUE1j,Output),
+    test_util:expected(?OUTPUT1j,Got).
+
+num_parser_test1k() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test1k(suite) -> 
+    [];
+
+num_parser_test1k(Config) when is_list(Config) -> 
+    {erlang,Output}=format:compile_format(?INPUT1),
+    Got=format:run_format(?VALUE1k,Output),
+    test_util:expected(?OUTPUT1k,Got).
+
+num_parser_test1l() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test1l(suite) -> 
+    [];
+
+num_parser_test1l(Config) when is_list(Config) -> 
+    {erlang,Output}=format:compile_format(?INPUT1),
+    Got=format:run_format(?VALUE1l,Output),
+    test_util:expected(?OUTPUT1l,Got).
+
+num_parser_test1m() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test1m(suite) -> 
+    [];
+
+num_parser_test1m(Config) when is_list(Config) -> 
+    {erlang,Output}=format:compile_format(?INPUT1),
+    Got=format:run_format(?VALUE1m,Output),
+    test_util:expected(?OUTPUT1m,Got).
 
 num_parser_test2() -> 
     [{userdata,[{doc,"Describe the main purpose of test case"}]}].
