@@ -26,9 +26,6 @@
 -define(IS_FUNCALL(X),
         is_atom(X) andalso X =/= true andalso X =/= false).
 
--define(NEED_BINDINGS,
-        [sscellref, ssrcref, rcrelref, ':', hn, hypernumber, isref, cell]).
-
 %%%--------------------%%%
 %%%  Public functions  %%%
 %%%--------------------%%%
@@ -57,7 +54,7 @@ run(Pcode, Bindings) ->
     foreach(fun({K, V}) -> put(K, V) end,
             Bindings ++ [{retvals, {[], [], []}}]),
              
-    case (catch eval(Pcode, Bindings)) of
+    case (catch eval(Pcode)) of
         {error, R} ->
             {error, R};
         Value ->
@@ -80,20 +77,14 @@ update(Formula, UpdateMsg) ->
 %%%---------------------%%%
 
 %% @doc Evaluates an s-expression, pre-processing subexps as needed.
-eval([Fun__ | Args__], Bindings) when ?IS_FUNCALL(Fun__) ->
+eval([Fun__ | Args__]) when ?IS_FUNCALL(Fun__) ->
     %% Transform s-exp if needed.
-    [Fun | Args] = preproc([Fun__ | Args__], Bindings),
-
-    %% Evaluate args first.
-    CallArgs = [eval(X, Bindings) || X <- Args],
-
-    %% And then evaluate the whole s-exp.
-    %% Some functions need access to bindings, some don't...
-    ?COND(member(Fun, ?NEED_BINDINGS),
-          funcall(Fun, CallArgs, Bindings),
-          funcall(Fun, CallArgs));
-
-eval(Value, _Bindings) ->
+    [Fun | Args] = preproc([Fun__ | Args__]),
+    %% Evaluate args.
+    CallArgs = [eval(X) || X <- Args],
+    %% Call the function.
+    funcall(Fun, CallArgs);
+eval(Value) ->
     Value.
 
 
@@ -101,9 +92,9 @@ eval(Value, _Bindings) ->
 
 %% Arguments to ':' calls are either tuples (literals) or lists (funcalls).
 %% Not checking if funcalls are to INDIRECT as it'll fail later if they aren't.
-preproc([':', StartExpr, EndExpr], Bindings) ->
+preproc([':', StartExpr, EndExpr]) ->
     Eval = fun(Arg) when is_list(Arg) ->
-                   Cellref = hd(plain_eval(tl(Arg), Bindings)),
+                   Cellref = hd(plain_eval(tl(Arg))),
                    {sscellref, "./" ++ Cellref};
               (Arg) when is_tuple(Arg) ->
                    Arg
@@ -113,8 +104,8 @@ preproc([':', StartExpr, EndExpr], Bindings) ->
 
 %% This clause is for standalone calls to INDIRECT. Ones that are part of
 %% a range construction expression will be caught by the clause above.
-preproc([indirect, Arg], Bindings) ->
-    RefStr = plain_eval(Arg, Bindings),
+preproc([indirect, Arg]) ->
+    RefStr = plain_eval(Arg),
     {ok, Tokens, _} = muin_lexer:string(RefStr),% Yeh, screw the frontends.
                                                 % FIXME: ^^^
 
@@ -140,74 +131,58 @@ preproc([indirect, Arg], Bindings) ->
     end;
 
 %% Anything else -- don't need to transform.
-preproc(Sexp, _Bindings) ->
+preproc(Sexp) ->
     Sexp.
 
 
 %% @doc Same as eval() but doesn't pre-process.
-plain_eval([Fun | Args], Bindings) when ?IS_FUNCALL(Fun) ->
-    CallArgs = [plain_eval(X, Bindings) || X <- Args],
-    
-    ?COND(member(Fun, ?NEED_BINDINGS),
-          funcall(Fun, CallArgs, Bindings),
-          funcall(Fun, CallArgs));
-
-plain_eval(Value, _Bindings) ->
+plain_eval([Fun | Args]) when ?IS_FUNCALL(Fun) ->
+    CallArgs = [plain_eval(X) || X <- Args],
+    funcall(Fun, CallArgs);
+plain_eval(Value) ->
     Value.
 
 
-%%% ----- Functions defined in spriki_funs or userdef.
-
-%% Picks a module name, calls
-funcall(Fname, Args) ->
-    %% Find module name corresponding to function; default to userdef.
-    [Modname | _] = foldl(fun({M, L}, Acc) ->
-                                  ?COND(member(Fname, L), [M], Acc)
-                          end,
-                          [userdef],
-                          ?STDFUNS),
-    Modname:Fname(Args).
-
 %%% ----- Reference functions.
 
-funcall(sscellref, [Ssref], Bindings) ->
+funcall(sscellref, [Ssref]) ->
     {Path_, Ref} = split_ssref(Ssref),
     Path = walk_path(?mpath, Path_),
-    do_cell(Path, Ref, Bindings);
+    do_cell(Path, Ref);
 
-funcall(ssrcref, [{RelPath, Row, Col}], Bindings) ->
+funcall(ssrcref, [{RelPath, Row, Col}]) ->
     Path = walk_path(?mpath, RelPath),
-    do_cell(Path, Row, Col, Bindings);
+    do_cell(Path, Row, Col);
 
-funcall(rcrelref, [{RelPath, RowOffset, ColOffset}], Bindings) ->
+funcall(rcrelref, [{RelPath, RowOffset, ColOffset}]) ->
     Path = walk_path(?mpath, RelPath),
-    do_cell(Path, ?my + RowOffset, ?mx + ColOffset, Bindings);
+    do_cell(Path, ?my + RowOffset, ?mx + ColOffset);
 
 %% -- Range functions.
 
 %% Cellranges, e.g. A1:B10, ../page/A1:B10 etc.
-funcall(':', [{sscellref, Ref1}, {cellref, Ref2}], Bindings) ->
-    [do_cell(just_path(Ref1), X, Bindings) ||
+funcall(':', [{sscellref, Ref1}, {cellref, Ref2}]) ->
+    [do_cell(just_path(Ref1), X) ||
         X <- expand_cellrange(just_ref(Ref1), Ref2)];
 
 %% Column ranges.
-funcall(':', [{sscolref, Ref1}, {col, Ref2}], Bindings) ->
+funcall(':', [{sscolref, Ref1}, {col, Ref2}]) ->
     Path = walk_path(?mpath, just_path(Ref1)),
     Cols = seq(to_i(just_ref(Ref1), b26), to_i(Ref2, b26)),
     %% generate a fun to read each column
     Funs = [fun() -> db:read_column(?msite, Path, X) end || X <- Cols],
-    do_cells(Funs, Bindings);
+    do_cells(Funs);
 
 %% Row ranges.
-funcall(':', [{ssrowref, Ref1}, {row, Ref2}], Bindings) ->
+funcall(':', [{ssrowref, Ref1}, {row, Ref2}]) ->
     FullPath = walk_path(?mpath, just_path(Ref1)),
     Rows = seq(to_i(just_ref(Ref1)), to_i(Ref2)),
     Funs = [?fun0(db:read_row(?msite, FullPath, X)) || X <- Rows],
-    do_cells(Funs, Bindings);
+    do_cells(Funs);
 
 %% -- Hypernumber function and its shorthand.
 
-funcall(hypernumber, [Url_], Bindings) ->
+funcall(hypernumber, [Url_]) ->
     %% Remove trailing ?hypernumber if needed.
     {ok, Url, _} = regexp:gsub(Url_, "\\?hypernumber$", ""),
     
@@ -220,46 +195,56 @@ funcall(hypernumber, [Url_], Bindings) ->
                                                       RSite, RPath, RX, RY)
                        end);
 
-funcall(hn, [Url], Bindings) ->
-    funcall(hypernumber, [Url], Bindings);
+funcall(hn, [Url]) ->
+    funcall(hypernumber, [Url]);
 
 %%% -- Information functions
 
 %% Unsupported info types: color, filename, parentheses (WTF?), prefix, width.
 
-funcall(cell, ["address", Ref], _Bindings) ->
+funcall(cell, ["address", Ref]) ->
     Ref;
-funcall(cell, ["col", Ref], _Bindings) ->
+funcall(cell, ["col", Ref]) ->
     {_Row, Col} = getxy(Ref),
     Col;
-funcall(cell, ["contents", Ref], Bindings) ->
-    Val = do_cell(".", Ref, Bindings),
+funcall(cell, ["contents", Ref]) ->
+    Val = do_cell(".", Ref),
     ?COND(Val == blank, 0, Val);
-funcall(cell, ["format", _Ref], _Bindings) ->
+funcall(cell, ["format", _Ref]) ->
     throw(tantrum); %% TODO: Implement me.
-funcall(cell, ["protect", _Ref], _Bindings) ->
+funcall(cell, ["protect", _Ref]) ->
     throw(tantrum); %% TODO: Implement me.
-funcall(cell, ["row", Ref], _Bindings) ->
+funcall(cell, ["row", Ref]) ->
     {Row, _Col} = getxy(Ref),
     Row;
-funcall(cell, ["type", Ref], Bindings) ->
-    Val = do_cell(".", Ref, Bindings),
+funcall(cell, ["type", Ref]) ->
+    Val = do_cell(".", Ref),
     ?COND(Val == blank, "b",
           ?COND(is_binary(Val), "l",
                 "v"));
 
-funcall(info, _, _Bindings) ->
+funcall(info, _) ->
     throw({error, unsupported}); %% TODO: What to do with this?
 
-funcall(isref, [_MaybeRef], _Bindings) ->
-    throw(tantrum). %% TODO: Implement me. With cellref, range, and name support.
+funcall(isref, [_MaybeRef]) ->
+    throw(tantrum); %% TODO: Implement me. With cellref, range, and name support.
+
+%% Picks a module name, calls
+funcall(Fname, Args) ->
+    %% Find module name corresponding to function; default to userdef.
+    [Modname | _] = foldl(fun({M, L}, Acc) ->
+                                  ?COND(member(Fname, L), [M], Acc)
+                          end,
+                          [userdef],
+                          ?STDFUNS),
+    Modname:Fname(Args).
 
 
 %%% ----- Utility functions.
 
 %% Returns value in the cell + get_value_and_link() is called behind the
 %% scenes.
-do_cell(RelPath, Ref, Bindings) ->
+do_cell(RelPath, Ref) ->
     {X, Y} = getxy(Ref),
     
     ?IF(X == ?mx andalso Y == ?my,
@@ -269,19 +254,18 @@ do_cell(RelPath, Ref, Bindings) ->
     FetchFun = ?fun0(spriki:calc(?msite, Path, X, Y)),
     get_value_and_link(FetchFun).
 
-do_cell(Path, Row, Col, Bindings) ->
-    do_cell(Path, to_b26(Col) ++ to_s(Row), Bindings).
+do_cell(Path, Row, Col) ->
+    do_cell(Path, to_b26(Col) ++ to_s(Row)).
 
 %% @doc Takes a list of funs that fetch a list of cell records each.
 %% Calls do_cell() on each of those cells.
 %% TODO: The records already contain all required information, don't really
 %% need to call do_cell().
-do_cells(Funs, Bindings) ->
+do_cells(Funs) ->
     DoRec = fun(CellRec) ->
                     do_cell((CellRec#spriki.index)#index.path,
                             (CellRec#spriki.index)#index.row,
-                            (CellRec#spriki.index)#index.column,
-                            Bindings)
+                            (CellRec#spriki.index)#index.column)
             end,
     
     map(fun(GetCellRecFun) ->
