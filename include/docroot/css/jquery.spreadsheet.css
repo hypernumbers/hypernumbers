@@ -81,14 +81,11 @@
 
 .ss_root #name 
 {
-    vertical-align: middle;
-    display:        block;
     font:           12px "Helvetica Neue", Palatino, sans-serif;
     padding:        3px;
     width:          80px;
     border:         0px;
     text-align:     center;
-    float:          left;
 }
 
 .ss_root #functions
@@ -207,21 +204,21 @@
 }
 
 .ss_root #toolbar .left {
-    background-image:  url('/img/text_align_left.png'); }
+    background-image:  url('../img/text_align_left.png'); }
 .ss_root #toolbar .center {
-    background-image:  url('/img/text_align_center.png'); }
+    background-image:  url('../img/text_align_center.png'); }
 .ss_root #toolbar .right {
-    background-image:  url('/img/text_align_right.png'); }
+    background-image:  url('../img/text_align_right.png'); }
 .ss_root #toolbar .justify {
-    background-image:  url('/img/text_align_justify.png'); }
+    background-image:  url('../img/text_align_justify.png'); }
 .ss_root #toolbar .bold {
-    background-image:  url('/img/text_bold.png'); }
+    background-image:  url('../img/text_bold.png'); }
 .ss_root #toolbar .italic {
-    background-image:  url('/img/text_italic.png'); }
+    background-image:  url('../img/text_italic.png'); }
 .ss_root #toolbar .underl {
-    background-image:  url('/img/text_underline.png'); }
+    background-image:  url('../img/text_underline.png'); }
 .ss_root #toolbar .strike {
-    background-image:  url('/img/text_strikethrough.png'); }
+    background-image:  url('../img/text_strikethrough.png'); }
 
 .ss_root .dragleft   { border-left:  1px dashed #000 !important; }
 .ss_root .dragright  { border-right: 1px dashed #000 !important; }

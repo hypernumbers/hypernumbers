@@ -1,586 +1,593 @@
 /**
- * jQuery.SpreadSheet
- * Copyright (c) 2008 HyperNumbers.com
- * All rights reserved.
- * @projectDescription A Spreadsheet GUI 
- * @author Dale Harvey
- * @version 0.1
- */
+ * jQuery SpreadSheet
+ * Version 0.1 - 18/03/2008
+ * @author Dale Harvey <harveyd@gmail.com>
+ *
+ * http://code.google.com/p/jqueryspreadsheet/
+ *
+ **/
 
-(function($) 
-{
-    $.fn.spreadsheet = function(options) 
-    {    
-        // Builder for the toolbar, an <a> is built for each element
-        // the callback is called on click and is given info
-        // on the current selection                    
-        $.fn.toolbar = [
-            {css:"left",    click:function(e,s){ s.range.each(function(i) { set_css(this,"text-align","left"); }); }},
-            {css:"center",  click:function(e,s){ s.range.each(function(i) { set_css(this,"text-align","center"); }); }},
-            {css:"right",   click:function(e,s){ s.range.each(function(i) { set_css(this,"text-align","right"); }); }},
-            {css:"justify", click:function(e,s){ s.range.each(function(i) { set_css(this,"text-align","justify"); }); }},
-            {css:"separator"},         
-            {css:"bold",    click:function(e,s){ s.range.each(function(i) { toggle_css(this,"font-weight","normal","bold"); }); }},
-            {css:"italic",  click:function(e,s){ s.range.each(function(i) { toggle_css(this,"font-style","normal","italic"); }); }},
-            {css:"underl",  click:function(e,s){ s.range.each(function(i) { toggle_css(this,"text-decoration","none","underline"); }); }},
-            {css:"strike",  click:function(e,s){ s.range.each(function(i) { toggle_css(this,"text-decoration","none","line-through"); }); }},
-            {css:"separator"}
-        ]; 
+(function($) {
+    
+$.fn.spreadsheet = function(options) 
+{    
+    // Builder for the toolbar, an <a> is built for each element
+    // the callback is called on click and is given info
+    // on the current selection                    
+    $.fn.toolbar = [
+        {css:"left",    click:function(e,s){ s.range.each(function() { set_css(this,"text-align","left"); }); }},
+        {css:"center",  click:function(e,s){ s.range.each(function() { set_css(this,"text-align","center"); }); }},
+        {css:"right",   click:function(e,s){ s.range.each(function() { set_css(this,"text-align","right"); }); }},
+        {css:"justify", click:function(e,s){ s.range.each(function() { set_css(this,"text-align","justify"); }); }},
+        {css:"separator"},         
+        {css:"bold",    click:function(e,s){ s.range.each(function() { toggle_css(this,"font-weight","normal","bold"); }); }},
+        {css:"italic",  click:function(e,s){ s.range.each(function() { toggle_css(this,"font-style","normal","italic"); }); }},
+        {css:"underl",  click:function(e,s){ s.range.each(function() { toggle_css(this,"text-decoration","none","underline"); }); }},
+        {css:"strike",  click:function(e,s){ s.range.each(function() { toggle_css(this,"text-decoration","none","line-through"); }); }},
+        {css:"separator"}
+    ]; 
         
-        $.fn.spreadsheet.defaults = 
-        {
-            range: "a1:z100",   // Default Range that is loaded
-            fmargin: 0,         // Footer Margin
-            cellSelect:null,    // Callback on a cell being selected
-            cellChange:null,    // Callback for a cell Changing
-            rowResize:null,
-            colResize:null,
-            cssChange:null,
-            fullscreen:false
-        };
+    $.fn.spreadsheet.defaults = 
+    {
+        range: "a1:z100",   // Default Range that is loaded
+        fmargin: 0,         // Footer Margin
+        cellSelect:null,    // Callback on a cell being selected
+        cellChange:null,    // Callback for a cell Changing
+        rowResize:null,
+        colResize:null,
+        cssChange:null,
+        addName:null,
+        nameSet:null,
+        fullscreen:false
+    };
 
-        $.fn.modes =
-        { 
-            CELL_EDIT:0,        // Currently Editing a cell         
-            FORMULA_EDIT:1,     // Editing in the formula bar
-            NOT_EDITING:2       // Not Editing
-        };
+    $.fn.modes =
+    { 
+        CELL_EDIT:0,        // Currently Editing a cell         
+        FORMULA_EDIT:1,     // Editing in the formula bar
+        NOT_EDITING:2       // Not Editing
+    };
     
-        $.fn.states =           // Keep track of states during selection
-        { 
-            INIT:0,             // Page Just Loaded
-            VIEW:1,             // Editing cell
-            SELECT:2,           // Dragging over a range
-            DRAG:3              // Formula Drag
-        };
+    $.fn.states =           // Keep track of states during selection
+    { 
+        INIT:0,             // Page Just Loaded
+        VIEW:1,             // Editing cell
+        SELECT:2,           // Dragging over a range
+        DRAG:3              // Formula Drag
+    };
       
-        // Consts for key presses
-        $.fn.keys = 
-        { 
-            RETURN: 13,
-            UP:     38, 
-            DOWN:   40, 
-            LEFT:   37, 
-            RIGHT:  39 
-        };
+    // Consts for key presses
+    $.fn.keys = 
+    { 
+        RETURN: 13,
+        UP:     38, 
+        DOWN:   40, 
+        LEFT:   37, 
+        RIGHT:  39 
+    };
 
-        // Consts for range types
-        $.fn.addr = 
-        {
-            ROW:0,
-            COLUMN:1,
-            CELL:2,
-            RANGE:3            
-        };
+    // Consts for range types
+    $.fn.addr = 
+    {
+        ROW:0,
+        COLUMN:1,
+        CELL:2,
+        RANGE:3            
+    };
 
-        var o = $.extend({}, $.fn.spreadsheet.defaults, options);
-        var edit_mode = $.fn.modes.NOT_EDITING;
+    // default options used on initialisation
+    // and arguments used on later calls
+    var opts = $.extend({}, $.fn.spreadsheet.defaults, options);
+    var args = arguments;
 
-        /**
-        * Replaces a cell with an input element to enter cell values, 
-        * called on cell focus, removes input on blur
-        */    
-        var select_cell = function($this,$sel)
-        {
-            var oldtime = (new Date()).getTime();
+    /**
+     * Replaces a cell with an input element to enter cell values, 
+     * called on cell focus, removes input on blur
+     */    
+    var select_cell = function($this,$sel)
+    {
+        var cell    = cell_div($sel.tbl,$sel.x,$sel.y);
+        var val     = $(cell).text();
+        var formula = $this.find("#formula input");
 
-            var cell    = $($.fn.getcell($sel.tbl,$sel.x,$sel.y)).children("div");
-            var val     = $(cell).text();
-            var formula = $this.find("#formula input");
+        $(cell).empty();
 
-            $(cell).empty();
-
-            if(typeof o.cellSelect != "function")
-                formula.val(val);
+        if(typeof opts.cellSelect != "function")
+            formula.val(val);
+        else
+            opts.cellSelect($sel.x,$sel.y+1,formula);
+    
+        $(document.createElement("textarea")).val(val).keyup(function (e) 
+        {              
+            var coords = offset(e.keyCode,$sel);
+    
+            if(coords != false)
+                key_pressed($this,$sel,coords,e);
             else
-                o.cellSelect($sel.x,$sel.y+1,formula);
+                formula.val($(this).val());
     
-            $(document.createElement("textarea")).val(val).keyup(function (e) 
-            {              
-                var coords = offset(e.keyCode,$sel);
-    
-                if(coords != false)
-                    key_pressed($this,$sel,coords,e);
-                else
-                    formula.val($(this).val());
-    
-            }).keydown(function(e)
-            {
-                if(e.keyCode == $.fn.keys.RETURN)
-                    return false;
+        }).keydown(function(e)
+        {
+            if(e.keyCode == $.fn.keys.RETURN)
+                return false;
                     
-                return true;
+            return true;
 
-            }).blur(function()
+        }).blur(function()
+        {
+            if(edit_mode  != $.fn.modes.FORMULA_EDIT)
             {
-                if(edit_mode  != $.fn.modes.FORMULA_EDIT)
-                {
-                    var newval = $(this).val();
-                    $(this).parent().empty().text(newval);
+                var newval = $(this).val();
+                $(this).parent().empty().text(newval);
             
-                    if(val != newval && typeof o.cellChange == "function") 
-                    {
-                        o.cellChange($sel.x,$sel.y+1,newval); 
-                    }
-                    edit_mode  = $.fn.modes.NOT_EDITING;
-                }
-            }).appendTo(cell).width(cell.width()).height(cell.height()).focus();
+                if(val != newval && typeof opts.cellChange == "function")
+                    opts.cellChange($sel.x,$sel.y+1,newval); 
 
-            edit_mode = $.fn.modes.CELL_EDIT;
-        };
-
-        /**
-        * Replaces a cell with an input element to enter cell values, 
-        * called on cell focus, removes input on blur
-        */     
-        var offset = function(key,$sel) 
-        {
-            switch(key)
-            {
-                case $.fn.keys.UP     : return [$sel.x,$sel.y-1]; break;
-                case $.fn.keys.RIGHT  : return [$sel.x+1,$sel.y]; break;
-                case $.fn.keys.LEFT   : return [$sel.x-1,$sel.y]; break;
-                case $.fn.keys.DOWN   : 
-                case $.fn.keys.RETURN : return [$sel.x,$sel.y+1];  break;
-                default : return false; break;
+                edit_mode  = $.fn.modes.NOT_EDITING;
             }
-            return false;
-        };           
-                
-        /**
-        * Called when user presses arrow / navigation keys
-        */   
-        var key_pressed = function($this, $sel, i, e)
+        }).appendTo(cell).width(cell.width()).height(cell.height()).focus();
+
+         edit_mode = $.fn.modes.CELL_EDIT;
+    };
+
+    /**
+     * Replaces a cell with an input element to enter cell values, 
+     * called on cell focus, removes input on blur
+     */     
+    var offset = function(key,$sel) 
+    {
+        switch(key)
         {
-            var cell = $($.fn.getcell($sel.tbl,i[0],i[1])).children("div");
+            case $.fn.keys.UP     : return [$sel.x,$sel.y-1]; break;
+            case $.fn.keys.RIGHT  : return [$sel.x+1,$sel.y]; break;
+            case $.fn.keys.LEFT   : return [$sel.x-1,$sel.y]; break;
+            case $.fn.keys.DOWN   : 
+            case $.fn.keys.RETURN : return [$sel.x,$sel.y+1];  break;
+            default : return false; break;
+        }
+        return false;
+    };           
+  
+    /**
+     * Called when user presses arrow / navigation keys
+     */   
+    var key_pressed = function($this, $sel, i, e)
+    {
+        var cell = cell_div($sel.tbl,i[0],i[1]);
     
-            if($(cell).size() > 0)
+        if($(cell).size() > 0)
+        {
+            $sel.blurcell();
+    
+            if(e.shiftKey)
             {
-                $sel.blurcell();
+                $sel.state = $.fn.states.SELECT;
+                $sel.hover(cell[0]);
+            }
+            else
+            {    
+                $sel.hide_selection();
+                $sel.hide_drag();             
+                $sel.start($.fn.addr.CELL,cell[0]);
+            }
     
-                if(e.shiftKey)
+            select_cell($this,$sel);
+            $sel.state = $.fn.states.VIEW;
+            set_name($this,$sel);
+        }
+    }
+        
+    /**
+     * Create the formula bar + name field and buttons
+     */  
+    var write_formula_bar = function(root,$sel)
+    {
+        root.prepend("<div class=\"clearfix\">"
+            +"<input type=\"text\" id=\"name\" />"
+            +"<button id=\"functions\">f(x)</button>"
+            +"<div id=\"formula\"><input type=\"text\" /></div></div>");
+
+        var change = function(x,y,val)
+        {
+            edit_mode = $.fn.modes.NOT_EDITING;
+
+            if(typeof opts.cellChange == "function")
+                 opts.cellChange(x,y,val);            
+        }
+
+        $("#formula input").click(function(e)
+        {
+            $(this).focus();
+        }
+        ).mousedown(function(e)
+        {
+            edit_mode = $.fn.modes.FORMULA_EDIT;
+        }
+        ).keyup(function (e)
+        {
+            if($sel.state != $.fn.states.INIT)
+            {
+                var coords = offset(e.keyCode,$sel);
+        
+                if(coords != false)
                 {
-                    $sel.state = $.fn.states.SELECT;
-                    $sel.hover(cell[0]);
+                    change($sel.x,$sel.y+1,$(this).val());
+                    key_pressed(root,$sel,coords,e);
                 }
                 else
-                {    
-                    $sel.hide_selection();
-                    $sel.hide_drag();             
-                    $sel.start($.fn.addr.CELL,cell[0]);
+                {
+                    var cell = cell($sel.tbl,$sel.x,$sel.y);
+            
+                    if(cell.size() > 0)
+                        cell.children("div").text($(this).val());
                 }
-    
-                select_cell($this,$sel);
-                $sel.state = $.fn.states.VIEW;
-                set_name($this,$sel);
             }
         }
+        ).blur(function (e)
+        {
+            change($sel.x,$sel.y+1,$(this).val());
+        });  
+    };
+    
+    /**
+     * Stub for the formatting tools etc
+     */  
+    var write_button_menu = function(root,$sel,toolbar)
+    {
+        var wrap = $("<div id=\"toolbar\" class=\"clearfix\">");
+    
+        $(toolbar).each(function(i)
+        {
+            var $this = this;
+            var item = $("<a />").addClass($this.css);
+    
+            if(typeof this.click != "undefined")
+                item.click(function(e) { $this.click(e,$sel); });
+    
+            wrap.append(item);
+        });
+    
+        root.prepend(wrap);
+    };
+    
+    /**
+     * Toggles a css attribute on an element between 2 values
+     * Used for toolbar
+     */    
+    var toggle_css = function(el,attr,off,on)
+    {
+        set_css(el,attr,($(el).css(attr) == on ? off : on));
+    };
         
-        /**
-        * Create the formula bar + name field and buttons
-        */  
-        var write_formula_bar = function(root,$sel)
-        {
-            root.prepend("<div class=\"clearfix\">"
-                +"<input type=\"text\" id=\"name\" />"
-                +"<button id=\"functions\">f(x)</button>"
-                +"<div id=\"formula\"><input type=\"text\" /></div></div>");
-
-            var change = function(x,y,val)
-            {
-                edit_mode = $.fn.modes.NOT_EDITING;
-
-                if(typeof o.cellChange == "function")
-                    o.cellChange(x,y,val);            
-            }
-    
-            $("#formula input").click(function(e)
-            {
-                $(this).focus();
-            }
-            ).mousedown(function(e)
-            {
-                 edit_mode = $.fn.modes.FORMULA_EDIT;
-            }
-            ).keyup(function (e)
-            {
-                if($sel.state != $.fn.states.INIT)
-                {
-                    var coords = offset(e.keyCode,$sel);
-        
-                    if(coords != false)
-                    {
-                        change($sel.x,$sel.y+1,$(this).val());
-                        key_pressed(root,$sel,coords,e);
-                    }
-                    else
-                    {
-                        var cell = $($.fn.getcell($sel.tbl,$sel.x,$sel.y));
-            
-                        if(cell.size() > 0)
-                            cell.children("div").text($(this).val());
-                    }
-                }
-            }
-            ).blur(function (e)
-            {
-                change($sel.x,$sel.y+1,$(this).val());
-            });  
-        };
-    
-        /**
-        * Stub for the formatting tools etc
-        */  
-        var write_button_menu = function(root,$sel,toolbar)
-        {
-            var wrap = $("<div id=\"toolbar\" class=\"clearfix\">");
-    
-            $(toolbar).each(function(i)
-            {
-                var $this = this;
-                var item = $("<a />").addClass($this.css);
-    
-                if(typeof this.click != "undefined")
-                    item.click(function(e) { $this.click(e,$sel); });
-    
-                wrap.append(item);
-            });
-    
-            root.prepend(wrap);
-        };
-    
-        /**
-        * Toggles a css attribute on an element between 2 values
-        * Used for toolbar
-        */    
-        var toggle_css = function(el,attr,off,on)
-        {
-            set_css(el,attr,($(el).css(attr) == on ? off : on));
-        };
-        
-        /**
-         * 
-         */  
-        var set_css = function(el,attr,val) 
-        {
-            if(typeof o.cssChange == "function")
-                o.cssChange(el,attr,val);
+    /**
+     * 
+     */  
+    var set_css = function(el,attr,val) 
+    {
+        if(typeof opts.cssChange == "function")
+            opts.cssChange(el,attr,val);
                 
-            $(el).css(attr,val);
-        };
+        $(el).css(attr,val);
+    };
     
-        /**
-        * Sets default width / height values and display attributes
-        * may be overridden with user defined values later
-        */  
-        var set_display_values = function(root,cols,fmargin)
-        {
-            var width = 100;
-            var total_width = cols * width;
+    /**
+     * Sets default width / height values and display attributes
+     * may be overridden with user defined values later
+     */  
+    var set_display_values = function(root,cols,fmargin)
+    {
+        var width = 100;
+        var total_width = cols * width;
             
-            var x = root.children("div.container").children("div.ssinner");
-            var y = x.children("div.datacontainer").children("div.datainner");
+        var x = root.children("div.container").children("div.ssinner");
+        var y = x.children("div.datacontainer").children("div.datainner");
                         
-            x.children("table").find("tr th").width(width);
-            y.children("table").find("tr td").width(width);
+        x.children("table").find("tr th").width(width);
+        y.children("table").find("tr td").width(width);
 
-            x.width(total_width);
-            y.width(total_width);               
+        x.width(total_width);
+        y.width(total_width);               
     
-            x.children("div.datacontainer").scroll(function (e) 
-            {
-                x.children("table").css("left","-"+e.target.scrollLeft+"px"); 
-                root.children("div.container").children("div.rows").css("top","-"+e.target.scrollTop+"px");
-            });
+        x.children("div.datacontainer").scroll(function (e) 
+        {
+            x.children("table").css("left","-"+e.target.scrollLeft+"px"); 
+            root.children("div.container").children("div.rows").css("top","-"+e.target.scrollTop+"px");
+        });
     
-            $(window).resize(function()
-            {
-                var c =  x.children("div.datacontainer");     
-                var h = (o.fullscreen)
-                    ? $(window).height() - c.offset().top
-                    : $(root).height() - (x.offset().top - root.offset().top) - 21;                
+        $(window).resize(function()
+        {
+            var c =  x.children("div.datacontainer");     
+            var h = (opts.fullscreen)
+                ? $(window).height() - c.offset().top
+                : $(root).height() - (x.offset().top - root.offset().top) - 21;                
                                 
-                var height = h - fmargin;
-                var width = $(root).width() - 25;
+            var height = h - fmargin;
+            var width = $(root).width() - 25;
     
-                root.children("div.container").children("div.rows").height(height);
-                c.height(height);
-                c.width(width);
+            root.children("div.container").children("div.rows").height(height);
+            c.height(height);
+            c.width(width);
                 
-                root.find("#marker").height(height-15);
-            });
+            root.find("#marker").height(height-15);
+        });
     
-            $(window).resize();
+        $(window).resize();
+    };
+    
+    /**
+     * Sets the the value of the name field to the currently selected
+     * range / cell
+     */  
+    var set_name = function(root,$s)
+    {
+        var range = $.fn.to_b26($s.startx+1) + "" + ($s.starty+1);
+    
+        if($s.startx != $s.endx || $s.starty != $s.endy)
+            range += ":"+$.fn.to_b26($s.endx+1)+""+($s.endy+1);
+    
+        root.find("#name").val(range);
+    };
+    
+    /**
+     * Make table columns resizable
+     */  
+    var resize_columns = function(root,$sel)
+    {
+        var x = root.children("div.container").children("div.ssinner");
+        var y = x.children("div.datacontainer").children("div.datainner");
+            
+        var headers = x.children("table").find("tr th");
+        var header,newwidth;
+        var resize = false;
+            
+        var marker = $("<div id=\"marker\" />").appendTo(root);
+        marker.css("top",x.children("div.datacontainer").offset().top+"px");
+    
+        endresize = function()
+        {
+            if(resize == true && header != null)
+            {
+                var child = $.fn.from_b26($(header).text());
+                set_width(root,$(header).text(),newwidth);
+                    
+                marker.css("display","none");
+                resize = false;
+                $sel.hide_selection();
+                $sel.show_selection();
+                    
+                if(typeof opts.colResize == "function")
+                    opts.colResize(child,newwidth);
+            }   
         };
     
-        /**
-        * Sets the the value of the name field to the currently selected
-        * range / cell
-        */  
-        var set_name = function(root,$s)
+        headers.mousemove(function(e)
         {
-            var range = $.fn.to_b26($s.startx+1) + "" + ($s.starty+1);
+            var left = (e.clientX - root.offset().left);
     
-            if($s.startx != $s.endx || $s.starty != $s.endy)
-                range += ":"+$.fn.to_b26($s.endx+1)+""+($s.endy+1);
-    
-            root.find("#name").val(range);
-        };
-    
-        /**
-        * Make table columns resizable
-        */  
-        var resize_columns = function(root,$sel)
-        {
-            var x = root.children("div.container").children("div.ssinner");
-            var y = x.children("div.datacontainer").children("div.datainner");
-            
-            var headers = x.children("table").find("tr th");
-            var header,newwidth;
-            var resize = false;
-            
-            var marker = $("<div id=\"marker\" />").appendTo(root);
-            marker.css("top",x.children("div.datacontainer").offset().top+"px");
-    
-            endresize = function()
+            if(resize)
             {
-                if(resize == true && header != null)
+                var width = left - (header.offset().left - root.offset().left);
+    
+                if(width > 1)
                 {
-                    var child = $.fn.from_b26($(header).text());
-                    $.fn.set_width(root,$(header).text(),newwidth);
-                    
-                    marker.css("display","none");
-                    resize = false;
-                    $sel.hide_selection();
-                    $sel.show_selection();
-                    
-                    if(typeof o.colResize == "function")
-                        o.colResize(child,newwidth);
-                }   
-            };
-    
-            headers.mousemove(function(e)
-            {
-                var left = (e.clientX - root.offset().left);
-    
-                if(resize)
-                {
-                    var width = left - (header.offset().left - root.offset().left);
-    
-                    if(width > 1)
-                    {
-                        x.width(x.width() + ((width - header.width())));
-                        header.width(width);
-                        marker.css("left",(e.clientX)+"px");
-                        newwidth = width;
-                    }
+                    x.width(x.width() + ((width - header.width())));
+                    header.width(width);
+                    marker.css("left",(e.clientX)+"px");
+                    newwidth = width;
                 }
-                else
-                {
-                    headers.css("cursor",
-                        (left-($(this).offset().left-root.offset().left) > $(this).width()-4)
-                        ? "col-resize" : "");
-                }                  
-            });
+            }
+            else
+            {
+                headers.css("cursor",
+                    (left-($(this).offset().left-root.offset().left) > $(this).width()-4)
+                    ? "col-resize" : "");
+            }                  
+        });
     
-            x.children("table").bind("mouseleave",function(e)
+        x.children("table").bind("mouseleave",function(e)
+        {
+            endresize();
+            return false; 
+        });
+    
+        headers.each(function(i)
+        {
+            $(this).mousedown(function(e) 
+            {
+                if(headers.css("cursor") ==  "col-resize")
+                {
+                    marker.css("left",e.clientX+"px").css("display","block");
+                    header = $(this);                    
+                    resize = true;
+                }    
+                return false;
+            });
+        
+            $(this).mouseup(function(e) 
             {
                 endresize();
-                return false; 
             });
+        });
+    };
     
-            headers.each(function(i)
-            {
-                $(this).mousedown(function(e) 
-                {
-                    if(headers.css("cursor") ==  "col-resize")
-                    {
-                        marker.css("left",e.clientX+"px").css("display","block");
-                        header = $(this);                    
-                        resize = true;
-                    }    
-                    return false;
-                });
-        
-                $(this).mouseup(function(e) 
-                {
-                    endresize();
-                });
-            });
-        };
+    /**
+     * Make table rows resizable
+     */  
+    var resize_rows = function(root,$sel)
+    {
+        var x = root.children("div.container").children("div.ssinner");
+            
+        var row,newheight;
+        var rows = root.children("div.container").children("div.rows").find("td");
+        var resize = false;
+        var top = root.offset().top;
     
-        /**
-        * Make table rows resizable
-        */  
-        var resize_rows = function(root,$sel)
+        rows.mousemove(function(e)
         {
-            var x = root.children("div.container").children("div.ssinner");
-            
-            var row,newheight;
-            var rows = root.children("div.container").children("div.rows").find("td");
-            var resize = false;
-            var top = root.offset().top;
+            var x = (e.clientY - top);
     
-            rows.mousemove(function(e)
+            if(resize)
             {
-                var x = (e.clientY - top);
-    
-                if(resize)
-                {
-                    var height = x - ($(row).offset().top - top);
-                    $(row).find("div").height(height);
-                    newheight = height;
-                }
-    
-                else
-                {
-                    rows.css("cursor",
-                        (x - ($(this).offset().top - top) > $(this).height() - 5) 
-                        ? "row-resize" : "");
-                }
-            });
-    
-            rows.each(function()
-            {
-                $(this).mousedown(function(e) 
-                {
-                    if(rows.css("cursor") ==  "row-resize")
-                    {
-                        row = this;                   
-                        resize = true;
-                    }
-                    return false;
-    
-                }).mouseup(function(e) 
-                {
-                    var child = parseInt($(row).text());
-                    $.fn.set_height(root,child,newheight);
-                    
-                    row = null;
-                    resize = false;
-                    
-                    $sel.hide_selection();
-                    $sel.show_selection();
-                    
-                    if(typeof o.rowResize == "function")
-                        o.rowResize(child,newheight);
-                });
-            });
-        };
-    
-        /**
-        * Creates the basic table layout
-        */  
-        var create_table = function(root,rows,cols)
-        {
-            // wrapper for most things
-            var home = $("<div class=\"container\"></div>").appendTo(root);
-
-            // Set up the row indexes (1,2,3,4,5 ...)
-            var ind = $("<div id=\"box\" /><div class=\"rows\"><table><tr><td class=\"first\"><div /></td></tr></table></div>").appendTo(home);
-
-            for(var z = 1; z < rows+1; z++)
-                ind.find("table").append("<tr><td><div>"+z+"</div></td></tr>");
-
-            
-            var cont = $("<div class=\"ssinner\" />").appendTo(home);
-            var tr = $("<tr />").appendTo($("<table class=\"columns\" />").appendTo(cont));
-            
-            // Setup Table Headers (a,b,c,d,e ....)
-            for(var n = 1; n < cols+1; n++) 
-                tr.append("<th>"+ $.fn.to_b26(n)+"</th>");
-    
-            var table = $("<table class=\"tabledata\" />").appendTo(
-                $("<div class=\"datainner\" />").appendTo(
-                $("<div class=\"datacontainer\" />").appendTo(cont)));                       
-    
-            // Rest of table data
-            for(var z = 1; z < rows+1; z++)
-            {
-                var row = $("<tr/>").appendTo(table);
-                
-                for(var n = 0; n < cols; n++)
-                    row.append("<td><div class='"+($.fn.to_b26(n)+z)
-                        + " cell'></div></td>");
+                var height = x - ($(row).offset().top - top);
+                $(row).find("div").height(height);
+                newheight = height;
             }
+    
+            else
+            {
+                rows.css("cursor",
+                    (x - ($(this).offset().top - top) > $(this).height() - 5) 
+                    ? "row-resize" : "");
+            }
+        });
+    
+        rows.each(function()
+        {
+            $(this).mousedown(function(e) 
+            {
+                if(rows.css("cursor") ==  "row-resize")
+                {
+                    row = this;                   
+                    resize = true;
+                }
+                return false;
+    
+            }).mouseup(function(e) 
+            {
+                var child = parseInt($(row).text());
+                set_height(root,child,newheight);
+                    
+                row = null;
+                resize = false;
+                    
+                $sel.hide_selection();
+                $sel.show_selection();
+                    
+                if(typeof opts.rowResize == "function")
+                    opts.rowResize(child,newheight);
+            });
+        });
+    };
+    
+    /**
+     * Creates the basic table layout
+     */  
+    var create_table = function(root,rows,cols)
+    {
+        // wrapper for most things
+         var home = $("<div class=\"container\"></div>").appendTo(root);
+
+        // Set up the row indexes (1,2,3,4,5 ...)
+        var ind = $("<div id=\"box\" /><div class=\"rows\"><table><tr><td class=\"first\"><div /></td></tr></table></div>").appendTo(home);
+
+        for(var z = 1; z < rows+1; z++)
+            ind.find("table").append("<tr><td><div>"+z+"</div></td></tr>");
+
+            
+        var cont = $("<div class=\"ssinner\" />").appendTo(home);
+        var tr = $("<tr />").appendTo($("<table class=\"columns\" />").appendTo(cont));
+            
+        // Setup Table Headers (a,b,c,d,e ....)
+        for(var n = 1; n < cols+1; n++) 
+            tr.append("<th>"+ $.fn.to_b26(n)+"</th>");
+    
+        var table = $("<table class=\"tabledata\" />").appendTo(
+            $("<div class=\"datainner\" />").appendTo(
+            $("<div class=\"datacontainer\" />").appendTo(cont)));                       
+    
+        // Rest of table data
+        for(var z = 1; z < rows+1; z++)
+        {
+            var row = $("<tr/>").appendTo(table);
+                
+            for(var n = 0; n < cols; n++)
+                row.append("<td><div class='"+($.fn.to_b26(n)+z)
+                    + " cell'></div></td>");
         }
+    }
     
-        /**
-        * returns true if the mouse button clicked was a left button
-        * only tested in ie
-        */  
-        var leftclick = function(button) 
-        {
-            return ($.browser.msie && button == 1) || button == 0;
-        };        
+    /**
+     * returns true if the mouse button clicked was a left button
+     * only tested in ie
+     */  
+    var leftclick = function(button) 
+    {
+        return ($.browser.msie && button == 1) || button == 0;
+    };        
     
+    /**
+     * This contains most of the functionality behind the range selection
+     * and formula drag 
+     */               
+    var Selection = function(root) 
+    {
         /**
-        * This contains most of the functionality behind the range selection
-        * and formula drag 
-        */               
-        var Selection = function(root) 
+         * Fake constructor
+         */   
+        this.construct = function(root)
         {
-            /**
-            * Fake constructor
-            */   
-            this.construct = function(root)
+            var $this = this;
+    
+            this.state = $.fn.states.INIT;
+            this.root  = root;
+            this.tbl   = root.find(".datainner table");
+            this.drag  = new Object();         
+    
+            // Store the current selection / borders etc
+            // Quicker deletion
+            this.drag.bottom = this.drag.top = 
+                this.drag.right  = this.drag.left =
+                this.cols_highlight = this.rows_highlight = 
+                this.range = $();
+    
+            // Little blue formula drag handler
+            this.drag.div = $("<div id=\"drag\" />").appendTo(this.tbl);
+            this.drag.div.bind("mouseover",function(e)
             {
-                var $this = this;
+                e.preventDefault();
+                return false;
+            });
+                
+            this.drag.div.bind("mousedown",function() 
+            {
+                $this.state = $.fn.states.DRAG;
+                $this.blurcell();
+                return false;
+            });
     
-                this.state = $.fn.states.INIT;
-                this.root  = root;
-                this.tbl   = root.find(".datainner table");
-                this.drag  = new Object();         
+            this.add_events(this);
+        }; 
     
-                // Store the current selection / borders etc
-                // Quicker deletion
-                this.drag.bottom = this.drag.top = 
-                    this.drag.right  = this.drag.left =
-                    this.cols_highlight = this.rows_highlight = 
-                    this.range = $();
-    
-                // Little blue formula drag handler
-                this.drag.div = $("<div id=\"drag\" />").appendTo(this.tbl)
-                this.drag.div.bind("mousedown",function() 
+        /**
+         * Mouse Events that track user selections
+         */               
+        this.add_events = function($this)
+        {
+            this.tbl.bind('mousedown',function(e) 
+            {
+                if( leftclick(e.button) && !e.shiftKey && $(e.target).is("div:not(#drag)"))
                 {
-                    $this.state = $.fn.states.DRAG;
-                    $this.blurcell();
+                    $this.start($.fn.addr.CELL,e.target);
                     return false;
-                });
-    
-                this.add_events(this);
-            }; 
-    
-            /**
-            * Mouse Events that track user selections
-            */               
-            this.add_events = function($this)
-            {
-                this.tbl.bind('mousedown',function(e) 
+                }
+                return true;
+        
+            }).bind('mouseover',function(e) 
+            { 
+                if($(e.target).is("div:not(#drag)"))
                 {
-                    if( leftclick(e.button) && !e.shiftKey && $(e.target).is("div"))
-                    {
-                        $this.start($.fn.addr.CELL,e.target);
-                        return false;
-                    }
-                    return true;
+                    $this.hover(e.target);
+                    return false;
+                }
+                return true;
         
-                }).bind('mouseover',function(e) 
-                { 
-                    if($(e.target).is("div"))
+            }).bind('mouseup',function(e) 
+            { 
+                if( leftclick(e.button) && $(e.target).is("div:not(#drag)"))
+                {
+                    if(e.shiftKey)
                     {
-                        $this.hover(e.target);
-                        return false;
-                    }
-                    return true;
-        
-                }).bind('mouseup',function(e) 
-                { 
-                    if( leftclick(e.button) && $(e.target).is("div"))
-                    {
-                        if(e.shiftKey)
-                        {
-                            $this.state = $.fn.states.SELECT;
+                         $this.state = $.fn.states.SELECT;
                             $this.hover(e.target);
                             $this.end(e.target);
                             set_name(root,$this);
@@ -593,341 +600,411 @@
                         }
                     }
                     return true;
-                });
+            });
                     
-                this.root.find("div.datacontainer").scroll(function (e) 
-                {
-                    $this.hide_selection();
-                    $this.show_selection();
-                });
-            };
-    
-            /**
-            * Called on mousedown, clear + hide all the previous selections
-            */               
-            this.start = function(addr,cell)
+            this.root.find("div.datacontainer").scroll(function (e) 
             {
-                if(this.state != $.fn.states.INIT)
-                    this.blurcell();
-    
-                this.hide_selection();
-                this.hide_drag();
-    
-                this.state = $.fn.states.SELECT;
-                var i = $.fn.cell_index(cell);
-                this.x = this.initx = this.startx = this.endx = i[0];
-                this.y = this.inity = this.starty = this.endy = i[1];
-                this.hover(cell);
-            };
-    
-            /**
-            * Set actively selected cell
-            */        
-            this.set = function(cell)
-            {
-                var index = $.fn.cell_index(cell);
-                this.x = index[0];
-                this.y = index[1];            
-    
-            };
-    
-            /**
-            * Blur currently selected editable cell
-            */        
-            this.blurcell = function(cell)
-            {
-                $($.fn.getcell(this.tbl,this.x,this.y)).children("div").children("textarea").blur();
-            };
-    
-            /**
-            * Moused up
-            */
-            this.end = function(cell)
-            {
-                if(this.state != $.fn.states.DRAG)
-                {
-                    this.set(cell);
-                    select_cell(root,this);
-                }
-        
-                this.state = $.fn.states.VIEW;
-            };
-    
-            /**
-            * Call when a new cell is being added, either by dragging over
-            * with mouse or keyboard shortcuts
-            */
-            this.hover = function(cell)
-            {
-                // Typical range selection, drag or shift select
-                if(this.state == $.fn.states.SELECT)
-                {
-                    this.newrefs = function(x,y,x1,y1,x2,y2,x3,y3)
-                    {
-                        if(x >= x3 && y >= y3) return [x3,y3,x,y];
-                        if(x >= x3 && y <= y3) return [x3,y,x,y3];
-                        if(x <= x3 && y >= y3) return [x,y3,x3,y];
-                        if(x <= x3 && y <= y3) return [x,y,x3,y3];
-                        return false;
-                    };
-    
-                    var i = $.fn.cell_index(cell);
-                    var refs = this.newrefs( i[0], i[1],
-                        this.startx,this.starty,
-                        this.endx,this.endy,
-                        this.initx,this.inity);
-    
-                    if(refs != null)
-                    {
-                        this.hide_selection();  
-    
-                        this.x = i[0];
-                        this.y = i[1];
-                        this.startx = refs[0];
-                        this.starty = refs[1];
-                        this.endx = refs[2];
-                        this.endy = refs[3];
-
-                        var c =  root.children("div.container");
-
-                        this.range = this.tbl.find("tr:lt("+(this.endy+1)+"):gt("+(this.starty-1) + ")").find("td:lt("+(this.endx+1)+"):gt("+(this.startx-1)+")").children("div");
-                        this.rows_highlight = c.children("div.rows").children("table").find("tr td:lt("+(this.endy+2)+"):gt("+(this.starty)+")");
-                        this.cols_highlight = c.children("div.ssinner").children("table").find("tr th:lt("+(this.endx+1)+"):gt("+(this.startx-1)+")");
-
-                        this.show_selection();
-                    }
-                }
-    
-                // Formula drag
-                else if(this.state == $.fn.states.DRAG)
-                {
-                    var i = $.fn.cell_index(cell);
-                    
-                    // Make sure the new selection is outside current
-                    // range
-                    if(    i[0] >= this.startx && i[0] <= this.endx 
-                        && i[1] >= this.starty && i[1] <= this.endy)
-                    {
-                        return false;
-                    }
-    
-                    this.newrefs = function(x,y,x1,y1,x2,y2,x3,y3)
-                    {
-                        if(x >= x1 && x <= x2 && y > y3) return [x1,y2+1,x2,y];
-                        if(x >= x1 && x <= x2 && y < y3) return [x1,y,x2,y1-1];
-                        if(y >= y1 && y <= y2 && x < x3) return [x,y1,x1-1,y2];
-                        if(y >= y1 && y <= y2 && x > x3) return [x2+1,y1,x,y2];
-                        return null;
-                    };
-    
-                    var refs = this.newrefs(i[0],i[1],
-                        this.startx,this.starty,
-                        this.endx,this.endy,
-                        this.initx,this.inity);
-    
-                    if(refs != null)
-                    {
-                        this.hide_drag();
-    
-                        this.drag.startx = refs[0];
-                        this.drag.starty = refs[1]; 
-                        this.drag.endx = refs[2];
-                        this.drag.endy = refs[3]
-    
-                        this.drag.right = this.tbl.find("tr:lt("+(this.drag.endy+1)+"):gt("+(this.drag.starty-1)+")").find("td:eq("+(this.drag.endx)+")").children("div");   
-                        this.drag.left = this.tbl.find("tr:lt("+(this.drag.endy+1)+"):gt("+(this.drag.starty-1)+")").find("td:eq("+(this.drag.startx)+")").children("div");          
-                        this.drag.top = this.tbl.find("tr:eq("+(this.drag.starty)+")").find("td:lt("+(this.drag.endx+1)+"):gt("+(this.drag.startx-1)+")").children("div");
-                        this.drag.bottom = this.tbl.find("tr:eq("+(this.drag.endy)+")").find("td:lt("+(this.drag.endx+1)+"):gt("+(this.drag.startx-1)+")").children("div");
-    
-                        this.show_drag();
-                    }
-                }
-                return false;
-            };
-    
-            /**
-            * Adds the background to selected items, positions the drag handle
-            * and highlights the row / column index highlights
-            */
-            this.show_selection = function()
-            {
-                this.rows_highlight.addClass("highlight");
-                this.cols_highlight.addClass("highlight");
-                this.range.addClass("selected");
-                    
-                if(this.state != $.fn.states.INIT)
-                {
-                    var c = $($.fn.getcell(this.tbl,this.endx,this.endy));
-                    var off = c.offset();
-
-                    $($.fn.getcell(this.tbl,this.x,this.y)).addClass("current");
-  
-                    // Hide of displayed above the table
-                    if(off.top+c.height() < this.tbl.parent().parent().offset().top)
-                        this.drag.div.css("display","none");
-                    
-                    else
-                    {
-                        this.drag.div.css("left",(off.left+c.width()-3)+"px");
-                        this.drag.div.css("top", (off.top+c.height())+"px");
-                        this.drag.div.css("display","block");
-                    }
-                }
-            };
-    
-            /**
-            * Hides above
-            */      
-            this.hide_selection = function()
-            {
-                this.rows_highlight.removeClass("highlight");
-                this.cols_highlight.removeClass("highlight");
-                this.range.removeClass("selected");           
-                this.drag.div.css("display","none");
-    
-                if(this.state != $.fn.states.INIT)
-                {
-                    $($.fn.getcell(this.tbl,this.x,this.y)).removeClass("current");
-                }            
-            };
-    
-            /**
-            * Adds the dashed borders around a drag 
-            * selection
-            */
-            this.show_drag = function()
-            {
-                this.drag.right.addClass("dragright");
-                this.drag.left.addClass("dragleft");
-                this.drag.top.addClass("dragtop");
-                this.drag.bottom.addClass("dragbottom");
-            };
-    
-            /**
-            * Hides above
-            */
-            this.hide_drag = function()
-            {
-                this.drag.right.removeClass("dragright");
-                this.drag.left.removeClass("dragleft");
-                this.drag.top.removeClass("dragtop");
-                this.drag.bottom.removeClass("dragbottom");
-            };
-    
-            // I do this to make sure all the functions
-            // are defined before they can be called
-            // when the object is created
-            this.construct(root);
+                $this.hide_selection();
+                $this.show_selection();
+            });
         };
-
+    
         /**
-        * Entry point
-        */   
-        return this.each(function() 
-        {               
-            var $this = $(this);
-            var range = $.fn.parse_cell(o.range.split(":")[1]);
-            
-            $this.addClass("ss_root");
-            
-            create_table($this,range[1],range[0]);
+         * Called on mousedown, clear + hide all the previous selections
+         */               
+        this.start = function(addr,cell)
+        {
+            if(this.state != $.fn.states.INIT)
+                this.blurcell();
+    
+            this.hide_selection();
+            this.hide_drag();
+    
+            this.state = $.fn.states.SELECT;
+            var i = $.fn.cell_index(cell);
+            this.x = this.initx = this.startx = this.endx = i[0];
+            this.y = this.inity = this.starty = this.endy = i[1];
+            this.hover(cell);
+        };
+    
+        /**
+         * Set actively selected cell
+         */        
+        this.set = function(cell)
+        {
+            var index = $.fn.cell_index(cell);
+            this.x = index[0];
+            this.y = index[1];            
+    
+        };
+    
+        /**
+        * Blur currently selected editable cell
+        */        
+        this.blurcell = function(cell)
+        {
+            cell_div(this.tbl,this.x,this.y).children("textarea").blur();
+        };
+    
+        /**
+        * Moused up
+        */
+        this.end = function(cell)
+        {
+            if(this.state != $.fn.states.DRAG)
+            {
+                this.set(cell);
+                select_cell(root,this);
+            }
+        
+            this.state = $.fn.states.VIEW;
+        };
+    
+        /**
+         * Call when a new cell is being added, either by dragging over
+         * with mouse or keyboard shortcuts
+         */
+        this.hover = function(cell)
+        {
+            // Typical range selection, drag or shift select
+            if(this.state == $.fn.states.SELECT)
+            {
+                this.newrefs = function(x,y,x1,y1,x2,y2,x3,y3)
+                {
+                    if(x >= x3 && y >= y3) return [x3,y3,x,y];
+                    if(x >= x3 && y <= y3) return [x3,y,x,y3];
+                    if(x <= x3 && y >= y3) return [x,y3,x3,y];
+                    if(x <= x3 && y <= y3) return [x,y,x3,y3];
+                    return false;
+                };
+    
+                var i = $.fn.cell_index(cell);
+                var refs = this.newrefs( i[0], i[1],
+                    this.startx,this.starty,
+                    this.endx,this.endy,
+                    this.initx,this.inity);
+    
+                if(refs != null)
+                {
+                    this.hide_selection();  
+    
+                    this.x = i[0];
+                    this.y = i[1];
+                    this.startx = refs[0];
+                    this.starty = refs[1];
+                    this.endx = refs[2];
+                    this.endy = refs[3];
 
-            var $sel = new Selection($this);
+                    var c =  root.children("div.container");
 
-            write_formula_bar($this,$sel);
-            write_button_menu($this,$sel,$.fn.toolbar);
+                    this.range = this.tbl.find("tr:lt("+(this.endy+1)+"):gt("+(this.starty-1) + ")").find("td:lt("+(this.endx+1)+"):gt("+(this.startx-1)+")").children("div");
+                    this.rows_highlight = c.children("div.rows").children("table").find("tr td:lt("+(this.endy+2)+"):gt("+(this.starty)+")");
+                    this.cols_highlight = c.children("div.ssinner").children("table").find("tr th:lt("+(this.endx+1)+"):gt("+(this.startx-1)+")");
 
-            resize_columns($this,$sel);
-            resize_rows($this,$sel);
-            set_display_values($this,range[0],o.fmargin);
-        });
+                    this.show_selection();
+                }
+            }
+    
+            // Formula drag
+            else if(this.state == $.fn.states.DRAG)
+            {
+                var i = $.fn.cell_index(cell);
+                    
+                // Make sure the new selection is outside current
+                // range
+                if(    i[0] >= this.startx && i[0] <= this.endx 
+                    && i[1] >= this.starty && i[1] <= this.endy)
+                {
+                    return false;
+                }
+    
+                this.newrefs = function(x,y,x1,y1,x2,y2,x3,y3)
+                {
+                    if(x >= x1 && x <= x2 && y > y3) return [x1,y2+1,x2,y];
+                    if(x >= x1 && x <= x2 && y < y3) return [x1,y,x2,y1-1];
+                    if(y >= y1 && y <= y2 && x < x3) return [x,y1,x1-1,y2];
+                    if(y >= y1 && y <= y2 && x > x3) return [x2+1,y1,x,y2];
+                    return null;
+                };
+    
+                var refs = this.newrefs(i[0],i[1],
+                    this.startx,this.starty,
+                    this.endx,this.endy,
+                    this.initx,this.inity);
+    
+                if(refs != null)
+                {
+                    this.hide_drag();
+    
+                    this.drag.startx = refs[0];
+                    this.drag.starty = refs[1]; 
+                    this.drag.endx = refs[2];
+                    this.drag.endy = refs[3]
+    
+                    this.drag.right = this.tbl.find("tr:lt("+(this.drag.endy+1)+"):gt("+(this.drag.starty-1)+")").find("td:eq("+(this.drag.endx)+")").children("div");   
+                    this.drag.left = this.tbl.find("tr:lt("+(this.drag.endy+1)+"):gt("+(this.drag.starty-1)+")").find("td:eq("+(this.drag.startx)+")").children("div");          
+                    this.drag.top = this.tbl.find("tr:eq("+(this.drag.starty)+")").find("td:lt("+(this.drag.endx+1)+"):gt("+(this.drag.startx-1)+")").children("div");
+                    this.drag.bottom = this.tbl.find("tr:eq("+(this.drag.endy)+")").find("td:lt("+(this.drag.endx+1)+"):gt("+(this.drag.startx-1)+")").children("div");
+    
+                    this.show_drag();
+                }
+            }
+            return false;
+        };
+    
+        /**
+         * Adds the background to selected items, positions the drag handle
+         * and highlights the row / column index highlights
+         */
+        this.show_selection = function()
+        {
+            this.rows_highlight.addClass("highlight");
+            this.cols_highlight.addClass("highlight");
+            this.range.addClass("selected");
+                    
+            if(this.state != $.fn.states.INIT)
+            {
+                var c = cell(this.tbl,this.endx,this.endy);
+                var off = c.offset();
+
+                cell(this.tbl,this.x,this.y).addClass("current");
+  
+                // Hide of displayed above the table
+                if(off.top+c.height() < this.tbl.parent().parent().offset().top)
+                    this.drag.div.css("display","none");
+                    
+                else
+                {
+                    this.drag.div.css("left",(off.left+c.width()-3)+"px");
+                    this.drag.div.css("top", (off.top+c.height())+"px");
+                    this.drag.div.css("display","block");
+                }
+            }
+        };
+    
+        /**
+         * Hides above
+         */      
+        this.hide_selection = function()
+        {
+            this.rows_highlight.removeClass("highlight");
+            this.cols_highlight.removeClass("highlight");
+            this.range.removeClass("selected");           
+            this.drag.div.css("display","none");
+    
+            if(this.state != $.fn.states.INIT)
+            {
+                cell(this.tbl,this.x,this.y).removeClass("current");
+            }            
+        };
+    
+        /**
+         * Adds the dashed borders around a drag 
+         * selection
+         */
+        this.show_drag = function()
+        {
+            this.drag.right.addClass("dragright");
+            this.drag.left.addClass("dragleft");
+            this.drag.top.addClass("dragtop");
+            this.drag.bottom.addClass("dragbottom");
+        };
+    
+        /**
+         * Hides above
+         */
+        this.hide_drag = function()
+        {
+            this.drag.right.removeClass("dragright");
+            this.drag.left.removeClass("dragleft");
+            this.drag.top.removeClass("dragtop");
+            this.drag.bottom.removeClass("dragbottom");
+        };
+    
+        // I do this to make sure all the functions
+        // are defined before they can be called
+        // when the object is created
+        this.construct(root);
     };
+    
+    var addName = function(tb,names,range,item)
+    {
+        names[item] = range;
+        tb.textbox("add",item);
+        
+        if(opts.setName == "function")
+            opts.setName(range,item);
+    }
     
    /**
-    * Returns the x/y coordinated of a cell from 
-    * within a table
+    * Set the height of a row
     */  
-   $.fn.cell_index = function(cell)
+   var set_height = function(root,row,height)
    {
-        return [cell.parentNode.cellIndex,
-            cell.parentNode.parentNode.rowIndex];
-   }
-    
-    /**
-     * Return a cell table given an x/y index
-     */  
-    $.fn.getcell = function($this,x,y)
-    {
-        return $this[0].childNodes[0].childNodes[y].childNodes[x];
-    };
+       var ind  = root.find(".rows tr:nth-child("+(parseInt(row)+1)+") td");
+       var td = root.find(".tabledata tr:nth-child("+(row)+") td");
+       
+       td.height(height+"px");
+       ind.height(height+"px");
+   
+       td.find("div,textarea").height((parseInt(height)+3)+"px");
+       ind.find("div").height(height+"px");
+   };
     
     /**
      * Set the width of a column
      */  
-    $.fn.set_width = function(root,col,width)
+    var set_width = function(root,col,width)
     {
-    
         var newwidth = parseInt(width);
         var column = $.fn.from_b26(col);
-        
+            
         var x = root.children("div.container").children("div.ssinner");
         var y = x.children("div.datacontainer").children("div.datainner");
         var td = y.find("table.tabledata").find("tr td:nth-child("+column+")");
-        
+            
         root.find(".columns tr th:nth-child("+column+")").width(newwidth);
-
+    
         var total = y.width() + (newwidth - td.width());
         y.width(total);
         x.width(total);
-        
+            
         td.width(newwidth);
         td.find("textarea").width(newwidth-4);
     };
-
-    /**
-     * Set the height of a row
-     */  
-    $.fn.set_height = function(root,row,height)
-    {
-        var ind  = root.find(".rows tr:nth-child("+(parseInt(row)+1)+") td");
-        var td = root.find(".tabledata tr:nth-child("+(row)+") td");
     
-        td.height(height+"px");
-        ind.height(height+"px");
-
-        td.find("div,textarea").height((parseInt(height)+3)+"px");
-        ind.find("div").height(height+"px");
-    };
+    var cell = function(root,x,y)
+    {
+        return $(root[0].childNodes[0].childNodes[y].childNodes[x]);    
+    }
+    
+    var cell_div = function(root,x,y)
+    {
+        return cell(root,x,y).children("div");
+    }
 
     /**
-     * Parses a cell reference (a1) into its x/y coordinates
-     */
-    $.fn.parse_cell = function(cell) 
+     * Entry point
+     */   
+    return this.each(function() 
     {
-        var x = $.fn.from_b26((cell.match(/[a-z]+/i)[0]).toLowerCase());
-        var y = parseInt(cell.match(/[0-9]+/)[0]);
+        var data = $.data(this,"spreadsheet");
+        
+        if(typeof data == "undefined")
+        {
+            $.data(this,"spreadsheet",{});
             
-        return [x,y];
-    };
+            var $this = $(this);
+            var range = $.fn.parse_cell(opts.range.split(":")[1]);
+            var names = [];
+                
+            $this.addClass("ss_root");
+                
+            create_table($this,range[1],range[0]);
+                
+            var $sel = new Selection($this);
+                
+            write_formula_bar($this,$sel);
+            write_button_menu($this,$sel,$.fn.toolbar);
+                
+            $("#name").textbox(
+            {                
+                onChange : function(item)
+                {
+                    if($sel.state != $.fn.states.INIT)
+                    {
+                        var range = $.fn.to_b26($sel.startx+1) + "" + ($sel.starty+1)
+                            + ":"+$.fn.to_b26($sel.endx+1)+""+($sel.endy+1);
+                            
+                        addName($("#name"),names,range,item);
+                    }   
+                },
+                onSelect : function(item)
+                {
+                    var start = $.fn.parse_cell((names[item]).split(":")[0]);
+                    var end =   $.fn.parse_cell((names[item]).split(":")[1]);
+                        
+                    var s = cell_div($sel.tbl,(start[0]-1),(start[1]-1))[0];
+                    $sel.start($.fn.addr.CELL,s);
+                        
+                    var e = cell_div($sel.tbl,(end[0]-1),(end[1]-1))[0];
+                    $sel.hover(e);
+                    $sel.end(e);
+                }
+            });
+                
+            resize_columns($this,$sel);
+            resize_rows($this,$sel);
+            set_display_values($this,range[0],opts.fmargin);
+            
+            $.data(this,"spreadsheet",{names:names});
+        }
+        // The plugin has already been created on this object
+        // must be an external call to modify
+        else if(args[0] == "addName")
+            addName($("#name"),data.names,args[1],args[2]);
+            
+        else if(args[0] == "setWidth")
+            set_width($(this),args[1],args[2]);
+            
+        else if(args[0] == "setHeight")
+            set_height($(this),args[1],args[2]);
+        
+        else if(args[0] == "setValue")
+        {
+            var ref = $.fn.parse_cell(args[1]);
+            var tbl = $(this).find(".tabledata");
+			cell_div(tbl,ref[0]-1,ref[1]-1).text(args[2]);
+        }
+        
+        else if(args[0] == "setStyle")
+        {
+            var ref = $.fn.parse_cell(args[1]);
+            var tbl = $(this).find(".tabledata");
+			cell_div(tbl,ref[0]-1,ref[1]-1).css(args[2],args[3]);
+        }
+    });
+};
+    
+/**
+ * Returns the x/y coordinated of a cell from 
+ * within a table
+ */  
+$.fn.cell_index = function(cell)
+{
+    return [cell.parentNode.cellIndex,
+        cell.parentNode.parentNode.rowIndex];
+}
 
-    /**
-     * turns an integer into a base 26 string
-     * 1,2,3,4,5,,,,26,27,28
-     * a,b,c,d,e,,,,z,aa,ab
-     * TODO : fix
-     */  
-    $.fn.to_b26 = function(cell) 
-    {
-        return String.fromCharCode(cell+96);
-    };
+/**
+ * Parses a cell reference (a1) into its x/y coordinates
+ */
+$.fn.parse_cell = function(cell) 
+{
+    var x = $.fn.from_b26((cell.match(/[a-z]+/i)[0]).toLowerCase());
+    var y = parseInt(cell.match(/[0-9]+/)[0]);
+   
+    return [x,y];
+};
 
-    /**
-     * turns a base 26 string into an interger
-     * TODO : fix
-     */  
-    $.fn.from_b26 = function(cell) 
-    {
-        return cell.charCodeAt(0)-96;
-    };
+/**
+ * turns an integer into a base 26 string
+ * 1,2,3,4,5,,,,26,27,28
+ * a,b,c,d,e,,,,z,aa,ab
+ * TODO : fix
+ */  
+$.fn.to_b26 = function(cell) 
+{
+    return String.fromCharCode(cell+96);
+};
+
+/**
+ * turns a base 26 string into an interger
+ * TODO : fix
+ */  
+$.fn.from_b26 = function(cell) 
+{
+    return cell.charCodeAt(0)-96;
+};
 
 })(jQuery);

@@ -15,6 +15,7 @@
 	<script type="text/javascript" src="/js/jquery.bgiframe.min.js"></script>
 	<script type="text/javascript" src="/js/jquery.clickmenu.js"></script>
 	<script type="text/javascript" src="/js/jquery.spreadsheet.js"></script>
+	<script type="text/javascript" src="/js/jquery.textbox.js"></script>
 	<script type="text/javascript" src="/js/swfobject.js"></script>
 	<script type="text/javascript" src="/js/socket.js"></script>
 
@@ -23,6 +24,7 @@
 		@import "/css/modal.css";
 		@import "/css/clickmenu.css";
 		@import "/css/jquery.spreadsheet.css";
+        @import "/css/jquery.textbox.css";
 	</style>
 
 	<script type="text/javascript">
@@ -33,27 +35,13 @@
         var handle_attr = function(type,ref,name,value)
         {
             if( jQuery.inArray(name, css_attrs) != -1 )
-            {
-                var ref = $.fn.parse_cell(ref);
-                $($.fn.getcell($(".tabledata"),ref[0]-1,ref[1]-1)
-                    ).children("div").css(name,value);  
-            }
-            if(name == "formula")
-                formulae[ref] = value;
-                
-            else if(name == "height")
-                $.fn.set_height($("#hn"),ref,value);
-
-            else if(name == "width")
-                $.fn.set_width($("#hn"),ref,value);
-
-            else if(name == "value")
-            {
-             	var ref = $.fn.parse_cell(ref);
-				$($.fn.getcell($(".tabledata"),ref[0]-1,ref[1]-1)
-                    ).children("div").text(value);       
-            }
+                $("#hn").spreadsheet("setStyle",ref,name,value);
             
+            else if(name == "formula") formulae[ref] = value;  
+            else if(name == "height")  $("#hn").spreadsheet("setHeight",ref,value);
+            else if(name == "width")   $("#hn").spreadsheet("setWidth",ref,value);
+            else if(name == "name")    $("#hn").spreadsheet("addName",ref,value);
+            else if(name == "value")   $("#hn").spreadsheet("setValue",ref,value);    
         }
     
 		$(function()
@@ -107,9 +95,9 @@
             
 			var defaults =
             {
-                fullscreen: true,
-                range   : range,
-                fmargin : 24,
+                fullscreen : true,
+                range      : range,
+                fmargin    : 24,
                 cellChange  : function(x,y,val)
                 {
                     $.post(url+$.fn.to_b26(x+1)+y+"?attr",
@@ -135,6 +123,11 @@
                     var ref = $.fn.cell_index(el);
                     $.post(url+$.fn.to_b26((ref[0]+1))+(ref[1]+1)+"?attr",
                         "<create><"+attr+">"+val+"</"+attr+"></create>",null,"xml");
+                },
+                setName : function(range,name)
+                {
+                    $.post(url+range+"?attr",
+                        "<create><name>"+name+"</name></create>",null,"xml");
                 }
             };
             
