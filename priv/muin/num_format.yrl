@@ -26,7 +26,6 @@ colour
 %% conditions
 condition
 
-
 %% format characters
 dollar
 minus
@@ -142,6 +141,11 @@ Col -> colour : '$1'.
 
 Erlang code.
 
+-define(SPACE,32).
+-define(LESSTHAN,60).
+-define(EQUALS,61).
+-define(GREATERTHAN,62).
+
 dump(N,Content) ->
   io:format("in Dump for ~p Content is ~p~n",[N,Content]),
   Content.
@@ -169,6 +173,11 @@ strip({string,A}) ->
         A1 = string:strip(A,both,$"),%" syntax highlighting fix
         {string2,A1}.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                           %%
+%% These functions all pertain to make_src                                   %%
+%%                                                                           %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 make_src(A) when is_list(A) -> make_src2(lists:flatten(A));
 make_src(A)                 -> make_src2([A]).
   
@@ -186,38 +195,57 @@ gen_src([H1|T1],[],Acc)      -> gen_src(T1,[],[make_default(H1)|Acc]);
 gen_src([H1|T1],[H2|T2],Acc) -> gen_src(T1,T2,[make_default(H1,H2)|Acc]).
 
 gen_src2(Clauses)->
+  io:format("in format:get_src2 Clauses are ~p~n",[Clauses]),
   Clause1=make_clause(lists:nth(1,Clauses)),
   Clause2=make_clause(lists:nth(2,Clauses)),
-  Clause3=make_clause(lists:nth(3,Clauses)),  
+  Clause3=strip_semi(make_clause(lists:nth(3,Clauses))),  
   Clause4 = case length(Clauses) of
     3 -> default_clause();
-    4 -> strip_semi(make_clause(lists:nth(4,Clauses)))
+    4 -> drop_cond(lists:nth(4,Clauses))
   end,
-  Src=lists:flatten("fun(X) -> if "++Clause1++" "++Clause2++" "++Clause3++" "
-    ++Clause4++" end end."),
-  Src.
+  io:format("in format:get_src2~n-1: ~p~n-2: ~p~n-3: ~p~n-4: ~p~n",
+    [Clause1,Clause2,Clause3,Clause4]),
+  Src="fun(X) -> "++
+      "   Return=try tconv:to_i(X)"++
+      "       catch"++
+      "         error:_ ->"++
+      "           try tconv:to_f(X)"++
+      "           catch"++
+      "               error:_ ->"++
+      "                    {error, value}"++
+      "           end"++
+      "       end,"++
+      "    case Return of"++
+      "      {error,_} -> "++
+                  Clause4++
+      "      _ ->"++
+      "          if "++
+                     Clause1++" "++
+                     Clause2++" "++
+                     Clause3++" "++
+      "          end"++
+      "      end"++
+      "   end.",
+  lists:flatten(Src).
+
+drop_cond([{condition,Cond},{colour,Col}|Rest]) -> [{colour,Col}|Rest].
 
 strip_semi(String)->
-  string:strip(String,right,10). % 10 = Carriage Return
+  string:strip(String,right,$;).
 
 make_clause([{condition,Cond},{colour,Col}|Rest])->
   Bits=io_lib:fwrite("~p",[Rest]),
   Bits2=lists:flatten(Bits),
   "X"++tart_up(Cond)++" -> {"++atom_to_list(Col)++",format:format(X,"++Bits2++")};".
   
-default_clause() -> "true -> {black,X}".
+default_clause() -> "{black,X};".
 
 %% tart_up just makes the condition clauses well behaved
-%%
-%% [32] is ' '
-%% [60] is '<'
-%% [61] is '='
-%% [62] is '>'
-tart_up(text)         -> "= text";
-tart_up([62,61|Rest]) -> [32,62,61,32|Rest];
-tart_up([61,60|Rest]) -> [32,61,60,32|Rest];
-tart_up([61|Rest])    -> [32,61,61,32|Rest]; % switch '=' to '=='
-tart_up([Op|Rest])    -> [32,Op,32|Rest].
+tart_up(text)                        -> "= text";
+tart_up([?GREATERTHAN,?EQUALS|Rest]) -> [?SPACE,?GREATERTHAN,?EQUALS,?SPACE|Rest];
+tart_up([?EQUALS,?LESSTHAN|Rest])    -> [?SPACE,?EQUALS,?LESSTHAN,?SPACE|Rest];
+tart_up([?EQUALS|Rest])              -> [?SPACE,?EQUALS,?EQUALS,?SPACE|Rest]; % switch '=' to '=='
+tart_up([Op|Rest])                   -> [?SPACE,Op,?SPACE|Rest].
 
 swap_cond(Cond,[{condition,_OldCond}|Rest]) -> [{condition,Cond}|Rest].
 

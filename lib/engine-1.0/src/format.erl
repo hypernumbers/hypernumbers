@@ -3,29 +3,37 @@
 %%% @author Gordon Guthrie <gordon@hypernumbers.com>
 -module(format).
 
+%% Standard Interfaces
 -export([
           compile_format/1,
-          run_format/2,
+          run_format/2
+          ]).
+
+%% Run-time Interface
+%% The module format is called from within generated code only
+%% It is *NOT* an interface that should be programmed against
+-export([
           format/2
         ]).
 
-%% Debug export
--export([get_pad/2]).
 
 -define(PLUS,43).
 -define(MINUS,45).
 
-
-%%% @doc takes a value and a format and returns the tagged value as per 
-%%%      the format
-%%% @spec format(Value ,Format) -> {tag,FormattedValue} | {error, InvMsg}
-%%% @type Value = [string|number|error|boolean|date]
+%%% @doc takes a format and returns the compiled code that will format input to that format
+%%% @spec format(Format) -> {erlang,ErlangFun} | {error, InvMsg}
+%%% @type Format = string
 %%% @type InvMsg = string
 compile_format(Format)->
     {ok,Tokens,_}=num_format_lexer:string(Format),
     {ok,Output}=num_format_parser:parse(Tokens),
     {erlang,Output}.
-    
+
+%%% @doc takes a value and the src code for a format and returns the
+%%% value formatted by the source code
+%%% @spec format(Value,Src) -> string
+%%% @type Format = string
+%%% @type Src = string
 run_format(X,Src)->
   io:format("in format:run_format Src is ~p~n",[Src]),
   {ok,ErlTokens,_}=erl_scan:string(Src),
@@ -33,6 +41,7 @@ run_format(X,Src)->
   {value,Fun,_}=erl_eval:exprs(ErlAbsForm,[]),
   Fun(X).
 
+%%% @doc Run-time interface not an API - this function should *NOT* be programmed against
 format(X,Format)->
   format(X,Format,[]).
   
