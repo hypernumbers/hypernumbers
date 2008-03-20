@@ -141,10 +141,7 @@ Col -> colour : '$1'.
 
 Erlang code.
 
--define(SPACE,32).
--define(LESSTHAN,60).
--define(EQUALS,61).
--define(GREATERTHAN,62).
+-include("ascii.hrl").
 
 dump(N,Content) ->
   io:format("in Dump for ~p Content is ~p~n",[N,Content]),
@@ -241,11 +238,12 @@ make_clause([{condition,Cond},{colour,Col}|Rest])->
 default_clause() -> "{black,X};".
 
 %% tart_up just makes the condition clauses well behaved
-tart_up(text)                        -> "= text";
-tart_up([?GREATERTHAN,?EQUALS|Rest]) -> [?SPACE,?GREATERTHAN,?EQUALS,?SPACE|Rest];
-tart_up([?EQUALS,?LESSTHAN|Rest])    -> [?SPACE,?EQUALS,?LESSTHAN,?SPACE|Rest];
-tart_up([?EQUALS|Rest])              -> [?SPACE,?EQUALS,?EQUALS,?SPACE|Rest]; % switch '=' to '=='
-tart_up([Op|Rest])                   -> [?SPACE,Op,?SPACE|Rest].
+tart_up(text)                  -> "= text";
+tart_up([?ASC_GT,?ASC_EQ|Rest])->[?ASC_SPACE,?ASC_GT,?ASC_EQ,?ASC_SPACE|Rest];
+tart_up([?ASC_EQ,?ASC_LT|Rest])->[?ASC_SPACE,?ASC_EQ,?ASC_LT,?ASC_SPACE|Rest];
+%% switch '=' to '=='
+tart_up([?ASC_EQ|Rest])        ->[?ASC_SPACE,?ASC_EQ,?ASC_EQ,?ASC_SPACE|Rest];
+tart_up([Op|Rest])             ->[?ASC_SPACE,Op,?ASC_SPACE|Rest].
 
 swap_cond(Cond,[{condition,_OldCond}|Rest]) -> [{condition,Cond}|Rest].
 

@@ -60,6 +60,9 @@
 -define(VALUE1m,-33330000000000000000000000000000000000000000000).
 -define(OUTPUT1m,{black,"-33330000000000000000000000000000000000000000000"}).
 
+-define(VALUE1n,2.999).
+-define(OUTPUT1n,{black,"3"}).
+
 %% Test 2
 -define(FORMAT2,"0.00").
 -define(VALUE2a,33).
@@ -147,14 +150,100 @@
 -define(VALUE41a,33).
 -define(OUTPUT41a,{black,"0033"}).
 
--define(VALUE41b,33.00).
+-define(VALUE41b,33.3).
 -define(OUTPUT41b,{black,"0033"}).
 
 -define(VALUE41c,-33).
 -define(OUTPUT41c,{black,"-0033"}).
 
--define(VALUE41d,-33.00).
+-define(VALUE41d,-33.3).
 -define(OUTPUT41d,{black,"-0033"}).
+
+-define(FORMAT42,"??00").
+
+-define(VALUE42a,33).
+-define(OUTPUT42a,{black,"  33"}).
+
+-define(VALUE42b,33.3).
+-define(OUTPUT42b,{black,"  33"}).
+
+-define(VALUE42c,-33).
+-define(OUTPUT42c,{black,"-  33"}).
+
+-define(VALUE42d,-33.3).
+-define(OUTPUT42d,{black,"-  33"}).
+
+-define(FORMAT43,"##00").
+
+-define(VALUE43a,33).
+-define(OUTPUT43a,{black,"33"}).
+
+-define(VALUE43b,33.3).
+-define(OUTPUT43b,{black,"33"}).
+
+-define(VALUE43c,-33).
+-define(OUTPUT43c,{black,"-33"}).
+
+-define(VALUE43d,-33.3).
+-define(OUTPUT43d,{black,"-33"}).
+
+-define(FORMAT44,"0#?0").
+
+-define(VALUE44a,33).
+-define(OUTPUT44a,{black,"033"}).
+
+-define(VALUE44b,33.3).
+-define(OUTPUT44b,{black,"033"}).
+
+-define(VALUE44c,-33).
+-define(OUTPUT44c,{black,"-033"}).
+
+-define(VALUE44d,-33.3).
+-define(OUTPUT44d,{black,"-033"}).
+
+-define(FORMAT45,"0?#0").
+
+-define(VALUE45a,33).
+-define(OUTPUT45a,{black,"0 33"}).
+
+-define(VALUE45b,33.3).
+-define(OUTPUT45b,{black,"0 33"}).
+
+-define(VALUE45c,-33).
+-define(OUTPUT45c,{black,"-0 33"}).
+
+-define(VALUE45d,-33.3).
+-define(OUTPUT45d,{black,"-0 33"}).
+
+-define(FORMAT46,"0,000").
+
+-define(VALUE46a,3333).
+-define(OUTPUT46a,{black,"3,333"}).
+
+-define(VALUE46b,3333.33).
+-define(OUTPUT46b,{black,"3,333"}).
+
+-define(VALUE46c,-3333).
+-define(OUTPUT46c,{black,"-3,333"}).
+
+-define(VALUE46d,-3333.33).
+-define(OUTPUT46d,{black,"-3,333"}).
+
+-define(FORMAT47,"00,00").
+
+-define(VALUE47a,3333).
+-define(OUTPUT47a,{black,"3,333"}).
+
+-define(VALUE47b,3333.33).
+-define(OUTPUT47b,{black,"3,333"}).
+
+-define(VALUE47c,-3333).
+-define(OUTPUT47c,{black,"-3,333"}).
+
+-define(VALUE47d,-3333.33).
+-define(OUTPUT47d,{black,"-3,333"}).
+
+
 
 %% Test server callback functions
 %%------------------------------------------------------------------------------
@@ -230,6 +319,7 @@ all() ->
      num_parser_test1k,
      num_parser_test1l,
      num_parser_test1m,
+     num_parser_test1n,
      num_parser_test2a,
      num_parser_test2b,
      num_parser_test2c,
@@ -284,7 +374,31 @@ all() ->
      num_parser_test41a,
      num_parser_test41b,
      num_parser_test41c,
-     num_parser_test41d
+     num_parser_test41d,
+     num_parser_test42a,
+     num_parser_test42b,
+     num_parser_test42c,
+     num_parser_test42d,
+     num_parser_test43a,
+     num_parser_test43b,
+     num_parser_test43c,
+     num_parser_test43d,
+     num_parser_test44a,
+     num_parser_test44b,
+     num_parser_test44c,
+     num_parser_test44d,
+     num_parser_test45a,
+     num_parser_test45b,
+     num_parser_test45c,
+     num_parser_test45d,
+     num_parser_test46a,
+     num_parser_test46b,
+     num_parser_test46c,
+     num_parser_test46d,
+     num_parser_test47a,
+     num_parser_test47b,
+     num_parser_test47c,
+     num_parser_test47d
     ].
     
 %% Case executor
@@ -331,7 +445,7 @@ num_parser_test1f() ->
 num_parser_test1f(Config) when is_list(Config) -> 
   executor(?FORMAT1,?VALUE1f,?OUTPUT1f).
 
-num_parser_test1g() -> 
+num_parser_test1g() ->- 
     [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test1g(Config) when is_list(Config) -> 
@@ -372,6 +486,12 @@ num_parser_test1m() ->
 
 num_parser_test1m(Config) when is_list(Config) -> 
   executor(?FORMAT1,?VALUE1m,?OUTPUT1m).
+
+num_parser_test1n() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test1n(Config) when is_list(Config) -> 
+  executor(?FORMAT1,?VALUE1n,?OUTPUT1n).
 
 num_parser_test2a() -> 
     [{userdata,[{doc,"Describe the main purpose of test case"}]}].
@@ -699,4 +819,148 @@ num_parser_test41d() ->
 
 num_parser_test41d(Config) when is_list(Config) -> 
   executor(?FORMAT41,?VALUE41d,?OUTPUT41d).
+
+num_parser_test42a() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test42a(Config) when is_list(Config) -> 
+  executor(?FORMAT42,?VALUE42a,?OUTPUT42a).
+
+num_parser_test42b() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test42b(Config) when is_list(Config) -> 
+  executor(?FORMAT42,?VALUE42b,?OUTPUT42b).
+
+num_parser_test42c() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test42c(Config) when is_list(Config) -> 
+  executor(?FORMAT42,?VALUE42c,?OUTPUT42c).
+
+num_parser_test42d() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test42d(Config) when is_list(Config) -> 
+  executor(?FORMAT42,?VALUE42d,?OUTPUT42d).
+
+num_parser_test43a() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test43a(Config) when is_list(Config) -> 
+  executor(?FORMAT43,?VALUE43a,?OUTPUT43a).
+
+num_parser_test43b() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test43b(Config) when is_list(Config) -> 
+  executor(?FORMAT43,?VALUE43b,?OUTPUT43b).
+
+num_parser_test43c() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test43c(Config) when is_list(Config) -> 
+  executor(?FORMAT43,?VALUE43c,?OUTPUT43c).
+
+num_parser_test43d() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test43d(Config) when is_list(Config) -> 
+  executor(?FORMAT43,?VALUE43d,?OUTPUT43d).
+
+num_parser_test44a() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test44a(Config) when is_list(Config) -> 
+  executor(?FORMAT44,?VALUE44a,?OUTPUT44a).
+
+num_parser_test44b() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test44b(Config) when is_list(Config) -> 
+  executor(?FORMAT44,?VALUE44b,?OUTPUT44b).
+
+num_parser_test44c() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test44c(Config) when is_list(Config) -> 
+  executor(?FORMAT44,?VALUE44c,?OUTPUT44c).
+
+num_parser_test44d() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test44d(Config) when is_list(Config) -> 
+  executor(?FORMAT44,?VALUE44d,?OUTPUT44d).
+
+num_parser_test45a() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test45a(Config) when is_list(Config) -> 
+  executor(?FORMAT45,?VALUE45a,?OUTPUT45a).
+
+num_parser_test45b() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test45b(Config) when is_list(Config) -> 
+  executor(?FORMAT45,?VALUE45b,?OUTPUT45b).
+
+num_parser_test45c() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test45c(Config) when is_list(Config) -> 
+  executor(?FORMAT45,?VALUE45c,?OUTPUT45c).
+
+num_parser_test45d() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test45d(Config) when is_list(Config) -> 
+  executor(?FORMAT45,?VALUE45d,?OUTPUT45d).
+
+num_parser_test46a() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test46a(Config) when is_list(Config) -> 
+  executor(?FORMAT46,?VALUE46a,?OUTPUT46a).
+
+num_parser_test46b() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test46b(Config) when is_list(Config) -> 
+  executor(?FORMAT46,?VALUE46b,?OUTPUT46b).
+
+num_parser_test46c() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test46c(Config) when is_list(Config) -> 
+  executor(?FORMAT46,?VALUE46c,?OUTPUT46c).
+
+num_parser_test46d() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test46d(Config) when is_list(Config) -> 
+  executor(?FORMAT46,?VALUE46d,?OUTPUT46d).
+
+num_parser_test47a() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test47a(Config) when is_list(Config) -> 
+  executor(?FORMAT47,?VALUE47a,?OUTPUT47a).
+
+num_parser_test47b() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test47b(Config) when is_list(Config) -> 
+  executor(?FORMAT47,?VALUE47b,?OUTPUT47b).
+
+num_parser_test47c() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test47c(Config) when is_list(Config) -> 
+  executor(?FORMAT47,?VALUE47c,?OUTPUT47c).
+
+num_parser_test47d() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test47d(Config) when is_list(Config) -> 
+  executor(?FORMAT47,?VALUE47d,?OUTPUT47d).
 
