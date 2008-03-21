@@ -18,6 +18,9 @@
 -define(ensure_nonzero(Num_x),
         ?IF(Num_x == 0, ?ERR_DIV)).
 
+-define(ensure_non_negative_ex(Num_x, Action_x),
+        ?IF(not(is_number(Num_x) andalso Num_x >= 0), Action_x)).
+
 -define(ensure_positive_ex(Num_x, Action_x),
         ?IF(not(is_number(Num_x) andalso Num_x > 0), Action_x)).
 
@@ -29,3 +32,11 @@
                                   muin_util:error(X_x))
                       end,
                       Values_x)).
+
+-define(ensure(Test, Action),
+        case Test of
+            true ->
+                nothing;
+            false ->
+                Action
+        end).
