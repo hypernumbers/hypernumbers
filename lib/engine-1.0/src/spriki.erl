@@ -14,6 +14,8 @@
 -include("regexp.hrl").
 -include("handy_macros.hrl").
 
+
+
 -export([ out/1, calc/4, recalc/1, process_input/4, get_hypernumber/9 ]).
 
 -import(tconv, [to_l/1, to_s/1, to_b26/1]).
@@ -76,6 +78,9 @@ out(Arg) -> try
 %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Return HTML pages, for "/" , "?admin" and "?import"
+process_GET(_Arg,_User,#page{ref={page,_},vars=[]}) ->
+    {page,"/html/index.html"};
+
 process_GET(Arg,User,Page) ->
     
     case lists:member({attr},Page#page.vars) of
@@ -101,13 +106,6 @@ process_GET(Arg,User,Page) ->
         process_GET2(Arg,User,Page)
     end.
 
-process_GET2(#arg{docroot=Root},_,#page{ref={page,_},vars=[]}) ->
-    {page,"/html/index.html"};
-
-%% unauthorised users can get access to the pages and swf's. but not
-%% the data
-process_GET2(_Arg,{_User,unauthorised},Page) ->
-    format_output(Page#page.format,{"error","Error: unauthorised"});
 
 %% REST queries to a page
 process_GET2(_Arg,{User,_},Page) when element(1,Page#page.ref) == page ->
@@ -121,30 +119,6 @@ process_GET2(_Arg,{User,_},Page) when element(1,Page#page.ref) == page ->
 %% REST calls to a reference
 process_GET2(_Arg,_User,Page) ->
     format_output(Page#page.format,show_ref(Page)).
-
-%% Column
-show_ref(#page{site=Site,path=Path,ref={column,Y}}) ->
-    
-    Vals = lists:map(fun(A) -> 
-        Row = to_s((A#spriki.index)#index.row),
-        {row,[{label,Row}],[to_s(A#spriki.value)]}
-    end,db:read_column(Site,Path,Y)),
-
-    {column,[{label,to_s(tconv:to_b26(Y))}],Vals};
-
-%% Row
-show_ref(#page{site=Site,path=Path,ref={row,X}}) ->
-
-    Vals = lists:map(fun(A) -> 
-        Col = to_s(to_b26((A#spriki.index)#index.column)),
-        {column,[{label,Col}],[to_s(A#spriki.value)]}
-    end,db:read_row(Site,Path,X)),
-
-    {row,[{label,to_s(X)}],Vals};
-
-%% Cell
-show_ref(#page{site=Site,path=Path,ref={cell,{X,Y}},vars=[]}) ->
-    {cell,[],[{value,[],[hn_util:text(get_value(Site,Path,X,Y))]}]};
 
 show_ref(#page{site=Site,path=Path,ref={cell,{X,Y}},vars=Vars}) ->
 
@@ -169,38 +143,7 @@ show_ref(#page{site=Site,path=Path,ref={cell,{X,Y}},vars=Vars}) ->
             {value,[],[FValue]},
             {references,[],[util2:pad_list(hn_util:text(Refs))]},
             {reftree,[],[util2:pad_list(hn_util:text(RefTree))]},
-            {errors,[],[util2:pad_list(hn_util:text(Errors))]}]};
-    [{toolbar}] ->
-        {toolbar,[],[{value,[],[FValue]},
-            {formula,[],[util2:make_text(Form)]},
-            {reftree,[],[util2:pad_list(util2:make_text(RefTree))]},
-            {errors,[],util2:pad_list(util2:make_text(Errors))}]}
-    end;
-
-%% Range
-show_ref(#page{site=Site,path=Path,ref={range,{X1,Y1,X2,Y2}}})->
-  
-    Data = db:read_range(Site,Path,{X1,Y1,X2,Y2}),
-
-    {range,[],
-        [{row,[{label,to_s(X)}],
-            [{column,[{label,to_s(to_b26(Y))}],
-                [get_element(X,Y,Data)]
-            } || Y <- lists:seq(X1,X2)]   
-         } || X <- lists:seq(Y1,Y2)]
-    }.
-
-get_element(X,Y,[]) -> "";
-get_element(X,Y,[H|T]) ->
-    Index = H#spriki.index,
-    case {Index#index.row,Index#index.column} of
-    {X,Y} ->
-        case (H#spriki.status)#status.errors of
-        [] -> hn_util:text(H#spriki.value);
-        E -> E
-        end;
-    _ ->
-        get_element(X,Y,T)
+            {errors,[],[util2:pad_list(hn_util:text(Errors))]}]}
     end.
 
 
@@ -479,6 +422,9 @@ process_formula(Site, Path, X, Y, Formula) ->
         case muin:run(Ast, [{site, Site}, {path, Path}, {x, X}, {y, Y}]) of 
 
         {ok, {Value, RefTree, Errors, References}} ->
+            ?F("RefTree ~p ~n",[RefTree]),
+            ?F("References ~p ~n",[References]),
+        
             db:add_attr(Addr#attr_addr{name=formula},Formula),
             db:add_attr(Addr#attr_addr{name=value},Value),
             write_cell(Formula, Value, number, {Site, Path, X, Y},{RefTree, Errors, References}, []);
@@ -499,9 +445,9 @@ write_cell(Formula, Value, Type, Bindings, Dependencies, Spec) ->
     {RefTree, Errors, References} = Dependencies,
     {Site, Path, X, Y} = Bindings,
     
-    db:write(Site, Path, X, Y, Value, Type, make_bind_list(Site, Path, Spec),
-    #status{formula = Formula,
-        reftree = RefTree, errors = Errors, refs = References}).
+    db:write(Site, Path, X, Y, Value, Type,
+        #status{formula = Formula,
+            reftree = RefTree, errors = Errors, refs = References}).
 
 
 get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY)->
@@ -523,11 +469,11 @@ calc(Site,Path,X,Y)->
         NewRefTree=lists:umerge(NewRefs,Tree),
         {Val,NewRefTree,Err,NewRefs}
     end.
-
+‬
 recalc(#index{site=Site,path=Path,column=X,row=Y}) ->
     
     case db:read_spriki(Site,Path,X,Y) of
-    []   -> ok;
+    []   -> ok;‎
     [#spriki{status=#status{formula=Formula}}] ->
         process_formula(Site,Path,X,Y,Formula)
     end.
@@ -544,32 +490,3 @@ get_value(Site,Path,X,Y) ->
                     Else
             end
     end.
-
-get_last_val(Site,Path,{row,Ref}) ->
-    case lists:filter(fun(X) -> (X#spriki.index)#index.row == Ref 
-        end,db:read_site(Site,Path)) of
-        [] -> 0;    
-        List ->
-            Tmp = lists:sort(fun(A,B) -> (A#spriki.index)#index.column <
-            (B#spriki.index)#index.column end,List),
-            ((lists:last(Tmp))#spriki.index)#index.column
-    end;
-get_last_val(Site,Path,{column,Ref}) ->
-    case lists:filter(fun(X) -> (X#spriki.index)#index.column == Ref 
-        end,db:read_site(Site,Path)) of
-        [] -> 0;    
-        List ->
-            Tmp = lists:sort(fun(A,B) -> (A#spriki.index)#index.row <
-            (B#spriki.index)#index.row end,List),
-            ((lists:last(Tmp))#spriki.index)#index.row
-    end.
-
-
-make_bind_list(Site,Path,SpecBindings)->
-    make_bind_list(Site,Path,SpecBindings,[]).
-
-%% make_bind_list is the opposite of make_bindings
-%% This function is a mess - it relies on the fact that "Site" and "Path"
-%% are not valid values for variables of the type 'Site' or 'Path'
-make_bind_list(_Site,_Path,[],Residuum)->
-    Residuum.

@@ -216,10 +216,10 @@ $.fn.spreadsheet = function(options)
                 }
                 else
                 {
-                    var cell = cell($sel.tbl,$sel.x,$sel.y);
+                    var c = cell($sel.tbl,$sel.x,$sel.y);
             
-                    if(cell.size() > 0)
-                        cell.children("div").text($(this).val());
+                    if(c.size() > 0)
+                        c.children("div").text($(this).val());
                 }
             }
         }
@@ -284,6 +284,7 @@ $.fn.spreadsheet = function(options)
                         
         x.children("table").find("tr th").width(width);
         y.children("table").find("tr td").width(width);
+        y.children("table").find("tr td").children("div").width(width-4);
 
         x.width(total_width);
         y.width(total_width);               
@@ -829,11 +830,11 @@ $.fn.spreadsheet = function(options)
     
     var addName = function(tb,names,range,item)
     {
-        names[item] = range;
-        tb.textbox("add",item);
-        
-        if(opts.setName == "function")
-            opts.setName(range,item);
+        if(typeof names[item] == "undefined")
+        {
+            names[item] = range;
+            tb.textbox("add",item);
+        }
     }
     
    /**
@@ -869,7 +870,8 @@ $.fn.spreadsheet = function(options)
         y.width(total);
         x.width(total);
             
-        td.width(newwidth);
+        td.width(newwidth).children();
+        td.children("div").width(newwidth-4);
         td.find("textarea").width(newwidth-4);
     };
     
@@ -917,6 +919,9 @@ $.fn.spreadsheet = function(options)
                             + ":"+$.fn.to_b26($sel.endx+1)+""+($sel.endy+1);
                             
                         addName($("#name"),names,range,item);
+ 
+                        if(typeof opts.setName == "function")
+                            opts.setName(range,item);
                     }   
                 },
                 onSelect : function(item)

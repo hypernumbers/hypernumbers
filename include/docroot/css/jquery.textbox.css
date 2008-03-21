@@ -1,0 +1,58 @@
+/**
+ * jQuery TextBox
+ * Version 0.1 - 18/03/2008
+ * @author Dale Harvey <harveyd@gmail.com>
+ *
+ * A combination of a text input and a drop down
+ * select box, used by
+ * http://code.google.com/p/jqueryspreadsheet/
+ *
+ **/
+
+.textbox *
+{
+    padding:    0px;
+    margin:     0px;
+}
+
+.textbox
+{
+    float:left;
+}
+
+.textbox .arrow
+{
+    cursor:     pointer;
+    width:      16px;
+    height:     16px;
+    background: url('../img/arrow_down.png');
+    position:   relative;
+    top:        -18px;
+}
+
+.textbox ul
+{
+    background: #FFF;
+    border:     1px solid #999;
+    position:   absolute;
+    display:    none;
+    z-index:    9999;
+}
+
+.textbox li
+{
+    width:      100%;
+    list-style-type: none;
+}
+
+.textbox li a
+{
+    cursor:     pointer;
+    display:    block;
+    padding:    3px;
+}
+
+.textbox li a:hover
+{
+    background: #EEE;
+}

@@ -33,6 +33,7 @@
     text-align:     right;
     border-bottom:  1px solid #aaa;
     border-right:   1px solid #aaa;
+    overflow:       hidden;
 }
 
 .ss_root .ssinner

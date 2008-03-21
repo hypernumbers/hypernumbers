@@ -88,7 +88,7 @@
     site        = [],
     path        = [],
     ref         = null,
-    name        = []
+    name        = undef
 }).
 
 -record( hypnum_item,
