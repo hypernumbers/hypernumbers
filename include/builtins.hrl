@@ -89,7 +89,7 @@
            acosh,
            atanh,
            degrees,
-           radian,
+           radian
           ]},
 
          {stdfuns_text,
