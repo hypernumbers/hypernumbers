@@ -3,27 +3,19 @@
 
 Definitions.
 
-%% ----- Basic types.
-
+%%% Basic types.
 INTEGER = ([0-9]+)
-
 FLOAT_DECIMAL = ([0-9]+\.[0-9]*)
 FLOAT_SCIENTIFIC = ([0-9]+\.[0-9]+((E|e))(\+|\-)?[0-9]+)
-
-%% Leex can't do case-insensitive. 14/32 variations for true/false -> full coverage.
-TRUE = (true|TRUE|True|tRue|trUe|truE|TRue|TrUe|TruE|tRUe|tRuE|trUE|TRUe|TRuE|TrUE|tRUE)
-FALSE = (false|FALSE|False|fAlse|faLse|falSe|falsE|FAlse|FaLse|FalSe|FalsE|fALse|fAlSe|fAlsE|faLSe|faLsE|falSE|faLSE|fAlSE|fALsE|fALSe|FalSE|FaLsE|FaLSe|FAlsE|FAlSe|FALse|fALSE|FaLSE|FAlSE|FALsE|FALSe)
 BOOLEAN = {TRUE}|{FALSE}
-
 STRING    = (\"[^"\n]*\")
 %%" % Syntax highlighting fix.
 
-%% Column names / function names.
+%% Column names // function names.
 ID = [a-zA-Z][a-zA-Z0-9_]*
 
 %% Variables ("names" in Excel-speak).
 VAR = _{ID}
-
 ERROR = \#NULL\!|\#DIV\/0\!|\#VALUE\!|\#REF\!|\#NAME\?|\#NUM\!|\#N\/A\!
 
 %%% ----- References
