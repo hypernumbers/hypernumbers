@@ -88,10 +88,10 @@ CondFormat -> FullFormat      : '$1'.
 
 Cond -> condition : make_cond('$1').
 
-Format -> format       : '$1'.
+Format -> format       : verify('$1').
 Format -> fraction     : '$1'.
-Format -> Bits         : '$1'.
-Format -> Format Bits  : concat2('$1','$2').
+Format -> Bits         : verify('$1').
+Format -> Format Bits  : verify(concat2('$1','$2')).
 
 FullFormat -> Format            : '$1'.
 FullFormat -> Format percent    : concat2('$1','$2').
@@ -146,6 +146,24 @@ Erlang code.
 dump(N,Content) ->
   io:format("in Dump for ~p Content is ~p~n",[N,Content]),
   Content.
+
+verify(A) when is_list(A) -> verify(A,[],0);
+verify(A)                 -> verify([A],[],0).
+
+%% There can be 0 or 1 decimal point - any more and its not valid...
+verify([],Acc,0)    -> lists:reverse(Acc);
+verify([],Acc,1)    -> lists:reverse(Acc);
+verify([],Acc,N)    -> {error, invalid_format};
+verify([H|T],Acc,N) -> verify(T,[H|Acc],N+get_decimals(H)).
+
+get_decimals({format,Format}) -> count(Format);
+get_decimals(_)               -> 0.
+
+count(Format) -> count(Format,0).
+
+count([],N)             -> N;
+count([?ASC_FULLS|T],N) -> count(T,N+1);
+count([H|T],N)          -> count(T,N).
 
 fix_up({format,A}) -> {tokens,A}.
 

@@ -243,7 +243,11 @@
 -define(VALUE47d,-3333.33).
 -define(OUTPUT47d,{black,"-3,333"}).
 
+%% Failing tests
+-define(FORMAT_F1A,"00.00\"ttt\"00.00").
 
+-define(VALUE_F1A,100).
+-define(OUTPUT_F1A,{error,not_valid}).
 
 %% Test server callback functions
 %%------------------------------------------------------------------------------
@@ -398,7 +402,8 @@ all() ->
      num_parser_test47a,
      num_parser_test47b,
      num_parser_test47c,
-     num_parser_test47d
+     num_parser_test47d,
+     num_parser_fail1a
     ].
     
 %% Case executor
@@ -963,4 +968,12 @@ num_parser_test47d() ->
 
 num_parser_test47d(Config) when is_list(Config) -> 
   executor(?FORMAT47,?VALUE47d,?OUTPUT47d).
+
+%% Failing tests
+num_parser_fail1a() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_fail1a(Config) when is_list(Config) -> 
+  executor(?FORMAT_F1A,?VALUE_F1A,?OUTPUT_F1A).
+
 

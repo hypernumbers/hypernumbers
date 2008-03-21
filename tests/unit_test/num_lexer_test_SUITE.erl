@@ -184,6 +184,19 @@
                   {char,"g"},
                   {char,"g"}]).
 
+%% Test40
+-define(INPUT40, "0000\"tttt\"0000.0").
+-define(OUTPUT40,[{format,"0000"},
+                  {string,"\"tttt\""},
+                  {format,"0000.0"}]).
+
+%% Test41
+-define(INPUT41, "00.00\"tttt\"0000.0").
+-define(OUTPUT41,[{format,"00.00"},
+                  {string,"\"tttt\""},
+                  {format,"0000.0"}]).
+
+
 %% Test server callback functions
 %%------------------------------------------------------------------------------
 %% Function: init_per_suite(Config) -> Config
@@ -282,7 +295,9 @@ all() ->
      num_lexer_test36,
      num_lexer_test37,
      num_lexer_test38,
-     num_lexer_test39
+     num_lexer_test39,
+     num_lexer_test40,
+     num_lexer_test41
     ].
 
 %% Test cases starts here.
@@ -588,3 +603,16 @@ num_lexer_test39(Config) when is_list(Config) ->
     {ok,Output,_}=num_format_lexer:string(?INPUT39),
     test_util:expected(?OUTPUT39,Output).
 
+num_lexer_test40() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_lexer_test40(Config) when is_list(Config) -> 
+    {ok,Output,_}=num_format_lexer:string(?INPUT40),
+    test_util:expected(?OUTPUT40,Output).
+
+num_lexer_test41() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_lexer_test41(Config) when is_list(Config) -> 
+    {ok,Output,_}=num_format_lexer:string(?INPUT41),
+    test_util:expected(?OUTPUT41,Output).
