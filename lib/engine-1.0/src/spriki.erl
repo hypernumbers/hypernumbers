@@ -469,11 +469,11 @@ calc(Site,Path,X,Y)->
         NewRefTree=lists:umerge(NewRefs,Tree),
         {Val,NewRefTree,Err,NewRefs}
     end.
-‬
+
 recalc(#index{site=Site,path=Path,column=X,row=Y}) ->
     
     case db:read_spriki(Site,Path,X,Y) of
-    []   -> ok;‎
+    []   -> ok;
     [#spriki{status=#status{formula=Formula}}] ->
         process_formula(Site,Path,X,Y,Formula)
     end.
