@@ -1,6 +1,5 @@
 %%% @doc        Interface to the formula engine. Also, the interpreter.
 %%% @author     Hasan Veldstra <hasan@hypernumbers.com>
-
 %%% Formulas are currently compiled into simple sexps.
 
 -module(muin).
@@ -9,6 +8,7 @@
 -include("spriki.hrl").
 -include("builtins.hrl").
 -include("handy_macros.hrl").
+-include("typechecks.hrl").
 
 -import(muin_util, [expand_cellrange/2, fdbg/1, fdbg/2, get_frontend/0,
                     getxy/1, init/1, join/1, join/2, just_path/1,
@@ -42,7 +42,6 @@ compile(Fla) ->
 
 try_parse(Fla) ->
     FlaTr = translator:do(Fla),
-    io:format("~s~n", [FlaTr]),
     {LexMod, ParseMod} = get_frontend(),
     {ok, Tokens, _} = LexMod:string(FlaTr),
     {ok, _Ast} = ParseMod:parse(Tokens). % Match to enforce the contract.
@@ -237,10 +236,30 @@ funcall(Fname, Args) ->
                           end,
                           [userdef],
                           ?STDFUNS),
-    Modname:Fname(Args).
+
+    ?COND(Modname == userdef,
+          userdef_call(Fname, Args),
+          Modname:Fname(Args)).
 
 
-%%% ----- Utility functions.
+%%% Utility functions.
+
+userdef_call(Fname, Args) ->
+    case (catch userdef:Fname(Args)) of
+        {'EXIT', {undef, _}} -> % Not there, try Ruby.
+            userdef_rb:start(),
+            Res = userdef_rb:test(Fname, Args),
+            userdef_rb:stop(),
+            case Res of
+                error_not_defined ->
+                    ?ERR_NAM;
+                _ ->
+                    Res
+            end;
+        Res -> % Ok.
+            Res
+    end.
+
 
 %% Returns value in the cell + get_value_and_link() is called behind the
 %% scenes.
@@ -274,7 +293,7 @@ do_cells(Funs) ->
         Funs).
 
 %% @doc Calls supplied fun to get a cell's value and dependence information,
-%% saves the dependencies away (linking it to current cell), and returns
+%% saves the dependencies (linking it to current cell), and returns
 %% the value to the caller (to continue the evaluation of the formula).
 get_value_and_link(FetchFun) ->
     {Value, RefTree, Errs, Refs} = FetchFun(),
