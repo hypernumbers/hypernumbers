@@ -5,19 +5,6 @@
 %%% IMPORTANT NOTES:
 %%% ================
 %%%
-%%% The general pattern for each function is that the exported version
-%%% does type and error checks, and then calls the helper function if all
-%%% arguments are ok. E.g. floor/1 is the exported function that does the
-%%% checking, floor1/2 is the helper function that does the actual
-%%% calculations.
-%%%
-%%% All exported functions have the arity of 1, because a variable number
-%%% of arguments is allowed to be given to functions, and so they all take
-%%% the stack and are free to do whatever they want with it.
-%%%
-%%% Excel is the spec for how the functions should behave. Only the
-%%% differences are documented here.
-%%%
 %%%
 %%% INCOMPATIBILITIES:
 %%%   1. Many (most? all?) Excel functions discard strings and booleans in
@@ -27,7 +14,6 @@
 %%%      We don't make this distinction, and simply discard non-numeric
 %%%      values.
 %%%      Examples of such functions: SUM, PRODUCT, POWER etc.
-%%%
 %%%
 %%%   2. This one applies for functions with a fixed number of arguments,
 %%%      e.g. ABS. If wrong number of arguments is entered, Excel displays an
@@ -41,7 +27,7 @@
 -include("typechecks.hrl").
 
 -export([
-         %% Basic arithmetics
+         %% Basics
          plus/1,
          minus/1,
          times/1,
@@ -51,7 +37,6 @@
          %% Arithmetic
          sum/1,
          product/1,
-         average/1,
          quotient/1,
          abs/1,
          sqrt/1,
@@ -163,19 +148,22 @@ negate([Num]) ->
 %%% Arithmetic %%%
 %%% ---------- %%%
 
-%% Adds all numbers in a range of cells.
-sum(Vals_) ->
-    Vals = flatten(Vals_),
-    ?maybe_throw_up(Vals),
-    lists:sum([X || X <- Vals, is_number(X)]).
+sum(Vals) ->
+    Flatvals = flatten(Vals),
+    ?ensure_no_errvals(Flatvals),
+    Nums = [X || X <- Flatvals, is_number(X)],
+    sum1(Nums).
+sum1(Nums) ->
+    lists:sum(Nums).
 
-%% Multiplies all the numbers given as arguments and returns the product.
-product(Vals_) ->
-    Vals = flatten(Vals_),
-    ?maybe_throw_up(Vals),
-    foldl(?funXY(X * Y), 1, [X || X <- Vals, is_number(X)]).
+product(Vals) ->
+    Flatvals = flatten(Vals),
+    ?ensure_no_errvals(Flatvals),
+    Nums = [X || X <- Flatvals, is_number(X)],
+    product1(Nums).
+product1(Nums) ->
+    foldl(?funXAcc(X * Acc), 1, Nums).
 
-%% Returns the integer portion of a division, discarding the remainder.
 quotient([Num, Divisor]) ->
     ?MODULE:trunc(divide([Num, Divisor])).
 
@@ -183,18 +171,10 @@ abs([Num]) ->
     ?ensure_number(Num),
     erlang:abs(Num).
     
-%% Returns the arithmetic means of its arguments.
-average(Vals_) ->
-    Vals = flatten(Vals_),
-    ?maybe_throw_up(Vals),
-    Nums = [X || X <- Vals, is_number(X)],
-    ?ensure_nonzero(length(Nums)),
-    lists:sum(Nums) / length(Nums).
-
-%% Returns a positive square root.
 sqrt([Num]) ->
     ?ensure_number(Num),
-    ?COND(Num < 0, ?ERR_NUM, math:sqrt(Num)).
+    ?ensure(Num >= 0, ?ERR_NUM),
+    math:sqrt(Num).
 
 power([Num, Pow]) ->
     ?ensure_numbers([Num, Pow]),
@@ -215,12 +195,18 @@ exp([Num]) ->
     math:exp(Num).
 
 %% NOTE: Num (artificially) limited to 8192 (Excel's limit is 170).
-fact([Num]) ->
-    ?ensure_number(Num),
-    ?COND(Num == 0, 1,
-          ?COND(Num < 0, ?ERR_NUM,
-                ?COND(Num > 8192, ?ERR_NUM,
-                      foldl(?funXY(X * Y), 1, seq(1, Num))))).
+fact([Num_]) ->
+    ?ensure_number(Num_),
+    Num = erlang:trunc(Num_),
+    ?ensure(Num =< 8192, ?ERR_NUM),
+    ?ensure_non_negative_ex(Num, ?ERR_NUM),
+    fact1(Num).
+fact1(0) ->
+    1;
+fact1(Num) ->
+    foldl(?funXAcc(X * Acc),
+          1,
+          seq(1, Num)).
 
 %% Returns the remainder after number is divided by divisor. The result
 %% has the same sign as divisor.
@@ -259,7 +245,7 @@ mmult([L1, L2]) ->
     case matrix:multiply(Mx1, Mx2) of
         {matrix, _, _, NewL} ->
             NewL;
-        {error, ""} ->
+        {error, _} ->
             ?ERR_VAL
     end.
 
@@ -302,15 +288,15 @@ randbetween([First, Last]) ->
 
 round([Num, NumDigits]) ->
     ?ensure_numbers([Num, NumDigits]),
-    if NumDigits < 0 ->
-            Pow = math:pow(10, erlang:abs(NumDigits)),
-            erlang:round(Num / Pow) * erlang:round(Pow);
-        NumDigits == 0 ->
-            erlang:round(Num);
-        true ->
-            Pow = math:pow(10, NumDigits),
-            erlang:round(Num * Pow) / erlang:round(Pow)
-    end.
+    round1(Num, NumDigits).
+round1(Num, 0) ->
+    erlang:round(Num);
+round1(Num, NumDigits) when NumDigits < 0 ->
+    Pow = math:pow(10, erlang:abs(NumDigits)),
+    erlang:round(Num / Pow) * erlang:round(Pow);
+round1(Num, NumDigits) ->
+    Pow = math:pow(10, NumDigits),
+    erlang:round(Num * Pow) / erlang:round(Pow).
 
 rounddown([Num, NumDigits]) ->
     ?ensure_numbers([Num, NumDigits]),
@@ -326,32 +312,27 @@ rounddown1(Num, NumDigits) when NumDigits > 0 ->
 
 roundup([Num, NumDigits]) ->
     ?ensure_numbers([Num, NumDigits]),
-    if NumDigits < 0 ->
-            Pow = math:pow(10, erlang:abs(NumDigits)),
-            Rounded = erlang:trunc(erlang:trunc(Num) / Pow) * Pow,
-            if erlang:abs(Num) > erlang:abs(Rounded) ->
-                    Rounded + (sign(Num) * Pow);
-                true ->
-                    Rounded
-            end;
-       NumDigits == 0 ->
-            if erlang:trunc(Num) == (Num * 1.0) ->
-                    Num; % This also handles the case when Num is 0.
-               true ->
-                    erlang:trunc(Num) + sign(Num)
-            end;
-       true ->
-            Pow = math:pow(10, NumDigits),
-            Rndup = fun(X) when erlang:round(X) < X, X >= 0 ->
-                            erlang:round(X) + 1;
-                       (X) when erlang:round(X) > X, X < 0 ->
-                            erlang:round(X) - 1;
-                       (X) ->
-                            erlang:round(X)
-                    end,
-                       
-            Rndup(Num * Pow) / erlang:round(Pow)
-    end.
+    roundup1(Num, NumDigits).
+roundup1(Num, 0) ->
+    ?COND(erlang:trunc(Num) == Num,
+          Num,
+          erlang:trunc(Num) + sign1(Num));
+roundup1(Num, NumDigits) when NumDigits < 0 ->
+    Pow = math:pow(10, erlang:abs(NumDigits)),
+    Rounded = erlang:trunc(erlang:trunc(Num) / Pow) * Pow,
+    ?COND(erlang:abs(Num) > erlang:abs(Rounded),
+          Rounded + (sign(Num) * Pow),
+          Rounded);
+roundup1(Num, NumDigits) ->
+    Pow = math:pow(10, NumDigits),
+    Rndup = fun(X) when erlang:round(X) < X, X >= 0 ->
+                    erlang:round(X) + 1;
+               (X) when erlang:round(X) > X, X < 0 ->
+                    erlang:round(X) - 1;
+               (X) ->
+                    erlang:round(X)
+            end,                       
+    Rndup(Num * Pow) / erlang:round(Pow).
 
 ceiling([Num, Multiple]) ->
     ?ensure_numbers([Num, Multiple]),
@@ -451,7 +432,7 @@ roman1(_Num, _Form) ->
 %%% Summation %%%
 %%% --------- %%%
 
-%% :(
+%% Not yet. :(
 
 %%% ------------ %%%
 %%% Trigonometry %%%
