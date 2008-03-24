@@ -28,6 +28,18 @@ to_f(Str) when is_list(Str) ->
     {ok, [Val], []} = io_lib:fread("~f", Str),
     Val.
 
+%% String -> number.
+to_num(Str) when is_list(Str) ->
+    try to_i(Str)
+    catch
+        error:_ ->
+            try to_f(Str)
+            catch
+                error:_ ->
+                    {error, value}
+            end
+    end.
+
 
 %% Integer -> string.
 to_s(Int) when is_integer(Int) ->
