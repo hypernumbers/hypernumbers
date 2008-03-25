@@ -34,7 +34,7 @@
                     <listen>127.0.0.1</listen>
                     <docroot><reldir>include/docroot</reldir></docroot>
                     <appmods>
-                        <mod path="/" module="spriki" />
+                        <mod path="/" module="hn_yaws" />
                     </appmods>
                 </server>
             </group>
@@ -44,7 +44,7 @@
                     <listen>127.0.0.1</listen>
                     <docroot><reldir>include/docroot</reldir></docroot>
                     <appmods>
-                        <mod path="/" module="spriki" />
+                        <mod path="/" module="hn_yaws" />
                     </appmods>
                 </server>
             </group>

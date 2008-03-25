@@ -1,23 +1,27 @@
 %%%-----------------------------------------------------------------------------
-%%% File        : spriki.erl
-%%% Author      : Gordon Guthrie <gordonguthrie@vixo.com>
-%%% Description : this is the base handling module of the spriki
-%%%               It is demo quality only
-%%%
-%%% Created     : 10 Nov 2006 by Gordon Guthrie <gordonguthrie@vixo.com>
+%%% File        : hn_yaws.erl
+%%% Author      : Dale Harvey <dale@hypernumbers.com>
+%%% Description : this handles incoming http requests
 %%%-----------------------------------------------------------------------------
+-module(hn_yaws).
 
--module(spriki).
-
+%%--------------------------------------------------------------------
+%% Include files
+%%--------------------------------------------------------------------
 -include("yaws_api.hrl").
 -include("spriki.hrl").
 -include("regexp.hrl").
 -include("handy_macros.hrl").
 
+%%%-----------------------------------------------------------------
+%%% Exported Functions
+%%%-----------------------------------------------------------------
 -export([ out/1 ]).
 
+%%%-----------------------------------------------------------------
+%%% Imported Functions
+%%%-----------------------------------------------------------------
 -import(tconv, [to_l/1, to_s/1, to_b26/1]).
-
 -compile(export_all).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -152,7 +156,6 @@ format_output(Format,Data) ->
     {json,nocallback} -> 
         {content,"text/plain","hn("++simplexml:to_json_string(Data)++");"}
     end.
-
 
 %% Takes an unfiltered list of spriki records, extracts the path
 %% they are from and constructs a tree

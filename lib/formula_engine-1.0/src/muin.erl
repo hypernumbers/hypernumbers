@@ -57,7 +57,6 @@ run(Pcode, Bindings) ->
         {error, R}  -> {error, R};
         {'EXIT', R} -> throw(R); 
         Value ->
-            io:format("hello? ~p~n",[Value]),
             {RefTree, Errors, References} = get(retvals),
             {ok, {Value, RefTree, Errors, References}}
     end.

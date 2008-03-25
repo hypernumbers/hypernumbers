@@ -11,27 +11,19 @@
 -include("spriki.hrl").
 -include("handy_macros.hrl").
 
-%%--------------------------------------------------------------------
-%% External exports
-%%--------------------------------------------------------------------
+%%%-----------------------------------------------------------------
+%%% Exported Functions
+%%%-----------------------------------------------------------------
 -export([
     %% hn_item
     add_item/2,     get_item/1,     get_item_val/1,
     %% link_cell
-  	write_link/2,   read_links/2,    del_links/2,
+  	write_link/2,   read_links/2,   del_links/2,
+    %% hypernumbers
+    register_hn/5,  update_hn/4,    get_hn/3,
   	%% dirty tables
-    dirty_refs_changed/2,
-	get_first_dirty/1,
-	mark_dirty/2,
-  
-    register_hn/5,
-    update_hn/4,
-	get_hypnum/3
+    dirty_refs_changed/2, get_first_dirty/1, mark_dirty/2
     ]).
-
-%%%-----------------------------------------------------------------
-%%% Exported Functions
-%%%-----------------------------------------------------------------
 
 %%-------------------------------------------------------------------
 %% Table : hn_item
@@ -211,8 +203,6 @@ dirty_refs_changed(dirty_cell, Ref) ->
             mnesia:match_object(#outgoing_hn{local=Ref,_='_'})
         ),
         
-        io:format("ref ~p~n",[Ref]),
-        io:format("refs ~p~n",[read_links(Ref,parent)]),
         %% Update local cells
         lists:foreach(
             fun({link_cell, _, RefTo}) ->
@@ -288,10 +278,11 @@ mark_dirty(Index,Type) ->
 %%         this server change
 %%-------------------------------------------------------------------
 %%--------------------------------------------------------------------
-%% Function    : update_hypnum/5
+%% Function    : update_hn/5
 %%
 %% Description : updates the value of a hypernumber and then triggers
-%%               the recalc
+%%               the recalc, this is ran when an external site 
+%%               notifies us their number changed
 %%--------------------------------------------------------------------
 update_hn(From,Bic,Val,Version)->
 
@@ -302,29 +293,26 @@ update_hn(From,Bic,Val,Version)->
  
         [Obj] = mnesia:match_object(Rec),
         
-        mnesia:write(Obj#incoming_hn{value=Val}),
+        V = ?COND(hn_util:is_numeric(Val) == true,
+            util2:make_num(Val),util2:make_text(Val)),
+        
+        mnesia:write(Obj#incoming_hn{value=V}),
         mark_dirty(Index,hypernumber)
         
-    end),    
-
+    end),
     ok.
 
 %%--------------------------------------------------------------------
-%% Function    : get_hypnum/9
+%% Function    : get_hn/3
 %%
 %% Description : This reads the hypernumber table and returns the
-%%               current value of a hypernumber or an empty record
-%%                if one doesn't exist
-%%
-%%               It creates a new record for the hypernumber and an
-%%               into the refs table and then populates the
-%%               value by making an external call
-%%
-%%               Having got a value it then writes it to the
-%%               table and marks it a dirty reference
-%%
+%%               current value of a hypernumber. if it doesnt 
+%%               exist, make a http call to the site to 
+%%               fetch its value and register for updates when
+%%               that number changes. Also maintain a list of 
+%%               cell listening to this number
 %%--------------------------------------------------------------------
-get_hypnum(Url,From,To)->
+get_hn(Url,From,To)->
 
     {atomic, List} = mnesia:transaction(fun() ->
 
@@ -347,9 +335,20 @@ get_hypnum(Url,From,To)->
                     {proxy, [],[PUrl]},
                     {url,   [],[PUrl]}
                 ]}),
+                
+            XML = hn_util:post(Url++"?hypernumber",Actions,"text/xml"),
+
+            {hypernumber,[],[
+                {value,[],              [Val]},
+                {'dependancy-tree',[],  Tree}]
+            } = simplexml:from_xml_string(XML),
             
-            Tmp = get_hn_record(Url,Actions),
-            HNumber = Tmp#incoming_hn{
+            V = ?COND(hn_util:is_numeric(Val) == true,
+                util2:make_num(Val),util2:make_text(Val)),
+
+            HNumber = #incoming_hn{
+                value   = V,
+                deptree = Tree,
                 remote  = To,
                 cells   = [From],
                 biccie  = Bic},
@@ -358,25 +357,14 @@ get_hypnum(Url,From,To)->
             HNumber
         end
     end),
-    
     List.
-
-get_hn_record(Url,Actions) ->
-
-    XML = hn_util:post(Url++"?hypernumber",Actions,"text/xml"),
-
-    {hypernumber,[],[
-        {value,[],              [Val]},
-        {'dependancy-tree',[],  Tree}]
-    } = simplexml:from_xml_string(XML),
-
-    V = ?COND(hn_util:is_numeric(Val) == true,
-        util2:make_num(Val),
-        util2:make_text(Val)),
-
-    #incoming_hn{value= V, deptree=Tree}.
     
-
+%%--------------------------------------------------------------------
+%% Function    : register_hn/3
+%%
+%% Description : Register to recieve updates to from a hypernumber
+%%               on a remote server when its value changes
+%%--------------------------------------------------------------------
 register_hn(To,From,Bic,Proxy,Url) -> 
     {atomic , ok} = mnesia:transaction(fun()-> 
         mnesia:write(#outgoing_hn{ 
