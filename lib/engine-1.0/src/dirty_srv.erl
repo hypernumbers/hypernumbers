@@ -59,7 +59,7 @@ start_link(Arg) ->
 init([Type]) ->
     gen_fsm:send_event(self(),{clear_dirty,[]}),
     case Type of
-	dirty_refs         -> {ok, clear_dirty, #state{type=Type}};
+	dirty_cell         -> {ok, clear_dirty, #state{type=Type}};
 	dirty_hypernumbers -> {ok, clear_dirty, #state{type=Type}}
     end.
 %%------------------------------------------------------------------------------
@@ -76,7 +76,7 @@ init([Type]) ->
 %%------------------------------------------------------------------------------
 clear_dirty(_Event, State) ->
     Type=State#state.type,
-    NewState=case db:get_first_dirty(Type) of
+    NewState=case hn_db:get_first_dirty(Type) of
 		 %% if there are no dirty records just wait on a table write
 		 []       -> {ok,_Return}=mnesia:subscribe({table,Type,detailed}),
 			     wait_on_write;
@@ -225,9 +225,9 @@ code_change(_OldVsn, StateName, State, _Extra) ->
 %% spriki.hrl. Example:
 %% {dirty_refs,{index,"http://127.0.0.1:9000","/",1,1},1966112354}
 %% for A1 on /.
-process(Record, dirty_refs)->
-    db:trigger_recalcs(dirty_refs, Record#dirty_refs.index);
+process(Record, dirty_cell)->
+    hn_db:dirty_refs_changed(dirty_cell, Record#dirty_cell.index);
 process(Record, dirty_hypernumbers) ->
-    db:trigger_recalcs(dirty_hypernumbers,Record#dirty_hypernumbers.index).
+    hn_db:dirty_refs_changed(dirty_hypernumbers,Record#dirty_hypernumbers.index).
 
 

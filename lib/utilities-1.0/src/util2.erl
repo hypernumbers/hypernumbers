@@ -15,7 +15,6 @@
 	 remove_auth/1,
 	 chop/1,
 	 rev_chop/1,
-	 in_range/5,
 	 invalid/0,
 	 make_num/1,
 	 parse_range/1,
@@ -78,19 +77,6 @@ chop(Path)->
 
 rev_chop(Path)->
     lists:reverse(chop(Path)).
-
-in_range(Cell,Site,Path,{X1,Y1},{X2,Y2})->
-    Index=Cell#spriki.index,
-    CellSite=Index#index.site,
-    CellPath=Index#index.path,
-    CellX=Index#index.column,
-    CellY=Index#index.row,
-    case {CellSite,CellPath,CellX,CellY} of
-	{Site,Path,CellX,CellY} when
-	CellX >= X1,CellY >= Y1,
-	CellX =< X2,CellY =< Y2 -> true;
-	_ -> false
-    end.
 
 invalid()->{1,[],[{"invalid code"}],[]}.
 

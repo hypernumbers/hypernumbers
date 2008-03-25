@@ -9,42 +9,28 @@
 -include("regexp.hrl").
 -include("yaws.hrl").
 -include("yaws_api.hrl").
+-include("handy_macros.hrl").
 
 -record(upload, {fd,filename, last}).
 
 -export([
     %% HyperNumbers Utils
-    index_to_url/1,
-    ref_to_str/1,
-
+    index_to_url/1,     page_to_index/1,    ref_to_str/1,
     %% HTTP Utils
-    req/1,
-    post/2,
-    post/3,
+    req/1,              post/2,             post/3,
     parse_url/1,
     %% XML Utils
-    xml_to_string/1,
-    readxml_string/1,
-    readxml_file/1,
-    xmlsearch/3,
-    values/2,
-    clear_whitespace/1,
-
+    xml_to_string/1,    readxml_string/1,   readxml_file/1,
+    xmlsearch/3,        values/2,           clear_whitespace/1,
     %% File Utils
     read/1,
-    
     %% List Utils
-    implode/2,
-    is_alpha/1,
-    is_numeric/1,
-    str_replace/2,
-    text/1,
+    add_uniq/2,         implode/2,          is_alpha/1,
+    is_numeric/1,       str_replace/2,      text/1,
     trim/1,
-
     %% Yaws Utils
-    create_conf/1,
-    upload/3,
-    get_cookie/1]).
+    create_conf/1,      upload/3,           get_cookie/1
+    ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -54,11 +40,16 @@
 index_to_url(#index{site=Site,path=Path,column=X,row=Y}) ->
     lists:append([Site,Path,util2:make_b26(X),text(Y)]).
     
+page_to_index(#page{site=Site,path=Path,ref={cell,{X,Y}}}) ->
+    #index{site=Site,path=Path,column=X,row=Y}.
+
+ref_to_str({page,Path})  -> Path;   
 ref_to_str({cell,{X,Y}}) -> tconv:to_b26(X)++text(Y);
 ref_to_str({row,Y})      -> text(Y);
 ref_to_str({column,X})   -> tconv:to_b26(X);
 ref_to_str({range,{X1,Y1,X2,Y2}}) ->
     tconv:to_b26(X1)++text(Y1)++":"++tconv:to_b26(X2)++text(Y2).
+ 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -220,6 +211,19 @@ read(FileName) ->
 %%% List Utils                                                               %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%--------------------------------------------------------------------
+%% Function:    add_uniq/2
+%%
+%% Description: 
+%%--------------------------------------------------------------------
+add_uniq(List,Item) -> 
+
+    lists:filter(
+        fun(X) -> ?COND(X == Item,false,true) end,
+        List) 
+        
+    ++ [Item].
+    
 %%--------------------------------------------------------------------
 %% Function:    str_replace/2
 %%

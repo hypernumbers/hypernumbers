@@ -26,21 +26,13 @@ create_db(Type)->
     
     mnesia:start(),
     
-    {atomic,ok} = mnesia:create_table(hypnum_item,
+    {atomic,ok} = mnesia:create_table(hn_item,
         [{Storage, [node()]},{type,set},
-         {attributes, record_info(fields, hypnum_item)}]),
+         {attributes, record_info(fields, hn_item)}]),
     
-    {atomic,ok} = mnesia:create_table(spriki,
-        [{Storage, [node()]},{type,set},
-         {attributes, record_info(fields, spriki)}]),
-         
-    {atomic,ok} =mnesia:create_table(ref,
+    {atomic,ok} = mnesia:create_table(link_cell,
         [{Storage, [node()]},{type,bag},
-	 {attributes, record_info(fields, ref)}]),
-         
-    {atomic,ok} = mnesia:create_table(bindings,
-        [{Storage, [node()]},{type,bag},
-	 {attributes, record_info(fields, bindings)}]),
+	 {attributes, record_info(fields, link_cell)}]),
     
     {atomic,ok} = mnesia:create_table(users,
         [{Storage, [node()]},{type,bag},
@@ -50,20 +42,22 @@ create_db(Type)->
         [{Storage, [node()]},{type,bag},
 	 {attributes, record_info(fields, websheet)}]),
          
-    {atomic,ok} = mnesia:create_table(dirty_refs,
+    {atomic,ok} = mnesia:create_table(dirty_cell,
     	[{Storage, [node()]},{type,set},
-    	 {attributes, record_info(fields, dirty_refs)}]),
+    	 {attributes, record_info(fields, dirty_cell)}]),
          
     {atomic,ok} = mnesia:create_table(dirty_hypernumbers,
     	[{Storage, [node()]},{type,set},
          {attributes, record_info(fields, dirty_hypernumbers)}]),
          
-    {atomic,ok} = mnesia:create_table(hypernumbers,
+    {atomic,ok} = mnesia:create_table(incoming_hn,
         [{Storage, [node()]},{type,set},
-         {attributes, record_info(fields, hypernumbers)}]),
-                           
-    {atomic,ok} = mnesia:add_table_index(ref,ref_to),
-    {atomic,ok} = mnesia:add_table_index(bindings,page),
+         {attributes, record_info(fields, incoming_hn)}]),
+         
+    {atomic,ok} = mnesia:create_table(outgoing_hn,
+        [{Storage, [node()]},{type,bag},
+         {attributes, record_info(fields, outgoing_hn)}]),
+                    
 
     users:create("admin","admin",superuser),
     users:create("user","user"),

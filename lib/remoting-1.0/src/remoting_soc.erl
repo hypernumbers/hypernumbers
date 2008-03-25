@@ -44,14 +44,11 @@ loop(Socket)->
         self() ! {msg,Msg++"\0"},
         loop(Socket);
 
-    %% Received a Message to send back to client
     {msg,Msg} ->
-        ?F("got message to send back - Msg~p~n",[Msg]),
         gen_tcp:send(Socket, Msg++"\n"),
         loop(Socket);
 
     {tcp_closed, _Port} ->
-        ?F("tcp closed ~n"),
         gen_server:call(remoting_reg,{unregister}),
         exit(normal)
 

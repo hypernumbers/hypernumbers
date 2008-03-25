@@ -71,7 +71,7 @@ $(function()
         cellChange  : function(x,y,val)
         {
             $.post(url+$.fn.to_b26(x+1)+y+"?attr",
-                "<create><value>"+val+"</value></create>",null,"xml");
+                "<create><formula>"+val+"</formula></create>",null,"xml");
         },
         cellSelect : function(x,y,el)
         {

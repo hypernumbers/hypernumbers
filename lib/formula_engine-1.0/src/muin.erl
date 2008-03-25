@@ -54,9 +54,10 @@ run(Pcode, Bindings) ->
             Bindings ++ [{retvals, {[], [], []}}]),
              
     case (catch eval(Pcode)) of
-        {error, R} ->
-            {error, R};
+        {error, R}  -> {error, R};
+        {'EXIT', R} -> throw(R); 
         Value ->
+            io:format("hello? ~p~n",[Value]),
             {RefTree, Errors, References} = get(retvals),
             {ok, {Value, RefTree, Errors, References}}
     end.
@@ -189,10 +190,9 @@ funcall(hypernumber, [Url_]) ->
           ref = {cell, {RX, RY}}} = hn_util:parse_url(Url),
 
     get_value_and_link(fun() ->
-                               spriki:get_hypernumber(?msite, ?mpath,
-                                                      ?mx, ?my, Url,
-                                                      RSite, RPath, RX, RY)
-                       end);
+        hn_main:get_hypernumber(?msite, ?mpath, ?mx, ?my, 
+            Url, RSite, RPath, RX, RY)
+    end);
 
 funcall(hn, [Url]) ->
     funcall(hypernumber, [Url]);
@@ -270,7 +270,7 @@ do_cell(RelPath, Ref) ->
         throw({error, self_reference})),
 
     Path = walk_path(?mpath, RelPath),
-    FetchFun = ?fun0(spriki:calc(?msite, Path, X, Y)),
+    FetchFun = ?fun0(hn_main:get_cell_info(?msite, Path, X, Y)),
     get_value_and_link(FetchFun).
 
 do_cell(Path, Row, Col) ->
@@ -281,14 +281,14 @@ do_cell(Path, Row, Col) ->
 %% TODO: The records already contain all required information, don't really
 %% need to call do_cell().
 do_cells(Funs) ->
-    DoRec = fun(CellRec) ->
-                    do_cell((CellRec#spriki.index)#index.path,
-                            (CellRec#spriki.index)#index.row,
-                            (CellRec#spriki.index)#index.column)
-            end,
+%    DoRec = fun(CellRec) ->
+%                    do_cell((CellRec#spriki.index)#index.path,
+%                            (CellRec#spriki.index)#index.row,
+%                            (CellRec#spriki.index)#index.column)
+%            end,
     
     map(fun(GetCellRecFun) ->
-                map(DoRec, GetCellRecFun())
+                map([], GetCellRecFun())
         end,
         Funs).
 

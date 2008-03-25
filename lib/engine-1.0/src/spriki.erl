@@ -14,9 +14,7 @@
 -include("regexp.hrl").
 -include("handy_macros.hrl").
 
-
-
--export([ out/1, calc/4, recalc/1, process_input/4, get_hypernumber/9 ]).
+-export([ out/1 ]).
 
 -import(tconv, [to_l/1, to_s/1, to_b26/1]).
 
@@ -69,7 +67,8 @@ out(Arg) -> try
 
     %% Globally catch any errors during processing
     catch
-    _:Err -> ?F("Error:~p~n~p",[Err,erlang:get_stacktrace()]),{html,"error"}
+    _:Err -> io:format("Error:~p~n~p",[
+        Err,erlang:get_stacktrace()]),{html,"error"}
     end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -86,18 +85,28 @@ process_GET(Arg,User,Page) ->
     case lists:member({attr},Page#page.vars) of
     true ->
     
-        #page{site=Site,path=Path,ref=Ref} = Page,
-        Addr = #attr_addr{site=Site,path=Path,ref=Ref},
+        Addr = page_to_ref(Page),
         
+        %% Bit ugly, some values are simplexml lists, others
+        %% are strings / ints. simplexml is left unchanged, 
+        %% ints/strings are returned as ["99"] ["string"]
+        F = fun(Val) ->
+            V = hn_util:text(Val),
+            ?COND(io_lib:char_list(V) == true, [V], Val)
+        end,
+
         List = lists:map
         (
-            fun(#hypnum_item{addr=R, val=Val}) ->
-                {RefType,_} = R#attr_addr.ref,
-                RefVal = hn_util:ref_to_str(R#attr_addr.ref),
-                Attr = [{type,hn_util:text(RefType)},{ref,RefVal}],
-                {ref,Attr,[{R#attr_addr.name,[],[hn_util:text(Val)]}]}
+            fun(#hn_item{addr=A,val=Val}) -> 
+     
+                Type = hn_util:text(element(1,A#ref.ref)),
+                Str  = hn_util:ref_to_str(A#ref.ref),
+
+                {ref,[{type,Type},{ref,Str}],[
+                    {A#ref.name,[],F(Val)}
+                ]}
             end,
-            db:get_attr(Addr)
+            hn_db:get_item(Addr)
         ),
         
         format_output(Page#page.format,{attr,[],List});
@@ -105,8 +114,7 @@ process_GET(Arg,User,Page) ->
     false ->
         process_GET2(Arg,User,Page)
     end.
-
-
+    
 %% REST queries to a page
 process_GET2(_Arg,{User,_},Page) when element(1,Page#page.ref) == page ->
     Data = case Page#page.vars of
@@ -116,39 +124,26 @@ process_GET2(_Arg,{User,_},Page) when element(1,Page#page.ref) == page ->
     end,
     format_output(Page#page.format,Data);
 
-%% REST calls to a reference
 process_GET2(_Arg,_User,Page) ->
-    format_output(Page#page.format,show_ref(Page)).
 
-show_ref(#page{site=Site,path=Path,ref={cell,{X,Y}},vars=Vars}) ->
-
-    %% first read the cell
-    {Val,RefTree,Form,Errors,Refs} = 
-        case db:read_spriki(Site,Path,X,Y) of
-        [] -> {0,[],[],[],[]};
-        [#spriki{value=Value,status=
-                 #status{formula=Formula, reftree=RT,
-                         errors=Errs, refs=Refns}}] -> 
-            {Value,RT,Formula,Errs,Refns}
+    Addr = page_to_ref(Page),
+    
+    F = fun(Name) -> 
+        hn_db:get_item_val(Addr#ref{name=Name})
     end,
-
-    FValue = case Errors of
-    [] -> util2:make_text(Val);
-    _  -> "Error!"
-    end,
-
-    case Vars of
-    [{hypernumber}] ->
-        {cell,[],[
-            {value,[],[FValue]},
-            {references,[],[util2:pad_list(hn_util:text(Refs))]},
-            {reftree,[],[util2:pad_list(hn_util:text(RefTree))]},
-            {errors,[],[util2:pad_list(hn_util:text(Errors))]}]}
-    end.
-
+      
+    Xml = {hypernumber,[],[
+        {value,[], [hn_util:text(F(value))]},
+        {'dependancy-tree',[],F('dependancy-tree')}
+    ]},
+    
+    format_output(Page#page.format,Xml).
 
 %% Utility GET functions
 %%--------------------------------------------------------------------
+page_to_ref(#page{site=Site, path=Path, ref=Ref}) ->
+    #ref{site=Site, path=Path, ref=Ref}.
+
 %% Format the output depending on the requested format.
 format_output(Format,Data) ->
     case Format of
@@ -202,12 +197,12 @@ create_tree([H|T]) ->
     {dir,[{path,H}],[create_tree(T)]}.    
 
 %% Filter records and remove duplicates
-path_list([],PathList) -> PathList;
-path_list([#spriki{index=#index{path=Path}}|T],List) ->
-    case lists:member(Path,List) of
-    true  -> path_list(T,List);
-    false -> path_list(T,[Path|List])
-    end.
+path_list([],PathList) -> PathList.
+%path_list([#spriki{index=#index{path=Path}}|T],List) ->
+%    case lists:member(Path,List) of
+%    true  -> path_list(T,List);
+%    false -> path_list(T,[Path|List])
+%    end.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%
 %%% POST handlers, 
@@ -223,6 +218,7 @@ get_post_data({json},Arg,_Dec) ->
     simplexml:from_json_string(binary_to_list(Arg#arg.clidata));
 get_post_data({xml},Arg,_Dec) ->
     simplexml:from_xml_string(binary_to_list(Arg#arg.clidata)).
+    
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% This section handles the POST request of the REST API
 %% calls, Read the API spcification for what further
@@ -285,12 +281,9 @@ api_create(Data, Page) ->
     
     lists:map
     (
-        fun({value,[],[Val]}) ->
-            process_input(Site,Path,Ref,Val);
-            
-        ({Attr,[],[Val]}) ->
-            Addr = #attr_addr{site=Site,path=Path,ref=Ref,name=Attr},
-            db:add_attr(Addr,Val)
+        fun({Attr,[],[Val]}) ->
+            Addr = #ref{site=Site,path=Path,ref=Ref,name=Attr},
+            hn_main:set_attribute(Addr,Val)
         end,
         Data
     ),
@@ -314,55 +307,33 @@ api_unreg(_R,_Page) -> ok.
 
 %%% API call - REGISTER
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-api_reg(PostData,#page{site=Site,path=Path,ref={cell,{X,Y}}})->
+api_reg(Data,Page)->
 
-    case PostData of
-    [{biccie,[],[Bic]},{proxy,[],[Proxy]},{url,[],[Reg]}] ->
-        case hn_util:parse_url(Reg) of
-        #page{site=Site2,path=Path2,ref={cell,{X2,Y2}}} ->
-            db:write_ref(
-                #index{site=Site,path=Path,column=X,row=Y},
-                #index{site=Site2,path=Path2,column=X2,row=Y2},
-                #details_from{},
-                #details_to{proxy_URL=Proxy,reg_URL=Reg,biccie=Bic})
-        end
-    end,
-    ok.
+    [{biccie,[],[Bic]},{proxy,[],[Proxy]},{url,[],[Reg]}] = Data,
+
+    hn_db:register_hn(
+        hn_util:page_to_index(Page),
+        hn_util:page_to_index(hn_util:parse_url(Reg)),
+        Bic, Proxy, Reg).
 
 %%% API call - NOTIFY
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-api_notify(PostData,Page)->
-    case lists:keysearch(type,1,PostData) of
-    {value,{type,[],["change"]}} -> api_change(PostData,Page)
+api_notify(Data,Page)->
+    case lists:keysearch(type,1,Data) of
+    {value,{type,[],["change"]}} -> api_change(Data,Page)
     end,
     ok.
 
-api_change(PostData,Page)->
-    case get_changed_data(PostData,Page) of
-        {ok,{Val,{Site,Path,X,Y}}}-> 
-            Index = #index{site=Site,path=Path,column=X,row=Y},            
-            Hyp = #hypernumbers{value=Val,ref_from=Index},
-            db:update_hypnum(Hyp),
-            ok;
-        _Other -> {ok,error}
-    end.
+api_change(Data,Page)->
 
-get_changed_data(PostData,#page{site=Site,path=Path,ref={cell,{X,Y}}})->
-
-    [{biccie,[],[Bic]},{notifyurl,[],[Notif_URL]},
-        _Reg,_Type,{value,[],[Value]},_Ver] = PostData,
-
-    #page{site=FSite,path=FPath,ref={cell,{FX,FY}}} 
-        = hn_util:parse_url(Notif_URL),
-
-    [Res]=db:read_ref(
-        #index{site=FSite,path=FPath,column=FX,row=FY},
-        #index{site=Site, path=Path, column=X, row=Y}),
-
-    case (Res#ref.details_from)#details_from.biccie of
-    Bic -> {ok,{Value,{FSite,FPath,FX,FY}}};
-    _   -> {error, invalid_credentials}
-    end.
+    [ {biccie,[],       [Bic]},
+      {notifyurl,[],    [Url]},
+      {registerurl,[],  [Self]},
+      {type,[],         ["change"]},
+      {value,[],        [Val]},
+      {version,[],      [Version]}] = Data,
+      
+    hn_db:update_hn(Url,Bic,Val,Version).
 
 %%% API call - LOGIN
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -381,112 +352,4 @@ api_logout() ->
     M = #user{loggedin = false},
     NewCookie = yaws_api:new_cookie_session(M),
     {ok,{"logout","success"},yaws_api:setcookie("user",NewCookie,"/")}.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%
-%%% Rest of the POST functions
-%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-process_input(Site, Path, {cell, {X, Y}}, Val) ->
-    case superparser:process(Val) of
-        {formula, Fla} ->
-            process_formula(Site, Path, X, Y, Fla);
-        {value, Value} ->
-            process_value(Site, Path, X, Y, Value)
-    end.
-
-process_value(Site, Path, X, Y, Value) ->
-
-    {Type, Val} = case regexp:match(Value, ?RG_num) of
-        
-        {match, _, _} ->
-            {number, util2:make_num(Value)};
-        nomatch ->
-            muin_util:fdbg(Value, "V"),
-            {string, Value}
-        end,
-        
-    Addr = #attr_addr{site=Site, path=Path, ref={cell,{X,Y}}},
-    db:add_attr(Addr#attr_addr{name=value},Val),
     
-    write_cell("", Val, Type, {Site, Path, X, Y}, {[], [], []}, []),
-    ok.
-
-process_formula(Site, Path, X, Y, Formula) ->
-
-    Addr = #attr_addr{site=Site, path=Path, ref={cell,{X,Y}}},
-
-    case muin:compile(Formula) of
-    
-    {ok, Ast} ->
-        case muin:run(Ast, [{site, Site}, {path, Path}, {x, X}, {y, Y}]) of 
-
-        {ok, {Value, RefTree, Errors, References}} ->
-            ?F("RefTree ~p ~n",[RefTree]),
-            ?F("References ~p ~n",[References]),
-        
-            db:add_attr(Addr#attr_addr{name=formula},Formula),
-            db:add_attr(Addr#attr_addr{name=value},Value),
-            write_cell(Formula, Value, number, {Site, Path, X, Y},{RefTree, Errors, References}, []);
-        
-        ErrVal = {error, Reason} ->
-            ErrMsg = append([atom_to_list(Reason), " ", Site, Path,util2:make_b26(X), to_l(Y)]),
-            db:add_attr(Addr#attr_addr{name=value},ErrMsg)
-        end;
-
-    {error, error_in_formula} ->
-        db:add_attr(Addr#attr_addr{name=value},"Invalid Formula")
-        
-    end,
-    ok.
-
-write_cell(Formula, Value, Type, Bindings, Dependencies, Spec) ->
-
-    {RefTree, Errors, References} = Dependencies,
-    {Site, Path, X, Y} = Bindings,
-    
-    db:write(Site, Path, X, Y, Value, Type,
-        #status{formula = Formula,
-            reftree = RefTree, errors = Errors, refs = References}).
-
-
-get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY)->
-
-    From = #index{site  =FSite,path=FPath,column=FX,row=FY},
-    To   = #index{site=TSite,path=TPath,column=TX,row=TY},
-
-    #hypernumbers{value = Val, reftree = Tree, errors = Err, 
-        refs = Refs} = db:get_hypnum(URL,To,From),
-
-    {Val,Tree,Err,Refs}.
-
-
-calc(Site,Path,X,Y)->
-    case db:read_spriki(Site,Path,X,Y) of
-    [] -> {0,[{Site,Path,X,Y}],[],[{Site,Path,X,Y}]};
-    [#spriki{value=Val,status=#status{reftree=Tree,errors=Err,refs=Refs}}] ->
-        NewRefs=lists:umerge([[{Site,Path,X,Y}],Refs]),
-        NewRefTree=lists:umerge(NewRefs,Tree),
-        {Val,NewRefTree,Err,NewRefs}
-    end.
-
-recalc(#index{site=Site,path=Path,column=X,row=Y}) ->
-    
-    case db:read_spriki(Site,Path,X,Y) of
-    []   -> ok;
-    [#spriki{status=#status{formula=Formula}}] ->
-        process_formula(Site,Path,X,Y,Formula)
-    end.
-
-get_value(Site,Path,X,Y) ->
-    case db:read_spriki(Site, Path, X, Y) of
-        [] ->
-            blank;
-        [#spriki{value = Value, status = Stat}] ->
-            case Stat#status.errors of
-                []   ->
-                    ?COND(Value == [], blank, Value);
-                Else ->
-                    Else
-            end
-    end.

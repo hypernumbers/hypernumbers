@@ -1,14 +1,10 @@
 -define(HN_NAME,    "HyperNumbers").
 
--define(TIMEOUT,     1000).
+-define(TIMEOUT,    1000).
 -define(HTML_ROOT,  "/html/").
--define(SWF_ROOT,   "/swf/").
 
--define(PORTNO, 1935). 
--define(F, io:format). % Handy for debugging
+-define(PORTNO,     1935). 
 
--define(REGISTER,   $r,$e,$g,$i,$s,$t,$e,$r).
--define(UNREGISTER, $u,$n,$r,$e,$g,$i,$s,$t,$e,$r).
 -define(HTTP,       $h,$t,$t,$p).
 -define(HTTPS,      $h,$t,$t,$p,$s).
 -define(SLASH,      47).
@@ -21,8 +17,8 @@
 {
     site,
     path,
-    row,
-    column
+    column,
+    row
 }).
 
 -record( page,
@@ -80,10 +76,7 @@
     format
 }).
 
-%% a hypnum_item is a value stored against a page , row , col , cell , range
-%% the 'ref' is an attr_ref record that specified the full address of the
-%% reference including the name of the attribute
--record( attr_addr,
+-record( ref,
 {
     site        = [],
     path        = [],
@@ -91,58 +84,48 @@
     name        = undef
 }).
 
--record( hypnum_item,
+-record( hn_item,
 {
-    addr        = #attr_addr{},
+    addr        = #ref{},
     val         = []
 }).
 
--record(bindings,
+-record( dirty_cell,
 {
     index       = #index{},
-	page        = #page{},
-    type,
-	varname     = [],
-	value
-}).
-
--record(dirty_refs,
-{
-    index       = #index{},
-    timestamp
+    timestamp   = now()
 }).
 
 -record( dirty_hypernumbers,
 {
     index       = #index{},
-    timestamp
+    timestamp   = now()
  }).
 
--record( ref,
+-record( link_cell,
 {
-    ref_from    = #index{},
-    ref_to      = #index{},
-    details_from= #details_from{},
-    details_to  = #details_to{}
+    parent      = #index{}, 
+    child       = #index{}
 }).
 
--record( spriki,
+-record( outgoing_hn,
 {
-    index       = #index{},
-    value,
-    val_type,
-    status      = #status{},
-    num_format  = [],
-    disp_format = []
+    local       = #index{},
+    remote      = #index{},
+    biccie      = [],       %% A shared token
+    proxy       = [],
+    url         = [],
+    version     = 0         %% Version for structural updates
 }).
 
--record( hypernumbers,
+-record( incoming_hn,
 {
-    ref_from    = #index{},
-    value,
-    reftree     = [],
-    errors      = [],
-    refs        = []
+    remote     = #index{},  %% The address of the number
+    value,                  
+    deptree     = [],       %% Cells use in this numbers calculation
+    biccie      = [],       %% A shared token
+    version     = 0,        %% Version for structural updates
+    cells       = []        %% Cells that use this number
 }).
 
 -record( users,
