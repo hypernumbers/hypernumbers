@@ -29,6 +29,20 @@
 -include("handy_macros.hrl").
 
 
+conv(X, int) when is_integer(X) ->
+    X;
+conv(X, int) when is_float(X) ->
+    erlang:trunc(X);
+conv(X, int) when is_list(X) ->
+    erlang:trunc(tconv:to_num(X));
+conv(true, int) ->
+    1;
+conv(false, int) ->
+    0;
+
+conv(X, num) when is_number(X) ->
+    X.
+
 error('#NULL!')  -> throw({error, null});
 error('#DIV/0!') -> throw({error, div0});
 error('#VALUE!') -> throw({error, value});
@@ -200,15 +214,11 @@ normalize_ssref(Ssref) ->
           "/" ++ join(NewSsrefTokens, "/"),
           join(NewSsrefTokens, "/")).
 
-
 %% Returns {lexer_module, parser_module} to use as frontend.
 get_frontend() ->
-    R = os:getenv("MUIN_FRONTEND"),
-    ?COND(is_list(R),
-          {list_to_atom(R ++ "_lexer"), list_to_atom(R ++ "_parser")},
-          {muin_lexer, muin_parser}).
-
-
-%%% =====================
-%%% = Private functions =
-%%% =====================
+    case os:getenv("MUIN_FRONTEND") of
+        S when is_list(S) ->
+            {list_to_atom(S ++ "_lexer"), list_to_atom(S ++ "_parser")};
+        _Else ->
+            {muin_lexer, muin_parser}
+    end.

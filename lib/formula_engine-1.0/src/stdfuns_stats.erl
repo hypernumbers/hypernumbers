@@ -11,6 +11,8 @@
 -module(stdfuns_stats).
 
 -include("handy_macros.hrl").
+-include("typechecks.hrl").
+-import(muin_util, [conv/2]).
 
 -export([
          avedev/1,
@@ -57,9 +59,9 @@ average1(Nums) ->
 averagea(Vals) ->
     Flatvals = flatten(Vals),
     ?ensure_no_errvals(Flatvals),
-    MaybeNums = map(fun tonum/1, Flatvals),     % Can contain {error, value}
-                                                % tuples from tonum.
-    Nums = foldl(fun({error, value}, Acc) ->    % Convert them to 0s.
+    MaybeNums = map(fun(X) -> conv(X, num) end, Flatvals),
+    %% Now convert {error, value}s that may be there to 0s.
+    Nums = foldl(fun({error, value}, Acc) ->
                          Acc ++ [0];
                     (X, Acc) ->
                          Acc ++ [X]
@@ -70,20 +72,21 @@ averagea(Vals) ->
     average1(Nums).
 
 binomdist([Succn_, Trials_, Succprob, Cumul]) ->
-    ?ensure_numbers([Succn_, Trials, Succprob]),
+    ?ensure_numbers([Succn_, Trials_, Succprob]),
     Succn = erlang:trunc(Succn_),
     Trials = erlang:trunc(Trials_),
     ?ensure(Succn =< Trials, ?ERR_NUM),
     ?ensure_non_negative_ex(Succn, ?ERR_NUM),
-    ?ensure_non_negative_ex(Succprob),
+    ?ensure_non_negative_ex(Succprob, ?ERR_NUM),
     ?ensure(Succprob =< 1, ?ERR_NUM),
     ?ensure(is_boolean(Cumul), ?ERR_VAL),
     binomdist1(Succn, Trials, Succprob, Cumul).
 binomdist1(Ns, Nt, Ps, false) ->
-    combin(Nt, Ps) * power(Ps, Ns) * power((1 - Ps), (Nt - Ns));
+    stdfuns_math:combin([Nt, Ps]) * math:pow(Ps, Ns) * math:pow((1 - Ps),
+                                                                (Nt - Ns));
 %% TODO: Rewrite to tail-recursive.
 binomdist1(Ns, Nt, Ps, true) ->
-    binomdist(Ns, Nt, Ps, false) + binomdist(Ns - 1, Nt, Ps, true).
+    binomdist1(Ns, Nt, Ps, false) + binomdist1(Ns - 1, Nt, Ps, true).
 
 chidist([X, Degfree_]) ->
     ?ensure_numbers([X, Degfree_]),
@@ -107,19 +110,3 @@ expondist([X, Lamda, false]) when not (X < 0) ->
     exp(-1 * X / Lamda) / Lamda;
 expondist([X, Lamda, true]) when not (X < 0)  ->
     1 - exp(-1 * X / Lamda).
-
-
-
-
-%%% ----------------- %%%
-%%% Private functions %%%
-%%% ----------------- %%%
-
-tonum(N) when is_number(N) ->
-    N;
-tonum(true) ->
-    1;
-tonum(0) ->
-    false;
-tonum(S) when is_list(S) ->
-    tconv:to_num(S).
