@@ -139,7 +139,7 @@ make_err_val(X)            -> X.
 expected(Expected, Got) ->
     case Got of
         Expected ->
-            io:format("SUCCESS~nExpected : ~p~nGot         : ~p~n",[Expected,Got]),
+            io:format("SUCCESS~nExpected : ~p~nGot     : ~p~n",[Expected,Got]),
             {test, ok};
         _Else ->
             exit({"E:", Expected, "G:", Got})
@@ -150,7 +150,7 @@ expected2(Expected, Got) ->
     io:format("in test_util:expected2 Result is ~p~n",[Result]),
     case Result of
         true ->
-            io:format("SUCCESS~nExpected: ~p~nGot:     ~p~n",[Expected,Got]),
+            io:format("SUCCESS~nExpected : ~p~nGot     : ~p~n",[Expected,Got]),
             {test, ok};
         false ->
                 %%case file:open("C:/tmp/fails.txt", [append]) of

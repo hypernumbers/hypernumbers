@@ -8,13 +8,11 @@ FinalFormat
 CondFormat
 Col
 Format
-DateFormat
 FullFormat
 Tokens
+Token
 Escaped
 Cond
-Bits
-At
 Semicolon
 .
 
@@ -67,72 +65,61 @@ Unary 100 Escaped.
 
 Final -> FinalFormat : make_src('$1').
 
-Semicolon -> semicolon           : '$1'.
-Semicolon -> Semicolon semicolon : concat('$1','$2').
+Semicolon -> semicolon           : tr('semicolon 1','$1').
+Semicolon -> Semicolon semicolon : tr('semicolon 2',concat('$1','$2')).
 
-FinalFormat -> CondFormat Semicolon FinalFormat : lists:flatten(concat('$1','$2','$3')).
+FinalFormat -> CondFormat Semicolon FinalFormat : concat(verify('$1'),'$2','$3').
 
-FinalFormat -> CondFormat Semicolon  : lists:flatten(concat('$1','$2')).
-FinalFormat -> CondFormat            : '$1'.
-
-Bits -> Escaped : to_tk('$1').
-Bits -> Tokens  : to_tk('$1').
+FinalFormat -> CondFormat Semicolon  : concat(verify('$1'),'$2').
+FinalFormat -> CondFormat            : verify('$1').
 
 %% Set up the escaped character formats
-Escaped -> esc Tokens  : esc('$2').
-Escaped -> esc esc     : esc('$2').
+Escaped -> esc Token  : esc('$2').
+Escaped -> esc esc    : esc('$2').
 
 %% you can skip either or both of Condition or Col with a format
-CondFormat -> Cond FullFormat : concat2('$1','$2').
+CondFormat -> Cond FullFormat : concat('$1','$2').
 CondFormat -> FullFormat      : '$1'.
 
 Cond -> condition : make_cond('$1').
 
-Format -> format       : verify('$1').
-Format -> fraction     : '$1'.
-Format -> Bits         : verify('$1').
-Format -> Format Bits  : verify(concat2('$1','$2')).
+Format -> Tokens        : '$1'.
+Format -> fraction      : '$1'.
+%%Format -> Format Format : concat('$1','$2').
 
-FullFormat -> Format            : '$1'.
-FullFormat -> Format percent    : concat2('$1','$2').
-FullFormat -> Bits Format       : concat2('$1','$2').
-FullFormat -> Col FullFormat    : concat2('$1','$2').
-FullFormat -> DateFormat        : '$1'.
-FullFormat -> Bits DateFormat   : concat2('$1','$2').
-FullFormat -> format DateFormat : concat2(fix_up('$1'),'$2').
-FullFormat -> At                : '$1'.
-FullFormat -> Bits At           : concat2('$1','$2').
+FullFormat -> Format                : '$1'.
+FullFormat -> Format percent        : concat('$1','$2').
+FullFormat -> Col FullFormat        : concat('$1','$2').
 
 %% Set up the numerical formats
-Tokens -> space        : '$1'.
-Tokens -> forwardslash : '$1'.
-Tokens -> minus        : '$1'.
-Tokens -> underscore   : '$1'.
-Tokens -> colon        : '$1'.
-Tokens -> string       : strip('$1').
-Tokens -> char         : '$1'.
-Tokens -> dollar       : '$1'.
-Tokens -> plus         : '$1'.
-Tokens -> open_bra     : '$1'.
-Tokens -> close_ket    : '$1'.
+Token -> format       : '$1'.
+Token -> space        : '$1'.
+Token -> forwardslash : '$1'.
+Token -> minus        : '$1'.
+Token -> underscore   : '$1'.
+Token -> colon        : '$1'.
+Token -> string       : strip('$1').
+Token -> char         : '$1'.
+Token -> dollar       : '$1'.
+Token -> plus         : '$1'.
+Token -> open_bra     : '$1'.
+Token -> close_ket    : '$1'.
 
-%% Date Formats
-DateFormat -> year         : '$1'.
-DateFormat -> mon_min      : '$1'.
-DateFormat -> mon          : '$1'.
-DateFormat -> day          : '$1'.
-DateFormat -> hour         : '$1'.
-DateFormat -> sec          : '$1'.
-DateFormat -> ampm         : '$1'.
+%% And Date Formats
+Token -> year         : '$1'.
+Token -> mon_min      : '$1'.
+Token -> mon          : '$1'.
+Token -> day          : '$1'.
+Token -> hour         : '$1'.
+Token -> sec          : '$1'.
+Token -> ampm         : '$1'.
 
-DateFormat -> DateFormat DateFormat : concat2('$1','$2').
-DateFormat -> DateFormat Bits       : concat2('$1','$2').
-DateFormat -> DateFormat format     : concat2('$1',fix_up('$2')).
+%% and text token
+Token -> at           : '$1'.
 
-Tokens -> Tokens Tokens  : concat_tk('$1','$2').
-
-At -> at      : '$1'.
-At -> at Bits : concat('$1','$2').
+Tokens -> Token Tokens : concat('$1','$2').
+Tokens -> Token        : '$1'. 
+Tokens -> Escaped      : '$1'.
 
 Col -> colour : '$1'.
 
@@ -143,39 +130,108 @@ Erlang code.
 
 -include("ascii.hrl").
 
-dump(N,Content) ->
-  io:format("in Dump for ~p Content is ~p~n",[N,Content]),
-  Content.
+%%
+%% Some debugging functions
+%%
+dump([])    -> ok;
+dump([H|T]) ->
+  io:format("in dump H is ~p~n",[H]),
+  dump(T).
 
-verify(A) when is_list(A) -> verify(A,[],0);
-verify(A)                 -> verify([A],[],0).
+tr(Location,Term) ->
+  io:format("at ~p Term is ~p~n",[Location,Term]),
+  Term.
+
+%%
+%% 'Proper' functions
+%%
+verify(A) when is_list(A) ->
+  B=lists:flatten(A),
+  Return=case is_text(B) of
+    yes -> {text,B};
+    no  -> case is_date(B) of
+      yes -> {date,B};
+      no  -> verify_num(B)
+    end
+  end,
+  Return; % yes this is a clause end...
+verify(A) -> verify([A]). %% If 'A' is not a list make it so
+
+verify_num(A) when is_list(A) -> verify_num(A,[],0);
+verify_num(A)                 -> verify_num([A],[],0).
 
 %% There can be 0 or 1 decimal point - any more and its not valid...
-verify([],Acc,0)    -> lists:reverse(Acc);
-verify([],Acc,1)    -> lists:reverse(Acc);
-verify([],Acc,N)    -> {error, invalid_format};
-verify([H|T],Acc,N) -> verify(T,[H|Acc],N+get_decimals(H)).
+verify_num([],Acc,0)    -> {number,conv_to_num(Acc)}; % don't reverse list!
+verify_num([],Acc,1)    -> {number,conv_to_num(Acc)}; % don't reverse list!
+verify_num([],Acc,N)    -> exit(invalid_format);
+verify_num([H|T],Acc,N) ->
+  NewAcc=[H|Acc],
+  NewN=N+get_decimals(H),
+  verify_num(T,[H|Acc],N+get_decimals(H)).
 
-get_decimals({format,Format}) -> count(Format);
+conv_to_num(List) -> io:format("in conv_to_num List is ~p~n",[List]),
+                     conv_to_num(List,[]).
+
+conv_to_num([],Acc)                        -> Acc; % don't reverse list!
+conv_to_num([{colour,Colour}|T],Acc)       -> conv_to_num(T,[{colour,Colour}|Acc]);
+conv_to_num([{condition,Cond}|T],Acc)      -> conv_to_num(T,[{condition,Cond}|Acc]);
+conv_to_num([{percent,Perc}|T],Acc)        -> conv_to_num(T,[{percent,Perc}|Acc]);
+conv_to_num([{fraction,Frac}|T],Acc)       -> conv_to_num(T,[{fraction,Frac}|Acc]);
+conv_to_num([{string,String}|T],Acc)       -> conv_to_num(T,[{string,String}|Acc]);
+conv_to_num([{dollar,String}|T],Acc)       -> conv_to_num(T,[{string,String}|Acc]);
+conv_to_num([{minus,String}|T],Acc)        -> conv_to_num(T,[{string,String}|Acc]);
+conv_to_num([{plus,String}|T],Acc)         -> conv_to_num(T,[{string,String}|Acc]);
+conv_to_num([{forwardslash,String}|T],Acc) -> conv_to_num(T,[{string,String}|Acc]);
+conv_to_num([{open_bra,String}|T],Acc)     -> conv_to_num(T,[{string,String}|Acc]);
+conv_to_num([{close_ket,String}|T],Acc)    -> conv_to_num(T,[{string,String}|Acc]);
+conv_to_num([{colon,String}|T],Acc)        -> conv_to_num(T,[{string,String}|Acc]);
+conv_to_num([{space,String}|T],Acc)        -> conv_to_num(T,[{string,String}|Acc]);
+conv_to_num([{format,Format}|T],Acc)       -> conv_to_num(T,[{format,Format}|Acc]);
+conv_to_num([{char,"£"}|T],Acc)            -> conv_to_num(T,[{string,"£"}|Acc]);
+conv_to_num([{char,"*"}|T],Acc)            -> conv_to_num(T,Acc); % silently drop "*"'s
+conv_to_num([{underscore,UndS}|T],Acc)     -> conv_to_num(T,Acc); % silently drop "_"'s
+conv_to_num([{char,"."}|T],Acc)            -> conv_to_num(T,[{format,"."}|Acc]); % convert to format!
+conv_to_num([{char,","}|T],Acc)            -> conv_to_num(T,[{format,","}|Acc]); % convert to format!
+conv_to_num(Other,_Acc)                    -> io:format("in conv_to_num Other is ~p~n",[Other]),
+                                              exit(invalid_format).
+
+is_text(A) when is_list(A) -> is_text2(A);
+is_text(A)                 -> is_text2([A]).
+
+is_text2([])          -> no;
+is_text2([{at,_}|_T]) -> yes;
+is_text2([H|T])       -> is_text2(T).
+
+is_date(A) when is_list(A) -> is_date2(A);
+is_date(A)                 -> is_date([A]).
+
+is_date2([])               -> no;
+is_date2([{year,_}|_T])    -> yes;
+is_date2([{mon_min,_}|_T]) -> yes;
+is_date2([{mon,_}|_T])     -> yes;
+is_date2([{day,_}|_T])     -> yes;
+is_date2([{hour,_}|_T])    -> yes;
+is_date2([{sec,_}|_T])     -> yes;
+is_date2([{ampm,_}|_T])    -> yes;
+is_date2([H|T])            -> is_date2(T).
+
+get_decimals({format,Format}) -> count_dec(Format);
+get_decimals({char,"."})      -> 1;
 get_decimals(_)               -> 0.
 
-count(Format) -> count(Format,0).
+count_dec(Format) -> count_dec(Format,0).
 
-count([],N)             -> N;
-count([?ASC_FULLS|T],N) -> count(T,N+1);
-count([H|T],N)          -> count(T,N).
+count_dec([],N)             -> N;
+count_dec([?ASC_FULLS|T],N) -> count_dec(T,N+1);
+count_dec([H|T],N)          -> count_dec(T,N).
 
 fix_up({format,A}) -> {tokens,A}.
 
-to_tk({_,A}) -> {tokens,A}.
-
-concat_tk({_,A},{_,B}) -> {tokens,lists:concat([A,B])}.
+to_tk({_,A}) -> {token,A}.
 
 concat(A,B) -> [A,B].
 
 concat(A,B,C) -> [A,B,C].
-
-concat2(A,B) -> [A,B].
 
 esc(A) -> {char, A}.
 
@@ -186,7 +242,7 @@ make_cond({condition,String})->
 
 strip({string,A}) -> 
         A1 = string:strip(A,both,$"),%" syntax highlighting fix
-        {string2,A1}.
+        {string,A1}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                           %%
@@ -197,17 +253,36 @@ make_src(A) when is_list(A) -> make_src2(lists:flatten(A));
 make_src(A)                 -> make_src2([A]).
   
 make_src2(A) ->
-  Clauses=organise_clauses(A,[],[]),
-  gen_src(Clauses,[">0","<0","=0"]).
+  Clauses=organise_clauses(A),
+  io:format("in make_src Clauses are ~p~n",[Clauses]),
+  Return=gen_src(Clauses,[">0","<0","=0"]),
+  io:format("In make_src2 Return is ~p~n",[Return]),
+  Return.
 
-gen_src(Clauses,Defaults) -> gen_src(Clauses,Defaults,[]).
+gen_src(Clauses,Defaults) -> 
+  Return=gen_src(Clauses,Defaults,[]),
+  io:format("in gen_src~n-Clauses are ~p~n-Defaults are ~p~n Return is ~p~n",[Clauses,Defaults,Return]),
+  Return.
 
 %% generate the source from the list of clauses and the list of default clauses
 %% if there aren't enough conditions repeat the first one
-gen_src([],[],Acc)           -> gen_src2(lists:reverse(Acc));
-gen_src([],[H1|T1],Acc)      -> gen_src([],T1,[swap_cond(H1,lists:last(Acc))|Acc]); 
-gen_src([H1|T1],[],Acc)      -> gen_src(T1,[],[make_default(H1)|Acc]);
-gen_src([H1|T1],[H2|T2],Acc) -> gen_src(T1,T2,[make_default(H1,H2)|Acc]).
+gen_src([],[],Acc)           -> 
+  io:format("in gen_src (1) Acc is ~p~n",[Acc]),
+  gen_src2(lists:reverse(Acc));
+%% this is nasty to fix the ghastly 'feature' of sign swapping for explicity
+%% specified '<0' clauses - this one isn't and we 
+gen_src([],["<0"|T2],Acc)      -> 
+  io:format("in gen_src (2) T2 is ~p Acc is ~p~n",[T2,Acc]),  
+  gen_src([],T2,[swap_cond("dont swap sign",lists:last(Acc))|Acc]); 
+gen_src([],[H2|T2],Acc)      -> 
+  io:format("in gen_src (3) H2 is ~p T2 is ~p Acc is ~p~n",[H2,T2,Acc]),  
+  gen_src([],T2,[swap_cond(H2,lists:last(Acc))|Acc]); 
+gen_src([H1|T1],[],Acc)      -> 
+  io:format("in gen_src (4) H1 is ~p T1 is ~p Acc is ~p~n",[H1,T1,Acc]),  
+  gen_src(T1,[],[make_default(H1)|Acc]);
+gen_src([H1|T1],[H2|T2],Acc) ->
+  io:format("in gen_src (5) H1 is ~p T1 is ~p H2 is ~p T2 is ~p Acc is ~p~n",[H1,T1,H2,T2,Acc]),  
+  gen_src(T1,T2,[make_default(H1,H2)|Acc]).
 
 gen_src2(Clauses)->
   io:format("in format:get_src2 Clauses are ~p~n",[Clauses]),
@@ -216,7 +291,7 @@ gen_src2(Clauses)->
   Clause3=strip_semi(make_clause(lists:nth(3,Clauses))),  
   Clause4 = case length(Clauses) of
     3 -> default_clause();
-    4 -> drop_cond(lists:nth(4,Clauses))
+    4 -> strip_format(lists:nth(4,Clauses))
   end,
   io:format("in format:get_src2~n-1: ~p~n-2: ~p~n-3: ~p~n-4: ~p~n",
     [Clause1,Clause2,Clause3,Clause4]),
@@ -243,16 +318,43 @@ gen_src2(Clauses)->
       "   end.",
   lists:flatten(Src).
 
-drop_cond([{condition,Cond},{colour,Col}|Rest]) -> [{colour,Col}|Rest].
+strip_format([{condition,Text}|T]) -> T.
 
 strip_semi(String)->
   string:strip(String,right,$;).
 
-make_clause([{condition,Cond},{colour,Col}|Rest])->
-  Bits=io_lib:fwrite("~p",[Rest]),
+make_clause([{condition,Cond},{colour,Col}]) -> [{condition,Cond},{colour,Col}];
+make_clause([{condition,"<0"},{colour,Col},{Type,Format}]) ->
+   make_clause2([{condition,"<0"},{colour,Col},{Type,Format}]);
+make_clause([{condition,"=<0"},{colour,Col},{Type,Format}]) ->
+   make_clause2([{condition,"=<0"},{colour,Col},{Type,Format}]);
+%% this clause is a default clause and there should *NOT* have the sign change of
+%% a custom specified <0 clause
+%% you want someone to blame try billgates@microsoft.com
+make_clause([{condition,"dont swap sign"},{colour,Col},{Type,Format}]) ->
+   make_clause3([{condition,"<0"},{colour,Col},{Type,Format}]);
+make_clause([{condition,Cond},{colour,Col},{Type,Format}]) ->
+   make_clause3([{condition,Cond},{colour,Col},{Type,Format}]).
+
+%% if the conditional clause is less than (or in our case less than or equals) to zero
+%% then the Excel format automatically changes the sign of the number to positive!
+make_clause2([{condition,Cond},{colour,Col},{Type,Format}]) ->
+  io:format("in make_clause2 Cond is ~p Format is ~p~n",[Cond,Format]),
+  FormatClause={Type,Format},
+  Bits=io_lib:fwrite("~p",[FormatClause]),
+  Bits2=lists:flatten(Bits),
+  "X"++tart_up(Cond)++" -> {"++atom_to_list(Col)++",format:format(-X,"++Bits2++")};".
+
+%% this is the normal clause - but it also is picked up for automatically generated
+%% <0 clauses
+make_clause3([{condition,Cond},{colour,Col},{Type,Format}]) ->
+  io:format("in make_clause3 Cond is ~p Format is ~p~n",[Cond,Format]),
+  FormatClause={Type,Format},
+  Bits=io_lib:fwrite("~p",[FormatClause]),
   Bits2=lists:flatten(Bits),
   "X"++tart_up(Cond)++" -> {"++atom_to_list(Col)++",format:format(X,"++Bits2++")};".
-  
+
+
 default_clause() -> "{black,X};".
 
 %% tart_up just makes the condition clauses well behaved
@@ -273,6 +375,24 @@ make_default([{colour,Col}|R],Def)                  -> [{condition,Def},{colour,
 make_default([{condition,Cond}|R],_Def)             -> [{condition,Cond},{colour,black}|R];
 make_default(Plain,Def)                             -> [{condition,Def},{colour,black}|Plain].
 
-organise_clauses([],Acc1,Acc2)                -> lists:reverse([lists:reverse(Acc1)|Acc2]);
+organise_clauses(A) ->
+  Clauses=organise_clauses(A,[],[]),
+  Return=promote_subclauses(Clauses),
+  io:format("in organise_clauses~n-Clauses are ~p~n-Return is ~p~n",[Clauses,Return]),
+  Return.
+
+organise_clauses([],Acc1,Acc2)                -> [lists:reverse(Acc1)|Acc2]; % don't reverse the Acc!
 organise_clauses([{semicolon,_}|T],Acc1,Acc2) -> organise_clauses(T,[],[lists:reverse(Acc1)|Acc2]);
 organise_clauses([Other|T],Acc1,Acc2)         -> organise_clauses(T,[Other|Acc1],Acc2).
+
+promote_subclauses(A) -> promote_subclauses(A,[]).
+
+promote_subclauses([],Acc) -> Acc; % don't reverse the Acc!
+promote_subclauses([[{Type,[{condition,Cond},{colour,Col}|Rest]}]|T],Acc) ->
+  promote_subclauses(T,[[{condition,Cond},{colour,Col}|[{number,Rest}]]|Acc]);
+promote_subclauses([[{Type,[{condition,Cond}|Rest]}]|T],Acc) ->
+  promote_subclauses(T,[[{condition,Cond}|[{number,Rest}]]|Acc]);
+promote_subclauses([[{Type,[{colour,Col}|Rest]}]|T],Acc) ->
+  promote_subclauses(T,[[{colour,Col}|[{number,Rest}]]|Acc]);
+promote_subclauses([H|T],Acc) ->
+  promote_subclauses(T,[H|Acc]).

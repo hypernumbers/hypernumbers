@@ -12,8 +12,7 @@
 
 %% String -> integer.
 to_i(Str) when is_list(Str) ->
-    {ok, [Val], []} = io_lib:fread("~d", Str),
-    Val;
+    list_to_integer(Str);
 %% Number -> integer.
 to_i(Num) when is_number(Num) ->
     trunc(Num).
@@ -40,13 +39,11 @@ to_num(Str) when is_list(Str) ->
             end
     end.
 
-
-%% Integer -> string.
+%% Integer -> string. %Floats as well surely?
 to_s(Int) when is_integer(Int) ->
     integer_to_list(Int);
 to_s(Flt) when is_float(Flt) ->
-    NoCigar = float_to_list(Flt),
-    regexp:gsub(NoCigar, "(0|e|\\+|\\-)*", "");
+    float_to_list(Flt);
 to_s(Str) when is_list(Str) ->
     Str.
 
