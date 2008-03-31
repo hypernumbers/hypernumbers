@@ -111,8 +111,33 @@
            find,
            left,
            right,
-           
            concatenate,
            rept           
+          ]},
+
+         {stdfuns_logical,
+          [
+           eq,
+           neq,
+           lt,
+           gt,
+           lte,
+           gte,
+           'if',
+           'and',
+           %%iferror,
+           'not',
+           'or'
+          ]},
+
+         {stdfuns_stats,
+          [
+           avedev,
+           average,
+           averagea,
+           binomdist,
+           chidist,
+           exp,
+           expondist
           ]}
         ]).
