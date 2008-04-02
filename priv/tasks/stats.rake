@@ -17,7 +17,8 @@ end
 namespace :stats do
   task(:loc) do
     exceptions = [/yaws-1.74/, /mochi-1.0/, /muin_lexer.erl/,
-                  /muin_parser.erl/, /russian_lexer.erl/]
+                  /muin_parser.erl/, /russian_lexer.erl/,
+                  /jquery.js/]
     puts "Scanning source directories..."
     loc = 0
     ["lib", "include", "priv", "src"].map { |x| File.join(SVNROOT, x) }.each do |path|
