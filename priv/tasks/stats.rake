@@ -17,7 +17,7 @@ end
 namespace :stats do
   task(:loc) do
     exceptions = [/yaws-1.74/, /mochi-1.0/, /muin_lexer.erl/,
-                  /muin_parser.erl/, /russian_lexer.erl/,
+                  /muin_parser.erl/, /russian_lexer\./,
                   /jquery.js/]
     puts "Scanning source directories..."
     loc = 0
@@ -25,7 +25,7 @@ namespace :stats do
       Find.find(path) do |file|
         if exceptions.any? { |rx| rx.match(file) }
           Find.prune
-        elsif /(\.erl)$/.match(file)
+        elsif /(\.erl)$/.match(file) || /(\.yrl)/.match(file) || /(\.xrl)/.match(file)
           loc += getloc(file, /^%/)
         elsif /(\.rb)$/.match(file)
           loc += getloc(file, /^#/)
