@@ -15,7 +15,7 @@
     set_attribute/2, 
     set_cell/2,
     get_cell_info/4,
-    write_cell/2,       write_cell/5,
+    write_cell/5,
     get_hypernumber/9 
     ]).
 
@@ -79,7 +79,7 @@ set_cell(Addr, Val) ->
             {match, _, _} ->    util2:make_num(Value);
             nomatch ->          Value
         end,
-        write_cell(Addr,V)
+        write_cell(Addr,V,Val,[],[])
     end.
     
 %%%-----------------------------------------------------------------
@@ -88,12 +88,7 @@ set_cell(Addr, Val) ->
 %%% Description : writes a cell to the db, marks it
 %%%               dirty (trigger recalculations) and update
 %%%               references
-%%%-----------------------------------------------------------------
-write_cell(Addr,Value) ->
-    hn_db:del_links(to_index(Addr),child),
-    db_put(Addr,value,Value),
-    hn_db:mark_dirty(to_index(Addr),cell).
-    
+%%%-----------------------------------------------------------------    
 write_cell(Addr, Value, Formula, Parents, DepTree) ->
 
     {atomic,ok} = mnesia:transaction(fun() ->

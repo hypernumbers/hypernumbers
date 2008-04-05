@@ -25,7 +25,7 @@
 clear_db()->
     application:stop(mnesia),
     application:stop(engine),
-    load_db:create_db(persistent),
+    hn_loaddb:create_db(persistent),
     application:start(engine),
     application:start(remoting),
     {ok, "db cleared down"}.

@@ -120,7 +120,7 @@ process_GET(Arg,User,Page) ->
     end.
     
 %% REST queries to a page
-process_GET2(_Arg,{User,_},Page) when element(1,Page#page.ref) == page ->
+process_GET2(_Arg,_,Page) when element(1,Page#page.ref) == page ->
     Data = case Page#page.vars of
     [{pages}] ->
         {dir,[],[]}
@@ -280,7 +280,7 @@ import([{_Name,Tid}|T],Page)->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 api_create(Data, Page) ->
 
-    #page{site=Site,path=Path,ref=Ref,vars=Vars} = Page,
+    #page{site=Site,path=Path,ref=Ref,vars=_Vars} = Page,
     
     lists:map
     (
@@ -327,11 +327,11 @@ api_notify(Data,Page)->
     end,
     ok.
 
-api_change(Data,Page)->
+api_change(Data,_Page)->
 
     [ {biccie,[],       [Bic]},
       {notifyurl,[],    [Url]},
-      {registerurl,[],  [Self]},
+      {registerurl,[],  [_Self]},
       {type,[],         ["change"]},
       {value,[],        [Val]},
       {version,[],      [Version]}] = Data,

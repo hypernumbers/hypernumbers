@@ -35,7 +35,7 @@ loop(Socket)->
         self() ! gen_server:call(remoting_reg,{unregister}),
         loop(Socket);
 
-    {tcp, Socket, Msg} ->     
+    {tcp, Socket, _Msg} ->     
         self() ! {msg,"invalid message"},
         loop(Socket);
 

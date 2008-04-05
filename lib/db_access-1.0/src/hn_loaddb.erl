@@ -1,11 +1,9 @@
-%%%-------------------------------------------------------------------
-%%% File        : load_db.erl
-%%% Author      : Gordon Guthrie <gordonguthrie@backawinner.gg>
-%%% Description :
-%%%
-%%% Created     : 12 Nov 2006 by Gordon Guthrie <gordon@psyduck.local>
-%%%-------------------------------------------------------------------
--module(load_db).
+%%%-----------------------------------------------------------------------------
+%%% File        : hn_loaddb.erl
+%%% Author      : Dale Harvey <dale@hypernumbers.com>
+%%% Description : Sets up database
+%%%-----------------------------------------------------------------------------
+-module(hn_loaddb).
 
 -include("spriki.hrl").
 
@@ -30,9 +28,9 @@ create_db(Type)->
         [{Storage, [node()]},{type,set},
          {attributes, record_info(fields, hn_item)}]),
     
-    {atomic,ok} = mnesia:create_table(link_cell,
+    {atomic,ok} = mnesia:create_table(local_cell_link,
         [{Storage, [node()]},{type,bag},
-	 {attributes, record_info(fields, link_cell)}]),
+	 {attributes, record_info(fields, local_cell_link)}]),
     
     {atomic,ok} = mnesia:create_table(users,
         [{Storage, [node()]},{type,bag},
@@ -57,9 +55,5 @@ create_db(Type)->
     {atomic,ok} = mnesia:create_table(outgoing_hn,
         [{Storage, [node()]},{type,bag},
          {attributes, record_info(fields, outgoing_hn)}]),
-                    
-
-    users:create("admin","admin",superuser),
-    users:create("user","user"),
     
     ok.

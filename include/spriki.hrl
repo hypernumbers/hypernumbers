@@ -102,7 +102,7 @@
     timestamp   = now()
  }).
 
--record( link_cell,
+-record( local_cell_link,
 {
     parent      = #index{}, 
     child       = #index{}

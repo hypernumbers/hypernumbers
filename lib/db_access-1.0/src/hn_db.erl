@@ -17,7 +17,7 @@
 -export([
     %% hn_item
     add_item/2,     get_item/1,     get_item_val/1,
-    %% link_cell
+    %% local_cell_link
   	write_link/2,   read_links/2,   del_links/2,
     %% hypernumbers
     register_hn/5,  update_hn/4,    get_hn/3,
@@ -130,8 +130,8 @@ get_item_val(Addr) ->
     end.
       
 %%-------------------------------------------------------------------
-%% Table : link_cell
-%% Def   : record(link_cell, {parent = #index{}, child = #index{}}).
+%% Table : local_cell_link
+%% Def   : record(local_cell_link, {parent = #index{}, child = #index{}}).
 %% Desc  : Creates a link between 2 cells, the child is using the
 %%         parents value in a calculation
 %%-------------------------------------------------------------------
@@ -143,7 +143,7 @@ get_item_val(Addr) ->
 write_link(Parent,Child) ->
 
     {atomic , ok} = mnesia:transaction(fun()-> 
-        mnesia:write(#link_cell{ parent=Parent, child=Child })
+        mnesia:write(#local_cell_link{ parent=Parent, child=Child })
     end),  
 	ok.	
 
@@ -155,8 +155,8 @@ write_link(Parent,Child) ->
 read_links(Index, Relation) ->
     
     Obj = ?COND(Relation == child,
-        {link_cell,'_',Index},
-        {link_cell,Index,'_'}),
+        {local_cell_link,'_',Index},
+        {local_cell_link,Index,'_'}),
     
     {atomic, List} = mnesia:transaction(fun() ->
         mnesia:match_object(Obj)
@@ -171,8 +171,8 @@ read_links(Index, Relation) ->
 del_links(Index, Relation) ->
 
     Obj = ?COND(Relation == child,
-        {link_cell,'_',Index},
-        {link_cell,Index,'_'}),
+        {local_cell_link,'_',Index},
+        {local_cell_link,Index,'_'}),
     
     {atomic, ok} = mnesia:transaction(fun() ->
         mnesia:dirty_delete_object(Obj)
@@ -205,7 +205,7 @@ dirty_refs_changed(dirty_cell, Ref) ->
         
         %% Update local cells
         lists:foreach(
-            fun({link_cell, _, RefTo}) ->
+            fun({local_cell_link, _, RefTo}) ->
                 hn_main:recalc(RefTo)
             end,
             read_links(Ref,parent) 
@@ -220,7 +220,7 @@ dirty_refs_changed(dirty_cell, Ref) ->
 %% This is called when a remote hypernumber changes
 dirty_refs_changed(dirty_hypernumbers, Ref) ->
 
-    {atomic, List} = mnesia:transaction(fun() ->
+    {atomic, ok} = mnesia:transaction(fun() ->
     
         [Obj] = mnesia:match_object(
             #incoming_hn{remote=Ref, _='_'}),       
@@ -257,14 +257,10 @@ get_first_dirty(Table)->
 %%               means cells that use its value needs to be 
 %%               recalculated (this triggers the recalc)
 %%--------------------------------------------------------------------
-mark_dirty(Index,Type) ->
-
-    Rec = ?COND(Type == cell,
-        #dirty_cell{index=Index},
-        #dirty_hypernumbers{index=Index}),
+mark_dirty(Index,_Type) ->
 
     {atomic, _Okay} = mnesia:transaction(fun() ->
-        mnesia:write(Rec)
+        mnesia:write(#dirty_cell{index=Index})
     end),
     ok.
 
@@ -284,9 +280,9 @@ mark_dirty(Index,Type) ->
 %%               the recalc, this is ran when an external site 
 %%               notifies us their number changed
 %%--------------------------------------------------------------------
-update_hn(From,Bic,Val,Version)->
+update_hn(From,Bic,Val,_Version)->
 
-    {atomic, List} = mnesia:transaction(fun() ->
+    {atomic, ok} = mnesia:transaction(fun() ->
     
         Index = hn_util:page_to_index(hn_util:parse_url(From)),
         Rec   = #incoming_hn{ remote = Index, biccie = Bic, _='_'},
@@ -385,7 +381,7 @@ notify_remote_change(Hn) ->
     
         #outgoing_hn{
             local  = From,
-            remote = To, 
+            remote = _To, 
             biccie = Bic,
             url    = Url,
             proxy  = Proxy } = Hn,

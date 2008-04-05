@@ -38,27 +38,25 @@ compile() ->
                 {i, App_rt_dir ++ "/lib/read_excel-1.0/include"},
                 {i, code:lib_dir(xmerl)++"/include"}],
 
-    Dirs = 
-        lists:flatten(lists:map(
-                        fun(X) ->
-                                lists:map(
-                                  fun(Y) -> {Y,X++"ebin"} end,
-                                  filelib:wildcard(X++"src/*.erl"))
-                        end,
-                        [App_rt_dir++"/lib/db_access-1.0/",
-                         App_rt_dir++"/lib/engine-1.0/",
-                         App_rt_dir++"/lib/hypernumbers.com-1.0/",
-                         App_rt_dir++"/lib/formula_engine-1.0/",
-                         App_rt_dir++"/lib/read_excel-1.0/",
-                         App_rt_dir++"/lib/remoting-1.0/",
-                         App_rt_dir++"/lib/utilities-1.0/",
-                         App_rt_dir++"/lib/mochi-1.0/"])),
+    Dirs = lists:flatten(lists:map(
+        fun(X) ->
+            lists:map(
+                fun(Y) -> {Y,X++"ebin"} end,
+                filelib:wildcard(X++"src/*.erl"))
+        end,
+        [App_rt_dir++"/lib/db_access-1.0/",
+         App_rt_dir++"/lib/engine-1.0/",
+         App_rt_dir++"/lib/hypernumbers.com-1.0/",
+         App_rt_dir++"/lib/formula_engine-1.0/",
+         App_rt_dir++"/lib/read_excel-1.0/",
+         App_rt_dir++"/lib/remoting-1.0/",
+         App_rt_dir++"/lib/utilities-1.0/",
+         App_rt_dir++"/lib/mochi-1.0/"])),
     
     Extra = [
              {App_rt_dir++"priv/muin/leex.erl",App_rt_dir++"ebin"},
              {App_rt_dir++"src/bits.erl",App_rt_dir++"ebin"},
              {App_rt_dir++"src/production_boot.erl",App_rt_dir++"ebin"},
-             {App_rt_dir++"src/load_db.erl",App_rt_dir++"ebin"},
              {App_rt_dir++"src/test_util.erl",App_rt_dir++"ebin"}],
     
     compile_funcs(Dirs++Extra, Inc_list).
