@@ -7,6 +7,8 @@
 -export([gen/0]).
 -import(file, [copy/2, delete/1, get_cwd/0, rename/2]).
 -define(P(X), io:format("*****" ++ X ++ "~n")).
+-define(FRONTENDS,
+        ["russian", "french", "german", "italian", "spanish", "portuguese"]).
 
 gen() ->
     DestDir = "../../lib/formula_engine-1.0/src/",
@@ -28,30 +30,38 @@ gen() ->
     %% Generate super lexer.
     leex:gen(superlex, superlex),
     ?P("Generated super lexer!"),
-    
-    %% Generate Russian front-end.
-    {ok, CurrDir} = get_cwd(),
-    copy(CurrDir ++ "/language_frontends/russian_lexer.xrl",
-         CurrDir ++ "/russian_lexer.xrl"),
-    leex:gen(russian_lexer, russian_lexer),
-    ?P("Generated Russian front-end"),
+
+    %% Generate frontends.
+    lists:foreach(fun(X) -> gen_frontend(X) end,
+                  ?FRONTENDS),
 
     %% Move the generated files to the right directory.
     delete(DestDir ++ "muin_lexer.erl"),
     delete(DestDir ++ "muin_parser.erl"),
     delete(DestDir ++ "muin_supd_lexer.erl"),
     delete(DestDir ++ "superlex.erl"),
-    delete(DestDir ++ "russian_lexer.erl"),
+    lists:foreach(fun(X) -> delete(DestDir ++ X ++ "_lexer.erl") end,
+                  ?FRONTENDS),
+        
     delete(DestDir ++ "num_format_lexer.erl"),
     delete(DestDir ++ "num_format_parser.erl"),
     rename("muin_lexer.erl", DestDir ++ "muin_lexer.erl"),
     rename("muin_parser.erl", DestDir ++ "muin_parser.erl"),
     rename("muin_supd_lexer.erl", DestDir ++ "muin_supd_lexer.erl"),
     rename("superlex.erl", DestDir ++ "superlex.erl"),
-    rename("russian_lexer.erl", DestDir ++ "russian_lexer.erl"),
+    lists:foreach(fun(X) -> rename(X ++ "_lexer.erl", DestDir ++ X ++ "_lexer.erl") end,
+                  ?FRONTENDS),
     rename("num_format_lexer.erl", DestDir ++ "num_format_lexer.erl"),
     rename("num_format_parser.erl", DestDir ++ "num_format_parser.erl"),
 
-    delete("russian_lexer.erl"),
+    lists:foreach(fun(X) -> delete(X ++ "_lexer.erl") end,
+                  ?FRONTENDS),
     
     ?P("OK").
+
+gen_frontend(Lang) ->
+    {ok, Currdir} = get_cwd(),
+    copy(Currdir ++ "/language_frontends/" ++ Lang ++ "_lexer.xrl",
+         Currdir ++ "/" ++ Lang ++ "_lexer.xrl"),
+    leex:gen(list_to_atom(Lang ++ "_lexer"), list_to_atom(Lang ++ "_lexer")),
+    ?P("Generated " ++ string:to_upper([hd(Lang)]) ++ tl(Lang) ++ " frontend").
