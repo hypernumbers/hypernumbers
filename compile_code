@@ -1,27 +1,34 @@
 #!/bin/sh
 
-echo "=================="
-echo "COMPILING STARLING"
-echo "=================="
+# Pass any parameter to this script for quick compile (only recompile the main 
+# app), e.g.: ./compile_code quick
 
-cd ./lib/starling/
-rake
-cd ../../
+if [ ! -n "$1" ] 
+then
+    echo "=================="
+    echo "COMPILING STARLING"
+    echo "=================="
+    cd ./lib/starling/
+    rake
+    cd ../../
+    echo "OK"
 
-echo "============================="
-echo "GENERATING LEXERS AND PARSERS"
-echo "============================="
-# Generate lexers and parsers.
-cd ./priv/muin/
-erlc generate.erl
-erl -noshell -s generate gen -s init stop
-cd ../../
+    echo "============================="
+    echo "GENERATING LEXERS AND PARSERS"
+    echo "============================="
+    cd ./priv/muin/
+    erlc generate.erl
+    erl -noshell -s generate gen -s init stop
+    cd ../../
+    echo "OK"
+fi
 
 echo
 echo "======================"
 echo "COMPILING BUILD SCRIPT"
 echo "======================"
 erlc -o ebin src/compile_code.erl
+echo "OK"
 
 echo
 echo "================"
@@ -29,3 +36,4 @@ echo "    BUILDING    "
 echo "================"
 cd ebin
 erl -pa ebin -noshell -s compile_code -s init stop
+echo "OK"
