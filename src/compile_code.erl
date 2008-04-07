@@ -77,7 +77,7 @@ comp_lists([{File, Opt}|T], OldStatus) ->
     [debug_info, {outdir, Dir} | _] = Options,
     filelib:ensure_dir(Dir ++ "/"),
     
-    case uptodate(File) of
+    case uptodate(File, Dir) of
         false ->
             NewStatus = compile:file(File, Options),
             case NewStatus of
@@ -100,12 +100,12 @@ comp_lists([], Status) ->
 	Status.
 
 %% Is the beam older than the erl file?
-uptodate(File) ->
+uptodate(File, Dir) ->
     %% Find the beam corresponding to this erl file.
     Comps = string:tokens(File, "/"), % Path components
     Erlfile = last(Comps),
     Modname = sublist(Erlfile, length(Erlfile) - 4), % 4 <-> ".erl"
-    Beam = "/" ++ string:join(?init(?init(Comps)), "/") ++ "/ebin/" ++ Modname ++ ".beam",
+    Beam = Dir ++ "/" ++ Modname ++ ".beam",
     %% Get last modified times for beam and erl and compare them.
     Filelastmod = filelib:last_modified(File),
     Beamlastmod = filelib:last_modified(Beam),
