@@ -1,4 +1,3 @@
-%%% Any macros that expand to **code** and are handy.
 %%% Hasan Veldstra <hasan@hypernumbers.com>
 
 %% Import most useful functions from lists.
@@ -19,6 +18,7 @@
                 nth/2,
                 reverse/1,
                 seq/2,
+                sublist/2,
                 sublist/3,
                 takewhile/2,
                 zip/2]).
