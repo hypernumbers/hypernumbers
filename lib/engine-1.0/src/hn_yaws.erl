@@ -63,8 +63,8 @@ out(Arg) -> try
 
         %% If POST has nothing to return, handle GET
         case PostResult of
-        ok -> process_GET(Arg,{User,Perms},Page);
-        {ok,Content} ->        format_output(Page#page.format,Content);
+        ok                  -> process_GET(Arg,{User,Perms},Page);
+        {ok,Content}        -> format_output(Page#page.format,Content);
         {ok,Content,Cookie} -> [format_output(Page#page.format,Content),Cookie]
         end
     end
