@@ -71,8 +71,9 @@ out(Arg) -> try
 
     %% Globally catch any errors during processing
     catch
-    _:Err -> io:format("Error:~p~n~p",[
-        Err,erlang:get_stacktrace()]),{html,"error"}
+    _:Err -> 
+        io:format("Error:~p~n~p",[Err,erlang:get_stacktrace()]),
+        {status,400}
     end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -86,9 +87,9 @@ process_GET(_Arg,_User,#page{ref={page,_},vars=[]}) ->
 
 process_GET(Arg,User,Page) ->
     
-    case lists:member({attr},Page#page.vars) of
-    true ->
+    {Format,Data} = case request_type(Page) of
     
+    attribute ->
         Addr = page_to_ref(Page),
         
         %% Bit ugly, some values are simplexml lists, others
@@ -113,46 +114,68 @@ process_GET(Arg,User,Page) ->
             hn_db:get_item(Addr)
         ),
         
-        format_output(Page#page.format,{attr,[],List});
+        {Page#page.format,{attr,[],List}};
         
-    false ->
-        process_GET2(Arg,User,Page)
-    end.
-    
-%% REST queries to a page
-process_GET2(_Arg,_,Page) when element(1,Page#page.ref) == page ->
-    Data = case Page#page.vars of
-    [{pages}] ->
-        {dir,[],[]}
-        %create_pages_tree(db:read_pages(Page#page.site))
+    pages ->
+        {Page#page.format,{dir,[],[]}};
+        
+    hypernumber ->
+        Addr = page_to_ref(Page),
+        
+        F = fun(Name) -> 
+            hn_db:get_item_val(Addr#ref{name=Name})
+        end,
+          
+        {Page#page.format,{hypernumber,[],[
+            {value,[], [hn_util:text(F(value))]},
+            {'dependancy-tree',[],F('dependancy-tree')}
+        ]}};
+                
+    reference -> 
+        case hn_db:get_item(page_to_ref(Page)) of
+        []   -> {{plain},"0"};
+        List -> 
+            F = fun(X) -> 
+                ?COND((X#hn_item.addr)#ref.name == value,true,false)
+            end,
+            
+            Val = case lists:filter(F,List) of
+            [] -> 0;
+            [#hn_item{val=Value}] -> Value
+            end,
+            
+            {{plain}, hn_util:text(Val)}
+        end
     end,
-    format_output(Page#page.format,Data);
-
-process_GET2(_Arg,_User,Page) ->
-
-    Addr = page_to_ref(Page),
     
-    F = fun(Name) -> 
-        hn_db:get_item_val(Addr#ref{name=Name})
-    end,
-      
-    Xml = {hypernumber,[],[
-        {value,[], [hn_util:text(F(value))]},
-        {'dependancy-tree',[],F('dependancy-tree')}
-    ]},
-    
-    format_output(Page#page.format,Xml).
+    format_output(Format,Data).
 
 %% Utility GET functions
 %%--------------------------------------------------------------------
+request_type(Page) ->
+    Vars = Page#page.vars,
+    case lists:member({attr},Vars) of
+    true  -> attribute;
+    false ->
+        case lists:member({hypernumber},Vars) of
+        true  -> hypernumber;
+        false ->
+            case lists:member({pages},Vars) of
+            true  -> pages;
+            false -> reference
+            end
+        end
+    end.        
+
 page_to_ref(#page{site=Site, path=Path, ref=Ref}) ->
     #ref{site=Site, path=Path, ref=Ref}.
 
 %% Format the output depending on the requested format.
 format_output(Format,Data) ->
     case Format of
-    {xml}  -> {content,"text/xml",simplexml:to_xml_string(Data)};
-    {json} -> {content,"text/plain",simplexml:to_json_string(Data)};
+    {xml}   -> {content,"text/xml",simplexml:to_xml_string(Data)};
+    {json}  -> {content,"text/plain",simplexml:to_json_string(Data)};
+    {plain} -> {content,"text/plain",Data};
     {json,nocallback} -> 
         {content,"text/plain","hn("++simplexml:to_json_string(Data)++");"}
     end.

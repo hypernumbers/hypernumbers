@@ -18,7 +18,8 @@
     %% hn_item
     add_item/2,     get_item/1,     get_item_val/1,
     %% local_cell_link
-  	write_link/2,   read_links/2,   del_links/2,
+  	read_links/2,   del_links/2,    write_local_link/2,
+  	write_remote_link/3,
     %% hypernumbers
     register_hn/5,  update_hn/4,    get_hn/3,
   	%% dirty tables
@@ -136,11 +137,11 @@ get_item_val(Addr) ->
 %%         parents value in a calculation
 %%-------------------------------------------------------------------
 %%--------------------------------------------------------------------
-%% Function    : write_link/2
+%% Function    : write_local_link/2
 %%
 %% Description : 
 %%--------------------------------------------------------------------
-write_link(Parent,Child) ->
+write_local_link(Parent,Child) ->
 
     {atomic , ok} = mnesia:transaction(fun()-> 
         mnesia:write(#local_cell_link{ parent=Parent, child=Child })
@@ -179,6 +180,20 @@ del_links(Index, Relation) ->
     end),
     ok.
 
+
+%%--------------------------------------------------------------------
+%% Function    : write_local_link/2
+%%
+%% Description : 
+%%--------------------------------------------------------------------
+write_remote_link(Parent,Child,Type) ->
+
+    {atomic , ok} = mnesia:transaction(fun()-> 
+        mnesia:write(#remote_cell_link{ parent=Parent, child=Child, 
+            type=Type })
+    end),  
+	ok.	
+	
 %%-------------------------------------------------------------------
 %% Table : dirty_cell , dirty_hypernumbers
 %% Def   : 

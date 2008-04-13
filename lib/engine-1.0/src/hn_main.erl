@@ -57,9 +57,11 @@ set_cell(Addr, Val) ->
                      
                 %% Transform parents and deptree from tuple list to
                 %% simplexml
-                F = fun({S,P,X1,Y1}) ->
-                    {url,[],[hn_util:index_to_url({index,S,P,X1,Y1})]}
-                end,     
+                F = fun({Type,{S,P,X1,Y1}}) ->
+                    Url = hn_util:index_to_url({index,S,P,X1,Y1}),
+                    {url,[{type,Type}],[Url]}
+                end,
+  
                 NPar = lists:map(F,Parents),
                 NDep = lists:map(F,DepTree),
 
@@ -104,16 +106,21 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
         
         %% Delete the references
         hn_db:del_links(Index,child),
-    
+            
         lists:map( 
-            fun({url,[],[Url]}) ->
-                #page{site=Site,path=Path,ref={cell,{X,Y}}} 
-                    = hn_util:parse_url(Url),
-                hn_db:write_link({index,Site,Path,X,Y},Index)
+            fun({url,[{type,Type}],[Url]}) ->
+                #page{site=Site,path=Path,ref={cell,{X,Y}}} = hn_util:parse_url(Url),
+                Parent = {index,Site,Path,X,Y},
+                case Type of
+                "local"  -> hn_db:write_local_link(Parent,Index);
+                "remote" -> hn_db:write_remote_link(Parent,Index,incoming)
+                end,
+                ok
             end,
             Parents),
             
-        hn_db:mark_dirty(Index,cell)   
+        hn_db:mark_dirty(Index,cell)
+        
     end),       
     ok.
     
@@ -132,8 +139,15 @@ get_cell_info(Site,Path,X,Y) ->
     DepTree = get_val(hn_db:get_item(Ref#ref{name='dependancy-tree'})),   
      
     Val = ?COND(Value == [],0,Value),
+        
+    F = fun({url,[{type,Type}],[Url]}) ->
+        #page{site=S,path=P,ref={cell,{X1,Y1}}} = hn_util:parse_url(Url),
+        {Type,{S,P,X1,Y1}}
+    end,
     
-    cell_info({Site,Path,X,Y},Val,DepTree).
+    Dep = lists:map(F,DepTree) ++ [{"local",{Site,Path,X,Y}}],
+    
+    {Val,Dep,[],[{"local",{Site,Path,X,Y}}]}.
        
 %%%-----------------------------------------------------------------
 %%% Function    : recalc/1
@@ -164,23 +178,19 @@ get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY)->
 
     #incoming_hn{value=V,deptree=T} = hn_db:get_hn(URL,Fr,To),
 
-    cell_info({FSite,FPath,FX,FY},V,T).
-
-%%%-----------------------------------------------------------------
-%%% Helper Functions
-%%%-----------------------------------------------------------------
-cell_info(Self,Value,Tree) ->
-
     F = fun({url,[],[Url]}) ->
         #page{site=S,path=P,ref={cell,{X,Y}}} 
             = hn_util:parse_url(Url),
         {S,P,X,Y}
     end,
     
-    Dep = lists:map(F,Tree) ++ [Self],
+    Dep = lists:map(F,T) ++ [{"remote",{FSite,FPath,FX,FY}}],
     
-    {Value,Dep,[],[Self]}.
+    {V,Dep,[],[{"remote",{FSite,FPath,FX,FY}}]}.
 
+%%%-----------------------------------------------------------------
+%%% Helper Functions
+%%%-----------------------------------------------------------------
 get_val([]) -> [];
 get_val([#hn_item{val=Value}]) -> Value.
 

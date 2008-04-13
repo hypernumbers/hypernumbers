@@ -102,10 +102,17 @@
     timestamp   = now()
  }).
 
--record( local_cell_link,
+-record( local_cell_link,   %% Link 2 cells on the same sheet together
 {
     parent      = #index{}, 
     child       = #index{}
+}).
+
+-record( remote_cell_link,  %% Link a hypernumber with a cell,
+{                           %% is used to link both incoming and outgoing
+    parent      = #index{}, %% hypernumbers
+    child       = #index{},
+    type        = null      %% incoming or outgoing
 }).
 
 -record( outgoing_hn,

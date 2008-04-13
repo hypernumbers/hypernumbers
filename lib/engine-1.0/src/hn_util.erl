@@ -57,16 +57,16 @@ ref_to_str({range,{X1,Y1,X2,Y2}}) ->
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 req(Url) ->
-    {ok,{{_V,200,_R},_H,Body}} = http:request(get,{Url,[]},[],[]),
+    {ok,{{_V,_Status,_R},_H,Body}} = http:request(get,{Url,[]},[],[]),
     Body.
 
 post(Url,Data) ->
-    {ok, {{_V, 200,_R},_H,Body}} = 
+    {ok, {{_V,_Status,_R},_H,Body}} = 
         http:request(post,{Url,[],"text/plain",Data},[],[]),
     Body.
 
 post(Url,Data,Format) ->
-    {ok, {{_V, 200,_R},_H,Body}} =
+    {ok, {{_V, _Status,_R},_H,Body}} =
         http:request(post,{Url,[],Format,Data},[],[]),
     Body.
 
