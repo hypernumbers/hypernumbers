@@ -51,7 +51,9 @@ iserr(_) ->
 iserror([{error, X}]) ->
     ?COND(is_number(error_type([{error, X}])),
           true,
-          false).
+          false);
+iserror(_) ->
+    false.
 
 %% Returns TRUE if number is even, or FALSE if number is odd.
 %% The number is truncated, so ISEVEN(2.5) is true.
