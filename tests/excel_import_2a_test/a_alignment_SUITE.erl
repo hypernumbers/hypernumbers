@@ -82,7 +82,7 @@ sheet1_a1_test(_Config) ->
 sheet1_a2_test(doc) -> [{userdata,[{""}]}];
 sheet1_a2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","a2"),
-  Expected="<cell><value>"++"This is a cell A2 on Sheet1"++"</value></cell>",
+  Expected="<hypernumber><value>"++"This is a cell A2 on Sheet1"++"</value></hypernumber>",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   

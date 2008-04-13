@@ -137,12 +137,15 @@ make_err_val(?ErrValueInt) -> "#VALUE!";
 make_err_val(X)            -> X.
 
 expected(Expected, Got) ->
-    case Got of
-        Expected ->
-            io:format("SUCCESS~nExpected : ~p~nGot     : ~p~n",[Expected,Got]),
+    Expected2=yaws_api:url_encode(Expected),
+    Got2=yaws_api:url_encode(Got ),
+    case Got2 of
+        Expected2 ->
+            io:format("SUCCESS~nExpected : ~p~nGot     : ~p~n",
+                      [Expected2,Got2]),
             {test, ok};
         _Else ->
-            exit({"E:", Expected, "G:", Got})
+            exit({"E:", Expected2, "G:", Got2})
     end.
 
 expected2(Expected, Got) ->
