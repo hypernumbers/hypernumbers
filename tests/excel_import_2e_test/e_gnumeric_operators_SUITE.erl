@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_operators.xls
-% Generated on: Tue Mar 11 09:11:24 +0000 2008
+% Generated on: Sun Apr 13 20:22:48 +0100 2008
 
 -module(e_gnumeric_operators_SUITE).
 -compile(export_all).
@@ -75,182 +75,182 @@ assert_eql(X, Y) ->
 result_a5_test(doc) -> [{userdata,[{""}]}];
 result_a5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Result/","a5"),
-  Expected="<cell><value>"++"LTE"++"</value></cell>",
+  Expected="LTE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 result_a16_test(doc) -> [{userdata,[{""}]}];
 result_a16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Result/","a16"),
-  Expected="<cell><value>"++"Epsilon :"++"</value></cell>",
+  Expected="Epsilon :",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 result_a11_test(doc) -> [{userdata,[{""}]}];
 result_a11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Result/","a11"),
-  Expected="<cell><value>"++"EXP"++"</value></cell>",
+  Expected="EXP",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 result_a6_test(doc) -> [{userdata,[{""}]}];
 result_a6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Result/","a6"),
-  Expected="<cell><value>"++"NOT_EQUAL"++"</value></cell>",
+  Expected="NOT_EQUAL",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 result_a1_test(doc) -> [{userdata,[{""}]}];
 result_a1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Result/","a1"),
-  Expected="<cell><value>"++"EQUAL"++"</value></cell>",
+  Expected="EQUAL",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 result_a12_test(doc) -> [{userdata,[{""}]}];
 result_a12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Result/","a12"),
-  Expected="<cell><value>"++"CONCAT"++"</value></cell>",
+  Expected="CONCAT",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 result_a7_test(doc) -> [{userdata,[{""}]}];
 result_a7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Result/","a7"),
-  Expected="<cell><value>"++"ADD"++"</value></cell>",
+  Expected="ADD",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 result_a2_test(doc) -> [{userdata,[{""}]}];
 result_a2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Result/","a2"),
-  Expected="<cell><value>"++"GT"++"</value></cell>",
+  Expected="GT",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 result_a8_test(doc) -> [{userdata,[{""}]}];
 result_a8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Result/","a8"),
-  Expected="<cell><value>"++"SUB"++"</value></cell>",
+  Expected="SUB",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 result_a3_test(doc) -> [{userdata,[{""}]}];
 result_a3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Result/","a3"),
-  Expected="<cell><value>"++"LT"++"</value></cell>",
+  Expected="LT",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 result_a9_test(doc) -> [{userdata,[{""}]}];
 result_a9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Result/","a9"),
-  Expected="<cell><value>"++"MULT"++"</value></cell>",
+  Expected="MULT",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 result_a4_test(doc) -> [{userdata,[{""}]}];
 result_a4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Result/","a4"),
-  Expected="<cell><value>"++"GTE"++"</value></cell>",
+  Expected="GTE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 result_a10_test(doc) -> [{userdata,[{""}]}];
 result_a10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Result/","a10"),
-  Expected="<cell><value>"++"DIV"++"</value></cell>",
+  Expected="DIV",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 result_b16_test(doc) -> [{userdata,[{""}]}];
 result_b16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Result/","b16"),
-  Expected="<cell><value>"++"1.0e-006"++"</value></cell>",
+  Expected="1.0e-006",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 result_c5_test(doc) -> [{userdata,[{""}]}];
 result_c5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Result/","c5"),
-  Expected="<cell><value>"++"Success"++"</value></cell>",
+  Expected="Success",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 result_c11_test(doc) -> [{userdata,[{""}]}];
 result_c11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Result/","c11"),
-  Expected="<cell><value>"++"Success"++"</value></cell>",
+  Expected="Success",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 result_c6_test(doc) -> [{userdata,[{""}]}];
 result_c6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Result/","c6"),
-  Expected="<cell><value>"++"Success"++"</value></cell>",
+  Expected="Success",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 result_c1_test(doc) -> [{userdata,[{""}]}];
 result_c1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Result/","c1"),
-  Expected="<cell><value>"++"Success"++"</value></cell>",
+  Expected="Success",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 result_c12_test(doc) -> [{userdata,[{""}]}];
 result_c12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Result/","c12"),
-  Expected="<cell><value>"++"Success"++"</value></cell>",
+  Expected="Success",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 result_c7_test(doc) -> [{userdata,[{""}]}];
 result_c7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Result/","c7"),
-  Expected="<cell><value>"++"Success"++"</value></cell>",
+  Expected="Success",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 result_c2_test(doc) -> [{userdata,[{""}]}];
 result_c2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Result/","c2"),
-  Expected="<cell><value>"++"Success"++"</value></cell>",
+  Expected="Success",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 result_c8_test(doc) -> [{userdata,[{""}]}];
 result_c8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Result/","c8"),
-  Expected="<cell><value>"++"Success"++"</value></cell>",
+  Expected="Success",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 result_c3_test(doc) -> [{userdata,[{""}]}];
 result_c3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Result/","c3"),
-  Expected="<cell><value>"++"Success"++"</value></cell>",
+  Expected="Success",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 result_c9_test(doc) -> [{userdata,[{""}]}];
 result_c9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Result/","c9"),
-  Expected="<cell><value>"++"Success"++"</value></cell>",
+  Expected="Success",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 result_c4_test(doc) -> [{userdata,[{""}]}];
 result_c4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Result/","c4"),
-  Expected="<cell><value>"++"Success"++"</value></cell>",
+  Expected="Success",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 result_c10_test(doc) -> [{userdata,[{""}]}];
 result_c10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Result/","c10"),
-  Expected="<cell><value>"++"Success"++"</value></cell>",
+  Expected="Success",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   

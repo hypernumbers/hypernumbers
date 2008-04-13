@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_operators_concat.xls
-% Generated on: Tue Mar 11 09:11:26 +0000 2008
+% Generated on: Sun Apr 13 20:22:50 +0100 2008
 
 -module(e_gnumeric_operators_concat_SUITE).
 -compile(export_all).
@@ -75,9121 +75,9121 @@ assert_eql(X, Y) ->
 concat_k5_test(doc) -> [{userdata,[{""}]}];
 concat_k5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k5"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k16_test(doc) -> [{userdata,[{""}]}];
 concat_k16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k16"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k27_test(doc) -> [{userdata,[{""}]}];
 concat_k27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k27"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k38_test(doc) -> [{userdata,[{""}]}];
 concat_k38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k38"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k49_test(doc) -> [{userdata,[{""}]}];
 concat_k49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k60_test(doc) -> [{userdata,[{""}]}];
 concat_k60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k11_test(doc) -> [{userdata,[{""}]}];
 concat_k11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k22_test(doc) -> [{userdata,[{""}]}];
 concat_k22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k22"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k33_test(doc) -> [{userdata,[{""}]}];
 concat_k33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k44_test(doc) -> [{userdata,[{""}]}];
 concat_k44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k44"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k55_test(doc) -> [{userdata,[{""}]}];
 concat_k55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k66_test(doc) -> [{userdata,[{""}]}];
 concat_k66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k6_test(doc) -> [{userdata,[{""}]}];
 concat_k6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k17_test(doc) -> [{userdata,[{""}]}];
 concat_k17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k17"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k28_test(doc) -> [{userdata,[{""}]}];
 concat_k28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k39_test(doc) -> [{userdata,[{""}]}];
 concat_k39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k39"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k50_test(doc) -> [{userdata,[{""}]}];
 concat_k50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k61_test(doc) -> [{userdata,[{""}]}];
 concat_k61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k1_test(doc) -> [{userdata,[{""}]}];
 concat_k1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k1"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k12_test(doc) -> [{userdata,[{""}]}];
 concat_k12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k34_test(doc) -> [{userdata,[{""}]}];
 concat_k34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k56_test(doc) -> [{userdata,[{""}]}];
 concat_k56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k7_test(doc) -> [{userdata,[{""}]}];
 concat_k7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k18_test(doc) -> [{userdata,[{""}]}];
 concat_k18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k18"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k29_test(doc) -> [{userdata,[{""}]}];
 concat_k29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k40_test(doc) -> [{userdata,[{""}]}];
 concat_k40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k40"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k51_test(doc) -> [{userdata,[{""}]}];
 concat_k51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k62_test(doc) -> [{userdata,[{""}]}];
 concat_k62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k2_test(doc) -> [{userdata,[{""}]}];
 concat_k2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k2"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k13_test(doc) -> [{userdata,[{""}]}];
 concat_k13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k13"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k35_test(doc) -> [{userdata,[{""}]}];
 concat_k35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k35"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k57_test(doc) -> [{userdata,[{""}]}];
 concat_k57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k8_test(doc) -> [{userdata,[{""}]}];
 concat_k8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k19_test(doc) -> [{userdata,[{""}]}];
 concat_k19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k19"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k30_test(doc) -> [{userdata,[{""}]}];
 concat_k30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k41_test(doc) -> [{userdata,[{""}]}];
 concat_k41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k41"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k52_test(doc) -> [{userdata,[{""}]}];
 concat_k52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k63_test(doc) -> [{userdata,[{""}]}];
 concat_k63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k3_test(doc) -> [{userdata,[{""}]}];
 concat_k3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k3"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k14_test(doc) -> [{userdata,[{""}]}];
 concat_k14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k14"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k25_test(doc) -> [{userdata,[{""}]}];
 concat_k25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k25"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k36_test(doc) -> [{userdata,[{""}]}];
 concat_k36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k36"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k47_test(doc) -> [{userdata,[{""}]}];
 concat_k47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k58_test(doc) -> [{userdata,[{""}]}];
 concat_k58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k9_test(doc) -> [{userdata,[{""}]}];
 concat_k9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k20_test(doc) -> [{userdata,[{""}]}];
 concat_k20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k20"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k31_test(doc) -> [{userdata,[{""}]}];
 concat_k31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k42_test(doc) -> [{userdata,[{""}]}];
 concat_k42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k42"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k53_test(doc) -> [{userdata,[{""}]}];
 concat_k53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k64_test(doc) -> [{userdata,[{""}]}];
 concat_k64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k4_test(doc) -> [{userdata,[{""}]}];
 concat_k4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k4"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k15_test(doc) -> [{userdata,[{""}]}];
 concat_k15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k15"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k26_test(doc) -> [{userdata,[{""}]}];
 concat_k26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k26"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k37_test(doc) -> [{userdata,[{""}]}];
 concat_k37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k37"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k48_test(doc) -> [{userdata,[{""}]}];
 concat_k48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k59_test(doc) -> [{userdata,[{""}]}];
 concat_k59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k10_test(doc) -> [{userdata,[{""}]}];
 concat_k10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k21_test(doc) -> [{userdata,[{""}]}];
 concat_k21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k21"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k32_test(doc) -> [{userdata,[{""}]}];
 concat_k32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k43_test(doc) -> [{userdata,[{""}]}];
 concat_k43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k43"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k54_test(doc) -> [{userdata,[{""}]}];
 concat_k54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_k65_test(doc) -> [{userdata,[{""}]}];
 concat_k65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","k65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v5_test(doc) -> [{userdata,[{""}]}];
 concat_v5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v5"),
-  Expected="<cell><value>"++"FALSE36193.2"++"</value></cell>",
+  Expected="FALSE36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v16_test(doc) -> [{userdata,[{""}]}];
 concat_v16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v16"),
-  Expected="<cell><value>"++"2.736193.2"++"</value></cell>",
+  Expected="2.736193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v27_test(doc) -> [{userdata,[{""}]}];
 concat_v27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v27"),
-  Expected="<cell><value>"++"FALSE36193.2"++"</value></cell>",
+  Expected="FALSE36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v38_test(doc) -> [{userdata,[{""}]}];
 concat_v38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v38"),
-  Expected="<cell><value>"++"2.736193.2"++"</value></cell>",
+  Expected="2.736193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v49_test(doc) -> [{userdata,[{""}]}];
 concat_v49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v60_test(doc) -> [{userdata,[{""}]}];
 concat_v60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v11_test(doc) -> [{userdata,[{""}]}];
 concat_v11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v22_test(doc) -> [{userdata,[{""}]}];
 concat_v22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v22"),
-  Expected="<cell><value>"++"36193.236193.2"++"</value></cell>",
+  Expected="36193.236193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v33_test(doc) -> [{userdata,[{""}]}];
 concat_v33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v44_test(doc) -> [{userdata,[{""}]}];
 concat_v44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v44"),
-  Expected="<cell><value>"++"36193.236193.2"++"</value></cell>",
+  Expected="36193.236193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v55_test(doc) -> [{userdata,[{""}]}];
 concat_v55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v66_test(doc) -> [{userdata,[{""}]}];
 concat_v66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v6_test(doc) -> [{userdata,[{""}]}];
 concat_v6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v17_test(doc) -> [{userdata,[{""}]}];
 concat_v17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v17"),
-  Expected="<cell><value>"++"3.5436193.2"++"</value></cell>",
+  Expected="3.5436193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v28_test(doc) -> [{userdata,[{""}]}];
 concat_v28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v39_test(doc) -> [{userdata,[{""}]}];
 concat_v39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v39"),
-  Expected="<cell><value>"++"3.5436193.2"++"</value></cell>",
+  Expected="3.5436193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v50_test(doc) -> [{userdata,[{""}]}];
 concat_v50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v61_test(doc) -> [{userdata,[{""}]}];
 concat_v61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v1_test(doc) -> [{userdata,[{""}]}];
 concat_v1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v1"),
-  Expected="<cell><value>"++"Float"++"</value></cell>",
+  Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v12_test(doc) -> [{userdata,[{""}]}];
 concat_v12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v34_test(doc) -> [{userdata,[{""}]}];
 concat_v34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v56_test(doc) -> [{userdata,[{""}]}];
 concat_v56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v7_test(doc) -> [{userdata,[{""}]}];
 concat_v7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v18_test(doc) -> [{userdata,[{""}]}];
 concat_v18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v18"),
-  Expected="<cell><value>"++"3619236193.2"++"</value></cell>",
+  Expected="3619236193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v29_test(doc) -> [{userdata,[{""}]}];
 concat_v29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v40_test(doc) -> [{userdata,[{""}]}];
 concat_v40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v40"),
-  Expected="<cell><value>"++"3619236193.2"++"</value></cell>",
+  Expected="3619236193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v51_test(doc) -> [{userdata,[{""}]}];
 concat_v51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v62_test(doc) -> [{userdata,[{""}]}];
 concat_v62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v2_test(doc) -> [{userdata,[{""}]}];
 concat_v2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v2"),
-  Expected="<cell><value>"++"36193.2"++"</value></cell>",
+  Expected="36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v13_test(doc) -> [{userdata,[{""}]}];
 concat_v13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v13"),
-  Expected="<cell><value>"++"Liz36193.2"++"</value></cell>",
+  Expected="Liz36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v35_test(doc) -> [{userdata,[{""}]}];
 concat_v35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v35"),
-  Expected="<cell><value>"++"Liz36193.2"++"</value></cell>",
+  Expected="Liz36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v57_test(doc) -> [{userdata,[{""}]}];
 concat_v57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v8_test(doc) -> [{userdata,[{""}]}];
 concat_v8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v19_test(doc) -> [{userdata,[{""}]}];
 concat_v19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v19"),
-  Expected="<cell><value>"++"3619336193.2"++"</value></cell>",
+  Expected="3619336193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v30_test(doc) -> [{userdata,[{""}]}];
 concat_v30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v41_test(doc) -> [{userdata,[{""}]}];
 concat_v41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v41"),
-  Expected="<cell><value>"++"3619336193.2"++"</value></cell>",
+  Expected="3619336193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v52_test(doc) -> [{userdata,[{""}]}];
 concat_v52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v63_test(doc) -> [{userdata,[{""}]}];
 concat_v63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v3_test(doc) -> [{userdata,[{""}]}];
 concat_v3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v3"),
-  Expected="<cell><value>"++"36193.2"++"</value></cell>",
+  Expected="36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v14_test(doc) -> [{userdata,[{""}]}];
 concat_v14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v14"),
-  Expected="<cell><value>"++"Doug36193.2"++"</value></cell>",
+  Expected="Doug36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v25_test(doc) -> [{userdata,[{""}]}];
 concat_v25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v25"),
-  Expected="<cell><value>"++"36193.2"++"</value></cell>",
+  Expected="36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v36_test(doc) -> [{userdata,[{""}]}];
 concat_v36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v36"),
-  Expected="<cell><value>"++"Doug36193.2"++"</value></cell>",
+  Expected="Doug36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v47_test(doc) -> [{userdata,[{""}]}];
 concat_v47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v58_test(doc) -> [{userdata,[{""}]}];
 concat_v58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v9_test(doc) -> [{userdata,[{""}]}];
 concat_v9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v20_test(doc) -> [{userdata,[{""}]}];
 concat_v20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v20"),
-  Expected="<cell><value>"++"036193.2"++"</value></cell>",
+  Expected="036193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v31_test(doc) -> [{userdata,[{""}]}];
 concat_v31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v42_test(doc) -> [{userdata,[{""}]}];
 concat_v42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v42"),
-  Expected="<cell><value>"++"036193.2"++"</value></cell>",
+  Expected="036193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v53_test(doc) -> [{userdata,[{""}]}];
 concat_v53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v64_test(doc) -> [{userdata,[{""}]}];
 concat_v64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v4_test(doc) -> [{userdata,[{""}]}];
 concat_v4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v4"),
-  Expected="<cell><value>"++"TRUE36193.2"++"</value></cell>",
+  Expected="TRUE36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v15_test(doc) -> [{userdata,[{""}]}];
 concat_v15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v15"),
-  Expected="<cell><value>"++"Bob36193.2"++"</value></cell>",
+  Expected="Bob36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v26_test(doc) -> [{userdata,[{""}]}];
 concat_v26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v26"),
-  Expected="<cell><value>"++"TRUE36193.2"++"</value></cell>",
+  Expected="TRUE36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v37_test(doc) -> [{userdata,[{""}]}];
 concat_v37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v37"),
-  Expected="<cell><value>"++"Bob36193.2"++"</value></cell>",
+  Expected="Bob36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v48_test(doc) -> [{userdata,[{""}]}];
 concat_v48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v59_test(doc) -> [{userdata,[{""}]}];
 concat_v59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v10_test(doc) -> [{userdata,[{""}]}];
 concat_v10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v21_test(doc) -> [{userdata,[{""}]}];
 concat_v21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v21"),
-  Expected="<cell><value>"++"3.141536193.2"++"</value></cell>",
+  Expected="3.141536193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v32_test(doc) -> [{userdata,[{""}]}];
 concat_v32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v43_test(doc) -> [{userdata,[{""}]}];
 concat_v43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v43"),
-  Expected="<cell><value>"++"3.141536193.2"++"</value></cell>",
+  Expected="3.141536193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v54_test(doc) -> [{userdata,[{""}]}];
 concat_v54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_v65_test(doc) -> [{userdata,[{""}]}];
 concat_v65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","v65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a5_test(doc) -> [{userdata,[{""}]}];
 concat_a5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a5"),
-  Expected="<cell><value>"++"Boolean"++"</value></cell>",
+  Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a16_test(doc) -> [{userdata,[{""}]}];
 concat_a16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a16"),
-  Expected="<cell><value>"++"Str Num"++"</value></cell>",
+  Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a27_test(doc) -> [{userdata,[{""}]}];
 concat_a27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a27"),
-  Expected="<cell><value>"++"Boolean"++"</value></cell>",
+  Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a38_test(doc) -> [{userdata,[{""}]}];
 concat_a38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a38"),
-  Expected="<cell><value>"++"Str Num"++"</value></cell>",
+  Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a11_test(doc) -> [{userdata,[{""}]}];
 concat_a11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a11"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a22_test(doc) -> [{userdata,[{""}]}];
 concat_a22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a22"),
-  Expected="<cell><value>"++"Float"++"</value></cell>",
+  Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a33_test(doc) -> [{userdata,[{""}]}];
 concat_a33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a33"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a44_test(doc) -> [{userdata,[{""}]}];
 concat_a44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a44"),
-  Expected="<cell><value>"++"Float"++"</value></cell>",
+  Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a6_test(doc) -> [{userdata,[{""}]}];
 concat_a6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a6"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a17_test(doc) -> [{userdata,[{""}]}];
 concat_a17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a17"),
-  Expected="<cell><value>"++"Str Num"++"</value></cell>",
+  Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a28_test(doc) -> [{userdata,[{""}]}];
 concat_a28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a28"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a39_test(doc) -> [{userdata,[{""}]}];
 concat_a39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a39"),
-  Expected="<cell><value>"++"Str Num"++"</value></cell>",
+  Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a1_test(doc) -> [{userdata,[{""}]}];
 concat_a1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a1"),
-  Expected="<cell><value>"++"&"++"</value></cell>",
+  Expected="&",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a12_test(doc) -> [{userdata,[{""}]}];
 concat_a12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a12"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a34_test(doc) -> [{userdata,[{""}]}];
 concat_a34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a34"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a7_test(doc) -> [{userdata,[{""}]}];
 concat_a7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a7"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a18_test(doc) -> [{userdata,[{""}]}];
 concat_a18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a18"),
-  Expected="<cell><value>"++"Integer"++"</value></cell>",
+  Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a29_test(doc) -> [{userdata,[{""}]}];
 concat_a29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a29"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a40_test(doc) -> [{userdata,[{""}]}];
 concat_a40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a40"),
-  Expected="<cell><value>"++"Integer"++"</value></cell>",
+  Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a2_test(doc) -> [{userdata,[{""}]}];
 concat_a2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a2"),
-  Expected="<cell><value>"++"A"++"</value></cell>",
+  Expected="A",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a13_test(doc) -> [{userdata,[{""}]}];
 concat_a13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a13"),
-  Expected="<cell><value>"++"String"++"</value></cell>",
+  Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a35_test(doc) -> [{userdata,[{""}]}];
 concat_a35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a35"),
-  Expected="<cell><value>"++"String"++"</value></cell>",
+  Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a8_test(doc) -> [{userdata,[{""}]}];
 concat_a8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a8"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a19_test(doc) -> [{userdata,[{""}]}];
 concat_a19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a19"),
-  Expected="<cell><value>"++"Integer"++"</value></cell>",
+  Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a30_test(doc) -> [{userdata,[{""}]}];
 concat_a30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a30"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a41_test(doc) -> [{userdata,[{""}]}];
 concat_a41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a41"),
-  Expected="<cell><value>"++"Integer"++"</value></cell>",
+  Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a3_test(doc) -> [{userdata,[{""}]}];
 concat_a3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a3"),
-  Expected="<cell><value>"++"Blank"++"</value></cell>",
+  Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a14_test(doc) -> [{userdata,[{""}]}];
 concat_a14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a14"),
-  Expected="<cell><value>"++"String"++"</value></cell>",
+  Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a25_test(doc) -> [{userdata,[{""}]}];
 concat_a25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a25"),
-  Expected="<cell><value>"++"Blank"++"</value></cell>",
+  Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a36_test(doc) -> [{userdata,[{""}]}];
 concat_a36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a36"),
-  Expected="<cell><value>"++"String"++"</value></cell>",
+  Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a47_test(doc) -> [{userdata,[{""}]}];
 concat_a47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a47"),
-  Expected="<cell><value>"++"400.0"++"</value></cell>",
+  Expected="400.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a9_test(doc) -> [{userdata,[{""}]}];
 concat_a9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a9"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a20_test(doc) -> [{userdata,[{""}]}];
 concat_a20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a20"),
-  Expected="<cell><value>"++"Zero"++"</value></cell>",
+  Expected="Zero",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a31_test(doc) -> [{userdata,[{""}]}];
 concat_a31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a31"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a42_test(doc) -> [{userdata,[{""}]}];
 concat_a42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a42"),
-  Expected="<cell><value>"++"Zero"++"</value></cell>",
+  Expected="Zero",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a4_test(doc) -> [{userdata,[{""}]}];
 concat_a4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a4"),
-  Expected="<cell><value>"++"Boolean"++"</value></cell>",
+  Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a15_test(doc) -> [{userdata,[{""}]}];
 concat_a15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a15"),
-  Expected="<cell><value>"++"String"++"</value></cell>",
+  Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a26_test(doc) -> [{userdata,[{""}]}];
 concat_a26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a26"),
-  Expected="<cell><value>"++"Boolean"++"</value></cell>",
+  Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a37_test(doc) -> [{userdata,[{""}]}];
 concat_a37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a37"),
-  Expected="<cell><value>"++"String"++"</value></cell>",
+  Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a48_test(doc) -> [{userdata,[{""}]}];
 concat_a48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a48"),
-  Expected="<cell><value>"++"Success"++"</value></cell>",
+  Expected="Success",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a10_test(doc) -> [{userdata,[{""}]}];
 concat_a10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a10"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a21_test(doc) -> [{userdata,[{""}]}];
 concat_a21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a21"),
-  Expected="<cell><value>"++"Float"++"</value></cell>",
+  Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a32_test(doc) -> [{userdata,[{""}]}];
 concat_a32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a32"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_a43_test(doc) -> [{userdata,[{""}]}];
 concat_a43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","a43"),
-  Expected="<cell><value>"++"Float"++"</value></cell>",
+  Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l5_test(doc) -> [{userdata,[{""}]}];
 concat_l5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l5"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l16_test(doc) -> [{userdata,[{""}]}];
 concat_l16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l16"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l27_test(doc) -> [{userdata,[{""}]}];
 concat_l27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l27"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l38_test(doc) -> [{userdata,[{""}]}];
 concat_l38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l38"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l49_test(doc) -> [{userdata,[{""}]}];
 concat_l49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l60_test(doc) -> [{userdata,[{""}]}];
 concat_l60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l11_test(doc) -> [{userdata,[{""}]}];
 concat_l11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l22_test(doc) -> [{userdata,[{""}]}];
 concat_l22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l22"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l33_test(doc) -> [{userdata,[{""}]}];
 concat_l33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l44_test(doc) -> [{userdata,[{""}]}];
 concat_l44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l55_test(doc) -> [{userdata,[{""}]}];
 concat_l55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l66_test(doc) -> [{userdata,[{""}]}];
 concat_l66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l6_test(doc) -> [{userdata,[{""}]}];
 concat_l6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l17_test(doc) -> [{userdata,[{""}]}];
 concat_l17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l17"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l28_test(doc) -> [{userdata,[{""}]}];
 concat_l28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l39_test(doc) -> [{userdata,[{""}]}];
 concat_l39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l39"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l50_test(doc) -> [{userdata,[{""}]}];
 concat_l50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l61_test(doc) -> [{userdata,[{""}]}];
 concat_l61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l1_test(doc) -> [{userdata,[{""}]}];
 concat_l1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l1"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l12_test(doc) -> [{userdata,[{""}]}];
 concat_l12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l34_test(doc) -> [{userdata,[{""}]}];
 concat_l34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l56_test(doc) -> [{userdata,[{""}]}];
 concat_l56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l7_test(doc) -> [{userdata,[{""}]}];
 concat_l7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l18_test(doc) -> [{userdata,[{""}]}];
 concat_l18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l18"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l29_test(doc) -> [{userdata,[{""}]}];
 concat_l29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l40_test(doc) -> [{userdata,[{""}]}];
 concat_l40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l40"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l51_test(doc) -> [{userdata,[{""}]}];
 concat_l51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l62_test(doc) -> [{userdata,[{""}]}];
 concat_l62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l2_test(doc) -> [{userdata,[{""}]}];
 concat_l2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l2"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l13_test(doc) -> [{userdata,[{""}]}];
 concat_l13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l13"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l35_test(doc) -> [{userdata,[{""}]}];
 concat_l35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l35"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l57_test(doc) -> [{userdata,[{""}]}];
 concat_l57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l8_test(doc) -> [{userdata,[{""}]}];
 concat_l8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l19_test(doc) -> [{userdata,[{""}]}];
 concat_l19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l19"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l30_test(doc) -> [{userdata,[{""}]}];
 concat_l30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l41_test(doc) -> [{userdata,[{""}]}];
 concat_l41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l52_test(doc) -> [{userdata,[{""}]}];
 concat_l52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l63_test(doc) -> [{userdata,[{""}]}];
 concat_l63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l3_test(doc) -> [{userdata,[{""}]}];
 concat_l3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l3"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l14_test(doc) -> [{userdata,[{""}]}];
 concat_l14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l14"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l25_test(doc) -> [{userdata,[{""}]}];
 concat_l25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l25"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l36_test(doc) -> [{userdata,[{""}]}];
 concat_l36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l36"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l47_test(doc) -> [{userdata,[{""}]}];
 concat_l47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l58_test(doc) -> [{userdata,[{""}]}];
 concat_l58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l9_test(doc) -> [{userdata,[{""}]}];
 concat_l9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l20_test(doc) -> [{userdata,[{""}]}];
 concat_l20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l20"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l31_test(doc) -> [{userdata,[{""}]}];
 concat_l31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l42_test(doc) -> [{userdata,[{""}]}];
 concat_l42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l53_test(doc) -> [{userdata,[{""}]}];
 concat_l53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l64_test(doc) -> [{userdata,[{""}]}];
 concat_l64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l4_test(doc) -> [{userdata,[{""}]}];
 concat_l4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l4"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l15_test(doc) -> [{userdata,[{""}]}];
 concat_l15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l15"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l26_test(doc) -> [{userdata,[{""}]}];
 concat_l26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l26"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l37_test(doc) -> [{userdata,[{""}]}];
 concat_l37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l37"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l48_test(doc) -> [{userdata,[{""}]}];
 concat_l48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l59_test(doc) -> [{userdata,[{""}]}];
 concat_l59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l10_test(doc) -> [{userdata,[{""}]}];
 concat_l10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l21_test(doc) -> [{userdata,[{""}]}];
 concat_l21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l21"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l32_test(doc) -> [{userdata,[{""}]}];
 concat_l32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l43_test(doc) -> [{userdata,[{""}]}];
 concat_l43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l54_test(doc) -> [{userdata,[{""}]}];
 concat_l54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_l65_test(doc) -> [{userdata,[{""}]}];
 concat_l65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","l65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_b5_test(doc) -> [{userdata,[{""}]}];
 concat_b5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","b5"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_b16_test(doc) -> [{userdata,[{""}]}];
 concat_b16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","b16"),
-  Expected="<cell><value>"++"2.7"++"</value></cell>",
+  Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_b11_test(doc) -> [{userdata,[{""}]}];
 concat_b11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","b11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_b22_test(doc) -> [{userdata,[{""}]}];
 concat_b22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","b22"),
-  Expected="<cell><value>"++"36193.2"++"</value></cell>",
+  Expected="36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_b6_test(doc) -> [{userdata,[{""}]}];
 concat_b6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","b6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_b17_test(doc) -> [{userdata,[{""}]}];
 concat_b17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","b17"),
-  Expected="<cell><value>"++"3.54"++"</value></cell>",
+  Expected="3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_b1_test(doc) -> [{userdata,[{""}]}];
 concat_b1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","b1"),
-  Expected="<cell><value>"++"B"++"</value></cell>",
+  Expected="B",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_b12_test(doc) -> [{userdata,[{""}]}];
 concat_b12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","b12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_b7_test(doc) -> [{userdata,[{""}]}];
 concat_b7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","b7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_b18_test(doc) -> [{userdata,[{""}]}];
 concat_b18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","b18"),
-  Expected="<cell><value>"++"1999/02/01 00:00:00"++"</value></cell>",
+  Expected="1999/02/01 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_b13_test(doc) -> [{userdata,[{""}]}];
 concat_b13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","b13"),
-  Expected="<cell><value>"++"Liz"++"</value></cell>",
+  Expected="Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_b8_test(doc) -> [{userdata,[{""}]}];
 concat_b8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","b8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_b19_test(doc) -> [{userdata,[{""}]}];
 concat_b19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","b19"),
-  Expected="<cell><value>"++"1999/02/02 00:00:00"++"</value></cell>",
+  Expected="1999/02/02 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_b14_test(doc) -> [{userdata,[{""}]}];
 concat_b14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","b14"),
-  Expected="<cell><value>"++"Doug"++"</value></cell>",
+  Expected="Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_b9_test(doc) -> [{userdata,[{""}]}];
 concat_b9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","b9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_b20_test(doc) -> [{userdata,[{""}]}];
 concat_b20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","b20"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_b4_test(doc) -> [{userdata,[{""}]}];
 concat_b4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","b4"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_b15_test(doc) -> [{userdata,[{""}]}];
 concat_b15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","b15"),
-  Expected="<cell><value>"++"Bob"++"</value></cell>",
+  Expected="Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_b10_test(doc) -> [{userdata,[{""}]}];
 concat_b10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","b10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_b21_test(doc) -> [{userdata,[{""}]}];
 concat_b21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","b21"),
-  Expected="<cell><value>"++"3.1415"++"</value></cell>",
+  Expected="3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m5_test(doc) -> [{userdata,[{""}]}];
 concat_m5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m5"),
-  Expected="<cell><value>"++"FALSELiz"++"</value></cell>",
+  Expected="FALSELiz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m16_test(doc) -> [{userdata,[{""}]}];
 concat_m16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m16"),
-  Expected="<cell><value>"++"2.7Liz"++"</value></cell>",
+  Expected="2.7Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m27_test(doc) -> [{userdata,[{""}]}];
 concat_m27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m27"),
-  Expected="<cell><value>"++"FALSELiz"++"</value></cell>",
+  Expected="FALSELiz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m38_test(doc) -> [{userdata,[{""}]}];
 concat_m38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m38"),
-  Expected="<cell><value>"++"2.7Liz"++"</value></cell>",
+  Expected="2.7Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m49_test(doc) -> [{userdata,[{""}]}];
 concat_m49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m60_test(doc) -> [{userdata,[{""}]}];
 concat_m60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m11_test(doc) -> [{userdata,[{""}]}];
 concat_m11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m22_test(doc) -> [{userdata,[{""}]}];
 concat_m22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m22"),
-  Expected="<cell><value>"++"36193.2Liz"++"</value></cell>",
+  Expected="36193.2Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m33_test(doc) -> [{userdata,[{""}]}];
 concat_m33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m44_test(doc) -> [{userdata,[{""}]}];
 concat_m44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m44"),
-  Expected="<cell><value>"++"36193.2Liz"++"</value></cell>",
+  Expected="36193.2Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m55_test(doc) -> [{userdata,[{""}]}];
 concat_m55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m66_test(doc) -> [{userdata,[{""}]}];
 concat_m66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m6_test(doc) -> [{userdata,[{""}]}];
 concat_m6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m17_test(doc) -> [{userdata,[{""}]}];
 concat_m17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m17"),
-  Expected="<cell><value>"++"3.54Liz"++"</value></cell>",
+  Expected="3.54Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m28_test(doc) -> [{userdata,[{""}]}];
 concat_m28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m39_test(doc) -> [{userdata,[{""}]}];
 concat_m39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m39"),
-  Expected="<cell><value>"++"3.54Liz"++"</value></cell>",
+  Expected="3.54Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m50_test(doc) -> [{userdata,[{""}]}];
 concat_m50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m61_test(doc) -> [{userdata,[{""}]}];
 concat_m61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m1_test(doc) -> [{userdata,[{""}]}];
 concat_m1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m1"),
-  Expected="<cell><value>"++"String"++"</value></cell>",
+  Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m12_test(doc) -> [{userdata,[{""}]}];
 concat_m12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m34_test(doc) -> [{userdata,[{""}]}];
 concat_m34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m56_test(doc) -> [{userdata,[{""}]}];
 concat_m56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m7_test(doc) -> [{userdata,[{""}]}];
 concat_m7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m18_test(doc) -> [{userdata,[{""}]}];
 concat_m18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m18"),
-  Expected="<cell><value>"++"36192Liz"++"</value></cell>",
+  Expected="36192Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m29_test(doc) -> [{userdata,[{""}]}];
 concat_m29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m40_test(doc) -> [{userdata,[{""}]}];
 concat_m40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m40"),
-  Expected="<cell><value>"++"36192Liz"++"</value></cell>",
+  Expected="36192Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m51_test(doc) -> [{userdata,[{""}]}];
 concat_m51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m62_test(doc) -> [{userdata,[{""}]}];
 concat_m62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m2_test(doc) -> [{userdata,[{""}]}];
 concat_m2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m2"),
-  Expected="<cell><value>"++"Liz"++"</value></cell>",
+  Expected="Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m13_test(doc) -> [{userdata,[{""}]}];
 concat_m13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m13"),
-  Expected="<cell><value>"++"LizLiz"++"</value></cell>",
+  Expected="LizLiz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m35_test(doc) -> [{userdata,[{""}]}];
 concat_m35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m35"),
-  Expected="<cell><value>"++"LizLiz"++"</value></cell>",
+  Expected="LizLiz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m57_test(doc) -> [{userdata,[{""}]}];
 concat_m57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m8_test(doc) -> [{userdata,[{""}]}];
 concat_m8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m19_test(doc) -> [{userdata,[{""}]}];
 concat_m19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m19"),
-  Expected="<cell><value>"++"36193Liz"++"</value></cell>",
+  Expected="36193Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m30_test(doc) -> [{userdata,[{""}]}];
 concat_m30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m41_test(doc) -> [{userdata,[{""}]}];
 concat_m41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m41"),
-  Expected="<cell><value>"++"36193Liz"++"</value></cell>",
+  Expected="36193Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m52_test(doc) -> [{userdata,[{""}]}];
 concat_m52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m63_test(doc) -> [{userdata,[{""}]}];
 concat_m63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m3_test(doc) -> [{userdata,[{""}]}];
 concat_m3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m3"),
-  Expected="<cell><value>"++"Liz"++"</value></cell>",
+  Expected="Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m14_test(doc) -> [{userdata,[{""}]}];
 concat_m14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m14"),
-  Expected="<cell><value>"++"DougLiz"++"</value></cell>",
+  Expected="DougLiz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m25_test(doc) -> [{userdata,[{""}]}];
 concat_m25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m25"),
-  Expected="<cell><value>"++"Liz"++"</value></cell>",
+  Expected="Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m36_test(doc) -> [{userdata,[{""}]}];
 concat_m36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m36"),
-  Expected="<cell><value>"++"DougLiz"++"</value></cell>",
+  Expected="DougLiz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m47_test(doc) -> [{userdata,[{""}]}];
 concat_m47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m58_test(doc) -> [{userdata,[{""}]}];
 concat_m58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m9_test(doc) -> [{userdata,[{""}]}];
 concat_m9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m20_test(doc) -> [{userdata,[{""}]}];
 concat_m20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m20"),
-  Expected="<cell><value>"++"0Liz"++"</value></cell>",
+  Expected="0Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m31_test(doc) -> [{userdata,[{""}]}];
 concat_m31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m42_test(doc) -> [{userdata,[{""}]}];
 concat_m42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m42"),
-  Expected="<cell><value>"++"0Liz"++"</value></cell>",
+  Expected="0Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m53_test(doc) -> [{userdata,[{""}]}];
 concat_m53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m64_test(doc) -> [{userdata,[{""}]}];
 concat_m64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m4_test(doc) -> [{userdata,[{""}]}];
 concat_m4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m4"),
-  Expected="<cell><value>"++"TRUELiz"++"</value></cell>",
+  Expected="TRUELiz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m15_test(doc) -> [{userdata,[{""}]}];
 concat_m15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m15"),
-  Expected="<cell><value>"++"BobLiz"++"</value></cell>",
+  Expected="BobLiz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m26_test(doc) -> [{userdata,[{""}]}];
 concat_m26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m26"),
-  Expected="<cell><value>"++"TRUELiz"++"</value></cell>",
+  Expected="TRUELiz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m37_test(doc) -> [{userdata,[{""}]}];
 concat_m37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m37"),
-  Expected="<cell><value>"++"BobLiz"++"</value></cell>",
+  Expected="BobLiz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m48_test(doc) -> [{userdata,[{""}]}];
 concat_m48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m59_test(doc) -> [{userdata,[{""}]}];
 concat_m59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m10_test(doc) -> [{userdata,[{""}]}];
 concat_m10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m21_test(doc) -> [{userdata,[{""}]}];
 concat_m21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m21"),
-  Expected="<cell><value>"++"3.1415Liz"++"</value></cell>",
+  Expected="3.1415Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m32_test(doc) -> [{userdata,[{""}]}];
 concat_m32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m43_test(doc) -> [{userdata,[{""}]}];
 concat_m43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m43"),
-  Expected="<cell><value>"++"3.1415Liz"++"</value></cell>",
+  Expected="3.1415Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m54_test(doc) -> [{userdata,[{""}]}];
 concat_m54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_m65_test(doc) -> [{userdata,[{""}]}];
 concat_m65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","m65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c5_test(doc) -> [{userdata,[{""}]}];
 concat_c5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c5"),
-  Expected="<cell><value>"++"FALSE"++"</value></cell>",
+  Expected="FALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c16_test(doc) -> [{userdata,[{""}]}];
 concat_c16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c16"),
-  Expected="<cell><value>"++"2.7"++"</value></cell>",
+  Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c27_test(doc) -> [{userdata,[{""}]}];
 concat_c27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c27"),
-  Expected="<cell><value>"++"FALSE"++"</value></cell>",
+  Expected="FALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c38_test(doc) -> [{userdata,[{""}]}];
 concat_c38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c38"),
-  Expected="<cell><value>"++"2.7"++"</value></cell>",
+  Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c49_test(doc) -> [{userdata,[{""}]}];
 concat_c49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c60_test(doc) -> [{userdata,[{""}]}];
 concat_c60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c11_test(doc) -> [{userdata,[{""}]}];
 concat_c11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c22_test(doc) -> [{userdata,[{""}]}];
 concat_c22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c22"),
-  Expected="<cell><value>"++"36193.2"++"</value></cell>",
+  Expected="36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c33_test(doc) -> [{userdata,[{""}]}];
 concat_c33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c44_test(doc) -> [{userdata,[{""}]}];
 concat_c44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c44"),
-  Expected="<cell><value>"++"36193.2"++"</value></cell>",
+  Expected="36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c55_test(doc) -> [{userdata,[{""}]}];
 concat_c55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c66_test(doc) -> [{userdata,[{""}]}];
 concat_c66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c6_test(doc) -> [{userdata,[{""}]}];
 concat_c6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c17_test(doc) -> [{userdata,[{""}]}];
 concat_c17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c17"),
-  Expected="<cell><value>"++"3.54"++"</value></cell>",
+  Expected="3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c28_test(doc) -> [{userdata,[{""}]}];
 concat_c28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c39_test(doc) -> [{userdata,[{""}]}];
 concat_c39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c39"),
-  Expected="<cell><value>"++"3.54"++"</value></cell>",
+  Expected="3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c50_test(doc) -> [{userdata,[{""}]}];
 concat_c50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c61_test(doc) -> [{userdata,[{""}]}];
 concat_c61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c1_test(doc) -> [{userdata,[{""}]}];
 concat_c1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c1"),
-  Expected="<cell><value>"++"Blank"++"</value></cell>",
+  Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c12_test(doc) -> [{userdata,[{""}]}];
 concat_c12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c34_test(doc) -> [{userdata,[{""}]}];
 concat_c34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c56_test(doc) -> [{userdata,[{""}]}];
 concat_c56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c7_test(doc) -> [{userdata,[{""}]}];
 concat_c7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c18_test(doc) -> [{userdata,[{""}]}];
 concat_c18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c18"),
-  Expected="<cell><value>"++"36192"++"</value></cell>",
+  Expected="36192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c29_test(doc) -> [{userdata,[{""}]}];
 concat_c29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c40_test(doc) -> [{userdata,[{""}]}];
 concat_c40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c40"),
-  Expected="<cell><value>"++"36192"++"</value></cell>",
+  Expected="36192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c51_test(doc) -> [{userdata,[{""}]}];
 concat_c51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c62_test(doc) -> [{userdata,[{""}]}];
 concat_c62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c13_test(doc) -> [{userdata,[{""}]}];
 concat_c13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c13"),
-  Expected="<cell><value>"++"Liz"++"</value></cell>",
+  Expected="Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c35_test(doc) -> [{userdata,[{""}]}];
 concat_c35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c35"),
-  Expected="<cell><value>"++"Liz"++"</value></cell>",
+  Expected="Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c57_test(doc) -> [{userdata,[{""}]}];
 concat_c57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c8_test(doc) -> [{userdata,[{""}]}];
 concat_c8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c19_test(doc) -> [{userdata,[{""}]}];
 concat_c19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c19"),
-  Expected="<cell><value>"++"36193"++"</value></cell>",
+  Expected="36193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c30_test(doc) -> [{userdata,[{""}]}];
 concat_c30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c41_test(doc) -> [{userdata,[{""}]}];
 concat_c41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c41"),
-  Expected="<cell><value>"++"36193"++"</value></cell>",
+  Expected="36193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c52_test(doc) -> [{userdata,[{""}]}];
 concat_c52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c63_test(doc) -> [{userdata,[{""}]}];
 concat_c63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c3_test(doc) -> [{userdata,[{""}]}];
 concat_c3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c3"),
-  Expected="<cell><value>"++""++"</value></cell>",
+  Expected="",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c14_test(doc) -> [{userdata,[{""}]}];
 concat_c14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c14"),
-  Expected="<cell><value>"++"Doug"++"</value></cell>",
+  Expected="Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c25_test(doc) -> [{userdata,[{""}]}];
 concat_c25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c25"),
-  Expected="<cell><value>"++""++"</value></cell>",
+  Expected="",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c36_test(doc) -> [{userdata,[{""}]}];
 concat_c36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c36"),
-  Expected="<cell><value>"++"Doug"++"</value></cell>",
+  Expected="Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c47_test(doc) -> [{userdata,[{""}]}];
 concat_c47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c58_test(doc) -> [{userdata,[{""}]}];
 concat_c58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c9_test(doc) -> [{userdata,[{""}]}];
 concat_c9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c20_test(doc) -> [{userdata,[{""}]}];
 concat_c20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c20"),
-  Expected="<cell><value>"++"0"++"</value></cell>",
+  Expected="0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c31_test(doc) -> [{userdata,[{""}]}];
 concat_c31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c42_test(doc) -> [{userdata,[{""}]}];
 concat_c42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c42"),
-  Expected="<cell><value>"++"0"++"</value></cell>",
+  Expected="0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c53_test(doc) -> [{userdata,[{""}]}];
 concat_c53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c64_test(doc) -> [{userdata,[{""}]}];
 concat_c64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c4_test(doc) -> [{userdata,[{""}]}];
 concat_c4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c4"),
-  Expected="<cell><value>"++"TRUE"++"</value></cell>",
+  Expected="TRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c15_test(doc) -> [{userdata,[{""}]}];
 concat_c15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c15"),
-  Expected="<cell><value>"++"Bob"++"</value></cell>",
+  Expected="Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c26_test(doc) -> [{userdata,[{""}]}];
 concat_c26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c26"),
-  Expected="<cell><value>"++"TRUE"++"</value></cell>",
+  Expected="TRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c37_test(doc) -> [{userdata,[{""}]}];
 concat_c37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c37"),
-  Expected="<cell><value>"++"Bob"++"</value></cell>",
+  Expected="Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c48_test(doc) -> [{userdata,[{""}]}];
 concat_c48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c59_test(doc) -> [{userdata,[{""}]}];
 concat_c59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c10_test(doc) -> [{userdata,[{""}]}];
 concat_c10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c21_test(doc) -> [{userdata,[{""}]}];
 concat_c21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c21"),
-  Expected="<cell><value>"++"3.1415"++"</value></cell>",
+  Expected="3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c32_test(doc) -> [{userdata,[{""}]}];
 concat_c32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c43_test(doc) -> [{userdata,[{""}]}];
 concat_c43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c43"),
-  Expected="<cell><value>"++"3.1415"++"</value></cell>",
+  Expected="3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c54_test(doc) -> [{userdata,[{""}]}];
 concat_c54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_c65_test(doc) -> [{userdata,[{""}]}];
 concat_c65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","c65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n5_test(doc) -> [{userdata,[{""}]}];
 concat_n5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n5"),
-  Expected="<cell><value>"++"FALSEDoug"++"</value></cell>",
+  Expected="FALSEDoug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n16_test(doc) -> [{userdata,[{""}]}];
 concat_n16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n16"),
-  Expected="<cell><value>"++"2.7Doug"++"</value></cell>",
+  Expected="2.7Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n27_test(doc) -> [{userdata,[{""}]}];
 concat_n27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n27"),
-  Expected="<cell><value>"++"FALSEDoug"++"</value></cell>",
+  Expected="FALSEDoug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n38_test(doc) -> [{userdata,[{""}]}];
 concat_n38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n38"),
-  Expected="<cell><value>"++"2.7Doug"++"</value></cell>",
+  Expected="2.7Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n49_test(doc) -> [{userdata,[{""}]}];
 concat_n49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n60_test(doc) -> [{userdata,[{""}]}];
 concat_n60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n11_test(doc) -> [{userdata,[{""}]}];
 concat_n11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n22_test(doc) -> [{userdata,[{""}]}];
 concat_n22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n22"),
-  Expected="<cell><value>"++"36193.2Doug"++"</value></cell>",
+  Expected="36193.2Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n33_test(doc) -> [{userdata,[{""}]}];
 concat_n33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n44_test(doc) -> [{userdata,[{""}]}];
 concat_n44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n44"),
-  Expected="<cell><value>"++"36193.2Doug"++"</value></cell>",
+  Expected="36193.2Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n55_test(doc) -> [{userdata,[{""}]}];
 concat_n55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n66_test(doc) -> [{userdata,[{""}]}];
 concat_n66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n6_test(doc) -> [{userdata,[{""}]}];
 concat_n6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n17_test(doc) -> [{userdata,[{""}]}];
 concat_n17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n17"),
-  Expected="<cell><value>"++"3.54Doug"++"</value></cell>",
+  Expected="3.54Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n28_test(doc) -> [{userdata,[{""}]}];
 concat_n28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n39_test(doc) -> [{userdata,[{""}]}];
 concat_n39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n39"),
-  Expected="<cell><value>"++"3.54Doug"++"</value></cell>",
+  Expected="3.54Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n50_test(doc) -> [{userdata,[{""}]}];
 concat_n50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n61_test(doc) -> [{userdata,[{""}]}];
 concat_n61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n1_test(doc) -> [{userdata,[{""}]}];
 concat_n1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n1"),
-  Expected="<cell><value>"++"String"++"</value></cell>",
+  Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n12_test(doc) -> [{userdata,[{""}]}];
 concat_n12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n34_test(doc) -> [{userdata,[{""}]}];
 concat_n34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n56_test(doc) -> [{userdata,[{""}]}];
 concat_n56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n7_test(doc) -> [{userdata,[{""}]}];
 concat_n7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n18_test(doc) -> [{userdata,[{""}]}];
 concat_n18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n18"),
-  Expected="<cell><value>"++"36192Doug"++"</value></cell>",
+  Expected="36192Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n29_test(doc) -> [{userdata,[{""}]}];
 concat_n29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n40_test(doc) -> [{userdata,[{""}]}];
 concat_n40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n40"),
-  Expected="<cell><value>"++"36192Doug"++"</value></cell>",
+  Expected="36192Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n51_test(doc) -> [{userdata,[{""}]}];
 concat_n51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n62_test(doc) -> [{userdata,[{""}]}];
 concat_n62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n2_test(doc) -> [{userdata,[{""}]}];
 concat_n2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n2"),
-  Expected="<cell><value>"++"Doug"++"</value></cell>",
+  Expected="Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n13_test(doc) -> [{userdata,[{""}]}];
 concat_n13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n13"),
-  Expected="<cell><value>"++"LizDoug"++"</value></cell>",
+  Expected="LizDoug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n35_test(doc) -> [{userdata,[{""}]}];
 concat_n35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n35"),
-  Expected="<cell><value>"++"LizDoug"++"</value></cell>",
+  Expected="LizDoug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n57_test(doc) -> [{userdata,[{""}]}];
 concat_n57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n8_test(doc) -> [{userdata,[{""}]}];
 concat_n8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n19_test(doc) -> [{userdata,[{""}]}];
 concat_n19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n19"),
-  Expected="<cell><value>"++"36193Doug"++"</value></cell>",
+  Expected="36193Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n30_test(doc) -> [{userdata,[{""}]}];
 concat_n30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n41_test(doc) -> [{userdata,[{""}]}];
 concat_n41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n41"),
-  Expected="<cell><value>"++"36193Doug"++"</value></cell>",
+  Expected="36193Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n52_test(doc) -> [{userdata,[{""}]}];
 concat_n52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n63_test(doc) -> [{userdata,[{""}]}];
 concat_n63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n3_test(doc) -> [{userdata,[{""}]}];
 concat_n3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n3"),
-  Expected="<cell><value>"++"Doug"++"</value></cell>",
+  Expected="Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n14_test(doc) -> [{userdata,[{""}]}];
 concat_n14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n14"),
-  Expected="<cell><value>"++"DougDoug"++"</value></cell>",
+  Expected="DougDoug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n25_test(doc) -> [{userdata,[{""}]}];
 concat_n25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n25"),
-  Expected="<cell><value>"++"Doug"++"</value></cell>",
+  Expected="Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n36_test(doc) -> [{userdata,[{""}]}];
 concat_n36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n36"),
-  Expected="<cell><value>"++"DougDoug"++"</value></cell>",
+  Expected="DougDoug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n47_test(doc) -> [{userdata,[{""}]}];
 concat_n47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n58_test(doc) -> [{userdata,[{""}]}];
 concat_n58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n9_test(doc) -> [{userdata,[{""}]}];
 concat_n9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n20_test(doc) -> [{userdata,[{""}]}];
 concat_n20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n20"),
-  Expected="<cell><value>"++"0Doug"++"</value></cell>",
+  Expected="0Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n31_test(doc) -> [{userdata,[{""}]}];
 concat_n31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n42_test(doc) -> [{userdata,[{""}]}];
 concat_n42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n42"),
-  Expected="<cell><value>"++"0Doug"++"</value></cell>",
+  Expected="0Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n53_test(doc) -> [{userdata,[{""}]}];
 concat_n53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n64_test(doc) -> [{userdata,[{""}]}];
 concat_n64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n4_test(doc) -> [{userdata,[{""}]}];
 concat_n4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n4"),
-  Expected="<cell><value>"++"TRUEDoug"++"</value></cell>",
+  Expected="TRUEDoug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n15_test(doc) -> [{userdata,[{""}]}];
 concat_n15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n15"),
-  Expected="<cell><value>"++"BobDoug"++"</value></cell>",
+  Expected="BobDoug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n26_test(doc) -> [{userdata,[{""}]}];
 concat_n26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n26"),
-  Expected="<cell><value>"++"TRUEDoug"++"</value></cell>",
+  Expected="TRUEDoug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n37_test(doc) -> [{userdata,[{""}]}];
 concat_n37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n37"),
-  Expected="<cell><value>"++"BobDoug"++"</value></cell>",
+  Expected="BobDoug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n48_test(doc) -> [{userdata,[{""}]}];
 concat_n48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n59_test(doc) -> [{userdata,[{""}]}];
 concat_n59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n10_test(doc) -> [{userdata,[{""}]}];
 concat_n10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n21_test(doc) -> [{userdata,[{""}]}];
 concat_n21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n21"),
-  Expected="<cell><value>"++"3.1415Doug"++"</value></cell>",
+  Expected="3.1415Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n32_test(doc) -> [{userdata,[{""}]}];
 concat_n32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n43_test(doc) -> [{userdata,[{""}]}];
 concat_n43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n43"),
-  Expected="<cell><value>"++"3.1415Doug"++"</value></cell>",
+  Expected="3.1415Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n54_test(doc) -> [{userdata,[{""}]}];
 concat_n54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_n65_test(doc) -> [{userdata,[{""}]}];
 concat_n65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","n65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d5_test(doc) -> [{userdata,[{""}]}];
 concat_d5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d5"),
-  Expected="<cell><value>"++"FALSETRUE"++"</value></cell>",
+  Expected="FALSETRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d16_test(doc) -> [{userdata,[{""}]}];
 concat_d16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d16"),
-  Expected="<cell><value>"++"2.7TRUE"++"</value></cell>",
+  Expected="2.7TRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d27_test(doc) -> [{userdata,[{""}]}];
 concat_d27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d27"),
-  Expected="<cell><value>"++"FALSETRUE"++"</value></cell>",
+  Expected="FALSETRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d38_test(doc) -> [{userdata,[{""}]}];
 concat_d38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d38"),
-  Expected="<cell><value>"++"2.7TRUE"++"</value></cell>",
+  Expected="2.7TRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d49_test(doc) -> [{userdata,[{""}]}];
 concat_d49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d60_test(doc) -> [{userdata,[{""}]}];
 concat_d60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d11_test(doc) -> [{userdata,[{""}]}];
 concat_d11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d22_test(doc) -> [{userdata,[{""}]}];
 concat_d22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d22"),
-  Expected="<cell><value>"++"36193.2TRUE"++"</value></cell>",
+  Expected="36193.2TRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d33_test(doc) -> [{userdata,[{""}]}];
 concat_d33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d44_test(doc) -> [{userdata,[{""}]}];
 concat_d44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d44"),
-  Expected="<cell><value>"++"36193.2TRUE"++"</value></cell>",
+  Expected="36193.2TRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d55_test(doc) -> [{userdata,[{""}]}];
 concat_d55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d66_test(doc) -> [{userdata,[{""}]}];
 concat_d66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d6_test(doc) -> [{userdata,[{""}]}];
 concat_d6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d17_test(doc) -> [{userdata,[{""}]}];
 concat_d17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d17"),
-  Expected="<cell><value>"++"3.54TRUE"++"</value></cell>",
+  Expected="3.54TRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d28_test(doc) -> [{userdata,[{""}]}];
 concat_d28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d39_test(doc) -> [{userdata,[{""}]}];
 concat_d39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d39"),
-  Expected="<cell><value>"++"3.54TRUE"++"</value></cell>",
+  Expected="3.54TRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d50_test(doc) -> [{userdata,[{""}]}];
 concat_d50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d61_test(doc) -> [{userdata,[{""}]}];
 concat_d61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d1_test(doc) -> [{userdata,[{""}]}];
 concat_d1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d1"),
-  Expected="<cell><value>"++"Boolean"++"</value></cell>",
+  Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d12_test(doc) -> [{userdata,[{""}]}];
 concat_d12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d34_test(doc) -> [{userdata,[{""}]}];
 concat_d34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d56_test(doc) -> [{userdata,[{""}]}];
 concat_d56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d7_test(doc) -> [{userdata,[{""}]}];
 concat_d7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d18_test(doc) -> [{userdata,[{""}]}];
 concat_d18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d18"),
-  Expected="<cell><value>"++"36192TRUE"++"</value></cell>",
+  Expected="36192TRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d29_test(doc) -> [{userdata,[{""}]}];
 concat_d29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d40_test(doc) -> [{userdata,[{""}]}];
 concat_d40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d40"),
-  Expected="<cell><value>"++"36192TRUE"++"</value></cell>",
+  Expected="36192TRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d51_test(doc) -> [{userdata,[{""}]}];
 concat_d51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d62_test(doc) -> [{userdata,[{""}]}];
 concat_d62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d2_test(doc) -> [{userdata,[{""}]}];
 concat_d2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d2"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d13_test(doc) -> [{userdata,[{""}]}];
 concat_d13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d13"),
-  Expected="<cell><value>"++"LizTRUE"++"</value></cell>",
+  Expected="LizTRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d35_test(doc) -> [{userdata,[{""}]}];
 concat_d35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d35"),
-  Expected="<cell><value>"++"LizTRUE"++"</value></cell>",
+  Expected="LizTRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d57_test(doc) -> [{userdata,[{""}]}];
 concat_d57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d8_test(doc) -> [{userdata,[{""}]}];
 concat_d8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d19_test(doc) -> [{userdata,[{""}]}];
 concat_d19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d19"),
-  Expected="<cell><value>"++"36193TRUE"++"</value></cell>",
+  Expected="36193TRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d30_test(doc) -> [{userdata,[{""}]}];
 concat_d30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d41_test(doc) -> [{userdata,[{""}]}];
 concat_d41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d41"),
-  Expected="<cell><value>"++"36193TRUE"++"</value></cell>",
+  Expected="36193TRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d52_test(doc) -> [{userdata,[{""}]}];
 concat_d52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d63_test(doc) -> [{userdata,[{""}]}];
 concat_d63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d3_test(doc) -> [{userdata,[{""}]}];
 concat_d3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d3"),
-  Expected="<cell><value>"++"TRUE"++"</value></cell>",
+  Expected="TRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d14_test(doc) -> [{userdata,[{""}]}];
 concat_d14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d14"),
-  Expected="<cell><value>"++"DougTRUE"++"</value></cell>",
+  Expected="DougTRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d25_test(doc) -> [{userdata,[{""}]}];
 concat_d25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d25"),
-  Expected="<cell><value>"++"TRUE"++"</value></cell>",
+  Expected="TRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d36_test(doc) -> [{userdata,[{""}]}];
 concat_d36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d36"),
-  Expected="<cell><value>"++"DougTRUE"++"</value></cell>",
+  Expected="DougTRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d47_test(doc) -> [{userdata,[{""}]}];
 concat_d47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d58_test(doc) -> [{userdata,[{""}]}];
 concat_d58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d9_test(doc) -> [{userdata,[{""}]}];
 concat_d9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d20_test(doc) -> [{userdata,[{""}]}];
 concat_d20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d20"),
-  Expected="<cell><value>"++"0TRUE"++"</value></cell>",
+  Expected="0TRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d31_test(doc) -> [{userdata,[{""}]}];
 concat_d31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d42_test(doc) -> [{userdata,[{""}]}];
 concat_d42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d42"),
-  Expected="<cell><value>"++"0TRUE"++"</value></cell>",
+  Expected="0TRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d53_test(doc) -> [{userdata,[{""}]}];
 concat_d53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d64_test(doc) -> [{userdata,[{""}]}];
 concat_d64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d4_test(doc) -> [{userdata,[{""}]}];
 concat_d4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d4"),
-  Expected="<cell><value>"++"TRUETRUE"++"</value></cell>",
+  Expected="TRUETRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d15_test(doc) -> [{userdata,[{""}]}];
 concat_d15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d15"),
-  Expected="<cell><value>"++"BobTRUE"++"</value></cell>",
+  Expected="BobTRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d26_test(doc) -> [{userdata,[{""}]}];
 concat_d26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d26"),
-  Expected="<cell><value>"++"TRUETRUE"++"</value></cell>",
+  Expected="TRUETRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d37_test(doc) -> [{userdata,[{""}]}];
 concat_d37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d37"),
-  Expected="<cell><value>"++"BobTRUE"++"</value></cell>",
+  Expected="BobTRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d48_test(doc) -> [{userdata,[{""}]}];
 concat_d48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d59_test(doc) -> [{userdata,[{""}]}];
 concat_d59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d10_test(doc) -> [{userdata,[{""}]}];
 concat_d10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d21_test(doc) -> [{userdata,[{""}]}];
 concat_d21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d21"),
-  Expected="<cell><value>"++"3.1415TRUE"++"</value></cell>",
+  Expected="3.1415TRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d32_test(doc) -> [{userdata,[{""}]}];
 concat_d32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d43_test(doc) -> [{userdata,[{""}]}];
 concat_d43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d43"),
-  Expected="<cell><value>"++"3.1415TRUE"++"</value></cell>",
+  Expected="3.1415TRUE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d54_test(doc) -> [{userdata,[{""}]}];
 concat_d54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_d65_test(doc) -> [{userdata,[{""}]}];
 concat_d65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","d65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o5_test(doc) -> [{userdata,[{""}]}];
 concat_o5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o5"),
-  Expected="<cell><value>"++"FALSEBob"++"</value></cell>",
+  Expected="FALSEBob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o16_test(doc) -> [{userdata,[{""}]}];
 concat_o16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o16"),
-  Expected="<cell><value>"++"2.7Bob"++"</value></cell>",
+  Expected="2.7Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o27_test(doc) -> [{userdata,[{""}]}];
 concat_o27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o27"),
-  Expected="<cell><value>"++"FALSEBob"++"</value></cell>",
+  Expected="FALSEBob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o38_test(doc) -> [{userdata,[{""}]}];
 concat_o38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o38"),
-  Expected="<cell><value>"++"2.7Bob"++"</value></cell>",
+  Expected="2.7Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o49_test(doc) -> [{userdata,[{""}]}];
 concat_o49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o60_test(doc) -> [{userdata,[{""}]}];
 concat_o60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o11_test(doc) -> [{userdata,[{""}]}];
 concat_o11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o22_test(doc) -> [{userdata,[{""}]}];
 concat_o22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o22"),
-  Expected="<cell><value>"++"36193.2Bob"++"</value></cell>",
+  Expected="36193.2Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o33_test(doc) -> [{userdata,[{""}]}];
 concat_o33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o44_test(doc) -> [{userdata,[{""}]}];
 concat_o44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o44"),
-  Expected="<cell><value>"++"36193.2Bob"++"</value></cell>",
+  Expected="36193.2Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o55_test(doc) -> [{userdata,[{""}]}];
 concat_o55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o66_test(doc) -> [{userdata,[{""}]}];
 concat_o66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o6_test(doc) -> [{userdata,[{""}]}];
 concat_o6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o17_test(doc) -> [{userdata,[{""}]}];
 concat_o17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o17"),
-  Expected="<cell><value>"++"3.54Bob"++"</value></cell>",
+  Expected="3.54Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o28_test(doc) -> [{userdata,[{""}]}];
 concat_o28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o39_test(doc) -> [{userdata,[{""}]}];
 concat_o39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o39"),
-  Expected="<cell><value>"++"3.54Bob"++"</value></cell>",
+  Expected="3.54Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o50_test(doc) -> [{userdata,[{""}]}];
 concat_o50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o61_test(doc) -> [{userdata,[{""}]}];
 concat_o61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o1_test(doc) -> [{userdata,[{""}]}];
 concat_o1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o1"),
-  Expected="<cell><value>"++"String"++"</value></cell>",
+  Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o12_test(doc) -> [{userdata,[{""}]}];
 concat_o12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o34_test(doc) -> [{userdata,[{""}]}];
 concat_o34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o56_test(doc) -> [{userdata,[{""}]}];
 concat_o56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o7_test(doc) -> [{userdata,[{""}]}];
 concat_o7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o18_test(doc) -> [{userdata,[{""}]}];
 concat_o18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o18"),
-  Expected="<cell><value>"++"36192Bob"++"</value></cell>",
+  Expected="36192Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o29_test(doc) -> [{userdata,[{""}]}];
 concat_o29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o40_test(doc) -> [{userdata,[{""}]}];
 concat_o40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o40"),
-  Expected="<cell><value>"++"36192Bob"++"</value></cell>",
+  Expected="36192Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o51_test(doc) -> [{userdata,[{""}]}];
 concat_o51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o62_test(doc) -> [{userdata,[{""}]}];
 concat_o62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o2_test(doc) -> [{userdata,[{""}]}];
 concat_o2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o2"),
-  Expected="<cell><value>"++"Bob"++"</value></cell>",
+  Expected="Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o13_test(doc) -> [{userdata,[{""}]}];
 concat_o13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o13"),
-  Expected="<cell><value>"++"LizBob"++"</value></cell>",
+  Expected="LizBob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o35_test(doc) -> [{userdata,[{""}]}];
 concat_o35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o35"),
-  Expected="<cell><value>"++"LizBob"++"</value></cell>",
+  Expected="LizBob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o57_test(doc) -> [{userdata,[{""}]}];
 concat_o57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o8_test(doc) -> [{userdata,[{""}]}];
 concat_o8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o19_test(doc) -> [{userdata,[{""}]}];
 concat_o19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o19"),
-  Expected="<cell><value>"++"36193Bob"++"</value></cell>",
+  Expected="36193Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o30_test(doc) -> [{userdata,[{""}]}];
 concat_o30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o41_test(doc) -> [{userdata,[{""}]}];
 concat_o41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o41"),
-  Expected="<cell><value>"++"36193Bob"++"</value></cell>",
+  Expected="36193Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o52_test(doc) -> [{userdata,[{""}]}];
 concat_o52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o63_test(doc) -> [{userdata,[{""}]}];
 concat_o63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o3_test(doc) -> [{userdata,[{""}]}];
 concat_o3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o3"),
-  Expected="<cell><value>"++"Bob"++"</value></cell>",
+  Expected="Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o14_test(doc) -> [{userdata,[{""}]}];
 concat_o14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o14"),
-  Expected="<cell><value>"++"DougBob"++"</value></cell>",
+  Expected="DougBob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o25_test(doc) -> [{userdata,[{""}]}];
 concat_o25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o25"),
-  Expected="<cell><value>"++"Bob"++"</value></cell>",
+  Expected="Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o36_test(doc) -> [{userdata,[{""}]}];
 concat_o36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o36"),
-  Expected="<cell><value>"++"DougBob"++"</value></cell>",
+  Expected="DougBob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o47_test(doc) -> [{userdata,[{""}]}];
 concat_o47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o58_test(doc) -> [{userdata,[{""}]}];
 concat_o58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o9_test(doc) -> [{userdata,[{""}]}];
 concat_o9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o20_test(doc) -> [{userdata,[{""}]}];
 concat_o20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o20"),
-  Expected="<cell><value>"++"0Bob"++"</value></cell>",
+  Expected="0Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o31_test(doc) -> [{userdata,[{""}]}];
 concat_o31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o42_test(doc) -> [{userdata,[{""}]}];
 concat_o42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o42"),
-  Expected="<cell><value>"++"0Bob"++"</value></cell>",
+  Expected="0Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o53_test(doc) -> [{userdata,[{""}]}];
 concat_o53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o64_test(doc) -> [{userdata,[{""}]}];
 concat_o64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o4_test(doc) -> [{userdata,[{""}]}];
 concat_o4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o4"),
-  Expected="<cell><value>"++"TRUEBob"++"</value></cell>",
+  Expected="TRUEBob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o15_test(doc) -> [{userdata,[{""}]}];
 concat_o15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o15"),
-  Expected="<cell><value>"++"BobBob"++"</value></cell>",
+  Expected="BobBob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o26_test(doc) -> [{userdata,[{""}]}];
 concat_o26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o26"),
-  Expected="<cell><value>"++"TRUEBob"++"</value></cell>",
+  Expected="TRUEBob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o37_test(doc) -> [{userdata,[{""}]}];
 concat_o37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o37"),
-  Expected="<cell><value>"++"BobBob"++"</value></cell>",
+  Expected="BobBob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o48_test(doc) -> [{userdata,[{""}]}];
 concat_o48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o59_test(doc) -> [{userdata,[{""}]}];
 concat_o59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o10_test(doc) -> [{userdata,[{""}]}];
 concat_o10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o21_test(doc) -> [{userdata,[{""}]}];
 concat_o21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o21"),
-  Expected="<cell><value>"++"3.1415Bob"++"</value></cell>",
+  Expected="3.1415Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o32_test(doc) -> [{userdata,[{""}]}];
 concat_o32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o43_test(doc) -> [{userdata,[{""}]}];
 concat_o43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o43"),
-  Expected="<cell><value>"++"3.1415Bob"++"</value></cell>",
+  Expected="3.1415Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o54_test(doc) -> [{userdata,[{""}]}];
 concat_o54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_o65_test(doc) -> [{userdata,[{""}]}];
 concat_o65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","o65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e5_test(doc) -> [{userdata,[{""}]}];
 concat_e5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e5"),
-  Expected="<cell><value>"++"FALSEFALSE"++"</value></cell>",
+  Expected="FALSEFALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e16_test(doc) -> [{userdata,[{""}]}];
 concat_e16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e16"),
-  Expected="<cell><value>"++"2.7FALSE"++"</value></cell>",
+  Expected="2.7FALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e27_test(doc) -> [{userdata,[{""}]}];
 concat_e27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e27"),
-  Expected="<cell><value>"++"FALSEFALSE"++"</value></cell>",
+  Expected="FALSEFALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e38_test(doc) -> [{userdata,[{""}]}];
 concat_e38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e38"),
-  Expected="<cell><value>"++"2.7FALSE"++"</value></cell>",
+  Expected="2.7FALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e49_test(doc) -> [{userdata,[{""}]}];
 concat_e49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e60_test(doc) -> [{userdata,[{""}]}];
 concat_e60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e11_test(doc) -> [{userdata,[{""}]}];
 concat_e11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e22_test(doc) -> [{userdata,[{""}]}];
 concat_e22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e22"),
-  Expected="<cell><value>"++"36193.2FALSE"++"</value></cell>",
+  Expected="36193.2FALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e33_test(doc) -> [{userdata,[{""}]}];
 concat_e33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e44_test(doc) -> [{userdata,[{""}]}];
 concat_e44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e44"),
-  Expected="<cell><value>"++"36193.2FALSE"++"</value></cell>",
+  Expected="36193.2FALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e55_test(doc) -> [{userdata,[{""}]}];
 concat_e55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e66_test(doc) -> [{userdata,[{""}]}];
 concat_e66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e6_test(doc) -> [{userdata,[{""}]}];
 concat_e6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e17_test(doc) -> [{userdata,[{""}]}];
 concat_e17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e17"),
-  Expected="<cell><value>"++"3.54FALSE"++"</value></cell>",
+  Expected="3.54FALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e28_test(doc) -> [{userdata,[{""}]}];
 concat_e28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e39_test(doc) -> [{userdata,[{""}]}];
 concat_e39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e39"),
-  Expected="<cell><value>"++"3.54FALSE"++"</value></cell>",
+  Expected="3.54FALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e50_test(doc) -> [{userdata,[{""}]}];
 concat_e50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e61_test(doc) -> [{userdata,[{""}]}];
 concat_e61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e1_test(doc) -> [{userdata,[{""}]}];
 concat_e1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e1"),
-  Expected="<cell><value>"++"Boolean"++"</value></cell>",
+  Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e12_test(doc) -> [{userdata,[{""}]}];
 concat_e12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e34_test(doc) -> [{userdata,[{""}]}];
 concat_e34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e56_test(doc) -> [{userdata,[{""}]}];
 concat_e56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e7_test(doc) -> [{userdata,[{""}]}];
 concat_e7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e18_test(doc) -> [{userdata,[{""}]}];
 concat_e18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e18"),
-  Expected="<cell><value>"++"36192FALSE"++"</value></cell>",
+  Expected="36192FALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e29_test(doc) -> [{userdata,[{""}]}];
 concat_e29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e40_test(doc) -> [{userdata,[{""}]}];
 concat_e40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e40"),
-  Expected="<cell><value>"++"36192FALSE"++"</value></cell>",
+  Expected="36192FALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e51_test(doc) -> [{userdata,[{""}]}];
 concat_e51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e62_test(doc) -> [{userdata,[{""}]}];
 concat_e62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e2_test(doc) -> [{userdata,[{""}]}];
 concat_e2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e2"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e13_test(doc) -> [{userdata,[{""}]}];
 concat_e13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e13"),
-  Expected="<cell><value>"++"LizFALSE"++"</value></cell>",
+  Expected="LizFALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e35_test(doc) -> [{userdata,[{""}]}];
 concat_e35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e35"),
-  Expected="<cell><value>"++"LizFALSE"++"</value></cell>",
+  Expected="LizFALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e57_test(doc) -> [{userdata,[{""}]}];
 concat_e57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e8_test(doc) -> [{userdata,[{""}]}];
 concat_e8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e19_test(doc) -> [{userdata,[{""}]}];
 concat_e19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e19"),
-  Expected="<cell><value>"++"36193FALSE"++"</value></cell>",
+  Expected="36193FALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e30_test(doc) -> [{userdata,[{""}]}];
 concat_e30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e41_test(doc) -> [{userdata,[{""}]}];
 concat_e41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e41"),
-  Expected="<cell><value>"++"36193FALSE"++"</value></cell>",
+  Expected="36193FALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e52_test(doc) -> [{userdata,[{""}]}];
 concat_e52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e63_test(doc) -> [{userdata,[{""}]}];
 concat_e63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e3_test(doc) -> [{userdata,[{""}]}];
 concat_e3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e3"),
-  Expected="<cell><value>"++"FALSE"++"</value></cell>",
+  Expected="FALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e14_test(doc) -> [{userdata,[{""}]}];
 concat_e14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e14"),
-  Expected="<cell><value>"++"DougFALSE"++"</value></cell>",
+  Expected="DougFALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e25_test(doc) -> [{userdata,[{""}]}];
 concat_e25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e25"),
-  Expected="<cell><value>"++"FALSE"++"</value></cell>",
+  Expected="FALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e36_test(doc) -> [{userdata,[{""}]}];
 concat_e36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e36"),
-  Expected="<cell><value>"++"DougFALSE"++"</value></cell>",
+  Expected="DougFALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e47_test(doc) -> [{userdata,[{""}]}];
 concat_e47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e58_test(doc) -> [{userdata,[{""}]}];
 concat_e58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e9_test(doc) -> [{userdata,[{""}]}];
 concat_e9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e20_test(doc) -> [{userdata,[{""}]}];
 concat_e20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e20"),
-  Expected="<cell><value>"++"0FALSE"++"</value></cell>",
+  Expected="0FALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e31_test(doc) -> [{userdata,[{""}]}];
 concat_e31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e42_test(doc) -> [{userdata,[{""}]}];
 concat_e42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e42"),
-  Expected="<cell><value>"++"0FALSE"++"</value></cell>",
+  Expected="0FALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e53_test(doc) -> [{userdata,[{""}]}];
 concat_e53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e64_test(doc) -> [{userdata,[{""}]}];
 concat_e64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e4_test(doc) -> [{userdata,[{""}]}];
 concat_e4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e4"),
-  Expected="<cell><value>"++"TRUEFALSE"++"</value></cell>",
+  Expected="TRUEFALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e15_test(doc) -> [{userdata,[{""}]}];
 concat_e15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e15"),
-  Expected="<cell><value>"++"BobFALSE"++"</value></cell>",
+  Expected="BobFALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e26_test(doc) -> [{userdata,[{""}]}];
 concat_e26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e26"),
-  Expected="<cell><value>"++"TRUEFALSE"++"</value></cell>",
+  Expected="TRUEFALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e37_test(doc) -> [{userdata,[{""}]}];
 concat_e37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e37"),
-  Expected="<cell><value>"++"BobFALSE"++"</value></cell>",
+  Expected="BobFALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e48_test(doc) -> [{userdata,[{""}]}];
 concat_e48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e59_test(doc) -> [{userdata,[{""}]}];
 concat_e59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e10_test(doc) -> [{userdata,[{""}]}];
 concat_e10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e21_test(doc) -> [{userdata,[{""}]}];
 concat_e21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e21"),
-  Expected="<cell><value>"++"3.1415FALSE"++"</value></cell>",
+  Expected="3.1415FALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e32_test(doc) -> [{userdata,[{""}]}];
 concat_e32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e43_test(doc) -> [{userdata,[{""}]}];
 concat_e43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e43"),
-  Expected="<cell><value>"++"3.1415FALSE"++"</value></cell>",
+  Expected="3.1415FALSE",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e54_test(doc) -> [{userdata,[{""}]}];
 concat_e54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_e65_test(doc) -> [{userdata,[{""}]}];
 concat_e65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","e65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p5_test(doc) -> [{userdata,[{""}]}];
 concat_p5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p5"),
-  Expected="<cell><value>"++"FALSE2.7"++"</value></cell>",
+  Expected="FALSE2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p16_test(doc) -> [{userdata,[{""}]}];
 concat_p16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p16"),
-  Expected="<cell><value>"++"2.72.7"++"</value></cell>",
+  Expected="2.72.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p27_test(doc) -> [{userdata,[{""}]}];
 concat_p27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p27"),
-  Expected="<cell><value>"++"FALSE2.7"++"</value></cell>",
+  Expected="FALSE2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p38_test(doc) -> [{userdata,[{""}]}];
 concat_p38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p38"),
-  Expected="<cell><value>"++"2.72.7"++"</value></cell>",
+  Expected="2.72.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p49_test(doc) -> [{userdata,[{""}]}];
 concat_p49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p60_test(doc) -> [{userdata,[{""}]}];
 concat_p60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p11_test(doc) -> [{userdata,[{""}]}];
 concat_p11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p22_test(doc) -> [{userdata,[{""}]}];
 concat_p22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p22"),
-  Expected="<cell><value>"++"36193.22.7"++"</value></cell>",
+  Expected="36193.22.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p33_test(doc) -> [{userdata,[{""}]}];
 concat_p33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p44_test(doc) -> [{userdata,[{""}]}];
 concat_p44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p44"),
-  Expected="<cell><value>"++"36193.22.7"++"</value></cell>",
+  Expected="36193.22.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p55_test(doc) -> [{userdata,[{""}]}];
 concat_p55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p66_test(doc) -> [{userdata,[{""}]}];
 concat_p66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p6_test(doc) -> [{userdata,[{""}]}];
 concat_p6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p17_test(doc) -> [{userdata,[{""}]}];
 concat_p17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p17"),
-  Expected="<cell><value>"++"3.542.7"++"</value></cell>",
+  Expected="3.542.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p28_test(doc) -> [{userdata,[{""}]}];
 concat_p28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p39_test(doc) -> [{userdata,[{""}]}];
 concat_p39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p39"),
-  Expected="<cell><value>"++"3.542.7"++"</value></cell>",
+  Expected="3.542.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p50_test(doc) -> [{userdata,[{""}]}];
 concat_p50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p61_test(doc) -> [{userdata,[{""}]}];
 concat_p61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p1_test(doc) -> [{userdata,[{""}]}];
 concat_p1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p1"),
-  Expected="<cell><value>"++"Str Num"++"</value></cell>",
+  Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p12_test(doc) -> [{userdata,[{""}]}];
 concat_p12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p34_test(doc) -> [{userdata,[{""}]}];
 concat_p34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p56_test(doc) -> [{userdata,[{""}]}];
 concat_p56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p7_test(doc) -> [{userdata,[{""}]}];
 concat_p7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p18_test(doc) -> [{userdata,[{""}]}];
 concat_p18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p18"),
-  Expected="<cell><value>"++"361922.7"++"</value></cell>",
+  Expected="361922.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p29_test(doc) -> [{userdata,[{""}]}];
 concat_p29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p40_test(doc) -> [{userdata,[{""}]}];
 concat_p40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p40"),
-  Expected="<cell><value>"++"361922.7"++"</value></cell>",
+  Expected="361922.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p51_test(doc) -> [{userdata,[{""}]}];
 concat_p51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p62_test(doc) -> [{userdata,[{""}]}];
 concat_p62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p2_test(doc) -> [{userdata,[{""}]}];
 concat_p2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p2"),
-  Expected="<cell><value>"++"2.7"++"</value></cell>",
+  Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p13_test(doc) -> [{userdata,[{""}]}];
 concat_p13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p13"),
-  Expected="<cell><value>"++"Liz2.7"++"</value></cell>",
+  Expected="Liz2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p35_test(doc) -> [{userdata,[{""}]}];
 concat_p35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p35"),
-  Expected="<cell><value>"++"Liz2.7"++"</value></cell>",
+  Expected="Liz2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p57_test(doc) -> [{userdata,[{""}]}];
 concat_p57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p8_test(doc) -> [{userdata,[{""}]}];
 concat_p8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p19_test(doc) -> [{userdata,[{""}]}];
 concat_p19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p19"),
-  Expected="<cell><value>"++"361932.7"++"</value></cell>",
+  Expected="361932.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p30_test(doc) -> [{userdata,[{""}]}];
 concat_p30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p41_test(doc) -> [{userdata,[{""}]}];
 concat_p41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p41"),
-  Expected="<cell><value>"++"361932.7"++"</value></cell>",
+  Expected="361932.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p52_test(doc) -> [{userdata,[{""}]}];
 concat_p52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p63_test(doc) -> [{userdata,[{""}]}];
 concat_p63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p3_test(doc) -> [{userdata,[{""}]}];
 concat_p3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p3"),
-  Expected="<cell><value>"++"2.7"++"</value></cell>",
+  Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p14_test(doc) -> [{userdata,[{""}]}];
 concat_p14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p14"),
-  Expected="<cell><value>"++"Doug2.7"++"</value></cell>",
+  Expected="Doug2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p25_test(doc) -> [{userdata,[{""}]}];
 concat_p25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p25"),
-  Expected="<cell><value>"++"2.7"++"</value></cell>",
+  Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p36_test(doc) -> [{userdata,[{""}]}];
 concat_p36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p36"),
-  Expected="<cell><value>"++"Doug2.7"++"</value></cell>",
+  Expected="Doug2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p47_test(doc) -> [{userdata,[{""}]}];
 concat_p47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p58_test(doc) -> [{userdata,[{""}]}];
 concat_p58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p9_test(doc) -> [{userdata,[{""}]}];
 concat_p9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p20_test(doc) -> [{userdata,[{""}]}];
 concat_p20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p20"),
-  Expected="<cell><value>"++"02.7"++"</value></cell>",
+  Expected="02.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p31_test(doc) -> [{userdata,[{""}]}];
 concat_p31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p42_test(doc) -> [{userdata,[{""}]}];
 concat_p42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p42"),
-  Expected="<cell><value>"++"02.7"++"</value></cell>",
+  Expected="02.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p53_test(doc) -> [{userdata,[{""}]}];
 concat_p53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p64_test(doc) -> [{userdata,[{""}]}];
 concat_p64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p4_test(doc) -> [{userdata,[{""}]}];
 concat_p4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p4"),
-  Expected="<cell><value>"++"TRUE2.7"++"</value></cell>",
+  Expected="TRUE2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p15_test(doc) -> [{userdata,[{""}]}];
 concat_p15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p15"),
-  Expected="<cell><value>"++"Bob2.7"++"</value></cell>",
+  Expected="Bob2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p26_test(doc) -> [{userdata,[{""}]}];
 concat_p26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p26"),
-  Expected="<cell><value>"++"TRUE2.7"++"</value></cell>",
+  Expected="TRUE2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p37_test(doc) -> [{userdata,[{""}]}];
 concat_p37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p37"),
-  Expected="<cell><value>"++"Bob2.7"++"</value></cell>",
+  Expected="Bob2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p48_test(doc) -> [{userdata,[{""}]}];
 concat_p48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p59_test(doc) -> [{userdata,[{""}]}];
 concat_p59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p10_test(doc) -> [{userdata,[{""}]}];
 concat_p10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p21_test(doc) -> [{userdata,[{""}]}];
 concat_p21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p21"),
-  Expected="<cell><value>"++"3.14152.7"++"</value></cell>",
+  Expected="3.14152.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p32_test(doc) -> [{userdata,[{""}]}];
 concat_p32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p43_test(doc) -> [{userdata,[{""}]}];
 concat_p43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p43"),
-  Expected="<cell><value>"++"3.14152.7"++"</value></cell>",
+  Expected="3.14152.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p54_test(doc) -> [{userdata,[{""}]}];
 concat_p54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_p65_test(doc) -> [{userdata,[{""}]}];
 concat_p65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","p65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f5_test(doc) -> [{userdata,[{""}]}];
 concat_f5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f5"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f16_test(doc) -> [{userdata,[{""}]}];
 concat_f16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f16"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f27_test(doc) -> [{userdata,[{""}]}];
 concat_f27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f38_test(doc) -> [{userdata,[{""}]}];
 concat_f38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f38"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f49_test(doc) -> [{userdata,[{""}]}];
 concat_f49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f60_test(doc) -> [{userdata,[{""}]}];
 concat_f60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f11_test(doc) -> [{userdata,[{""}]}];
 concat_f11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f22_test(doc) -> [{userdata,[{""}]}];
 concat_f22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f22"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f33_test(doc) -> [{userdata,[{""}]}];
 concat_f33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f44_test(doc) -> [{userdata,[{""}]}];
 concat_f44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f44"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f55_test(doc) -> [{userdata,[{""}]}];
 concat_f55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f66_test(doc) -> [{userdata,[{""}]}];
 concat_f66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f6_test(doc) -> [{userdata,[{""}]}];
 concat_f6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f17_test(doc) -> [{userdata,[{""}]}];
 concat_f17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f17"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f28_test(doc) -> [{userdata,[{""}]}];
 concat_f28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f39_test(doc) -> [{userdata,[{""}]}];
 concat_f39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f39"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f50_test(doc) -> [{userdata,[{""}]}];
 concat_f50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f61_test(doc) -> [{userdata,[{""}]}];
 concat_f61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f1_test(doc) -> [{userdata,[{""}]}];
 concat_f1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f1"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f12_test(doc) -> [{userdata,[{""}]}];
 concat_f12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f34_test(doc) -> [{userdata,[{""}]}];
 concat_f34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f56_test(doc) -> [{userdata,[{""}]}];
 concat_f56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f7_test(doc) -> [{userdata,[{""}]}];
 concat_f7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f18_test(doc) -> [{userdata,[{""}]}];
 concat_f18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f18"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f29_test(doc) -> [{userdata,[{""}]}];
 concat_f29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f40_test(doc) -> [{userdata,[{""}]}];
 concat_f40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f40"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f51_test(doc) -> [{userdata,[{""}]}];
 concat_f51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f62_test(doc) -> [{userdata,[{""}]}];
 concat_f62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f2_test(doc) -> [{userdata,[{""}]}];
 concat_f2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f2"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f13_test(doc) -> [{userdata,[{""}]}];
 concat_f13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f13"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f35_test(doc) -> [{userdata,[{""}]}];
 concat_f35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f35"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f57_test(doc) -> [{userdata,[{""}]}];
 concat_f57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f8_test(doc) -> [{userdata,[{""}]}];
 concat_f8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f19_test(doc) -> [{userdata,[{""}]}];
 concat_f19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f19"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f30_test(doc) -> [{userdata,[{""}]}];
 concat_f30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f41_test(doc) -> [{userdata,[{""}]}];
 concat_f41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f41"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f52_test(doc) -> [{userdata,[{""}]}];
 concat_f52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f63_test(doc) -> [{userdata,[{""}]}];
 concat_f63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f3_test(doc) -> [{userdata,[{""}]}];
 concat_f3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f3"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f14_test(doc) -> [{userdata,[{""}]}];
 concat_f14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f14"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f25_test(doc) -> [{userdata,[{""}]}];
 concat_f25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f25"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f36_test(doc) -> [{userdata,[{""}]}];
 concat_f36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f36"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f47_test(doc) -> [{userdata,[{""}]}];
 concat_f47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f58_test(doc) -> [{userdata,[{""}]}];
 concat_f58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f9_test(doc) -> [{userdata,[{""}]}];
 concat_f9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f20_test(doc) -> [{userdata,[{""}]}];
 concat_f20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f20"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f31_test(doc) -> [{userdata,[{""}]}];
 concat_f31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f42_test(doc) -> [{userdata,[{""}]}];
 concat_f42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f42"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f53_test(doc) -> [{userdata,[{""}]}];
 concat_f53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f64_test(doc) -> [{userdata,[{""}]}];
 concat_f64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f4_test(doc) -> [{userdata,[{""}]}];
 concat_f4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f4"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f15_test(doc) -> [{userdata,[{""}]}];
 concat_f15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f15"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f26_test(doc) -> [{userdata,[{""}]}];
 concat_f26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f26"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f37_test(doc) -> [{userdata,[{""}]}];
 concat_f37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f37"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f48_test(doc) -> [{userdata,[{""}]}];
 concat_f48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f59_test(doc) -> [{userdata,[{""}]}];
 concat_f59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f10_test(doc) -> [{userdata,[{""}]}];
 concat_f10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f21_test(doc) -> [{userdata,[{""}]}];
 concat_f21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f21"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f32_test(doc) -> [{userdata,[{""}]}];
 concat_f32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f43_test(doc) -> [{userdata,[{""}]}];
 concat_f43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f43"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f54_test(doc) -> [{userdata,[{""}]}];
 concat_f54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_f65_test(doc) -> [{userdata,[{""}]}];
 concat_f65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","f65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q5_test(doc) -> [{userdata,[{""}]}];
 concat_q5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q5"),
-  Expected="<cell><value>"++"FALSE3.54"++"</value></cell>",
+  Expected="FALSE3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q16_test(doc) -> [{userdata,[{""}]}];
 concat_q16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q16"),
-  Expected="<cell><value>"++"2.73.54"++"</value></cell>",
+  Expected="2.73.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q27_test(doc) -> [{userdata,[{""}]}];
 concat_q27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q27"),
-  Expected="<cell><value>"++"FALSE3.54"++"</value></cell>",
+  Expected="FALSE3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q38_test(doc) -> [{userdata,[{""}]}];
 concat_q38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q38"),
-  Expected="<cell><value>"++"2.73.54"++"</value></cell>",
+  Expected="2.73.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q49_test(doc) -> [{userdata,[{""}]}];
 concat_q49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q60_test(doc) -> [{userdata,[{""}]}];
 concat_q60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q11_test(doc) -> [{userdata,[{""}]}];
 concat_q11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q22_test(doc) -> [{userdata,[{""}]}];
 concat_q22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q22"),
-  Expected="<cell><value>"++"36193.23.54"++"</value></cell>",
+  Expected="36193.23.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q33_test(doc) -> [{userdata,[{""}]}];
 concat_q33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q44_test(doc) -> [{userdata,[{""}]}];
 concat_q44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q44"),
-  Expected="<cell><value>"++"36193.23.54"++"</value></cell>",
+  Expected="36193.23.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q55_test(doc) -> [{userdata,[{""}]}];
 concat_q55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q66_test(doc) -> [{userdata,[{""}]}];
 concat_q66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q6_test(doc) -> [{userdata,[{""}]}];
 concat_q6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q17_test(doc) -> [{userdata,[{""}]}];
 concat_q17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q17"),
-  Expected="<cell><value>"++"3.543.54"++"</value></cell>",
+  Expected="3.543.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q28_test(doc) -> [{userdata,[{""}]}];
 concat_q28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q39_test(doc) -> [{userdata,[{""}]}];
 concat_q39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q39"),
-  Expected="<cell><value>"++"3.543.54"++"</value></cell>",
+  Expected="3.543.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q50_test(doc) -> [{userdata,[{""}]}];
 concat_q50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q61_test(doc) -> [{userdata,[{""}]}];
 concat_q61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q1_test(doc) -> [{userdata,[{""}]}];
 concat_q1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q1"),
-  Expected="<cell><value>"++"Str Num"++"</value></cell>",
+  Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q12_test(doc) -> [{userdata,[{""}]}];
 concat_q12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q34_test(doc) -> [{userdata,[{""}]}];
 concat_q34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q56_test(doc) -> [{userdata,[{""}]}];
 concat_q56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q7_test(doc) -> [{userdata,[{""}]}];
 concat_q7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q18_test(doc) -> [{userdata,[{""}]}];
 concat_q18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q18"),
-  Expected="<cell><value>"++"361923.54"++"</value></cell>",
+  Expected="361923.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q29_test(doc) -> [{userdata,[{""}]}];
 concat_q29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q40_test(doc) -> [{userdata,[{""}]}];
 concat_q40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q40"),
-  Expected="<cell><value>"++"361923.54"++"</value></cell>",
+  Expected="361923.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q51_test(doc) -> [{userdata,[{""}]}];
 concat_q51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q62_test(doc) -> [{userdata,[{""}]}];
 concat_q62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q2_test(doc) -> [{userdata,[{""}]}];
 concat_q2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q2"),
-  Expected="<cell><value>"++"3.54"++"</value></cell>",
+  Expected="3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q13_test(doc) -> [{userdata,[{""}]}];
 concat_q13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q13"),
-  Expected="<cell><value>"++"Liz3.54"++"</value></cell>",
+  Expected="Liz3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q35_test(doc) -> [{userdata,[{""}]}];
 concat_q35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q35"),
-  Expected="<cell><value>"++"Liz3.54"++"</value></cell>",
+  Expected="Liz3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q57_test(doc) -> [{userdata,[{""}]}];
 concat_q57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q8_test(doc) -> [{userdata,[{""}]}];
 concat_q8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q19_test(doc) -> [{userdata,[{""}]}];
 concat_q19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q19"),
-  Expected="<cell><value>"++"361933.54"++"</value></cell>",
+  Expected="361933.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q30_test(doc) -> [{userdata,[{""}]}];
 concat_q30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q41_test(doc) -> [{userdata,[{""}]}];
 concat_q41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q41"),
-  Expected="<cell><value>"++"361933.54"++"</value></cell>",
+  Expected="361933.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q52_test(doc) -> [{userdata,[{""}]}];
 concat_q52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q63_test(doc) -> [{userdata,[{""}]}];
 concat_q63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q3_test(doc) -> [{userdata,[{""}]}];
 concat_q3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q3"),
-  Expected="<cell><value>"++"3.54"++"</value></cell>",
+  Expected="3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q14_test(doc) -> [{userdata,[{""}]}];
 concat_q14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q14"),
-  Expected="<cell><value>"++"Doug3.54"++"</value></cell>",
+  Expected="Doug3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q25_test(doc) -> [{userdata,[{""}]}];
 concat_q25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q25"),
-  Expected="<cell><value>"++"3.54"++"</value></cell>",
+  Expected="3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q36_test(doc) -> [{userdata,[{""}]}];
 concat_q36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q36"),
-  Expected="<cell><value>"++"Doug3.54"++"</value></cell>",
+  Expected="Doug3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q47_test(doc) -> [{userdata,[{""}]}];
 concat_q47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q58_test(doc) -> [{userdata,[{""}]}];
 concat_q58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q9_test(doc) -> [{userdata,[{""}]}];
 concat_q9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q20_test(doc) -> [{userdata,[{""}]}];
 concat_q20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q20"),
-  Expected="<cell><value>"++"03.54"++"</value></cell>",
+  Expected="03.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q31_test(doc) -> [{userdata,[{""}]}];
 concat_q31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q42_test(doc) -> [{userdata,[{""}]}];
 concat_q42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q42"),
-  Expected="<cell><value>"++"03.54"++"</value></cell>",
+  Expected="03.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q53_test(doc) -> [{userdata,[{""}]}];
 concat_q53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q64_test(doc) -> [{userdata,[{""}]}];
 concat_q64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q4_test(doc) -> [{userdata,[{""}]}];
 concat_q4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q4"),
-  Expected="<cell><value>"++"TRUE3.54"++"</value></cell>",
+  Expected="TRUE3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q15_test(doc) -> [{userdata,[{""}]}];
 concat_q15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q15"),
-  Expected="<cell><value>"++"Bob3.54"++"</value></cell>",
+  Expected="Bob3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q26_test(doc) -> [{userdata,[{""}]}];
 concat_q26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q26"),
-  Expected="<cell><value>"++"TRUE3.54"++"</value></cell>",
+  Expected="TRUE3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q37_test(doc) -> [{userdata,[{""}]}];
 concat_q37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q37"),
-  Expected="<cell><value>"++"Bob3.54"++"</value></cell>",
+  Expected="Bob3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q48_test(doc) -> [{userdata,[{""}]}];
 concat_q48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q59_test(doc) -> [{userdata,[{""}]}];
 concat_q59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q10_test(doc) -> [{userdata,[{""}]}];
 concat_q10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q21_test(doc) -> [{userdata,[{""}]}];
 concat_q21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q21"),
-  Expected="<cell><value>"++"3.14153.54"++"</value></cell>",
+  Expected="3.14153.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q32_test(doc) -> [{userdata,[{""}]}];
 concat_q32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q43_test(doc) -> [{userdata,[{""}]}];
 concat_q43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q43"),
-  Expected="<cell><value>"++"3.14153.54"++"</value></cell>",
+  Expected="3.14153.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q54_test(doc) -> [{userdata,[{""}]}];
 concat_q54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_q65_test(doc) -> [{userdata,[{""}]}];
 concat_q65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","q65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g5_test(doc) -> [{userdata,[{""}]}];
 concat_g5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g5"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g16_test(doc) -> [{userdata,[{""}]}];
 concat_g16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g16"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g27_test(doc) -> [{userdata,[{""}]}];
 concat_g27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g27"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g38_test(doc) -> [{userdata,[{""}]}];
 concat_g38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g38"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g49_test(doc) -> [{userdata,[{""}]}];
 concat_g49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g60_test(doc) -> [{userdata,[{""}]}];
 concat_g60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g11_test(doc) -> [{userdata,[{""}]}];
 concat_g11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g22_test(doc) -> [{userdata,[{""}]}];
 concat_g22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g22"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g33_test(doc) -> [{userdata,[{""}]}];
 concat_g33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g44_test(doc) -> [{userdata,[{""}]}];
 concat_g44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g44"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g55_test(doc) -> [{userdata,[{""}]}];
 concat_g55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g66_test(doc) -> [{userdata,[{""}]}];
 concat_g66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g6_test(doc) -> [{userdata,[{""}]}];
 concat_g6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g17_test(doc) -> [{userdata,[{""}]}];
 concat_g17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g17"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g28_test(doc) -> [{userdata,[{""}]}];
 concat_g28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g39_test(doc) -> [{userdata,[{""}]}];
 concat_g39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g39"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g50_test(doc) -> [{userdata,[{""}]}];
 concat_g50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g61_test(doc) -> [{userdata,[{""}]}];
 concat_g61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g1_test(doc) -> [{userdata,[{""}]}];
 concat_g1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g1"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g12_test(doc) -> [{userdata,[{""}]}];
 concat_g12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g34_test(doc) -> [{userdata,[{""}]}];
 concat_g34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g56_test(doc) -> [{userdata,[{""}]}];
 concat_g56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g7_test(doc) -> [{userdata,[{""}]}];
 concat_g7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g18_test(doc) -> [{userdata,[{""}]}];
 concat_g18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g18"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g29_test(doc) -> [{userdata,[{""}]}];
 concat_g29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g40_test(doc) -> [{userdata,[{""}]}];
 concat_g40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g40"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g51_test(doc) -> [{userdata,[{""}]}];
 concat_g51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g62_test(doc) -> [{userdata,[{""}]}];
 concat_g62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g2_test(doc) -> [{userdata,[{""}]}];
 concat_g2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g2"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g13_test(doc) -> [{userdata,[{""}]}];
 concat_g13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g13"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g35_test(doc) -> [{userdata,[{""}]}];
 concat_g35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g35"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g57_test(doc) -> [{userdata,[{""}]}];
 concat_g57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g8_test(doc) -> [{userdata,[{""}]}];
 concat_g8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g19_test(doc) -> [{userdata,[{""}]}];
 concat_g19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g19"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g30_test(doc) -> [{userdata,[{""}]}];
 concat_g30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g41_test(doc) -> [{userdata,[{""}]}];
 concat_g41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g41"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g52_test(doc) -> [{userdata,[{""}]}];
 concat_g52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g63_test(doc) -> [{userdata,[{""}]}];
 concat_g63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g3_test(doc) -> [{userdata,[{""}]}];
 concat_g3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g3"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g14_test(doc) -> [{userdata,[{""}]}];
 concat_g14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g14"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g25_test(doc) -> [{userdata,[{""}]}];
 concat_g25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g25"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g36_test(doc) -> [{userdata,[{""}]}];
 concat_g36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g36"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g47_test(doc) -> [{userdata,[{""}]}];
 concat_g47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g58_test(doc) -> [{userdata,[{""}]}];
 concat_g58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g9_test(doc) -> [{userdata,[{""}]}];
 concat_g9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g20_test(doc) -> [{userdata,[{""}]}];
 concat_g20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g20"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g31_test(doc) -> [{userdata,[{""}]}];
 concat_g31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g42_test(doc) -> [{userdata,[{""}]}];
 concat_g42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g42"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g53_test(doc) -> [{userdata,[{""}]}];
 concat_g53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g64_test(doc) -> [{userdata,[{""}]}];
 concat_g64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g4_test(doc) -> [{userdata,[{""}]}];
 concat_g4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g4"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g15_test(doc) -> [{userdata,[{""}]}];
 concat_g15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g15"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g26_test(doc) -> [{userdata,[{""}]}];
 concat_g26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g26"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g37_test(doc) -> [{userdata,[{""}]}];
 concat_g37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g37"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g48_test(doc) -> [{userdata,[{""}]}];
 concat_g48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g59_test(doc) -> [{userdata,[{""}]}];
 concat_g59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g10_test(doc) -> [{userdata,[{""}]}];
 concat_g10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g21_test(doc) -> [{userdata,[{""}]}];
 concat_g21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g21"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g32_test(doc) -> [{userdata,[{""}]}];
 concat_g32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g43_test(doc) -> [{userdata,[{""}]}];
 concat_g43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g43"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g54_test(doc) -> [{userdata,[{""}]}];
 concat_g54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_g65_test(doc) -> [{userdata,[{""}]}];
 concat_g65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","g65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r5_test(doc) -> [{userdata,[{""}]}];
 concat_r5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r5"),
-  Expected="<cell><value>"++"FALSE36192"++"</value></cell>",
+  Expected="FALSE36192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r16_test(doc) -> [{userdata,[{""}]}];
 concat_r16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r16"),
-  Expected="<cell><value>"++"2.736192"++"</value></cell>",
+  Expected="2.736192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r27_test(doc) -> [{userdata,[{""}]}];
 concat_r27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r27"),
-  Expected="<cell><value>"++"FALSE36192"++"</value></cell>",
+  Expected="FALSE36192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r38_test(doc) -> [{userdata,[{""}]}];
 concat_r38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r38"),
-  Expected="<cell><value>"++"2.736192"++"</value></cell>",
+  Expected="2.736192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r49_test(doc) -> [{userdata,[{""}]}];
 concat_r49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r60_test(doc) -> [{userdata,[{""}]}];
 concat_r60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r11_test(doc) -> [{userdata,[{""}]}];
 concat_r11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r22_test(doc) -> [{userdata,[{""}]}];
 concat_r22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r22"),
-  Expected="<cell><value>"++"36193.236192"++"</value></cell>",
+  Expected="36193.236192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r33_test(doc) -> [{userdata,[{""}]}];
 concat_r33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r44_test(doc) -> [{userdata,[{""}]}];
 concat_r44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r44"),
-  Expected="<cell><value>"++"36193.236192"++"</value></cell>",
+  Expected="36193.236192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r55_test(doc) -> [{userdata,[{""}]}];
 concat_r55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r66_test(doc) -> [{userdata,[{""}]}];
 concat_r66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r6_test(doc) -> [{userdata,[{""}]}];
 concat_r6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r17_test(doc) -> [{userdata,[{""}]}];
 concat_r17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r17"),
-  Expected="<cell><value>"++"3.5436192"++"</value></cell>",
+  Expected="3.5436192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r28_test(doc) -> [{userdata,[{""}]}];
 concat_r28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r39_test(doc) -> [{userdata,[{""}]}];
 concat_r39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r39"),
-  Expected="<cell><value>"++"3.5436192"++"</value></cell>",
+  Expected="3.5436192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r50_test(doc) -> [{userdata,[{""}]}];
 concat_r50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r61_test(doc) -> [{userdata,[{""}]}];
 concat_r61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r1_test(doc) -> [{userdata,[{""}]}];
 concat_r1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r1"),
-  Expected="<cell><value>"++"Integer"++"</value></cell>",
+  Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r12_test(doc) -> [{userdata,[{""}]}];
 concat_r12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r34_test(doc) -> [{userdata,[{""}]}];
 concat_r34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r56_test(doc) -> [{userdata,[{""}]}];
 concat_r56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r7_test(doc) -> [{userdata,[{""}]}];
 concat_r7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r18_test(doc) -> [{userdata,[{""}]}];
 concat_r18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r18"),
-  Expected="<cell><value>"++"3619236192"++"</value></cell>",
+  Expected="3619236192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r29_test(doc) -> [{userdata,[{""}]}];
 concat_r29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r40_test(doc) -> [{userdata,[{""}]}];
 concat_r40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r40"),
-  Expected="<cell><value>"++"3619236192"++"</value></cell>",
+  Expected="3619236192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r51_test(doc) -> [{userdata,[{""}]}];
 concat_r51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r62_test(doc) -> [{userdata,[{""}]}];
 concat_r62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r2_test(doc) -> [{userdata,[{""}]}];
 concat_r2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r2"),
-  Expected="<cell><value>"++"1999/02/01 00:00:00"++"</value></cell>",
+  Expected="1999/02/01 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r13_test(doc) -> [{userdata,[{""}]}];
 concat_r13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r13"),
-  Expected="<cell><value>"++"Liz36192"++"</value></cell>",
+  Expected="Liz36192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r35_test(doc) -> [{userdata,[{""}]}];
 concat_r35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r35"),
-  Expected="<cell><value>"++"Liz36192"++"</value></cell>",
+  Expected="Liz36192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r57_test(doc) -> [{userdata,[{""}]}];
 concat_r57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r8_test(doc) -> [{userdata,[{""}]}];
 concat_r8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r19_test(doc) -> [{userdata,[{""}]}];
 concat_r19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r19"),
-  Expected="<cell><value>"++"3619336192"++"</value></cell>",
+  Expected="3619336192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r30_test(doc) -> [{userdata,[{""}]}];
 concat_r30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r41_test(doc) -> [{userdata,[{""}]}];
 concat_r41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r41"),
-  Expected="<cell><value>"++"3619336192"++"</value></cell>",
+  Expected="3619336192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r52_test(doc) -> [{userdata,[{""}]}];
 concat_r52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r63_test(doc) -> [{userdata,[{""}]}];
 concat_r63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r3_test(doc) -> [{userdata,[{""}]}];
 concat_r3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r3"),
-  Expected="<cell><value>"++"36192"++"</value></cell>",
+  Expected="36192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r14_test(doc) -> [{userdata,[{""}]}];
 concat_r14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r14"),
-  Expected="<cell><value>"++"Doug36192"++"</value></cell>",
+  Expected="Doug36192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r25_test(doc) -> [{userdata,[{""}]}];
 concat_r25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r25"),
-  Expected="<cell><value>"++"36192"++"</value></cell>",
+  Expected="36192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r36_test(doc) -> [{userdata,[{""}]}];
 concat_r36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r36"),
-  Expected="<cell><value>"++"Doug36192"++"</value></cell>",
+  Expected="Doug36192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r47_test(doc) -> [{userdata,[{""}]}];
 concat_r47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r58_test(doc) -> [{userdata,[{""}]}];
 concat_r58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r9_test(doc) -> [{userdata,[{""}]}];
 concat_r9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r20_test(doc) -> [{userdata,[{""}]}];
 concat_r20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r20"),
-  Expected="<cell><value>"++"036192"++"</value></cell>",
+  Expected="036192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r31_test(doc) -> [{userdata,[{""}]}];
 concat_r31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r42_test(doc) -> [{userdata,[{""}]}];
 concat_r42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r42"),
-  Expected="<cell><value>"++"036192"++"</value></cell>",
+  Expected="036192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r53_test(doc) -> [{userdata,[{""}]}];
 concat_r53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r64_test(doc) -> [{userdata,[{""}]}];
 concat_r64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r4_test(doc) -> [{userdata,[{""}]}];
 concat_r4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r4"),
-  Expected="<cell><value>"++"TRUE36192"++"</value></cell>",
+  Expected="TRUE36192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r15_test(doc) -> [{userdata,[{""}]}];
 concat_r15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r15"),
-  Expected="<cell><value>"++"Bob36192"++"</value></cell>",
+  Expected="Bob36192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r26_test(doc) -> [{userdata,[{""}]}];
 concat_r26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r26"),
-  Expected="<cell><value>"++"TRUE36192"++"</value></cell>",
+  Expected="TRUE36192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r37_test(doc) -> [{userdata,[{""}]}];
 concat_r37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r37"),
-  Expected="<cell><value>"++"Bob36192"++"</value></cell>",
+  Expected="Bob36192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r48_test(doc) -> [{userdata,[{""}]}];
 concat_r48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r59_test(doc) -> [{userdata,[{""}]}];
 concat_r59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r10_test(doc) -> [{userdata,[{""}]}];
 concat_r10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r21_test(doc) -> [{userdata,[{""}]}];
 concat_r21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r21"),
-  Expected="<cell><value>"++"3.141536192"++"</value></cell>",
+  Expected="3.141536192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r32_test(doc) -> [{userdata,[{""}]}];
 concat_r32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r43_test(doc) -> [{userdata,[{""}]}];
 concat_r43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r43"),
-  Expected="<cell><value>"++"3.141536192"++"</value></cell>",
+  Expected="3.141536192",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r54_test(doc) -> [{userdata,[{""}]}];
 concat_r54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_r65_test(doc) -> [{userdata,[{""}]}];
 concat_r65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","r65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h5_test(doc) -> [{userdata,[{""}]}];
 concat_h5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h16_test(doc) -> [{userdata,[{""}]}];
 concat_h16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h27_test(doc) -> [{userdata,[{""}]}];
 concat_h27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h27"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h38_test(doc) -> [{userdata,[{""}]}];
 concat_h38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h38"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h49_test(doc) -> [{userdata,[{""}]}];
 concat_h49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h60_test(doc) -> [{userdata,[{""}]}];
 concat_h60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h11_test(doc) -> [{userdata,[{""}]}];
 concat_h11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h22_test(doc) -> [{userdata,[{""}]}];
 concat_h22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h33_test(doc) -> [{userdata,[{""}]}];
 concat_h33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h44_test(doc) -> [{userdata,[{""}]}];
 concat_h44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h44"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h55_test(doc) -> [{userdata,[{""}]}];
 concat_h55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h66_test(doc) -> [{userdata,[{""}]}];
 concat_h66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h6_test(doc) -> [{userdata,[{""}]}];
 concat_h6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h17_test(doc) -> [{userdata,[{""}]}];
 concat_h17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h28_test(doc) -> [{userdata,[{""}]}];
 concat_h28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h39_test(doc) -> [{userdata,[{""}]}];
 concat_h39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h39"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h50_test(doc) -> [{userdata,[{""}]}];
 concat_h50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h61_test(doc) -> [{userdata,[{""}]}];
 concat_h61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h1_test(doc) -> [{userdata,[{""}]}];
 concat_h1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h1"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h12_test(doc) -> [{userdata,[{""}]}];
 concat_h12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h34_test(doc) -> [{userdata,[{""}]}];
 concat_h34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h56_test(doc) -> [{userdata,[{""}]}];
 concat_h56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h7_test(doc) -> [{userdata,[{""}]}];
 concat_h7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h18_test(doc) -> [{userdata,[{""}]}];
 concat_h18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h29_test(doc) -> [{userdata,[{""}]}];
 concat_h29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h40_test(doc) -> [{userdata,[{""}]}];
 concat_h40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h40"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h51_test(doc) -> [{userdata,[{""}]}];
 concat_h51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h62_test(doc) -> [{userdata,[{""}]}];
 concat_h62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h2_test(doc) -> [{userdata,[{""}]}];
 concat_h2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h2"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h13_test(doc) -> [{userdata,[{""}]}];
 concat_h13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h35_test(doc) -> [{userdata,[{""}]}];
 concat_h35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h35"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h57_test(doc) -> [{userdata,[{""}]}];
 concat_h57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h8_test(doc) -> [{userdata,[{""}]}];
 concat_h8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h19_test(doc) -> [{userdata,[{""}]}];
 concat_h19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h30_test(doc) -> [{userdata,[{""}]}];
 concat_h30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h41_test(doc) -> [{userdata,[{""}]}];
 concat_h41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h41"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h52_test(doc) -> [{userdata,[{""}]}];
 concat_h52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h63_test(doc) -> [{userdata,[{""}]}];
 concat_h63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h3_test(doc) -> [{userdata,[{""}]}];
 concat_h3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h14_test(doc) -> [{userdata,[{""}]}];
 concat_h14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h25_test(doc) -> [{userdata,[{""}]}];
 concat_h25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h25"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h36_test(doc) -> [{userdata,[{""}]}];
 concat_h36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h36"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h47_test(doc) -> [{userdata,[{""}]}];
 concat_h47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h58_test(doc) -> [{userdata,[{""}]}];
 concat_h58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h9_test(doc) -> [{userdata,[{""}]}];
 concat_h9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h20_test(doc) -> [{userdata,[{""}]}];
 concat_h20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h31_test(doc) -> [{userdata,[{""}]}];
 concat_h31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h42_test(doc) -> [{userdata,[{""}]}];
 concat_h42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h42"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h53_test(doc) -> [{userdata,[{""}]}];
 concat_h53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h64_test(doc) -> [{userdata,[{""}]}];
 concat_h64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h4_test(doc) -> [{userdata,[{""}]}];
 concat_h4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h15_test(doc) -> [{userdata,[{""}]}];
 concat_h15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h26_test(doc) -> [{userdata,[{""}]}];
 concat_h26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h26"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h37_test(doc) -> [{userdata,[{""}]}];
 concat_h37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h37"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h48_test(doc) -> [{userdata,[{""}]}];
 concat_h48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h59_test(doc) -> [{userdata,[{""}]}];
 concat_h59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h10_test(doc) -> [{userdata,[{""}]}];
 concat_h10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h21_test(doc) -> [{userdata,[{""}]}];
 concat_h21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h32_test(doc) -> [{userdata,[{""}]}];
 concat_h32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h43_test(doc) -> [{userdata,[{""}]}];
 concat_h43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h43"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h54_test(doc) -> [{userdata,[{""}]}];
 concat_h54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_h65_test(doc) -> [{userdata,[{""}]}];
 concat_h65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","h65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s5_test(doc) -> [{userdata,[{""}]}];
 concat_s5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s5"),
-  Expected="<cell><value>"++"FALSE36193"++"</value></cell>",
+  Expected="FALSE36193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s16_test(doc) -> [{userdata,[{""}]}];
 concat_s16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s16"),
-  Expected="<cell><value>"++"2.736193"++"</value></cell>",
+  Expected="2.736193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s27_test(doc) -> [{userdata,[{""}]}];
 concat_s27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s27"),
-  Expected="<cell><value>"++"FALSE36193"++"</value></cell>",
+  Expected="FALSE36193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s38_test(doc) -> [{userdata,[{""}]}];
 concat_s38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s38"),
-  Expected="<cell><value>"++"2.736193"++"</value></cell>",
+  Expected="2.736193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s49_test(doc) -> [{userdata,[{""}]}];
 concat_s49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s60_test(doc) -> [{userdata,[{""}]}];
 concat_s60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s11_test(doc) -> [{userdata,[{""}]}];
 concat_s11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s22_test(doc) -> [{userdata,[{""}]}];
 concat_s22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s22"),
-  Expected="<cell><value>"++"36193.236193"++"</value></cell>",
+  Expected="36193.236193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s33_test(doc) -> [{userdata,[{""}]}];
 concat_s33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s44_test(doc) -> [{userdata,[{""}]}];
 concat_s44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s44"),
-  Expected="<cell><value>"++"36193.236193"++"</value></cell>",
+  Expected="36193.236193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s55_test(doc) -> [{userdata,[{""}]}];
 concat_s55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s66_test(doc) -> [{userdata,[{""}]}];
 concat_s66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s6_test(doc) -> [{userdata,[{""}]}];
 concat_s6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s17_test(doc) -> [{userdata,[{""}]}];
 concat_s17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s17"),
-  Expected="<cell><value>"++"3.5436193"++"</value></cell>",
+  Expected="3.5436193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s28_test(doc) -> [{userdata,[{""}]}];
 concat_s28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s39_test(doc) -> [{userdata,[{""}]}];
 concat_s39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s39"),
-  Expected="<cell><value>"++"3.5436193"++"</value></cell>",
+  Expected="3.5436193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s50_test(doc) -> [{userdata,[{""}]}];
 concat_s50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s61_test(doc) -> [{userdata,[{""}]}];
 concat_s61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s1_test(doc) -> [{userdata,[{""}]}];
 concat_s1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s1"),
-  Expected="<cell><value>"++"Integer"++"</value></cell>",
+  Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s12_test(doc) -> [{userdata,[{""}]}];
 concat_s12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s34_test(doc) -> [{userdata,[{""}]}];
 concat_s34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s56_test(doc) -> [{userdata,[{""}]}];
 concat_s56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s7_test(doc) -> [{userdata,[{""}]}];
 concat_s7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s18_test(doc) -> [{userdata,[{""}]}];
 concat_s18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s18"),
-  Expected="<cell><value>"++"3619236193"++"</value></cell>",
+  Expected="3619236193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s29_test(doc) -> [{userdata,[{""}]}];
 concat_s29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s40_test(doc) -> [{userdata,[{""}]}];
 concat_s40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s40"),
-  Expected="<cell><value>"++"3619236193"++"</value></cell>",
+  Expected="3619236193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s51_test(doc) -> [{userdata,[{""}]}];
 concat_s51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s62_test(doc) -> [{userdata,[{""}]}];
 concat_s62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s2_test(doc) -> [{userdata,[{""}]}];
 concat_s2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s2"),
-  Expected="<cell><value>"++"1999/02/02 00:00:00"++"</value></cell>",
+  Expected="1999/02/02 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s13_test(doc) -> [{userdata,[{""}]}];
 concat_s13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s13"),
-  Expected="<cell><value>"++"Liz36193"++"</value></cell>",
+  Expected="Liz36193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s35_test(doc) -> [{userdata,[{""}]}];
 concat_s35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s35"),
-  Expected="<cell><value>"++"Liz36193"++"</value></cell>",
+  Expected="Liz36193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s57_test(doc) -> [{userdata,[{""}]}];
 concat_s57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s8_test(doc) -> [{userdata,[{""}]}];
 concat_s8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s19_test(doc) -> [{userdata,[{""}]}];
 concat_s19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s19"),
-  Expected="<cell><value>"++"3619336193"++"</value></cell>",
+  Expected="3619336193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s30_test(doc) -> [{userdata,[{""}]}];
 concat_s30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s41_test(doc) -> [{userdata,[{""}]}];
 concat_s41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s41"),
-  Expected="<cell><value>"++"3619336193"++"</value></cell>",
+  Expected="3619336193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s52_test(doc) -> [{userdata,[{""}]}];
 concat_s52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s63_test(doc) -> [{userdata,[{""}]}];
 concat_s63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s3_test(doc) -> [{userdata,[{""}]}];
 concat_s3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s3"),
-  Expected="<cell><value>"++"36193"++"</value></cell>",
+  Expected="36193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s14_test(doc) -> [{userdata,[{""}]}];
 concat_s14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s14"),
-  Expected="<cell><value>"++"Doug36193"++"</value></cell>",
+  Expected="Doug36193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s25_test(doc) -> [{userdata,[{""}]}];
 concat_s25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s25"),
-  Expected="<cell><value>"++"36193"++"</value></cell>",
+  Expected="36193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s36_test(doc) -> [{userdata,[{""}]}];
 concat_s36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s36"),
-  Expected="<cell><value>"++"Doug36193"++"</value></cell>",
+  Expected="Doug36193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s47_test(doc) -> [{userdata,[{""}]}];
 concat_s47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s58_test(doc) -> [{userdata,[{""}]}];
 concat_s58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s9_test(doc) -> [{userdata,[{""}]}];
 concat_s9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s20_test(doc) -> [{userdata,[{""}]}];
 concat_s20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s20"),
-  Expected="<cell><value>"++"036193"++"</value></cell>",
+  Expected="036193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s31_test(doc) -> [{userdata,[{""}]}];
 concat_s31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s42_test(doc) -> [{userdata,[{""}]}];
 concat_s42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s42"),
-  Expected="<cell><value>"++"036193"++"</value></cell>",
+  Expected="036193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s53_test(doc) -> [{userdata,[{""}]}];
 concat_s53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s64_test(doc) -> [{userdata,[{""}]}];
 concat_s64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s4_test(doc) -> [{userdata,[{""}]}];
 concat_s4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s4"),
-  Expected="<cell><value>"++"TRUE36193"++"</value></cell>",
+  Expected="TRUE36193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s15_test(doc) -> [{userdata,[{""}]}];
 concat_s15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s15"),
-  Expected="<cell><value>"++"Bob36193"++"</value></cell>",
+  Expected="Bob36193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s26_test(doc) -> [{userdata,[{""}]}];
 concat_s26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s26"),
-  Expected="<cell><value>"++"TRUE36193"++"</value></cell>",
+  Expected="TRUE36193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s37_test(doc) -> [{userdata,[{""}]}];
 concat_s37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s37"),
-  Expected="<cell><value>"++"Bob36193"++"</value></cell>",
+  Expected="Bob36193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s48_test(doc) -> [{userdata,[{""}]}];
 concat_s48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s59_test(doc) -> [{userdata,[{""}]}];
 concat_s59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s10_test(doc) -> [{userdata,[{""}]}];
 concat_s10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s21_test(doc) -> [{userdata,[{""}]}];
 concat_s21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s21"),
-  Expected="<cell><value>"++"3.141536193"++"</value></cell>",
+  Expected="3.141536193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s32_test(doc) -> [{userdata,[{""}]}];
 concat_s32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s43_test(doc) -> [{userdata,[{""}]}];
 concat_s43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s43"),
-  Expected="<cell><value>"++"3.141536193"++"</value></cell>",
+  Expected="3.141536193",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s54_test(doc) -> [{userdata,[{""}]}];
 concat_s54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_s65_test(doc) -> [{userdata,[{""}]}];
 concat_s65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","s65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i5_test(doc) -> [{userdata,[{""}]}];
 concat_i5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i5"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i16_test(doc) -> [{userdata,[{""}]}];
 concat_i16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i16"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i27_test(doc) -> [{userdata,[{""}]}];
 concat_i27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i27"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i38_test(doc) -> [{userdata,[{""}]}];
 concat_i38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i38"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i49_test(doc) -> [{userdata,[{""}]}];
 concat_i49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i60_test(doc) -> [{userdata,[{""}]}];
 concat_i60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i11_test(doc) -> [{userdata,[{""}]}];
 concat_i11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i22_test(doc) -> [{userdata,[{""}]}];
 concat_i22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i22"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i33_test(doc) -> [{userdata,[{""}]}];
 concat_i33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i44_test(doc) -> [{userdata,[{""}]}];
 concat_i44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i44"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i55_test(doc) -> [{userdata,[{""}]}];
 concat_i55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i66_test(doc) -> [{userdata,[{""}]}];
 concat_i66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i6_test(doc) -> [{userdata,[{""}]}];
 concat_i6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i17_test(doc) -> [{userdata,[{""}]}];
 concat_i17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i17"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i28_test(doc) -> [{userdata,[{""}]}];
 concat_i28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i39_test(doc) -> [{userdata,[{""}]}];
 concat_i39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i39"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i50_test(doc) -> [{userdata,[{""}]}];
 concat_i50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i61_test(doc) -> [{userdata,[{""}]}];
 concat_i61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i1_test(doc) -> [{userdata,[{""}]}];
 concat_i1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i1"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i12_test(doc) -> [{userdata,[{""}]}];
 concat_i12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i34_test(doc) -> [{userdata,[{""}]}];
 concat_i34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i56_test(doc) -> [{userdata,[{""}]}];
 concat_i56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i7_test(doc) -> [{userdata,[{""}]}];
 concat_i7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i18_test(doc) -> [{userdata,[{""}]}];
 concat_i18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i18"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i29_test(doc) -> [{userdata,[{""}]}];
 concat_i29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i40_test(doc) -> [{userdata,[{""}]}];
 concat_i40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i40"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i51_test(doc) -> [{userdata,[{""}]}];
 concat_i51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i62_test(doc) -> [{userdata,[{""}]}];
 concat_i62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i2_test(doc) -> [{userdata,[{""}]}];
 concat_i2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i2"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i13_test(doc) -> [{userdata,[{""}]}];
 concat_i13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i13"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i35_test(doc) -> [{userdata,[{""}]}];
 concat_i35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i35"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i57_test(doc) -> [{userdata,[{""}]}];
 concat_i57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i8_test(doc) -> [{userdata,[{""}]}];
 concat_i8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i19_test(doc) -> [{userdata,[{""}]}];
 concat_i19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i19"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i30_test(doc) -> [{userdata,[{""}]}];
 concat_i30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i41_test(doc) -> [{userdata,[{""}]}];
 concat_i41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i41"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i52_test(doc) -> [{userdata,[{""}]}];
 concat_i52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i63_test(doc) -> [{userdata,[{""}]}];
 concat_i63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i3_test(doc) -> [{userdata,[{""}]}];
 concat_i3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i3"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i14_test(doc) -> [{userdata,[{""}]}];
 concat_i14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i14"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i25_test(doc) -> [{userdata,[{""}]}];
 concat_i25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i25"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i36_test(doc) -> [{userdata,[{""}]}];
 concat_i36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i36"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i47_test(doc) -> [{userdata,[{""}]}];
 concat_i47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i58_test(doc) -> [{userdata,[{""}]}];
 concat_i58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i9_test(doc) -> [{userdata,[{""}]}];
 concat_i9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i20_test(doc) -> [{userdata,[{""}]}];
 concat_i20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i20"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i31_test(doc) -> [{userdata,[{""}]}];
 concat_i31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i42_test(doc) -> [{userdata,[{""}]}];
 concat_i42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i42"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i53_test(doc) -> [{userdata,[{""}]}];
 concat_i53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i64_test(doc) -> [{userdata,[{""}]}];
 concat_i64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i4_test(doc) -> [{userdata,[{""}]}];
 concat_i4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i4"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i15_test(doc) -> [{userdata,[{""}]}];
 concat_i15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i15"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i26_test(doc) -> [{userdata,[{""}]}];
 concat_i26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i26"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i37_test(doc) -> [{userdata,[{""}]}];
 concat_i37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i37"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i48_test(doc) -> [{userdata,[{""}]}];
 concat_i48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i59_test(doc) -> [{userdata,[{""}]}];
 concat_i59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i10_test(doc) -> [{userdata,[{""}]}];
 concat_i10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i21_test(doc) -> [{userdata,[{""}]}];
 concat_i21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i21"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i32_test(doc) -> [{userdata,[{""}]}];
 concat_i32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i43_test(doc) -> [{userdata,[{""}]}];
 concat_i43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i43"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i54_test(doc) -> [{userdata,[{""}]}];
 concat_i54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_i65_test(doc) -> [{userdata,[{""}]}];
 concat_i65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","i65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t5_test(doc) -> [{userdata,[{""}]}];
 concat_t5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t5"),
-  Expected="<cell><value>"++"FALSE0"++"</value></cell>",
+  Expected="FALSE0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t16_test(doc) -> [{userdata,[{""}]}];
 concat_t16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t16"),
-  Expected="<cell><value>"++"2.70"++"</value></cell>",
+  Expected="2.70",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t27_test(doc) -> [{userdata,[{""}]}];
 concat_t27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t27"),
-  Expected="<cell><value>"++"FALSE0"++"</value></cell>",
+  Expected="FALSE0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t38_test(doc) -> [{userdata,[{""}]}];
 concat_t38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t38"),
-  Expected="<cell><value>"++"2.70"++"</value></cell>",
+  Expected="2.70",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t49_test(doc) -> [{userdata,[{""}]}];
 concat_t49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t60_test(doc) -> [{userdata,[{""}]}];
 concat_t60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t11_test(doc) -> [{userdata,[{""}]}];
 concat_t11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t22_test(doc) -> [{userdata,[{""}]}];
 concat_t22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t22"),
-  Expected="<cell><value>"++"36193.20"++"</value></cell>",
+  Expected="36193.20",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t33_test(doc) -> [{userdata,[{""}]}];
 concat_t33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t44_test(doc) -> [{userdata,[{""}]}];
 concat_t44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t44"),
-  Expected="<cell><value>"++"36193.20"++"</value></cell>",
+  Expected="36193.20",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t55_test(doc) -> [{userdata,[{""}]}];
 concat_t55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t66_test(doc) -> [{userdata,[{""}]}];
 concat_t66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t6_test(doc) -> [{userdata,[{""}]}];
 concat_t6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t17_test(doc) -> [{userdata,[{""}]}];
 concat_t17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t17"),
-  Expected="<cell><value>"++"3.540"++"</value></cell>",
+  Expected="3.540",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t28_test(doc) -> [{userdata,[{""}]}];
 concat_t28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t39_test(doc) -> [{userdata,[{""}]}];
 concat_t39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t39"),
-  Expected="<cell><value>"++"3.540"++"</value></cell>",
+  Expected="3.540",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t50_test(doc) -> [{userdata,[{""}]}];
 concat_t50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t61_test(doc) -> [{userdata,[{""}]}];
 concat_t61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t1_test(doc) -> [{userdata,[{""}]}];
 concat_t1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t1"),
-  Expected="<cell><value>"++"Zero"++"</value></cell>",
+  Expected="Zero",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t12_test(doc) -> [{userdata,[{""}]}];
 concat_t12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t34_test(doc) -> [{userdata,[{""}]}];
 concat_t34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t56_test(doc) -> [{userdata,[{""}]}];
 concat_t56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t7_test(doc) -> [{userdata,[{""}]}];
 concat_t7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t18_test(doc) -> [{userdata,[{""}]}];
 concat_t18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t18"),
-  Expected="<cell><value>"++"361920"++"</value></cell>",
+  Expected="361920",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t29_test(doc) -> [{userdata,[{""}]}];
 concat_t29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t40_test(doc) -> [{userdata,[{""}]}];
 concat_t40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t40"),
-  Expected="<cell><value>"++"361920"++"</value></cell>",
+  Expected="361920",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t51_test(doc) -> [{userdata,[{""}]}];
 concat_t51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t62_test(doc) -> [{userdata,[{""}]}];
 concat_t62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t2_test(doc) -> [{userdata,[{""}]}];
 concat_t2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t2"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t13_test(doc) -> [{userdata,[{""}]}];
 concat_t13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t13"),
-  Expected="<cell><value>"++"Liz0"++"</value></cell>",
+  Expected="Liz0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t35_test(doc) -> [{userdata,[{""}]}];
 concat_t35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t35"),
-  Expected="<cell><value>"++"Liz0"++"</value></cell>",
+  Expected="Liz0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t57_test(doc) -> [{userdata,[{""}]}];
 concat_t57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t8_test(doc) -> [{userdata,[{""}]}];
 concat_t8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t19_test(doc) -> [{userdata,[{""}]}];
 concat_t19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t19"),
-  Expected="<cell><value>"++"361930"++"</value></cell>",
+  Expected="361930",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t30_test(doc) -> [{userdata,[{""}]}];
 concat_t30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t41_test(doc) -> [{userdata,[{""}]}];
 concat_t41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t41"),
-  Expected="<cell><value>"++"361930"++"</value></cell>",
+  Expected="361930",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t52_test(doc) -> [{userdata,[{""}]}];
 concat_t52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t63_test(doc) -> [{userdata,[{""}]}];
 concat_t63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t3_test(doc) -> [{userdata,[{""}]}];
 concat_t3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t3"),
-  Expected="<cell><value>"++"0"++"</value></cell>",
+  Expected="0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t14_test(doc) -> [{userdata,[{""}]}];
 concat_t14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t14"),
-  Expected="<cell><value>"++"Doug0"++"</value></cell>",
+  Expected="Doug0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t25_test(doc) -> [{userdata,[{""}]}];
 concat_t25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t25"),
-  Expected="<cell><value>"++"0"++"</value></cell>",
+  Expected="0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t36_test(doc) -> [{userdata,[{""}]}];
 concat_t36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t36"),
-  Expected="<cell><value>"++"Doug0"++"</value></cell>",
+  Expected="Doug0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t47_test(doc) -> [{userdata,[{""}]}];
 concat_t47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t58_test(doc) -> [{userdata,[{""}]}];
 concat_t58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t9_test(doc) -> [{userdata,[{""}]}];
 concat_t9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t20_test(doc) -> [{userdata,[{""}]}];
 concat_t20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t20"),
-  Expected="<cell><value>"++"00"++"</value></cell>",
+  Expected="00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t31_test(doc) -> [{userdata,[{""}]}];
 concat_t31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t42_test(doc) -> [{userdata,[{""}]}];
 concat_t42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t42"),
-  Expected="<cell><value>"++"00"++"</value></cell>",
+  Expected="00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t53_test(doc) -> [{userdata,[{""}]}];
 concat_t53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t64_test(doc) -> [{userdata,[{""}]}];
 concat_t64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t4_test(doc) -> [{userdata,[{""}]}];
 concat_t4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t4"),
-  Expected="<cell><value>"++"TRUE0"++"</value></cell>",
+  Expected="TRUE0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t15_test(doc) -> [{userdata,[{""}]}];
 concat_t15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t15"),
-  Expected="<cell><value>"++"Bob0"++"</value></cell>",
+  Expected="Bob0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t26_test(doc) -> [{userdata,[{""}]}];
 concat_t26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t26"),
-  Expected="<cell><value>"++"TRUE0"++"</value></cell>",
+  Expected="TRUE0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t37_test(doc) -> [{userdata,[{""}]}];
 concat_t37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t37"),
-  Expected="<cell><value>"++"Bob0"++"</value></cell>",
+  Expected="Bob0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t48_test(doc) -> [{userdata,[{""}]}];
 concat_t48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t59_test(doc) -> [{userdata,[{""}]}];
 concat_t59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t10_test(doc) -> [{userdata,[{""}]}];
 concat_t10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t21_test(doc) -> [{userdata,[{""}]}];
 concat_t21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t21"),
-  Expected="<cell><value>"++"3.14150"++"</value></cell>",
+  Expected="3.14150",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t32_test(doc) -> [{userdata,[{""}]}];
 concat_t32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t43_test(doc) -> [{userdata,[{""}]}];
 concat_t43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t43"),
-  Expected="<cell><value>"++"3.14150"++"</value></cell>",
+  Expected="3.14150",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t54_test(doc) -> [{userdata,[{""}]}];
 concat_t54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_t65_test(doc) -> [{userdata,[{""}]}];
 concat_t65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","t65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j5_test(doc) -> [{userdata,[{""}]}];
 concat_j5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j5"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j16_test(doc) -> [{userdata,[{""}]}];
 concat_j16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j16"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j27_test(doc) -> [{userdata,[{""}]}];
 concat_j27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j27"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j38_test(doc) -> [{userdata,[{""}]}];
 concat_j38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j38"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j49_test(doc) -> [{userdata,[{""}]}];
 concat_j49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j60_test(doc) -> [{userdata,[{""}]}];
 concat_j60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j11_test(doc) -> [{userdata,[{""}]}];
 concat_j11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j22_test(doc) -> [{userdata,[{""}]}];
 concat_j22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j22"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j33_test(doc) -> [{userdata,[{""}]}];
 concat_j33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j44_test(doc) -> [{userdata,[{""}]}];
 concat_j44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j44"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j55_test(doc) -> [{userdata,[{""}]}];
 concat_j55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j66_test(doc) -> [{userdata,[{""}]}];
 concat_j66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j6_test(doc) -> [{userdata,[{""}]}];
 concat_j6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j17_test(doc) -> [{userdata,[{""}]}];
 concat_j17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j17"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j28_test(doc) -> [{userdata,[{""}]}];
 concat_j28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j39_test(doc) -> [{userdata,[{""}]}];
 concat_j39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j39"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j50_test(doc) -> [{userdata,[{""}]}];
 concat_j50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j61_test(doc) -> [{userdata,[{""}]}];
 concat_j61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j1_test(doc) -> [{userdata,[{""}]}];
 concat_j1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j1"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j12_test(doc) -> [{userdata,[{""}]}];
 concat_j12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j34_test(doc) -> [{userdata,[{""}]}];
 concat_j34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j56_test(doc) -> [{userdata,[{""}]}];
 concat_j56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j7_test(doc) -> [{userdata,[{""}]}];
 concat_j7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j18_test(doc) -> [{userdata,[{""}]}];
 concat_j18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j18"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j29_test(doc) -> [{userdata,[{""}]}];
 concat_j29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j40_test(doc) -> [{userdata,[{""}]}];
 concat_j40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j40"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j51_test(doc) -> [{userdata,[{""}]}];
 concat_j51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j62_test(doc) -> [{userdata,[{""}]}];
 concat_j62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j2_test(doc) -> [{userdata,[{""}]}];
 concat_j2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j2"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j13_test(doc) -> [{userdata,[{""}]}];
 concat_j13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j13"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j35_test(doc) -> [{userdata,[{""}]}];
 concat_j35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j35"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j57_test(doc) -> [{userdata,[{""}]}];
 concat_j57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j8_test(doc) -> [{userdata,[{""}]}];
 concat_j8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j19_test(doc) -> [{userdata,[{""}]}];
 concat_j19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j19"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j30_test(doc) -> [{userdata,[{""}]}];
 concat_j30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j41_test(doc) -> [{userdata,[{""}]}];
 concat_j41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j41"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j52_test(doc) -> [{userdata,[{""}]}];
 concat_j52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j63_test(doc) -> [{userdata,[{""}]}];
 concat_j63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j3_test(doc) -> [{userdata,[{""}]}];
 concat_j3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j3"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j14_test(doc) -> [{userdata,[{""}]}];
 concat_j14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j14"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j25_test(doc) -> [{userdata,[{""}]}];
 concat_j25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j25"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j36_test(doc) -> [{userdata,[{""}]}];
 concat_j36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j36"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j47_test(doc) -> [{userdata,[{""}]}];
 concat_j47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j58_test(doc) -> [{userdata,[{""}]}];
 concat_j58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j9_test(doc) -> [{userdata,[{""}]}];
 concat_j9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j20_test(doc) -> [{userdata,[{""}]}];
 concat_j20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j20"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j31_test(doc) -> [{userdata,[{""}]}];
 concat_j31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j42_test(doc) -> [{userdata,[{""}]}];
 concat_j42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j42"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j53_test(doc) -> [{userdata,[{""}]}];
 concat_j53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j64_test(doc) -> [{userdata,[{""}]}];
 concat_j64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j4_test(doc) -> [{userdata,[{""}]}];
 concat_j4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j4"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j15_test(doc) -> [{userdata,[{""}]}];
 concat_j15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j15"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j26_test(doc) -> [{userdata,[{""}]}];
 concat_j26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j26"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j37_test(doc) -> [{userdata,[{""}]}];
 concat_j37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j37"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j48_test(doc) -> [{userdata,[{""}]}];
 concat_j48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j59_test(doc) -> [{userdata,[{""}]}];
 concat_j59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j10_test(doc) -> [{userdata,[{""}]}];
 concat_j10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j21_test(doc) -> [{userdata,[{""}]}];
 concat_j21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j21"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j32_test(doc) -> [{userdata,[{""}]}];
 concat_j32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j43_test(doc) -> [{userdata,[{""}]}];
 concat_j43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j43"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j54_test(doc) -> [{userdata,[{""}]}];
 concat_j54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_j65_test(doc) -> [{userdata,[{""}]}];
 concat_j65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","j65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u5_test(doc) -> [{userdata,[{""}]}];
 concat_u5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u5"),
-  Expected="<cell><value>"++"FALSE3.1415"++"</value></cell>",
+  Expected="FALSE3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u16_test(doc) -> [{userdata,[{""}]}];
 concat_u16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u16"),
-  Expected="<cell><value>"++"2.73.1415"++"</value></cell>",
+  Expected="2.73.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u27_test(doc) -> [{userdata,[{""}]}];
 concat_u27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u27"),
-  Expected="<cell><value>"++"FALSE3.1415"++"</value></cell>",
+  Expected="FALSE3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u38_test(doc) -> [{userdata,[{""}]}];
 concat_u38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u38"),
-  Expected="<cell><value>"++"2.73.1415"++"</value></cell>",
+  Expected="2.73.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u49_test(doc) -> [{userdata,[{""}]}];
 concat_u49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u60_test(doc) -> [{userdata,[{""}]}];
 concat_u60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u11_test(doc) -> [{userdata,[{""}]}];
 concat_u11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u22_test(doc) -> [{userdata,[{""}]}];
 concat_u22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u22"),
-  Expected="<cell><value>"++"36193.23.1415"++"</value></cell>",
+  Expected="36193.23.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u33_test(doc) -> [{userdata,[{""}]}];
 concat_u33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u44_test(doc) -> [{userdata,[{""}]}];
 concat_u44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u44"),
-  Expected="<cell><value>"++"36193.23.1415"++"</value></cell>",
+  Expected="36193.23.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u55_test(doc) -> [{userdata,[{""}]}];
 concat_u55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u66_test(doc) -> [{userdata,[{""}]}];
 concat_u66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u6_test(doc) -> [{userdata,[{""}]}];
 concat_u6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u17_test(doc) -> [{userdata,[{""}]}];
 concat_u17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u17"),
-  Expected="<cell><value>"++"3.543.1415"++"</value></cell>",
+  Expected="3.543.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u28_test(doc) -> [{userdata,[{""}]}];
 concat_u28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u39_test(doc) -> [{userdata,[{""}]}];
 concat_u39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u39"),
-  Expected="<cell><value>"++"3.543.1415"++"</value></cell>",
+  Expected="3.543.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u50_test(doc) -> [{userdata,[{""}]}];
 concat_u50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u61_test(doc) -> [{userdata,[{""}]}];
 concat_u61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u1_test(doc) -> [{userdata,[{""}]}];
 concat_u1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u1"),
-  Expected="<cell><value>"++"Float"++"</value></cell>",
+  Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u12_test(doc) -> [{userdata,[{""}]}];
 concat_u12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u34_test(doc) -> [{userdata,[{""}]}];
 concat_u34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u56_test(doc) -> [{userdata,[{""}]}];
 concat_u56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u7_test(doc) -> [{userdata,[{""}]}];
 concat_u7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u18_test(doc) -> [{userdata,[{""}]}];
 concat_u18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u18"),
-  Expected="<cell><value>"++"361923.1415"++"</value></cell>",
+  Expected="361923.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u29_test(doc) -> [{userdata,[{""}]}];
 concat_u29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u40_test(doc) -> [{userdata,[{""}]}];
 concat_u40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u40"),
-  Expected="<cell><value>"++"361923.1415"++"</value></cell>",
+  Expected="361923.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u51_test(doc) -> [{userdata,[{""}]}];
 concat_u51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u62_test(doc) -> [{userdata,[{""}]}];
 concat_u62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u2_test(doc) -> [{userdata,[{""}]}];
 concat_u2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u2"),
-  Expected="<cell><value>"++"3.1415"++"</value></cell>",
+  Expected="3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u13_test(doc) -> [{userdata,[{""}]}];
 concat_u13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u13"),
-  Expected="<cell><value>"++"Liz3.1415"++"</value></cell>",
+  Expected="Liz3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u35_test(doc) -> [{userdata,[{""}]}];
 concat_u35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u35"),
-  Expected="<cell><value>"++"Liz3.1415"++"</value></cell>",
+  Expected="Liz3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u57_test(doc) -> [{userdata,[{""}]}];
 concat_u57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u8_test(doc) -> [{userdata,[{""}]}];
 concat_u8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u19_test(doc) -> [{userdata,[{""}]}];
 concat_u19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u19"),
-  Expected="<cell><value>"++"361933.1415"++"</value></cell>",
+  Expected="361933.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u30_test(doc) -> [{userdata,[{""}]}];
 concat_u30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u41_test(doc) -> [{userdata,[{""}]}];
 concat_u41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u41"),
-  Expected="<cell><value>"++"361933.1415"++"</value></cell>",
+  Expected="361933.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u52_test(doc) -> [{userdata,[{""}]}];
 concat_u52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u63_test(doc) -> [{userdata,[{""}]}];
 concat_u63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u3_test(doc) -> [{userdata,[{""}]}];
 concat_u3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u3"),
-  Expected="<cell><value>"++"3.1415"++"</value></cell>",
+  Expected="3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u14_test(doc) -> [{userdata,[{""}]}];
 concat_u14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u14"),
-  Expected="<cell><value>"++"Doug3.1415"++"</value></cell>",
+  Expected="Doug3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u25_test(doc) -> [{userdata,[{""}]}];
 concat_u25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u25"),
-  Expected="<cell><value>"++"3.1415"++"</value></cell>",
+  Expected="3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u36_test(doc) -> [{userdata,[{""}]}];
 concat_u36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u36"),
-  Expected="<cell><value>"++"Doug3.1415"++"</value></cell>",
+  Expected="Doug3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u47_test(doc) -> [{userdata,[{""}]}];
 concat_u47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u58_test(doc) -> [{userdata,[{""}]}];
 concat_u58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u9_test(doc) -> [{userdata,[{""}]}];
 concat_u9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u20_test(doc) -> [{userdata,[{""}]}];
 concat_u20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u20"),
-  Expected="<cell><value>"++"03.1415"++"</value></cell>",
+  Expected="03.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u31_test(doc) -> [{userdata,[{""}]}];
 concat_u31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u42_test(doc) -> [{userdata,[{""}]}];
 concat_u42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u42"),
-  Expected="<cell><value>"++"03.1415"++"</value></cell>",
+  Expected="03.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u53_test(doc) -> [{userdata,[{""}]}];
 concat_u53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u64_test(doc) -> [{userdata,[{""}]}];
 concat_u64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u4_test(doc) -> [{userdata,[{""}]}];
 concat_u4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u4"),
-  Expected="<cell><value>"++"TRUE3.1415"++"</value></cell>",
+  Expected="TRUE3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u15_test(doc) -> [{userdata,[{""}]}];
 concat_u15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u15"),
-  Expected="<cell><value>"++"Bob3.1415"++"</value></cell>",
+  Expected="Bob3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u26_test(doc) -> [{userdata,[{""}]}];
 concat_u26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u26"),
-  Expected="<cell><value>"++"TRUE3.1415"++"</value></cell>",
+  Expected="TRUE3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u37_test(doc) -> [{userdata,[{""}]}];
 concat_u37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u37"),
-  Expected="<cell><value>"++"Bob3.1415"++"</value></cell>",
+  Expected="Bob3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u48_test(doc) -> [{userdata,[{""}]}];
 concat_u48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u59_test(doc) -> [{userdata,[{""}]}];
 concat_u59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u10_test(doc) -> [{userdata,[{""}]}];
 concat_u10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u21_test(doc) -> [{userdata,[{""}]}];
 concat_u21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u21"),
-  Expected="<cell><value>"++"3.14153.1415"++"</value></cell>",
+  Expected="3.14153.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u32_test(doc) -> [{userdata,[{""}]}];
 concat_u32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u43_test(doc) -> [{userdata,[{""}]}];
 concat_u43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u43"),
-  Expected="<cell><value>"++"3.14153.1415"++"</value></cell>",
+  Expected="3.14153.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u54_test(doc) -> [{userdata,[{""}]}];
 concat_u54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 concat_u65_test(doc) -> [{userdata,[{""}]}];
 concat_u65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/CONCAT/","u65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   

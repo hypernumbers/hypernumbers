@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_ping.xls
-% Generated on: Tue Mar 11 09:09:59 +0000 2008
+% Generated on: Sun Apr 13 20:21:27 +0100 2008
 
 -module(b_ping_test_SUITE).
 -compile(export_all).

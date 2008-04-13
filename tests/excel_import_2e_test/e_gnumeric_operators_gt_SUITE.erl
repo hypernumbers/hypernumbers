@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_operators_gt.xls
-% Generated on: Tue Mar 11 09:11:30 +0000 2008
+% Generated on: Sun Apr 13 20:22:52 +0100 2008
 
 -module(e_gnumeric_operators_gt_SUITE).
 -compile(export_all).
@@ -75,9121 +75,9121 @@ assert_eql(X, Y) ->
 gt_k5_test(doc) -> [{userdata,[{""}]}];
 gt_k5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k5"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k16_test(doc) -> [{userdata,[{""}]}];
 gt_k16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k16"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k27_test(doc) -> [{userdata,[{""}]}];
 gt_k27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k27"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k38_test(doc) -> [{userdata,[{""}]}];
 gt_k38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k38"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k49_test(doc) -> [{userdata,[{""}]}];
 gt_k49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k60_test(doc) -> [{userdata,[{""}]}];
 gt_k60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k11_test(doc) -> [{userdata,[{""}]}];
 gt_k11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k22_test(doc) -> [{userdata,[{""}]}];
 gt_k22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k22"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k33_test(doc) -> [{userdata,[{""}]}];
 gt_k33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k44_test(doc) -> [{userdata,[{""}]}];
 gt_k44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k44"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k55_test(doc) -> [{userdata,[{""}]}];
 gt_k55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k66_test(doc) -> [{userdata,[{""}]}];
 gt_k66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k6_test(doc) -> [{userdata,[{""}]}];
 gt_k6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k17_test(doc) -> [{userdata,[{""}]}];
 gt_k17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k17"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k28_test(doc) -> [{userdata,[{""}]}];
 gt_k28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k39_test(doc) -> [{userdata,[{""}]}];
 gt_k39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k39"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k50_test(doc) -> [{userdata,[{""}]}];
 gt_k50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k61_test(doc) -> [{userdata,[{""}]}];
 gt_k61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k1_test(doc) -> [{userdata,[{""}]}];
 gt_k1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k1"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k12_test(doc) -> [{userdata,[{""}]}];
 gt_k12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k34_test(doc) -> [{userdata,[{""}]}];
 gt_k34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k56_test(doc) -> [{userdata,[{""}]}];
 gt_k56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k7_test(doc) -> [{userdata,[{""}]}];
 gt_k7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k18_test(doc) -> [{userdata,[{""}]}];
 gt_k18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k18"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k29_test(doc) -> [{userdata,[{""}]}];
 gt_k29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k40_test(doc) -> [{userdata,[{""}]}];
 gt_k40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k40"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k51_test(doc) -> [{userdata,[{""}]}];
 gt_k51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k62_test(doc) -> [{userdata,[{""}]}];
 gt_k62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k2_test(doc) -> [{userdata,[{""}]}];
 gt_k2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k2"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k13_test(doc) -> [{userdata,[{""}]}];
 gt_k13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k13"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k35_test(doc) -> [{userdata,[{""}]}];
 gt_k35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k35"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k57_test(doc) -> [{userdata,[{""}]}];
 gt_k57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k8_test(doc) -> [{userdata,[{""}]}];
 gt_k8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k19_test(doc) -> [{userdata,[{""}]}];
 gt_k19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k19"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k30_test(doc) -> [{userdata,[{""}]}];
 gt_k30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k41_test(doc) -> [{userdata,[{""}]}];
 gt_k41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k41"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k52_test(doc) -> [{userdata,[{""}]}];
 gt_k52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k63_test(doc) -> [{userdata,[{""}]}];
 gt_k63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k3_test(doc) -> [{userdata,[{""}]}];
 gt_k3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k3"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k14_test(doc) -> [{userdata,[{""}]}];
 gt_k14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k14"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k25_test(doc) -> [{userdata,[{""}]}];
 gt_k25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k25"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k36_test(doc) -> [{userdata,[{""}]}];
 gt_k36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k36"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k47_test(doc) -> [{userdata,[{""}]}];
 gt_k47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k58_test(doc) -> [{userdata,[{""}]}];
 gt_k58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k9_test(doc) -> [{userdata,[{""}]}];
 gt_k9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k20_test(doc) -> [{userdata,[{""}]}];
 gt_k20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k20"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k31_test(doc) -> [{userdata,[{""}]}];
 gt_k31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k42_test(doc) -> [{userdata,[{""}]}];
 gt_k42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k42"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k53_test(doc) -> [{userdata,[{""}]}];
 gt_k53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k64_test(doc) -> [{userdata,[{""}]}];
 gt_k64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k4_test(doc) -> [{userdata,[{""}]}];
 gt_k4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k4"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k15_test(doc) -> [{userdata,[{""}]}];
 gt_k15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k15"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k26_test(doc) -> [{userdata,[{""}]}];
 gt_k26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k26"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k37_test(doc) -> [{userdata,[{""}]}];
 gt_k37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k37"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k48_test(doc) -> [{userdata,[{""}]}];
 gt_k48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k59_test(doc) -> [{userdata,[{""}]}];
 gt_k59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k10_test(doc) -> [{userdata,[{""}]}];
 gt_k10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k21_test(doc) -> [{userdata,[{""}]}];
 gt_k21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k21"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k32_test(doc) -> [{userdata,[{""}]}];
 gt_k32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k43_test(doc) -> [{userdata,[{""}]}];
 gt_k43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k43"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k54_test(doc) -> [{userdata,[{""}]}];
 gt_k54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_k65_test(doc) -> [{userdata,[{""}]}];
 gt_k65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","k65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v5_test(doc) -> [{userdata,[{""}]}];
 gt_v5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v5"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v16_test(doc) -> [{userdata,[{""}]}];
 gt_v16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v16"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v27_test(doc) -> [{userdata,[{""}]}];
 gt_v27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v27"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v38_test(doc) -> [{userdata,[{""}]}];
 gt_v38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v38"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v49_test(doc) -> [{userdata,[{""}]}];
 gt_v49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v60_test(doc) -> [{userdata,[{""}]}];
 gt_v60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v11_test(doc) -> [{userdata,[{""}]}];
 gt_v11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v22_test(doc) -> [{userdata,[{""}]}];
 gt_v22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v22"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v33_test(doc) -> [{userdata,[{""}]}];
 gt_v33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v44_test(doc) -> [{userdata,[{""}]}];
 gt_v44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v44"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v55_test(doc) -> [{userdata,[{""}]}];
 gt_v55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v66_test(doc) -> [{userdata,[{""}]}];
 gt_v66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v6_test(doc) -> [{userdata,[{""}]}];
 gt_v6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v17_test(doc) -> [{userdata,[{""}]}];
 gt_v17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v17"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v28_test(doc) -> [{userdata,[{""}]}];
 gt_v28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v39_test(doc) -> [{userdata,[{""}]}];
 gt_v39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v39"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v50_test(doc) -> [{userdata,[{""}]}];
 gt_v50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v61_test(doc) -> [{userdata,[{""}]}];
 gt_v61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v1_test(doc) -> [{userdata,[{""}]}];
 gt_v1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v1"),
-  Expected="<cell><value>"++"Float"++"</value></cell>",
+  Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v12_test(doc) -> [{userdata,[{""}]}];
 gt_v12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v34_test(doc) -> [{userdata,[{""}]}];
 gt_v34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v56_test(doc) -> [{userdata,[{""}]}];
 gt_v56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v7_test(doc) -> [{userdata,[{""}]}];
 gt_v7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v18_test(doc) -> [{userdata,[{""}]}];
 gt_v18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v18"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v29_test(doc) -> [{userdata,[{""}]}];
 gt_v29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v40_test(doc) -> [{userdata,[{""}]}];
 gt_v40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v40"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v51_test(doc) -> [{userdata,[{""}]}];
 gt_v51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v62_test(doc) -> [{userdata,[{""}]}];
 gt_v62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v2_test(doc) -> [{userdata,[{""}]}];
 gt_v2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v2"),
-  Expected="<cell><value>"++"36193.2"++"</value></cell>",
+  Expected="36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v13_test(doc) -> [{userdata,[{""}]}];
 gt_v13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v13"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v35_test(doc) -> [{userdata,[{""}]}];
 gt_v35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v35"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v57_test(doc) -> [{userdata,[{""}]}];
 gt_v57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v8_test(doc) -> [{userdata,[{""}]}];
 gt_v8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v19_test(doc) -> [{userdata,[{""}]}];
 gt_v19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v19"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v30_test(doc) -> [{userdata,[{""}]}];
 gt_v30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v41_test(doc) -> [{userdata,[{""}]}];
 gt_v41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v41"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v52_test(doc) -> [{userdata,[{""}]}];
 gt_v52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v63_test(doc) -> [{userdata,[{""}]}];
 gt_v63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v3_test(doc) -> [{userdata,[{""}]}];
 gt_v3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v3"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v14_test(doc) -> [{userdata,[{""}]}];
 gt_v14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v14"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v25_test(doc) -> [{userdata,[{""}]}];
 gt_v25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v25"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v36_test(doc) -> [{userdata,[{""}]}];
 gt_v36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v36"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v47_test(doc) -> [{userdata,[{""}]}];
 gt_v47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v58_test(doc) -> [{userdata,[{""}]}];
 gt_v58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v9_test(doc) -> [{userdata,[{""}]}];
 gt_v9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v20_test(doc) -> [{userdata,[{""}]}];
 gt_v20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v20"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v31_test(doc) -> [{userdata,[{""}]}];
 gt_v31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v42_test(doc) -> [{userdata,[{""}]}];
 gt_v42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v42"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v53_test(doc) -> [{userdata,[{""}]}];
 gt_v53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v64_test(doc) -> [{userdata,[{""}]}];
 gt_v64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v4_test(doc) -> [{userdata,[{""}]}];
 gt_v4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v4"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v15_test(doc) -> [{userdata,[{""}]}];
 gt_v15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v15"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v26_test(doc) -> [{userdata,[{""}]}];
 gt_v26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v26"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v37_test(doc) -> [{userdata,[{""}]}];
 gt_v37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v37"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v48_test(doc) -> [{userdata,[{""}]}];
 gt_v48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v59_test(doc) -> [{userdata,[{""}]}];
 gt_v59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v10_test(doc) -> [{userdata,[{""}]}];
 gt_v10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v21_test(doc) -> [{userdata,[{""}]}];
 gt_v21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v21"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v32_test(doc) -> [{userdata,[{""}]}];
 gt_v32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v43_test(doc) -> [{userdata,[{""}]}];
 gt_v43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v43"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v54_test(doc) -> [{userdata,[{""}]}];
 gt_v54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_v65_test(doc) -> [{userdata,[{""}]}];
 gt_v65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","v65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a5_test(doc) -> [{userdata,[{""}]}];
 gt_a5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a5"),
-  Expected="<cell><value>"++"Boolean"++"</value></cell>",
+  Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a16_test(doc) -> [{userdata,[{""}]}];
 gt_a16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a16"),
-  Expected="<cell><value>"++"Str Num"++"</value></cell>",
+  Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a27_test(doc) -> [{userdata,[{""}]}];
 gt_a27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a27"),
-  Expected="<cell><value>"++"Boolean"++"</value></cell>",
+  Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a38_test(doc) -> [{userdata,[{""}]}];
 gt_a38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a38"),
-  Expected="<cell><value>"++"Str Num"++"</value></cell>",
+  Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a11_test(doc) -> [{userdata,[{""}]}];
 gt_a11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a11"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a22_test(doc) -> [{userdata,[{""}]}];
 gt_a22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a22"),
-  Expected="<cell><value>"++"Float"++"</value></cell>",
+  Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a33_test(doc) -> [{userdata,[{""}]}];
 gt_a33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a33"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a44_test(doc) -> [{userdata,[{""}]}];
 gt_a44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a44"),
-  Expected="<cell><value>"++"Float"++"</value></cell>",
+  Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a6_test(doc) -> [{userdata,[{""}]}];
 gt_a6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a6"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a17_test(doc) -> [{userdata,[{""}]}];
 gt_a17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a17"),
-  Expected="<cell><value>"++"Str Num"++"</value></cell>",
+  Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a28_test(doc) -> [{userdata,[{""}]}];
 gt_a28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a28"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a39_test(doc) -> [{userdata,[{""}]}];
 gt_a39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a39"),
-  Expected="<cell><value>"++"Str Num"++"</value></cell>",
+  Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a1_test(doc) -> [{userdata,[{""}]}];
 gt_a1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a1"),
-  Expected="<cell><value>"++">"++"</value></cell>",
+  Expected=">",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a12_test(doc) -> [{userdata,[{""}]}];
 gt_a12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a12"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a34_test(doc) -> [{userdata,[{""}]}];
 gt_a34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a34"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a7_test(doc) -> [{userdata,[{""}]}];
 gt_a7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a7"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a18_test(doc) -> [{userdata,[{""}]}];
 gt_a18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a18"),
-  Expected="<cell><value>"++"Integer"++"</value></cell>",
+  Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a29_test(doc) -> [{userdata,[{""}]}];
 gt_a29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a29"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a40_test(doc) -> [{userdata,[{""}]}];
 gt_a40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a40"),
-  Expected="<cell><value>"++"Integer"++"</value></cell>",
+  Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a2_test(doc) -> [{userdata,[{""}]}];
 gt_a2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a2"),
-  Expected="<cell><value>"++"A"++"</value></cell>",
+  Expected="A",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a13_test(doc) -> [{userdata,[{""}]}];
 gt_a13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a13"),
-  Expected="<cell><value>"++"String"++"</value></cell>",
+  Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a35_test(doc) -> [{userdata,[{""}]}];
 gt_a35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a35"),
-  Expected="<cell><value>"++"String"++"</value></cell>",
+  Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a8_test(doc) -> [{userdata,[{""}]}];
 gt_a8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a8"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a19_test(doc) -> [{userdata,[{""}]}];
 gt_a19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a19"),
-  Expected="<cell><value>"++"Integer"++"</value></cell>",
+  Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a30_test(doc) -> [{userdata,[{""}]}];
 gt_a30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a30"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a41_test(doc) -> [{userdata,[{""}]}];
 gt_a41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a41"),
-  Expected="<cell><value>"++"Integer"++"</value></cell>",
+  Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a3_test(doc) -> [{userdata,[{""}]}];
 gt_a3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a3"),
-  Expected="<cell><value>"++"Blank"++"</value></cell>",
+  Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a14_test(doc) -> [{userdata,[{""}]}];
 gt_a14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a14"),
-  Expected="<cell><value>"++"String"++"</value></cell>",
+  Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a25_test(doc) -> [{userdata,[{""}]}];
 gt_a25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a25"),
-  Expected="<cell><value>"++"Blank"++"</value></cell>",
+  Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a36_test(doc) -> [{userdata,[{""}]}];
 gt_a36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a36"),
-  Expected="<cell><value>"++"String"++"</value></cell>",
+  Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a47_test(doc) -> [{userdata,[{""}]}];
 gt_a47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a47"),
-  Expected="<cell><value>"++"400.0"++"</value></cell>",
+  Expected="400.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a9_test(doc) -> [{userdata,[{""}]}];
 gt_a9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a9"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a20_test(doc) -> [{userdata,[{""}]}];
 gt_a20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a20"),
-  Expected="<cell><value>"++"Zero"++"</value></cell>",
+  Expected="Zero",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a31_test(doc) -> [{userdata,[{""}]}];
 gt_a31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a31"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a42_test(doc) -> [{userdata,[{""}]}];
 gt_a42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a42"),
-  Expected="<cell><value>"++"Zero"++"</value></cell>",
+  Expected="Zero",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a4_test(doc) -> [{userdata,[{""}]}];
 gt_a4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a4"),
-  Expected="<cell><value>"++"Boolean"++"</value></cell>",
+  Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a15_test(doc) -> [{userdata,[{""}]}];
 gt_a15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a15"),
-  Expected="<cell><value>"++"String"++"</value></cell>",
+  Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a26_test(doc) -> [{userdata,[{""}]}];
 gt_a26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a26"),
-  Expected="<cell><value>"++"Boolean"++"</value></cell>",
+  Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a37_test(doc) -> [{userdata,[{""}]}];
 gt_a37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a37"),
-  Expected="<cell><value>"++"String"++"</value></cell>",
+  Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a48_test(doc) -> [{userdata,[{""}]}];
 gt_a48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a48"),
-  Expected="<cell><value>"++"Success"++"</value></cell>",
+  Expected="Success",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a10_test(doc) -> [{userdata,[{""}]}];
 gt_a10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a10"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a21_test(doc) -> [{userdata,[{""}]}];
 gt_a21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a21"),
-  Expected="<cell><value>"++"Float"++"</value></cell>",
+  Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a32_test(doc) -> [{userdata,[{""}]}];
 gt_a32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a32"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_a43_test(doc) -> [{userdata,[{""}]}];
 gt_a43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","a43"),
-  Expected="<cell><value>"++"Float"++"</value></cell>",
+  Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l5_test(doc) -> [{userdata,[{""}]}];
 gt_l5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l5"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l16_test(doc) -> [{userdata,[{""}]}];
 gt_l16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l16"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l27_test(doc) -> [{userdata,[{""}]}];
 gt_l27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l27"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l38_test(doc) -> [{userdata,[{""}]}];
 gt_l38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l38"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l49_test(doc) -> [{userdata,[{""}]}];
 gt_l49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l60_test(doc) -> [{userdata,[{""}]}];
 gt_l60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l11_test(doc) -> [{userdata,[{""}]}];
 gt_l11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l22_test(doc) -> [{userdata,[{""}]}];
 gt_l22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l22"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l33_test(doc) -> [{userdata,[{""}]}];
 gt_l33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l44_test(doc) -> [{userdata,[{""}]}];
 gt_l44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l55_test(doc) -> [{userdata,[{""}]}];
 gt_l55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l66_test(doc) -> [{userdata,[{""}]}];
 gt_l66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l6_test(doc) -> [{userdata,[{""}]}];
 gt_l6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l17_test(doc) -> [{userdata,[{""}]}];
 gt_l17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l17"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l28_test(doc) -> [{userdata,[{""}]}];
 gt_l28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l39_test(doc) -> [{userdata,[{""}]}];
 gt_l39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l39"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l50_test(doc) -> [{userdata,[{""}]}];
 gt_l50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l61_test(doc) -> [{userdata,[{""}]}];
 gt_l61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l1_test(doc) -> [{userdata,[{""}]}];
 gt_l1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l1"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l12_test(doc) -> [{userdata,[{""}]}];
 gt_l12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l34_test(doc) -> [{userdata,[{""}]}];
 gt_l34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l56_test(doc) -> [{userdata,[{""}]}];
 gt_l56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l7_test(doc) -> [{userdata,[{""}]}];
 gt_l7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l18_test(doc) -> [{userdata,[{""}]}];
 gt_l18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l18"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l29_test(doc) -> [{userdata,[{""}]}];
 gt_l29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l40_test(doc) -> [{userdata,[{""}]}];
 gt_l40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l40"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l51_test(doc) -> [{userdata,[{""}]}];
 gt_l51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l62_test(doc) -> [{userdata,[{""}]}];
 gt_l62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l2_test(doc) -> [{userdata,[{""}]}];
 gt_l2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l2"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l13_test(doc) -> [{userdata,[{""}]}];
 gt_l13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l13"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l35_test(doc) -> [{userdata,[{""}]}];
 gt_l35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l35"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l57_test(doc) -> [{userdata,[{""}]}];
 gt_l57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l8_test(doc) -> [{userdata,[{""}]}];
 gt_l8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l19_test(doc) -> [{userdata,[{""}]}];
 gt_l19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l19"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l30_test(doc) -> [{userdata,[{""}]}];
 gt_l30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l41_test(doc) -> [{userdata,[{""}]}];
 gt_l41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l52_test(doc) -> [{userdata,[{""}]}];
 gt_l52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l63_test(doc) -> [{userdata,[{""}]}];
 gt_l63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l3_test(doc) -> [{userdata,[{""}]}];
 gt_l3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l3"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l14_test(doc) -> [{userdata,[{""}]}];
 gt_l14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l14"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l25_test(doc) -> [{userdata,[{""}]}];
 gt_l25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l25"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l36_test(doc) -> [{userdata,[{""}]}];
 gt_l36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l36"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l47_test(doc) -> [{userdata,[{""}]}];
 gt_l47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l58_test(doc) -> [{userdata,[{""}]}];
 gt_l58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l9_test(doc) -> [{userdata,[{""}]}];
 gt_l9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l20_test(doc) -> [{userdata,[{""}]}];
 gt_l20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l20"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l31_test(doc) -> [{userdata,[{""}]}];
 gt_l31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l42_test(doc) -> [{userdata,[{""}]}];
 gt_l42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l53_test(doc) -> [{userdata,[{""}]}];
 gt_l53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l64_test(doc) -> [{userdata,[{""}]}];
 gt_l64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l4_test(doc) -> [{userdata,[{""}]}];
 gt_l4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l4"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l15_test(doc) -> [{userdata,[{""}]}];
 gt_l15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l15"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l26_test(doc) -> [{userdata,[{""}]}];
 gt_l26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l26"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l37_test(doc) -> [{userdata,[{""}]}];
 gt_l37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l37"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l48_test(doc) -> [{userdata,[{""}]}];
 gt_l48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l59_test(doc) -> [{userdata,[{""}]}];
 gt_l59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l10_test(doc) -> [{userdata,[{""}]}];
 gt_l10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l21_test(doc) -> [{userdata,[{""}]}];
 gt_l21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l21"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l32_test(doc) -> [{userdata,[{""}]}];
 gt_l32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l43_test(doc) -> [{userdata,[{""}]}];
 gt_l43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l54_test(doc) -> [{userdata,[{""}]}];
 gt_l54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_l65_test(doc) -> [{userdata,[{""}]}];
 gt_l65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","l65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_b5_test(doc) -> [{userdata,[{""}]}];
 gt_b5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","b5"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_b16_test(doc) -> [{userdata,[{""}]}];
 gt_b16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","b16"),
-  Expected="<cell><value>"++"2.7"++"</value></cell>",
+  Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_b11_test(doc) -> [{userdata,[{""}]}];
 gt_b11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","b11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_b22_test(doc) -> [{userdata,[{""}]}];
 gt_b22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","b22"),
-  Expected="<cell><value>"++"36193.2"++"</value></cell>",
+  Expected="36193.2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_b6_test(doc) -> [{userdata,[{""}]}];
 gt_b6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","b6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_b17_test(doc) -> [{userdata,[{""}]}];
 gt_b17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","b17"),
-  Expected="<cell><value>"++"3.54"++"</value></cell>",
+  Expected="3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_b1_test(doc) -> [{userdata,[{""}]}];
 gt_b1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","b1"),
-  Expected="<cell><value>"++"B"++"</value></cell>",
+  Expected="B",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_b12_test(doc) -> [{userdata,[{""}]}];
 gt_b12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","b12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_b7_test(doc) -> [{userdata,[{""}]}];
 gt_b7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","b7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_b18_test(doc) -> [{userdata,[{""}]}];
 gt_b18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","b18"),
-  Expected="<cell><value>"++"1999/02/01 00:00:00"++"</value></cell>",
+  Expected="1999/02/01 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_b13_test(doc) -> [{userdata,[{""}]}];
 gt_b13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","b13"),
-  Expected="<cell><value>"++"Liz"++"</value></cell>",
+  Expected="Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_b8_test(doc) -> [{userdata,[{""}]}];
 gt_b8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","b8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_b19_test(doc) -> [{userdata,[{""}]}];
 gt_b19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","b19"),
-  Expected="<cell><value>"++"1999/02/02 00:00:00"++"</value></cell>",
+  Expected="1999/02/02 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_b14_test(doc) -> [{userdata,[{""}]}];
 gt_b14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","b14"),
-  Expected="<cell><value>"++"Doug"++"</value></cell>",
+  Expected="Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_b9_test(doc) -> [{userdata,[{""}]}];
 gt_b9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","b9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_b20_test(doc) -> [{userdata,[{""}]}];
 gt_b20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","b20"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_b4_test(doc) -> [{userdata,[{""}]}];
 gt_b4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","b4"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_b15_test(doc) -> [{userdata,[{""}]}];
 gt_b15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","b15"),
-  Expected="<cell><value>"++"Bob"++"</value></cell>",
+  Expected="Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_b10_test(doc) -> [{userdata,[{""}]}];
 gt_b10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","b10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_b21_test(doc) -> [{userdata,[{""}]}];
 gt_b21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","b21"),
-  Expected="<cell><value>"++"3.1415"++"</value></cell>",
+  Expected="3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m5_test(doc) -> [{userdata,[{""}]}];
 gt_m5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m5"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m16_test(doc) -> [{userdata,[{""}]}];
 gt_m16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m16"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m27_test(doc) -> [{userdata,[{""}]}];
 gt_m27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m27"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m38_test(doc) -> [{userdata,[{""}]}];
 gt_m38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m38"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m49_test(doc) -> [{userdata,[{""}]}];
 gt_m49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m60_test(doc) -> [{userdata,[{""}]}];
 gt_m60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m11_test(doc) -> [{userdata,[{""}]}];
 gt_m11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m22_test(doc) -> [{userdata,[{""}]}];
 gt_m22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m22"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m33_test(doc) -> [{userdata,[{""}]}];
 gt_m33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m44_test(doc) -> [{userdata,[{""}]}];
 gt_m44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m44"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m55_test(doc) -> [{userdata,[{""}]}];
 gt_m55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m66_test(doc) -> [{userdata,[{""}]}];
 gt_m66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m6_test(doc) -> [{userdata,[{""}]}];
 gt_m6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m17_test(doc) -> [{userdata,[{""}]}];
 gt_m17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m17"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m28_test(doc) -> [{userdata,[{""}]}];
 gt_m28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m39_test(doc) -> [{userdata,[{""}]}];
 gt_m39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m39"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m50_test(doc) -> [{userdata,[{""}]}];
 gt_m50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m61_test(doc) -> [{userdata,[{""}]}];
 gt_m61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m1_test(doc) -> [{userdata,[{""}]}];
 gt_m1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m1"),
-  Expected="<cell><value>"++"String"++"</value></cell>",
+  Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m12_test(doc) -> [{userdata,[{""}]}];
 gt_m12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m34_test(doc) -> [{userdata,[{""}]}];
 gt_m34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m56_test(doc) -> [{userdata,[{""}]}];
 gt_m56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m7_test(doc) -> [{userdata,[{""}]}];
 gt_m7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m18_test(doc) -> [{userdata,[{""}]}];
 gt_m18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m18"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m29_test(doc) -> [{userdata,[{""}]}];
 gt_m29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m40_test(doc) -> [{userdata,[{""}]}];
 gt_m40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m40"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m51_test(doc) -> [{userdata,[{""}]}];
 gt_m51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m62_test(doc) -> [{userdata,[{""}]}];
 gt_m62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m2_test(doc) -> [{userdata,[{""}]}];
 gt_m2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m2"),
-  Expected="<cell><value>"++"Liz"++"</value></cell>",
+  Expected="Liz",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m13_test(doc) -> [{userdata,[{""}]}];
 gt_m13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m13"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m35_test(doc) -> [{userdata,[{""}]}];
 gt_m35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m35"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m57_test(doc) -> [{userdata,[{""}]}];
 gt_m57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m8_test(doc) -> [{userdata,[{""}]}];
 gt_m8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m19_test(doc) -> [{userdata,[{""}]}];
 gt_m19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m19"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m30_test(doc) -> [{userdata,[{""}]}];
 gt_m30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m41_test(doc) -> [{userdata,[{""}]}];
 gt_m41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m41"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m52_test(doc) -> [{userdata,[{""}]}];
 gt_m52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m63_test(doc) -> [{userdata,[{""}]}];
 gt_m63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m3_test(doc) -> [{userdata,[{""}]}];
 gt_m3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m3"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m14_test(doc) -> [{userdata,[{""}]}];
 gt_m14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m14"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m25_test(doc) -> [{userdata,[{""}]}];
 gt_m25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m25"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m36_test(doc) -> [{userdata,[{""}]}];
 gt_m36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m36"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m47_test(doc) -> [{userdata,[{""}]}];
 gt_m47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m58_test(doc) -> [{userdata,[{""}]}];
 gt_m58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m9_test(doc) -> [{userdata,[{""}]}];
 gt_m9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m20_test(doc) -> [{userdata,[{""}]}];
 gt_m20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m20"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m31_test(doc) -> [{userdata,[{""}]}];
 gt_m31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m42_test(doc) -> [{userdata,[{""}]}];
 gt_m42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m42"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m53_test(doc) -> [{userdata,[{""}]}];
 gt_m53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m64_test(doc) -> [{userdata,[{""}]}];
 gt_m64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m4_test(doc) -> [{userdata,[{""}]}];
 gt_m4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m4"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m15_test(doc) -> [{userdata,[{""}]}];
 gt_m15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m15"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m26_test(doc) -> [{userdata,[{""}]}];
 gt_m26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m26"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m37_test(doc) -> [{userdata,[{""}]}];
 gt_m37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m37"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m48_test(doc) -> [{userdata,[{""}]}];
 gt_m48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m59_test(doc) -> [{userdata,[{""}]}];
 gt_m59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m10_test(doc) -> [{userdata,[{""}]}];
 gt_m10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m21_test(doc) -> [{userdata,[{""}]}];
 gt_m21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m21"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m32_test(doc) -> [{userdata,[{""}]}];
 gt_m32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m43_test(doc) -> [{userdata,[{""}]}];
 gt_m43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m43"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m54_test(doc) -> [{userdata,[{""}]}];
 gt_m54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_m65_test(doc) -> [{userdata,[{""}]}];
 gt_m65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","m65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c5_test(doc) -> [{userdata,[{""}]}];
 gt_c5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c5"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c16_test(doc) -> [{userdata,[{""}]}];
 gt_c16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c16"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c27_test(doc) -> [{userdata,[{""}]}];
 gt_c27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c27"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c38_test(doc) -> [{userdata,[{""}]}];
 gt_c38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c38"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c49_test(doc) -> [{userdata,[{""}]}];
 gt_c49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c60_test(doc) -> [{userdata,[{""}]}];
 gt_c60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c11_test(doc) -> [{userdata,[{""}]}];
 gt_c11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c22_test(doc) -> [{userdata,[{""}]}];
 gt_c22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c22"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c33_test(doc) -> [{userdata,[{""}]}];
 gt_c33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c44_test(doc) -> [{userdata,[{""}]}];
 gt_c44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c44"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c55_test(doc) -> [{userdata,[{""}]}];
 gt_c55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c66_test(doc) -> [{userdata,[{""}]}];
 gt_c66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c6_test(doc) -> [{userdata,[{""}]}];
 gt_c6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c17_test(doc) -> [{userdata,[{""}]}];
 gt_c17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c17"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c28_test(doc) -> [{userdata,[{""}]}];
 gt_c28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c39_test(doc) -> [{userdata,[{""}]}];
 gt_c39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c39"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c50_test(doc) -> [{userdata,[{""}]}];
 gt_c50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c61_test(doc) -> [{userdata,[{""}]}];
 gt_c61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c1_test(doc) -> [{userdata,[{""}]}];
 gt_c1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c1"),
-  Expected="<cell><value>"++"Blank"++"</value></cell>",
+  Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c12_test(doc) -> [{userdata,[{""}]}];
 gt_c12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c34_test(doc) -> [{userdata,[{""}]}];
 gt_c34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c56_test(doc) -> [{userdata,[{""}]}];
 gt_c56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c7_test(doc) -> [{userdata,[{""}]}];
 gt_c7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c18_test(doc) -> [{userdata,[{""}]}];
 gt_c18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c18"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c29_test(doc) -> [{userdata,[{""}]}];
 gt_c29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c40_test(doc) -> [{userdata,[{""}]}];
 gt_c40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c40"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c51_test(doc) -> [{userdata,[{""}]}];
 gt_c51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c62_test(doc) -> [{userdata,[{""}]}];
 gt_c62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c13_test(doc) -> [{userdata,[{""}]}];
 gt_c13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c13"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c35_test(doc) -> [{userdata,[{""}]}];
 gt_c35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c35"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c57_test(doc) -> [{userdata,[{""}]}];
 gt_c57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c8_test(doc) -> [{userdata,[{""}]}];
 gt_c8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c19_test(doc) -> [{userdata,[{""}]}];
 gt_c19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c19"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c30_test(doc) -> [{userdata,[{""}]}];
 gt_c30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c41_test(doc) -> [{userdata,[{""}]}];
 gt_c41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c41"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c52_test(doc) -> [{userdata,[{""}]}];
 gt_c52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c63_test(doc) -> [{userdata,[{""}]}];
 gt_c63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c3_test(doc) -> [{userdata,[{""}]}];
 gt_c3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c3"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c14_test(doc) -> [{userdata,[{""}]}];
 gt_c14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c14"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c25_test(doc) -> [{userdata,[{""}]}];
 gt_c25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c25"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c36_test(doc) -> [{userdata,[{""}]}];
 gt_c36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c36"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c47_test(doc) -> [{userdata,[{""}]}];
 gt_c47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c58_test(doc) -> [{userdata,[{""}]}];
 gt_c58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c9_test(doc) -> [{userdata,[{""}]}];
 gt_c9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c20_test(doc) -> [{userdata,[{""}]}];
 gt_c20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c20"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c31_test(doc) -> [{userdata,[{""}]}];
 gt_c31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c42_test(doc) -> [{userdata,[{""}]}];
 gt_c42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c42"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c53_test(doc) -> [{userdata,[{""}]}];
 gt_c53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c64_test(doc) -> [{userdata,[{""}]}];
 gt_c64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c4_test(doc) -> [{userdata,[{""}]}];
 gt_c4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c4"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c15_test(doc) -> [{userdata,[{""}]}];
 gt_c15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c15"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c26_test(doc) -> [{userdata,[{""}]}];
 gt_c26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c26"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c37_test(doc) -> [{userdata,[{""}]}];
 gt_c37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c37"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c48_test(doc) -> [{userdata,[{""}]}];
 gt_c48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c59_test(doc) -> [{userdata,[{""}]}];
 gt_c59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c10_test(doc) -> [{userdata,[{""}]}];
 gt_c10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c21_test(doc) -> [{userdata,[{""}]}];
 gt_c21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c21"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c32_test(doc) -> [{userdata,[{""}]}];
 gt_c32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c43_test(doc) -> [{userdata,[{""}]}];
 gt_c43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c43"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c54_test(doc) -> [{userdata,[{""}]}];
 gt_c54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_c65_test(doc) -> [{userdata,[{""}]}];
 gt_c65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","c65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n5_test(doc) -> [{userdata,[{""}]}];
 gt_n5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n5"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n16_test(doc) -> [{userdata,[{""}]}];
 gt_n16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n16"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n27_test(doc) -> [{userdata,[{""}]}];
 gt_n27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n27"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n38_test(doc) -> [{userdata,[{""}]}];
 gt_n38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n38"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n49_test(doc) -> [{userdata,[{""}]}];
 gt_n49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n60_test(doc) -> [{userdata,[{""}]}];
 gt_n60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n11_test(doc) -> [{userdata,[{""}]}];
 gt_n11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n22_test(doc) -> [{userdata,[{""}]}];
 gt_n22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n22"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n33_test(doc) -> [{userdata,[{""}]}];
 gt_n33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n44_test(doc) -> [{userdata,[{""}]}];
 gt_n44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n44"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n55_test(doc) -> [{userdata,[{""}]}];
 gt_n55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n66_test(doc) -> [{userdata,[{""}]}];
 gt_n66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n6_test(doc) -> [{userdata,[{""}]}];
 gt_n6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n17_test(doc) -> [{userdata,[{""}]}];
 gt_n17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n17"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n28_test(doc) -> [{userdata,[{""}]}];
 gt_n28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n39_test(doc) -> [{userdata,[{""}]}];
 gt_n39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n39"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n50_test(doc) -> [{userdata,[{""}]}];
 gt_n50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n61_test(doc) -> [{userdata,[{""}]}];
 gt_n61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n1_test(doc) -> [{userdata,[{""}]}];
 gt_n1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n1"),
-  Expected="<cell><value>"++"String"++"</value></cell>",
+  Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n12_test(doc) -> [{userdata,[{""}]}];
 gt_n12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n34_test(doc) -> [{userdata,[{""}]}];
 gt_n34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n56_test(doc) -> [{userdata,[{""}]}];
 gt_n56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n7_test(doc) -> [{userdata,[{""}]}];
 gt_n7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n18_test(doc) -> [{userdata,[{""}]}];
 gt_n18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n18"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n29_test(doc) -> [{userdata,[{""}]}];
 gt_n29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n40_test(doc) -> [{userdata,[{""}]}];
 gt_n40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n40"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n51_test(doc) -> [{userdata,[{""}]}];
 gt_n51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n62_test(doc) -> [{userdata,[{""}]}];
 gt_n62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n2_test(doc) -> [{userdata,[{""}]}];
 gt_n2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n2"),
-  Expected="<cell><value>"++"Doug"++"</value></cell>",
+  Expected="Doug",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n13_test(doc) -> [{userdata,[{""}]}];
 gt_n13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n13"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n35_test(doc) -> [{userdata,[{""}]}];
 gt_n35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n35"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n57_test(doc) -> [{userdata,[{""}]}];
 gt_n57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n8_test(doc) -> [{userdata,[{""}]}];
 gt_n8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n19_test(doc) -> [{userdata,[{""}]}];
 gt_n19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n19"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n30_test(doc) -> [{userdata,[{""}]}];
 gt_n30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n41_test(doc) -> [{userdata,[{""}]}];
 gt_n41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n41"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n52_test(doc) -> [{userdata,[{""}]}];
 gt_n52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n63_test(doc) -> [{userdata,[{""}]}];
 gt_n63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n3_test(doc) -> [{userdata,[{""}]}];
 gt_n3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n3"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n14_test(doc) -> [{userdata,[{""}]}];
 gt_n14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n14"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n25_test(doc) -> [{userdata,[{""}]}];
 gt_n25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n25"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n36_test(doc) -> [{userdata,[{""}]}];
 gt_n36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n36"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n47_test(doc) -> [{userdata,[{""}]}];
 gt_n47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n58_test(doc) -> [{userdata,[{""}]}];
 gt_n58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n9_test(doc) -> [{userdata,[{""}]}];
 gt_n9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n20_test(doc) -> [{userdata,[{""}]}];
 gt_n20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n20"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n31_test(doc) -> [{userdata,[{""}]}];
 gt_n31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n42_test(doc) -> [{userdata,[{""}]}];
 gt_n42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n42"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n53_test(doc) -> [{userdata,[{""}]}];
 gt_n53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n64_test(doc) -> [{userdata,[{""}]}];
 gt_n64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n4_test(doc) -> [{userdata,[{""}]}];
 gt_n4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n4"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n15_test(doc) -> [{userdata,[{""}]}];
 gt_n15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n15"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n26_test(doc) -> [{userdata,[{""}]}];
 gt_n26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n26"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n37_test(doc) -> [{userdata,[{""}]}];
 gt_n37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n37"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n48_test(doc) -> [{userdata,[{""}]}];
 gt_n48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n59_test(doc) -> [{userdata,[{""}]}];
 gt_n59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n10_test(doc) -> [{userdata,[{""}]}];
 gt_n10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n21_test(doc) -> [{userdata,[{""}]}];
 gt_n21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n21"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n32_test(doc) -> [{userdata,[{""}]}];
 gt_n32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n43_test(doc) -> [{userdata,[{""}]}];
 gt_n43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n43"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n54_test(doc) -> [{userdata,[{""}]}];
 gt_n54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_n65_test(doc) -> [{userdata,[{""}]}];
 gt_n65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","n65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d5_test(doc) -> [{userdata,[{""}]}];
 gt_d5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d5"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d16_test(doc) -> [{userdata,[{""}]}];
 gt_d16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d16"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d27_test(doc) -> [{userdata,[{""}]}];
 gt_d27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d27"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d38_test(doc) -> [{userdata,[{""}]}];
 gt_d38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d38"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d49_test(doc) -> [{userdata,[{""}]}];
 gt_d49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d60_test(doc) -> [{userdata,[{""}]}];
 gt_d60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d11_test(doc) -> [{userdata,[{""}]}];
 gt_d11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d22_test(doc) -> [{userdata,[{""}]}];
 gt_d22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d22"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d33_test(doc) -> [{userdata,[{""}]}];
 gt_d33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d44_test(doc) -> [{userdata,[{""}]}];
 gt_d44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d44"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d55_test(doc) -> [{userdata,[{""}]}];
 gt_d55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d66_test(doc) -> [{userdata,[{""}]}];
 gt_d66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d6_test(doc) -> [{userdata,[{""}]}];
 gt_d6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d17_test(doc) -> [{userdata,[{""}]}];
 gt_d17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d17"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d28_test(doc) -> [{userdata,[{""}]}];
 gt_d28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d39_test(doc) -> [{userdata,[{""}]}];
 gt_d39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d39"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d50_test(doc) -> [{userdata,[{""}]}];
 gt_d50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d61_test(doc) -> [{userdata,[{""}]}];
 gt_d61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d1_test(doc) -> [{userdata,[{""}]}];
 gt_d1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d1"),
-  Expected="<cell><value>"++"Boolean"++"</value></cell>",
+  Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d12_test(doc) -> [{userdata,[{""}]}];
 gt_d12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d34_test(doc) -> [{userdata,[{""}]}];
 gt_d34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d56_test(doc) -> [{userdata,[{""}]}];
 gt_d56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d7_test(doc) -> [{userdata,[{""}]}];
 gt_d7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d18_test(doc) -> [{userdata,[{""}]}];
 gt_d18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d18"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d29_test(doc) -> [{userdata,[{""}]}];
 gt_d29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d40_test(doc) -> [{userdata,[{""}]}];
 gt_d40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d40"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d51_test(doc) -> [{userdata,[{""}]}];
 gt_d51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d62_test(doc) -> [{userdata,[{""}]}];
 gt_d62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d2_test(doc) -> [{userdata,[{""}]}];
 gt_d2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d2"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d13_test(doc) -> [{userdata,[{""}]}];
 gt_d13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d13"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d35_test(doc) -> [{userdata,[{""}]}];
 gt_d35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d35"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d57_test(doc) -> [{userdata,[{""}]}];
 gt_d57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d8_test(doc) -> [{userdata,[{""}]}];
 gt_d8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d19_test(doc) -> [{userdata,[{""}]}];
 gt_d19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d19"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d30_test(doc) -> [{userdata,[{""}]}];
 gt_d30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d41_test(doc) -> [{userdata,[{""}]}];
 gt_d41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d41"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d52_test(doc) -> [{userdata,[{""}]}];
 gt_d52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d63_test(doc) -> [{userdata,[{""}]}];
 gt_d63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d3_test(doc) -> [{userdata,[{""}]}];
 gt_d3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d3"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d14_test(doc) -> [{userdata,[{""}]}];
 gt_d14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d14"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d25_test(doc) -> [{userdata,[{""}]}];
 gt_d25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d25"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d36_test(doc) -> [{userdata,[{""}]}];
 gt_d36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d36"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d47_test(doc) -> [{userdata,[{""}]}];
 gt_d47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d58_test(doc) -> [{userdata,[{""}]}];
 gt_d58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d9_test(doc) -> [{userdata,[{""}]}];
 gt_d9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d20_test(doc) -> [{userdata,[{""}]}];
 gt_d20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d20"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d31_test(doc) -> [{userdata,[{""}]}];
 gt_d31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d42_test(doc) -> [{userdata,[{""}]}];
 gt_d42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d42"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d53_test(doc) -> [{userdata,[{""}]}];
 gt_d53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d64_test(doc) -> [{userdata,[{""}]}];
 gt_d64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d4_test(doc) -> [{userdata,[{""}]}];
 gt_d4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d4"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d15_test(doc) -> [{userdata,[{""}]}];
 gt_d15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d15"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d26_test(doc) -> [{userdata,[{""}]}];
 gt_d26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d26"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d37_test(doc) -> [{userdata,[{""}]}];
 gt_d37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d37"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d48_test(doc) -> [{userdata,[{""}]}];
 gt_d48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d59_test(doc) -> [{userdata,[{""}]}];
 gt_d59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d10_test(doc) -> [{userdata,[{""}]}];
 gt_d10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d21_test(doc) -> [{userdata,[{""}]}];
 gt_d21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d21"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d32_test(doc) -> [{userdata,[{""}]}];
 gt_d32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d43_test(doc) -> [{userdata,[{""}]}];
 gt_d43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d43"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d54_test(doc) -> [{userdata,[{""}]}];
 gt_d54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_d65_test(doc) -> [{userdata,[{""}]}];
 gt_d65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","d65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o5_test(doc) -> [{userdata,[{""}]}];
 gt_o5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o5"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o16_test(doc) -> [{userdata,[{""}]}];
 gt_o16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o16"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o27_test(doc) -> [{userdata,[{""}]}];
 gt_o27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o27"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o38_test(doc) -> [{userdata,[{""}]}];
 gt_o38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o38"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o49_test(doc) -> [{userdata,[{""}]}];
 gt_o49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o60_test(doc) -> [{userdata,[{""}]}];
 gt_o60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o11_test(doc) -> [{userdata,[{""}]}];
 gt_o11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o22_test(doc) -> [{userdata,[{""}]}];
 gt_o22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o22"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o33_test(doc) -> [{userdata,[{""}]}];
 gt_o33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o44_test(doc) -> [{userdata,[{""}]}];
 gt_o44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o44"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o55_test(doc) -> [{userdata,[{""}]}];
 gt_o55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o66_test(doc) -> [{userdata,[{""}]}];
 gt_o66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o6_test(doc) -> [{userdata,[{""}]}];
 gt_o6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o17_test(doc) -> [{userdata,[{""}]}];
 gt_o17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o17"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o28_test(doc) -> [{userdata,[{""}]}];
 gt_o28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o39_test(doc) -> [{userdata,[{""}]}];
 gt_o39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o39"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o50_test(doc) -> [{userdata,[{""}]}];
 gt_o50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o61_test(doc) -> [{userdata,[{""}]}];
 gt_o61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o1_test(doc) -> [{userdata,[{""}]}];
 gt_o1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o1"),
-  Expected="<cell><value>"++"String"++"</value></cell>",
+  Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o12_test(doc) -> [{userdata,[{""}]}];
 gt_o12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o34_test(doc) -> [{userdata,[{""}]}];
 gt_o34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o56_test(doc) -> [{userdata,[{""}]}];
 gt_o56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o7_test(doc) -> [{userdata,[{""}]}];
 gt_o7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o18_test(doc) -> [{userdata,[{""}]}];
 gt_o18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o18"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o29_test(doc) -> [{userdata,[{""}]}];
 gt_o29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o40_test(doc) -> [{userdata,[{""}]}];
 gt_o40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o40"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o51_test(doc) -> [{userdata,[{""}]}];
 gt_o51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o62_test(doc) -> [{userdata,[{""}]}];
 gt_o62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o2_test(doc) -> [{userdata,[{""}]}];
 gt_o2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o2"),
-  Expected="<cell><value>"++"Bob"++"</value></cell>",
+  Expected="Bob",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o13_test(doc) -> [{userdata,[{""}]}];
 gt_o13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o13"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o35_test(doc) -> [{userdata,[{""}]}];
 gt_o35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o35"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o57_test(doc) -> [{userdata,[{""}]}];
 gt_o57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o8_test(doc) -> [{userdata,[{""}]}];
 gt_o8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o19_test(doc) -> [{userdata,[{""}]}];
 gt_o19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o19"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o30_test(doc) -> [{userdata,[{""}]}];
 gt_o30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o41_test(doc) -> [{userdata,[{""}]}];
 gt_o41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o41"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o52_test(doc) -> [{userdata,[{""}]}];
 gt_o52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o63_test(doc) -> [{userdata,[{""}]}];
 gt_o63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o3_test(doc) -> [{userdata,[{""}]}];
 gt_o3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o3"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o14_test(doc) -> [{userdata,[{""}]}];
 gt_o14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o14"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o25_test(doc) -> [{userdata,[{""}]}];
 gt_o25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o25"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o36_test(doc) -> [{userdata,[{""}]}];
 gt_o36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o36"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o47_test(doc) -> [{userdata,[{""}]}];
 gt_o47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o58_test(doc) -> [{userdata,[{""}]}];
 gt_o58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o9_test(doc) -> [{userdata,[{""}]}];
 gt_o9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o20_test(doc) -> [{userdata,[{""}]}];
 gt_o20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o20"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o31_test(doc) -> [{userdata,[{""}]}];
 gt_o31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o42_test(doc) -> [{userdata,[{""}]}];
 gt_o42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o42"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o53_test(doc) -> [{userdata,[{""}]}];
 gt_o53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o64_test(doc) -> [{userdata,[{""}]}];
 gt_o64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o4_test(doc) -> [{userdata,[{""}]}];
 gt_o4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o4"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o15_test(doc) -> [{userdata,[{""}]}];
 gt_o15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o15"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o26_test(doc) -> [{userdata,[{""}]}];
 gt_o26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o26"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o37_test(doc) -> [{userdata,[{""}]}];
 gt_o37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o37"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o48_test(doc) -> [{userdata,[{""}]}];
 gt_o48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o59_test(doc) -> [{userdata,[{""}]}];
 gt_o59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o10_test(doc) -> [{userdata,[{""}]}];
 gt_o10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o21_test(doc) -> [{userdata,[{""}]}];
 gt_o21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o21"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o32_test(doc) -> [{userdata,[{""}]}];
 gt_o32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o43_test(doc) -> [{userdata,[{""}]}];
 gt_o43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o43"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o54_test(doc) -> [{userdata,[{""}]}];
 gt_o54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_o65_test(doc) -> [{userdata,[{""}]}];
 gt_o65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","o65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e5_test(doc) -> [{userdata,[{""}]}];
 gt_e5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e5"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e16_test(doc) -> [{userdata,[{""}]}];
 gt_e16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e16"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e27_test(doc) -> [{userdata,[{""}]}];
 gt_e27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e27"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e38_test(doc) -> [{userdata,[{""}]}];
 gt_e38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e38"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e49_test(doc) -> [{userdata,[{""}]}];
 gt_e49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e60_test(doc) -> [{userdata,[{""}]}];
 gt_e60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e11_test(doc) -> [{userdata,[{""}]}];
 gt_e11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e22_test(doc) -> [{userdata,[{""}]}];
 gt_e22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e22"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e33_test(doc) -> [{userdata,[{""}]}];
 gt_e33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e44_test(doc) -> [{userdata,[{""}]}];
 gt_e44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e44"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e55_test(doc) -> [{userdata,[{""}]}];
 gt_e55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e66_test(doc) -> [{userdata,[{""}]}];
 gt_e66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e6_test(doc) -> [{userdata,[{""}]}];
 gt_e6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e17_test(doc) -> [{userdata,[{""}]}];
 gt_e17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e17"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e28_test(doc) -> [{userdata,[{""}]}];
 gt_e28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e39_test(doc) -> [{userdata,[{""}]}];
 gt_e39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e39"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e50_test(doc) -> [{userdata,[{""}]}];
 gt_e50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e61_test(doc) -> [{userdata,[{""}]}];
 gt_e61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e1_test(doc) -> [{userdata,[{""}]}];
 gt_e1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e1"),
-  Expected="<cell><value>"++"Boolean"++"</value></cell>",
+  Expected="Boolean",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e12_test(doc) -> [{userdata,[{""}]}];
 gt_e12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e34_test(doc) -> [{userdata,[{""}]}];
 gt_e34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e56_test(doc) -> [{userdata,[{""}]}];
 gt_e56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e7_test(doc) -> [{userdata,[{""}]}];
 gt_e7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e18_test(doc) -> [{userdata,[{""}]}];
 gt_e18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e18"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e29_test(doc) -> [{userdata,[{""}]}];
 gt_e29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e40_test(doc) -> [{userdata,[{""}]}];
 gt_e40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e40"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e51_test(doc) -> [{userdata,[{""}]}];
 gt_e51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e62_test(doc) -> [{userdata,[{""}]}];
 gt_e62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e2_test(doc) -> [{userdata,[{""}]}];
 gt_e2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e2"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e13_test(doc) -> [{userdata,[{""}]}];
 gt_e13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e13"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e35_test(doc) -> [{userdata,[{""}]}];
 gt_e35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e35"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e57_test(doc) -> [{userdata,[{""}]}];
 gt_e57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e8_test(doc) -> [{userdata,[{""}]}];
 gt_e8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e19_test(doc) -> [{userdata,[{""}]}];
 gt_e19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e19"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e30_test(doc) -> [{userdata,[{""}]}];
 gt_e30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e41_test(doc) -> [{userdata,[{""}]}];
 gt_e41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e41"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e52_test(doc) -> [{userdata,[{""}]}];
 gt_e52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e63_test(doc) -> [{userdata,[{""}]}];
 gt_e63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e3_test(doc) -> [{userdata,[{""}]}];
 gt_e3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e3"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e14_test(doc) -> [{userdata,[{""}]}];
 gt_e14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e14"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e25_test(doc) -> [{userdata,[{""}]}];
 gt_e25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e25"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e36_test(doc) -> [{userdata,[{""}]}];
 gt_e36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e36"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e47_test(doc) -> [{userdata,[{""}]}];
 gt_e47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e58_test(doc) -> [{userdata,[{""}]}];
 gt_e58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e9_test(doc) -> [{userdata,[{""}]}];
 gt_e9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e20_test(doc) -> [{userdata,[{""}]}];
 gt_e20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e20"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e31_test(doc) -> [{userdata,[{""}]}];
 gt_e31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e42_test(doc) -> [{userdata,[{""}]}];
 gt_e42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e42"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e53_test(doc) -> [{userdata,[{""}]}];
 gt_e53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e64_test(doc) -> [{userdata,[{""}]}];
 gt_e64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e4_test(doc) -> [{userdata,[{""}]}];
 gt_e4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e4"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e15_test(doc) -> [{userdata,[{""}]}];
 gt_e15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e15"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e26_test(doc) -> [{userdata,[{""}]}];
 gt_e26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e26"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e37_test(doc) -> [{userdata,[{""}]}];
 gt_e37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e37"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e48_test(doc) -> [{userdata,[{""}]}];
 gt_e48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e59_test(doc) -> [{userdata,[{""}]}];
 gt_e59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e10_test(doc) -> [{userdata,[{""}]}];
 gt_e10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e21_test(doc) -> [{userdata,[{""}]}];
 gt_e21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e21"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e32_test(doc) -> [{userdata,[{""}]}];
 gt_e32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e43_test(doc) -> [{userdata,[{""}]}];
 gt_e43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e43"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e54_test(doc) -> [{userdata,[{""}]}];
 gt_e54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_e65_test(doc) -> [{userdata,[{""}]}];
 gt_e65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","e65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p5_test(doc) -> [{userdata,[{""}]}];
 gt_p5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p5"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p16_test(doc) -> [{userdata,[{""}]}];
 gt_p16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p16"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p27_test(doc) -> [{userdata,[{""}]}];
 gt_p27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p27"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p38_test(doc) -> [{userdata,[{""}]}];
 gt_p38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p38"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p49_test(doc) -> [{userdata,[{""}]}];
 gt_p49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p60_test(doc) -> [{userdata,[{""}]}];
 gt_p60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p11_test(doc) -> [{userdata,[{""}]}];
 gt_p11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p22_test(doc) -> [{userdata,[{""}]}];
 gt_p22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p22"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p33_test(doc) -> [{userdata,[{""}]}];
 gt_p33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p44_test(doc) -> [{userdata,[{""}]}];
 gt_p44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p44"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p55_test(doc) -> [{userdata,[{""}]}];
 gt_p55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p66_test(doc) -> [{userdata,[{""}]}];
 gt_p66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p6_test(doc) -> [{userdata,[{""}]}];
 gt_p6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p17_test(doc) -> [{userdata,[{""}]}];
 gt_p17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p17"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p28_test(doc) -> [{userdata,[{""}]}];
 gt_p28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p39_test(doc) -> [{userdata,[{""}]}];
 gt_p39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p39"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p50_test(doc) -> [{userdata,[{""}]}];
 gt_p50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p61_test(doc) -> [{userdata,[{""}]}];
 gt_p61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p1_test(doc) -> [{userdata,[{""}]}];
 gt_p1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p1"),
-  Expected="<cell><value>"++"Str Num"++"</value></cell>",
+  Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p12_test(doc) -> [{userdata,[{""}]}];
 gt_p12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p34_test(doc) -> [{userdata,[{""}]}];
 gt_p34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p56_test(doc) -> [{userdata,[{""}]}];
 gt_p56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p7_test(doc) -> [{userdata,[{""}]}];
 gt_p7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p18_test(doc) -> [{userdata,[{""}]}];
 gt_p18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p18"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p29_test(doc) -> [{userdata,[{""}]}];
 gt_p29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p40_test(doc) -> [{userdata,[{""}]}];
 gt_p40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p40"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p51_test(doc) -> [{userdata,[{""}]}];
 gt_p51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p62_test(doc) -> [{userdata,[{""}]}];
 gt_p62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p2_test(doc) -> [{userdata,[{""}]}];
 gt_p2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p2"),
-  Expected="<cell><value>"++"2.7"++"</value></cell>",
+  Expected="2.7",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p13_test(doc) -> [{userdata,[{""}]}];
 gt_p13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p13"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p35_test(doc) -> [{userdata,[{""}]}];
 gt_p35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p35"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p57_test(doc) -> [{userdata,[{""}]}];
 gt_p57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p8_test(doc) -> [{userdata,[{""}]}];
 gt_p8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p19_test(doc) -> [{userdata,[{""}]}];
 gt_p19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p19"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p30_test(doc) -> [{userdata,[{""}]}];
 gt_p30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p41_test(doc) -> [{userdata,[{""}]}];
 gt_p41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p41"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p52_test(doc) -> [{userdata,[{""}]}];
 gt_p52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p63_test(doc) -> [{userdata,[{""}]}];
 gt_p63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p3_test(doc) -> [{userdata,[{""}]}];
 gt_p3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p3"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p14_test(doc) -> [{userdata,[{""}]}];
 gt_p14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p14"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p25_test(doc) -> [{userdata,[{""}]}];
 gt_p25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p25"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p36_test(doc) -> [{userdata,[{""}]}];
 gt_p36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p36"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p47_test(doc) -> [{userdata,[{""}]}];
 gt_p47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p58_test(doc) -> [{userdata,[{""}]}];
 gt_p58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p9_test(doc) -> [{userdata,[{""}]}];
 gt_p9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p20_test(doc) -> [{userdata,[{""}]}];
 gt_p20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p20"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p31_test(doc) -> [{userdata,[{""}]}];
 gt_p31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p42_test(doc) -> [{userdata,[{""}]}];
 gt_p42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p42"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p53_test(doc) -> [{userdata,[{""}]}];
 gt_p53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p64_test(doc) -> [{userdata,[{""}]}];
 gt_p64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p4_test(doc) -> [{userdata,[{""}]}];
 gt_p4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p4"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p15_test(doc) -> [{userdata,[{""}]}];
 gt_p15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p15"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p26_test(doc) -> [{userdata,[{""}]}];
 gt_p26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p26"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p37_test(doc) -> [{userdata,[{""}]}];
 gt_p37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p37"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p48_test(doc) -> [{userdata,[{""}]}];
 gt_p48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p59_test(doc) -> [{userdata,[{""}]}];
 gt_p59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p10_test(doc) -> [{userdata,[{""}]}];
 gt_p10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p21_test(doc) -> [{userdata,[{""}]}];
 gt_p21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p21"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p32_test(doc) -> [{userdata,[{""}]}];
 gt_p32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p43_test(doc) -> [{userdata,[{""}]}];
 gt_p43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p43"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p54_test(doc) -> [{userdata,[{""}]}];
 gt_p54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_p65_test(doc) -> [{userdata,[{""}]}];
 gt_p65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","p65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f5_test(doc) -> [{userdata,[{""}]}];
 gt_f5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f5"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f16_test(doc) -> [{userdata,[{""}]}];
 gt_f16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f16"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f27_test(doc) -> [{userdata,[{""}]}];
 gt_f27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f38_test(doc) -> [{userdata,[{""}]}];
 gt_f38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f38"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f49_test(doc) -> [{userdata,[{""}]}];
 gt_f49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f60_test(doc) -> [{userdata,[{""}]}];
 gt_f60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f11_test(doc) -> [{userdata,[{""}]}];
 gt_f11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f22_test(doc) -> [{userdata,[{""}]}];
 gt_f22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f22"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f33_test(doc) -> [{userdata,[{""}]}];
 gt_f33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f44_test(doc) -> [{userdata,[{""}]}];
 gt_f44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f44"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f55_test(doc) -> [{userdata,[{""}]}];
 gt_f55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f66_test(doc) -> [{userdata,[{""}]}];
 gt_f66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f6_test(doc) -> [{userdata,[{""}]}];
 gt_f6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f17_test(doc) -> [{userdata,[{""}]}];
 gt_f17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f17"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f28_test(doc) -> [{userdata,[{""}]}];
 gt_f28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f39_test(doc) -> [{userdata,[{""}]}];
 gt_f39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f39"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f50_test(doc) -> [{userdata,[{""}]}];
 gt_f50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f61_test(doc) -> [{userdata,[{""}]}];
 gt_f61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f1_test(doc) -> [{userdata,[{""}]}];
 gt_f1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f1"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f12_test(doc) -> [{userdata,[{""}]}];
 gt_f12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f34_test(doc) -> [{userdata,[{""}]}];
 gt_f34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f56_test(doc) -> [{userdata,[{""}]}];
 gt_f56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f7_test(doc) -> [{userdata,[{""}]}];
 gt_f7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f18_test(doc) -> [{userdata,[{""}]}];
 gt_f18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f18"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f29_test(doc) -> [{userdata,[{""}]}];
 gt_f29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f40_test(doc) -> [{userdata,[{""}]}];
 gt_f40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f40"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f51_test(doc) -> [{userdata,[{""}]}];
 gt_f51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f62_test(doc) -> [{userdata,[{""}]}];
 gt_f62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f2_test(doc) -> [{userdata,[{""}]}];
 gt_f2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f2"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f13_test(doc) -> [{userdata,[{""}]}];
 gt_f13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f13"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f35_test(doc) -> [{userdata,[{""}]}];
 gt_f35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f35"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f57_test(doc) -> [{userdata,[{""}]}];
 gt_f57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f8_test(doc) -> [{userdata,[{""}]}];
 gt_f8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f19_test(doc) -> [{userdata,[{""}]}];
 gt_f19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f19"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f30_test(doc) -> [{userdata,[{""}]}];
 gt_f30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f41_test(doc) -> [{userdata,[{""}]}];
 gt_f41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f41"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f52_test(doc) -> [{userdata,[{""}]}];
 gt_f52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f63_test(doc) -> [{userdata,[{""}]}];
 gt_f63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f3_test(doc) -> [{userdata,[{""}]}];
 gt_f3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f3"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f14_test(doc) -> [{userdata,[{""}]}];
 gt_f14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f14"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f25_test(doc) -> [{userdata,[{""}]}];
 gt_f25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f25"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f36_test(doc) -> [{userdata,[{""}]}];
 gt_f36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f36"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f47_test(doc) -> [{userdata,[{""}]}];
 gt_f47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f58_test(doc) -> [{userdata,[{""}]}];
 gt_f58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f9_test(doc) -> [{userdata,[{""}]}];
 gt_f9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f20_test(doc) -> [{userdata,[{""}]}];
 gt_f20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f20"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f31_test(doc) -> [{userdata,[{""}]}];
 gt_f31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f42_test(doc) -> [{userdata,[{""}]}];
 gt_f42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f42"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f53_test(doc) -> [{userdata,[{""}]}];
 gt_f53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f64_test(doc) -> [{userdata,[{""}]}];
 gt_f64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f4_test(doc) -> [{userdata,[{""}]}];
 gt_f4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f4"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f15_test(doc) -> [{userdata,[{""}]}];
 gt_f15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f15"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f26_test(doc) -> [{userdata,[{""}]}];
 gt_f26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f26"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f37_test(doc) -> [{userdata,[{""}]}];
 gt_f37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f37"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f48_test(doc) -> [{userdata,[{""}]}];
 gt_f48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f59_test(doc) -> [{userdata,[{""}]}];
 gt_f59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f10_test(doc) -> [{userdata,[{""}]}];
 gt_f10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f21_test(doc) -> [{userdata,[{""}]}];
 gt_f21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f21"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f32_test(doc) -> [{userdata,[{""}]}];
 gt_f32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f43_test(doc) -> [{userdata,[{""}]}];
 gt_f43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f43"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f54_test(doc) -> [{userdata,[{""}]}];
 gt_f54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_f65_test(doc) -> [{userdata,[{""}]}];
 gt_f65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","f65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q5_test(doc) -> [{userdata,[{""}]}];
 gt_q5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q5"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q16_test(doc) -> [{userdata,[{""}]}];
 gt_q16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q16"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q27_test(doc) -> [{userdata,[{""}]}];
 gt_q27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q27"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q38_test(doc) -> [{userdata,[{""}]}];
 gt_q38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q38"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q49_test(doc) -> [{userdata,[{""}]}];
 gt_q49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q60_test(doc) -> [{userdata,[{""}]}];
 gt_q60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q11_test(doc) -> [{userdata,[{""}]}];
 gt_q11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q22_test(doc) -> [{userdata,[{""}]}];
 gt_q22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q22"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q33_test(doc) -> [{userdata,[{""}]}];
 gt_q33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q44_test(doc) -> [{userdata,[{""}]}];
 gt_q44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q44"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q55_test(doc) -> [{userdata,[{""}]}];
 gt_q55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q66_test(doc) -> [{userdata,[{""}]}];
 gt_q66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q6_test(doc) -> [{userdata,[{""}]}];
 gt_q6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q17_test(doc) -> [{userdata,[{""}]}];
 gt_q17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q17"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q28_test(doc) -> [{userdata,[{""}]}];
 gt_q28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q39_test(doc) -> [{userdata,[{""}]}];
 gt_q39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q39"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q50_test(doc) -> [{userdata,[{""}]}];
 gt_q50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q61_test(doc) -> [{userdata,[{""}]}];
 gt_q61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q1_test(doc) -> [{userdata,[{""}]}];
 gt_q1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q1"),
-  Expected="<cell><value>"++"Str Num"++"</value></cell>",
+  Expected="Str Num",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q12_test(doc) -> [{userdata,[{""}]}];
 gt_q12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q34_test(doc) -> [{userdata,[{""}]}];
 gt_q34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q56_test(doc) -> [{userdata,[{""}]}];
 gt_q56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q7_test(doc) -> [{userdata,[{""}]}];
 gt_q7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q18_test(doc) -> [{userdata,[{""}]}];
 gt_q18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q18"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q29_test(doc) -> [{userdata,[{""}]}];
 gt_q29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q40_test(doc) -> [{userdata,[{""}]}];
 gt_q40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q40"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q51_test(doc) -> [{userdata,[{""}]}];
 gt_q51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q62_test(doc) -> [{userdata,[{""}]}];
 gt_q62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q2_test(doc) -> [{userdata,[{""}]}];
 gt_q2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q2"),
-  Expected="<cell><value>"++"3.54"++"</value></cell>",
+  Expected="3.54",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q13_test(doc) -> [{userdata,[{""}]}];
 gt_q13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q13"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q35_test(doc) -> [{userdata,[{""}]}];
 gt_q35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q35"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q57_test(doc) -> [{userdata,[{""}]}];
 gt_q57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q8_test(doc) -> [{userdata,[{""}]}];
 gt_q8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q19_test(doc) -> [{userdata,[{""}]}];
 gt_q19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q19"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q30_test(doc) -> [{userdata,[{""}]}];
 gt_q30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q41_test(doc) -> [{userdata,[{""}]}];
 gt_q41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q41"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q52_test(doc) -> [{userdata,[{""}]}];
 gt_q52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q63_test(doc) -> [{userdata,[{""}]}];
 gt_q63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q3_test(doc) -> [{userdata,[{""}]}];
 gt_q3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q3"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q14_test(doc) -> [{userdata,[{""}]}];
 gt_q14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q14"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q25_test(doc) -> [{userdata,[{""}]}];
 gt_q25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q25"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q36_test(doc) -> [{userdata,[{""}]}];
 gt_q36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q36"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q47_test(doc) -> [{userdata,[{""}]}];
 gt_q47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q58_test(doc) -> [{userdata,[{""}]}];
 gt_q58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q9_test(doc) -> [{userdata,[{""}]}];
 gt_q9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q20_test(doc) -> [{userdata,[{""}]}];
 gt_q20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q20"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q31_test(doc) -> [{userdata,[{""}]}];
 gt_q31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q42_test(doc) -> [{userdata,[{""}]}];
 gt_q42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q42"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q53_test(doc) -> [{userdata,[{""}]}];
 gt_q53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q64_test(doc) -> [{userdata,[{""}]}];
 gt_q64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q4_test(doc) -> [{userdata,[{""}]}];
 gt_q4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q4"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q15_test(doc) -> [{userdata,[{""}]}];
 gt_q15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q15"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q26_test(doc) -> [{userdata,[{""}]}];
 gt_q26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q26"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q37_test(doc) -> [{userdata,[{""}]}];
 gt_q37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q37"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q48_test(doc) -> [{userdata,[{""}]}];
 gt_q48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q59_test(doc) -> [{userdata,[{""}]}];
 gt_q59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q10_test(doc) -> [{userdata,[{""}]}];
 gt_q10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q21_test(doc) -> [{userdata,[{""}]}];
 gt_q21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q21"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q32_test(doc) -> [{userdata,[{""}]}];
 gt_q32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q43_test(doc) -> [{userdata,[{""}]}];
 gt_q43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q43"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q54_test(doc) -> [{userdata,[{""}]}];
 gt_q54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_q65_test(doc) -> [{userdata,[{""}]}];
 gt_q65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","q65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g5_test(doc) -> [{userdata,[{""}]}];
 gt_g5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g5"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g16_test(doc) -> [{userdata,[{""}]}];
 gt_g16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g16"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g27_test(doc) -> [{userdata,[{""}]}];
 gt_g27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g27"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g38_test(doc) -> [{userdata,[{""}]}];
 gt_g38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g38"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g49_test(doc) -> [{userdata,[{""}]}];
 gt_g49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g60_test(doc) -> [{userdata,[{""}]}];
 gt_g60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g11_test(doc) -> [{userdata,[{""}]}];
 gt_g11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g22_test(doc) -> [{userdata,[{""}]}];
 gt_g22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g22"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g33_test(doc) -> [{userdata,[{""}]}];
 gt_g33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g44_test(doc) -> [{userdata,[{""}]}];
 gt_g44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g44"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g55_test(doc) -> [{userdata,[{""}]}];
 gt_g55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g66_test(doc) -> [{userdata,[{""}]}];
 gt_g66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g6_test(doc) -> [{userdata,[{""}]}];
 gt_g6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g17_test(doc) -> [{userdata,[{""}]}];
 gt_g17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g17"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g28_test(doc) -> [{userdata,[{""}]}];
 gt_g28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g39_test(doc) -> [{userdata,[{""}]}];
 gt_g39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g39"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g50_test(doc) -> [{userdata,[{""}]}];
 gt_g50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g61_test(doc) -> [{userdata,[{""}]}];
 gt_g61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g1_test(doc) -> [{userdata,[{""}]}];
 gt_g1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g1"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g12_test(doc) -> [{userdata,[{""}]}];
 gt_g12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g34_test(doc) -> [{userdata,[{""}]}];
 gt_g34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g56_test(doc) -> [{userdata,[{""}]}];
 gt_g56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g7_test(doc) -> [{userdata,[{""}]}];
 gt_g7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g18_test(doc) -> [{userdata,[{""}]}];
 gt_g18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g18"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g29_test(doc) -> [{userdata,[{""}]}];
 gt_g29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g40_test(doc) -> [{userdata,[{""}]}];
 gt_g40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g40"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g51_test(doc) -> [{userdata,[{""}]}];
 gt_g51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g62_test(doc) -> [{userdata,[{""}]}];
 gt_g62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g2_test(doc) -> [{userdata,[{""}]}];
 gt_g2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g2"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g13_test(doc) -> [{userdata,[{""}]}];
 gt_g13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g13"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g35_test(doc) -> [{userdata,[{""}]}];
 gt_g35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g35"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g57_test(doc) -> [{userdata,[{""}]}];
 gt_g57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g8_test(doc) -> [{userdata,[{""}]}];
 gt_g8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g19_test(doc) -> [{userdata,[{""}]}];
 gt_g19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g19"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g30_test(doc) -> [{userdata,[{""}]}];
 gt_g30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g41_test(doc) -> [{userdata,[{""}]}];
 gt_g41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g41"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g52_test(doc) -> [{userdata,[{""}]}];
 gt_g52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g63_test(doc) -> [{userdata,[{""}]}];
 gt_g63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g3_test(doc) -> [{userdata,[{""}]}];
 gt_g3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g3"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g14_test(doc) -> [{userdata,[{""}]}];
 gt_g14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g14"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g25_test(doc) -> [{userdata,[{""}]}];
 gt_g25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g25"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g36_test(doc) -> [{userdata,[{""}]}];
 gt_g36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g36"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g47_test(doc) -> [{userdata,[{""}]}];
 gt_g47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g58_test(doc) -> [{userdata,[{""}]}];
 gt_g58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g9_test(doc) -> [{userdata,[{""}]}];
 gt_g9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g20_test(doc) -> [{userdata,[{""}]}];
 gt_g20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g20"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g31_test(doc) -> [{userdata,[{""}]}];
 gt_g31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g42_test(doc) -> [{userdata,[{""}]}];
 gt_g42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g42"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g53_test(doc) -> [{userdata,[{""}]}];
 gt_g53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g64_test(doc) -> [{userdata,[{""}]}];
 gt_g64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g4_test(doc) -> [{userdata,[{""}]}];
 gt_g4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g4"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g15_test(doc) -> [{userdata,[{""}]}];
 gt_g15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g15"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g26_test(doc) -> [{userdata,[{""}]}];
 gt_g26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g26"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g37_test(doc) -> [{userdata,[{""}]}];
 gt_g37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g37"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g48_test(doc) -> [{userdata,[{""}]}];
 gt_g48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g59_test(doc) -> [{userdata,[{""}]}];
 gt_g59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g10_test(doc) -> [{userdata,[{""}]}];
 gt_g10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g21_test(doc) -> [{userdata,[{""}]}];
 gt_g21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g21"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g32_test(doc) -> [{userdata,[{""}]}];
 gt_g32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g43_test(doc) -> [{userdata,[{""}]}];
 gt_g43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g43"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g54_test(doc) -> [{userdata,[{""}]}];
 gt_g54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_g65_test(doc) -> [{userdata,[{""}]}];
 gt_g65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","g65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r5_test(doc) -> [{userdata,[{""}]}];
 gt_r5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r5"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r16_test(doc) -> [{userdata,[{""}]}];
 gt_r16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r16"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r27_test(doc) -> [{userdata,[{""}]}];
 gt_r27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r27"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r38_test(doc) -> [{userdata,[{""}]}];
 gt_r38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r38"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r49_test(doc) -> [{userdata,[{""}]}];
 gt_r49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r60_test(doc) -> [{userdata,[{""}]}];
 gt_r60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r11_test(doc) -> [{userdata,[{""}]}];
 gt_r11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r22_test(doc) -> [{userdata,[{""}]}];
 gt_r22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r22"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r33_test(doc) -> [{userdata,[{""}]}];
 gt_r33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r44_test(doc) -> [{userdata,[{""}]}];
 gt_r44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r44"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r55_test(doc) -> [{userdata,[{""}]}];
 gt_r55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r66_test(doc) -> [{userdata,[{""}]}];
 gt_r66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r6_test(doc) -> [{userdata,[{""}]}];
 gt_r6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r17_test(doc) -> [{userdata,[{""}]}];
 gt_r17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r17"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r28_test(doc) -> [{userdata,[{""}]}];
 gt_r28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r39_test(doc) -> [{userdata,[{""}]}];
 gt_r39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r39"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r50_test(doc) -> [{userdata,[{""}]}];
 gt_r50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r61_test(doc) -> [{userdata,[{""}]}];
 gt_r61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r1_test(doc) -> [{userdata,[{""}]}];
 gt_r1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r1"),
-  Expected="<cell><value>"++"Integer"++"</value></cell>",
+  Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r12_test(doc) -> [{userdata,[{""}]}];
 gt_r12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r34_test(doc) -> [{userdata,[{""}]}];
 gt_r34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r56_test(doc) -> [{userdata,[{""}]}];
 gt_r56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r7_test(doc) -> [{userdata,[{""}]}];
 gt_r7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r18_test(doc) -> [{userdata,[{""}]}];
 gt_r18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r18"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r29_test(doc) -> [{userdata,[{""}]}];
 gt_r29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r40_test(doc) -> [{userdata,[{""}]}];
 gt_r40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r40"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r51_test(doc) -> [{userdata,[{""}]}];
 gt_r51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r62_test(doc) -> [{userdata,[{""}]}];
 gt_r62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r2_test(doc) -> [{userdata,[{""}]}];
 gt_r2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r2"),
-  Expected="<cell><value>"++"1999/02/01 00:00:00"++"</value></cell>",
+  Expected="1999/02/01 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r13_test(doc) -> [{userdata,[{""}]}];
 gt_r13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r13"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r35_test(doc) -> [{userdata,[{""}]}];
 gt_r35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r35"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r57_test(doc) -> [{userdata,[{""}]}];
 gt_r57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r8_test(doc) -> [{userdata,[{""}]}];
 gt_r8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r19_test(doc) -> [{userdata,[{""}]}];
 gt_r19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r19"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r30_test(doc) -> [{userdata,[{""}]}];
 gt_r30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r41_test(doc) -> [{userdata,[{""}]}];
 gt_r41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r41"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r52_test(doc) -> [{userdata,[{""}]}];
 gt_r52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r63_test(doc) -> [{userdata,[{""}]}];
 gt_r63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r3_test(doc) -> [{userdata,[{""}]}];
 gt_r3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r3"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r14_test(doc) -> [{userdata,[{""}]}];
 gt_r14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r14"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r25_test(doc) -> [{userdata,[{""}]}];
 gt_r25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r25"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r36_test(doc) -> [{userdata,[{""}]}];
 gt_r36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r36"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r47_test(doc) -> [{userdata,[{""}]}];
 gt_r47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r58_test(doc) -> [{userdata,[{""}]}];
 gt_r58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r9_test(doc) -> [{userdata,[{""}]}];
 gt_r9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r20_test(doc) -> [{userdata,[{""}]}];
 gt_r20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r20"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r31_test(doc) -> [{userdata,[{""}]}];
 gt_r31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r42_test(doc) -> [{userdata,[{""}]}];
 gt_r42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r42"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r53_test(doc) -> [{userdata,[{""}]}];
 gt_r53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r64_test(doc) -> [{userdata,[{""}]}];
 gt_r64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r4_test(doc) -> [{userdata,[{""}]}];
 gt_r4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r4"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r15_test(doc) -> [{userdata,[{""}]}];
 gt_r15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r15"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r26_test(doc) -> [{userdata,[{""}]}];
 gt_r26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r26"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r37_test(doc) -> [{userdata,[{""}]}];
 gt_r37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r37"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r48_test(doc) -> [{userdata,[{""}]}];
 gt_r48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r59_test(doc) -> [{userdata,[{""}]}];
 gt_r59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r10_test(doc) -> [{userdata,[{""}]}];
 gt_r10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r21_test(doc) -> [{userdata,[{""}]}];
 gt_r21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r21"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r32_test(doc) -> [{userdata,[{""}]}];
 gt_r32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r43_test(doc) -> [{userdata,[{""}]}];
 gt_r43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r43"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r54_test(doc) -> [{userdata,[{""}]}];
 gt_r54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_r65_test(doc) -> [{userdata,[{""}]}];
 gt_r65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","r65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h5_test(doc) -> [{userdata,[{""}]}];
 gt_h5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h16_test(doc) -> [{userdata,[{""}]}];
 gt_h16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h27_test(doc) -> [{userdata,[{""}]}];
 gt_h27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h27"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h38_test(doc) -> [{userdata,[{""}]}];
 gt_h38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h38"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h49_test(doc) -> [{userdata,[{""}]}];
 gt_h49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h60_test(doc) -> [{userdata,[{""}]}];
 gt_h60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h11_test(doc) -> [{userdata,[{""}]}];
 gt_h11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h22_test(doc) -> [{userdata,[{""}]}];
 gt_h22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h33_test(doc) -> [{userdata,[{""}]}];
 gt_h33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h44_test(doc) -> [{userdata,[{""}]}];
 gt_h44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h44"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h55_test(doc) -> [{userdata,[{""}]}];
 gt_h55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h66_test(doc) -> [{userdata,[{""}]}];
 gt_h66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h6_test(doc) -> [{userdata,[{""}]}];
 gt_h6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h17_test(doc) -> [{userdata,[{""}]}];
 gt_h17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h28_test(doc) -> [{userdata,[{""}]}];
 gt_h28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h39_test(doc) -> [{userdata,[{""}]}];
 gt_h39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h39"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h50_test(doc) -> [{userdata,[{""}]}];
 gt_h50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h61_test(doc) -> [{userdata,[{""}]}];
 gt_h61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h1_test(doc) -> [{userdata,[{""}]}];
 gt_h1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h1"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h12_test(doc) -> [{userdata,[{""}]}];
 gt_h12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h34_test(doc) -> [{userdata,[{""}]}];
 gt_h34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h56_test(doc) -> [{userdata,[{""}]}];
 gt_h56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h7_test(doc) -> [{userdata,[{""}]}];
 gt_h7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h18_test(doc) -> [{userdata,[{""}]}];
 gt_h18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h29_test(doc) -> [{userdata,[{""}]}];
 gt_h29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h40_test(doc) -> [{userdata,[{""}]}];
 gt_h40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h40"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h51_test(doc) -> [{userdata,[{""}]}];
 gt_h51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h62_test(doc) -> [{userdata,[{""}]}];
 gt_h62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h2_test(doc) -> [{userdata,[{""}]}];
 gt_h2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h2"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h13_test(doc) -> [{userdata,[{""}]}];
 gt_h13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h35_test(doc) -> [{userdata,[{""}]}];
 gt_h35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h35"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h57_test(doc) -> [{userdata,[{""}]}];
 gt_h57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h8_test(doc) -> [{userdata,[{""}]}];
 gt_h8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h19_test(doc) -> [{userdata,[{""}]}];
 gt_h19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h30_test(doc) -> [{userdata,[{""}]}];
 gt_h30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h41_test(doc) -> [{userdata,[{""}]}];
 gt_h41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h41"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h52_test(doc) -> [{userdata,[{""}]}];
 gt_h52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h63_test(doc) -> [{userdata,[{""}]}];
 gt_h63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h3_test(doc) -> [{userdata,[{""}]}];
 gt_h3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h14_test(doc) -> [{userdata,[{""}]}];
 gt_h14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h25_test(doc) -> [{userdata,[{""}]}];
 gt_h25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h25"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h36_test(doc) -> [{userdata,[{""}]}];
 gt_h36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h36"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h47_test(doc) -> [{userdata,[{""}]}];
 gt_h47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h58_test(doc) -> [{userdata,[{""}]}];
 gt_h58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h9_test(doc) -> [{userdata,[{""}]}];
 gt_h9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h20_test(doc) -> [{userdata,[{""}]}];
 gt_h20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h31_test(doc) -> [{userdata,[{""}]}];
 gt_h31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h42_test(doc) -> [{userdata,[{""}]}];
 gt_h42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h42"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h53_test(doc) -> [{userdata,[{""}]}];
 gt_h53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h64_test(doc) -> [{userdata,[{""}]}];
 gt_h64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h4_test(doc) -> [{userdata,[{""}]}];
 gt_h4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h15_test(doc) -> [{userdata,[{""}]}];
 gt_h15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h26_test(doc) -> [{userdata,[{""}]}];
 gt_h26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h26"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h37_test(doc) -> [{userdata,[{""}]}];
 gt_h37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h37"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h48_test(doc) -> [{userdata,[{""}]}];
 gt_h48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h59_test(doc) -> [{userdata,[{""}]}];
 gt_h59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h10_test(doc) -> [{userdata,[{""}]}];
 gt_h10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h21_test(doc) -> [{userdata,[{""}]}];
 gt_h21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h32_test(doc) -> [{userdata,[{""}]}];
 gt_h32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h43_test(doc) -> [{userdata,[{""}]}];
 gt_h43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h43"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h54_test(doc) -> [{userdata,[{""}]}];
 gt_h54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_h65_test(doc) -> [{userdata,[{""}]}];
 gt_h65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","h65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s5_test(doc) -> [{userdata,[{""}]}];
 gt_s5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s5"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s16_test(doc) -> [{userdata,[{""}]}];
 gt_s16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s16"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s27_test(doc) -> [{userdata,[{""}]}];
 gt_s27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s27"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s38_test(doc) -> [{userdata,[{""}]}];
 gt_s38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s38"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s49_test(doc) -> [{userdata,[{""}]}];
 gt_s49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s60_test(doc) -> [{userdata,[{""}]}];
 gt_s60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s11_test(doc) -> [{userdata,[{""}]}];
 gt_s11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s22_test(doc) -> [{userdata,[{""}]}];
 gt_s22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s22"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s33_test(doc) -> [{userdata,[{""}]}];
 gt_s33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s44_test(doc) -> [{userdata,[{""}]}];
 gt_s44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s44"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s55_test(doc) -> [{userdata,[{""}]}];
 gt_s55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s66_test(doc) -> [{userdata,[{""}]}];
 gt_s66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s6_test(doc) -> [{userdata,[{""}]}];
 gt_s6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s17_test(doc) -> [{userdata,[{""}]}];
 gt_s17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s17"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s28_test(doc) -> [{userdata,[{""}]}];
 gt_s28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s39_test(doc) -> [{userdata,[{""}]}];
 gt_s39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s39"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s50_test(doc) -> [{userdata,[{""}]}];
 gt_s50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s61_test(doc) -> [{userdata,[{""}]}];
 gt_s61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s1_test(doc) -> [{userdata,[{""}]}];
 gt_s1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s1"),
-  Expected="<cell><value>"++"Integer"++"</value></cell>",
+  Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s12_test(doc) -> [{userdata,[{""}]}];
 gt_s12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s34_test(doc) -> [{userdata,[{""}]}];
 gt_s34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s56_test(doc) -> [{userdata,[{""}]}];
 gt_s56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s7_test(doc) -> [{userdata,[{""}]}];
 gt_s7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s18_test(doc) -> [{userdata,[{""}]}];
 gt_s18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s18"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s29_test(doc) -> [{userdata,[{""}]}];
 gt_s29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s40_test(doc) -> [{userdata,[{""}]}];
 gt_s40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s40"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s51_test(doc) -> [{userdata,[{""}]}];
 gt_s51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s62_test(doc) -> [{userdata,[{""}]}];
 gt_s62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s2_test(doc) -> [{userdata,[{""}]}];
 gt_s2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s2"),
-  Expected="<cell><value>"++"1999/02/02 00:00:00"++"</value></cell>",
+  Expected="1999/02/02 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s13_test(doc) -> [{userdata,[{""}]}];
 gt_s13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s13"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s35_test(doc) -> [{userdata,[{""}]}];
 gt_s35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s35"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s57_test(doc) -> [{userdata,[{""}]}];
 gt_s57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s8_test(doc) -> [{userdata,[{""}]}];
 gt_s8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s19_test(doc) -> [{userdata,[{""}]}];
 gt_s19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s19"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s30_test(doc) -> [{userdata,[{""}]}];
 gt_s30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s41_test(doc) -> [{userdata,[{""}]}];
 gt_s41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s41"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s52_test(doc) -> [{userdata,[{""}]}];
 gt_s52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s63_test(doc) -> [{userdata,[{""}]}];
 gt_s63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s3_test(doc) -> [{userdata,[{""}]}];
 gt_s3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s3"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s14_test(doc) -> [{userdata,[{""}]}];
 gt_s14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s14"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s25_test(doc) -> [{userdata,[{""}]}];
 gt_s25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s25"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s36_test(doc) -> [{userdata,[{""}]}];
 gt_s36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s36"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s47_test(doc) -> [{userdata,[{""}]}];
 gt_s47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s58_test(doc) -> [{userdata,[{""}]}];
 gt_s58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s9_test(doc) -> [{userdata,[{""}]}];
 gt_s9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s20_test(doc) -> [{userdata,[{""}]}];
 gt_s20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s20"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s31_test(doc) -> [{userdata,[{""}]}];
 gt_s31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s42_test(doc) -> [{userdata,[{""}]}];
 gt_s42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s42"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s53_test(doc) -> [{userdata,[{""}]}];
 gt_s53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s64_test(doc) -> [{userdata,[{""}]}];
 gt_s64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s4_test(doc) -> [{userdata,[{""}]}];
 gt_s4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s4"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s15_test(doc) -> [{userdata,[{""}]}];
 gt_s15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s15"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s26_test(doc) -> [{userdata,[{""}]}];
 gt_s26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s26"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s37_test(doc) -> [{userdata,[{""}]}];
 gt_s37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s37"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s48_test(doc) -> [{userdata,[{""}]}];
 gt_s48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s59_test(doc) -> [{userdata,[{""}]}];
 gt_s59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s10_test(doc) -> [{userdata,[{""}]}];
 gt_s10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s21_test(doc) -> [{userdata,[{""}]}];
 gt_s21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s21"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s32_test(doc) -> [{userdata,[{""}]}];
 gt_s32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s43_test(doc) -> [{userdata,[{""}]}];
 gt_s43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s43"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s54_test(doc) -> [{userdata,[{""}]}];
 gt_s54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_s65_test(doc) -> [{userdata,[{""}]}];
 gt_s65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","s65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i5_test(doc) -> [{userdata,[{""}]}];
 gt_i5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i5"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i16_test(doc) -> [{userdata,[{""}]}];
 gt_i16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i16"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i27_test(doc) -> [{userdata,[{""}]}];
 gt_i27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i27"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i38_test(doc) -> [{userdata,[{""}]}];
 gt_i38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i38"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i49_test(doc) -> [{userdata,[{""}]}];
 gt_i49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i60_test(doc) -> [{userdata,[{""}]}];
 gt_i60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i11_test(doc) -> [{userdata,[{""}]}];
 gt_i11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i22_test(doc) -> [{userdata,[{""}]}];
 gt_i22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i22"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i33_test(doc) -> [{userdata,[{""}]}];
 gt_i33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i44_test(doc) -> [{userdata,[{""}]}];
 gt_i44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i44"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i55_test(doc) -> [{userdata,[{""}]}];
 gt_i55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i66_test(doc) -> [{userdata,[{""}]}];
 gt_i66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i6_test(doc) -> [{userdata,[{""}]}];
 gt_i6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i17_test(doc) -> [{userdata,[{""}]}];
 gt_i17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i17"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i28_test(doc) -> [{userdata,[{""}]}];
 gt_i28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i39_test(doc) -> [{userdata,[{""}]}];
 gt_i39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i39"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i50_test(doc) -> [{userdata,[{""}]}];
 gt_i50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i61_test(doc) -> [{userdata,[{""}]}];
 gt_i61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i1_test(doc) -> [{userdata,[{""}]}];
 gt_i1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i1"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i12_test(doc) -> [{userdata,[{""}]}];
 gt_i12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i34_test(doc) -> [{userdata,[{""}]}];
 gt_i34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i56_test(doc) -> [{userdata,[{""}]}];
 gt_i56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i7_test(doc) -> [{userdata,[{""}]}];
 gt_i7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i18_test(doc) -> [{userdata,[{""}]}];
 gt_i18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i18"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i29_test(doc) -> [{userdata,[{""}]}];
 gt_i29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i40_test(doc) -> [{userdata,[{""}]}];
 gt_i40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i40"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i51_test(doc) -> [{userdata,[{""}]}];
 gt_i51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i62_test(doc) -> [{userdata,[{""}]}];
 gt_i62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i2_test(doc) -> [{userdata,[{""}]}];
 gt_i2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i2"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i13_test(doc) -> [{userdata,[{""}]}];
 gt_i13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i13"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i35_test(doc) -> [{userdata,[{""}]}];
 gt_i35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i35"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i57_test(doc) -> [{userdata,[{""}]}];
 gt_i57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i8_test(doc) -> [{userdata,[{""}]}];
 gt_i8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i19_test(doc) -> [{userdata,[{""}]}];
 gt_i19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i19"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i30_test(doc) -> [{userdata,[{""}]}];
 gt_i30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i41_test(doc) -> [{userdata,[{""}]}];
 gt_i41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i41"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i52_test(doc) -> [{userdata,[{""}]}];
 gt_i52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i63_test(doc) -> [{userdata,[{""}]}];
 gt_i63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i3_test(doc) -> [{userdata,[{""}]}];
 gt_i3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i3"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i14_test(doc) -> [{userdata,[{""}]}];
 gt_i14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i14"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i25_test(doc) -> [{userdata,[{""}]}];
 gt_i25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i25"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i36_test(doc) -> [{userdata,[{""}]}];
 gt_i36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i36"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i47_test(doc) -> [{userdata,[{""}]}];
 gt_i47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i58_test(doc) -> [{userdata,[{""}]}];
 gt_i58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i9_test(doc) -> [{userdata,[{""}]}];
 gt_i9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i20_test(doc) -> [{userdata,[{""}]}];
 gt_i20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i20"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i31_test(doc) -> [{userdata,[{""}]}];
 gt_i31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i42_test(doc) -> [{userdata,[{""}]}];
 gt_i42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i42"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i53_test(doc) -> [{userdata,[{""}]}];
 gt_i53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i64_test(doc) -> [{userdata,[{""}]}];
 gt_i64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i4_test(doc) -> [{userdata,[{""}]}];
 gt_i4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i4"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i15_test(doc) -> [{userdata,[{""}]}];
 gt_i15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i15"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i26_test(doc) -> [{userdata,[{""}]}];
 gt_i26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i26"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i37_test(doc) -> [{userdata,[{""}]}];
 gt_i37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i37"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i48_test(doc) -> [{userdata,[{""}]}];
 gt_i48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i59_test(doc) -> [{userdata,[{""}]}];
 gt_i59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i10_test(doc) -> [{userdata,[{""}]}];
 gt_i10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i21_test(doc) -> [{userdata,[{""}]}];
 gt_i21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i21"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i32_test(doc) -> [{userdata,[{""}]}];
 gt_i32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i43_test(doc) -> [{userdata,[{""}]}];
 gt_i43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i43"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i54_test(doc) -> [{userdata,[{""}]}];
 gt_i54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_i65_test(doc) -> [{userdata,[{""}]}];
 gt_i65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","i65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t5_test(doc) -> [{userdata,[{""}]}];
 gt_t5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t5"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t16_test(doc) -> [{userdata,[{""}]}];
 gt_t16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t16"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t27_test(doc) -> [{userdata,[{""}]}];
 gt_t27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t27"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t38_test(doc) -> [{userdata,[{""}]}];
 gt_t38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t38"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t49_test(doc) -> [{userdata,[{""}]}];
 gt_t49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t60_test(doc) -> [{userdata,[{""}]}];
 gt_t60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t11_test(doc) -> [{userdata,[{""}]}];
 gt_t11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t22_test(doc) -> [{userdata,[{""}]}];
 gt_t22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t22"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t33_test(doc) -> [{userdata,[{""}]}];
 gt_t33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t44_test(doc) -> [{userdata,[{""}]}];
 gt_t44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t44"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t55_test(doc) -> [{userdata,[{""}]}];
 gt_t55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t66_test(doc) -> [{userdata,[{""}]}];
 gt_t66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t6_test(doc) -> [{userdata,[{""}]}];
 gt_t6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t17_test(doc) -> [{userdata,[{""}]}];
 gt_t17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t17"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t28_test(doc) -> [{userdata,[{""}]}];
 gt_t28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t39_test(doc) -> [{userdata,[{""}]}];
 gt_t39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t39"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t50_test(doc) -> [{userdata,[{""}]}];
 gt_t50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t61_test(doc) -> [{userdata,[{""}]}];
 gt_t61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t1_test(doc) -> [{userdata,[{""}]}];
 gt_t1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t1"),
-  Expected="<cell><value>"++"Zero"++"</value></cell>",
+  Expected="Zero",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t12_test(doc) -> [{userdata,[{""}]}];
 gt_t12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t34_test(doc) -> [{userdata,[{""}]}];
 gt_t34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t56_test(doc) -> [{userdata,[{""}]}];
 gt_t56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t7_test(doc) -> [{userdata,[{""}]}];
 gt_t7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t18_test(doc) -> [{userdata,[{""}]}];
 gt_t18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t18"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t29_test(doc) -> [{userdata,[{""}]}];
 gt_t29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t40_test(doc) -> [{userdata,[{""}]}];
 gt_t40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t40"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t51_test(doc) -> [{userdata,[{""}]}];
 gt_t51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t62_test(doc) -> [{userdata,[{""}]}];
 gt_t62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t2_test(doc) -> [{userdata,[{""}]}];
 gt_t2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t2"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t13_test(doc) -> [{userdata,[{""}]}];
 gt_t13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t13"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t35_test(doc) -> [{userdata,[{""}]}];
 gt_t35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t35"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t57_test(doc) -> [{userdata,[{""}]}];
 gt_t57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t8_test(doc) -> [{userdata,[{""}]}];
 gt_t8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t19_test(doc) -> [{userdata,[{""}]}];
 gt_t19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t19"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t30_test(doc) -> [{userdata,[{""}]}];
 gt_t30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t41_test(doc) -> [{userdata,[{""}]}];
 gt_t41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t41"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t52_test(doc) -> [{userdata,[{""}]}];
 gt_t52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t63_test(doc) -> [{userdata,[{""}]}];
 gt_t63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t3_test(doc) -> [{userdata,[{""}]}];
 gt_t3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t3"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t14_test(doc) -> [{userdata,[{""}]}];
 gt_t14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t14"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t25_test(doc) -> [{userdata,[{""}]}];
 gt_t25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t25"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t36_test(doc) -> [{userdata,[{""}]}];
 gt_t36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t36"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t47_test(doc) -> [{userdata,[{""}]}];
 gt_t47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t58_test(doc) -> [{userdata,[{""}]}];
 gt_t58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t9_test(doc) -> [{userdata,[{""}]}];
 gt_t9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t20_test(doc) -> [{userdata,[{""}]}];
 gt_t20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t20"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t31_test(doc) -> [{userdata,[{""}]}];
 gt_t31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t42_test(doc) -> [{userdata,[{""}]}];
 gt_t42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t42"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t53_test(doc) -> [{userdata,[{""}]}];
 gt_t53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t64_test(doc) -> [{userdata,[{""}]}];
 gt_t64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t4_test(doc) -> [{userdata,[{""}]}];
 gt_t4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t4"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t15_test(doc) -> [{userdata,[{""}]}];
 gt_t15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t15"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t26_test(doc) -> [{userdata,[{""}]}];
 gt_t26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t26"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t37_test(doc) -> [{userdata,[{""}]}];
 gt_t37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t37"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t48_test(doc) -> [{userdata,[{""}]}];
 gt_t48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t59_test(doc) -> [{userdata,[{""}]}];
 gt_t59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t10_test(doc) -> [{userdata,[{""}]}];
 gt_t10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t21_test(doc) -> [{userdata,[{""}]}];
 gt_t21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t21"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t32_test(doc) -> [{userdata,[{""}]}];
 gt_t32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t43_test(doc) -> [{userdata,[{""}]}];
 gt_t43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t43"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t54_test(doc) -> [{userdata,[{""}]}];
 gt_t54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_t65_test(doc) -> [{userdata,[{""}]}];
 gt_t65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","t65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j5_test(doc) -> [{userdata,[{""}]}];
 gt_j5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j5"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j16_test(doc) -> [{userdata,[{""}]}];
 gt_j16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j16"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j27_test(doc) -> [{userdata,[{""}]}];
 gt_j27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j27"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j38_test(doc) -> [{userdata,[{""}]}];
 gt_j38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j38"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j49_test(doc) -> [{userdata,[{""}]}];
 gt_j49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j60_test(doc) -> [{userdata,[{""}]}];
 gt_j60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j11_test(doc) -> [{userdata,[{""}]}];
 gt_j11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j22_test(doc) -> [{userdata,[{""}]}];
 gt_j22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j22"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j33_test(doc) -> [{userdata,[{""}]}];
 gt_j33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j44_test(doc) -> [{userdata,[{""}]}];
 gt_j44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j44"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j55_test(doc) -> [{userdata,[{""}]}];
 gt_j55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j66_test(doc) -> [{userdata,[{""}]}];
 gt_j66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j6_test(doc) -> [{userdata,[{""}]}];
 gt_j6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j17_test(doc) -> [{userdata,[{""}]}];
 gt_j17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j17"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j28_test(doc) -> [{userdata,[{""}]}];
 gt_j28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j39_test(doc) -> [{userdata,[{""}]}];
 gt_j39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j39"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j50_test(doc) -> [{userdata,[{""}]}];
 gt_j50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j61_test(doc) -> [{userdata,[{""}]}];
 gt_j61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j1_test(doc) -> [{userdata,[{""}]}];
 gt_j1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j1"),
-  Expected="<cell><value>"++"Error"++"</value></cell>",
+  Expected="Error",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j12_test(doc) -> [{userdata,[{""}]}];
 gt_j12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j34_test(doc) -> [{userdata,[{""}]}];
 gt_j34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j56_test(doc) -> [{userdata,[{""}]}];
 gt_j56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j7_test(doc) -> [{userdata,[{""}]}];
 gt_j7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j18_test(doc) -> [{userdata,[{""}]}];
 gt_j18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j18"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j29_test(doc) -> [{userdata,[{""}]}];
 gt_j29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j40_test(doc) -> [{userdata,[{""}]}];
 gt_j40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j40"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j51_test(doc) -> [{userdata,[{""}]}];
 gt_j51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j62_test(doc) -> [{userdata,[{""}]}];
 gt_j62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j2_test(doc) -> [{userdata,[{""}]}];
 gt_j2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j2"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j13_test(doc) -> [{userdata,[{""}]}];
 gt_j13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j13"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j35_test(doc) -> [{userdata,[{""}]}];
 gt_j35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j35"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j57_test(doc) -> [{userdata,[{""}]}];
 gt_j57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j8_test(doc) -> [{userdata,[{""}]}];
 gt_j8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j19_test(doc) -> [{userdata,[{""}]}];
 gt_j19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j19"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j30_test(doc) -> [{userdata,[{""}]}];
 gt_j30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j41_test(doc) -> [{userdata,[{""}]}];
 gt_j41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j41"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j52_test(doc) -> [{userdata,[{""}]}];
 gt_j52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j63_test(doc) -> [{userdata,[{""}]}];
 gt_j63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j3_test(doc) -> [{userdata,[{""}]}];
 gt_j3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j3"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j14_test(doc) -> [{userdata,[{""}]}];
 gt_j14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j14"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j25_test(doc) -> [{userdata,[{""}]}];
 gt_j25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j25"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j36_test(doc) -> [{userdata,[{""}]}];
 gt_j36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j36"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j47_test(doc) -> [{userdata,[{""}]}];
 gt_j47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j58_test(doc) -> [{userdata,[{""}]}];
 gt_j58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j9_test(doc) -> [{userdata,[{""}]}];
 gt_j9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j20_test(doc) -> [{userdata,[{""}]}];
 gt_j20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j20"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j31_test(doc) -> [{userdata,[{""}]}];
 gt_j31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j42_test(doc) -> [{userdata,[{""}]}];
 gt_j42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j42"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j53_test(doc) -> [{userdata,[{""}]}];
 gt_j53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j64_test(doc) -> [{userdata,[{""}]}];
 gt_j64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j4_test(doc) -> [{userdata,[{""}]}];
 gt_j4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j4"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j15_test(doc) -> [{userdata,[{""}]}];
 gt_j15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j15"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j26_test(doc) -> [{userdata,[{""}]}];
 gt_j26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j26"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j37_test(doc) -> [{userdata,[{""}]}];
 gt_j37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j37"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j48_test(doc) -> [{userdata,[{""}]}];
 gt_j48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j59_test(doc) -> [{userdata,[{""}]}];
 gt_j59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j10_test(doc) -> [{userdata,[{""}]}];
 gt_j10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j21_test(doc) -> [{userdata,[{""}]}];
 gt_j21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j21"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j32_test(doc) -> [{userdata,[{""}]}];
 gt_j32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j43_test(doc) -> [{userdata,[{""}]}];
 gt_j43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j43"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j54_test(doc) -> [{userdata,[{""}]}];
 gt_j54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_j65_test(doc) -> [{userdata,[{""}]}];
 gt_j65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","j65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u5_test(doc) -> [{userdata,[{""}]}];
 gt_u5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u5"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u16_test(doc) -> [{userdata,[{""}]}];
 gt_u16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u16"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u27_test(doc) -> [{userdata,[{""}]}];
 gt_u27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u27"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u38_test(doc) -> [{userdata,[{""}]}];
 gt_u38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u38"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u49_test(doc) -> [{userdata,[{""}]}];
 gt_u49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u49"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u60_test(doc) -> [{userdata,[{""}]}];
 gt_u60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u60"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u11_test(doc) -> [{userdata,[{""}]}];
 gt_u11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u11"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u22_test(doc) -> [{userdata,[{""}]}];
 gt_u22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u22"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u33_test(doc) -> [{userdata,[{""}]}];
 gt_u33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u33"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u44_test(doc) -> [{userdata,[{""}]}];
 gt_u44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u44"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u55_test(doc) -> [{userdata,[{""}]}];
 gt_u55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u66_test(doc) -> [{userdata,[{""}]}];
 gt_u66_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u66"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u6_test(doc) -> [{userdata,[{""}]}];
 gt_u6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u6"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u17_test(doc) -> [{userdata,[{""}]}];
 gt_u17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u17"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u28_test(doc) -> [{userdata,[{""}]}];
 gt_u28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u28"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u39_test(doc) -> [{userdata,[{""}]}];
 gt_u39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u39"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u50_test(doc) -> [{userdata,[{""}]}];
 gt_u50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u50"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u61_test(doc) -> [{userdata,[{""}]}];
 gt_u61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u61"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u1_test(doc) -> [{userdata,[{""}]}];
 gt_u1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u1"),
-  Expected="<cell><value>"++"Float"++"</value></cell>",
+  Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u12_test(doc) -> [{userdata,[{""}]}];
 gt_u12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u12"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u34_test(doc) -> [{userdata,[{""}]}];
 gt_u34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u56_test(doc) -> [{userdata,[{""}]}];
 gt_u56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u7_test(doc) -> [{userdata,[{""}]}];
 gt_u7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u7"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u18_test(doc) -> [{userdata,[{""}]}];
 gt_u18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u18"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u29_test(doc) -> [{userdata,[{""}]}];
 gt_u29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u29"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u40_test(doc) -> [{userdata,[{""}]}];
 gt_u40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u40"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u51_test(doc) -> [{userdata,[{""}]}];
 gt_u51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u51"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u62_test(doc) -> [{userdata,[{""}]}];
 gt_u62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u62"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u2_test(doc) -> [{userdata,[{""}]}];
 gt_u2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u2"),
-  Expected="<cell><value>"++"3.1415"++"</value></cell>",
+  Expected="3.1415",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u13_test(doc) -> [{userdata,[{""}]}];
 gt_u13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u13"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u35_test(doc) -> [{userdata,[{""}]}];
 gt_u35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u35"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u57_test(doc) -> [{userdata,[{""}]}];
 gt_u57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u8_test(doc) -> [{userdata,[{""}]}];
 gt_u8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u19_test(doc) -> [{userdata,[{""}]}];
 gt_u19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u19"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u30_test(doc) -> [{userdata,[{""}]}];
 gt_u30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u41_test(doc) -> [{userdata,[{""}]}];
 gt_u41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u41"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u52_test(doc) -> [{userdata,[{""}]}];
 gt_u52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u63_test(doc) -> [{userdata,[{""}]}];
 gt_u63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u63"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u3_test(doc) -> [{userdata,[{""}]}];
 gt_u3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u3"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u14_test(doc) -> [{userdata,[{""}]}];
 gt_u14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u14"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u25_test(doc) -> [{userdata,[{""}]}];
 gt_u25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u25"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u36_test(doc) -> [{userdata,[{""}]}];
 gt_u36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u36"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u47_test(doc) -> [{userdata,[{""}]}];
 gt_u47_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u47"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u58_test(doc) -> [{userdata,[{""}]}];
 gt_u58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u9_test(doc) -> [{userdata,[{""}]}];
 gt_u9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u9"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u20_test(doc) -> [{userdata,[{""}]}];
 gt_u20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u20"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u31_test(doc) -> [{userdata,[{""}]}];
 gt_u31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u31"),
-  Expected="<cell><value>"++"-2146826288"++"</value></cell>",
+  Expected="-2146826288",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u42_test(doc) -> [{userdata,[{""}]}];
 gt_u42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u42"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u53_test(doc) -> [{userdata,[{""}]}];
 gt_u53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u64_test(doc) -> [{userdata,[{""}]}];
 gt_u64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u64"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u4_test(doc) -> [{userdata,[{""}]}];
 gt_u4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u4"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u15_test(doc) -> [{userdata,[{""}]}];
 gt_u15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u15"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u26_test(doc) -> [{userdata,[{""}]}];
 gt_u26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u26"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u37_test(doc) -> [{userdata,[{""}]}];
 gt_u37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u37"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u48_test(doc) -> [{userdata,[{""}]}];
 gt_u48_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u48"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u59_test(doc) -> [{userdata,[{""}]}];
 gt_u59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u59"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u10_test(doc) -> [{userdata,[{""}]}];
 gt_u10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u10"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u21_test(doc) -> [{userdata,[{""}]}];
 gt_u21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u21"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u32_test(doc) -> [{userdata,[{""}]}];
 gt_u32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u32"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u43_test(doc) -> [{userdata,[{""}]}];
 gt_u43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u43"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u54_test(doc) -> [{userdata,[{""}]}];
 gt_u54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 gt_u65_test(doc) -> [{userdata,[{""}]}];
 gt_u65_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/GT/","u65"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   

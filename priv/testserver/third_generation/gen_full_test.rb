@@ -28,7 +28,7 @@ def erl_testcase(name, expected, got, output, doc = "")
 #{name}(doc) -> [{userdata,[{"#{doc}"}]}];
 #{name}(_Config) -> 
   Got=#{got},
-  Expected="<cell><value>"++#{expected}++"</value></cell>",
+  Expected=#{expected},
   #{output}
   test_util:expected(Expected,Got).
   

@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_trig.xls
-% Generated on: Tue Mar 11 09:11:37 +0000 2008
+% Generated on: Sun Apr 13 20:22:57 +0100 2008
 
 -module(e_gnumeric_trig_SUITE).
 -compile(export_all).
@@ -75,77 +75,77 @@ assert_eql(X, Y) ->
 summary_a5_test(doc) -> [{userdata,[{""}]}];
 summary_a5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","a5"),
-  Expected="<cell><value>"++"ATan2"++"</value></cell>",
+  Expected="ATan2",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 summary_a6_test(doc) -> [{userdata,[{""}]}];
 summary_a6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","a6"),
-  Expected="<cell><value>"++"PI"++"</value></cell>",
+  Expected="PI",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 summary_a4_test(doc) -> [{userdata,[{""}]}];
 summary_a4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","a4"),
-  Expected="<cell><value>"++"Trigonometry"++"</value></cell>",
+  Expected="Trigonometry",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 summary_b5_test(doc) -> [{userdata,[{""}]}];
 summary_b5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","b5"),
-  Expected="<cell><value>"++"Success"++"</value></cell>",
+  Expected="Success",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 summary_b6_test(doc) -> [{userdata,[{""}]}];
 summary_b6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","b6"),
-  Expected="<cell><value>"++"3.14159265358979"++"</value></cell>",
+  Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 summary_b4_test(doc) -> [{userdata,[{""}]}];
 summary_b4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","b4"),
-  Expected="<cell><value>"++"Success"++"</value></cell>",
+  Expected="Success",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 summary_c6_test(doc) -> [{userdata,[{""}]}];
 summary_c6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","c6"),
-  Expected="<cell><value>"++"PI"++"</value></cell>",
+  Expected="PI",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 summary_d6_test(doc) -> [{userdata,[{""}]}];
 summary_d6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","d6"),
-  Expected="<cell><value>"++"3.14159265358979"++"</value></cell>",
+  Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 summary_d2_test(doc) -> [{userdata,[{""}]}];
 summary_d2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","d2"),
-  Expected="<cell><value>"++"Tolerance"++"</value></cell>",
+  Expected="Tolerance",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 summary_e6_test(doc) -> [{userdata,[{""}]}];
 summary_e6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","e6"),
-  Expected="<cell><value>"++"Success"++"</value></cell>",
+  Expected="Success",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 summary_e2_test(doc) -> [{userdata,[{""}]}];
 summary_e2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Summary/","e2"),
-  Expected="<cell><value>"++"1.0e-006"++"</value></cell>",
+  Expected="1.0e-006",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   

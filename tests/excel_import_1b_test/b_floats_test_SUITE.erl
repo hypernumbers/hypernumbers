@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_floats.xls
-% Generated on: Tue Mar 11 09:09:53 +0000 2008
+% Generated on: Sun Apr 13 20:21:24 +0100 2008
 
 -module(b_floats_test_SUITE).
 -compile(export_all).

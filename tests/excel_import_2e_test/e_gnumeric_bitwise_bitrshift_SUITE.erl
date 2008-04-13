@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_bitwise_bitrshift.xls
-% Generated on: Tue Mar 11 09:11:22 +0000 2008
+% Generated on: Sun Apr 13 20:22:47 +0100 2008
 
 -module(e_gnumeric_bitwise_bitrshift_SUITE).
 -compile(export_all).
@@ -75,8988 +75,8988 @@ assert_eql(X, Y) ->
 bitrshift_k5_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k16_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k27_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k38_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k38"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k49_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k60_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k11_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k22_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k33_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k44_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k55_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k6_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k17_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k28_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k39_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k39"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k50_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k61_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k1_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k1"),
-  Expected="<cell><value>"++"String number Leading space"++"</value></cell>",
+  Expected="String number Leading space",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k12_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k34_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k34"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k45_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k56_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k7_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k18_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k29_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k40_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k40"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k51_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k62_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k2_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k2"),
-  Expected="<cell><value>"++" 24"++"</value></cell>",
+  Expected=" 24",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k13_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k35_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k35"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k46_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k57_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k8_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k19_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k30_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k41_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k52_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k63_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k3_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k14_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k25_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k25"),
-  Expected="<cell><value>"++"String number Leading space"++"</value></cell>",
+  Expected="String number Leading space",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k36_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k36"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k58_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k9_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k20_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k31_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k42_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k53_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k64_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k4_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k15_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k26_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k26"),
-  Expected="<cell><value>"++" 24"++"</value></cell>",
+  Expected=" 24",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k37_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k37"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k59_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k10_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k21_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k32_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k43_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_k54_test(doc) -> [{userdata,[{""}]}];
 bitrshift_k54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","k54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v5_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v16_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v27_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v38_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v38"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v49_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v60_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v11_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v22_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v33_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v44_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v55_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v6_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v17_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v28_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v39_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v39"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v50_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v61_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v1_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v1"),
-  Expected="<cell><value>"++"Range Colunm"++"</value></cell>",
+  Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v12_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v34_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v45_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v56_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v7_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v18_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v29_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v40_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v40"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v51_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v62_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v2_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v2"),
-  Expected="<cell><value>"++"X3:X6"++"</value></cell>",
+  Expected="X3:X6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v13_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v35_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v35"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v46_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v57_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v8_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v19_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v30_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v41_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v52_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v63_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v3_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v14_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v25_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v25"),
-  Expected="<cell><value>"++"Range Colunm"++"</value></cell>",
+  Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v36_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v36"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v58_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v9_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v20_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v31_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v42_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v53_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v64_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v4_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v15_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v26_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v26"),
-  Expected="<cell><value>"++"X3:X6"++"</value></cell>",
+  Expected="X3:X6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v37_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v37"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v59_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v10_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v21_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v32_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v43_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_v54_test(doc) -> [{userdata,[{""}]}];
 bitrshift_v54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","v54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a5_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a5"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a16_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a16"),
-  Expected="<cell><value>"++"Logical"++"</value></cell>",
+  Expected="Logical",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a27_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a27"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a38_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a38"),
-  Expected="<cell><value>"++"Blank"++"</value></cell>",
+  Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a49_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a49"),
-  Expected="<cell><value>"++"320.0"++"</value></cell>",
+  Expected="320.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a11_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a11"),
-  Expected="<cell><value>"++"String Number Leading space"++"</value></cell>",
+  Expected="String Number Leading space",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a22_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a22"),
-  Expected="<cell><value>"++"Range Colunm"++"</value></cell>",
+  Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a33_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a33"),
-  Expected="<cell><value>"++"String"++"</value></cell>",
+  Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a44_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a44"),
-  Expected="<cell><value>"++"Range Area"++"</value></cell>",
+  Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a6_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a6"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a17_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a17"),
-  Expected="<cell><value>"++"Range Row"++"</value></cell>",
+  Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a28_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a28"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a39_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a39"),
-  Expected="<cell><value>"++"Logical"++"</value></cell>",
+  Expected="Logical",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a50_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a50"),
-  Expected="<cell><value>"++"7.0"++"</value></cell>",
+  Expected="7.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a1_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a1"),
-  Expected="<cell><value>"++"bitrshift(A,B)"++"</value></cell>",
+  Expected="bitrshift(A,B)",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a12_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a12"),
-  Expected="<cell><value>"++"Interger"++"</value></cell>",
+  Expected="Interger",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a34_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a34"),
-  Expected="<cell><value>"++"String Number"++"</value></cell>",
+  Expected="String Number",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a45_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a45"),
-  Expected="<cell><value>"++"Range Colunm"++"</value></cell>",
+  Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a7_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a7"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a18_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a18"),
-  Expected="<cell><value>"++"Range Row"++"</value></cell>",
+  Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a29_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a29"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a40_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a40"),
-  Expected="<cell><value>"++"Logical"++"</value></cell>",
+  Expected="Logical",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a2_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a2"),
-  Expected="<cell><value>"++"A"++"</value></cell>",
+  Expected="A",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a13_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a13"),
-  Expected="<cell><value>"++"Float"++"</value></cell>",
+  Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a35_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a35"),
-  Expected="<cell><value>"++"String Number Leading space"++"</value></cell>",
+  Expected="String Number Leading space",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a46_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a46"),
-  Expected="<cell><value>"++"Range Colunm"++"</value></cell>",
+  Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a8_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a8"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a19_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a19"),
-  Expected="<cell><value>"++"Range Area"++"</value></cell>",
+  Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a30_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a30"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a41_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a41"),
-  Expected="<cell><value>"++"Range Row"++"</value></cell>",
+  Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a3_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a3"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a14_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a14"),
-  Expected="<cell><value>"++"Blank"++"</value></cell>",
+  Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a25_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a25"),
-  Expected="<cell><value>"++"bitrshift(A,B)"++"</value></cell>",
+  Expected="bitrshift(A,B)",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a36_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a36"),
-  Expected="<cell><value>"++"Interger"++"</value></cell>",
+  Expected="Interger",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a9_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a9"),
-  Expected="<cell><value>"++"String"++"</value></cell>",
+  Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a20_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a20"),
-  Expected="<cell><value>"++"Range Area"++"</value></cell>",
+  Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a31_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a31"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a42_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a42"),
-  Expected="<cell><value>"++"Range Row"++"</value></cell>",
+  Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a4_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a4"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a15_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a15"),
-  Expected="<cell><value>"++"Logical"++"</value></cell>",
+  Expected="Logical",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a26_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a26"),
-  Expected="<cell><value>"++"A"++"</value></cell>",
+  Expected="A",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a37_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a37"),
-  Expected="<cell><value>"++"Float"++"</value></cell>",
+  Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a10_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a10"),
-  Expected="<cell><value>"++"String Number"++"</value></cell>",
+  Expected="String Number",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a21_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a21"),
-  Expected="<cell><value>"++"Range Colunm"++"</value></cell>",
+  Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a32_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a32"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_a43_test(doc) -> [{userdata,[{""}]}];
 bitrshift_a43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","a43"),
-  Expected="<cell><value>"++"Range Area"++"</value></cell>",
+  Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l5_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l16_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l27_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l38_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l38"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l49_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l60_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l11_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l22_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l33_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l44_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l55_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l6_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l17_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l28_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l39_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l39"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l50_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l61_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l1_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l1"),
-  Expected="<cell><value>"++"Integer"++"</value></cell>",
+  Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l12_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l34_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l34"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l45_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l56_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l7_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l18_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l29_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l40_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l40"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l51_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l62_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l2_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l2"),
-  Expected="<cell><value>"++"1968/03/23 00:00:00"++"</value></cell>",
+  Expected="1968/03/23 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l13_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l35_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l35"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l46_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l57_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l8_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l19_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l30_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l41_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l52_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l63_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l3_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l14_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l25_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l25"),
-  Expected="<cell><value>"++"Integer"++"</value></cell>",
+  Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l36_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l36"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l58_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l9_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l20_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l31_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l42_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l53_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l64_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l4_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l15_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l26_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l26"),
-  Expected="<cell><value>"++"1968/03/23 00:00:00"++"</value></cell>",
+  Expected="1968/03/23 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l37_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l37"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l59_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l10_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l21_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l32_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l43_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_l54_test(doc) -> [{userdata,[{""}]}];
 bitrshift_l54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","l54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b5_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b5"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b16_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b16"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b27_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b11_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b11"),
-  Expected="<cell><value>"++" 23"++"</value></cell>",
+  Expected=" 23",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b22_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b22"),
-  Expected="<cell><value>"++"X3:X6"++"</value></cell>",
+  Expected="X3:X6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b33_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b33"),
-  Expected="<cell><value>"++"Phillip"++"</value></cell>",
+  Expected="Phillip",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b44_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b44"),
-  Expected="<cell><value>"++"X3:AA6"++"</value></cell>",
+  Expected="X3:AA6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b6_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b17_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b17"),
-  Expected="<cell><value>"++"X3:Y3"++"</value></cell>",
+  Expected="X3:Y3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b28_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b39_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b39"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b1_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b1"),
-  Expected="<cell><value>"++"B"++"</value></cell>",
+  Expected="B",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b12_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b12"),
-  Expected="<cell><value>"++"1968/03/23 00:00:00"++"</value></cell>",
+  Expected="1968/03/23 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b34_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b34"),
-  Expected="<cell><value>"++"12"++"</value></cell>",
+  Expected="12",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b45_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b45"),
-  Expected="<cell><value>"++"X3:X4"++"</value></cell>",
+  Expected="X3:X4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b7_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b7"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b18_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b18"),
-  Expected="<cell><value>"++"X3:AA3"++"</value></cell>",
+  Expected="X3:AA3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b29_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b40_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b40"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b13_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b13"),
-  Expected="<cell><value>"++"3.14159265358979"++"</value></cell>",
+  Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b35_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b35"),
-  Expected="<cell><value>"++" 23"++"</value></cell>",
+  Expected=" 23",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b46_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b46"),
-  Expected="<cell><value>"++"X3:X6"++"</value></cell>",
+  Expected="X3:X6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b8_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b8"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b19_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b19"),
-  Expected="<cell><value>"++"X3:Y4"++"</value></cell>",
+  Expected="X3:Y4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b30_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b41_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b41"),
-  Expected="<cell><value>"++"X3:Y3"++"</value></cell>",
+  Expected="X3:Y3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b3_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b3"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b25_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b25"),
-  Expected="<cell><value>"++"B"++"</value></cell>",
+  Expected="B",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b36_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b36"),
-  Expected="<cell><value>"++"1968/03/23 00:00:00"++"</value></cell>",
+  Expected="1968/03/23 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b9_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b9"),
-  Expected="<cell><value>"++"Phillip"++"</value></cell>",
+  Expected="Phillip",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b20_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b20"),
-  Expected="<cell><value>"++"X3:AA6"++"</value></cell>",
+  Expected="X3:AA6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b31_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b42_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b42"),
-  Expected="<cell><value>"++"X3:AA3"++"</value></cell>",
+  Expected="X3:AA3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b4_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b4"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b15_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b15"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b37_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b37"),
-  Expected="<cell><value>"++"3.14159265358979"++"</value></cell>",
+  Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b10_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b10"),
-  Expected="<cell><value>"++"12"++"</value></cell>",
+  Expected="12",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b21_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b21"),
-  Expected="<cell><value>"++"X3:X4"++"</value></cell>",
+  Expected="X3:X4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b32_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_b43_test(doc) -> [{userdata,[{""}]}];
 bitrshift_b43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","b43"),
-  Expected="<cell><value>"++"X3:Y4"++"</value></cell>",
+  Expected="X3:Y4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m5_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m16_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m27_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m38_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m38"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m49_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m60_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m11_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m22_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m33_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m44_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m55_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m6_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m17_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m28_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m39_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m39"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m50_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m61_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m1_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m1"),
-  Expected="<cell><value>"++"Float"++"</value></cell>",
+  Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m12_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m34_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m34"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m45_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m56_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m7_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m18_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m29_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m40_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m40"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m51_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m62_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m2_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m2"),
-  Expected="<cell><value>"++"3.14159265358979"++"</value></cell>",
+  Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m13_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m35_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m35"),
-  Expected="<cell><value>"++"2.0"++"</value></cell>",
+  Expected="2.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m46_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m57_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m8_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m19_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m30_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m41_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m52_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m63_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m3_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m14_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m25_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m25"),
-  Expected="<cell><value>"++"Float"++"</value></cell>",
+  Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m36_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m36"),
-  Expected="<cell><value>"++"3115.0"++"</value></cell>",
+  Expected="3115.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m58_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m9_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m20_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m31_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m42_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m53_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m64_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m4_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m15_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m26_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m26"),
-  Expected="<cell><value>"++"3.14159265358979"++"</value></cell>",
+  Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m37_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m37"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m59_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m10_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m21_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m32_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m43_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_m54_test(doc) -> [{userdata,[{""}]}];
 bitrshift_m54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","m54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c5_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c16_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c27_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c38_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c38"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c49_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c60_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c11_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c22_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c33_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c44_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c55_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c6_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c17_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c28_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c39_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c39"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c50_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c61_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c1_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c1"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c12_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c34_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c34"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c45_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c56_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c7_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c18_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c29_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c40_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c40"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c51_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c62_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c2_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c2"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c13_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c35_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c35"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c46_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c57_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c8_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c19_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c30_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c41_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c52_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c63_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c3_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c14_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c25_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c25"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c36_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c36"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c58_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c9_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c20_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c31_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c42_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c53_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c64_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c4_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c15_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c26_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c26"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c37_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c37"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c59_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c10_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c21_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c32_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c43_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_c54_test(doc) -> [{userdata,[{""}]}];
 bitrshift_c54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","c54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n5_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n16_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n27_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n38_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n38"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n49_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n60_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n11_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n22_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n33_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n44_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n55_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n6_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n17_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n28_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n39_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n39"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n50_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n61_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n1_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n1"),
-  Expected="<cell><value>"++"Blank"++"</value></cell>",
+  Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n12_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n34_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n34"),
-  Expected="<cell><value>"++"12.0"++"</value></cell>",
+  Expected="12.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n45_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n56_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n7_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n18_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n29_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n40_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n40"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n51_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n62_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n13_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n35_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n35"),
-  Expected="<cell><value>"++"23.0"++"</value></cell>",
+  Expected="23.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n46_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n57_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n8_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n19_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n30_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n41_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n52_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n63_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n3_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n14_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n25_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n25"),
-  Expected="<cell><value>"++"Blank"++"</value></cell>",
+  Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n36_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n36"),
-  Expected="<cell><value>"++"24920.0"++"</value></cell>",
+  Expected="24920.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n58_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n9_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n20_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n31_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n42_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n53_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n64_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n4_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n15_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n37_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n37"),
-  Expected="<cell><value>"++"3.0"++"</value></cell>",
+  Expected="3.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n59_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n10_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n21_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n32_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n43_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_n54_test(doc) -> [{userdata,[{""}]}];
 bitrshift_n54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","n54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d5_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d16_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d27_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d38_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d38"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d49_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d60_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d11_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d22_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d33_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d44_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d55_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d6_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d17_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d28_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d39_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d39"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d50_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d61_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d1_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d1"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d12_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d34_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d45_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d56_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d7_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d18_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d29_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d40_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d40"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d51_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d62_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d2_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d2"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d13_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d35_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d35"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d46_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d57_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d8_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d19_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d30_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d41_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d52_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d63_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d3_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d14_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d25_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d25"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d36_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d36"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d58_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d9_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d20_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d31_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d42_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d53_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d64_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d4_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d15_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d26_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d26"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d37_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d37"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d59_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d10_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d21_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d32_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d43_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_d54_test(doc) -> [{userdata,[{""}]}];
 bitrshift_d54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","d54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o5_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o16_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o27_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o38_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o38"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o49_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o60_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o11_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o22_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o33_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o44_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o55_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o6_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o17_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o28_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o39_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o39"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o50_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o61_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o1_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o1"),
-  Expected="<cell><value>"++"Logical"++"</value></cell>",
+  Expected="Logical",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o12_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o34_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o34"),
-  Expected="<cell><value>"++"6.0"++"</value></cell>",
+  Expected="6.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o45_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o56_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o7_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o18_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o29_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o40_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o40"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o51_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o62_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o2_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o2"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o13_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o35_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o35"),
-  Expected="<cell><value>"++"11.0"++"</value></cell>",
+  Expected="11.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o46_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o57_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o8_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o19_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o30_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o41_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o52_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o63_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o3_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o14_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o25_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o25"),
-  Expected="<cell><value>"++"Logical"++"</value></cell>",
+  Expected="Logical",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o36_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o36"),
-  Expected="<cell><value>"++"12460.0"++"</value></cell>",
+  Expected="12460.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o58_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o9_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o20_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o31_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o42_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o53_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o64_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o4_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o15_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o26_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o26"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o37_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o37"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o59_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o10_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o21_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o32_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o43_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_o54_test(doc) -> [{userdata,[{""}]}];
 bitrshift_o54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","o54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e5_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e16_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e27_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e38_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e38"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e49_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e60_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e11_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e22_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e33_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e44_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e55_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e6_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e17_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e28_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e39_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e39"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e50_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e61_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e1_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e1"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e12_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e34_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e34"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e45_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e56_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e7_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e18_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e29_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e40_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e40"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e51_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e62_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e2_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e2"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e13_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e35_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e35"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e46_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e57_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e8_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e19_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e30_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e41_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e52_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e63_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e3_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e14_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e25_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e25"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e36_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e36"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e58_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e9_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e20_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e31_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e42_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e53_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e64_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e4_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e15_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e26_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e26"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e37_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e37"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e59_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e10_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e21_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e32_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e43_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_e54_test(doc) -> [{userdata,[{""}]}];
 bitrshift_e54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","e54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p5_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p16_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p27_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p38_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p38"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p49_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p60_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p11_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p22_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p33_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p44_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p55_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p6_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p17_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p28_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p39_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p39"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p50_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p61_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p1_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p1"),
-  Expected="<cell><value>"++"Logical"++"</value></cell>",
+  Expected="Logical",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p12_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p34_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p34"),
-  Expected="<cell><value>"++"12.0"++"</value></cell>",
+  Expected="12.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p45_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p56_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p7_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p18_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p29_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p40_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p40"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p51_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p62_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p2_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p2"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p13_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p35_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p35"),
-  Expected="<cell><value>"++"23.0"++"</value></cell>",
+  Expected="23.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p46_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p57_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p8_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p19_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p30_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p41_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p52_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p63_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p3_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p14_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p25_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p25"),
-  Expected="<cell><value>"++"Logical"++"</value></cell>",
+  Expected="Logical",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p36_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p36"),
-  Expected="<cell><value>"++"24920.0"++"</value></cell>",
+  Expected="24920.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p58_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p9_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p20_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p31_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p42_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p53_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p64_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p4_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p15_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p26_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p26"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p37_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p37"),
-  Expected="<cell><value>"++"3.0"++"</value></cell>",
+  Expected="3.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p59_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p10_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p21_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p32_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p43_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_p54_test(doc) -> [{userdata,[{""}]}];
 bitrshift_p54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","p54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f5_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f16_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f27_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f38_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f38"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f49_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f60_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f11_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f22_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f33_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f44_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f55_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f6_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f17_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f28_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f39_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f39"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f50_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f61_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f1_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f1"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f12_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f34_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f34"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f45_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f56_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f7_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f18_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f29_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f40_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f40"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f51_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f62_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f2_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f2"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f13_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f35_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f35"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f46_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f57_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f8_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f19_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f30_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f41_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f52_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f63_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f3_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f14_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f25_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f25"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f36_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f36"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f58_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f9_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f20_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f31_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f42_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f53_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f64_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f4_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f15_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f26_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f26"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f37_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f37"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f59_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f10_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f21_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f32_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f43_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_f54_test(doc) -> [{userdata,[{""}]}];
 bitrshift_f54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","f54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q5_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q16_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q27_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q38_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q38"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q49_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q60_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q11_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q22_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q33_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q44_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q55_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q6_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q17_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q28_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q39_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q39"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q50_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q61_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q1_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q1"),
-  Expected="<cell><value>"++"Range Row"++"</value></cell>",
+  Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q12_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q34_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q45_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q56_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q7_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q18_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q29_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q40_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q40"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q51_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q62_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q2_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q2"),
-  Expected="<cell><value>"++"X3:Y3"++"</value></cell>",
+  Expected="X3:Y3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q13_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q35_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q35"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q46_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q57_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q8_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q19_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q30_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q41_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q52_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q63_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q3_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q14_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q25_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q25"),
-  Expected="<cell><value>"++"Range Row"++"</value></cell>",
+  Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q36_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q36"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q58_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q9_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q20_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q31_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q42_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q53_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q64_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q4_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q15_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q26_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q26"),
-  Expected="<cell><value>"++"X3:Y3"++"</value></cell>",
+  Expected="X3:Y3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q37_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q37"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q59_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q10_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q21_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q32_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q43_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_q54_test(doc) -> [{userdata,[{""}]}];
 bitrshift_q54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","q54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g5_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g16_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g27_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g38_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g38"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g49_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g60_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g11_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g22_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g33_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g44_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g55_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g6_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g17_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g28_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g39_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g39"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g50_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g61_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g1_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g1"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g12_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g34_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g34"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g45_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g56_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g7_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g18_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g29_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g40_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g40"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g51_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g62_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g2_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g2"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g13_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g35_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g35"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g46_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g57_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g8_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g19_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g30_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g41_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g52_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g63_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g3_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g14_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g25_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g25"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g36_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g36"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g58_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g9_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g20_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g31_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g42_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g53_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g64_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g4_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g15_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g26_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g26"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g37_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g37"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g59_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g10_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g21_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g32_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g43_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_g54_test(doc) -> [{userdata,[{""}]}];
 bitrshift_g54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","g54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r5_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r16_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r27_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r38_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r38"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r49_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r60_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r11_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r22_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r33_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r44_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r55_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r6_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r17_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r28_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r39_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r39"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r50_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r61_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r1_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r1"),
-  Expected="<cell><value>"++"Range Row"++"</value></cell>",
+  Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r12_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r34_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r45_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r56_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r7_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r18_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r29_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r40_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r40"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r51_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r62_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r2_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r2"),
-  Expected="<cell><value>"++"X3:AA3"++"</value></cell>",
+  Expected="X3:AA3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r13_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r35_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r35"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r46_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r57_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r8_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r19_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r30_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r41_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r52_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r63_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r3_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r14_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r25_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r25"),
-  Expected="<cell><value>"++"Range Row"++"</value></cell>",
+  Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r36_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r36"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r58_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r9_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r20_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r31_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r42_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r53_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r64_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r4_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r15_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r26_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r26"),
-  Expected="<cell><value>"++"X3:AA3"++"</value></cell>",
+  Expected="X3:AA3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r37_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r37"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r59_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r10_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r21_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r32_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r43_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_r54_test(doc) -> [{userdata,[{""}]}];
 bitrshift_r54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","r54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h5_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h16_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h27_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h38_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h38"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h49_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h60_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h11_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h22_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h33_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h44_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h55_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h6_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h17_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h28_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h39_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h39"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h50_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h61_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h1_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h1"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h12_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h34_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h34"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h45_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h56_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h7_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h18_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h29_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h40_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h40"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h51_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h62_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h2_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h2"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h13_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h35_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h35"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h46_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h57_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h8_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h19_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h30_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h41_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h52_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h63_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h3_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h14_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h25_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h25"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h36_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h36"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h58_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h9_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h20_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h31_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h42_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h53_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h64_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h4_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h15_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h26_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h26"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h37_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h37"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h59_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h10_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h21_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h32_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h43_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_h54_test(doc) -> [{userdata,[{""}]}];
 bitrshift_h54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","h54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s5_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s16_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s27_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s38_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s38"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s49_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s60_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s11_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s22_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s33_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s44_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s55_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s6_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s17_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s28_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s39_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s39"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s50_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s61_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s1_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s1"),
-  Expected="<cell><value>"++"Range Area"++"</value></cell>",
+  Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s12_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s34_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s45_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s56_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s7_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s18_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s29_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s40_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s40"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s51_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s62_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s2_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s2"),
-  Expected="<cell><value>"++"X3:Y4"++"</value></cell>",
+  Expected="X3:Y4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s13_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s35_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s35"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s46_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s57_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s8_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s19_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s30_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s41_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s52_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s63_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s3_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s14_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s25_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s25"),
-  Expected="<cell><value>"++"Range Area"++"</value></cell>",
+  Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s36_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s36"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s58_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s9_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s20_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s31_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s42_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s53_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s64_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s4_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s15_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s26_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s26"),
-  Expected="<cell><value>"++"X3:Y4"++"</value></cell>",
+  Expected="X3:Y4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s37_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s37"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s59_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s10_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s21_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s32_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s43_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_s54_test(doc) -> [{userdata,[{""}]}];
 bitrshift_s54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","s54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i5_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i16_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i27_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i38_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i38"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i49_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i60_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i11_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i22_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i33_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i44_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i55_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i6_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i17_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i28_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i39_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i39"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i50_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i61_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i1_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i1"),
-  Expected="<cell><value>"++"String"++"</value></cell>",
+  Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i12_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i34_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i45_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i56_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i7_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i18_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i29_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i40_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i40"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i51_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i62_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i2_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i2"),
-  Expected="<cell><value>"++"Phillip"++"</value></cell>",
+  Expected="Phillip",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i13_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i35_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i35"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i46_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i57_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i8_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i19_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i30_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i41_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i52_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i63_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i3_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i14_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i25_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i25"),
-  Expected="<cell><value>"++"String"++"</value></cell>",
+  Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i36_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i36"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i58_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i9_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i20_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i31_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i42_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i53_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i64_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i4_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i15_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i26_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i26"),
-  Expected="<cell><value>"++"Phillip"++"</value></cell>",
+  Expected="Phillip",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i37_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i37"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i59_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i10_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i21_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i32_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i43_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_i54_test(doc) -> [{userdata,[{""}]}];
 bitrshift_i54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","i54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t5_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t16_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t27_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t38_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t38"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t49_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t60_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t11_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t22_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t33_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t44_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t55_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t6_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t17_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t28_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t39_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t39"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t50_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t61_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t1_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t1"),
-  Expected="<cell><value>"++"Range Area"++"</value></cell>",
+  Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t12_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t34_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t45_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t56_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t7_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t18_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t29_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t40_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t40"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t51_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t62_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t2_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t2"),
-  Expected="<cell><value>"++"X3:AA6"++"</value></cell>",
+  Expected="X3:AA6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t13_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t35_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t35"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t46_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t57_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t8_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t19_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t30_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t41_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t52_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t63_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t3_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t14_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t25_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t25"),
-  Expected="<cell><value>"++"Range Area"++"</value></cell>",
+  Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t36_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t36"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t58_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t9_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t20_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t31_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t42_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t53_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t64_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t4_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t15_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t26_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t26"),
-  Expected="<cell><value>"++"X3:AA6"++"</value></cell>",
+  Expected="X3:AA6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t37_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t37"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t59_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t10_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t21_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t32_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t43_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_t54_test(doc) -> [{userdata,[{""}]}];
 bitrshift_t54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","t54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j5_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j16_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j27_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j38_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j38"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j49_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j60_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j11_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j22_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j33_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j44_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j55_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j6_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j17_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j28_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j39_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j39"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j50_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j61_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j1_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j1"),
-  Expected="<cell><value>"++"String Number"++"</value></cell>",
+  Expected="String Number",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j12_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j34_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j34"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j45_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j56_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j7_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j18_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j29_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j40_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j40"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j51_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j62_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j2_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j2"),
-  Expected="<cell><value>"++"13"++"</value></cell>",
+  Expected="13",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j13_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j35_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j35"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j46_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j57_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j8_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j19_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j30_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j41_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j52_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j63_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j3_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j14_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j25_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j25"),
-  Expected="<cell><value>"++"String Number"++"</value></cell>",
+  Expected="String Number",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j36_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j36"),
-  Expected="<cell><value>"++"3.0"++"</value></cell>",
+  Expected="3.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j58_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j9_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j20_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j31_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j42_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j53_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j64_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j4_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j15_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j26_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j26"),
-  Expected="<cell><value>"++"13"++"</value></cell>",
+  Expected="13",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j37_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j37"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j59_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j10_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j21_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j32_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j43_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_j54_test(doc) -> [{userdata,[{""}]}];
 bitrshift_j54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","j54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u5_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u16_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u27_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u38_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u38"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u49_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u60_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u11_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u22_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u33_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u44_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u55_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u6_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u17_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u28_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u39_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u39"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u50_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u61_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u1_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u1"),
-  Expected="<cell><value>"++"Range Colunm"++"</value></cell>",
+  Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u12_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u34_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u45_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u56_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u7_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u18_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u29_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u40_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u40"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u51_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u62_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u2_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u2"),
-  Expected="<cell><value>"++"X3:X4"++"</value></cell>",
+  Expected="X3:X4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u13_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u35_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u35"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u46_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u57_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u8_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u19_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u30_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u41_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u52_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u63_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u3_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u14_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u25_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u25"),
-  Expected="<cell><value>"++"Range Colunm"++"</value></cell>",
+  Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u36_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u36"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u58_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u9_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u20_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u31_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u42_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u53_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u64_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u4_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u15_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u26_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u26"),
-  Expected="<cell><value>"++"X3:X4"++"</value></cell>",
+  Expected="X3:X4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u37_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u37"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u59_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u10_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u21_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u32_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u43_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitrshift_u54_test(doc) -> [{userdata,[{""}]}];
 bitrshift_u54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitrshift/","u54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   

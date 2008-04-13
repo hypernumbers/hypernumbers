@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_multiple_sheets.xls
-% Generated on: Tue Mar 11 09:09:56 +0000 2008
+% Generated on: Sun Apr 13 20:21:25 +0100 2008
 
 -module(b_multiple_sheets_test_SUITE).
 -compile(export_all).

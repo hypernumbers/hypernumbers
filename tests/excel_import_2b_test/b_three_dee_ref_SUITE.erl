@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_three_dee_ref.xls
-% Generated on: Tue Mar 11 09:10:59 +0000 2008
+% Generated on: Sun Apr 13 20:22:32 +0100 2008
 
 -module(b_three_dee_ref_SUITE).
 -compile(export_all).
@@ -75,84 +75,84 @@ assert_eql(X, Y) ->
 tom_a6_test(doc) -> [{userdata,[{""}]}];
 tom_a6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","a6"),
-  Expected="<cell><value>"++"And now some errors - the sheet bob has been deleted"++"</value></cell>",
+  Expected="And now some errors - the sheet bob has been deleted",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 tom_a1_test(doc) -> [{userdata,[{""}]}];
 tom_a1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","a1"),
-  Expected="<cell><value>"++"This Spreadsheet tests 3D references"++"</value></cell>",
+  Expected="This Spreadsheet tests 3D references",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 tom_a7_test(doc) -> [{userdata,[{""}]}];
 tom_a7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","a7"),
-  Expected="<cell><value>"++"Simple Ref"++"</value></cell>",
+  Expected="Simple Ref",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 tom_a2_test(doc) -> [{userdata,[{""}]}];
 tom_a2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","a2"),
-  Expected="<cell><value>"++"Simple Ref"++"</value></cell>",
+  Expected="Simple Ref",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 tom_a8_test(doc) -> [{userdata,[{""}]}];
 tom_a8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","a8"),
-  Expected="<cell><value>"++"Simple Range"++"</value></cell>",
+  Expected="Simple Range",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 tom_a3_test(doc) -> [{userdata,[{""}]}];
 tom_a3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","a3"),
-  Expected="<cell><value>"++"Simple Range"++"</value></cell>",
+  Expected="Simple Range",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 tom_a4_test(doc) -> [{userdata,[{""}]}];
 tom_a4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","a4"),
-  Expected="<cell><value>"++"3D Range"++"</value></cell>",
+  Expected="3D Range",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 tom_b7_test(doc) -> [{userdata,[{""}]}];
 tom_b7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","b7"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 tom_b2_test(doc) -> [{userdata,[{""}]}];
 tom_b2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","b2"),
-  Expected="<cell><value>"++"444.0"++"</value></cell>",
+  Expected="444.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 tom_b8_test(doc) -> [{userdata,[{""}]}];
 tom_b8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","b8"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 tom_b3_test(doc) -> [{userdata,[{""}]}];
 tom_b3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","b3"),
-  Expected="<cell><value>"++"10.0"++"</value></cell>",
+  Expected="10.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 tom_b4_test(doc) -> [{userdata,[{""}]}];
 tom_b4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","b4"),
-  Expected="<cell><value>"++"999.0"++"</value></cell>",
+  Expected="999.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   

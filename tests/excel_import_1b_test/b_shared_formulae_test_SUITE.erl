@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_shared_formulae.xls
-% Generated on: Tue Mar 11 09:10:00 +0000 2008
+% Generated on: Sun Apr 13 20:21:28 +0100 2008
 
 -module(b_shared_formulae_test_SUITE).
 -compile(export_all).

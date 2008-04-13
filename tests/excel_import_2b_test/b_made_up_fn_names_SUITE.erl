@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_made_up_fn_names.xls
-% Generated on: Tue Mar 11 09:10:50 +0000 2008
+% Generated on: Sun Apr 13 20:22:26 +0100 2008
 
 -module(b_made_up_fn_names_SUITE).
 -compile(export_all).
@@ -75,21 +75,21 @@ assert_eql(X, Y) ->
 tom_a5_test(doc) -> [{userdata,[{""}]}];
 tom_a5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","a5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 tom_a3_test(doc) -> [{userdata,[{""}]}];
 tom_a3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","a3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 tom_a4_test(doc) -> [{userdata,[{""}]}];
 tom_a4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","a4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   

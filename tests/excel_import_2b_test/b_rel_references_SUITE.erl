@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_rel_references.xls
-% Generated on: Tue Mar 11 09:10:54 +0000 2008
+% Generated on: Sun Apr 13 20:22:29 +0100 2008
 
 -module(b_rel_references_SUITE).
 -compile(export_all).
@@ -75,21 +75,21 @@ assert_eql(X, Y) ->
 sheet1_b5_test(doc) -> [{userdata,[{""}]}];
 sheet1_b5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","b5"),
-  Expected="<cell><value>"++"-3.0"++"</value></cell>",
+  Expected="-3.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 sheet1_b3_test(doc) -> [{userdata,[{""}]}];
 sheet1_b3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","b3"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 sheet1_b4_test(doc) -> [{userdata,[{""}]}];
 sheet1_b4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Sheet1/","b4"),
-  Expected="<cell><value>"++"-2.0"++"</value></cell>",
+  Expected="-2.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   

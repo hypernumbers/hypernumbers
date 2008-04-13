@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_block_of_numbers.xls
-% Generated on: Tue Mar 11 09:09:52 +0000 2008
+% Generated on: Sun Apr 13 20:21:23 +0100 2008
 
 -module(b_block_of_numbers_test_SUITE).
 -compile(export_all).

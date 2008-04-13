@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_bitwise_bitor.xls
-% Generated on: Tue Mar 11 09:10:21 +0000 2008
+% Generated on: Sun Apr 13 20:21:55 +0100 2008
 
 -module(e_gnumeric_bitwise_bitor_test_SUITE).
 -compile(export_all).

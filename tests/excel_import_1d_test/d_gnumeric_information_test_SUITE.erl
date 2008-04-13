@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: d_gnumeric_information.xls
-% Generated on: Tue Mar 11 09:10:14 +0000 2008
+% Generated on: Sun Apr 13 20:21:37 +0100 2008
 
 -module(d_gnumeric_information_test_SUITE).
 -compile(export_all).

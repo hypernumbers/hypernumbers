@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_bitwise_bitor.xls
-% Generated on: Tue Mar 11 09:11:19 +0000 2008
+% Generated on: Sun Apr 13 20:22:46 +0100 2008
 
 -module(e_gnumeric_bitwise_bitor_SUITE).
 -compile(export_all).
@@ -75,8988 +75,8988 @@ assert_eql(X, Y) ->
 bitor_k5_test(doc) -> [{userdata,[{""}]}];
 bitor_k5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k16_test(doc) -> [{userdata,[{""}]}];
 bitor_k16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k27_test(doc) -> [{userdata,[{""}]}];
 bitor_k27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k38_test(doc) -> [{userdata,[{""}]}];
 bitor_k38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k38"),
-  Expected="<cell><value>"++"24.0"++"</value></cell>",
+  Expected="24.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k49_test(doc) -> [{userdata,[{""}]}];
 bitor_k49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k60_test(doc) -> [{userdata,[{""}]}];
 bitor_k60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k11_test(doc) -> [{userdata,[{""}]}];
 bitor_k11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k22_test(doc) -> [{userdata,[{""}]}];
 bitor_k22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k33_test(doc) -> [{userdata,[{""}]}];
 bitor_k33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k44_test(doc) -> [{userdata,[{""}]}];
 bitor_k44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k55_test(doc) -> [{userdata,[{""}]}];
 bitor_k55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k6_test(doc) -> [{userdata,[{""}]}];
 bitor_k6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k17_test(doc) -> [{userdata,[{""}]}];
 bitor_k17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k28_test(doc) -> [{userdata,[{""}]}];
 bitor_k28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k39_test(doc) -> [{userdata,[{""}]}];
 bitor_k39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k39"),
-  Expected="<cell><value>"++"25.0"++"</value></cell>",
+  Expected="25.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k50_test(doc) -> [{userdata,[{""}]}];
 bitor_k50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k61_test(doc) -> [{userdata,[{""}]}];
 bitor_k61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k1_test(doc) -> [{userdata,[{""}]}];
 bitor_k1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k1"),
-  Expected="<cell><value>"++"String number Leading space"++"</value></cell>",
+  Expected="String number Leading space",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k12_test(doc) -> [{userdata,[{""}]}];
 bitor_k12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k34_test(doc) -> [{userdata,[{""}]}];
 bitor_k34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k34"),
-  Expected="<cell><value>"++"28.0"++"</value></cell>",
+  Expected="28.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k45_test(doc) -> [{userdata,[{""}]}];
 bitor_k45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k56_test(doc) -> [{userdata,[{""}]}];
 bitor_k56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k7_test(doc) -> [{userdata,[{""}]}];
 bitor_k7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k18_test(doc) -> [{userdata,[{""}]}];
 bitor_k18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k29_test(doc) -> [{userdata,[{""}]}];
 bitor_k29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k40_test(doc) -> [{userdata,[{""}]}];
 bitor_k40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k40"),
-  Expected="<cell><value>"++"24.0"++"</value></cell>",
+  Expected="24.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k51_test(doc) -> [{userdata,[{""}]}];
 bitor_k51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k62_test(doc) -> [{userdata,[{""}]}];
 bitor_k62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k2_test(doc) -> [{userdata,[{""}]}];
 bitor_k2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k2"),
-  Expected="<cell><value>"++" 24"++"</value></cell>",
+  Expected=" 24",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k13_test(doc) -> [{userdata,[{""}]}];
 bitor_k13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k35_test(doc) -> [{userdata,[{""}]}];
 bitor_k35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k35"),
-  Expected="<cell><value>"++"31.0"++"</value></cell>",
+  Expected="31.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k46_test(doc) -> [{userdata,[{""}]}];
 bitor_k46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k57_test(doc) -> [{userdata,[{""}]}];
 bitor_k57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k8_test(doc) -> [{userdata,[{""}]}];
 bitor_k8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k19_test(doc) -> [{userdata,[{""}]}];
 bitor_k19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k30_test(doc) -> [{userdata,[{""}]}];
 bitor_k30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k41_test(doc) -> [{userdata,[{""}]}];
 bitor_k41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k52_test(doc) -> [{userdata,[{""}]}];
 bitor_k52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k63_test(doc) -> [{userdata,[{""}]}];
 bitor_k63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k3_test(doc) -> [{userdata,[{""}]}];
 bitor_k3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k14_test(doc) -> [{userdata,[{""}]}];
 bitor_k14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k25_test(doc) -> [{userdata,[{""}]}];
 bitor_k25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k25"),
-  Expected="<cell><value>"++"String number Leading space"++"</value></cell>",
+  Expected="String number Leading space",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k36_test(doc) -> [{userdata,[{""}]}];
 bitor_k36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k36"),
-  Expected="<cell><value>"++"24920.0"++"</value></cell>",
+  Expected="24920.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k58_test(doc) -> [{userdata,[{""}]}];
 bitor_k58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k9_test(doc) -> [{userdata,[{""}]}];
 bitor_k9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k20_test(doc) -> [{userdata,[{""}]}];
 bitor_k20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k31_test(doc) -> [{userdata,[{""}]}];
 bitor_k31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k42_test(doc) -> [{userdata,[{""}]}];
 bitor_k42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k53_test(doc) -> [{userdata,[{""}]}];
 bitor_k53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k64_test(doc) -> [{userdata,[{""}]}];
 bitor_k64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k4_test(doc) -> [{userdata,[{""}]}];
 bitor_k4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k15_test(doc) -> [{userdata,[{""}]}];
 bitor_k15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k26_test(doc) -> [{userdata,[{""}]}];
 bitor_k26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k26"),
-  Expected="<cell><value>"++" 24"++"</value></cell>",
+  Expected=" 24",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k37_test(doc) -> [{userdata,[{""}]}];
 bitor_k37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k37"),
-  Expected="<cell><value>"++"27.0"++"</value></cell>",
+  Expected="27.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k59_test(doc) -> [{userdata,[{""}]}];
 bitor_k59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k10_test(doc) -> [{userdata,[{""}]}];
 bitor_k10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k21_test(doc) -> [{userdata,[{""}]}];
 bitor_k21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k32_test(doc) -> [{userdata,[{""}]}];
 bitor_k32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k43_test(doc) -> [{userdata,[{""}]}];
 bitor_k43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_k54_test(doc) -> [{userdata,[{""}]}];
 bitor_k54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","k54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v5_test(doc) -> [{userdata,[{""}]}];
 bitor_v5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v16_test(doc) -> [{userdata,[{""}]}];
 bitor_v16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v27_test(doc) -> [{userdata,[{""}]}];
 bitor_v27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v38_test(doc) -> [{userdata,[{""}]}];
 bitor_v38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v38"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v49_test(doc) -> [{userdata,[{""}]}];
 bitor_v49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v60_test(doc) -> [{userdata,[{""}]}];
 bitor_v60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v11_test(doc) -> [{userdata,[{""}]}];
 bitor_v11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v22_test(doc) -> [{userdata,[{""}]}];
 bitor_v22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v33_test(doc) -> [{userdata,[{""}]}];
 bitor_v33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v44_test(doc) -> [{userdata,[{""}]}];
 bitor_v44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v55_test(doc) -> [{userdata,[{""}]}];
 bitor_v55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v6_test(doc) -> [{userdata,[{""}]}];
 bitor_v6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v17_test(doc) -> [{userdata,[{""}]}];
 bitor_v17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v28_test(doc) -> [{userdata,[{""}]}];
 bitor_v28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v39_test(doc) -> [{userdata,[{""}]}];
 bitor_v39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v39"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v50_test(doc) -> [{userdata,[{""}]}];
 bitor_v50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v61_test(doc) -> [{userdata,[{""}]}];
 bitor_v61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v1_test(doc) -> [{userdata,[{""}]}];
 bitor_v1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v1"),
-  Expected="<cell><value>"++"Range Colunm"++"</value></cell>",
+  Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v12_test(doc) -> [{userdata,[{""}]}];
 bitor_v12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v34_test(doc) -> [{userdata,[{""}]}];
 bitor_v34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v45_test(doc) -> [{userdata,[{""}]}];
 bitor_v45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v56_test(doc) -> [{userdata,[{""}]}];
 bitor_v56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v7_test(doc) -> [{userdata,[{""}]}];
 bitor_v7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v18_test(doc) -> [{userdata,[{""}]}];
 bitor_v18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v29_test(doc) -> [{userdata,[{""}]}];
 bitor_v29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v40_test(doc) -> [{userdata,[{""}]}];
 bitor_v40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v40"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v51_test(doc) -> [{userdata,[{""}]}];
 bitor_v51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v62_test(doc) -> [{userdata,[{""}]}];
 bitor_v62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v2_test(doc) -> [{userdata,[{""}]}];
 bitor_v2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v2"),
-  Expected="<cell><value>"++"X3:X6"++"</value></cell>",
+  Expected="X3:X6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v13_test(doc) -> [{userdata,[{""}]}];
 bitor_v13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v35_test(doc) -> [{userdata,[{""}]}];
 bitor_v35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v35"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v46_test(doc) -> [{userdata,[{""}]}];
 bitor_v46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v57_test(doc) -> [{userdata,[{""}]}];
 bitor_v57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v8_test(doc) -> [{userdata,[{""}]}];
 bitor_v8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v19_test(doc) -> [{userdata,[{""}]}];
 bitor_v19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v30_test(doc) -> [{userdata,[{""}]}];
 bitor_v30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v41_test(doc) -> [{userdata,[{""}]}];
 bitor_v41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v52_test(doc) -> [{userdata,[{""}]}];
 bitor_v52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v63_test(doc) -> [{userdata,[{""}]}];
 bitor_v63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v3_test(doc) -> [{userdata,[{""}]}];
 bitor_v3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v14_test(doc) -> [{userdata,[{""}]}];
 bitor_v14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v25_test(doc) -> [{userdata,[{""}]}];
 bitor_v25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v25"),
-  Expected="<cell><value>"++"Range Colunm"++"</value></cell>",
+  Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v36_test(doc) -> [{userdata,[{""}]}];
 bitor_v36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v36"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v58_test(doc) -> [{userdata,[{""}]}];
 bitor_v58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v9_test(doc) -> [{userdata,[{""}]}];
 bitor_v9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v20_test(doc) -> [{userdata,[{""}]}];
 bitor_v20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v31_test(doc) -> [{userdata,[{""}]}];
 bitor_v31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v42_test(doc) -> [{userdata,[{""}]}];
 bitor_v42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v53_test(doc) -> [{userdata,[{""}]}];
 bitor_v53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v64_test(doc) -> [{userdata,[{""}]}];
 bitor_v64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v4_test(doc) -> [{userdata,[{""}]}];
 bitor_v4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v15_test(doc) -> [{userdata,[{""}]}];
 bitor_v15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v26_test(doc) -> [{userdata,[{""}]}];
 bitor_v26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v26"),
-  Expected="<cell><value>"++"X3:X6"++"</value></cell>",
+  Expected="X3:X6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v37_test(doc) -> [{userdata,[{""}]}];
 bitor_v37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v37"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v59_test(doc) -> [{userdata,[{""}]}];
 bitor_v59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v10_test(doc) -> [{userdata,[{""}]}];
 bitor_v10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v21_test(doc) -> [{userdata,[{""}]}];
 bitor_v21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v32_test(doc) -> [{userdata,[{""}]}];
 bitor_v32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v43_test(doc) -> [{userdata,[{""}]}];
 bitor_v43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_v54_test(doc) -> [{userdata,[{""}]}];
 bitor_v54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","v54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a5_test(doc) -> [{userdata,[{""}]}];
 bitor_a5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a5"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a16_test(doc) -> [{userdata,[{""}]}];
 bitor_a16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a16"),
-  Expected="<cell><value>"++"Logical"++"</value></cell>",
+  Expected="Logical",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a27_test(doc) -> [{userdata,[{""}]}];
 bitor_a27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a27"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a38_test(doc) -> [{userdata,[{""}]}];
 bitor_a38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a38"),
-  Expected="<cell><value>"++"Blank"++"</value></cell>",
+  Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a49_test(doc) -> [{userdata,[{""}]}];
 bitor_a49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a49"),
-  Expected="<cell><value>"++"320.0"++"</value></cell>",
+  Expected="320.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a11_test(doc) -> [{userdata,[{""}]}];
 bitor_a11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a11"),
-  Expected="<cell><value>"++"String Number Leading space"++"</value></cell>",
+  Expected="String Number Leading space",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a22_test(doc) -> [{userdata,[{""}]}];
 bitor_a22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a22"),
-  Expected="<cell><value>"++"Range Colunm"++"</value></cell>",
+  Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a33_test(doc) -> [{userdata,[{""}]}];
 bitor_a33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a33"),
-  Expected="<cell><value>"++"String"++"</value></cell>",
+  Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a44_test(doc) -> [{userdata,[{""}]}];
 bitor_a44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a44"),
-  Expected="<cell><value>"++"Range Area"++"</value></cell>",
+  Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a6_test(doc) -> [{userdata,[{""}]}];
 bitor_a6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a6"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a17_test(doc) -> [{userdata,[{""}]}];
 bitor_a17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a17"),
-  Expected="<cell><value>"++"Range Row"++"</value></cell>",
+  Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a28_test(doc) -> [{userdata,[{""}]}];
 bitor_a28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a28"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a39_test(doc) -> [{userdata,[{""}]}];
 bitor_a39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a39"),
-  Expected="<cell><value>"++"Logical"++"</value></cell>",
+  Expected="Logical",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a50_test(doc) -> [{userdata,[{""}]}];
 bitor_a50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a50"),
-  Expected="<cell><value>"++"7.0"++"</value></cell>",
+  Expected="7.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a1_test(doc) -> [{userdata,[{""}]}];
 bitor_a1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a1"),
-  Expected="<cell><value>"++"bitor(A,B)"++"</value></cell>",
+  Expected="bitor(A,B)",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a12_test(doc) -> [{userdata,[{""}]}];
 bitor_a12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a12"),
-  Expected="<cell><value>"++"Interger"++"</value></cell>",
+  Expected="Interger",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a34_test(doc) -> [{userdata,[{""}]}];
 bitor_a34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a34"),
-  Expected="<cell><value>"++"String Number"++"</value></cell>",
+  Expected="String Number",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a45_test(doc) -> [{userdata,[{""}]}];
 bitor_a45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a45"),
-  Expected="<cell><value>"++"Range Colunm"++"</value></cell>",
+  Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a7_test(doc) -> [{userdata,[{""}]}];
 bitor_a7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a7"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a18_test(doc) -> [{userdata,[{""}]}];
 bitor_a18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a18"),
-  Expected="<cell><value>"++"Range Row"++"</value></cell>",
+  Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a29_test(doc) -> [{userdata,[{""}]}];
 bitor_a29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a29"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a40_test(doc) -> [{userdata,[{""}]}];
 bitor_a40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a40"),
-  Expected="<cell><value>"++"Logical"++"</value></cell>",
+  Expected="Logical",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a2_test(doc) -> [{userdata,[{""}]}];
 bitor_a2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a2"),
-  Expected="<cell><value>"++"A"++"</value></cell>",
+  Expected="A",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a13_test(doc) -> [{userdata,[{""}]}];
 bitor_a13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a13"),
-  Expected="<cell><value>"++"Float"++"</value></cell>",
+  Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a35_test(doc) -> [{userdata,[{""}]}];
 bitor_a35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a35"),
-  Expected="<cell><value>"++"String Number Leading space"++"</value></cell>",
+  Expected="String Number Leading space",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a46_test(doc) -> [{userdata,[{""}]}];
 bitor_a46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a46"),
-  Expected="<cell><value>"++"Range Colunm"++"</value></cell>",
+  Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a8_test(doc) -> [{userdata,[{""}]}];
 bitor_a8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a8"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a19_test(doc) -> [{userdata,[{""}]}];
 bitor_a19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a19"),
-  Expected="<cell><value>"++"Range Area"++"</value></cell>",
+  Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a30_test(doc) -> [{userdata,[{""}]}];
 bitor_a30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a30"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a41_test(doc) -> [{userdata,[{""}]}];
 bitor_a41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a41"),
-  Expected="<cell><value>"++"Range Row"++"</value></cell>",
+  Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a3_test(doc) -> [{userdata,[{""}]}];
 bitor_a3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a3"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a14_test(doc) -> [{userdata,[{""}]}];
 bitor_a14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a14"),
-  Expected="<cell><value>"++"Blank"++"</value></cell>",
+  Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a25_test(doc) -> [{userdata,[{""}]}];
 bitor_a25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a25"),
-  Expected="<cell><value>"++"bitor(A,B)"++"</value></cell>",
+  Expected="bitor(A,B)",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a36_test(doc) -> [{userdata,[{""}]}];
 bitor_a36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a36"),
-  Expected="<cell><value>"++"Interger"++"</value></cell>",
+  Expected="Interger",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a9_test(doc) -> [{userdata,[{""}]}];
 bitor_a9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a9"),
-  Expected="<cell><value>"++"String"++"</value></cell>",
+  Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a20_test(doc) -> [{userdata,[{""}]}];
 bitor_a20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a20"),
-  Expected="<cell><value>"++"Range Area"++"</value></cell>",
+  Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a31_test(doc) -> [{userdata,[{""}]}];
 bitor_a31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a31"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a42_test(doc) -> [{userdata,[{""}]}];
 bitor_a42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a42"),
-  Expected="<cell><value>"++"Range Row"++"</value></cell>",
+  Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a4_test(doc) -> [{userdata,[{""}]}];
 bitor_a4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a4"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a15_test(doc) -> [{userdata,[{""}]}];
 bitor_a15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a15"),
-  Expected="<cell><value>"++"Logical"++"</value></cell>",
+  Expected="Logical",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a26_test(doc) -> [{userdata,[{""}]}];
 bitor_a26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a26"),
-  Expected="<cell><value>"++"A"++"</value></cell>",
+  Expected="A",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a37_test(doc) -> [{userdata,[{""}]}];
 bitor_a37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a37"),
-  Expected="<cell><value>"++"Float"++"</value></cell>",
+  Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a10_test(doc) -> [{userdata,[{""}]}];
 bitor_a10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a10"),
-  Expected="<cell><value>"++"String Number"++"</value></cell>",
+  Expected="String Number",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a21_test(doc) -> [{userdata,[{""}]}];
 bitor_a21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a21"),
-  Expected="<cell><value>"++"Range Colunm"++"</value></cell>",
+  Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a32_test(doc) -> [{userdata,[{""}]}];
 bitor_a32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a32"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_a43_test(doc) -> [{userdata,[{""}]}];
 bitor_a43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","a43"),
-  Expected="<cell><value>"++"Range Area"++"</value></cell>",
+  Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l5_test(doc) -> [{userdata,[{""}]}];
 bitor_l5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l16_test(doc) -> [{userdata,[{""}]}];
 bitor_l16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l27_test(doc) -> [{userdata,[{""}]}];
 bitor_l27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l38_test(doc) -> [{userdata,[{""}]}];
 bitor_l38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l38"),
-  Expected="<cell><value>"++"24920.0"++"</value></cell>",
+  Expected="24920.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l49_test(doc) -> [{userdata,[{""}]}];
 bitor_l49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l60_test(doc) -> [{userdata,[{""}]}];
 bitor_l60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l11_test(doc) -> [{userdata,[{""}]}];
 bitor_l11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l22_test(doc) -> [{userdata,[{""}]}];
 bitor_l22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l33_test(doc) -> [{userdata,[{""}]}];
 bitor_l33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l44_test(doc) -> [{userdata,[{""}]}];
 bitor_l44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l55_test(doc) -> [{userdata,[{""}]}];
 bitor_l55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l6_test(doc) -> [{userdata,[{""}]}];
 bitor_l6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l17_test(doc) -> [{userdata,[{""}]}];
 bitor_l17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l28_test(doc) -> [{userdata,[{""}]}];
 bitor_l28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l39_test(doc) -> [{userdata,[{""}]}];
 bitor_l39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l39"),
-  Expected="<cell><value>"++"24921.0"++"</value></cell>",
+  Expected="24921.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l50_test(doc) -> [{userdata,[{""}]}];
 bitor_l50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l61_test(doc) -> [{userdata,[{""}]}];
 bitor_l61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l1_test(doc) -> [{userdata,[{""}]}];
 bitor_l1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l1"),
-  Expected="<cell><value>"++"Integer"++"</value></cell>",
+  Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l12_test(doc) -> [{userdata,[{""}]}];
 bitor_l12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l34_test(doc) -> [{userdata,[{""}]}];
 bitor_l34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l34"),
-  Expected="<cell><value>"++"24924.0"++"</value></cell>",
+  Expected="24924.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l45_test(doc) -> [{userdata,[{""}]}];
 bitor_l45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l56_test(doc) -> [{userdata,[{""}]}];
 bitor_l56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l7_test(doc) -> [{userdata,[{""}]}];
 bitor_l7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l18_test(doc) -> [{userdata,[{""}]}];
 bitor_l18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l29_test(doc) -> [{userdata,[{""}]}];
 bitor_l29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l40_test(doc) -> [{userdata,[{""}]}];
 bitor_l40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l40"),
-  Expected="<cell><value>"++"24920.0"++"</value></cell>",
+  Expected="24920.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l51_test(doc) -> [{userdata,[{""}]}];
 bitor_l51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l62_test(doc) -> [{userdata,[{""}]}];
 bitor_l62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l2_test(doc) -> [{userdata,[{""}]}];
 bitor_l2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l2"),
-  Expected="<cell><value>"++"1968/03/23 00:00:00"++"</value></cell>",
+  Expected="1968/03/23 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l13_test(doc) -> [{userdata,[{""}]}];
 bitor_l13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l35_test(doc) -> [{userdata,[{""}]}];
 bitor_l35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l35"),
-  Expected="<cell><value>"++"24927.0"++"</value></cell>",
+  Expected="24927.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l46_test(doc) -> [{userdata,[{""}]}];
 bitor_l46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l57_test(doc) -> [{userdata,[{""}]}];
 bitor_l57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l8_test(doc) -> [{userdata,[{""}]}];
 bitor_l8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l19_test(doc) -> [{userdata,[{""}]}];
 bitor_l19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l30_test(doc) -> [{userdata,[{""}]}];
 bitor_l30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l41_test(doc) -> [{userdata,[{""}]}];
 bitor_l41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l52_test(doc) -> [{userdata,[{""}]}];
 bitor_l52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l63_test(doc) -> [{userdata,[{""}]}];
 bitor_l63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l3_test(doc) -> [{userdata,[{""}]}];
 bitor_l3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l14_test(doc) -> [{userdata,[{""}]}];
 bitor_l14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l25_test(doc) -> [{userdata,[{""}]}];
 bitor_l25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l25"),
-  Expected="<cell><value>"++"Integer"++"</value></cell>",
+  Expected="Integer",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l36_test(doc) -> [{userdata,[{""}]}];
 bitor_l36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l36"),
-  Expected="<cell><value>"++"24920.0"++"</value></cell>",
+  Expected="24920.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l58_test(doc) -> [{userdata,[{""}]}];
 bitor_l58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l9_test(doc) -> [{userdata,[{""}]}];
 bitor_l9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l20_test(doc) -> [{userdata,[{""}]}];
 bitor_l20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l31_test(doc) -> [{userdata,[{""}]}];
 bitor_l31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l42_test(doc) -> [{userdata,[{""}]}];
 bitor_l42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l53_test(doc) -> [{userdata,[{""}]}];
 bitor_l53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l64_test(doc) -> [{userdata,[{""}]}];
 bitor_l64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l4_test(doc) -> [{userdata,[{""}]}];
 bitor_l4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l15_test(doc) -> [{userdata,[{""}]}];
 bitor_l15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l26_test(doc) -> [{userdata,[{""}]}];
 bitor_l26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l26"),
-  Expected="<cell><value>"++"1968/03/23 00:00:00"++"</value></cell>",
+  Expected="1968/03/23 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l37_test(doc) -> [{userdata,[{""}]}];
 bitor_l37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l37"),
-  Expected="<cell><value>"++"24923.0"++"</value></cell>",
+  Expected="24923.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l59_test(doc) -> [{userdata,[{""}]}];
 bitor_l59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l10_test(doc) -> [{userdata,[{""}]}];
 bitor_l10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l21_test(doc) -> [{userdata,[{""}]}];
 bitor_l21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l32_test(doc) -> [{userdata,[{""}]}];
 bitor_l32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l43_test(doc) -> [{userdata,[{""}]}];
 bitor_l43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_l54_test(doc) -> [{userdata,[{""}]}];
 bitor_l54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","l54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b5_test(doc) -> [{userdata,[{""}]}];
 bitor_b5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b5"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b16_test(doc) -> [{userdata,[{""}]}];
 bitor_b16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b16"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b27_test(doc) -> [{userdata,[{""}]}];
 bitor_b27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b11_test(doc) -> [{userdata,[{""}]}];
 bitor_b11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b11"),
-  Expected="<cell><value>"++" 23"++"</value></cell>",
+  Expected=" 23",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b22_test(doc) -> [{userdata,[{""}]}];
 bitor_b22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b22"),
-  Expected="<cell><value>"++"X3:X6"++"</value></cell>",
+  Expected="X3:X6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b33_test(doc) -> [{userdata,[{""}]}];
 bitor_b33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b33"),
-  Expected="<cell><value>"++"Phillip"++"</value></cell>",
+  Expected="Phillip",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b44_test(doc) -> [{userdata,[{""}]}];
 bitor_b44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b44"),
-  Expected="<cell><value>"++"X3:AA6"++"</value></cell>",
+  Expected="X3:AA6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b6_test(doc) -> [{userdata,[{""}]}];
 bitor_b6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b17_test(doc) -> [{userdata,[{""}]}];
 bitor_b17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b17"),
-  Expected="<cell><value>"++"X3:Y3"++"</value></cell>",
+  Expected="X3:Y3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b28_test(doc) -> [{userdata,[{""}]}];
 bitor_b28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b39_test(doc) -> [{userdata,[{""}]}];
 bitor_b39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b39"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b1_test(doc) -> [{userdata,[{""}]}];
 bitor_b1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b1"),
-  Expected="<cell><value>"++"B"++"</value></cell>",
+  Expected="B",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b12_test(doc) -> [{userdata,[{""}]}];
 bitor_b12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b12"),
-  Expected="<cell><value>"++"1968/03/23 00:00:00"++"</value></cell>",
+  Expected="1968/03/23 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b34_test(doc) -> [{userdata,[{""}]}];
 bitor_b34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b34"),
-  Expected="<cell><value>"++"12"++"</value></cell>",
+  Expected="12",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b45_test(doc) -> [{userdata,[{""}]}];
 bitor_b45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b45"),
-  Expected="<cell><value>"++"X3:X4"++"</value></cell>",
+  Expected="X3:X4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b7_test(doc) -> [{userdata,[{""}]}];
 bitor_b7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b7"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b18_test(doc) -> [{userdata,[{""}]}];
 bitor_b18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b18"),
-  Expected="<cell><value>"++"X3:AA3"++"</value></cell>",
+  Expected="X3:AA3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b29_test(doc) -> [{userdata,[{""}]}];
 bitor_b29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b40_test(doc) -> [{userdata,[{""}]}];
 bitor_b40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b40"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b13_test(doc) -> [{userdata,[{""}]}];
 bitor_b13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b13"),
-  Expected="<cell><value>"++"3.14159265358979"++"</value></cell>",
+  Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b35_test(doc) -> [{userdata,[{""}]}];
 bitor_b35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b35"),
-  Expected="<cell><value>"++" 23"++"</value></cell>",
+  Expected=" 23",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b46_test(doc) -> [{userdata,[{""}]}];
 bitor_b46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b46"),
-  Expected="<cell><value>"++"X3:X6"++"</value></cell>",
+  Expected="X3:X6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b8_test(doc) -> [{userdata,[{""}]}];
 bitor_b8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b8"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b19_test(doc) -> [{userdata,[{""}]}];
 bitor_b19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b19"),
-  Expected="<cell><value>"++"X3:Y4"++"</value></cell>",
+  Expected="X3:Y4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b30_test(doc) -> [{userdata,[{""}]}];
 bitor_b30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b41_test(doc) -> [{userdata,[{""}]}];
 bitor_b41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b41"),
-  Expected="<cell><value>"++"X3:Y3"++"</value></cell>",
+  Expected="X3:Y3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b3_test(doc) -> [{userdata,[{""}]}];
 bitor_b3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b3"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b25_test(doc) -> [{userdata,[{""}]}];
 bitor_b25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b25"),
-  Expected="<cell><value>"++"B"++"</value></cell>",
+  Expected="B",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b36_test(doc) -> [{userdata,[{""}]}];
 bitor_b36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b36"),
-  Expected="<cell><value>"++"1968/03/23 00:00:00"++"</value></cell>",
+  Expected="1968/03/23 00:00:00",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b9_test(doc) -> [{userdata,[{""}]}];
 bitor_b9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b9"),
-  Expected="<cell><value>"++"Phillip"++"</value></cell>",
+  Expected="Phillip",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b20_test(doc) -> [{userdata,[{""}]}];
 bitor_b20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b20"),
-  Expected="<cell><value>"++"X3:AA6"++"</value></cell>",
+  Expected="X3:AA6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b31_test(doc) -> [{userdata,[{""}]}];
 bitor_b31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b42_test(doc) -> [{userdata,[{""}]}];
 bitor_b42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b42"),
-  Expected="<cell><value>"++"X3:AA3"++"</value></cell>",
+  Expected="X3:AA3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b4_test(doc) -> [{userdata,[{""}]}];
 bitor_b4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b4"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b15_test(doc) -> [{userdata,[{""}]}];
 bitor_b15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b15"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b37_test(doc) -> [{userdata,[{""}]}];
 bitor_b37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b37"),
-  Expected="<cell><value>"++"3.14159265358979"++"</value></cell>",
+  Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b10_test(doc) -> [{userdata,[{""}]}];
 bitor_b10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b10"),
-  Expected="<cell><value>"++"12"++"</value></cell>",
+  Expected="12",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b21_test(doc) -> [{userdata,[{""}]}];
 bitor_b21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b21"),
-  Expected="<cell><value>"++"X3:X4"++"</value></cell>",
+  Expected="X3:X4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b32_test(doc) -> [{userdata,[{""}]}];
 bitor_b32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_b43_test(doc) -> [{userdata,[{""}]}];
 bitor_b43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","b43"),
-  Expected="<cell><value>"++"X3:Y4"++"</value></cell>",
+  Expected="X3:Y4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m5_test(doc) -> [{userdata,[{""}]}];
 bitor_m5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m16_test(doc) -> [{userdata,[{""}]}];
 bitor_m16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m27_test(doc) -> [{userdata,[{""}]}];
 bitor_m27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m38_test(doc) -> [{userdata,[{""}]}];
 bitor_m38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m38"),
-  Expected="<cell><value>"++"3.0"++"</value></cell>",
+  Expected="3.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m49_test(doc) -> [{userdata,[{""}]}];
 bitor_m49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m60_test(doc) -> [{userdata,[{""}]}];
 bitor_m60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m11_test(doc) -> [{userdata,[{""}]}];
 bitor_m11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m22_test(doc) -> [{userdata,[{""}]}];
 bitor_m22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m33_test(doc) -> [{userdata,[{""}]}];
 bitor_m33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m44_test(doc) -> [{userdata,[{""}]}];
 bitor_m44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m55_test(doc) -> [{userdata,[{""}]}];
 bitor_m55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m6_test(doc) -> [{userdata,[{""}]}];
 bitor_m6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m17_test(doc) -> [{userdata,[{""}]}];
 bitor_m17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m28_test(doc) -> [{userdata,[{""}]}];
 bitor_m28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m39_test(doc) -> [{userdata,[{""}]}];
 bitor_m39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m39"),
-  Expected="<cell><value>"++"3.0"++"</value></cell>",
+  Expected="3.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m50_test(doc) -> [{userdata,[{""}]}];
 bitor_m50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m61_test(doc) -> [{userdata,[{""}]}];
 bitor_m61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m1_test(doc) -> [{userdata,[{""}]}];
 bitor_m1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m1"),
-  Expected="<cell><value>"++"Float"++"</value></cell>",
+  Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m12_test(doc) -> [{userdata,[{""}]}];
 bitor_m12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m34_test(doc) -> [{userdata,[{""}]}];
 bitor_m34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m34"),
-  Expected="<cell><value>"++"15.0"++"</value></cell>",
+  Expected="15.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m45_test(doc) -> [{userdata,[{""}]}];
 bitor_m45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m56_test(doc) -> [{userdata,[{""}]}];
 bitor_m56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m7_test(doc) -> [{userdata,[{""}]}];
 bitor_m7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m18_test(doc) -> [{userdata,[{""}]}];
 bitor_m18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m29_test(doc) -> [{userdata,[{""}]}];
 bitor_m29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m40_test(doc) -> [{userdata,[{""}]}];
 bitor_m40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m40"),
-  Expected="<cell><value>"++"3.0"++"</value></cell>",
+  Expected="3.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m51_test(doc) -> [{userdata,[{""}]}];
 bitor_m51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m62_test(doc) -> [{userdata,[{""}]}];
 bitor_m62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m2_test(doc) -> [{userdata,[{""}]}];
 bitor_m2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m2"),
-  Expected="<cell><value>"++"3.14159265358979"++"</value></cell>",
+  Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m13_test(doc) -> [{userdata,[{""}]}];
 bitor_m13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m35_test(doc) -> [{userdata,[{""}]}];
 bitor_m35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m35"),
-  Expected="<cell><value>"++"23.0"++"</value></cell>",
+  Expected="23.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m46_test(doc) -> [{userdata,[{""}]}];
 bitor_m46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m57_test(doc) -> [{userdata,[{""}]}];
 bitor_m57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m8_test(doc) -> [{userdata,[{""}]}];
 bitor_m8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m19_test(doc) -> [{userdata,[{""}]}];
 bitor_m19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m30_test(doc) -> [{userdata,[{""}]}];
 bitor_m30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m41_test(doc) -> [{userdata,[{""}]}];
 bitor_m41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m52_test(doc) -> [{userdata,[{""}]}];
 bitor_m52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m63_test(doc) -> [{userdata,[{""}]}];
 bitor_m63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m3_test(doc) -> [{userdata,[{""}]}];
 bitor_m3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m14_test(doc) -> [{userdata,[{""}]}];
 bitor_m14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m25_test(doc) -> [{userdata,[{""}]}];
 bitor_m25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m25"),
-  Expected="<cell><value>"++"Float"++"</value></cell>",
+  Expected="Float",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m36_test(doc) -> [{userdata,[{""}]}];
 bitor_m36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m36"),
-  Expected="<cell><value>"++"24923.0"++"</value></cell>",
+  Expected="24923.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m58_test(doc) -> [{userdata,[{""}]}];
 bitor_m58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m9_test(doc) -> [{userdata,[{""}]}];
 bitor_m9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m20_test(doc) -> [{userdata,[{""}]}];
 bitor_m20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m31_test(doc) -> [{userdata,[{""}]}];
 bitor_m31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m42_test(doc) -> [{userdata,[{""}]}];
 bitor_m42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m53_test(doc) -> [{userdata,[{""}]}];
 bitor_m53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m64_test(doc) -> [{userdata,[{""}]}];
 bitor_m64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m4_test(doc) -> [{userdata,[{""}]}];
 bitor_m4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m15_test(doc) -> [{userdata,[{""}]}];
 bitor_m15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m26_test(doc) -> [{userdata,[{""}]}];
 bitor_m26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m26"),
-  Expected="<cell><value>"++"3.14159265358979"++"</value></cell>",
+  Expected="3.14159265358979",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m37_test(doc) -> [{userdata,[{""}]}];
 bitor_m37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m37"),
-  Expected="<cell><value>"++"3.0"++"</value></cell>",
+  Expected="3.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m59_test(doc) -> [{userdata,[{""}]}];
 bitor_m59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m10_test(doc) -> [{userdata,[{""}]}];
 bitor_m10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m21_test(doc) -> [{userdata,[{""}]}];
 bitor_m21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m32_test(doc) -> [{userdata,[{""}]}];
 bitor_m32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m43_test(doc) -> [{userdata,[{""}]}];
 bitor_m43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_m54_test(doc) -> [{userdata,[{""}]}];
 bitor_m54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","m54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c5_test(doc) -> [{userdata,[{""}]}];
 bitor_c5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c16_test(doc) -> [{userdata,[{""}]}];
 bitor_c16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c27_test(doc) -> [{userdata,[{""}]}];
 bitor_c27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c38_test(doc) -> [{userdata,[{""}]}];
 bitor_c38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c38"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c49_test(doc) -> [{userdata,[{""}]}];
 bitor_c49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c60_test(doc) -> [{userdata,[{""}]}];
 bitor_c60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c11_test(doc) -> [{userdata,[{""}]}];
 bitor_c11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c22_test(doc) -> [{userdata,[{""}]}];
 bitor_c22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c33_test(doc) -> [{userdata,[{""}]}];
 bitor_c33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c44_test(doc) -> [{userdata,[{""}]}];
 bitor_c44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c55_test(doc) -> [{userdata,[{""}]}];
 bitor_c55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c6_test(doc) -> [{userdata,[{""}]}];
 bitor_c6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c17_test(doc) -> [{userdata,[{""}]}];
 bitor_c17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c28_test(doc) -> [{userdata,[{""}]}];
 bitor_c28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c39_test(doc) -> [{userdata,[{""}]}];
 bitor_c39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c39"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c50_test(doc) -> [{userdata,[{""}]}];
 bitor_c50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c61_test(doc) -> [{userdata,[{""}]}];
 bitor_c61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c1_test(doc) -> [{userdata,[{""}]}];
 bitor_c1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c1"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c12_test(doc) -> [{userdata,[{""}]}];
 bitor_c12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c34_test(doc) -> [{userdata,[{""}]}];
 bitor_c34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c34"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c45_test(doc) -> [{userdata,[{""}]}];
 bitor_c45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c56_test(doc) -> [{userdata,[{""}]}];
 bitor_c56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c7_test(doc) -> [{userdata,[{""}]}];
 bitor_c7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c18_test(doc) -> [{userdata,[{""}]}];
 bitor_c18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c29_test(doc) -> [{userdata,[{""}]}];
 bitor_c29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c40_test(doc) -> [{userdata,[{""}]}];
 bitor_c40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c40"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c51_test(doc) -> [{userdata,[{""}]}];
 bitor_c51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c62_test(doc) -> [{userdata,[{""}]}];
 bitor_c62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c2_test(doc) -> [{userdata,[{""}]}];
 bitor_c2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c2"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c13_test(doc) -> [{userdata,[{""}]}];
 bitor_c13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c35_test(doc) -> [{userdata,[{""}]}];
 bitor_c35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c35"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c46_test(doc) -> [{userdata,[{""}]}];
 bitor_c46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c57_test(doc) -> [{userdata,[{""}]}];
 bitor_c57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c8_test(doc) -> [{userdata,[{""}]}];
 bitor_c8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c19_test(doc) -> [{userdata,[{""}]}];
 bitor_c19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c30_test(doc) -> [{userdata,[{""}]}];
 bitor_c30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c41_test(doc) -> [{userdata,[{""}]}];
 bitor_c41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c52_test(doc) -> [{userdata,[{""}]}];
 bitor_c52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c63_test(doc) -> [{userdata,[{""}]}];
 bitor_c63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c3_test(doc) -> [{userdata,[{""}]}];
 bitor_c3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c14_test(doc) -> [{userdata,[{""}]}];
 bitor_c14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c25_test(doc) -> [{userdata,[{""}]}];
 bitor_c25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c25"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c36_test(doc) -> [{userdata,[{""}]}];
 bitor_c36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c36"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c58_test(doc) -> [{userdata,[{""}]}];
 bitor_c58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c9_test(doc) -> [{userdata,[{""}]}];
 bitor_c9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c20_test(doc) -> [{userdata,[{""}]}];
 bitor_c20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c31_test(doc) -> [{userdata,[{""}]}];
 bitor_c31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c42_test(doc) -> [{userdata,[{""}]}];
 bitor_c42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c53_test(doc) -> [{userdata,[{""}]}];
 bitor_c53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c64_test(doc) -> [{userdata,[{""}]}];
 bitor_c64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c4_test(doc) -> [{userdata,[{""}]}];
 bitor_c4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c15_test(doc) -> [{userdata,[{""}]}];
 bitor_c15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c26_test(doc) -> [{userdata,[{""}]}];
 bitor_c26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c26"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c37_test(doc) -> [{userdata,[{""}]}];
 bitor_c37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c37"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c59_test(doc) -> [{userdata,[{""}]}];
 bitor_c59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c10_test(doc) -> [{userdata,[{""}]}];
 bitor_c10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c21_test(doc) -> [{userdata,[{""}]}];
 bitor_c21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c32_test(doc) -> [{userdata,[{""}]}];
 bitor_c32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c43_test(doc) -> [{userdata,[{""}]}];
 bitor_c43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_c54_test(doc) -> [{userdata,[{""}]}];
 bitor_c54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","c54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n5_test(doc) -> [{userdata,[{""}]}];
 bitor_n5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n16_test(doc) -> [{userdata,[{""}]}];
 bitor_n16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n27_test(doc) -> [{userdata,[{""}]}];
 bitor_n27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n38_test(doc) -> [{userdata,[{""}]}];
 bitor_n38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n38"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n49_test(doc) -> [{userdata,[{""}]}];
 bitor_n49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n60_test(doc) -> [{userdata,[{""}]}];
 bitor_n60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n11_test(doc) -> [{userdata,[{""}]}];
 bitor_n11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n22_test(doc) -> [{userdata,[{""}]}];
 bitor_n22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n33_test(doc) -> [{userdata,[{""}]}];
 bitor_n33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n44_test(doc) -> [{userdata,[{""}]}];
 bitor_n44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n55_test(doc) -> [{userdata,[{""}]}];
 bitor_n55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n6_test(doc) -> [{userdata,[{""}]}];
 bitor_n6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n17_test(doc) -> [{userdata,[{""}]}];
 bitor_n17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n28_test(doc) -> [{userdata,[{""}]}];
 bitor_n28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n39_test(doc) -> [{userdata,[{""}]}];
 bitor_n39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n39"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n50_test(doc) -> [{userdata,[{""}]}];
 bitor_n50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n61_test(doc) -> [{userdata,[{""}]}];
 bitor_n61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n1_test(doc) -> [{userdata,[{""}]}];
 bitor_n1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n1"),
-  Expected="<cell><value>"++"Blank"++"</value></cell>",
+  Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n12_test(doc) -> [{userdata,[{""}]}];
 bitor_n12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n34_test(doc) -> [{userdata,[{""}]}];
 bitor_n34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n34"),
-  Expected="<cell><value>"++"12.0"++"</value></cell>",
+  Expected="12.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n45_test(doc) -> [{userdata,[{""}]}];
 bitor_n45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n56_test(doc) -> [{userdata,[{""}]}];
 bitor_n56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n7_test(doc) -> [{userdata,[{""}]}];
 bitor_n7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n18_test(doc) -> [{userdata,[{""}]}];
 bitor_n18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n29_test(doc) -> [{userdata,[{""}]}];
 bitor_n29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n40_test(doc) -> [{userdata,[{""}]}];
 bitor_n40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n40"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n51_test(doc) -> [{userdata,[{""}]}];
 bitor_n51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n62_test(doc) -> [{userdata,[{""}]}];
 bitor_n62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n13_test(doc) -> [{userdata,[{""}]}];
 bitor_n13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n35_test(doc) -> [{userdata,[{""}]}];
 bitor_n35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n35"),
-  Expected="<cell><value>"++"23.0"++"</value></cell>",
+  Expected="23.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n46_test(doc) -> [{userdata,[{""}]}];
 bitor_n46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n57_test(doc) -> [{userdata,[{""}]}];
 bitor_n57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n8_test(doc) -> [{userdata,[{""}]}];
 bitor_n8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n19_test(doc) -> [{userdata,[{""}]}];
 bitor_n19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n30_test(doc) -> [{userdata,[{""}]}];
 bitor_n30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n41_test(doc) -> [{userdata,[{""}]}];
 bitor_n41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n52_test(doc) -> [{userdata,[{""}]}];
 bitor_n52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n63_test(doc) -> [{userdata,[{""}]}];
 bitor_n63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n3_test(doc) -> [{userdata,[{""}]}];
 bitor_n3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n14_test(doc) -> [{userdata,[{""}]}];
 bitor_n14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n25_test(doc) -> [{userdata,[{""}]}];
 bitor_n25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n25"),
-  Expected="<cell><value>"++"Blank"++"</value></cell>",
+  Expected="Blank",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n36_test(doc) -> [{userdata,[{""}]}];
 bitor_n36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n36"),
-  Expected="<cell><value>"++"24920.0"++"</value></cell>",
+  Expected="24920.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n58_test(doc) -> [{userdata,[{""}]}];
 bitor_n58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n9_test(doc) -> [{userdata,[{""}]}];
 bitor_n9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n20_test(doc) -> [{userdata,[{""}]}];
 bitor_n20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n31_test(doc) -> [{userdata,[{""}]}];
 bitor_n31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n42_test(doc) -> [{userdata,[{""}]}];
 bitor_n42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n53_test(doc) -> [{userdata,[{""}]}];
 bitor_n53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n64_test(doc) -> [{userdata,[{""}]}];
 bitor_n64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n4_test(doc) -> [{userdata,[{""}]}];
 bitor_n4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n15_test(doc) -> [{userdata,[{""}]}];
 bitor_n15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n37_test(doc) -> [{userdata,[{""}]}];
 bitor_n37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n37"),
-  Expected="<cell><value>"++"3.0"++"</value></cell>",
+  Expected="3.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n59_test(doc) -> [{userdata,[{""}]}];
 bitor_n59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n10_test(doc) -> [{userdata,[{""}]}];
 bitor_n10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n21_test(doc) -> [{userdata,[{""}]}];
 bitor_n21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n32_test(doc) -> [{userdata,[{""}]}];
 bitor_n32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n43_test(doc) -> [{userdata,[{""}]}];
 bitor_n43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_n54_test(doc) -> [{userdata,[{""}]}];
 bitor_n54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","n54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d5_test(doc) -> [{userdata,[{""}]}];
 bitor_d5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d16_test(doc) -> [{userdata,[{""}]}];
 bitor_d16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d27_test(doc) -> [{userdata,[{""}]}];
 bitor_d27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d38_test(doc) -> [{userdata,[{""}]}];
 bitor_d38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d38"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d49_test(doc) -> [{userdata,[{""}]}];
 bitor_d49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d60_test(doc) -> [{userdata,[{""}]}];
 bitor_d60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d11_test(doc) -> [{userdata,[{""}]}];
 bitor_d11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d22_test(doc) -> [{userdata,[{""}]}];
 bitor_d22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d33_test(doc) -> [{userdata,[{""}]}];
 bitor_d33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d44_test(doc) -> [{userdata,[{""}]}];
 bitor_d44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d55_test(doc) -> [{userdata,[{""}]}];
 bitor_d55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d6_test(doc) -> [{userdata,[{""}]}];
 bitor_d6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d17_test(doc) -> [{userdata,[{""}]}];
 bitor_d17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d28_test(doc) -> [{userdata,[{""}]}];
 bitor_d28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d39_test(doc) -> [{userdata,[{""}]}];
 bitor_d39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d39"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d50_test(doc) -> [{userdata,[{""}]}];
 bitor_d50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d61_test(doc) -> [{userdata,[{""}]}];
 bitor_d61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d1_test(doc) -> [{userdata,[{""}]}];
 bitor_d1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d1"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d12_test(doc) -> [{userdata,[{""}]}];
 bitor_d12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d34_test(doc) -> [{userdata,[{""}]}];
 bitor_d34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d45_test(doc) -> [{userdata,[{""}]}];
 bitor_d45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d56_test(doc) -> [{userdata,[{""}]}];
 bitor_d56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d7_test(doc) -> [{userdata,[{""}]}];
 bitor_d7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d18_test(doc) -> [{userdata,[{""}]}];
 bitor_d18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d29_test(doc) -> [{userdata,[{""}]}];
 bitor_d29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d40_test(doc) -> [{userdata,[{""}]}];
 bitor_d40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d40"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d51_test(doc) -> [{userdata,[{""}]}];
 bitor_d51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d62_test(doc) -> [{userdata,[{""}]}];
 bitor_d62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d2_test(doc) -> [{userdata,[{""}]}];
 bitor_d2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d2"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d13_test(doc) -> [{userdata,[{""}]}];
 bitor_d13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d35_test(doc) -> [{userdata,[{""}]}];
 bitor_d35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d35"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d46_test(doc) -> [{userdata,[{""}]}];
 bitor_d46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d57_test(doc) -> [{userdata,[{""}]}];
 bitor_d57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d8_test(doc) -> [{userdata,[{""}]}];
 bitor_d8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d19_test(doc) -> [{userdata,[{""}]}];
 bitor_d19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d30_test(doc) -> [{userdata,[{""}]}];
 bitor_d30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d41_test(doc) -> [{userdata,[{""}]}];
 bitor_d41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d52_test(doc) -> [{userdata,[{""}]}];
 bitor_d52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d63_test(doc) -> [{userdata,[{""}]}];
 bitor_d63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d3_test(doc) -> [{userdata,[{""}]}];
 bitor_d3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d14_test(doc) -> [{userdata,[{""}]}];
 bitor_d14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d25_test(doc) -> [{userdata,[{""}]}];
 bitor_d25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d25"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d36_test(doc) -> [{userdata,[{""}]}];
 bitor_d36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d36"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d58_test(doc) -> [{userdata,[{""}]}];
 bitor_d58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d9_test(doc) -> [{userdata,[{""}]}];
 bitor_d9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d20_test(doc) -> [{userdata,[{""}]}];
 bitor_d20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d31_test(doc) -> [{userdata,[{""}]}];
 bitor_d31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d42_test(doc) -> [{userdata,[{""}]}];
 bitor_d42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d53_test(doc) -> [{userdata,[{""}]}];
 bitor_d53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d64_test(doc) -> [{userdata,[{""}]}];
 bitor_d64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d4_test(doc) -> [{userdata,[{""}]}];
 bitor_d4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d15_test(doc) -> [{userdata,[{""}]}];
 bitor_d15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d26_test(doc) -> [{userdata,[{""}]}];
 bitor_d26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d26"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d37_test(doc) -> [{userdata,[{""}]}];
 bitor_d37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d37"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d59_test(doc) -> [{userdata,[{""}]}];
 bitor_d59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d10_test(doc) -> [{userdata,[{""}]}];
 bitor_d10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d21_test(doc) -> [{userdata,[{""}]}];
 bitor_d21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d32_test(doc) -> [{userdata,[{""}]}];
 bitor_d32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d43_test(doc) -> [{userdata,[{""}]}];
 bitor_d43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_d54_test(doc) -> [{userdata,[{""}]}];
 bitor_d54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","d54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o5_test(doc) -> [{userdata,[{""}]}];
 bitor_o5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o16_test(doc) -> [{userdata,[{""}]}];
 bitor_o16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o27_test(doc) -> [{userdata,[{""}]}];
 bitor_o27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o38_test(doc) -> [{userdata,[{""}]}];
 bitor_o38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o38"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o49_test(doc) -> [{userdata,[{""}]}];
 bitor_o49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o60_test(doc) -> [{userdata,[{""}]}];
 bitor_o60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o11_test(doc) -> [{userdata,[{""}]}];
 bitor_o11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o22_test(doc) -> [{userdata,[{""}]}];
 bitor_o22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o33_test(doc) -> [{userdata,[{""}]}];
 bitor_o33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o44_test(doc) -> [{userdata,[{""}]}];
 bitor_o44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o55_test(doc) -> [{userdata,[{""}]}];
 bitor_o55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o6_test(doc) -> [{userdata,[{""}]}];
 bitor_o6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o17_test(doc) -> [{userdata,[{""}]}];
 bitor_o17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o28_test(doc) -> [{userdata,[{""}]}];
 bitor_o28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o39_test(doc) -> [{userdata,[{""}]}];
 bitor_o39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o39"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o50_test(doc) -> [{userdata,[{""}]}];
 bitor_o50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o61_test(doc) -> [{userdata,[{""}]}];
 bitor_o61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o1_test(doc) -> [{userdata,[{""}]}];
 bitor_o1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o1"),
-  Expected="<cell><value>"++"Logical"++"</value></cell>",
+  Expected="Logical",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o12_test(doc) -> [{userdata,[{""}]}];
 bitor_o12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o34_test(doc) -> [{userdata,[{""}]}];
 bitor_o34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o34"),
-  Expected="<cell><value>"++"13.0"++"</value></cell>",
+  Expected="13.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o45_test(doc) -> [{userdata,[{""}]}];
 bitor_o45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o56_test(doc) -> [{userdata,[{""}]}];
 bitor_o56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o7_test(doc) -> [{userdata,[{""}]}];
 bitor_o7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o18_test(doc) -> [{userdata,[{""}]}];
 bitor_o18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o29_test(doc) -> [{userdata,[{""}]}];
 bitor_o29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o40_test(doc) -> [{userdata,[{""}]}];
 bitor_o40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o40"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o51_test(doc) -> [{userdata,[{""}]}];
 bitor_o51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o62_test(doc) -> [{userdata,[{""}]}];
 bitor_o62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o2_test(doc) -> [{userdata,[{""}]}];
 bitor_o2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o2"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o13_test(doc) -> [{userdata,[{""}]}];
 bitor_o13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o35_test(doc) -> [{userdata,[{""}]}];
 bitor_o35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o35"),
-  Expected="<cell><value>"++"23.0"++"</value></cell>",
+  Expected="23.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o46_test(doc) -> [{userdata,[{""}]}];
 bitor_o46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o57_test(doc) -> [{userdata,[{""}]}];
 bitor_o57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o8_test(doc) -> [{userdata,[{""}]}];
 bitor_o8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o19_test(doc) -> [{userdata,[{""}]}];
 bitor_o19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o30_test(doc) -> [{userdata,[{""}]}];
 bitor_o30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o41_test(doc) -> [{userdata,[{""}]}];
 bitor_o41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o52_test(doc) -> [{userdata,[{""}]}];
 bitor_o52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o63_test(doc) -> [{userdata,[{""}]}];
 bitor_o63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o3_test(doc) -> [{userdata,[{""}]}];
 bitor_o3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o14_test(doc) -> [{userdata,[{""}]}];
 bitor_o14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o25_test(doc) -> [{userdata,[{""}]}];
 bitor_o25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o25"),
-  Expected="<cell><value>"++"Logical"++"</value></cell>",
+  Expected="Logical",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o36_test(doc) -> [{userdata,[{""}]}];
 bitor_o36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o36"),
-  Expected="<cell><value>"++"24921.0"++"</value></cell>",
+  Expected="24921.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o58_test(doc) -> [{userdata,[{""}]}];
 bitor_o58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o9_test(doc) -> [{userdata,[{""}]}];
 bitor_o9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o20_test(doc) -> [{userdata,[{""}]}];
 bitor_o20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o31_test(doc) -> [{userdata,[{""}]}];
 bitor_o31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o42_test(doc) -> [{userdata,[{""}]}];
 bitor_o42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o53_test(doc) -> [{userdata,[{""}]}];
 bitor_o53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o64_test(doc) -> [{userdata,[{""}]}];
 bitor_o64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o4_test(doc) -> [{userdata,[{""}]}];
 bitor_o4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o15_test(doc) -> [{userdata,[{""}]}];
 bitor_o15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o26_test(doc) -> [{userdata,[{""}]}];
 bitor_o26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o26"),
-  Expected="<cell><value>"++"true"++"</value></cell>",
+  Expected="true",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o37_test(doc) -> [{userdata,[{""}]}];
 bitor_o37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o37"),
-  Expected="<cell><value>"++"3.0"++"</value></cell>",
+  Expected="3.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o59_test(doc) -> [{userdata,[{""}]}];
 bitor_o59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o10_test(doc) -> [{userdata,[{""}]}];
 bitor_o10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o21_test(doc) -> [{userdata,[{""}]}];
 bitor_o21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o32_test(doc) -> [{userdata,[{""}]}];
 bitor_o32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o43_test(doc) -> [{userdata,[{""}]}];
 bitor_o43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_o54_test(doc) -> [{userdata,[{""}]}];
 bitor_o54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","o54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e5_test(doc) -> [{userdata,[{""}]}];
 bitor_e5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e16_test(doc) -> [{userdata,[{""}]}];
 bitor_e16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e27_test(doc) -> [{userdata,[{""}]}];
 bitor_e27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e38_test(doc) -> [{userdata,[{""}]}];
 bitor_e38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e38"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e49_test(doc) -> [{userdata,[{""}]}];
 bitor_e49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e60_test(doc) -> [{userdata,[{""}]}];
 bitor_e60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e11_test(doc) -> [{userdata,[{""}]}];
 bitor_e11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e22_test(doc) -> [{userdata,[{""}]}];
 bitor_e22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e33_test(doc) -> [{userdata,[{""}]}];
 bitor_e33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e44_test(doc) -> [{userdata,[{""}]}];
 bitor_e44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e55_test(doc) -> [{userdata,[{""}]}];
 bitor_e55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e6_test(doc) -> [{userdata,[{""}]}];
 bitor_e6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e17_test(doc) -> [{userdata,[{""}]}];
 bitor_e17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e28_test(doc) -> [{userdata,[{""}]}];
 bitor_e28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e39_test(doc) -> [{userdata,[{""}]}];
 bitor_e39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e39"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e50_test(doc) -> [{userdata,[{""}]}];
 bitor_e50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e61_test(doc) -> [{userdata,[{""}]}];
 bitor_e61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e1_test(doc) -> [{userdata,[{""}]}];
 bitor_e1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e1"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e12_test(doc) -> [{userdata,[{""}]}];
 bitor_e12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e34_test(doc) -> [{userdata,[{""}]}];
 bitor_e34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e34"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e45_test(doc) -> [{userdata,[{""}]}];
 bitor_e45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e56_test(doc) -> [{userdata,[{""}]}];
 bitor_e56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e7_test(doc) -> [{userdata,[{""}]}];
 bitor_e7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e18_test(doc) -> [{userdata,[{""}]}];
 bitor_e18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e29_test(doc) -> [{userdata,[{""}]}];
 bitor_e29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e40_test(doc) -> [{userdata,[{""}]}];
 bitor_e40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e40"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e51_test(doc) -> [{userdata,[{""}]}];
 bitor_e51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e62_test(doc) -> [{userdata,[{""}]}];
 bitor_e62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e2_test(doc) -> [{userdata,[{""}]}];
 bitor_e2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e2"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e13_test(doc) -> [{userdata,[{""}]}];
 bitor_e13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e35_test(doc) -> [{userdata,[{""}]}];
 bitor_e35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e35"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e46_test(doc) -> [{userdata,[{""}]}];
 bitor_e46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e57_test(doc) -> [{userdata,[{""}]}];
 bitor_e57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e8_test(doc) -> [{userdata,[{""}]}];
 bitor_e8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e19_test(doc) -> [{userdata,[{""}]}];
 bitor_e19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e30_test(doc) -> [{userdata,[{""}]}];
 bitor_e30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e41_test(doc) -> [{userdata,[{""}]}];
 bitor_e41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e52_test(doc) -> [{userdata,[{""}]}];
 bitor_e52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e63_test(doc) -> [{userdata,[{""}]}];
 bitor_e63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e3_test(doc) -> [{userdata,[{""}]}];
 bitor_e3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e14_test(doc) -> [{userdata,[{""}]}];
 bitor_e14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e25_test(doc) -> [{userdata,[{""}]}];
 bitor_e25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e25"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e36_test(doc) -> [{userdata,[{""}]}];
 bitor_e36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e36"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e58_test(doc) -> [{userdata,[{""}]}];
 bitor_e58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e9_test(doc) -> [{userdata,[{""}]}];
 bitor_e9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e20_test(doc) -> [{userdata,[{""}]}];
 bitor_e20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e31_test(doc) -> [{userdata,[{""}]}];
 bitor_e31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e42_test(doc) -> [{userdata,[{""}]}];
 bitor_e42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e53_test(doc) -> [{userdata,[{""}]}];
 bitor_e53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e64_test(doc) -> [{userdata,[{""}]}];
 bitor_e64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e4_test(doc) -> [{userdata,[{""}]}];
 bitor_e4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e15_test(doc) -> [{userdata,[{""}]}];
 bitor_e15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e26_test(doc) -> [{userdata,[{""}]}];
 bitor_e26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e26"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e37_test(doc) -> [{userdata,[{""}]}];
 bitor_e37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e37"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e59_test(doc) -> [{userdata,[{""}]}];
 bitor_e59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e10_test(doc) -> [{userdata,[{""}]}];
 bitor_e10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e21_test(doc) -> [{userdata,[{""}]}];
 bitor_e21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e32_test(doc) -> [{userdata,[{""}]}];
 bitor_e32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e43_test(doc) -> [{userdata,[{""}]}];
 bitor_e43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_e54_test(doc) -> [{userdata,[{""}]}];
 bitor_e54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","e54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p5_test(doc) -> [{userdata,[{""}]}];
 bitor_p5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p16_test(doc) -> [{userdata,[{""}]}];
 bitor_p16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p27_test(doc) -> [{userdata,[{""}]}];
 bitor_p27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p38_test(doc) -> [{userdata,[{""}]}];
 bitor_p38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p38"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p49_test(doc) -> [{userdata,[{""}]}];
 bitor_p49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p60_test(doc) -> [{userdata,[{""}]}];
 bitor_p60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p11_test(doc) -> [{userdata,[{""}]}];
 bitor_p11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p22_test(doc) -> [{userdata,[{""}]}];
 bitor_p22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p33_test(doc) -> [{userdata,[{""}]}];
 bitor_p33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p44_test(doc) -> [{userdata,[{""}]}];
 bitor_p44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p55_test(doc) -> [{userdata,[{""}]}];
 bitor_p55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p6_test(doc) -> [{userdata,[{""}]}];
 bitor_p6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p17_test(doc) -> [{userdata,[{""}]}];
 bitor_p17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p28_test(doc) -> [{userdata,[{""}]}];
 bitor_p28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p39_test(doc) -> [{userdata,[{""}]}];
 bitor_p39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p39"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p50_test(doc) -> [{userdata,[{""}]}];
 bitor_p50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p61_test(doc) -> [{userdata,[{""}]}];
 bitor_p61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p1_test(doc) -> [{userdata,[{""}]}];
 bitor_p1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p1"),
-  Expected="<cell><value>"++"Logical"++"</value></cell>",
+  Expected="Logical",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p12_test(doc) -> [{userdata,[{""}]}];
 bitor_p12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p34_test(doc) -> [{userdata,[{""}]}];
 bitor_p34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p34"),
-  Expected="<cell><value>"++"12.0"++"</value></cell>",
+  Expected="12.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p45_test(doc) -> [{userdata,[{""}]}];
 bitor_p45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p56_test(doc) -> [{userdata,[{""}]}];
 bitor_p56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p7_test(doc) -> [{userdata,[{""}]}];
 bitor_p7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p18_test(doc) -> [{userdata,[{""}]}];
 bitor_p18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p29_test(doc) -> [{userdata,[{""}]}];
 bitor_p29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p40_test(doc) -> [{userdata,[{""}]}];
 bitor_p40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p40"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p51_test(doc) -> [{userdata,[{""}]}];
 bitor_p51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p62_test(doc) -> [{userdata,[{""}]}];
 bitor_p62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p2_test(doc) -> [{userdata,[{""}]}];
 bitor_p2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p2"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p13_test(doc) -> [{userdata,[{""}]}];
 bitor_p13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p35_test(doc) -> [{userdata,[{""}]}];
 bitor_p35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p35"),
-  Expected="<cell><value>"++"23.0"++"</value></cell>",
+  Expected="23.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p46_test(doc) -> [{userdata,[{""}]}];
 bitor_p46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p57_test(doc) -> [{userdata,[{""}]}];
 bitor_p57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p8_test(doc) -> [{userdata,[{""}]}];
 bitor_p8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p19_test(doc) -> [{userdata,[{""}]}];
 bitor_p19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p30_test(doc) -> [{userdata,[{""}]}];
 bitor_p30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p41_test(doc) -> [{userdata,[{""}]}];
 bitor_p41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p52_test(doc) -> [{userdata,[{""}]}];
 bitor_p52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p63_test(doc) -> [{userdata,[{""}]}];
 bitor_p63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p3_test(doc) -> [{userdata,[{""}]}];
 bitor_p3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p14_test(doc) -> [{userdata,[{""}]}];
 bitor_p14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p25_test(doc) -> [{userdata,[{""}]}];
 bitor_p25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p25"),
-  Expected="<cell><value>"++"Logical"++"</value></cell>",
+  Expected="Logical",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p36_test(doc) -> [{userdata,[{""}]}];
 bitor_p36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p36"),
-  Expected="<cell><value>"++"24920.0"++"</value></cell>",
+  Expected="24920.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p58_test(doc) -> [{userdata,[{""}]}];
 bitor_p58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p9_test(doc) -> [{userdata,[{""}]}];
 bitor_p9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p20_test(doc) -> [{userdata,[{""}]}];
 bitor_p20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p31_test(doc) -> [{userdata,[{""}]}];
 bitor_p31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p42_test(doc) -> [{userdata,[{""}]}];
 bitor_p42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p53_test(doc) -> [{userdata,[{""}]}];
 bitor_p53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p64_test(doc) -> [{userdata,[{""}]}];
 bitor_p64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p4_test(doc) -> [{userdata,[{""}]}];
 bitor_p4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p15_test(doc) -> [{userdata,[{""}]}];
 bitor_p15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p26_test(doc) -> [{userdata,[{""}]}];
 bitor_p26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p26"),
-  Expected="<cell><value>"++"false"++"</value></cell>",
+  Expected="false",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p37_test(doc) -> [{userdata,[{""}]}];
 bitor_p37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p37"),
-  Expected="<cell><value>"++"3.0"++"</value></cell>",
+  Expected="3.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p59_test(doc) -> [{userdata,[{""}]}];
 bitor_p59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p10_test(doc) -> [{userdata,[{""}]}];
 bitor_p10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p21_test(doc) -> [{userdata,[{""}]}];
 bitor_p21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p32_test(doc) -> [{userdata,[{""}]}];
 bitor_p32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p43_test(doc) -> [{userdata,[{""}]}];
 bitor_p43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_p54_test(doc) -> [{userdata,[{""}]}];
 bitor_p54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","p54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f5_test(doc) -> [{userdata,[{""}]}];
 bitor_f5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f16_test(doc) -> [{userdata,[{""}]}];
 bitor_f16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f27_test(doc) -> [{userdata,[{""}]}];
 bitor_f27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f38_test(doc) -> [{userdata,[{""}]}];
 bitor_f38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f38"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f49_test(doc) -> [{userdata,[{""}]}];
 bitor_f49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f60_test(doc) -> [{userdata,[{""}]}];
 bitor_f60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f11_test(doc) -> [{userdata,[{""}]}];
 bitor_f11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f22_test(doc) -> [{userdata,[{""}]}];
 bitor_f22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f33_test(doc) -> [{userdata,[{""}]}];
 bitor_f33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f44_test(doc) -> [{userdata,[{""}]}];
 bitor_f44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f55_test(doc) -> [{userdata,[{""}]}];
 bitor_f55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f55"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f6_test(doc) -> [{userdata,[{""}]}];
 bitor_f6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f17_test(doc) -> [{userdata,[{""}]}];
 bitor_f17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f28_test(doc) -> [{userdata,[{""}]}];
 bitor_f28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f39_test(doc) -> [{userdata,[{""}]}];
 bitor_f39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f39"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f50_test(doc) -> [{userdata,[{""}]}];
 bitor_f50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f61_test(doc) -> [{userdata,[{""}]}];
 bitor_f61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f1_test(doc) -> [{userdata,[{""}]}];
 bitor_f1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f1"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f12_test(doc) -> [{userdata,[{""}]}];
 bitor_f12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f34_test(doc) -> [{userdata,[{""}]}];
 bitor_f34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f34"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f45_test(doc) -> [{userdata,[{""}]}];
 bitor_f45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f56_test(doc) -> [{userdata,[{""}]}];
 bitor_f56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f56"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f7_test(doc) -> [{userdata,[{""}]}];
 bitor_f7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f18_test(doc) -> [{userdata,[{""}]}];
 bitor_f18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f29_test(doc) -> [{userdata,[{""}]}];
 bitor_f29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f40_test(doc) -> [{userdata,[{""}]}];
 bitor_f40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f40"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f51_test(doc) -> [{userdata,[{""}]}];
 bitor_f51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f62_test(doc) -> [{userdata,[{""}]}];
 bitor_f62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f2_test(doc) -> [{userdata,[{""}]}];
 bitor_f2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f2"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f13_test(doc) -> [{userdata,[{""}]}];
 bitor_f13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f35_test(doc) -> [{userdata,[{""}]}];
 bitor_f35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f35"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f46_test(doc) -> [{userdata,[{""}]}];
 bitor_f46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f57_test(doc) -> [{userdata,[{""}]}];
 bitor_f57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f57"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f8_test(doc) -> [{userdata,[{""}]}];
 bitor_f8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f19_test(doc) -> [{userdata,[{""}]}];
 bitor_f19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f30_test(doc) -> [{userdata,[{""}]}];
 bitor_f30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f41_test(doc) -> [{userdata,[{""}]}];
 bitor_f41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f52_test(doc) -> [{userdata,[{""}]}];
 bitor_f52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f52"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f63_test(doc) -> [{userdata,[{""}]}];
 bitor_f63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f3_test(doc) -> [{userdata,[{""}]}];
 bitor_f3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f14_test(doc) -> [{userdata,[{""}]}];
 bitor_f14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f25_test(doc) -> [{userdata,[{""}]}];
 bitor_f25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f25"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f36_test(doc) -> [{userdata,[{""}]}];
 bitor_f36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f36"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f58_test(doc) -> [{userdata,[{""}]}];
 bitor_f58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f58"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f9_test(doc) -> [{userdata,[{""}]}];
 bitor_f9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f20_test(doc) -> [{userdata,[{""}]}];
 bitor_f20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f31_test(doc) -> [{userdata,[{""}]}];
 bitor_f31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f42_test(doc) -> [{userdata,[{""}]}];
 bitor_f42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f53_test(doc) -> [{userdata,[{""}]}];
 bitor_f53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f53"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f64_test(doc) -> [{userdata,[{""}]}];
 bitor_f64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f4_test(doc) -> [{userdata,[{""}]}];
 bitor_f4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f15_test(doc) -> [{userdata,[{""}]}];
 bitor_f15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f26_test(doc) -> [{userdata,[{""}]}];
 bitor_f26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f26"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f37_test(doc) -> [{userdata,[{""}]}];
 bitor_f37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f37"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f59_test(doc) -> [{userdata,[{""}]}];
 bitor_f59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f10_test(doc) -> [{userdata,[{""}]}];
 bitor_f10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f21_test(doc) -> [{userdata,[{""}]}];
 bitor_f21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f32_test(doc) -> [{userdata,[{""}]}];
 bitor_f32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f43_test(doc) -> [{userdata,[{""}]}];
 bitor_f43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_f54_test(doc) -> [{userdata,[{""}]}];
 bitor_f54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","f54"),
-  Expected="<cell><value>"++"1.0"++"</value></cell>",
+  Expected="1.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q5_test(doc) -> [{userdata,[{""}]}];
 bitor_q5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q16_test(doc) -> [{userdata,[{""}]}];
 bitor_q16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q27_test(doc) -> [{userdata,[{""}]}];
 bitor_q27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q38_test(doc) -> [{userdata,[{""}]}];
 bitor_q38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q38"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q49_test(doc) -> [{userdata,[{""}]}];
 bitor_q49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q60_test(doc) -> [{userdata,[{""}]}];
 bitor_q60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q11_test(doc) -> [{userdata,[{""}]}];
 bitor_q11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q22_test(doc) -> [{userdata,[{""}]}];
 bitor_q22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q33_test(doc) -> [{userdata,[{""}]}];
 bitor_q33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q44_test(doc) -> [{userdata,[{""}]}];
 bitor_q44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q55_test(doc) -> [{userdata,[{""}]}];
 bitor_q55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q6_test(doc) -> [{userdata,[{""}]}];
 bitor_q6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q17_test(doc) -> [{userdata,[{""}]}];
 bitor_q17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q28_test(doc) -> [{userdata,[{""}]}];
 bitor_q28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q39_test(doc) -> [{userdata,[{""}]}];
 bitor_q39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q39"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q50_test(doc) -> [{userdata,[{""}]}];
 bitor_q50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q61_test(doc) -> [{userdata,[{""}]}];
 bitor_q61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q1_test(doc) -> [{userdata,[{""}]}];
 bitor_q1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q1"),
-  Expected="<cell><value>"++"Range Row"++"</value></cell>",
+  Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q12_test(doc) -> [{userdata,[{""}]}];
 bitor_q12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q34_test(doc) -> [{userdata,[{""}]}];
 bitor_q34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q45_test(doc) -> [{userdata,[{""}]}];
 bitor_q45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q56_test(doc) -> [{userdata,[{""}]}];
 bitor_q56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q7_test(doc) -> [{userdata,[{""}]}];
 bitor_q7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q18_test(doc) -> [{userdata,[{""}]}];
 bitor_q18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q29_test(doc) -> [{userdata,[{""}]}];
 bitor_q29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q40_test(doc) -> [{userdata,[{""}]}];
 bitor_q40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q40"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q51_test(doc) -> [{userdata,[{""}]}];
 bitor_q51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q62_test(doc) -> [{userdata,[{""}]}];
 bitor_q62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q2_test(doc) -> [{userdata,[{""}]}];
 bitor_q2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q2"),
-  Expected="<cell><value>"++"X3:Y3"++"</value></cell>",
+  Expected="X3:Y3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q13_test(doc) -> [{userdata,[{""}]}];
 bitor_q13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q35_test(doc) -> [{userdata,[{""}]}];
 bitor_q35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q35"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q46_test(doc) -> [{userdata,[{""}]}];
 bitor_q46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q57_test(doc) -> [{userdata,[{""}]}];
 bitor_q57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q8_test(doc) -> [{userdata,[{""}]}];
 bitor_q8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q19_test(doc) -> [{userdata,[{""}]}];
 bitor_q19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q30_test(doc) -> [{userdata,[{""}]}];
 bitor_q30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q41_test(doc) -> [{userdata,[{""}]}];
 bitor_q41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q52_test(doc) -> [{userdata,[{""}]}];
 bitor_q52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q63_test(doc) -> [{userdata,[{""}]}];
 bitor_q63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q3_test(doc) -> [{userdata,[{""}]}];
 bitor_q3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q14_test(doc) -> [{userdata,[{""}]}];
 bitor_q14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q25_test(doc) -> [{userdata,[{""}]}];
 bitor_q25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q25"),
-  Expected="<cell><value>"++"Range Row"++"</value></cell>",
+  Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q36_test(doc) -> [{userdata,[{""}]}];
 bitor_q36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q36"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q58_test(doc) -> [{userdata,[{""}]}];
 bitor_q58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q9_test(doc) -> [{userdata,[{""}]}];
 bitor_q9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q20_test(doc) -> [{userdata,[{""}]}];
 bitor_q20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q31_test(doc) -> [{userdata,[{""}]}];
 bitor_q31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q42_test(doc) -> [{userdata,[{""}]}];
 bitor_q42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q53_test(doc) -> [{userdata,[{""}]}];
 bitor_q53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q64_test(doc) -> [{userdata,[{""}]}];
 bitor_q64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q4_test(doc) -> [{userdata,[{""}]}];
 bitor_q4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q15_test(doc) -> [{userdata,[{""}]}];
 bitor_q15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q26_test(doc) -> [{userdata,[{""}]}];
 bitor_q26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q26"),
-  Expected="<cell><value>"++"X3:Y3"++"</value></cell>",
+  Expected="X3:Y3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q37_test(doc) -> [{userdata,[{""}]}];
 bitor_q37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q37"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q59_test(doc) -> [{userdata,[{""}]}];
 bitor_q59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q10_test(doc) -> [{userdata,[{""}]}];
 bitor_q10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q21_test(doc) -> [{userdata,[{""}]}];
 bitor_q21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q32_test(doc) -> [{userdata,[{""}]}];
 bitor_q32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q43_test(doc) -> [{userdata,[{""}]}];
 bitor_q43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_q54_test(doc) -> [{userdata,[{""}]}];
 bitor_q54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","q54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g5_test(doc) -> [{userdata,[{""}]}];
 bitor_g5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g16_test(doc) -> [{userdata,[{""}]}];
 bitor_g16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g27_test(doc) -> [{userdata,[{""}]}];
 bitor_g27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g38_test(doc) -> [{userdata,[{""}]}];
 bitor_g38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g38"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g49_test(doc) -> [{userdata,[{""}]}];
 bitor_g49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g60_test(doc) -> [{userdata,[{""}]}];
 bitor_g60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g11_test(doc) -> [{userdata,[{""}]}];
 bitor_g11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g22_test(doc) -> [{userdata,[{""}]}];
 bitor_g22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g33_test(doc) -> [{userdata,[{""}]}];
 bitor_g33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g44_test(doc) -> [{userdata,[{""}]}];
 bitor_g44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g55_test(doc) -> [{userdata,[{""}]}];
 bitor_g55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g6_test(doc) -> [{userdata,[{""}]}];
 bitor_g6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g17_test(doc) -> [{userdata,[{""}]}];
 bitor_g17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g28_test(doc) -> [{userdata,[{""}]}];
 bitor_g28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g39_test(doc) -> [{userdata,[{""}]}];
 bitor_g39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g39"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g50_test(doc) -> [{userdata,[{""}]}];
 bitor_g50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g61_test(doc) -> [{userdata,[{""}]}];
 bitor_g61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g1_test(doc) -> [{userdata,[{""}]}];
 bitor_g1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g1"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g12_test(doc) -> [{userdata,[{""}]}];
 bitor_g12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g34_test(doc) -> [{userdata,[{""}]}];
 bitor_g34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g34"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g45_test(doc) -> [{userdata,[{""}]}];
 bitor_g45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g56_test(doc) -> [{userdata,[{""}]}];
 bitor_g56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g7_test(doc) -> [{userdata,[{""}]}];
 bitor_g7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g18_test(doc) -> [{userdata,[{""}]}];
 bitor_g18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g29_test(doc) -> [{userdata,[{""}]}];
 bitor_g29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g40_test(doc) -> [{userdata,[{""}]}];
 bitor_g40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g40"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g51_test(doc) -> [{userdata,[{""}]}];
 bitor_g51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g62_test(doc) -> [{userdata,[{""}]}];
 bitor_g62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g2_test(doc) -> [{userdata,[{""}]}];
 bitor_g2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g2"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g13_test(doc) -> [{userdata,[{""}]}];
 bitor_g13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g35_test(doc) -> [{userdata,[{""}]}];
 bitor_g35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g35"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g46_test(doc) -> [{userdata,[{""}]}];
 bitor_g46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g57_test(doc) -> [{userdata,[{""}]}];
 bitor_g57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g8_test(doc) -> [{userdata,[{""}]}];
 bitor_g8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g19_test(doc) -> [{userdata,[{""}]}];
 bitor_g19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g30_test(doc) -> [{userdata,[{""}]}];
 bitor_g30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g41_test(doc) -> [{userdata,[{""}]}];
 bitor_g41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g52_test(doc) -> [{userdata,[{""}]}];
 bitor_g52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g63_test(doc) -> [{userdata,[{""}]}];
 bitor_g63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g3_test(doc) -> [{userdata,[{""}]}];
 bitor_g3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g14_test(doc) -> [{userdata,[{""}]}];
 bitor_g14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g25_test(doc) -> [{userdata,[{""}]}];
 bitor_g25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g25"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g36_test(doc) -> [{userdata,[{""}]}];
 bitor_g36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g36"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g58_test(doc) -> [{userdata,[{""}]}];
 bitor_g58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g9_test(doc) -> [{userdata,[{""}]}];
 bitor_g9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g20_test(doc) -> [{userdata,[{""}]}];
 bitor_g20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g31_test(doc) -> [{userdata,[{""}]}];
 bitor_g31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g42_test(doc) -> [{userdata,[{""}]}];
 bitor_g42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g53_test(doc) -> [{userdata,[{""}]}];
 bitor_g53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g64_test(doc) -> [{userdata,[{""}]}];
 bitor_g64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g4_test(doc) -> [{userdata,[{""}]}];
 bitor_g4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g15_test(doc) -> [{userdata,[{""}]}];
 bitor_g15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g26_test(doc) -> [{userdata,[{""}]}];
 bitor_g26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g26"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g37_test(doc) -> [{userdata,[{""}]}];
 bitor_g37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g37"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g59_test(doc) -> [{userdata,[{""}]}];
 bitor_g59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g10_test(doc) -> [{userdata,[{""}]}];
 bitor_g10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g21_test(doc) -> [{userdata,[{""}]}];
 bitor_g21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g32_test(doc) -> [{userdata,[{""}]}];
 bitor_g32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g43_test(doc) -> [{userdata,[{""}]}];
 bitor_g43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_g54_test(doc) -> [{userdata,[{""}]}];
 bitor_g54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","g54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r5_test(doc) -> [{userdata,[{""}]}];
 bitor_r5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r16_test(doc) -> [{userdata,[{""}]}];
 bitor_r16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r27_test(doc) -> [{userdata,[{""}]}];
 bitor_r27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r38_test(doc) -> [{userdata,[{""}]}];
 bitor_r38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r38"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r49_test(doc) -> [{userdata,[{""}]}];
 bitor_r49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r60_test(doc) -> [{userdata,[{""}]}];
 bitor_r60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r11_test(doc) -> [{userdata,[{""}]}];
 bitor_r11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r22_test(doc) -> [{userdata,[{""}]}];
 bitor_r22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r33_test(doc) -> [{userdata,[{""}]}];
 bitor_r33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r44_test(doc) -> [{userdata,[{""}]}];
 bitor_r44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r55_test(doc) -> [{userdata,[{""}]}];
 bitor_r55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r6_test(doc) -> [{userdata,[{""}]}];
 bitor_r6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r17_test(doc) -> [{userdata,[{""}]}];
 bitor_r17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r28_test(doc) -> [{userdata,[{""}]}];
 bitor_r28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r39_test(doc) -> [{userdata,[{""}]}];
 bitor_r39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r39"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r50_test(doc) -> [{userdata,[{""}]}];
 bitor_r50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r61_test(doc) -> [{userdata,[{""}]}];
 bitor_r61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r1_test(doc) -> [{userdata,[{""}]}];
 bitor_r1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r1"),
-  Expected="<cell><value>"++"Range Row"++"</value></cell>",
+  Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r12_test(doc) -> [{userdata,[{""}]}];
 bitor_r12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r34_test(doc) -> [{userdata,[{""}]}];
 bitor_r34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r45_test(doc) -> [{userdata,[{""}]}];
 bitor_r45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r56_test(doc) -> [{userdata,[{""}]}];
 bitor_r56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r7_test(doc) -> [{userdata,[{""}]}];
 bitor_r7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r18_test(doc) -> [{userdata,[{""}]}];
 bitor_r18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r29_test(doc) -> [{userdata,[{""}]}];
 bitor_r29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r40_test(doc) -> [{userdata,[{""}]}];
 bitor_r40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r40"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r51_test(doc) -> [{userdata,[{""}]}];
 bitor_r51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r62_test(doc) -> [{userdata,[{""}]}];
 bitor_r62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r2_test(doc) -> [{userdata,[{""}]}];
 bitor_r2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r2"),
-  Expected="<cell><value>"++"X3:AA3"++"</value></cell>",
+  Expected="X3:AA3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r13_test(doc) -> [{userdata,[{""}]}];
 bitor_r13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r35_test(doc) -> [{userdata,[{""}]}];
 bitor_r35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r35"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r46_test(doc) -> [{userdata,[{""}]}];
 bitor_r46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r57_test(doc) -> [{userdata,[{""}]}];
 bitor_r57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r8_test(doc) -> [{userdata,[{""}]}];
 bitor_r8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r19_test(doc) -> [{userdata,[{""}]}];
 bitor_r19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r30_test(doc) -> [{userdata,[{""}]}];
 bitor_r30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r41_test(doc) -> [{userdata,[{""}]}];
 bitor_r41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r52_test(doc) -> [{userdata,[{""}]}];
 bitor_r52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r63_test(doc) -> [{userdata,[{""}]}];
 bitor_r63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r3_test(doc) -> [{userdata,[{""}]}];
 bitor_r3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r14_test(doc) -> [{userdata,[{""}]}];
 bitor_r14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r25_test(doc) -> [{userdata,[{""}]}];
 bitor_r25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r25"),
-  Expected="<cell><value>"++"Range Row"++"</value></cell>",
+  Expected="Range Row",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r36_test(doc) -> [{userdata,[{""}]}];
 bitor_r36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r36"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r58_test(doc) -> [{userdata,[{""}]}];
 bitor_r58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r9_test(doc) -> [{userdata,[{""}]}];
 bitor_r9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r20_test(doc) -> [{userdata,[{""}]}];
 bitor_r20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r31_test(doc) -> [{userdata,[{""}]}];
 bitor_r31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r42_test(doc) -> [{userdata,[{""}]}];
 bitor_r42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r53_test(doc) -> [{userdata,[{""}]}];
 bitor_r53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r64_test(doc) -> [{userdata,[{""}]}];
 bitor_r64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r4_test(doc) -> [{userdata,[{""}]}];
 bitor_r4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r15_test(doc) -> [{userdata,[{""}]}];
 bitor_r15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r26_test(doc) -> [{userdata,[{""}]}];
 bitor_r26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r26"),
-  Expected="<cell><value>"++"X3:AA3"++"</value></cell>",
+  Expected="X3:AA3",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r37_test(doc) -> [{userdata,[{""}]}];
 bitor_r37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r37"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r59_test(doc) -> [{userdata,[{""}]}];
 bitor_r59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r10_test(doc) -> [{userdata,[{""}]}];
 bitor_r10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r21_test(doc) -> [{userdata,[{""}]}];
 bitor_r21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r32_test(doc) -> [{userdata,[{""}]}];
 bitor_r32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r43_test(doc) -> [{userdata,[{""}]}];
 bitor_r43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_r54_test(doc) -> [{userdata,[{""}]}];
 bitor_r54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","r54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h5_test(doc) -> [{userdata,[{""}]}];
 bitor_h5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h16_test(doc) -> [{userdata,[{""}]}];
 bitor_h16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h27_test(doc) -> [{userdata,[{""}]}];
 bitor_h27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h38_test(doc) -> [{userdata,[{""}]}];
 bitor_h38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h38"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h49_test(doc) -> [{userdata,[{""}]}];
 bitor_h49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h60_test(doc) -> [{userdata,[{""}]}];
 bitor_h60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h11_test(doc) -> [{userdata,[{""}]}];
 bitor_h11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h22_test(doc) -> [{userdata,[{""}]}];
 bitor_h22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h33_test(doc) -> [{userdata,[{""}]}];
 bitor_h33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h44_test(doc) -> [{userdata,[{""}]}];
 bitor_h44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h55_test(doc) -> [{userdata,[{""}]}];
 bitor_h55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h6_test(doc) -> [{userdata,[{""}]}];
 bitor_h6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h17_test(doc) -> [{userdata,[{""}]}];
 bitor_h17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h28_test(doc) -> [{userdata,[{""}]}];
 bitor_h28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h39_test(doc) -> [{userdata,[{""}]}];
 bitor_h39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h39"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h50_test(doc) -> [{userdata,[{""}]}];
 bitor_h50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h61_test(doc) -> [{userdata,[{""}]}];
 bitor_h61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h1_test(doc) -> [{userdata,[{""}]}];
 bitor_h1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h1"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h12_test(doc) -> [{userdata,[{""}]}];
 bitor_h12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h34_test(doc) -> [{userdata,[{""}]}];
 bitor_h34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h34"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h45_test(doc) -> [{userdata,[{""}]}];
 bitor_h45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h56_test(doc) -> [{userdata,[{""}]}];
 bitor_h56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h7_test(doc) -> [{userdata,[{""}]}];
 bitor_h7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h18_test(doc) -> [{userdata,[{""}]}];
 bitor_h18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h29_test(doc) -> [{userdata,[{""}]}];
 bitor_h29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h40_test(doc) -> [{userdata,[{""}]}];
 bitor_h40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h40"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h51_test(doc) -> [{userdata,[{""}]}];
 bitor_h51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h62_test(doc) -> [{userdata,[{""}]}];
 bitor_h62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h2_test(doc) -> [{userdata,[{""}]}];
 bitor_h2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h2"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h13_test(doc) -> [{userdata,[{""}]}];
 bitor_h13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h35_test(doc) -> [{userdata,[{""}]}];
 bitor_h35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h35"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h46_test(doc) -> [{userdata,[{""}]}];
 bitor_h46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h57_test(doc) -> [{userdata,[{""}]}];
 bitor_h57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h8_test(doc) -> [{userdata,[{""}]}];
 bitor_h8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h19_test(doc) -> [{userdata,[{""}]}];
 bitor_h19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h30_test(doc) -> [{userdata,[{""}]}];
 bitor_h30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h41_test(doc) -> [{userdata,[{""}]}];
 bitor_h41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h52_test(doc) -> [{userdata,[{""}]}];
 bitor_h52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h63_test(doc) -> [{userdata,[{""}]}];
 bitor_h63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h3_test(doc) -> [{userdata,[{""}]}];
 bitor_h3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h14_test(doc) -> [{userdata,[{""}]}];
 bitor_h14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h25_test(doc) -> [{userdata,[{""}]}];
 bitor_h25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h25"),
-  Expected="<cell><value>"++"errors"++"</value></cell>",
+  Expected="errors",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h36_test(doc) -> [{userdata,[{""}]}];
 bitor_h36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h36"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h58_test(doc) -> [{userdata,[{""}]}];
 bitor_h58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h9_test(doc) -> [{userdata,[{""}]}];
 bitor_h9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h20_test(doc) -> [{userdata,[{""}]}];
 bitor_h20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h31_test(doc) -> [{userdata,[{""}]}];
 bitor_h31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h42_test(doc) -> [{userdata,[{""}]}];
 bitor_h42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h53_test(doc) -> [{userdata,[{""}]}];
 bitor_h53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h64_test(doc) -> [{userdata,[{""}]}];
 bitor_h64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h4_test(doc) -> [{userdata,[{""}]}];
 bitor_h4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h15_test(doc) -> [{userdata,[{""}]}];
 bitor_h15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h26_test(doc) -> [{userdata,[{""}]}];
 bitor_h26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h26"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h37_test(doc) -> [{userdata,[{""}]}];
 bitor_h37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h37"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h59_test(doc) -> [{userdata,[{""}]}];
 bitor_h59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h10_test(doc) -> [{userdata,[{""}]}];
 bitor_h10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h21_test(doc) -> [{userdata,[{""}]}];
 bitor_h21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h32_test(doc) -> [{userdata,[{""}]}];
 bitor_h32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h43_test(doc) -> [{userdata,[{""}]}];
 bitor_h43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_h54_test(doc) -> [{userdata,[{""}]}];
 bitor_h54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","h54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s5_test(doc) -> [{userdata,[{""}]}];
 bitor_s5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s16_test(doc) -> [{userdata,[{""}]}];
 bitor_s16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s27_test(doc) -> [{userdata,[{""}]}];
 bitor_s27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s38_test(doc) -> [{userdata,[{""}]}];
 bitor_s38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s38"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s49_test(doc) -> [{userdata,[{""}]}];
 bitor_s49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s60_test(doc) -> [{userdata,[{""}]}];
 bitor_s60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s11_test(doc) -> [{userdata,[{""}]}];
 bitor_s11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s22_test(doc) -> [{userdata,[{""}]}];
 bitor_s22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s33_test(doc) -> [{userdata,[{""}]}];
 bitor_s33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s44_test(doc) -> [{userdata,[{""}]}];
 bitor_s44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s55_test(doc) -> [{userdata,[{""}]}];
 bitor_s55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s6_test(doc) -> [{userdata,[{""}]}];
 bitor_s6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s17_test(doc) -> [{userdata,[{""}]}];
 bitor_s17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s28_test(doc) -> [{userdata,[{""}]}];
 bitor_s28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s39_test(doc) -> [{userdata,[{""}]}];
 bitor_s39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s39"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s50_test(doc) -> [{userdata,[{""}]}];
 bitor_s50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s61_test(doc) -> [{userdata,[{""}]}];
 bitor_s61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s1_test(doc) -> [{userdata,[{""}]}];
 bitor_s1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s1"),
-  Expected="<cell><value>"++"Range Area"++"</value></cell>",
+  Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s12_test(doc) -> [{userdata,[{""}]}];
 bitor_s12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s34_test(doc) -> [{userdata,[{""}]}];
 bitor_s34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s45_test(doc) -> [{userdata,[{""}]}];
 bitor_s45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s56_test(doc) -> [{userdata,[{""}]}];
 bitor_s56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s7_test(doc) -> [{userdata,[{""}]}];
 bitor_s7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s18_test(doc) -> [{userdata,[{""}]}];
 bitor_s18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s29_test(doc) -> [{userdata,[{""}]}];
 bitor_s29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s40_test(doc) -> [{userdata,[{""}]}];
 bitor_s40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s40"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s51_test(doc) -> [{userdata,[{""}]}];
 bitor_s51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s62_test(doc) -> [{userdata,[{""}]}];
 bitor_s62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s2_test(doc) -> [{userdata,[{""}]}];
 bitor_s2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s2"),
-  Expected="<cell><value>"++"X3:Y4"++"</value></cell>",
+  Expected="X3:Y4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s13_test(doc) -> [{userdata,[{""}]}];
 bitor_s13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s35_test(doc) -> [{userdata,[{""}]}];
 bitor_s35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s35"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s46_test(doc) -> [{userdata,[{""}]}];
 bitor_s46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s57_test(doc) -> [{userdata,[{""}]}];
 bitor_s57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s8_test(doc) -> [{userdata,[{""}]}];
 bitor_s8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s19_test(doc) -> [{userdata,[{""}]}];
 bitor_s19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s30_test(doc) -> [{userdata,[{""}]}];
 bitor_s30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s41_test(doc) -> [{userdata,[{""}]}];
 bitor_s41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s52_test(doc) -> [{userdata,[{""}]}];
 bitor_s52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s63_test(doc) -> [{userdata,[{""}]}];
 bitor_s63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s3_test(doc) -> [{userdata,[{""}]}];
 bitor_s3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s14_test(doc) -> [{userdata,[{""}]}];
 bitor_s14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s25_test(doc) -> [{userdata,[{""}]}];
 bitor_s25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s25"),
-  Expected="<cell><value>"++"Range Area"++"</value></cell>",
+  Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s36_test(doc) -> [{userdata,[{""}]}];
 bitor_s36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s36"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s58_test(doc) -> [{userdata,[{""}]}];
 bitor_s58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s9_test(doc) -> [{userdata,[{""}]}];
 bitor_s9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s20_test(doc) -> [{userdata,[{""}]}];
 bitor_s20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s31_test(doc) -> [{userdata,[{""}]}];
 bitor_s31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s42_test(doc) -> [{userdata,[{""}]}];
 bitor_s42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s53_test(doc) -> [{userdata,[{""}]}];
 bitor_s53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s64_test(doc) -> [{userdata,[{""}]}];
 bitor_s64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s4_test(doc) -> [{userdata,[{""}]}];
 bitor_s4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s15_test(doc) -> [{userdata,[{""}]}];
 bitor_s15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s26_test(doc) -> [{userdata,[{""}]}];
 bitor_s26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s26"),
-  Expected="<cell><value>"++"X3:Y4"++"</value></cell>",
+  Expected="X3:Y4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s37_test(doc) -> [{userdata,[{""}]}];
 bitor_s37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s37"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s59_test(doc) -> [{userdata,[{""}]}];
 bitor_s59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s10_test(doc) -> [{userdata,[{""}]}];
 bitor_s10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s21_test(doc) -> [{userdata,[{""}]}];
 bitor_s21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s32_test(doc) -> [{userdata,[{""}]}];
 bitor_s32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s43_test(doc) -> [{userdata,[{""}]}];
 bitor_s43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_s54_test(doc) -> [{userdata,[{""}]}];
 bitor_s54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","s54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i5_test(doc) -> [{userdata,[{""}]}];
 bitor_i5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i16_test(doc) -> [{userdata,[{""}]}];
 bitor_i16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i27_test(doc) -> [{userdata,[{""}]}];
 bitor_i27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i38_test(doc) -> [{userdata,[{""}]}];
 bitor_i38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i38"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i49_test(doc) -> [{userdata,[{""}]}];
 bitor_i49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i60_test(doc) -> [{userdata,[{""}]}];
 bitor_i60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i11_test(doc) -> [{userdata,[{""}]}];
 bitor_i11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i22_test(doc) -> [{userdata,[{""}]}];
 bitor_i22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i33_test(doc) -> [{userdata,[{""}]}];
 bitor_i33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i44_test(doc) -> [{userdata,[{""}]}];
 bitor_i44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i55_test(doc) -> [{userdata,[{""}]}];
 bitor_i55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i6_test(doc) -> [{userdata,[{""}]}];
 bitor_i6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i17_test(doc) -> [{userdata,[{""}]}];
 bitor_i17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i28_test(doc) -> [{userdata,[{""}]}];
 bitor_i28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i39_test(doc) -> [{userdata,[{""}]}];
 bitor_i39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i39"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i50_test(doc) -> [{userdata,[{""}]}];
 bitor_i50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i61_test(doc) -> [{userdata,[{""}]}];
 bitor_i61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i1_test(doc) -> [{userdata,[{""}]}];
 bitor_i1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i1"),
-  Expected="<cell><value>"++"String"++"</value></cell>",
+  Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i12_test(doc) -> [{userdata,[{""}]}];
 bitor_i12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i34_test(doc) -> [{userdata,[{""}]}];
 bitor_i34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i45_test(doc) -> [{userdata,[{""}]}];
 bitor_i45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i56_test(doc) -> [{userdata,[{""}]}];
 bitor_i56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i7_test(doc) -> [{userdata,[{""}]}];
 bitor_i7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i18_test(doc) -> [{userdata,[{""}]}];
 bitor_i18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i29_test(doc) -> [{userdata,[{""}]}];
 bitor_i29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i40_test(doc) -> [{userdata,[{""}]}];
 bitor_i40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i40"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i51_test(doc) -> [{userdata,[{""}]}];
 bitor_i51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i62_test(doc) -> [{userdata,[{""}]}];
 bitor_i62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i2_test(doc) -> [{userdata,[{""}]}];
 bitor_i2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i2"),
-  Expected="<cell><value>"++"Phillip"++"</value></cell>",
+  Expected="Phillip",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i13_test(doc) -> [{userdata,[{""}]}];
 bitor_i13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i35_test(doc) -> [{userdata,[{""}]}];
 bitor_i35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i35"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i46_test(doc) -> [{userdata,[{""}]}];
 bitor_i46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i57_test(doc) -> [{userdata,[{""}]}];
 bitor_i57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i8_test(doc) -> [{userdata,[{""}]}];
 bitor_i8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i19_test(doc) -> [{userdata,[{""}]}];
 bitor_i19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i30_test(doc) -> [{userdata,[{""}]}];
 bitor_i30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i41_test(doc) -> [{userdata,[{""}]}];
 bitor_i41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i52_test(doc) -> [{userdata,[{""}]}];
 bitor_i52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i63_test(doc) -> [{userdata,[{""}]}];
 bitor_i63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i3_test(doc) -> [{userdata,[{""}]}];
 bitor_i3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i14_test(doc) -> [{userdata,[{""}]}];
 bitor_i14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i25_test(doc) -> [{userdata,[{""}]}];
 bitor_i25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i25"),
-  Expected="<cell><value>"++"String"++"</value></cell>",
+  Expected="String",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i36_test(doc) -> [{userdata,[{""}]}];
 bitor_i36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i36"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i58_test(doc) -> [{userdata,[{""}]}];
 bitor_i58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i9_test(doc) -> [{userdata,[{""}]}];
 bitor_i9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i20_test(doc) -> [{userdata,[{""}]}];
 bitor_i20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i31_test(doc) -> [{userdata,[{""}]}];
 bitor_i31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i42_test(doc) -> [{userdata,[{""}]}];
 bitor_i42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i53_test(doc) -> [{userdata,[{""}]}];
 bitor_i53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i64_test(doc) -> [{userdata,[{""}]}];
 bitor_i64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i4_test(doc) -> [{userdata,[{""}]}];
 bitor_i4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i15_test(doc) -> [{userdata,[{""}]}];
 bitor_i15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i26_test(doc) -> [{userdata,[{""}]}];
 bitor_i26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i26"),
-  Expected="<cell><value>"++"Phillip"++"</value></cell>",
+  Expected="Phillip",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i37_test(doc) -> [{userdata,[{""}]}];
 bitor_i37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i37"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i59_test(doc) -> [{userdata,[{""}]}];
 bitor_i59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i10_test(doc) -> [{userdata,[{""}]}];
 bitor_i10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i21_test(doc) -> [{userdata,[{""}]}];
 bitor_i21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i32_test(doc) -> [{userdata,[{""}]}];
 bitor_i32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i43_test(doc) -> [{userdata,[{""}]}];
 bitor_i43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_i54_test(doc) -> [{userdata,[{""}]}];
 bitor_i54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","i54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t5_test(doc) -> [{userdata,[{""}]}];
 bitor_t5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t16_test(doc) -> [{userdata,[{""}]}];
 bitor_t16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t27_test(doc) -> [{userdata,[{""}]}];
 bitor_t27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t38_test(doc) -> [{userdata,[{""}]}];
 bitor_t38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t38"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t49_test(doc) -> [{userdata,[{""}]}];
 bitor_t49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t60_test(doc) -> [{userdata,[{""}]}];
 bitor_t60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t11_test(doc) -> [{userdata,[{""}]}];
 bitor_t11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t22_test(doc) -> [{userdata,[{""}]}];
 bitor_t22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t33_test(doc) -> [{userdata,[{""}]}];
 bitor_t33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t44_test(doc) -> [{userdata,[{""}]}];
 bitor_t44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t55_test(doc) -> [{userdata,[{""}]}];
 bitor_t55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t6_test(doc) -> [{userdata,[{""}]}];
 bitor_t6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t17_test(doc) -> [{userdata,[{""}]}];
 bitor_t17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t28_test(doc) -> [{userdata,[{""}]}];
 bitor_t28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t39_test(doc) -> [{userdata,[{""}]}];
 bitor_t39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t39"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t50_test(doc) -> [{userdata,[{""}]}];
 bitor_t50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t61_test(doc) -> [{userdata,[{""}]}];
 bitor_t61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t1_test(doc) -> [{userdata,[{""}]}];
 bitor_t1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t1"),
-  Expected="<cell><value>"++"Range Area"++"</value></cell>",
+  Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t12_test(doc) -> [{userdata,[{""}]}];
 bitor_t12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t34_test(doc) -> [{userdata,[{""}]}];
 bitor_t34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t45_test(doc) -> [{userdata,[{""}]}];
 bitor_t45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t56_test(doc) -> [{userdata,[{""}]}];
 bitor_t56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t7_test(doc) -> [{userdata,[{""}]}];
 bitor_t7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t18_test(doc) -> [{userdata,[{""}]}];
 bitor_t18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t29_test(doc) -> [{userdata,[{""}]}];
 bitor_t29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t40_test(doc) -> [{userdata,[{""}]}];
 bitor_t40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t40"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t51_test(doc) -> [{userdata,[{""}]}];
 bitor_t51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t62_test(doc) -> [{userdata,[{""}]}];
 bitor_t62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t2_test(doc) -> [{userdata,[{""}]}];
 bitor_t2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t2"),
-  Expected="<cell><value>"++"X3:AA6"++"</value></cell>",
+  Expected="X3:AA6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t13_test(doc) -> [{userdata,[{""}]}];
 bitor_t13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t35_test(doc) -> [{userdata,[{""}]}];
 bitor_t35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t35"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t46_test(doc) -> [{userdata,[{""}]}];
 bitor_t46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t57_test(doc) -> [{userdata,[{""}]}];
 bitor_t57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t8_test(doc) -> [{userdata,[{""}]}];
 bitor_t8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t19_test(doc) -> [{userdata,[{""}]}];
 bitor_t19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t30_test(doc) -> [{userdata,[{""}]}];
 bitor_t30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t41_test(doc) -> [{userdata,[{""}]}];
 bitor_t41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t52_test(doc) -> [{userdata,[{""}]}];
 bitor_t52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t63_test(doc) -> [{userdata,[{""}]}];
 bitor_t63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t3_test(doc) -> [{userdata,[{""}]}];
 bitor_t3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t14_test(doc) -> [{userdata,[{""}]}];
 bitor_t14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t25_test(doc) -> [{userdata,[{""}]}];
 bitor_t25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t25"),
-  Expected="<cell><value>"++"Range Area"++"</value></cell>",
+  Expected="Range Area",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t36_test(doc) -> [{userdata,[{""}]}];
 bitor_t36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t36"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t58_test(doc) -> [{userdata,[{""}]}];
 bitor_t58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t9_test(doc) -> [{userdata,[{""}]}];
 bitor_t9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t20_test(doc) -> [{userdata,[{""}]}];
 bitor_t20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t31_test(doc) -> [{userdata,[{""}]}];
 bitor_t31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t42_test(doc) -> [{userdata,[{""}]}];
 bitor_t42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t53_test(doc) -> [{userdata,[{""}]}];
 bitor_t53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t64_test(doc) -> [{userdata,[{""}]}];
 bitor_t64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t4_test(doc) -> [{userdata,[{""}]}];
 bitor_t4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t15_test(doc) -> [{userdata,[{""}]}];
 bitor_t15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t26_test(doc) -> [{userdata,[{""}]}];
 bitor_t26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t26"),
-  Expected="<cell><value>"++"X3:AA6"++"</value></cell>",
+  Expected="X3:AA6",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t37_test(doc) -> [{userdata,[{""}]}];
 bitor_t37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t37"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t59_test(doc) -> [{userdata,[{""}]}];
 bitor_t59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t10_test(doc) -> [{userdata,[{""}]}];
 bitor_t10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t21_test(doc) -> [{userdata,[{""}]}];
 bitor_t21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t32_test(doc) -> [{userdata,[{""}]}];
 bitor_t32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t43_test(doc) -> [{userdata,[{""}]}];
 bitor_t43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_t54_test(doc) -> [{userdata,[{""}]}];
 bitor_t54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","t54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j5_test(doc) -> [{userdata,[{""}]}];
 bitor_j5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j16_test(doc) -> [{userdata,[{""}]}];
 bitor_j16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j27_test(doc) -> [{userdata,[{""}]}];
 bitor_j27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j38_test(doc) -> [{userdata,[{""}]}];
 bitor_j38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j38"),
-  Expected="<cell><value>"++"13.0"++"</value></cell>",
+  Expected="13.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j49_test(doc) -> [{userdata,[{""}]}];
 bitor_j49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j60_test(doc) -> [{userdata,[{""}]}];
 bitor_j60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j11_test(doc) -> [{userdata,[{""}]}];
 bitor_j11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j22_test(doc) -> [{userdata,[{""}]}];
 bitor_j22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j33_test(doc) -> [{userdata,[{""}]}];
 bitor_j33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j44_test(doc) -> [{userdata,[{""}]}];
 bitor_j44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j55_test(doc) -> [{userdata,[{""}]}];
 bitor_j55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j6_test(doc) -> [{userdata,[{""}]}];
 bitor_j6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j17_test(doc) -> [{userdata,[{""}]}];
 bitor_j17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j28_test(doc) -> [{userdata,[{""}]}];
 bitor_j28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j39_test(doc) -> [{userdata,[{""}]}];
 bitor_j39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j39"),
-  Expected="<cell><value>"++"13.0"++"</value></cell>",
+  Expected="13.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j50_test(doc) -> [{userdata,[{""}]}];
 bitor_j50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j61_test(doc) -> [{userdata,[{""}]}];
 bitor_j61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j1_test(doc) -> [{userdata,[{""}]}];
 bitor_j1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j1"),
-  Expected="<cell><value>"++"String Number"++"</value></cell>",
+  Expected="String Number",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j12_test(doc) -> [{userdata,[{""}]}];
 bitor_j12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j34_test(doc) -> [{userdata,[{""}]}];
 bitor_j34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j34"),
-  Expected="<cell><value>"++"13.0"++"</value></cell>",
+  Expected="13.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j45_test(doc) -> [{userdata,[{""}]}];
 bitor_j45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j56_test(doc) -> [{userdata,[{""}]}];
 bitor_j56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j7_test(doc) -> [{userdata,[{""}]}];
 bitor_j7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j18_test(doc) -> [{userdata,[{""}]}];
 bitor_j18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j29_test(doc) -> [{userdata,[{""}]}];
 bitor_j29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j40_test(doc) -> [{userdata,[{""}]}];
 bitor_j40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j40"),
-  Expected="<cell><value>"++"13.0"++"</value></cell>",
+  Expected="13.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j51_test(doc) -> [{userdata,[{""}]}];
 bitor_j51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j62_test(doc) -> [{userdata,[{""}]}];
 bitor_j62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j2_test(doc) -> [{userdata,[{""}]}];
 bitor_j2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j2"),
-  Expected="<cell><value>"++"13"++"</value></cell>",
+  Expected="13",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j13_test(doc) -> [{userdata,[{""}]}];
 bitor_j13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j35_test(doc) -> [{userdata,[{""}]}];
 bitor_j35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j35"),
-  Expected="<cell><value>"++"31.0"++"</value></cell>",
+  Expected="31.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j46_test(doc) -> [{userdata,[{""}]}];
 bitor_j46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j57_test(doc) -> [{userdata,[{""}]}];
 bitor_j57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j8_test(doc) -> [{userdata,[{""}]}];
 bitor_j8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j19_test(doc) -> [{userdata,[{""}]}];
 bitor_j19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j30_test(doc) -> [{userdata,[{""}]}];
 bitor_j30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j41_test(doc) -> [{userdata,[{""}]}];
 bitor_j41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j52_test(doc) -> [{userdata,[{""}]}];
 bitor_j52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j63_test(doc) -> [{userdata,[{""}]}];
 bitor_j63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j3_test(doc) -> [{userdata,[{""}]}];
 bitor_j3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j14_test(doc) -> [{userdata,[{""}]}];
 bitor_j14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j25_test(doc) -> [{userdata,[{""}]}];
 bitor_j25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j25"),
-  Expected="<cell><value>"++"String Number"++"</value></cell>",
+  Expected="String Number",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j36_test(doc) -> [{userdata,[{""}]}];
 bitor_j36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j36"),
-  Expected="<cell><value>"++"24925.0"++"</value></cell>",
+  Expected="24925.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j58_test(doc) -> [{userdata,[{""}]}];
 bitor_j58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j9_test(doc) -> [{userdata,[{""}]}];
 bitor_j9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j20_test(doc) -> [{userdata,[{""}]}];
 bitor_j20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j31_test(doc) -> [{userdata,[{""}]}];
 bitor_j31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j42_test(doc) -> [{userdata,[{""}]}];
 bitor_j42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j53_test(doc) -> [{userdata,[{""}]}];
 bitor_j53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j64_test(doc) -> [{userdata,[{""}]}];
 bitor_j64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j4_test(doc) -> [{userdata,[{""}]}];
 bitor_j4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j15_test(doc) -> [{userdata,[{""}]}];
 bitor_j15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j26_test(doc) -> [{userdata,[{""}]}];
 bitor_j26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j26"),
-  Expected="<cell><value>"++"13"++"</value></cell>",
+  Expected="13",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j37_test(doc) -> [{userdata,[{""}]}];
 bitor_j37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j37"),
-  Expected="<cell><value>"++"15.0"++"</value></cell>",
+  Expected="15.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j59_test(doc) -> [{userdata,[{""}]}];
 bitor_j59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j10_test(doc) -> [{userdata,[{""}]}];
 bitor_j10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j21_test(doc) -> [{userdata,[{""}]}];
 bitor_j21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j32_test(doc) -> [{userdata,[{""}]}];
 bitor_j32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j43_test(doc) -> [{userdata,[{""}]}];
 bitor_j43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_j54_test(doc) -> [{userdata,[{""}]}];
 bitor_j54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","j54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u5_test(doc) -> [{userdata,[{""}]}];
 bitor_u5_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u5"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u16_test(doc) -> [{userdata,[{""}]}];
 bitor_u16_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u16"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u27_test(doc) -> [{userdata,[{""}]}];
 bitor_u27_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u27"),
-  Expected="<cell><value>"++"-2146826281"++"</value></cell>",
+  Expected="-2146826281",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u38_test(doc) -> [{userdata,[{""}]}];
 bitor_u38_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u38"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u49_test(doc) -> [{userdata,[{""}]}];
 bitor_u49_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u49"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u60_test(doc) -> [{userdata,[{""}]}];
 bitor_u60_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u60"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u11_test(doc) -> [{userdata,[{""}]}];
 bitor_u11_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u11"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u22_test(doc) -> [{userdata,[{""}]}];
 bitor_u22_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u22"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u33_test(doc) -> [{userdata,[{""}]}];
 bitor_u33_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u33"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u44_test(doc) -> [{userdata,[{""}]}];
 bitor_u44_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u44"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u55_test(doc) -> [{userdata,[{""}]}];
 bitor_u55_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u55"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u6_test(doc) -> [{userdata,[{""}]}];
 bitor_u6_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u6"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u17_test(doc) -> [{userdata,[{""}]}];
 bitor_u17_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u17"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u28_test(doc) -> [{userdata,[{""}]}];
 bitor_u28_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u28"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u39_test(doc) -> [{userdata,[{""}]}];
 bitor_u39_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u39"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u50_test(doc) -> [{userdata,[{""}]}];
 bitor_u50_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u50"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u61_test(doc) -> [{userdata,[{""}]}];
 bitor_u61_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u61"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u1_test(doc) -> [{userdata,[{""}]}];
 bitor_u1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u1"),
-  Expected="<cell><value>"++"Range Colunm"++"</value></cell>",
+  Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u12_test(doc) -> [{userdata,[{""}]}];
 bitor_u12_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u12"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u34_test(doc) -> [{userdata,[{""}]}];
 bitor_u34_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u34"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u45_test(doc) -> [{userdata,[{""}]}];
 bitor_u45_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u45"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u56_test(doc) -> [{userdata,[{""}]}];
 bitor_u56_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u56"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u7_test(doc) -> [{userdata,[{""}]}];
 bitor_u7_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u7"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u18_test(doc) -> [{userdata,[{""}]}];
 bitor_u18_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u18"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u29_test(doc) -> [{userdata,[{""}]}];
 bitor_u29_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u29"),
-  Expected="<cell><value>"++"-2146826265"++"</value></cell>",
+  Expected="-2146826265",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u40_test(doc) -> [{userdata,[{""}]}];
 bitor_u40_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u40"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u51_test(doc) -> [{userdata,[{""}]}];
 bitor_u51_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u51"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u62_test(doc) -> [{userdata,[{""}]}];
 bitor_u62_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u62"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u2_test(doc) -> [{userdata,[{""}]}];
 bitor_u2_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u2"),
-  Expected="<cell><value>"++"X3:X4"++"</value></cell>",
+  Expected="X3:X4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u13_test(doc) -> [{userdata,[{""}]}];
 bitor_u13_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u13"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u35_test(doc) -> [{userdata,[{""}]}];
 bitor_u35_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u35"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u46_test(doc) -> [{userdata,[{""}]}];
 bitor_u46_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u46"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u57_test(doc) -> [{userdata,[{""}]}];
 bitor_u57_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u57"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u8_test(doc) -> [{userdata,[{""}]}];
 bitor_u8_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u8"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u19_test(doc) -> [{userdata,[{""}]}];
 bitor_u19_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u19"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u30_test(doc) -> [{userdata,[{""}]}];
 bitor_u30_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u30"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u41_test(doc) -> [{userdata,[{""}]}];
 bitor_u41_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u41"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u52_test(doc) -> [{userdata,[{""}]}];
 bitor_u52_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u52"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u63_test(doc) -> [{userdata,[{""}]}];
 bitor_u63_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u63"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u3_test(doc) -> [{userdata,[{""}]}];
 bitor_u3_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u3"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u14_test(doc) -> [{userdata,[{""}]}];
 bitor_u14_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u14"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u25_test(doc) -> [{userdata,[{""}]}];
 bitor_u25_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u25"),
-  Expected="<cell><value>"++"Range Colunm"++"</value></cell>",
+  Expected="Range Colunm",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u36_test(doc) -> [{userdata,[{""}]}];
 bitor_u36_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u36"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u58_test(doc) -> [{userdata,[{""}]}];
 bitor_u58_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u58"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u9_test(doc) -> [{userdata,[{""}]}];
 bitor_u9_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u9"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u20_test(doc) -> [{userdata,[{""}]}];
 bitor_u20_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u20"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u31_test(doc) -> [{userdata,[{""}]}];
 bitor_u31_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u31"),
-  Expected="<cell><value>"++"-2146826252"++"</value></cell>",
+  Expected="-2146826252",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u42_test(doc) -> [{userdata,[{""}]}];
 bitor_u42_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u42"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u53_test(doc) -> [{userdata,[{""}]}];
 bitor_u53_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u53"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u64_test(doc) -> [{userdata,[{""}]}];
 bitor_u64_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u64"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u4_test(doc) -> [{userdata,[{""}]}];
 bitor_u4_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u4"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u15_test(doc) -> [{userdata,[{""}]}];
 bitor_u15_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u15"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u26_test(doc) -> [{userdata,[{""}]}];
 bitor_u26_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u26"),
-  Expected="<cell><value>"++"X3:X4"++"</value></cell>",
+  Expected="X3:X4",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u37_test(doc) -> [{userdata,[{""}]}];
 bitor_u37_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u37"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u59_test(doc) -> [{userdata,[{""}]}];
 bitor_u59_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u59"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u10_test(doc) -> [{userdata,[{""}]}];
 bitor_u10_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u10"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u21_test(doc) -> [{userdata,[{""}]}];
 bitor_u21_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u21"),
-  Expected="<cell><value>"++"-2146826259"++"</value></cell>",
+  Expected="-2146826259",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u32_test(doc) -> [{userdata,[{""}]}];
 bitor_u32_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u32"),
-  Expected="<cell><value>"++"-2146826246"++"</value></cell>",
+  Expected="-2146826246",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u43_test(doc) -> [{userdata,[{""}]}];
 bitor_u43_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u43"),
-  Expected="<cell><value>"++"-2146826273"++"</value></cell>",
+  Expected="-2146826273",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 bitor_u54_test(doc) -> [{userdata,[{""}]}];
 bitor_u54_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Bitor/","u54"),
-  Expected="<cell><value>"++"0.0"++"</value></cell>",
+  Expected="0.0",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   

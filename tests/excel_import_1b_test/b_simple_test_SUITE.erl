@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_simple.xls
-% Generated on: Tue Mar 11 09:10:01 +0000 2008
+% Generated on: Sun Apr 13 20:21:28 +0100 2008
 
 -module(b_simple_test_SUITE).
 -compile(export_all).

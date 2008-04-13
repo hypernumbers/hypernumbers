@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: e_gnumeric_trig_atan2.xls
-% Generated on: Tue Mar 11 09:10:40 +0000 2008
+% Generated on: Sun Apr 13 20:22:16 +0100 2008
 
 -module(e_gnumeric_trig_atan2_test_SUITE).
 -compile(export_all).

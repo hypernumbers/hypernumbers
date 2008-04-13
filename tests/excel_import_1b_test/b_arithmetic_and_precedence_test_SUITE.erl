@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_arithmetic_and_precedence.xls
-% Generated on: Tue Mar 11 09:09:49 +0000 2008
+% Generated on: Sun Apr 13 20:21:20 +0100 2008
 
 -module(b_arithmetic_and_precedence_test_SUITE).
 -compile(export_all).

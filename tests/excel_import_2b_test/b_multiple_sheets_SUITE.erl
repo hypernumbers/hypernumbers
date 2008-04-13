@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_multiple_sheets.xls
-% Generated on: Tue Mar 11 09:10:51 +0000 2008
+% Generated on: Sun Apr 13 20:22:26 +0100 2008
 
 -module(b_multiple_sheets_SUITE).
 -compile(export_all).
@@ -75,21 +75,21 @@ assert_eql(X, Y) ->
 harry_a1_test(doc) -> [{userdata,[{""}]}];
 harry_a1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Harry/","a1"),
-  Expected="<cell><value>"++"Harry"++"</value></cell>",
+  Expected="Harry",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 dick_a1_test(doc) -> [{userdata,[{""}]}];
 dick_a1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Dick/","a1"),
-  Expected="<cell><value>"++"Dick"++"</value></cell>",
+  Expected="Dick",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
 tom_a1_test(doc) -> [{userdata,[{""}]}];
 tom_a1_test(_Config) -> 
   Got=hn_get("http://127.0.0.1:9000","/Tom/","a1"),
-  Expected="<cell><value>"++"Tom"++"</value></cell>",
+  Expected="Tom",
   io:format("Expected : ~p~nGot      : ~p~n",[Expected,Got]),
   test_util:expected(Expected,Got).
   
