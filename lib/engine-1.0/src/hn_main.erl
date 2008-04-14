@@ -54,7 +54,10 @@ set_cell(Addr, Val) ->
             case muin:run(Ast,[{site,Site},{path,Path},{x,X},{y,Y}]) of
 
             {ok, {Value, DepTree, _, Parents}} ->
-                     
+            
+                %% Store syntax tree
+                db_put(Addr,"__ast",Ast),
+                
                 %% Transform parents and deptree from tuple list to
                 %% simplexml
                 F = fun({Type,{S,P,X1,Y1}}) ->
@@ -64,7 +67,7 @@ set_cell(Addr, Val) ->
   
                 NPar = lists:map(F,Parents),
                 NDep = lists:map(F,DepTree),
-
+                
                 write_cell(Addr, Value, Formula, NPar, NDep);
                 
             {error, Reason} ->
@@ -93,35 +96,34 @@ set_cell(Addr, Val) ->
 %%%-----------------------------------------------------------------    
 write_cell(Addr, Value, Formula, Parents, DepTree) ->
 
-    {atomic,ok} = mnesia:transaction(fun() ->
+    Index = to_index(Addr),
         
-        Index = to_index(Addr),
+    db_put(Addr,formula,Formula),
+    db_put(Addr,value,Value),
+           
+    %% These arent written if empty
+    db_put(Addr,parents,Parents),
+    db_put(Addr,'dependancy-tree',DepTree),
         
-        db_put(Addr,formula,Formula),
-        db_put(Addr,value,Value),
-            
-        %% These arent written if empty
-        db_put(Addr,parents,Parents),
-        db_put(Addr,'dependancy-tree',DepTree),
-        
-        %% Delete the references
-        hn_db:del_links(Index,child),
-            
-        lists:map( 
-            fun({url,[{type,Type}],[Url]}) ->
-                #page{site=Site,path=Path,ref={cell,{X,Y}}} = hn_util:parse_url(Url),
-                Parent = {index,Site,Path,X,Y},
-                case Type of
-                "local"  -> hn_db:write_local_link(Parent,Index);
-                "remote" -> hn_db:write_remote_link(Parent,Index,incoming)
-                end,
-                ok
+    %% Delete the references
+    hn_db:del_links(Index,child),
+
+    Old = hn_db:read_remote_links(Index,child,incoming),
+    %% check old vs new, delete old links 
+          
+    lists:map( 
+        fun({url,[{type,Type}],[Url]}) ->
+            #page{site=Site,path=Path,ref={cell,{X,Y}}} = hn_util:parse_url(Url),
+            Parent = {index,Site,Path,X,Y},
+            case Type of
+            "local"  -> hn_db:write_local_link(Parent,Index);
+            "remote" -> hn_db:write_remote_link(Parent,Index,incoming)
             end,
-            Parents),
-            
-        hn_db:mark_dirty(Index,cell)
-        
-    end),       
+            ok
+        end,
+        Parents),
+
+    hn_db:mark_dirty(Index,cell),    
     ok.
     
 %%%-----------------------------------------------------------------
@@ -152,18 +154,15 @@ get_cell_info(Site,Path,X,Y) ->
 %%%-----------------------------------------------------------------
 %%% Function    : recalc/1
 %%% Types       : 
-%%% Description : When a dependancy changes, recalculate the value
-%%%               of the cell
+%%% Description : called when a (parent)dependancy changes, pull 
+%%%               the abstract syntax tree of a cell and 
+%%%               recalculate its value
 %%%-----------------------------------------------------------------
-recalc( #index{site=Site,path=Path,column=X,row=Y}) ->
-
-    Addr = #ref{
-        site=Site,          path=Path,
-        ref={cell,{X,Y}},   name=formula},
-        
-    [#hn_item{val=Value}] = hn_db:get_item(Addr),    
-    set_attribute(Addr,Value),
-    
+recalc(#index{site=Site,path=Path,column=X,row=Y}) ->
+    Addr = #ref{ site=Site, path=Path, ref={cell,{X,Y}}},
+    Ast  = hn_db:get_item_val(Addr#ref{name=formula}),
+    {ok,{Val, _, _, _}} = muin:run(Ast,[{site,Site},{path,Path},{x,X},{y,Y}]),
+    hn_db:add_item(Addr#ref{name=value},Val),
     ok.
 
 %%%-----------------------------------------------------------------
@@ -179,8 +178,7 @@ get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY)->
     #incoming_hn{value=V,deptree=T} = hn_db:get_hn(URL,Fr,To),
 
     F = fun({url,[],[Url]}) ->
-        #page{site=S,path=P,ref={cell,{X,Y}}} 
-            = hn_util:parse_url(Url),
+        #page{site=S,path=P,ref={cell,{X,Y}}} = hn_util:parse_url(Url),
         {S,P,X,Y}
     end,
     

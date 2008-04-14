@@ -117,8 +117,7 @@
 
 -record( outgoing_hn,
 {
-    local       = #index{},
-    remote      = #index{},
+    index       = #index{},
     biccie      = [],       %% A shared token
     proxy       = [],
     url         = [],
@@ -131,8 +130,7 @@
     value,                  
     deptree     = [],       %% Cells use in this numbers calculation
     biccie      = [],       %% A shared token
-    version     = 0,        %% Version for structural updates
-    cells       = []        %% Cells that use this number
+    version     = 0         %% Version for structural updates
 }).
 
 -record( users,

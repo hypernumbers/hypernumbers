@@ -19,6 +19,7 @@
     add_item/2,     get_item/1,     get_item_val/1,
     %% local_cell_link
   	read_links/2,   del_links/2,    write_local_link/2,
+  	read_remote_links/3, 
   	write_remote_link/3,
     %% hypernumbers
     register_hn/5,  update_hn/4,    get_hn/3,
@@ -124,7 +125,6 @@ get_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
 %%               one value per name specified)
 %%--------------------------------------------------------------------   
 get_item_val(Addr) ->
-
     case get_item(Addr) of
     [] -> [];
     [#hn_item{val=Value}] -> Value
@@ -188,11 +188,52 @@ del_links(Index, Relation) ->
 %%--------------------------------------------------------------------
 write_remote_link(Parent,Child,Type) ->
 
-    {atomic , ok} = mnesia:transaction(fun()-> 
-        mnesia:write(#remote_cell_link{ parent=Parent, child=Child, 
-            type=Type })
-    end),  
-	ok.	
+    {atomic , {ok,Link}} = mnesia:transaction(fun()-> 
+    
+        Link = #remote_cell_link{parent=Parent,child=Child,type=Type},
+        
+        case mnesia:match_object(Link) of
+        [] ->
+            mnesia:write(Link),
+            [Hn] = mnesia:read({incoming_hn,Parent}),
+            {ok,{write_link,Hn}};
+        _->
+            {ok,link_exists}
+        end
+    end),
+    
+    case Link of
+    {write_link,Hn} ->
+
+        Url     = hn_util:index_to_url(Parent),
+        Actions = simplexml:to_xml_string(
+        {register,[],[
+            {biccie,[],[Hn#incoming_hn.biccie]},
+            {proxy, [],[Url]},
+            {url,   [],[Url]}
+        ]}),
+        
+        hn_util:post(Url++"?hypernumber",Actions,"text/xml"),
+        ok;
+        
+    _-> ok
+    end.
+
+%%--------------------------------------------------------------------
+%% Function    : read_links/2
+%%
+%% Description : 
+%%--------------------------------------------------------------------
+read_remote_links(Index, Relation,Type) ->
+    
+    Obj = ?COND(Relation == child,
+        {remote_cell_link,'_',Index,Type},
+        {remote_cell_link,Index,'_',Type}),
+    
+    {atomic, List} = mnesia:transaction(fun() ->
+        mnesia:match_object(Obj)
+    end),
+    List.		
 	
 %%-------------------------------------------------------------------
 %% Table : dirty_cell , dirty_hypernumbers
@@ -210,13 +251,13 @@ dirty_refs_changed(dirty_cell, Ref) ->
     
     {atomic, ok} = mnesia:transaction(fun() ->
     
-        %% Update Remote Hypernumbers
-        lists:foreach(
-            fun(Hn) ->                    
-                notify_remote_change(Hn)
-            end,
-            mnesia:match_object(#outgoing_hn{local=Ref,_='_'})
-        ),
+%        %% Update Remote Hypernumbers
+%        lists:foreach(
+%            fun(Hn) ->                    
+%                notify_remote_change(Hn)
+%            end,
+%            mnesia:match_object(#outgoing_hn{local=Ref,_='_'})
+%        ),
         
         %% Update local cells
         lists:foreach(
@@ -240,12 +281,12 @@ dirty_refs_changed(dirty_hypernumbers, Ref) ->
         [Obj] = mnesia:match_object(
             #incoming_hn{remote=Ref, _='_'}),       
         
-        lists:foreach(
-            fun(To) ->                          
-                hn_main:recalc(To)
-            end,
-            Obj#incoming_hn.cells
-        ),       
+%        lists:foreach(
+%            fun(To) ->                          
+%                hn_main:recalc(To)
+%            end,
+%            Obj#incoming_hn.cells
+%        ),       
         mnesia:delete({dirty_hypernumbers, Ref})
     end),
     ok.   
@@ -319,9 +360,8 @@ update_hn(From,Bic,Val,_Version)->
 %% Description : This reads the hypernumber table and returns the
 %%               current value of a hypernumber. if it doesnt 
 %%               exist, make a http call to the site to 
-%%               fetch its value and register for updates when
-%%               that number changes. Also maintain a list of 
-%%               cell listening to this number
+%%               fetch its value, a 'biccie' is created which
+%%               must be quoted in registrations etc
 %%--------------------------------------------------------------------
 get_hn(Url,From,To)->
 
@@ -329,26 +369,11 @@ get_hn(Url,From,To)->
 
         case mnesia:read({incoming_hn,To}) of
 
-        %% Remote number has already been fetched, add self to
-        %% list of listeners
-        [Hn] ->
-            Cells = Hn#incoming_hn.cells,
-            New   = Hn#incoming_hn{cells = hn_util:add_uniq(Cells,From)},
-            mnesia:write(New),
-            New;
+        [Hn] -> Hn;
         
-		[]->
-            Bic     = util2:get_biccie(),
-            PUrl    = hn_util:index_to_url(From), 
-            Actions = simplexml:to_xml_string(
-                {register,[],[
-                    {biccie,[],[Bic]},
-                    {proxy, [],[PUrl]},
-                    {url,   [],[PUrl]}
-                ]}),
-                
-            XML = hn_util:post(Url++"?hypernumber",Actions,"text/xml"),
-
+		[]->	  
+            XML = hn_util:req(Url++"?hypernumber"),
+            %% TODO: Handle remote server being down
             {hypernumber,[],[
                 {value,[],              [Val]},
                 {'dependancy-tree',[],  Tree}]
@@ -361,10 +386,9 @@ get_hn(Url,From,To)->
                 value   = V,
                 deptree = Tree,
                 remote  = To,
-                cells   = [From],
-                biccie  = Bic},
-
-            mnesia:write(HNumber),
+                biccie  = util2:get_biccie()},
+                
+            mnesia:write(HNumber),   
             HNumber
         end
     end),
@@ -377,16 +401,23 @@ get_hn(Url,From,To)->
 %%               on a remote server when its value changes
 %%--------------------------------------------------------------------
 register_hn(To,From,Bic,Proxy,Url) -> 
-    {atomic , ok} = mnesia:transaction(fun()-> 
-        mnesia:write(#outgoing_hn{ 
-            remote = From, 
-            local  = To,
+
+    {atomic , _Ok} = mnesia:transaction(fun()-> 
+
+        mnesia:write(#remote_cell_link{
+            parent=From,
+            child=To,
+            type=outgoing }),
+    
+        mnesia:write(#outgoing_hn{
+            index  = From,
             biccie = Bic,
             url    = Url,
-            proxy  = Proxy })
+            proxy  = Proxy }),
+        ok
     end),  
-	ok.	    
-        
+	ok.
+	
 %%--------------------------------------------------------------------
 %% Internal Functions
 %%--------------------------------------------------------------------
@@ -394,27 +425,26 @@ notify_remote_change(Hn) ->
 
     {atomic, List} = mnesia:transaction( fun() ->
     
-        #outgoing_hn{
-            local  = From,
-            remote = _To, 
-            biccie = Bic,
-            url    = Url,
-            proxy  = Proxy } = Hn,
-            
-        Value = get_item_val((to_ref(From))#ref{name=value}),
-            
-        Actions = simplexml:to_xml_string(
-            {notify,[],[
-                {biccie,      [],[Bic]},
-                {notifyurl,   [],[hn_util:index_to_url(From)]},
-                {registerurl, [],[Url]},
-                {type,        [],["change"]},
-                {value,       [],[hn_util:text(Value)]},
-                {version,     [],["1"]}
-            ]
-        }),
-    
-        hn_util:post(Proxy,Actions,"text/xml")
+%        #outgoing_hn{
+%            biccie = Bic,
+%            url    = Url,
+%            proxy  = Proxy } = Hn,
+%            
+%        Value = get_item_val((to_ref(From))#ref{name=value}),
+%            
+%        Actions = simplexml:to_xml_string(
+%            {notify,[],[
+%                {biccie,      [],[Bic]},
+%                {notifyurl,   [],[hn_util:index_to_url(From)]},
+%                {registerurl, [],[Url]},
+%                {type,        [],["change"]},
+%                {value,       [],[hn_util:text(Value)]},
+%                {version,     [],["1"]}
+%            ]
+%        }),
+%    
+%        hn_util:post(Proxy,Actions,"text/xml")
+        ok
 
     end),
     

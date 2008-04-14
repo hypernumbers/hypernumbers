@@ -100,6 +100,16 @@ process_GET(Arg,User,Page) ->
             ?COND(io_lib:char_list(V) == true, [V], Val)
         end,
 
+        %% Switch to filter on the db api later
+        Items = lists:filter(
+            fun(#hn_item{addr=A}) -> 
+                case (A)#ref.name of
+                "__"++_ -> false;
+                _ -> true
+                end
+            end,
+            hn_db:get_item(Addr)),
+
         List = lists:map
         (
             fun(#hn_item{addr=A,val=Val}) -> 
@@ -111,7 +121,7 @@ process_GET(Arg,User,Page) ->
                     {A#ref.name,[],F(Val)}
                 ]}
             end,
-            hn_db:get_item(Addr)
+            Items
         ),
         
         {Page#page.format,{attr,[],List}};

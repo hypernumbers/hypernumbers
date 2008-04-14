@@ -27,7 +27,7 @@ create_db(Type)->
     {atomic,ok} = mnesia:create_table(hn_item,
         [{Storage, [node()]},{type,set},
          {attributes, record_info(fields, hn_item)}]),
-         
+       
     {atomic,ok} = mnesia:create_table(remote_cell_link,
         [{Storage, [node()]},{type,bag},
 	 {attributes, record_info(fields, remote_cell_link)}]),
@@ -55,7 +55,7 @@ create_db(Type)->
     {atomic,ok} = mnesia:create_table(incoming_hn,
         [{Storage, [node()]},{type,set},
          {attributes, record_info(fields, incoming_hn)}]),
-         
+
     {atomic,ok} = mnesia:create_table(outgoing_hn,
         [{Storage, [node()]},{type,bag},
          {attributes, record_info(fields, outgoing_hn)}]),
