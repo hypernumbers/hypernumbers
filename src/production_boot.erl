@@ -8,7 +8,7 @@
 -module(production_boot).
 
 -export([
-    get_root/0,
+    root/0,
     setup_paths/0,
     start/0,
     start/1,
@@ -17,7 +17,7 @@
     remote_stop/1
     ]).
 
-get_root() ->
+root() ->
     [_File,_Ebin|Rest] = lists:reverse(
         string:tokens(code:which(production_boot),"/")),
     Pre = case os:type() of
@@ -37,7 +37,7 @@ start() ->
     start_apps(Conf,false).
 
 read_conf() ->
-    readxml_file(get_root()++"conf/hypernumbers.xml").
+    readxml_file(root()++"conf/hypernumbers.xml").
 
 setup_paths() ->
     setup_paths(read_conf()).
@@ -52,7 +52,7 @@ setup_paths(Conf) ->
         xmlsearch([],Conf,includes),erldir)),
 
     lists:map(fun(X) -> code:add_patha(X) end,Abs),
-    lists:map(fun(X) -> code:add_patha(get_root()++X) end,Rel),
+    lists:map(fun(X) -> code:add_patha(root()++X) end,Rel),
     lists:map(fun(X) -> code:add_patha(code:which(list_to_atom(X))) end,Erl),
 
     ok.
@@ -73,7 +73,7 @@ start_apps(Conf,Toolbar)->
         hn_util:xmlsearch([],Conf,mnesia),data),
     FullPath = case Type of
         absdir ->   Data;
-        _ ->        get_root()++Data
+        _ ->        root()++Data
     end,
 
     filelib:ensure_dir(FullPath),

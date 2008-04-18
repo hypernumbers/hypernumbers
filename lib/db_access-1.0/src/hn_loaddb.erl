@@ -11,7 +11,7 @@
 
 create_db()->
     create_db(transient).
-
+    
 create_db(Type)->
 
     Storage = case Type of
@@ -23,7 +23,7 @@ create_db(Type)->
     ok = mnesia:create_schema([node()]),
     
     mnesia:start(),
-    
+  
     {atomic,ok} = mnesia:create_table(hn_item,
         [{Storage, [node()]},{type,set},
          {attributes, record_info(fields, hn_item)}]),
@@ -48,9 +48,9 @@ create_db(Type)->
     	[{Storage, [node()]},{type,set},
     	 {attributes, record_info(fields, dirty_cell)}]),
          
-    {atomic,ok} = mnesia:create_table(dirty_hypernumbers,
+    {atomic,ok} = mnesia:create_table(dirty_hypernumber,
     	[{Storage, [node()]},{type,set},
-         {attributes, record_info(fields, dirty_hypernumbers)}]),
+         {attributes, record_info(fields, dirty_hypernumber)}]),
          
     {atomic,ok} = mnesia:create_table(incoming_hn,
         [{Storage, [node()]},{type,set},

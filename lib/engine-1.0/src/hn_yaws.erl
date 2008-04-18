@@ -346,7 +346,7 @@ api_unreg(_R,_Page) -> ok.
 api_reg(Data,Page)->
 
     [{biccie,[],[Bic]},{proxy,[],[Proxy]},{url,[],[Reg]}] = Data,
-
+    
     hn_db:register_hn(
         hn_util:page_to_index(Page),
         hn_util:page_to_index(hn_util:parse_url(Reg)),
@@ -357,19 +357,19 @@ api_reg(Data,Page)->
 api_notify(Data,Page)->
     case lists:keysearch(type,1,Data) of
     {value,{type,[],["change"]}} -> api_change(Data,Page)
-    end,
-    ok.
+    end.
 
 api_change(Data,_Page)->
 
-    [ {biccie,[],       [Bic]},
-      {notifyurl,[],    [Url]},
-      {registerurl,[],  [_Self]},
-      {type,[],         ["change"]},
-      {value,[],        [Val]},
-      {version,[],      [Version]}] = Data,
-      
-    hn_db:update_hn(Url,Bic,Val,Version).
+    [   {biccie,[],     [Bic]},
+        {cell,[],       [Cell]},
+        {type,[],       ["change"]},
+        {value,[],      [Val]},
+        {version,[],    [Version]}] = Data,
+  
+    hn_db:update_hn(Cell,Bic,Val,Version),
+    
+    {ok,"thanks"}.
 
 %%% API call - LOGIN
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

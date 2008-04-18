@@ -60,7 +60,7 @@ init([Type]) ->
     gen_fsm:send_event(self(),{clear_dirty,[]}),
     case Type of
 	dirty_cell         -> {ok, clear_dirty, #state{type=Type}};
-	dirty_hypernumbers -> {ok, clear_dirty, #state{type=Type}}
+	dirty_hypernumber  -> {ok, clear_dirty, #state{type=Type}}
     end.
 %%------------------------------------------------------------------------------
 %% Function:
@@ -227,7 +227,7 @@ code_change(_OldVsn, StateName, State, _Extra) ->
 %% for A1 on /.
 process(Record, dirty_cell)->
     hn_db:dirty_refs_changed(dirty_cell, Record#dirty_cell.index);
-process(Record, dirty_hypernumbers) ->
-    hn_db:dirty_refs_changed(dirty_hypernumbers,Record#dirty_hypernumbers.index).
+process(Record, dirty_hypernumber) ->
+    hn_db:dirty_refs_changed(dirty_hypernumber,Record#dirty_hypernumber.index).
 
 

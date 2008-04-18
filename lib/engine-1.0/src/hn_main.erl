@@ -54,7 +54,7 @@ set_cell(Addr, Val) ->
             case muin:run(Ast,[{site,Site},{path,Path},{x,X},{y,Y}]) of
 
             {ok, {Value, DepTree, _, Parents}} ->
-            
+
                 %% Store syntax tree
                 db_put(Addr,"__ast",Ast),
                 
@@ -108,9 +108,21 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
     %% Delete the references
     hn_db:del_links(Index,child),
 
-    Old = hn_db:read_remote_links(Index,child,incoming),
-    %% check old vs new, delete old links 
-          
+    %% probably to be cleaned up, go through the remote parents
+    %% to this cell, if they dont exist within the list of new
+    %% parents, delete it (and unregister)
+    lists:foreach(
+        fun(X) when is_record(X,remote_cell_link) ->
+            Url  = hn_util:index_to_url(X#remote_cell_link.parent),
+            case lists:member({url,[{type,"remote"}],[Url]},Parents) of
+            false -> hn_db:del_remote_link(X);
+            true  -> ok
+            end;
+        (_) -> ok
+        end,
+        hn_db:read_remote_links(Index,child,incoming)),
+    
+    %% Writes all the parent links 
     lists:map( 
         fun({url,[{type,Type}],[Url]}) ->
             #page{site=Site,path=Path,ref={cell,{X,Y}}} = hn_util:parse_url(Url),
@@ -158,11 +170,13 @@ get_cell_info(Site,Path,X,Y) ->
 %%%               the abstract syntax tree of a cell and 
 %%%               recalculate its value
 %%%-----------------------------------------------------------------
-recalc(#index{site=Site,path=Path,column=X,row=Y}) ->
+recalc(Index) ->
+    #index{site=Site,path=Path,column=X,row=Y} = Index,
     Addr = #ref{ site=Site, path=Path, ref={cell,{X,Y}}},
-    Ast  = hn_db:get_item_val(Addr#ref{name=formula}),
+    Ast  = hn_db:get_item_val(Addr#ref{name="__ast"}),
     {ok,{Val, _, _, _}} = muin:run(Ast,[{site,Site},{path,Path},{x,X},{y,Y}]),
     hn_db:add_item(Addr#ref{name=value},Val),
+    hn_db:mark_dirty(Index,cell),
     ok.
 
 %%%-----------------------------------------------------------------
@@ -177,9 +191,9 @@ get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY)->
 
     #incoming_hn{value=V,deptree=T} = hn_db:get_hn(URL,Fr,To),
 
-    F = fun({url,[],[Url]}) ->
+    F = fun({url,[{type,Type}],[Url]}) ->
         #page{site=S,path=P,ref={cell,{X,Y}}} = hn_util:parse_url(Url),
-        {S,P,X,Y}
+        {Type,{S,P,X,Y}}
     end,
     
     Dep = lists:map(F,T) ++ [{"remote",{FSite,FPath,FX,FY}}],
@@ -198,4 +212,4 @@ db_put(Addr,Name,Value) ->
     
 to_index(#ref{site=Site,path=Path,ref={cell,{X,Y}}}) ->
     #index{site=Site,path=Path,column=X,row=Y}.
-        
+            

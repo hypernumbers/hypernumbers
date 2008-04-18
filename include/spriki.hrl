@@ -96,7 +96,7 @@
     timestamp   = now()
 }).
 
--record( dirty_hypernumbers,
+-record( dirty_hypernumber,
 {
     index       = #index{},
     timestamp   = now()
@@ -117,9 +117,8 @@
 
 -record( outgoing_hn,
 {
-    index       = #index{},
+    index       = {[],#index{}},
     biccie      = [],       %% A shared token
-    proxy       = [],
     url         = [],
     version     = 0         %% Version for structural updates
 }).

@@ -21,6 +21,7 @@
   	read_links/2,   del_links/2,    write_local_link/2,
   	read_remote_links/3, 
   	write_remote_link/3,
+  	del_remote_link/1,
     %% hypernumbers
     register_hn/5,  update_hn/4,    get_hn/3,
   	%% dirty tables
@@ -179,6 +180,17 @@ del_links(Index, Relation) ->
         mnesia:dirty_delete_object(Obj)
     end),
     ok.
+    
+    
+del_remote_link(Obj) ->
+
+    {atomic, ok} = mnesia:transaction(fun() ->
+        mnesia:dirty_delete_object(Obj)
+    end),
+    
+    %% TODO: Unregister
+    
+    ok.
 
 
 %%--------------------------------------------------------------------
@@ -191,7 +203,6 @@ write_remote_link(Parent,Child,Type) ->
     {atomic , {ok,Link}} = mnesia:transaction(fun()-> 
     
         Link = #remote_cell_link{parent=Parent,child=Child,type=Type},
-        
         case mnesia:match_object(Link) of
         [] ->
             mnesia:write(Link),
@@ -205,15 +216,17 @@ write_remote_link(Parent,Child,Type) ->
     case Link of
     {write_link,Hn} ->
 
-        Url     = hn_util:index_to_url(Parent),
+        Url   = hn_util:index_to_url(Child),
+        Proxy = Child#index.site ++ Child#index.path,
         Actions = simplexml:to_xml_string(
         {register,[],[
             {biccie,[],[Hn#incoming_hn.biccie]},
-            {proxy, [],[Url]},
+            {proxy, [],[Proxy]},
             {url,   [],[Url]}
         ]}),
         
-        hn_util:post(Url++"?hypernumber",Actions,"text/xml"),
+        PUrl = hn_util:index_to_url(Parent),
+        hn_util:post(PUrl++"?hypernumber",Actions,"text/xml"),
         ok;
         
     _-> ok
@@ -249,16 +262,10 @@ read_remote_links(Index, Relation,Type) ->
 %% it and outgoing hypernumbers
 dirty_refs_changed(dirty_cell, Ref) ->
     
-    {atomic, ok} = mnesia:transaction(fun() ->
+    Val = get_item_val((to_ref(Ref))#ref{name=value}),
     
-%        %% Update Remote Hypernumbers
-%        lists:foreach(
-%            fun(Hn) ->                    
-%                notify_remote_change(Hn)
-%            end,
-%            mnesia:match_object(#outgoing_hn{local=Ref,_='_'})
-%        ),
-        
+    {atomic, {ok,Outgoing}} = mnesia:transaction(fun() ->
+            
         %% Update local cells
         lists:foreach(
             fun({local_cell_link, _, RefTo}) ->
@@ -267,27 +274,41 @@ dirty_refs_changed(dirty_cell, Ref) ->
             read_links(Ref,parent) 
         ),
         
-        mnesia:delete({dirty_cell, Ref})
+        mnesia:delete({dirty_cell, Ref}),
         
+        %% Make a list of hypernumbers listening
+        %% to this cell, (update outside transaction)
+        Links = mnesia:match_object(#remote_cell_link{
+            parent=Ref,type=outgoing,_='_'}),
+        {ok,list_hn(Links,[])}
     end),
+        
+    %Update Remote Hypernumbers
+    lists:foreach(
+        fun(Cell) ->
+            notify_remote_change(Cell,Val)
+        end,
+        Outgoing),
     
     ok;
 
 %% This is called when a remote hypernumber changes
-dirty_refs_changed(dirty_hypernumbers, Ref) ->
+dirty_refs_changed(dirty_hypernumber, Ref) ->
 
     {atomic, ok} = mnesia:transaction(fun() ->
-    
-        [Obj] = mnesia:match_object(
-            #incoming_hn{remote=Ref, _='_'}),       
-        
-%        lists:foreach(
-%            fun(To) ->                          
-%                hn_main:recalc(To)
-%            end,
-%            Obj#incoming_hn.cells
-%        ),       
-        mnesia:delete({dirty_hypernumbers, Ref})
+
+        Links = mnesia:match_object(#remote_cell_link{
+            parent=Ref,type=incoming,_='_'}),
+
+        lists:foreach(
+            fun(To) ->    
+                Cell = To#remote_cell_link.child,
+ 
+                hn_main:recalc(Cell)
+            end,
+            Links
+        ),       
+        mnesia:delete({dirty_hypernumber, Ref})
     end),
     ok.   
 
@@ -313,10 +334,15 @@ get_first_dirty(Table)->
 %%               means cells that use its value needs to be 
 %%               recalculated (this triggers the recalc)
 %%--------------------------------------------------------------------
-mark_dirty(Index,_Type) ->
+mark_dirty(Index,Type) ->
+
+    Obj = case Type of
+    cell ->         #dirty_cell{index=Index};
+    hypernumber ->  #dirty_hypernumber{index=Index}
+    end,
 
     {atomic, _Okay} = mnesia:transaction(fun() ->
-        mnesia:write(#dirty_cell{index=Index})
+        mnesia:write(Obj)
     end),
     ok.
 
@@ -339,19 +365,21 @@ mark_dirty(Index,_Type) ->
 update_hn(From,Bic,Val,_Version)->
 
     {atomic, ok} = mnesia:transaction(fun() ->
-    
+
         Index = hn_util:page_to_index(hn_util:parse_url(From)),
         Rec   = #incoming_hn{ remote = Index, biccie = Bic, _='_'},
- 
         [Obj] = mnesia:match_object(Rec),
-        
+
         V = ?COND(hn_util:is_numeric(Val) == true,
             util2:make_num(Val),util2:make_text(Val)),
-        
+
         mnesia:write(Obj#incoming_hn{value=V}),
-        mark_dirty(Index,hypernumber)
+        mark_dirty(Index,hypernumber),
+
+        ok
         
     end),
+    
     ok.
 
 %%--------------------------------------------------------------------
@@ -405,15 +433,14 @@ register_hn(To,From,Bic,Proxy,Url) ->
     {atomic , _Ok} = mnesia:transaction(fun()-> 
 
         mnesia:write(#remote_cell_link{
-            parent=From,
-            child=To,
+            parent=To,
+            child=From,
             type=outgoing }),
     
         mnesia:write(#outgoing_hn{
-            index  = From,
+            index  = {Proxy,To},
             biccie = Bic,
-            url    = Url,
-            proxy  = Proxy }),
+            url    = Url}),
         ok
     end),  
 	ok.
@@ -421,35 +448,31 @@ register_hn(To,From,Bic,Proxy,Url) ->
 %%--------------------------------------------------------------------
 %% Internal Functions
 %%--------------------------------------------------------------------
-notify_remote_change(Hn) ->
-
-    {atomic, List} = mnesia:transaction( fun() ->
+notify_remote_change(Hn,Value) ->
     
-%        #outgoing_hn{
-%            biccie = Bic,
-%            url    = Url,
-%            proxy  = Proxy } = Hn,
-%            
-%        Value = get_item_val((to_ref(From))#ref{name=value}),
-%            
-%        Actions = simplexml:to_xml_string(
-%            {notify,[],[
-%                {biccie,      [],[Bic]},
-%                {notifyurl,   [],[hn_util:index_to_url(From)]},
-%                {registerurl, [],[Url]},
-%                {type,        [],["change"]},
-%                {value,       [],[hn_util:text(Value)]},
-%                {version,     [],["1"]}
-%            ]
-%        }),
-%    
-%        hn_util:post(Proxy,Actions,"text/xml")
-        ok
+    {Server,Cell} = Hn#outgoing_hn.index,
+    Version = hn_util:text(Hn#outgoing_hn.version + 1),
 
-    end),
-    
-    List.
+    Actions = simplexml:to_xml_string(
+        {notify,[],[
+            {biccie,      [],[Hn#outgoing_hn.biccie]},
+            {cell,        [],[hn_util:index_to_url(Cell)]},
+            {type,        [],["change"]},
+            {value,       [],[hn_util:text(Value)]},
+            {version,     [],["1"]}
+        ]}),
+ 
+    hn_util:post(Server,Actions,"text/xml"),
+    ok.
     
 to_ref(#index{site=Site,path=Path,column=X,row=Y}) ->
     #ref{site=Site,path=Path,ref={cell,{X,Y}}}.
+    
+%% Given a list of remote cells, return a list of 
+%% related outgoing_hn's
+list_hn([],List) -> List;    
+list_hn([H|T],List) ->
+    Cell = H#remote_cell_link.parent,
+    [Hn] = mnesia:match_object(#outgoing_hn{index={'_',Cell},_='_'}),    
+    list_hn(T,hn_util:add_uniq(List,Hn)).    
     

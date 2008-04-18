@@ -419,14 +419,14 @@ sconf_servers({server,[{name,Name}],Vals},Port) ->
 
 sconf_vals(C,[]) -> C;
 sconf_vals(C,[{auth,[], [{dir,[],Dir},{realm,[],Realm},{users,[],Auth}]}|T]) ->
-    {ok,Users} = file:consult(production_boot:get_root()++Auth),
+    {ok,Users} = file:consult(production_boot:root()++Auth),
     sconf_vals(C#sconf{authdirs=lists:append(C#sconf.authdirs,[{Dir,{auth,[Dir],Realm,"Basic",Users,[],false}}])},T);
 sconf_vals(C,[{port,[],V}|T]) ->
     sconf_vals(C#sconf{port = list_to_integer(V)},T);
 sconf_vals(C,[{docroot,[],[{absdir,[],Dir}]}|T]) ->
     sconf_vals(C#sconf{docroot = Dir},T);
 sconf_vals(C,[{docroot,[],[{reldir,[],Dir}]}|T]) ->
-    sconf_vals(C#sconf{docroot = production_boot:get_root()++Dir},T);
+    sconf_vals(C#sconf{docroot = production_boot:root()++Dir},T);
 sconf_vals(Conf,[{appmods,[],V}|T]) ->
     List = lists:map(fun({mod,[{path,Path},{module,Mod}],[]}) ->
         {Path,list_to_atom(Mod)} end,V),
@@ -440,11 +440,11 @@ gconf_vals(C,[]) -> C;
 gconf_vals(C,[{log,[],[{absdir,[],Dir}]}|T]) ->
     gconf_vals(C#gconf{logdir = Dir},T);
 gconf_vals(C,[{log,[],[{reldir,[],Dir}]}|T]) ->
-    gconf_vals(C#gconf{logdir = production_boot:get_root()++Dir},T);
+    gconf_vals(C#gconf{logdir = production_boot:root()++Dir},T);
 gconf_vals(C,[{yaws_dir,[],[{absdir,[],Dir}]}|T]) ->
     gconf_vals(C#gconf{yaws_dir = Dir},T);
 gconf_vals(C,[{yaws_dir,[],[{reldir,[],Dir}]}|T]) ->
-    gconf_vals(C#gconf{yaws_dir = production_boot:get_root()++Dir},T);
+    gconf_vals(C#gconf{yaws_dir = production_boot:root()++Dir},T);
 gconf_vals(C,[{yaws,[],V}|T]) ->
     gconf_vals(C#gconf{yaws = V},T);
 gconf_vals(C,[{tmpdir,[],V}|T]) ->

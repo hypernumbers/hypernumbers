@@ -35,13 +35,14 @@ loop(Socket)->
         self() ! gen_server:call(remoting_reg,{unregister}),
         loop(Socket);
 
-    {tcp, Socket, _Msg} ->     
-        self() ! {msg,"invalid message"},
+    {tcp, Socket,"<policy-file-request/>"++_} ->
+        Root = production_boot:root(),
+        {ok,Msg} = hn_util:read(Root++"include/docroot/crossdomain.xml"),
+        self() ! {msg,Msg++"\0"},
         loop(Socket);
 
-    {tcp, Socket,"<policy-file-request/>"++_} ->
-        {ok,Msg} = hn_util:read("../include/docroot/crossdomain.xml"),
-        self() ! {msg,Msg++"\0"},
+    {tcp, Socket, _Msg} ->     
+        self() ! {msg,"invalid message"},
         loop(Socket);
 
     {msg,Msg} ->

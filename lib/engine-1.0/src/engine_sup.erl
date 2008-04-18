@@ -42,7 +42,7 @@ start_link() ->
 init([]) ->
     Dirty_refs_srv = {dirty_cell,{dirty_srv,start_link,[dirty_cell]},
 		      permanent,2000,worker,[start]},
-    Dirty_hypn_srv = {dirty_hypn,{dirty_srv,start_link,[dirty_hypernumbers]},
+    Dirty_hypn_srv = {dirty_hypn,{dirty_srv,start_link,[dirty_hypernumber]},
 		      permanent,2000,worker,[start]},
 
     {ok,{{one_for_all,0,1}, [Dirty_refs_srv,Dirty_hypn_srv]}}.
