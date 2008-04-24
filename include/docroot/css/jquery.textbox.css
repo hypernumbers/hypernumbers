@@ -8,51 +8,46 @@
  * http://code.google.com/p/jqueryspreadsheet/
  *
  **/
-
-.textbox *
-{
-    padding:    0px;
-    margin:     0px;
-}
-
 .textbox
 {
-    float:left;
+    padding-right:16px;
 }
 
-.textbox .arrow
+.textboxarrow
 {
-    cursor:     pointer;
-    width:      16px;
-    height:     16px;
-    background: url('../img/arrow_down.png');
-    position:   relative;
-    top:        -18px;
-}
-
-.textbox ul
-{
-    background: #FFF;
-    border:     1px solid #999;
     position:   absolute;
     display:    none;
+    cursor:     pointer;
+    width:      14px;
+    height:     14px;
+    background: url('../img/arrow_down.png') center center;
+}
+
+.textboxlist
+{
+    position:   absolute;
+    display:    none;
+    background: #FFF;
+    border:     1px solid #999;
     z-index:    9999;
 }
 
-.textbox li
+.textboxlist li
 {
     width:      100%;
     list-style-type: none;
 }
 
-.textbox li a
+.textboxlist li a
 {
     cursor:     pointer;
     display:    block;
     padding:    3px;
+    color:      black;
+    text-decoration:none;
 }
 
-.textbox li a:hover
+.textboxlist li a:hover
 {
     background: #EEE;
 }

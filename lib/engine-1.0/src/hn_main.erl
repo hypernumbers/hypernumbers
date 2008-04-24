@@ -32,7 +32,7 @@
 %%%               formula of a cell
 %%%-----------------------------------------------------------------
 set_attribute(R,Val) when R#ref.name == formula -> set_cell(R,Val);
-set_attribute(Ref,Val) -> hn_db:add_item(Ref,Val).        
+set_attribute(Ref,Val) -> hn_db:write_item(Ref,Val).        
 
 %%%-----------------------------------------------------------------
 %%% Function    : set_cell/2
@@ -98,12 +98,12 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
 
     Index = to_index(Addr),
         
-    db_put(Addr,formula,Formula),
-    db_put(Addr,value,Value),
+    hn_db:write_item(Addr#ref{name=formula},Formula),
+    hn_db:write_item(Addr#ref{name=value},Value),
            
     %% These arent written if empty
-    db_put(Addr,parents,Parents),
-    db_put(Addr,'dependancy-tree',DepTree),
+    hn_db:write_item(Addr#ref{name=parents},Parents),
+    hn_db:write_item(Addr#ref{name='dependancy-tree'},DepTree),
         
     %% Delete the references
     hn_db:del_links(Index,child),
@@ -175,7 +175,7 @@ recalc(Index) ->
     Addr = #ref{ site=Site, path=Path, ref={cell,{X,Y}}},
     Ast  = hn_db:get_item_val(Addr#ref{name="__ast"}),
     {ok,{Val, _, _, _}} = muin:run(Ast,[{site,Site},{path,Path},{x,X},{y,Y}]),
-    hn_db:add_item(Addr#ref{name=value},Val),
+    hn_db:write_item(Addr#ref{name=value},Val),
     hn_db:mark_dirty(Index,cell),
     ok.
 
@@ -208,7 +208,7 @@ get_val([#hn_item{val=Value}]) -> Value.
 
 db_put(_Addr,_Name,[]) -> ok;
 db_put(Addr,Name,Value) ->
-    hn_db:add_item(Addr#ref{name=Name},Value).
+    hn_db:write_item(Addr#ref{name=Name},Value).
     
 to_index(#ref{site=Site,path=Path,ref={cell,{X,Y}}}) ->
     #index{site=Site,path=Path,column=X,row=Y}.

@@ -272,7 +272,7 @@ process_POST(Arg,PostData,_User,Page) ->
     [{A,"insert"}|R]     -> api_insert(R,Page);
     [{A,"delete"}|R]     -> api_delete(R,Page);
     {register,[],Data}   -> api_reg(Data,Page);
-    [{A,"unregister"}|R] -> api_unreg(R,Page);
+    {unregister,[],Data} -> api_unreg(Data,Page);
     {notify,[],Data}     -> api_notify(Data,Page)
     end.
 
@@ -317,9 +317,13 @@ api_create(Data, Page) ->
     
     lists:map
     (
-        fun({Attr,[],[Val]}) ->
+        fun({Attr,[],Val}) ->
+            V = case Val of
+                []    -> [];
+                [Tmp] -> Tmp
+            end,
             Addr = #ref{site=Site,path=Path,ref=Ref,name=Attr},
-            hn_main:set_attribute(Addr,Val)
+            hn_main:set_attribute(Addr,V)
         end,
         Data
     ),
@@ -339,7 +343,15 @@ api_delete(_R,_Page) -> ok.
 
 %%% API call - UNREGISTER
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-api_unreg(_R,_Page) -> ok.
+api_unreg(Data,Page) -> 
+
+    [{biccie,[],[Bic]},{url,[],[Url]}] = Data,
+    hn_db:del_remote_link(#remote_cell_link{ 
+        parent = hn_util:page_to_index(Page),
+        child  = hn_util:page_to_index(hn_util:parse_url(Url)),
+        type   = outgoing }),
+
+    {ok,"thanks"}.
 
 %%% API call - REGISTER
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -364,10 +376,15 @@ api_change(Data,_Page)->
     [   {biccie,[],     [Bic]},
         {cell,[],       [Cell]},
         {type,[],       ["change"]},
-        {value,[],      [Val]},
+        {value,[],      Val},
         {version,[],    [Version]}] = Data,
+        
+    V = case Val of 
+        []    -> [];
+        [Tmp] -> Tmp
+    end,
   
-    hn_db:update_hn(Cell,Bic,Val,Version),
+    hn_db:update_hn(Cell,Bic,V,Version),
     
     {ok,"thanks"}.
 

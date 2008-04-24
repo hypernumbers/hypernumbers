@@ -16,7 +16,7 @@
 %%%-----------------------------------------------------------------
 -export([
     %% hn_item
-    add_item/2,     get_item/1,     get_item_val/1,
+    write_item/2,   get_item/1,     get_item_val/1,
     %% local_cell_link
   	read_links/2,   del_links/2,    write_local_link/2,
   	read_remote_links/3, 
@@ -37,11 +37,11 @@
 %%         format
 %%-------------------------------------------------------------------
 %%--------------------------------------------------------------------
-%% Function    : add_item/2
+%% Function    : write_item/2
 %%
 %% Description : Adds an attribute to a reference addressed by Ref
 %%--------------------------------------------------------------------
-add_item(Addr,Val) when is_record(Addr,ref) ->
+write_item(Addr,Val) when is_record(Addr,ref) ->
 
     Fun = fun() ->
         mnesia:write(#hn_item{addr = Addr, val = Val})
@@ -181,22 +181,61 @@ del_links(Index, Relation) ->
     end),
     ok.
     
-    
-del_remote_link(Obj) ->
-
+%%--------------------------------------------------------------------
+%% Function    : del_remote_link/1
+%% 
+%% Description : Delete a link between a local and remote cell, 
+%%      send an unregister message so the child doesnt recieve
+%%      any more updates to changes, and delete incomning record
+%%--------------------------------------------------------------------
+del_remote_link(Obj) when Obj#remote_cell_link.type == outgoing ->
     {atomic, ok} = mnesia:transaction(fun() ->
-        mnesia:dirty_delete_object(Obj)
+        Me = Obj#remote_cell_link.parent,
+        mnesia:dirty_delete_object(Obj),
+        case mnesia:match_object(#remote_cell_link{parent=Me,
+            type=outgoing,_='_'}) of
+        [] -> 
+            [Hn] = mnesia:match_object(#outgoing_hn{index={'_',Me},_='_'}),
+            mnesia:delete_object(Hn);
+        _  -> ok
+        end
+    end),
+    ok;
+
+del_remote_link(Obj) when Obj#remote_cell_link.type == incoming ->
+
+    {atomic, Hn} = mnesia:transaction(fun() ->
+        Remote = Obj#remote_cell_link.parent,
+        mnesia:dirty_delete_object(Obj),
+        [Hn] = mnesia:match_object(#incoming_hn{remote=Remote,_='_'}),
+
+        case mnesia:match_object(#remote_cell_link{parent=Remote,
+            type=incoming,_='_'}) of
+        [] -> mnesia:delete_object(Hn);
+        _  -> ok
+        end,
+        Hn
     end),
     
-    %% TODO: Unregister
+    Url   = hn_util:index_to_url(Obj#remote_cell_link.parent),
+    Child = hn_util:index_to_url(Obj#remote_cell_link.child),
+    Actions = simplexml:to_xml_string(
+        {unregister,[],[
+            {biccie,[],[Hn#incoming_hn.biccie]},
+            {url,   [],[Child]}
+        ]}),
+
+    hn_util:post(Url++"?hypernumber",Actions,"text/xml"),
     
     ok.
 
 
 %%--------------------------------------------------------------------
-%% Function    : write_local_link/2
+%% Function    : write_remote_link/2
 %%
-%% Description : 
+%% Description : Establishes a link between here and a remote cell
+%%               if the link doesnt already exist, register with the
+%%               remote cell to recieve updates
 %%--------------------------------------------------------------------
 write_remote_link(Parent,Child,Type) ->
 
@@ -207,14 +246,14 @@ write_remote_link(Parent,Child,Type) ->
         [] ->
             mnesia:write(Link),
             [Hn] = mnesia:read({incoming_hn,Parent}),
-            {ok,{write_link,Hn}};
+            {ok,{register,Hn}};
         _->
             {ok,link_exists}
         end
     end),
     
     case Link of
-    {write_link,Hn} ->
+    {register,Hn} ->
 
         Url   = hn_util:index_to_url(Child),
         Proxy = Child#index.site ++ Child#index.path,
@@ -303,11 +342,9 @@ dirty_refs_changed(dirty_hypernumber, Ref) ->
         lists:foreach(
             fun(To) ->    
                 Cell = To#remote_cell_link.child,
- 
                 hn_main:recalc(Cell)
             end,
-            Links
-        ),       
+            Links),       
         mnesia:delete({dirty_hypernumber, Ref})
     end),
     ok.   
@@ -370,8 +407,10 @@ update_hn(From,Bic,Val,_Version)->
         Rec   = #incoming_hn{ remote = Index, biccie = Bic, _='_'},
         [Obj] = mnesia:match_object(Rec),
 
-        V = ?COND(hn_util:is_numeric(Val) == true,
-            util2:make_num(Val),util2:make_text(Val)),
+        V = ?COND(Val == [],0,
+            ?COND(hn_util:is_numeric(Val) == true,
+                util2:make_num(Val),
+                util2:make_text(Val))),
 
         mnesia:write(Obj#incoming_hn{value=V}),
         mark_dirty(Index,hypernumber),

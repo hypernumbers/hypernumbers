@@ -282,6 +282,7 @@ is_alpha(Str) ->
 %% Function:    is_numeric/1
 %% Description: Returns true if a string is a list of digits
 %%--------------------------------------------------------------------
+is_numeric([]) -> false;
 is_numeric(Str) ->
     Fun = fun(XX) ->         
         if XX < 48 -> false;  

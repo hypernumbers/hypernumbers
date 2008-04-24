@@ -16,7 +16,7 @@ $.fn.textbox = function(options)
     // Add items to the list
     var addItem = function(list,item)
     {
-        var li = $("<li />").append($("<a>"+item+"</a>"));
+        var li = $("<li />").append($("<a href='#'>"+item+"</a>"));
         list.append(li);   
     };
         
@@ -40,21 +40,13 @@ $.fn.textbox = function(options)
         // Initialisation
         if(typeof $.data(this,"textbox") == "undefined")
         {
-            var $t   = $(this);
-            
-            var top  = $t.offset().top;
-            var left = $t.offset().left;
-            var height = this.offsetHeight + parseInt($t.css("border-top-width"));
-            var width  = this.offsetWidth  + parseInt($t.css("border-left-width"));
-            
-            // Wrap all the dom elements
-            var root = $t.wrap("<div class='textbox' />").parent();
-            root.width(width).height(height);
-                
+            var $t   = $(this);            
+            $t.addClass("textbox");
+            var abs = "style=\"position:absolute;\"";           
+                        
             // The drop down list
-            var list = $("<ul />").appendTo(root).width(width
-            ).css("top",(top + height) + "px"
-            ).mousedown(function(e)
+            var list = $("<ul class='textboxlist' "+abs+" />"
+            ).insertAfter($t).mousedown(function(e)
             {
                 list.toggle();
                 $t.val($(e.target).text());
@@ -64,11 +56,23 @@ $.fn.textbox = function(options)
             });            
             
             // The arrow that shows the list onclick
-            var arrow = $("<div class='arrow' />").appendTo(root
-            ).css("left", (width - 16) + "px"
-            ).mousedown(function()
+            var arrow = $("<div class='textboxarrow' "+abs+"/>"
+            ).insertAfter($t).bind('mousedown',function()
             {
                 list.toggle();
+                return false; // prevent wierd opera 
+            });               // context menu
+            
+            $(window).resize(function()
+            {
+                var h = $t[0].offsetHeight;
+                var w  = $t[0].offsetWidth;
+                
+                arrow.css("left",((w)-16)+"px"
+                ).css("top",(h+16)+"px");
+                
+                list.css("left","0px"
+                ).css("top",(h+32)+"px").width(w);
             });
                 
             $t.click(function()
@@ -115,6 +119,16 @@ $.fn.textbox = function(options)
             {
                 addItem(list,this);
             });
+            
+            // bit ugly, safari renders 
+            // too fast and misplaces stuff 
+            // everywhere
+            var fun = function()
+            {
+                arrow.css("display","block");
+                $(window).resize();
+            };
+            window.setTimeout(fun,50);
         }
         
         // The plugin has already been created on this object

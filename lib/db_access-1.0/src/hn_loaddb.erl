@@ -57,7 +57,7 @@ create_db(Type)->
          {attributes, record_info(fields, incoming_hn)}]),
 
     {atomic,ok} = mnesia:create_table(outgoing_hn,
-        [{Storage, [node()]},{type,bag},
+        [{Storage, [node()]},{type,set},
          {attributes, record_info(fields, outgoing_hn)}]),
     
     ok.

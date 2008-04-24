@@ -10,18 +10,40 @@
 /******************************************************************************
 	GLOBAL STYLES
 ******************************************************************************/
+.ss_root
+{
+    position:relative;
+    overflow:hidden;
+}
+
+.columns,.rows,.colwrap,.container
+{
+    position:relative;
+}
+
+.colwrap,.container
+{
+    overflow:hidden;
+}
+
 .ss_root table
 {
     border-top:     1px solid #aaa;
-    border-left:    1px solid #aaa;
+    border-left:    1px solid #aaa;s
     padding:        0px;
     margin:         0px;
     border-collapse:collapse;
 }
 
+.rows 
+{ 
+    width:          25px;
+    float:          left;
+ }
+
 .ss_root .rows td
 {
-    width:          30px;
+    width:          25px;
     background:     #ddd !important;
 }
 
@@ -33,12 +55,6 @@
     text-align:     right;
     border-bottom:  1px solid #aaa;
     border-right:   1px solid #aaa;
-    overflow:       hidden;
-}
-
-.ss_root .ssinner
-{
-    margin-left:    25px;
 }
 
 .ss_root .rows td.first div
@@ -83,21 +99,9 @@
 .ss_root #name 
 {
     font:           12px "Helvetica Neue", Palatino, sans-serif;
-    padding:        3px;
-    width:          80px;
     border:         0px;
+    width:          80px;
     text-align:     center;
-}
-
-.ss_root #functions
-{
-    border-width:   0px 1px 0px 1px;
-    font:           12px "Helvetica Neue", Palatino, sans-serif;
-    display:        block;
-    float:          left;
-    height:         20px;
-    background:     #eee;
-    width:          40px;
 }
 
 .ss_root #toolbar 
@@ -108,18 +112,29 @@
     border-top:     1px solid #ddd;
 }
 
-.ss_root #formula
+.formulabar
 {
-    margin-left:    130px;
+    height:         20px;
+    overflow:       hidden;
 }
 
-.ss_root #formula input
+.ss_root #formula
 {
     font:           12px "Helvetica Neue", Palatino, sans-serif;
     border:         0px;
     padding:        3px;
-    width:          100%;
 }
+
+.ss_root #functions
+{
+    border-width:   0px 1px 0px 1px;
+    border-style:   outset;
+    font:           12px "Helvetica Neue", Palatino, sans-serif;
+    height:         20px;
+    background:     #eee;
+    width:          40px;
+}
+
 
 .ss_root #marker 
 {
@@ -128,11 +143,6 @@
     height:         100%;
     width:          2px;
     background:     #000;
-}
-
-.ss_root .columns,.rows
-{
-    position:       relative;
 }
 
 .ss_root .datacontainer
@@ -168,8 +178,8 @@
     background-position:center center;
     background-repeat:  no-repeat;
     float:          left;
-    border:         1px solid transparent;
     cursor:         pointer;
+    border:         1px solid transparent;
     padding:        2px;
     margin:         2px;
     display:        block;
@@ -191,13 +201,16 @@
 .ss_root .rows
 {
     width:          25px;
-    float:          left;
     height:         100%;
 }
 
 .ss_root #box 
 {
     position:       absolute;
+    top:            0px;
+    border-bottom:  1px solid #aaa;
+    border-right:   1px solid #aaa;
+    left:           0px;
     background:     #ddd !important;
     width:          24px;
     height:         20px;
