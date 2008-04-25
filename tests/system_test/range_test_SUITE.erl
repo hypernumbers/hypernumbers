@@ -28,7 +28,7 @@ end_per_suite(_Config) ->
 init_per_testcase(_TestCase, Config) -> Config.
 end_per_testcase(_TestCase, _Config) -> ok.
 
-all() -> [range_xml,range_json].
+all() -> [].%[range_xml,range_json].
 
 %% Test cases starts here.
 %%------------------------------------------------------------------------------

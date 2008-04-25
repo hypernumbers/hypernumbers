@@ -17,6 +17,7 @@
 -export([
     %% hn_item
     write_item/2,   get_item/1,     get_item_val/1,
+    remove_item/1,
     %% local_cell_link
   	read_links/2,   del_links/2,    write_local_link/2,
   	read_remote_links/3, 
@@ -130,6 +131,30 @@ get_item_val(Addr) ->
     [] -> [];
     [#hn_item{val=Value}] -> Value
     end.
+    
+%%--------------------------------------------------------------------
+%% Function    : get_item/1
+%% 
+%% Description : Returns the list of attributes that are contained
+%%               within the range specified by Ref, ie if Ref refers
+%%               to a cell, all atributes referring to that cell, if
+%%               ref is a page, all cells / row / columns / ranges
+%%               in that page are returned
+%%--------------------------------------------------------------------    
+remove_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
+    
+    {atomic, _Okay} = mnesia:transaction(fun() ->
+    
+        %% If Name is defined, match it
+        N = ?COND(Name == undef,'_',Name),
+        Attr  = #ref{site=Site, path=Path, name=N, _ = '_'},
+        Match = #hn_item{addr = Attr, _ = '_'},
+        
+        lists:map(
+            fun(X) -> mnesia:delete_object(X) end,
+            mnesia:match_object(hn_item,Match,read))
+    end),
+    ok.
       
 %%-------------------------------------------------------------------
 %% Table : local_cell_link
@@ -441,13 +466,17 @@ get_hn(Url,From,To)->
 		[]->	  
             XML = hn_util:req(Url++"?hypernumber"),
             %% TODO: Handle remote server being down
+            
             {hypernumber,[],[
-                {value,[],              [Val]},
+                {value,[],              Tmp},
                 {'dependancy-tree',[],  Tree}]
             } = simplexml:from_xml_string(XML),
-            
-            V = ?COND(hn_util:is_numeric(Val) == true,
-                util2:make_num(Val),util2:make_text(Val)),
+                                 
+            Val = lists:flatten(Tmp),
+            V = ?COND(Val == [],0,
+                ?COND(hn_util:is_numeric(Val) == true,
+                    util2:make_num(Val),
+                    util2:make_text(Val))),
 
             HNumber = #incoming_hn{
                 value   = V,

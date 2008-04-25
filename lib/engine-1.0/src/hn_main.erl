@@ -100,10 +100,18 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
         
     hn_db:write_item(Addr#ref{name=formula},Formula),
     hn_db:write_item(Addr#ref{name=value},Value),
+        
+    %% Delete attribute if empty, else store
+    Set = fun(Ref,Val) ->
+        case Val of
+        [] -> hn_db:remove_item(Ref);
+        _  -> hn_db:write_item(Ref,Val)
+        end
+    end,
            
     %% These arent written if empty
-    hn_db:write_item(Addr#ref{name=parents},Parents),
-    hn_db:write_item(Addr#ref{name='dependancy-tree'},DepTree),
+    Set(Addr#ref{name=parents},Parents),
+    Set(Addr#ref{name='dependancy-tree'},DepTree),
         
     %% Delete the references
     hn_db:del_links(Index,child),

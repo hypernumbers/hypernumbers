@@ -29,9 +29,6 @@ init_per_testcase(_TestCase, Config) -> bits:clear_db(),Config.
 end_per_testcase(_TestCase, _Config) -> ok.
 
 all() -> [
-    row_xml,row_json,
-    last_xml,
-    last2_xml
     ].
 
 %% Test cases starts here.

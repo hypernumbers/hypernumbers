@@ -84,10 +84,10 @@ end_per_testcase(_TestCase, _Config) ->
 
 all() ->
     [
-        test_outgoing1,
-        test_outgoing2,
-        test_outgoing3,
-        test_outgoing4
+%        test_outgoing1,
+%        test_outgoing2,
+%        test_outgoing3,
+%        test_outgoing4
     ].
 
 %% Test cases starts here.

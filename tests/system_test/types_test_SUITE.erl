@@ -42,114 +42,101 @@ all() -> [
 json1() -> [{userdata,[{doc,"Testing data type converter"}]}].
 json1(Config) when is_list(Config) -> 
     Data = {root,[],[]},
-    Json = "[\"root\",[]]",
-    test_util:expected(Json,simplexml:to_json_string(Data)).
+    "[\"root\",[]]" = simplexml:to_json_string(Data).
 
 json2() -> [{userdata,[{doc,"Testing data type converter"}]}].
 json2(Config) when is_list(Config) -> 
     Data = {root,[{attribute,"value"}],[]},
-    Json = "[\"root\",[{\"attribute\":\"value\"}]]",
-    test_util:expected(Json,simplexml:to_json_string(Data)).
+    "[\"root\",[{\"attribute\":\"value\"}]]" 
+        = simplexml:to_json_string(Data).
 
 json3() -> [{userdata,[{doc,"Testing data type converter"}]}].
 json3(Config) when is_list(Config) -> 
     Data = {root,[{attribute,"value"},{another,"attribute"}],[]},
-    Json = "[\"root\",[{\"attribute\":\"value\"},{\"another\":\"attribute\"}]]",
-    test_util:expected(Json,simplexml:to_json_string(Data)).
+    "[\"root\",[{\"attribute\":\"value\"},{\"another\":\"attribute\"}]]"
+        = simplexml:to_json_string(Data).
 
 json4() -> [{userdata,[{doc,"Testing data type converter"}]}].
 json4(Config) when is_list(Config) -> 
     Data = {root,[{attribute,"value"}],[{firstchild,[],[]},{secondchild,[],[]}]},
-    Json = "[\"root\",[{\"attribute\":\"value\"},[\"firstchild\",[]],[\"secondchild\",[]]]]",
-    test_util:expected(Json,simplexml:to_json_string(Data)).
+    "[\"root\",[{\"attribute\":\"value\"},[\"firstchild\",[]],[\"secondchild\",[]]]]"
+        = simplexml:to_json_string(Data).
 
 json5() -> [{userdata,[{doc,"Testing data type converter"}]}].
 json5(Config) when is_list(Config) -> 
-    Data = {root,[],["test"]},
-    Json = "[\"root\",[\"test\"]]",
-    test_util:expected(Json,simplexml:to_json_string(Data)).
+    "[\"root\",[\"test\"]]" = simplexml:to_json_string({root,[],["test"]}).
 
 json6() -> [{userdata,[{doc,"Testing data type converter"}]}].
 json6(Config) when is_list(Config) -> 
-    Data = {root,[{attribute,"value"}],[{child,[],["3.1459"]},{child,[],
-        [{anotherchild,[],["3.1459"]}]}]},
-    Json = "[\"root\",[{\"attribute\":\"value\"},[\"child\",[\"3.1459\"]],"
-        ++"[\"child\",[[\"anotherchild\",[\"3.1459\"]]]]]]",
-    test_util:expected(Json,simplexml:to_json_string(Data)).
+    "[\"root\",[{\"attribute\":\"value\"},[\"child\",[\"3.1459\"]],"
+        ++"[\"child\",[[\"anotherchild\",[\"3.1459\"]]]]]]" = 
+    simplexml:to_json_string({root,[{attribute,"value"}],[
+        {child,[],["3.1459"]},{child,[],[{anotherchild,[],["3.1459"]}]}]}).
+
 
 from_json1() -> [{userdata,[{doc,"Testing data type converter"}]}].
 from_json1(Config) when is_list(Config) -> 
-    Data = {root,[],[]},
-    Json = "[\"root\",[]]",
-    test_util:expected(Data,simplexml:from_json_string(Json)).
+    {root,[],[]} = simplexml:from_json_string("[\"root\",[]]").
 
 from_json2() -> [{userdata,[{doc,"Testing data type converter"}]}].
 from_json2(Config) when is_list(Config) -> 
-    Data = {root,[{attribute,"value"}],[]},
-    Json = "[\"root\",[{\"attribute\":\"value\"}]]",
-    test_util:expected(Data,simplexml:from_json_string(Json)).
+    {root,[{attribute,"value"}],[]}
+        = simplexml:from_json_string("[\"root\",[{\"attribute\":\"value\"}]]").
 
 from_json3() -> [{userdata,[{doc,"Testing data type converter"}]}].
 from_json3(Config) when is_list(Config) -> 
-    Data = {root,[{attribute,"value"},{another,"attribute"}],[]},
-    Json = "[\"root\",[{\"attribute\":\"value\"},{\"another\":\"attribute\"}]]",
-    test_util:expected(Data,simplexml:from_json_string(Json)).
+    {root,[{attribute,"value"},{another,"attribute"}],[]}
+        = simplexml:from_json_string("[\"root\",[{\"attribute\":\"value\"},"
+            ++"{\"another\":\"attribute\"}]]").
 
 from_json4() -> [{userdata,[{doc,"Testing data type converter"}]}].
 from_json4(Config) when is_list(Config) -> 
-    Data = {root,[{attribute,"value"}],[{firstchild,[],[]},{secondchild,[],[]}]},
-    Json = "[\"root\",[{\"attribute\":\"value\"},[\"firstchild\",[]],[\"secondchild\",[]]]]",
-    test_util:expected(Data,simplexml:from_json_string(Json)).
+    {root,[{attribute,"value"}],[{firstchild,[],[]},{secondchild,[],[]}]}
+        = simplexml:from_json_string("[\"root\",[{\"attribute\":\"value\"}"
+            ++",[\"firstchild\",[]],[\"secondchild\",[]]]]").
 
 from_json5() -> [{userdata,[{doc,"Testing data type converter"}]}].
 from_json5(Config) when is_list(Config) -> 
-    Data = {root,[],["test"]},
-    Json = "[\"root\",[\"test\"]]",
-    test_util:expected(Data,simplexml:from_json_string(Json)).
+    {root,[],["test"]} = simplexml:from_json_string("[\"root\",[\"test\"]]").
 
 from_json6() -> [{userdata,[{doc,"Testing data type converter"}]}].
 from_json6(Config) when is_list(Config) -> 
-    Data = {root,[{attribute,"value"}],[{child,[],["3.1459"]},{child,[],
-        [{anotherchild,[],["3.1459"]}]}]},
-    Json = "[\"root\",[{\"attribute\":\"value\"},[\"child\",[\"3.1459\"]],"
-        ++"[\"child\",[[\"anotherchild\",[\"3.1459\"]]]]]]",
-    test_util:expected(Data,simplexml:from_json_string(Json)).
+    {root,[{attribute,"value"}],[{child,[],["3.1459"]},{child,[],
+        [{anotherchild,[],["3.1459"]}]}]} =
+    simplexml:from_json_string("[\"root\",[{\"attribute\":\"value\"},[\"child\",[\"3.1459\"]],"
+        ++"[\"child\",[[\"anotherchild\",[\"3.1459\"]]]]]]").
 
 from_json7() -> [{userdata,[{doc,"Testing data type converter"}]}].
 from_json7(Config) when is_list(Config) -> 
-    Data = {create,[],[{value,[],["value"]}]},
-    Json = "[\"create\",[[\"value\",[\"value\"]]]]",
-    test_util:expected(Data,simplexml:from_json_string(Json)).
+    {create,[],[{value,[],["value"]}]}
+        = simplexml:from_json_string("[\"create\",[[\"value\",[\"value\"]]]]").
 
 xml1() -> [{userdata,[{doc,"Testing data type converter"}]}].
 xml1(Config) when is_list(Config) -> 
     Data = {root,[],[]},
-    XML  = "<root/>",
-    test_util:expected(XML,simplexml:to_xml_string(Data)).
+    "<root/>" = simplexml:to_xml_string(Data).
 
 xml2() -> [{userdata,[{doc,"Testing data type converter"}]}].
 xml2(Config) when is_list(Config) -> 
     Data = {root,[{attribute,"value"}],[]},
-    XML  = "<root attribute=\"value\"/>",
-    test_util:expected(XML,simplexml:to_xml_string(Data)).
+    "<root attribute=\"value\"/>" = simplexml:to_xml_string(Data).
 
 xml3() -> [{userdata,[{doc,"Testing data type converter"}]}].
 xml3(Config) when is_list(Config) -> 
     Data = {root,[{attribute,"value"},{another,"attribute"}],[]},
-    XML  = "<root attribute=\"value\" another=\"attribute\"/>",
-    test_util:expected(XML,simplexml:to_xml_string(Data)).
+    "<root attribute=\"value\" another=\"attribute\"/>"
+        = simplexml:to_xml_string(Data).
 
 xml4() -> [{userdata,[{doc,"Testing data type converter"}]}].
 xml4(Config) when is_list(Config) -> 
     Data = {root,[{attribute,"value"}],[{firstchild,[],[]},{secondchild,[],[]}]},
-    XML  = "<root attribute=\"value\"><firstchild/><secondchild/></root>",
-    test_util:expected(XML,simplexml:to_xml_string(Data)).
+    "<root attribute=\"value\"><firstchild/><secondchild/></root>"
+        = simplexml:to_xml_string(Data).
 
 xml5() -> [{userdata,[{doc,"Testing data type converter"}]}].
 xml5(Config) when is_list(Config) -> 
     Data = {root,[],["test"]},
-    XML  = "<root>test</root>",
-    test_util:expected(XML,simplexml:to_xml_string(Data)).
+    "<root>test</root>" = simplexml:to_xml_string(Data).
 
 xml6() -> [{userdata,[{doc,"Testing data type converter"}]}].
 xml6(Config) when is_list(Config) -> 
@@ -157,4 +144,4 @@ xml6(Config) when is_list(Config) ->
         [{anotherchild,[],["3.1459"]}]}]},
     XML  = "<root attribute=\"value\"><child>3.1459</child><child><anotherchild>3.1459"
         ++"</anotherchild></child></root>",
-    test_util:expected(XML,simplexml:to_xml_string(Data)).
+    XML = simplexml:to_xml_string(Data).

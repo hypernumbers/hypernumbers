@@ -27,8 +27,8 @@ end_per_suite(_Config) ->
 init_per_testcase(_TestCase, Config) -> bits:clear_db(),Config.
 end_per_testcase(_TestCase, _Config) -> ok.
 
-all() ->
-    [write_perm,get_perm,get_perm2,get_perm3].
+all() -> [].
+%    [write_perm,get_perm,get_perm2,get_perm3].
 
 %% Test cases starts here.
 %%------------------------------------------------------------------------------
