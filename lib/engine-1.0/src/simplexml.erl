@@ -74,6 +74,7 @@ to_xml_string(SimpleXML) ->
 
 %% @doc from an xml encoded string to simplexml tuple
 from_xml_string(String) ->
+    io:format("~p~n",[String]),
     {Xml,_Misc} = xmerl_scan:string(String,[{space,normalize},{encoding,"utf-8"}]),
     Almost = xmerl_lib:simplify_element(Xml),
     rm_spaces(Almost).
