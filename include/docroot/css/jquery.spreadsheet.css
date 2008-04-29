@@ -29,7 +29,7 @@
 .ss_root table
 {
     border-top:     1px solid #aaa;
-    border-left:    1px solid #aaa;s
+    border-left:    1px solid #aaa;
     padding:        0px;
     margin:         0px;
     border-collapse:collapse;
@@ -98,7 +98,7 @@
 
 .ss_root #name 
 {
-    font:           12px "Helvetica Neue", Palatino, sans-serif;
+    font:           12px "Lucida Grande","Lucida Sans Unicode","Helvetica Neue", sans-serif;  
     border:         0px;
     width:          80px;
     text-align:     center;
@@ -120,7 +120,7 @@
 
 .ss_root #formula
 {
-    font:           12px "Helvetica Neue", Palatino, sans-serif;
+    font:           12px "Lucida Grande","Lucida Sans Unicode","Helvetica Neue", sans-serif;  
     border:         0px;
     padding:        3px;
 }
@@ -129,7 +129,7 @@
 {
     border-width:   0px 1px 0px 1px;
     border-style:   outset;
-    font:           12px "Helvetica Neue", Palatino, sans-serif;
+    font:           12px "Lucida Grande","Lucida Sans Unicode","Helvetica Neue", sans-serif;  
     height:         20px;
     background:     #eee;
     width:          40px;

@@ -16,8 +16,9 @@
 %%%-----------------------------------------------------------------
 -export([
     %% hn_item
-    write_item/2,   get_item/1,     get_item_val/1,
+    write_item/2,   get_item/1,     get_item_val/1,  
     remove_item/1,
+    get_ref_from_name/1,
     %% local_cell_link
   	read_links/2,   del_links/2,    write_local_link/2,
   	read_remote_links/3, 
@@ -132,6 +133,13 @@ get_item_val(Addr) ->
     [#hn_item{val=Value}] -> Value
     end.
     
+get_ref_from_name(Name) ->
+    {atomic, [Item]} = mnesia:transaction(fun() ->  
+        Match = #hn_item{addr=#ref{name=name, _ = '_'}, val = Name},
+        mnesia:match_object(hn_item,Match,read)   
+    end),
+    Item#hn_item.addr. 
+      
 %%--------------------------------------------------------------------
 %% Function    : get_item/1
 %% 

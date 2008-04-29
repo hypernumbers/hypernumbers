@@ -1,6 +1,6 @@
 * 
 { 
-    font:   13px "Helvetica Neue", Palatino, sans-serif; 
+    font:   13px "Lucida Grande","Lucida Sans Unicode","Helvetica Neue", sans-serif;  
     margin: 0px; 
     padding:0px; 
 }
@@ -24,7 +24,7 @@ input, textarea
 
 h2 
 {
-    font: bold 18px "Helvetica Neue", Palatino, sans-serif;  
+    font: bold 18px "Lucida Grande","Lucida Sans Unicode","Helvetica Neue", sans-serif;  
 }
 
 p
@@ -87,7 +87,7 @@ hr
 
 #dbg   
 {
-    font:   10px "Helvetica Neue",Palatino,sans-serif;  
+    font:   10px "Lucida Grande","Lucida Sans Unicode","Helvetica Neue", sans-serif;  
     height: 100px;
     display:none; 
     width:100%; 
@@ -107,7 +107,7 @@ table { table-layout:fixed; }
 #hn .rowindex
 {
     display:block;
-    font:   11px "Helvetica Neue",Palatino,sans-serif; 
+    font:   11px "Lucida Grande","Lucida Sans Unicode","Helvetica Neue", sans-serif;  
     padding: 3px; 
     text-align:center;
     background: #ddd !important;
@@ -125,7 +125,7 @@ table { table-layout:fixed; }
 
 #hn th
 {
-    font: 11px bold "Helvetica Neue",Palatino,sans-serif;  
+    font: 11px bold "Lucida Grande","Lucida Sans Unicode","Helvetica Neue", sans-serif;  
     padding: 0; 
     border-bottom:1px solid #aaa;
     border-right:1px solid #aaa;
