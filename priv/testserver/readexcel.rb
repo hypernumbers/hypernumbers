@@ -1,10 +1,6 @@
 #!/usr/bin/env ruby -wKU
 
-# USAGE: readexcel.rb somefile.xls
-
-# May be useful: 
-#   cell.Style.NumberFormat
-#   cell.FormatConditions
+# USAGE: ruby readexcel.rb C:\\dir\\somefile.xls
 
 require "win32ole"
 
@@ -24,9 +20,11 @@ xlsdata = []
     (1..sheet.UsedRange.Columns.Count).each do |colidx|
       cell = sheet.Cells(rowidx, colidx)
       if cell.Value != nil && cell.Formula != ""
-        celldata = [colidx]
-        celldata << cell.Value
-        celldata << cell.Formula
+        celldata = [colidx, {}]
+        celldata[1][:text] = cell.Text
+        celldata[1][:value] = cell.Value
+        celldata[1][:formula] = cell.Formula
+        celldata[1][:format] = cell.NumberFormat
         rowdata << celldata
       end
     end
