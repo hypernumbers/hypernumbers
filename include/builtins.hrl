@@ -1,35 +1,108 @@
-
 -define(STDFUNS,
         [
-         {stdfuns_math,
-          [
-           plus, minus, times, divide, negate, sum, product, average,
-           quotient, abs, sqrt, power, sign, exp, fact, mod, mdeterm,
-           minverse, mmult, ln, log, log10, rand, randbetween, round,
-           rounddown, roundup, ceiling, combin, even, floor, int, mround,
-           odd, trunc, pi, sqrtpi, roman, sin, cos, tan, asin, acos, atan,
-           atan2, sinh, cosh, tanh, asinh, acosh, atanh, degrees, radian
-          ]}, 
+         %% MATH
+         {'+',stdfuns_math},
+         {'-', stdfuns_math},
+         {'*', stdfuns_math},
+         {'/', stdfuns_math},
+         {negate, stdfuns_math},
+         {sum, stdfuns_math},
+         {product, stdfuns_math},
+         {quotient, stdfuns_math},
+         {abs, stdfuns_math},
+         {sqrt, stdfuns_math},
+         {power,stdfuns_math},
+         {sign,stdfuns_math},
+         {exp,stdfuns_math},
+         {fact,stdfuns_math},
+         {mod,stdfuns_math},
+         {mdeterm,stdfuns_math},
+         {minverse,stdfuns_math},
+         {mmult,stdfuns_math},
+         {ln,stdfuns_math},
+         {log,stdfuns_math},
+         {log10,stdfuns_math},
+         {rand,stdfuns_math},
+         {randbetween,stdfuns_math},
+         {round,stdfuns_math},
+         {rounddown,stdfuns_math},
+         {roundup,stdfuns_math},
+         {ceiling,stdfuns_math},
+         {combin,stdfuns_math},
+         {even,stdfuns_math},
+         {floor,stdfuns_math},
+         {int,stdfuns_math},
+         {mround,stdfuns_math},
+         {odd,stdfuns_math},
+         {trunc,stdfuns_math},
+         {pi,stdfuns_math},
+         {sqrtpi,stdfuns_math},
+         {roman,stdfuns_math},
+         {sin,stdfuns_math},
+         {cos,stdfuns_math},
+         {tan,stdfuns_math},
+         {asin,stdfuns_math},
+         {acos,stdfuns_math},
+         {atan,stdfuns_math},
+         {atan2,stdfuns_math},
+         {sinh,stdfuns_math},
+         {cosh,stdfuns_math},
+         {tanh,stdfuns_math},
+         {asinh,stdfuns_math},
+         {acosh,stdfuns_math},
+         {atanh,stdfuns_math},
+         {degrees,stdfuns_math},
+         {radian,stdfuns_math},
+        
+         %% TEXT
+         {exact,stdfuns_text},
+         {len,stdfuns_text},
+         {mid,stdfuns_text},
+         {clean,stdfuns_text},
+         {fixed,stdfuns_text},
+         {lower,stdfuns_text},
+         {proper,stdfuns_text},
+         {upper,stdfuns_text},
+         {char,stdfuns_text},
+         {find,stdfuns_text},
+         {left,stdfuns_text},
+         {right,stdfuns_text},
+         {concatenate,stdfuns_text},
+         {rept,stdfuns_text},
+         
+         %% LOGICAL
+         {eq,stdfuns_text},
+         {neq,stdfuns_logical},
+         {lt,stdfuns_logical},
+         {gt,stdfuns_logical},
+         {lte,stdfuns_logical},
+         {gte,stdfuns_logical},
+         {'if',stdfuns_logical},
+         {'and',stdfuns_logical},
+         {'not',stdfuns_logical},
+         {'or',stdfuns_logical},
+         
+         %% STATISTICAL
+         {avedev,stdfuns_stats},
+         {average,stdfuns_stats},
+         {averagea,stdfuns_stats},
+         {binomdist,stdfuns_stats},
+         {chidist,stdfuns_stats},
+         {exp,stdfuns_stats},
+         {expondist,stdfuns_stats},
 
-         {stdfuns_text,
-          [
-           exact, len, mid, clean, fixed, lower, proper, upper, char, find,
-           left, right, concatenate, rept
-          ]},
-
-         {stdfuns_logical,
-          [
-           eq, neq, lt, gt, lte, gte, 'if', 'and', 'not', 'or'
-          ]},
-
-         {stdfuns_stats,
-          [
-           avedev, average, averagea, binomdist, chidist, exp, expondist
-          ]},
-
-         {stdfuns_info,
-          [
-           error_type, iserr, iserror, iseven, islogical, isna, isnontext,
-           isnumber, isodd, istext, n, na, type
-          ]}
+         %% INFORMATION
+         {error_type,stdfuns_info},
+         {iserr,stdfuns_info},
+         {iserror,stdfuns_info},
+         {iseven,stdfuns_info},
+         {islogical,stdfuns_info},
+         {isna,stdfuns_info},
+         {isnontext,stdfuns_info},
+         {isnumber,stdfuns_info},
+         {isodd,stdfuns_info},
+         {istext,stdfuns_info},
+         {n,stdfuns_info},
+         {na,stdfuns_info},
+         {type,stdfuns_info}
         ]).
