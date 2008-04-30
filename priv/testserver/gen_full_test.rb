@@ -33,7 +33,7 @@ def preptype(val)
   }
 
   if val.kind_of?(String)
-    "\"" + val + "\""
+    "\"" + val.gsub("\\", "\\\\\\").gsub("\"", "\\\"") + "\""
   else
     t[val] or val
   end
@@ -46,15 +46,20 @@ end
 @testcasedata = []
 data.each_with_index { |sheetdata, sheetidx|
   sheetname = sheetdata[0]
+  currange = ranges[sheetidx] == nil ? [] : expand_range(ranges[sheetidx])
   sheetdata.slice(1..-1).map { |rowdata|
     if rowdata.length > 1
       rowdata.map { |celldata|
         if celldata.kind_of?(Array)
-          cellname = itob26(celldata[0]) + rowdata[0].to_s # make A1-style name
-          casename = "sheet#{sheetidx + 1}_#{cellname}"
-          path = "/#{sheetname}/"
-          expval = preptype(celldata[1][:value])
-          @testcasedata << [casename, path, cellname, expval]
+          puts currange.inspect
+          puts [celldata[0], rowdata[0]].inspect
+          if currange == [] || currange.include?([celldata[0], rowdata[0]])
+            cellname = itob26(celldata[0]) + rowdata[0].to_s # make A1-style name
+            casename = "sheet#{sheetidx + 1}_#{cellname}"
+            path = "/#{sheetname}/"
+            expval = preptype(celldata[1][:value])
+            @testcasedata << [casename, path, cellname, expval]
+          end
         end
       }
     end
