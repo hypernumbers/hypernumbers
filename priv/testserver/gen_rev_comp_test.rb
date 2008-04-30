@@ -4,7 +4,7 @@ load "gen_util.rb"
 
 # Determines the type of a cell given its contents (formula & value as read by Excel).
 def get_type(val)
-  return :formula if val[0].chr == "=" && val.length > 1
+  return :formula if val.kind_of?(String) && val.length > 1 && val[0].chr == "="
   return :number if val.kind_of?(Numeric)
   return :string if val.kind_of?(String)
   return :boolean if (val.class == TrueClass || val.class == FalseClass)
@@ -111,7 +111,7 @@ ranges = ARGV.slice(1..-1)
 data = eval(IO.readlines(datafile).join)
 
 basename = File.basename(ARGV[0], ".dat").downcase
-modname = "#{basename}_SUITE"
+modname = "#{basename}_test_SUITE"
 
 File.open("#{modname}.erl", "w") do |suite|
   suite << (module_header("#{basename}.xls", Time.now.to_s, modname) +
