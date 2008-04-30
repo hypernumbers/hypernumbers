@@ -4,26 +4,43 @@
 
 -module(superparser).
 -export([process/1]).
--import(muin_util, [init/1]).
 -define(upcase(S),
         ustring:pr(ustring:upcase(ustring:new(S)))).
 
-process(Str) ->
-    case Str of
-        [$= | _] ->
-            %% Formulas are upcased to make things easier in Muin.
-            {formula, upcase_formula(Str)};
+process(Input) ->
+    {ok, Toks} = muin_lexer:lex(Input, {1,1}), %% FIXME: If fails, complain.
+    case Toks of
+        [{str, Str}] ->
+            {string, Str};
         _ ->
-            {value, Str}
+            Up = upcase(Input),
+            case Up of
+                [$= | Tl] ->
+                    {formula, Tl};
+                _ ->
+                    %% TODO: Try to detect dates here (locale-specific,
+                    %% default to en_US).
+                    {ok, [Tok]} = muin_lexer:lex(Up, {1,1}),
+                    case Tok of
+                        {bool, B}  -> {bool, B};
+                        {float, F} -> {number, F};
+                        {int, I}   -> {number, I};
+                        {error, E} -> {error, E};
+                        _ ->
+                            io:format("IN superparser:process/1, SHOULD NOT HAPPEN. ~p~n",
+                                      [Tok])
+                    
+                    end
+            end
     end.
 
 %% Converts formula to upper-case, leaving only string literals as-is.
-upcase_formula(Str) ->
+upcase(Str) ->
     {ok, Tokens, _} = superlex:lex(Str),
     %% List of numbers (codepoints) interspersed with {string, _} tuples.
     Str2 = 
         tl(lists:foldl(fun({stuff, X}, Acc) ->
-                               init(Acc) ++ ([lists:last(Acc)] ++ X);
+                               hslists:init(Acc) ++ ([lists:last(Acc)] ++ X);
                           (Tok = {string, _}, Acc) ->
                                Acc ++ [Tok]
                        end,
