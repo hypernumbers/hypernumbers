@@ -28,10 +28,10 @@
 
 -export([
          %% Basics
-         plus/1,
-         minus/1,
-         times/1,
-         divide/1,
+         '+'/1,
+         '-'/1,
+         '*'/1,
+         '/'/1,
          negate/1,
          
          %% Arithmetic
@@ -122,19 +122,19 @@
 %%% Basic arithmetics %%%
 %%% ----------------- %%%
 
-plus([Num1, Num2]) ->
+'+'([Num1, Num2]) ->
     ?ensure_numbers([Num1, Num2]),
     Num1 + Num2.
 
-minus([Num1, Num2]) ->
+'-'([Num1, Num2]) ->
     ?ensure_numbers([Num1, Num2]),
     Num1 - Num2.
 
-times([Num1, Num2]) ->
+'*'([Num1, Num2]) ->
     ?ensure_numbers([Num1, Num2]),
     Num1 * Num2.
 
-divide([Num, Divisor]) ->
+'/'([Num, Divisor]) ->
     ?ensure_numbers([Num, Divisor]),
     ?ensure_nonzero(Divisor),
     Num / Divisor.
@@ -162,10 +162,10 @@ product(Vals) ->
     Nums = [X || X <- Flatvals, is_number(X)],
     product1(Nums).
 product1(Nums) ->
-    foldl(?funXAcc(X * Acc), 1, Nums).
+    foldl(?Lxacc(X * Acc), 1, Nums).
 
 quotient([Num, Divisor]) ->
-    ?MODULE:trunc(divide([Num, Divisor])).
+    ?MODULE:trunc('/'([Num, Divisor])).
 
 abs([Num]) ->
     ?ensure_number(Num),
@@ -204,7 +204,7 @@ fact([Num_]) ->
 fact1(0) ->
     1;
 fact1(Num) ->
-    foldl(?funXAcc(X * Acc),
+    foldl(?Lxacc(X * Acc),
           1,
           seq(1, Num)).
 
@@ -212,7 +212,7 @@ fact1(Num) ->
 %% has the same sign as divisor.
 mod([Num, Divisor]) ->
     ?ensure_numbers([Num, Divisor]),
-    Num - Divisor * int(divide([Num, Divisor])).
+    Num - Divisor * int('/'([Num, Divisor])).
 
 %%% ------------------- %%%
 %%% Arrays and matrices %%%
