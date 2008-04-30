@@ -102,7 +102,7 @@ conv_from_get(Val) ->
 conv_for_post(Val) ->
     case Val of
         {_, boolean, true} -> "true";
-        {_, boolean, fase} -> "false";
+        {_, boolean, false} -> "false";
         {_, number, N}     -> tconv:to_s(N);
         {_, error, E}      -> E;
         {string, X}        -> "\"" ++ X ++ "\"";

@@ -30,9 +30,13 @@ def expand_range(a1range)
   row1 = cell1[/[0-9]+/].to_i
   row2 = cell2[/[0-9]+/].to_i
 
-  (col1..col2).map { |colidx|
-    (row1..row2).map { |rowidx|
-      [colidx, rowidx]
+  res = []
+  
+  (col1..col2).each { |colidx|
+    (row1..row2).each { |rowidx|
+      res << [colidx, rowidx]
     }
   }
+
+  res
 end
