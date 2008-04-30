@@ -32,16 +32,16 @@ gen() ->
     ?P("Generated super lexer!"),
 
     %% Generate frontends.
-    lists:foreach(fun(X) -> gen_frontend(X) end,
-                  ?FRONTENDS),
+    %%lists:foreach(fun(X) -> gen_frontend(X) end,
+    %%              ?FRONTENDS),
 
     %% Move the generated files to the right directory.
     delete(DestDir ++ "muin_lexer.erl"),
     delete(DestDir ++ "muin_parser.erl"),
     delete(DestDir ++ "muin_supd_lexer.erl"),
     delete(DestDir ++ "superlex.erl"),
-    lists:foreach(fun(X) -> delete(DestDir ++ X ++ "_lexer.erl") end,
-                  ?FRONTENDS),
+    %%lists:foreach(fun(X) -> delete(DestDir ++ X ++ "_lexer.erl") end,
+    %%              ?FRONTENDS),
         
     delete(DestDir ++ "num_format_lexer.erl"),
     delete(DestDir ++ "num_format_parser.erl"),
@@ -49,13 +49,13 @@ gen() ->
     rename("muin_parser.erl", DestDir ++ "muin_parser.erl"),
     rename("muin_supd_lexer.erl", DestDir ++ "muin_supd_lexer.erl"),
     rename("superlex.erl", DestDir ++ "superlex.erl"),
-    lists:foreach(fun(X) -> rename(X ++ "_lexer.erl", DestDir ++ X ++ "_lexer.erl") end,
-                  ?FRONTENDS),
+    %%lists:foreach(fun(X) -> rename(X ++ "_lexer.erl", DestDir ++ X ++ "_lexer.erl") end,
+    %%              ?FRONTENDS),
     rename("num_format_lexer.erl", DestDir ++ "num_format_lexer.erl"),
     rename("num_format_parser.erl", DestDir ++ "num_format_parser.erl"),
 
-    lists:foreach(fun(X) -> delete(X ++ "_lexer.erl") end,
-                  ?FRONTENDS),
+    %%lists:foreach(fun(X) -> delete(X ++ "_lexer.erl") end,
+    %%              ?FRONTENDS),
     
     ?P("OK").
 
