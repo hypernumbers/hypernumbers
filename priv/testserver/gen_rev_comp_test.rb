@@ -1,14 +1,13 @@
 #!/usr/bin/env ruby -wKU
 
-require "yaml"
+load "gen_util.rb"
 
 # Determines the type of a cell given its contents (formula & value as read by Excel).
-def get_type(cell_data)
-  return :formula if cell_data["formula"][0,1] == "=" && cell_data["formula"].length > 1
-  return :number if cell_data["value"].kind_of?(Numeric)
-  return :string if cell_data["value"].kind_of?(String)
-  return :date if cell_data["value"].kind_of?(Time)
-  return :boolean if (cell_data["value"].class == TrueClass || cell_data["value"].class == FalseClass)
+def get_type(val)
+  return :formula if val[0].chr == "=" && val.length > 1
+  return :number if val.kind_of?(Numeric)
+  return :string if val.kind_of?(String)
+  return :boolean if (val.class == TrueClass || val.class == FalseClass)
 end
 
 # ====================================
@@ -49,12 +48,12 @@ def module_header(source_file, timestamp, modname)
 eos
 end
 
-def init_per_suite(source_file,mod_name)
+def init_per_suite(xlsfile)
 <<-eos
 init_per_suite(Config) ->
     code:add_patha("../../../../../ebin"),
     production_boot:setup_paths(),
-    Data = test_util:read_excel_file("../../../../excel_files/Win Excel 2007 (as 97)/#{source_file}"),
+    Data = test_util:read_excel_file("../../../../excel_files/Win_Excel07_As_97/#{xlsfile}"),
     %% io:format("in init_per_suite Data is ~p~n",[Data]),
     Pid=spawn(test_util,test_state,[Data]),
     io:format("in init_per_suite Pid is ~p~n",[Pid]),
@@ -106,69 +105,57 @@ end
 # = Main part: read YAML file, and generate test case from it. =
 # ==============================================================
 
-hash = File.open(ARGV[0]) { |f| YAML::load(f) }
+datafile = ARGV[0]
+ranges = ARGV.slice(1..-1)
 
-modname = "#{File.basename(ARGV[0], ".yaml").downcase}_SUITE"
-#puts "modname is #{modname}"
+data = eval(IO.readlines(datafile).join)
+
+basename = File.basename(ARGV[0], ".dat").downcase
+modname = "#{basename}_SUITE"
 
 File.open("#{modname}.erl", "w") do |suite|
-  suite << module_header(hash["source-file"], Time.now.to_s, modname) +
-           init_per_suite(hash["source-file"], modname) +
-           end_per_suite() +
-           init_per_testcase() +
-           end_per_testcase() + 
-           read_from_excel_data(modname)
+  suite << (module_header("#{basename}.xls", Time.now.to_s, modname) +
+            init_per_suite("#{basename}.xls") +
+            end_per_suite() +
+            init_per_testcase() +
+            end_per_testcase() + 
+            read_from_excel_data(modname))
   
   # Keep a list of names of generated test cases for all().
   test_names = []
-  
-  # Write test cases.
-  hash.each do |sheet|
-    #puts "sheet is #{sheet}"
-     if sheet[0] != "source-file" && sheet[0] != "generated-on"
-      sheet[1].each do |col_cells|
-      #puts "col_cells are #{col_cells}"
-      # col_cells will contain something like:
-      # ["B", 
-      #   { 5 => {"formula"=>"=UPPER(\"hello\")", "value"=>"HELLO"}, 
-      #     3 => {"formula"=>"=1>0", "value"=>true},
-      #     4 => {"formula"=>"zhopa", "value"=>"zhopa"}}]
-      # Where "B" is, of course, the name of the column, and the elements in the
-      # hash are { row_number => value } pairs.
-    
-        col_cells[1].each do |row_data|
-          #puts "row data is #{row_data}"
-          # row_data data will contain something like:
-          # [1, {"formula" => "=2 * 2.5", "value" => 5}]
-        
-          # This will give us a name like sheet1_c15_test
-          name = "#{sheet[0].downcase}_#{col_cells[0].downcase}#{row_data[0]}_test"
-          test_names << name
-          #puts "get_type(row_data[1]) is #{get_type(row_data[1])}"
-          got, type =  case get_type(row_data[1])
-                                     when :formula
-                                       ["\"#{row_data[1]["formula"]}\"", :formula]
-                                     when :number
-                                       ["#{row_data[1]["value"]}", :number]
-                                     when :boolean
-                                       ["#{row_data[1]["value"]}", :boolean]
-                                     when :string
-                                       ["\"#{row_data[1]["value"]}\"", :string]
-                                     when :date
-                                       ["\"#{row_data[1]["value"]}\"", :date]
-                                     else
-                                       ["\"not tested (type not supported by generatetest.rb yet)\"", 0, :not_supported]
-                                     end
-          got2 = "{#{type.to_s},#{got}}"
-          #expected="read_from_excel_data(Config,{\"#{sheet[0]}\",#{row_data[0]-1},#{col_cells[0][-1]-65}})"
-          key="{\"#{sheet[0]}\",#{row_data[0]-1},#{col_cells[0][-1]-65}}"
-        #puts "got2 is #{got2} and key is #{key}"
-        suite << erl_testcase(name, key, got2)
-        end
+
+  data.each_with_index { |sheetdata, sheetidx|
+    sheetdata.slice(1..-1).map { |rowdata|
+      if rowdata.length > 1
+        rowdata.map { |celldata|
+          if celldata.kind_of?(Array)
+            cellname = itob26(celldata[0]) + rowdata[0].to_s # make A1-style name
+            casename = "sheet#{sheetidx + 1}_#{cellname}"
+            test_names << casename
+
+            got, type = case get_type(celldata[1][:value])
+                        when :formula
+                          ["\"#{celldata[1][:formula]}\"", :formula]
+                        when :number
+                          ["#{celldata[1][:value]}", :number]
+                        when :boolean
+                          ["#{celldata[1][:value]}", :boolean]
+                        when :string
+                          ["\"#{celldata[1][:value]}\"", :string]
+                        when :date
+                          ["\"#{celldata[1][:value]}\"", :date]
+                        else
+                          ["\"not tested (type not supported by generatetest.rb yet)\"", 0, :not_supported]
+                        end
+
+            got2 = "{#{type.to_s},#{got}}"
+            key="{\"#{sheetdata[0]}\",#{rowdata[0]-1},#{celldata[0]-1}}"
+            suite << erl_testcase(casename, key, got2)
+          end
+        }
       end
-    end
-  end
-  
-  # Three spaces after the line break, so that the output is formatted nicely.
+    }
+  }
+
   suite << all(test_names.join(",\n   ")) 
 end
