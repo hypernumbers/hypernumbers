@@ -9,13 +9,14 @@
 
 %% public exports
 -export([
-	 expected/2,
+         expected/2,
          expected2/2,
-	 read_excel_file/1,
-	 equal_to_digit/3,
-	 excel_equal/2,
-	 wait/0,
-	 wait/1,
+         readxls/1,
+         read_excel_file/1,
+         equal_to_digit/3,
+         excel_equal/2,
+         wait/0,
+         wait/1,
          test_state/1,
          make_float/1
 	]).
@@ -137,8 +138,8 @@ make_err_val(?ErrValueInt) -> "#VALUE!";
 make_err_val(X)            -> X.
 
 expected(Expected, Got) ->
-    Expected2=yaws_api:url_encode(Expected),
-    Got2=yaws_api:url_encode(Got ),
+    Expected2 = yaws_api:url_encode(Expected),
+    Got2 = yaws_api:url_encode(Got),
     case Got2 of
         Expected2 ->
             io:format("SUCCESS~nExpected : ~p~nGot     : ~p~n",
@@ -167,11 +168,13 @@ expected2(Expected, Got) ->
             exit({fail, expected, Expected, got, Got})
     end.
 
-%% Reads an Excel file under SVNROOT/testroot/excel_import_test/files
-read_excel_file(FilePathAndName) ->
+readxls(Filename) ->
+    filefilters:read(excel, Filename, fun extract_cell_info/1).
+
+read_excel_file(Filename) ->
     c:pwd(),
-    io:format("in test_util:read_excel_file FilePathAndName is ~p~n",[FilePathAndName]),
-    filefilters:read(excel,FilePathAndName,fun dump_cells/1).
+    io:format("in test_util:read_excel_file Filename is ~p~n",[Filename]),
+    readxls(Filename).
 
 make_float(List) ->
     Return = try
@@ -205,15 +208,15 @@ wait(N) -> internal_wait(?DEFAULT * N).
 %% Internal functions
 %%------------------------------------------------------------------------------
 
-%% Cleans up the response from the excel spreadsheet file reader.
-dump_cells(Tables) ->
-    {value,{cell,Tid}}=lists:keysearch(cell,1,Tables),   
-    io:format("Dumping Cell table"),
-    Fun=fun(X,Y)->[X|Y] end,
-    Cells=ets:foldl(Fun,[],Tid),
-    Transform=fun({Index,[_,Body]}) -> {Index,Body}
-               end,
-     lists:map(Transform,Cells).
+%% Gets the list of xls table names and their ETS table ids, grabs the cell table
+%% and extracts cell information from it (sheet, row, col, contents).
+extract_cell_info(Tables) ->
+    {value, {cell,Tid}} = lists:keysearch(cell, 1, Tables),
+    Cells = ets:foldl(fun(X, Acc) -> [X | Acc] end,
+                      [], Tid),
+    Res = lists:map(fun({Index, [_, Body]}) -> {Index, Body} end,
+                    Cells),
+    Res.
 
 internal_wait(0) ->
     ok;
