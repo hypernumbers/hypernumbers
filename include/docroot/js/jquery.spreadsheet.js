@@ -6,7 +6,36 @@
  * http://code.google.com/p/jqueryspreadsheet/
  *
  **/
-
+ 
+/**
+ *  
+ *
+ *  <div class="spreadsheet">
+ *      <div class="toolbar" />
+ *      <div class="formulabar" />
+ *      <div class="datatable">
+ *          <div class="columns">
+ *              <table>
+ *                  <tr><td>a</td><td>b</td>....
+ *              </table>
+ *          </div>
+ *          <div class="rowsanddata">
+ *              <div class="rows">
+ *                  <table>
+ *                      <tr><td>1</td><td>2</td>....
+ *                  </table>
+ *              </div>
+ *              <div class="data">
+ *                  <table>
+ *                      <tr><td>a1</td><td>a2</td>....
+ *                      <tr><td>b1</td><td>b2</td>....
+ *                  </table>
+ *              </div>
+ *          </div>
+ *      </div>
+ *  </div>
+ **/
+ 
 (function($) {
     
 $.fn.spreadsheet = function(options) 
@@ -178,11 +207,6 @@ $.fn.spreadsheet = function(options)
      */  
     var write_formula_bar = function(root,$sel)
     {
-        root.prepend("<div class=\"clearfix formulabar\">"
-            +"<input type=\"text\" id=\"name\" />"
-            +"<input type=\"button\" id=\"functions\" value=\"f(x)\" />"
-            +"<input type=\"text\" id=\"formula\"/></div>");
-            
         var initval = "";
 
         var change = function(x,y,val)
@@ -234,7 +258,7 @@ $.fn.spreadsheet = function(options)
      */  
     var write_button_menu = function(root,$sel,toolbar)
     {
-        var wrap = $("<div id=\"toolbar\" class=\"clearfix\">");
+        var wrap = root.find(".toolbar");
     
         $(toolbar).each(function(i)
         {
@@ -246,8 +270,6 @@ $.fn.spreadsheet = function(options)
     
             wrap.append(item);
         });
-    
-        root.prepend(wrap);
     };
     
     /**
@@ -277,45 +299,50 @@ $.fn.spreadsheet = function(options)
     var set_display_values = function(root,cols,fmargin)
     {
         var width = 100;
-        var total_width = cols * width;
-            
-        var x = root.children("div.container").children("div.ssinner");
-        var y = x.children("div.datacontainer").children("div.datainner");
-                        
-        x.find("table").find("tr th").width(width);
-        y.find("table").find("tr td").width(width);
-        y.find("table").find("tr td").children("div").width(width-2);
+        
+        root.find(".columns table, .data table").width(cols * width);
+        root.find(".columns table th, .data table td").width(width);
 
-        y.width(total_width);               
-        $(".colwrap").width(total_width+cols);
-    
-        x.children("div.datacontainer").scroll(function (e) 
+        root.find(".data").scroll(function (e) 
         {
-            var top = parseInt("-"+e.target.scrollTop);// + root.children("div.container").offset().top;
-            x.find("table").css("left","-"+e.target.scrollLeft+"px"); 
-            root.find("div.container").find("div.rows").css("top",top+"px");
+            root.find(".columns table").css("left","-"+e.target.scrollLeft+"px"); 
+            root.find(".rows table").css("top","-"+e.target.scrollTop+"px");
         });
     
         $(window).resize(function()
-        {
-            var p = root.find(".formulabar");
-            $("#formula").width(p.width() - 300);
-            var c =  x.children("div.datacontainer");  
-            
-            var width = $(root).width()-25;
-            c.width(width);
+        {           
+            root.children("div.datatable").width($(root).width());
                
-            var h = (opts.fullscreen)
-                ? $(window).height() - c.offset().top
-                : $(root).height() - (x.offset().top - root.offset().top) - 21;                
-                                
-            var height = h - fmargin;
-            root.children("div.container").children("div.rows").height(height);
-            c.height(height);
-            root.find("#marker").height(height-15);
+            var h = ((opts.fullscreen) ? $(window).height() : $(root).height()) 
+                - $(".toolbar").height() - $(".formulabar").height() 
+                - fmargin - 110;
+                            
+            root.find(".data,.rows").height(h);
         });
-    
+        
         $(window).resize();
+        
+        
+        var tblopts = 
+        {
+            col_border : false,
+            row_border : "1px solid #aaa",
+            set_height: function(row,height)
+            {
+                set_height(root,row+1,height);
+                if(typeof opts.rowResize == "function")
+                    opts.rowResize(row+1,height);                
+            },
+            set_width: function(col,width)
+            {
+                set_width(root,$.fn.to_b26(col),width);
+                if(typeof opts.colResize == "function")
+                    opts.colResize(col,width);
+
+            }
+        };
+
+        $(".rows table,.columns table").tableresizer(tblopts);
     };
     
     /**
@@ -331,181 +358,48 @@ $.fn.spreadsheet = function(options)
     
         root.find("#name").val(range);
     };
-    
-    /**
-     * Make table columns resizable
-     */  
-    var resize_columns = function(root,$sel)
-    {
-        var x = root.children("div.container").children("div.ssinner");
-        var y = x.children("div.datacontainer").children("div.datainner");
-            
-        var headers = x.find("table").find("tr th");
-        var header,newwidth;
-        var resize = false;
-            
-        var marker = $("<div id=\"marker\" />").appendTo(root);
-        marker.css("top",x.children("div.datacontainer").offset().top+"px");
-    
-        endresize = function()
-        {
-            if(resize == true && header != null)
-            {
-                var child = $.fn.from_b26($(header).text());
-                set_width(root,$(header).text(),newwidth);
-                    
-                marker.css("display","none");
-                resize = false;
-                $sel.hide_selection();
-                $sel.show_selection();
-                    
-                if(typeof opts.colResize == "function")
-                    opts.colResize(child,newwidth);
-            }   
-        };
-    
-        headers.mousemove(function(e)
-        {
-            var left = (e.clientX - root.offset().left);
-    
-            if(resize)
-            {
-                var width = left - (header.offset().left - root.offset().left);
-    
-                if(width > 1)
-                {
-                    var total = x.width() + ((width - header.width()));
-                    x.width(total);
-                                    
-                    header.width(width);
-                    marker.css("left",(e.clientX)+"px");
-                    newwidth = width;
-                }
-            }
-            else
-            {
-                headers.css("cursor",
-                    (left-($(this).offset().left-root.offset().left) > $(this).width()-4)
-                    ? "col-resize" : "");
-            }                  
-        });
-    
-        x.children("table").bind("mouseleave",function(e)
-        {
-            endresize();
-            return false; 
-        });
-    
-        headers.each(function(i)
-        {
-            $(this).mousedown(function(e) 
-            {
-                if(headers.css("cursor") ==  "col-resize")
-                {
-                    marker.css("left",e.clientX+"px").css("display","block");
-                    header = $(this);                    
-                    resize = true;
-                }    
-                return false;
-            });
-        
-            $(this).mouseup(function(e) 
-            {
-                endresize();
-            });
-        });
-    };
-    
-    /**
-     * Make table rows resizable
-     */  
-    var resize_rows = function(root,$sel)
-    {
-        var x = root.children("div.container").children("div.ssinner");
-            
-        var row,newheight;
-        var rows = root.children("div.container").children("div.rows").find("td");
-        var resize = false;
-        var top = root.offset().top;
-    
-        rows.mousemove(function(e)
-        {
-            var x = (e.clientY - top) + document.documentElement.scrollTop;
-    
-            if(resize)
-            {
-                var height = x - ($(row).offset().top - top);
-                $(row).find("div").height(height);
-                newheight = height;
-            }
-    
-            else
-            {
-                var off = $(this).offset().top - document.documentElement.scrollTop;
-                var cursor = (x - (off - top) > $(this).height() - 5)
-                    ? "row-resize" : "";
-                rows.css("cursor",cursor);
-            }
-        });
-    
-        rows.each(function()
-        {
-            $(this).mousedown(function(e) 
-            {
-                if(rows.css("cursor") ==  "row-resize")
-                {
-                    row = this;                   
-                    resize = true;
-                }
-                return false;
-    
-            }).mouseup(function(e) 
-            {
-                var child = parseInt($(row).text());
-                set_height(root,child,newheight);
-                    
-                row = null;
-                resize = false;
-                    
-                $sel.hide_selection();
-                $sel.show_selection();
-                    
-                if(typeof opts.rowResize == "function")
-                    opts.rowResize(child,newheight);
-            });
-        });
-    };
-    
+ 
     /**
      * Creates the basic table layout
      */  
     var create_table = function(root,rows,cols)
     {
-        // wrapper for most things
-         var home = $("<div class=\"container\"></div>").appendTo(root);
+        var html = '\
+            <div class="clearfix toolbar" />\
+            <div class="clearfix formulabar">\
+                <input type="text" id="name" />\
+                <input type="button" id="functions" value="f(x)" />\
+                <input type="text" id="formula"/>\
+            </div>\
+            <div class="datatable">\
+                <div class="corner" />\
+                <div class="columns">\
+                    <table cellpadding="0" cellspacing="0"><tr></tr></table>\
+                </div>\
+                <div class="rowsanddata">\
+                    <div class="rows">\
+                        <table cellpadding="0" cellspacing="0"></table>\
+                    </div>\
+                    <div class="data">\
+                        <table cellpadding="0" cellspacing="0"></table>\
+                    </div>\
+                </div>\
+            </div>';
 
-        // Set up the row indexes (1,2,3,4,5 ...)
-        var ind = $("<div id=\"box\" /><div class=\"rows\"><table><tr><td class=\"first\"><div /></td></tr></table></div>").appendTo(home);
-
-        for(var z = 1; z < rows+1; z++)
-            ind.find("table").append("<tr><td><div>"+z+"</div></td></tr>");
-
-        var cont = $("<div class=\"ssinner\" />").appendTo(home);
-        var t = $("<div class=\"colwrap\"><table class=\"columns\" /></div>").appendTo(cont);
-        var tr = $("<tr />").appendTo(t.find("table"));
-            
-        // Setup Table Headers (a,b,c,d,e ....)
+        root.append($(html));
+        
+        var colstable = root.find("div.columns table tr");            
         for(var n = 1; n < cols+1; n++) 
-            tr.append("<th>"+ $.fn.to_b26(n)+"</th>");
-    
-        var table = $("<table class=\"tabledata\" />").appendTo(
-            $("<div class=\"datainner\" />").appendTo(
-            $("<div class=\"datacontainer\" />").appendTo(cont)));                       
-    
-        // Rest of table data
+            colstable.append("<th>"+ $.fn.to_b26(n)+"</th>");
+        
+        var rowstable = root.find("div.rows table");
+        for(var z = 1; z < rows+1; z++)
+            rowstable.append($("<tr><td>"+z+"</td></tr>"));
+
+        var datatable = root.find("div.data table");
         for(var z = 1; z < rows+1; z++)
         {
-            var row = $("<tr/>").appendTo(table);
+            var row = $("<tr/>").appendTo(datatable);
                 
             for(var n = 0; n < cols; n++)
                 row.append("<td><div class='"+($.fn.to_b26(n)+z)
@@ -537,7 +431,7 @@ $.fn.spreadsheet = function(options)
     
             this.state = $.fn.states.INIT;
             this.root  = root;
-            this.tbl   = root.find(".datainner table");
+            this.tbl   = root.find(".data table");
             this.drag  = new Object();         
     
             // Store the current selection / borders etc
@@ -574,12 +468,12 @@ $.fn.spreadsheet = function(options)
             var cell = "div:not(#drag)";
         
             this.tbl.bind('mousedown',function(e) 
-            {   
+            {
                 if($("#formula").hasClass("focus"))
                 {
                     $("#formula").blur();
                 }
-                
+
                 if( leftclick(e.button) && !e.shiftKey && $(e.target).is(cell))
                 {
                     $this.start($.fn.addr.CELL,e.target);
@@ -587,6 +481,7 @@ $.fn.spreadsheet = function(options)
                     e.preventDefault();
                     return false;
                 }
+                
                 return true;
         
             }).bind('mouseover',function(e) 
@@ -621,7 +516,7 @@ $.fn.spreadsheet = function(options)
                     return true;
             });
                     
-            this.root.find("div.datacontainer").scroll(function (e) 
+            this.root.find("div.data").scroll(function (e) 
             {
                 $this.hide_selection();
                 $this.show_selection();
@@ -632,17 +527,18 @@ $.fn.spreadsheet = function(options)
          * Called on mousedown, clear + hide all the previous selections
          */               
         this.start = function(addr,cell)
-        {
+        {            
             if(this.state != $.fn.states.INIT)
                 this.blurcell();
-    
+            
             this.hide_selection();
             this.hide_drag();
-    
+            
             this.state = $.fn.states.SELECT;
             var i = $.fn.cell_index(cell);
             this.x = this.initx = this.startx = this.endx = i[0];
             this.y = this.inity = this.starty = this.endy = i[1];
+           
             this.hover(cell);
         };
     
@@ -696,8 +592,9 @@ $.fn.spreadsheet = function(options)
                     if(x <= x3 && y <= y3) return [x,y,x3,y3];
                     return false;
                 };
-    
+                
                 var i = $.fn.cell_index(cell);
+ 
                 var refs = this.newrefs( i[0], i[1],
                     this.startx,this.starty,
                     this.endx,this.endy,
@@ -706,7 +603,7 @@ $.fn.spreadsheet = function(options)
                 if(refs != null)
                 {
                     this.hide_selection();  
-    
+
                     this.x = i[0];
                     this.y = i[1];
                     this.startx = refs[0];
@@ -714,12 +611,10 @@ $.fn.spreadsheet = function(options)
                     this.endx = refs[2];
                     this.endy = refs[3];
 
-                    var c =  root.children("div.container");
-
+                    var c =  root.children("div.data");
                     this.range = this.tbl.find("tr:lt("+(this.endy+1)+"):gt("+(this.starty-1) + ")").find("td:lt("+(this.endx+1)+"):gt("+(this.startx-1)+")").children("div");
-                    this.rows_highlight = c.children("div.rows").children("table").find("tr td:lt("+(this.endy+2)+"):gt("+(this.starty)+")");
-                    this.cols_highlight = c.children("div.ssinner").children("div > table").find("tr th:lt("+(this.endx+1)+"):gt("+(this.startx-1)+")");
-
+                    this.rows_highlight = root.find("div.rows:first table").find("tr td:lt("+(this.endy+1)+"):gt("+(this.starty-1)+")");
+                    this.cols_highlight = root.find("div.columns:first table").find("tr th:lt("+(this.endx+1)+"):gt("+(this.startx-1)+")");
                     this.show_selection();
                 }
             }
@@ -795,7 +690,8 @@ $.fn.spreadsheet = function(options)
                 }   
                 else
                 {
-                    var f = document.documentElement.scrollTop;
+                    var f = document.documentElement.scrollTop
+                        + document.body.scrollTop;
                     this.drag.div.css("left",(off.left+c.width()-3)+"px");
                     this.drag.div.css("top", (off.top+c.height()-f)+"px");
                     this.drag.div.css("display","block");
@@ -862,14 +758,13 @@ $.fn.spreadsheet = function(options)
     */  
    var set_height = function(root,row,height)
    {
-       var ind  = root.find(".rows tr:nth-child("+(parseInt(row)+1)+") td");
-       var td = root.find(".tabledata tr:nth-child("+(row)+") td");
+       var ind  = root.find(".rows table tr:nth-child("+row+") td");
+       var td = root.find(".data tr:nth-child("+row+") td");
        
-       td.height(height+"px");
-       ind.height(height+"px");
+       td.height(height+1);
+       ind.height(height);
    
-       td.find("div,textarea").height((parseInt(height)+3)+"px");
-       ind.find("div").height(height+"px");
+       td.find("div,textarea").height(height+1);
    };
     
     /**
@@ -877,27 +772,20 @@ $.fn.spreadsheet = function(options)
      */  
     var set_width = function(root,col,width)
     {
-        var newwidth = parseInt(width);
-        var column = $.fn.from_b26(col);
+        var column = $.fn.from_b26(col); 
+        var td = root.find(".data").find("tr td:nth-child("+column+"):first");
             
-        var x = root.children("div.container").children("div.ssinner");
-        var y = x.children("div.datacontainer").children("div.datainner");
-        var td = y.find("table.tabledata").find("tr td:nth-child("+column+")");
-            
-        root.find(".columns tr th:nth-child("+column+")").width(newwidth);
+        root.find(".columns tr th:nth-child("+column+")").width(width);
     
-        var total = y.width() + (newwidth - td.width());
-        y.width(total);
-        $(".columns").width(total+26);
-            
-        td.width(newwidth).children();
-        td.children("div").width(newwidth-4);
-        td.find("textarea").width(newwidth-4);
+        var total = root.find("div.data table").width() + (width - td.width());
+        root.find(".data table").width(total);
+        root.find(".columns .roottbl , .columns table").width(total);
+        td.width(width);
     };
     
     var cell = function(root,x,y)
     {
-        return $(root[0].childNodes[0].childNodes[y].childNodes[x]);    
+        return $(root.children("tbody")[0].childNodes[y].childNodes[x]);    
     }
     
     var cell_div = function(root,x,y)
@@ -925,7 +813,7 @@ $.fn.spreadsheet = function(options)
             var range = $.fn.parse_cell(opts.range.split(":")[1]);
             var names = [];
                 
-            $this.addClass("ss_root");
+            $this.addClass("spreadsheet");
                 
             create_table($this,range[1],range[0]);
                 
@@ -933,10 +821,8 @@ $.fn.spreadsheet = function(options)
                 
             write_formula_bar($this,$sel);
             write_button_menu($this,$sel,$.fn.toolbar);
-            resize_columns($this,$sel);
-            resize_rows($this,$sel);
             set_display_values($this,range[0],opts.fmargin);
-                            
+                         
             $("#name").textbox(
             {                
                 onChange : function(item)
@@ -993,14 +879,14 @@ $.fn.spreadsheet = function(options)
         else if(args[0] == "setValue")
         {
             var ref = $.fn.parse_cell(args[1]);
-            var tbl = $(this).find(".tabledata");
+            var tbl = $(this).find(".data table");
 			cell_div(tbl,ref[0]-1,ref[1]-1).text(args[2]);
         }
         
         else if(args[0] == "setStyle")
         {
             var ref = $.fn.parse_cell(args[1]);
-            var tbl = $(this).find(".tabledata");
+            var tbl = $(this).find(".data table");
 			cell_div(tbl,ref[0]-1,ref[1]-1).css(args[2],args[3]);
         }
     });

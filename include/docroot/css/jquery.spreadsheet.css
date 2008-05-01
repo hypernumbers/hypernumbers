@@ -10,152 +10,53 @@
 /******************************************************************************
 	GLOBAL STYLES
 ******************************************************************************/
-.ss_root
+.spreadsheet * 
 {
-    position:relative;
-    overflow:hidden;
-}
-
-.columns,.rows,.colwrap,.container
-{
-    position:relative;
-}
-
-.colwrap,.container
-{
-    overflow:hidden;
-}
-
-.ss_root table
-{
-    border-top:     1px solid #aaa;
-    border-left:    1px solid #aaa;
     padding:        0px;
     margin:         0px;
-    border-collapse:collapse;
 }
 
-.rows 
-{ 
-    width:          25px;
-    float:          left;
- }
-
-.ss_root .rows td
+.spreadsheet
 {
-    width:          25px;
-    background:     #ddd !important;
+    overflow:hidden;
 }
 
-.ss_root .rows td div
+.spreadsheet #name 
 {
-    height:         17px; 
-    padding-top:    4px;
-    padding-right:  3px;
-    text-align:     right;
-    border-bottom:  1px solid #aaa;
-    border-right:   1px solid #aaa;
-}
-
-.ss_root .rows td.first div
-{
-    height:         16px !important;
-}
-
-.ss_root th
-{
-    padding:        3px 0px; 
-    border-bottom:  1px solid #aaa;
-    border-right:   1px solid #aaa;
-    text-align:     center;
-    background:     #ddd;    
-}
-
-.ss_root td
-{
-    background:     #fefefe;
-    border-bottom:  1px solid #ddd;
-    border-right:   1px solid #ddd;
-    vertical-align: top;
-}
-
-.ss_root table div textarea
-{
-    border:         1px solid blue;
-    display:        block;
-    height:         18px;
-    position:       absolute;
-    overflow-x:     hidden;
-}
-
-.ss_root table div.cell
-{
-    border:         1px solid transparent;
-    height:         20px;
-    overflow:       hidden;
-    cursor:         default;
-}
-
-.ss_root #name 
-{
-    font:           12px "Lucida Grande","Lucida Sans Unicode","Helvetica Neue", sans-serif;  
+    font:           11px "Helvetica Neue", sans-serif;
     border:         0px;
-    width:          80px;
+    width:          100px;
+    display:        block;
+    vertical-align: middle;
+    float:          left;
+    height:         20px;
     text-align:     center;
 }
 
-.ss_root #toolbar 
-{
-    background:     #eee;
-    height:         26px;
-    border-bottom:  1px solid #999;
-    border-top:     1px solid #ddd;
-}
-
-.formulabar
+.spreadsheet .formulabar
 {
     height:         20px;
     overflow:       hidden;
 }
 
-.ss_root #formula
+.spreadsheet #formula
 {
-    font:           12px "Lucida Grande","Lucida Sans Unicode","Helvetica Neue", sans-serif;  
+    font:           12px "Helvetica Neue", sans-serif;
     border:         0px;
     padding:        3px;
 }
 
-.ss_root #functions
+.spreadsheet #functions
 {
     border-width:   0px 1px 0px 1px;
     border-style:   outset;
-    font:           12px "Lucida Grande","Lucida Sans Unicode","Helvetica Neue", sans-serif;  
+    font:           11px "Helvetica Neue", sans-serif;
     height:         20px;
     background:     #eee;
     width:          40px;
 }
 
-
-.ss_root #marker 
-{
-    display:        none;
-    position:       absolute;
-    height:         100%;
-    width:          2px;
-    background:     #000;
-}
-
-.ss_root .datacontainer
-{
-    overflow-y:     scroll;
-}
-
-.ss_root, .container 
-{
-    overflow:       hidden;
-}
-
-.ss_root #drag
+.spreadsheet #drag
 {
     display:        none;
     position:       fixed;
@@ -166,14 +67,149 @@
     z-index:        9999;
 }
 
+.spreadsheet .dragleft   { border-left:  1px dashed #000 !important; }
+.spreadsheet .dragright  { border-right: 1px dashed #000 !important; }
+.spreadsheet .dragtop    { border-top:   1px dashed #000 !important; }
+.spreadsheet .dragbottom { border-bottom:1px dashed #000 !important; }
 
-.ss_root #toolbar a:hover
+.spreadsheet .current div
 {
-    border:         1px solid #BBB;
-    background-color:#fff;
+    opacity:        1 !important;
 }
 
-.ss_root #toolbar a 
+.spreadsheet .selected 
+{
+    opacity:        .5;
+    background:      #d2e9ff;
+}
+
+.spreadsheet th.highlight,.spreadsheet td.highlight
+{
+    background:     #666 !important;
+}
+
+.spreadsheet .rowsanddata
+{
+    overflow:     none;
+}
+
+.spreadsheet .corner
+{
+    position:       absolute;;
+    border-bottom:  1px solid #aaa;
+    border-right:   1px solid #aaa;
+    background:     #ddd;
+    width:          24px;
+    height:         20px;
+}
+
+/******************************************************************************
+	    CELLS
+******************************************************************************/
+.spreadsheet .data
+{
+    overflow-y:     scroll;
+}
+
+.spreadsheet .data table
+{
+    border-collapse:collapse;
+}
+
+.spreadsheet .data table td
+{
+    background:     #fefefe;
+    border-bottom:  1px solid #ddd;
+    border-right:   1px solid #ddd;
+    vertical-align: top;
+}
+
+.spreadsheet .data table div textarea
+{
+    border:         1px solid blue;
+    display:        block;
+    height:         18px;
+    position:       absolute;
+    overflow-x:     hidden;
+}
+
+.spreadsheet .data table div.cell
+{
+    border:         1px solid transparent;
+    height:         20px;
+    overflow:       hidden;
+    cursor:         default;
+}
+
+/******************************************************************************
+	    ROWS
+******************************************************************************/
+.spreadsheet .rows
+{ 
+    width:          25px;
+    float:          left;
+    overflow:       hidden;
+    position:       relative;
+}
+
+.spreadsheet .rows table
+{
+    position:       relative;
+    border-collapse:collapse;
+}
+
+.spreadsheet .rows td 
+{
+    display:        block;
+    height:         19px;
+    width:          22px; 
+    padding-top:    3px;
+    padding-right:  3px;
+    vertical-align: top;
+    border-right:   1px solid #aaa;
+    border-bottom:  1px solid #aaa;
+    background:     #ddd;
+    text-align:     right;
+}
+
+/******************************************************************************
+	    COLUMNS
+******************************************************************************/
+.spreadsheet .columns
+{
+    margin-left:    25px;
+    overflow:       hidden;
+    position:       relative;
+}
+
+.spreadsheet .columns table
+{
+    position:       relative;
+    border-collapse:collapse;
+}
+
+.spreadsheet .columns th
+{
+    padding:        3px 0px; 
+    border-bottom:  1px solid #aaa;
+    border-right:   1px solid #aaa;
+    height:         14px;
+    text-align:     center;
+    background:     #ddd;    
+}
+
+/******************************************************************************
+		TOOLBAR
+******************************************************************************/
+.spreadsheet .toolbar 
+{
+    background:     #eee;
+    height:         26px;
+    border-bottom:  1px solid #999;
+    border-top:     1px solid #ddd;
+}
+
+.spreadsheet .toolbar a 
 {
     background-position:center center;
     background-repeat:  no-repeat;
@@ -187,7 +223,13 @@
     width:          16px;
 }
 
-.ss_root #toolbar a.separator
+.spreadsheet .toolbar a:hover
+{
+    border:         1px solid #BBB;
+    background-color:#fff;
+}
+
+.spreadsheet .toolbar a.separator
 {
     cursor:         default;
     margin:         3px;
@@ -198,62 +240,22 @@
     border-right:   1px solid #FFF;
 }
 
-.ss_root .rows
-{
-    width:          25px;
-    height:         100%;
-}
-
-.ss_root #box 
-{
-    position:       absolute;
-    top:            0px;
-    border-bottom:  1px solid #aaa;
-    border-right:   1px solid #aaa;
-    left:           0px;
-    background:     #ddd !important;
-    width:          24px;
-    height:         20px;
-    z-index:        999;
-}
-
-.ss_root #toolbar .left {
+.spreadsheet .toolbar .left {
     background-image:  url('../img/text_align_left.png'); }
-.ss_root #toolbar .center {
+.spreadsheet .toolbar .center {
     background-image:  url('../img/text_align_center.png'); }
-.ss_root #toolbar .right {
+.spreadsheet .toolbar .right {
     background-image:  url('../img/text_align_right.png'); }
-.ss_root #toolbar .justify {
+.spreadsheet .toolbar .justify {
     background-image:  url('../img/text_align_justify.png'); }
-.ss_root #toolbar .bold {
+.spreadsheet .toolbar .bold {
     background-image:  url('../img/text_bold.png'); }
-.ss_root #toolbar .italic {
+.spreadsheet .toolbar .italic {
     background-image:  url('../img/text_italic.png'); }
-.ss_root #toolbar .underl {
+.spreadsheet .toolbar .underl {
     background-image:  url('../img/text_underline.png'); }
-.ss_root #toolbar .strike {
+.spreadsheet .toolbar .strike {
     background-image:  url('../img/text_strikethrough.png'); }
-
-.ss_root .dragleft   { border-left:  1px dashed #000 !important; }
-.ss_root .dragright  { border-right: 1px dashed #000 !important; }
-.ss_root .dragtop    { border-top:   1px dashed #000 !important; }
-.ss_root .dragbottom { border-bottom:1px dashed #000 !important; }
-
-.ss_root .current div
-{
-    opacity:        1 !important;
-}
-
-.ss_root .selected 
-{
-    opacity:        .5;
-    background:      #d2e9ff;
-}
-
-.ss_root th.highlight,.ss_root td.highlight
-{
-    background:     #666 !important;
-}
 
 /******************************************************************************
 		HACKS

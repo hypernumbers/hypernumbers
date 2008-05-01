@@ -40,13 +40,15 @@ $.fn.textbox = function(options)
         // Initialisation
         if(typeof $.data(this,"textbox") == "undefined")
         {
-            var $t   = $(this);            
+            var $t   = $(this);
+            var height = this.offsetHeight;
+            var width  = this.offsetWidth+16;
+            
             $t.addClass("textbox");
-            var abs = "style=\"position:absolute;\"";           
                         
             // The drop down list
-            var list = $("<ul class='textboxlist' "+abs+" />"
-            ).insertAfter($t).mousedown(function(e)
+            var list = $("<ul class='textboxlist' />"
+            ).insertAfter($t).width(width).mousedown(function(e)
             {
                 list.toggle();
                 $t.val($(e.target).text());
@@ -56,7 +58,7 @@ $.fn.textbox = function(options)
             });            
             
             // The arrow that shows the list onclick
-            var arrow = $("<div class='textboxarrow' "+abs+"/>"
+            var arrow = $("<div class='textboxarrow'/>"
             ).insertAfter($t).bind('mousedown',function()
             {
                 list.toggle();
@@ -65,14 +67,14 @@ $.fn.textbox = function(options)
             
             $(window).resize(function()
             {
-                var h = $t[0].offsetHeight;
-                var w  = $t[0].offsetWidth;
+                var top  = $t.offset().top;
+                var left = $t.offset().left;
+
+                arrow.css("left",((left+width)-16)+"px"
+                ).css("top",((top+height)-16)+"px");
                 
-                arrow.css("left",((w)-16)+"px"
-                ).css("top",(h+16)+"px");
-                
-                list.css("left","0px"
-                ).css("top",(h+32)+"px").width(w);
+                list.css("left",(left)+"px"
+                ).css("top",(top+height)+"px");
             });
                 
             $t.click(function()
