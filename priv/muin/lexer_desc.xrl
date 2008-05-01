@@ -11,8 +11,10 @@ BOOL = TRUE|FALSE
 STR    = (\"[^"\n]*\")
 %%" % Syntax highlighting fix.
 
-%% Column names, function names, or names of cells/ranges.
-NAME = [a-zA-Z][a-zA-Z0-9_\.]*
+%% Column names, function names.
+NAME = ([a-zA-Z][a-zA-Z0-9_\.]*)
+%% Names of cells / ranges.
+VAR = \@{NAME}
 
 ERROR = \#NULL\!|\#DIV\/0\!|\#VALUE\!|\#REF\!|\#NAME\?|\#NUM\!|\#N\/A\!
 
@@ -53,6 +55,7 @@ Rules.
 
 {ERROR} : {token, {error, list_to_atom(YYtext)}}.
 {NAME}  : {token, {name,  string:to_lower(YYtext)}}.
+{VAR}   : {token, {var,   tl(string:to_lower(YYtext))}}.
 
 %% Discard whitespace.
 {WHITESPACE} : .

@@ -11,7 +11,7 @@ ArrayLiteral ArrayRow ArrayRows Array
 
 Terminals
 
-name
+name var
 '=' '<>' '>' '<' '>=' '<='
 '+' '-' '*' '/' '^'
 '&' '%' ':'
@@ -56,7 +56,7 @@ E -> E '+' E : op('$1', '$2',  '$3').
 E -> E '-' E : op('$1', '$2',  '$3').
 E -> E '*' E : op('$1', '$2',  '$3').
 E -> E '/' E : op('$1', {'/'}, '$3').
-E -> E '^' E : op('$1', {'*'}, '$3').
+E -> E '^' E : op('$1', {power}, '$3').
 
 %% Percent.
 E -> E '%' : ['/', '$1', [int, 100]].
@@ -92,6 +92,7 @@ Literal -> bool  : lit('$1').
 Literal -> str   : lit('$1').
 Literal -> ref   : lit('$1').
 Literal -> name  : lit('$1').
+Literal -> var   : lit('$1').
 Literal -> error : lit('$1').
 Literal -> Array : '$1'.
 
@@ -151,16 +152,13 @@ all_rows_eql(MyArray) ->
         MyArray).
 
 %% Convert representation of array in AST into Erlang's native list-of-lists.
-to_native_list(MyArray) ->
-    case all_rows_eql(MyArray) of
-        false ->
-            throw(invalid_array);
-        true ->
-            %% Tail cos there'll be an extra [] in the list after the fold.
-            tl(foldl(fun(Row, Acc) ->
-                             {row, Elts} = Row,
-                             Acc ++ [Elts]
-                     end,
-                     [[]], %% <== See, here it is.
-                     MyArray))
-    end.
+to_native_list(Ary) ->
+    ?IF(not(all_rows_eql(Ary)),
+        throw(invalid_array)),
+    %% Tail cos there'll be an extra [] in the list after the fold.
+    tl(foldl(fun(Row, Acc) ->
+                     {row, Elts} = Row,
+                     Acc ++ [Elts]
+             end,
+             [[]], %% <== See, here it is.
+             Ary)).
