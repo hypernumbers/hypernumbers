@@ -25,13 +25,13 @@ conv(false, int) ->
 conv(X, num) when is_number(X) ->
     X.
 
-error('#NULL!')  -> throw({error, null});
-error('#DIV/0!') -> throw({error, div0});
-error('#VALUE!') -> throw({error, value});
-error('#REF!')   -> throw({error, ref});
-error('#NAME?')  -> throw({error, name});
-error('#NUM!')   -> throw({error, num});
-error('#N/A!')   -> throw({error, na}).
+error('#NULL!')  -> throw({error, '#NULL!'});
+error('#DIV/0!') -> throw({error, '#DIV/0!'});
+error('#VALUE!') -> throw({error, '#VALUE!'});
+error('#REF!')   -> throw({error, '#REF!'});
+error('#NAME?')  -> throw({error, '#NAME?'});
+error('#NUM!')   -> throw({error, '#NUM'});
+error('#N/A!')   -> throw({error, '#N/A!'}).
 
 %% Splits ssref to [Path, Ref]
 split_ssref(Ssref) ->

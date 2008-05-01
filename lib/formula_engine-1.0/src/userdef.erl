@@ -3,3 +3,6 @@
 
 inc([Num]) ->
     Num + 1.
+
+bla([]) ->
+    "blablabla".

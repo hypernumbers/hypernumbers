@@ -3,8 +3,6 @@
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 %%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-%%% Formulas are currently compiled into simple s-exps.
-
 -module(muin).
 -export([compile/2, run/2]).
 
@@ -78,13 +76,13 @@ eval(Value) ->
 
 %% Arguments to ':' calls are either tuples (literals) or lists (funcalls).
 %% Not checking if funcalls are to INDIRECT as it'll fail later if they aren't.
-%% FIXME: This doesn't work anymore with the new ref format.
 preproc([':', StartExpr, EndExpr]) ->
-    Eval = fun(Expr) when is_list(Expr) ->
-                   Cellref = hd(plain_eval(tl(Expr))),
-                   {sscellref, "./" ++ Cellref};
-              (Expr) when is_tuple(Expr) ->
-                   Expr
+    Eval = fun(Node) when is_list(Node) ->
+                   Cellref = hd(plain_eval(tl(Node))),
+                   {ok, [Ref]} = muin_lexer:lex(Cellref, {?mx, ?my}),
+                   Ref;
+              (Node) when is_tuple(Node) ->
+                   Node
            end,
 
     [':', Eval(StartExpr), Eval(EndExpr)];
@@ -134,7 +132,8 @@ plain_eval(Value) ->
 funcall(ref, [Col, Row, Path]) ->
     Rowidx = toidx(Row),
     Colidx = toidx(Col),
-    do_cell(Path, Rowidx, Colidx);
+    Val = do_cell(Path, Rowidx, Colidx),
+    ?COND(Val == blank, 0, Val); %% Cells referencing blank cells become 0.
 
 %% Cell ranges (A1:A5, R1C2:R2C10 etc).
 %% In a range, the path of second ref **must** be ./
@@ -148,6 +147,11 @@ funcall(':', [{ref, Col1, Row1, Path1}, {ref, Col2, Row2, "./"}]) ->
         Cells);
 
 %% TODO: Column & row ranges.
+
+%% TODO: Names.
+%% funcall(var, [Name]) ->
+%%     Addr = hn_db:get_ref_from_name(Name),
+%%     Addr;
 
 %% Hypernumber function and its shorthand.
 

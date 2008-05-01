@@ -50,7 +50,7 @@ avedev1(Nums) ->
 average(Vals) ->
     Flatvals = flatten(Vals),
     ?ensure_no_errvals(Flatvals),
-    Nums = [X || X <- Vals, is_number(X)],
+    Nums = [X || X <- Flatvals, is_number(X)],
     ?ensure_nonzero(length(Nums)),
     average1(Nums).
 average1(Nums) ->
