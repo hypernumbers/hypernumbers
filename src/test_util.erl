@@ -1,13 +1,5 @@
-%%%-------------------------------------------------------------------
-%%% File        : test_util.erl
-%%% Author      : Gordon Guthrie <gordonguthrie@localhost>
-%%% Description : 
-%%%
-%%% Created     : 15 Jun 2007 by Gordon Guthrie <gordonguthrie@localhost>
-%%%-------------------------------------------------------------------
 -module(test_util).
 
-%% public exports
 -export([
          expected/2,
          expected2/2,
@@ -18,7 +10,13 @@
          wait/0,
          wait/1,
          test_state/1,
-         make_float/1
+         make_float/1,
+
+         conv_for_post/1,
+         conv_from_get/1,
+         cmp/2,
+         hnpost/3,
+         hnget/2
 	]).
 
 -include("excel_errors.hrl").
@@ -203,6 +201,59 @@ make_float2(List)->
 wait()  -> internal_wait(?DEFAULT).
 
 wait(N) -> internal_wait(?DEFAULT * N).
+
+-define(HNSERVER, "http://127.0.0.1:9000").
+
+hnget(Path, Ref) ->
+    Url = ?HNSERVER ++ Path ++ Ref,
+    {ok, {{_V, Code, _R}, _H, Body}} = http:request(get, {Url, []}, [], []),
+    io:format("Code for ~p~p is ~p.~nBody is: ~p~n~n", [Path, Ref, Code, Body]),
+    Body.
+  
+hnpost(Path, Ref, Postdata) ->
+    Url = ?HNSERVER ++ Path ++ Ref,
+    Postreq = "<create><formula>" ++ Postdata ++ "</formula></create>",
+    Return = http:request(post,
+                          {Url, [], "text/xml", Postreq},
+                          [], []),
+    {ok, {{_V, Code, _R}, _H, Body}} = Return,
+    io:format("Posted ~p to ~p~p.~nResponse code: ~p. Response body: ~p.~n~n", 
+              [Postdata, Path, Ref, Code, Body]),
+    Return.
+
+cmp(G, E) ->
+    Val = conv_from_get(G),
+    if is_float(G) andalso is_float(E) ->
+            equal_to_digit(Val, E, 5);
+       true ->
+            Val == E
+    end.
+
+conv_from_get(Val) ->
+    case Val of
+        [34 | Tl] -> % String
+            hslists:init(Tl);
+        X = [35 | Tl] -> % Starts with # -> error value.
+            list_to_atom(X);
+        "TRUE" ->
+            true;
+        "FALSE" ->
+            false;
+        _ ->
+            tconv:to_num(Val)
+    end.
+
+%% TODO: Some of these conversion need to be done inside the reader itself.
+conv_for_post(Val) ->
+    case Val of
+        {_, boolean, true} -> "true";
+        {_, boolean, false} -> "false";
+        {_, number, N}     -> tconv:to_s(N);
+        {_, error, E}      -> E;
+        {string, X}        -> "\"" ++ X ++ "\"";
+        {formula, F}       -> F
+    end.
+
 
 %%------------------------------------------------------------------------------
 %% Internal functions
