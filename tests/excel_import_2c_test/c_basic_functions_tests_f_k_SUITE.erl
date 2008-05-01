@@ -8478,7 +8478,7 @@ all() ->
 
 hnget(Path, Ref) ->
     Url = ?HNSERVER ++ Path ++ Ref,
-    {ok, {{V, Code, R}, H, Body}} = http:request(get, {Url, []}, [], []),
+    {ok, {{_V, Code, _R}, _H, Body}} = http:request(get, {Url, []}, [], []),
     io:format("Code for ~p~p is ~p.~nBody is: ~p~n~n", [Path, Ref, Code, Body]),
     Body.
   

@@ -7,8 +7,10 @@ require "win32ole"
 xlsfile = ARGV[0]
 
 WIN32OLE.codepage = WIN32OLE::CP_UTF8
+puts "xlsfile is #{xlsfile}"
 
 xl = WIN32OLE.new("Excel.Application")
+xl.visible=TRUE
 wb = xl.Workbooks.Open(xlsfile)
 
 xlsdata = []
