@@ -135,13 +135,13 @@ File.open("#{modname}.erl", "w") do |suite|
 
             got, type = case get_type(celldata[1][:value])
                         when :formula
-                          ["\"#{celldata[1][:formula]}\"", :formula]
+                          ["\"#{celldata[1][:formula].gsub("\\", "\\\\\\").gsub("\"", "\\\"")}\"", :formula]
                         when :number
                           ["#{celldata[1][:value]}", :number]
                         when :boolean
                           ["#{celldata[1][:value]}", :boolean]
                         when :string
-                          ["\"#{celldata[1][:value]}\"", :string]
+                          ["\"#{celldata[1][:value].gsub("\\", "\\\\\\").gsub("\"", "\\\"")}\"", :string]
                         when :date
                           ["\"#{celldata[1][:value]}\"", :date]
                         else
