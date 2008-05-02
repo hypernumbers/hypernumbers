@@ -42,13 +42,13 @@ $.fn.textbox = function(options)
         {
             var $t   = $(this);
             var height = this.offsetHeight;
-            var width  = this.offsetWidth+16;
+            var width  = this.offsetWidth;
             
             $t.addClass("textbox");
                         
             // The drop down list
             var list = $("<ul class='textboxlist' />"
-            ).insertAfter($t).width(width).mousedown(function(e)
+            ).insertAfter($t).mousedown(function(e)
             {
                 list.toggle();
                 $t.val($(e.target).text());
@@ -69,12 +69,16 @@ $.fn.textbox = function(options)
             {
                 var top  = $t.offset().top;
                 var left = $t.offset().left;
-
+                var width = $t.width();
+                var height = $t.height();
+                
+                //alert(width);       
+         
                 arrow.css("left",((left+width)-16)+"px"
                 ).css("top",((top+height)-16)+"px");
                 
                 list.css("left",(left)+"px"
-                ).css("top",(top+height)+"px");
+                ).css("top",(top+height)+"px").width(width);
             });
                 
             $t.click(function()
@@ -130,7 +134,7 @@ $.fn.textbox = function(options)
                 arrow.css("display","block");
                 $(window).resize();
             };
-            window.setTimeout(fun,50);
+            window.setTimeout(fun,2000);
         }
         
         // The plugin has already been created on this object
