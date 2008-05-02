@@ -51,7 +51,7 @@ Rules.
 {FLOATDEC} : {token, {float, tconv:to_f(YYtext)}}.
 {FLOATSCI} : {token, {float, tconv:to_f(YYtext)}}.
 {BOOL}     : {token, {bool, YYtext == "TRUE"}}.
-{STR}      : {token, {str, YYtext}}.
+{STR}      : {token, {str, hslists:mid(YYtext)}}.
 
 {ERROR} : {token, {error, list_to_atom(YYtext)}}.
 {NAME}  : {token, {name,  string:to_lower(YYtext)}}.
