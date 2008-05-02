@@ -16,7 +16,7 @@ NAME = ([a-zA-Z][a-zA-Z0-9_\.]*)
 %% Names of cells / ranges.
 VAR = \@{NAME}
 
-ERROR = \#NULL\!|\#DIV\/0\!|\#VALUE\!|\#REF\!|\#NAME\?|\#NUM\!|\#N\/A\!
+ERROR = \#NULL\!|\#DIV\/0\!|\#VALUE\!|\#REF\!|\#NAME\?|\#NUM\!|\#N\/A
 
 %%% A1-style references.
 A1REF = ((\$)?([a-zA-Z]+)(\$)?([0-9]+))
