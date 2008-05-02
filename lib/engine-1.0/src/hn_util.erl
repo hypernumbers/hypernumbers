@@ -301,7 +301,7 @@ is_numeric(Str) ->
 %%--------------------------------------------------------------------
 text(X) when is_integer(X) -> integer_to_list(X);
 text(X) when is_float(X)   -> float_to_list(X);
-text(X) when is_list(X)    -> lists:flatten(X);
+text(X) when is_list(X)    -> "\"" ++ lists:flatten(X) ++ "\"";
 text(X) when is_atom(X)    -> atom_to_list(X);
 text(X) -> X.
 

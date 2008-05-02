@@ -61,22 +61,25 @@ run(Pcode, Bindings) ->
 %%%---------------------%%%
 
 %% @doc Evaluates an s-expression, pre-processing subexps as needed.
-eval([Fun__ | Args__]) when ?isfuncall(Fun__) ->
-    %% Transform s-exp if needed.
-    [Fun | Args] = preproc([Fun__ | Args__]),
-    %% Evaluate args.
-    CallArgs = [eval(X) || X <- Args],
-    %% Call the function.
-    funcall(Fun, CallArgs);
+eval([Func0 | Args0]) when ?isfuncall(Func0) ->
+    [Func | Args] = preproc([Func0 | Args0]), %% transform sexp if needed
+    CallArgs = [eval(X) || X <- Args], %% eval args
+    funcall(Func, CallArgs);
 eval(Value) ->
+    Value.
+
+%% @doc Same as eval() but doesn't preprocess.
+plain_eval([Func | Args]) when ?isfuncall(Func) ->
+    CallArgs = [plain_eval(X) || X <- Args],
+    funcall(Func, CallArgs);
+plain_eval(Value) ->
     Value.
 
 
 %% @doc Transforms certain types of s-exps. @end
-
-%% Arguments to ':' calls are either tuples (literals) or lists (funcalls).
-%% Not checking if funcalls are to INDIRECT as it'll fail later if they aren't.
 preproc([':', StartExpr, EndExpr]) ->
+    %% Arguments to ':' calls are either tuples (literals) or lists (funcalls).
+    %% Will fail later if funcalls aren't to INDIRECT, so not checking here.
     Eval = fun(Node) when is_list(Node) ->
                    Cellref = hd(plain_eval(tl(Node))),
                    {ok, [Ref]} = muin_lexer:lex(Cellref, {?mx, ?my}),
@@ -86,47 +89,15 @@ preproc([':', StartExpr, EndExpr]) ->
            end,
 
     [':', Eval(StartExpr), Eval(EndExpr)];
-
-%% This clause is for standalone calls to INDIRECT. Ones that are part of
-%% a range construction expression will be caught by the clause above.
-%% FIXME: As the clause above.
 preproc([indirect, Arg]) ->
-    RefStr = plain_eval(Arg),
-    {ok, Tokens, _} = muin_lexer:string(RefStr),% Yeh, screw the frontends.
-                                                % FIXME: ^^^
-
-    case Tokens of
-        [{cellref, Ref}] -> % A1
-            [sscellref, "./" ++ Ref];
-        [{sscellref, Ref}] -> % ../A1
-            [sscellref, Ref];
-        [{cellref, Ref1}, {colon}, {cellref, Ref2}] -> % A1:B2
-            [':', {sscellref, "./" ++ Ref1}, {cellref, Ref2}];
-        [{sscellref, Ref1}, {colon}, {cellref, Ref2}] -> % ../A1:B2
-            [':', {sscellref, Ref1}, {cellref, Ref2}];
-        [{integer, Row1}, {colon}, {integer, Row2}] -> % 1:2
-            [':', {ssrowref, "" ++ to_s(Row1)}, {row, to_s(Row2)}];
-        [{ssrowref, Row1}, {colon}, {integer, Row2}] -> % ../1:2
-            [':', {ssrowref, Row1}, {row, to_s(Row2)}];
-        [{id, Col1}, {colon}, {id, Col2}] -> % A:B
-            [':', {sscolref, "./" ++ Col1}, {col, Col2}];
-        [{sscolref, Col1}, {colon}, {id, Col2}] -> % ../A:B
-            [':', {sscolref, Col1}, {col, Col2}];
-        _ -> % FOAD
-            throw({error, ref})
-    end;
-
-%% Anything else -- don't need to transform.
+    Str = plain_eval(Arg),
+    {ok, Toks} = muin_lexer:lex(Str, {?mx, ?my}),
+    ?ifmatch(Toks,
+             [{ref, R, C, P}],
+             [ref, R, C, P],
+             ?ERR_REF);
 preproc(Sexp) ->
     Sexp.
-
-
-%% @doc Same as eval() but doesn't pre-process.
-plain_eval([Fun | Args]) when ?isfuncall(Fun) ->
-    CallArgs = [plain_eval(X) || X <- Args],
-    funcall(Fun, CallArgs);
-plain_eval(Value) ->
-    Value.
 
 %% Refs
 funcall(ref, [Col, Row, Path]) ->
@@ -138,10 +109,8 @@ funcall(ref, [Col, Row, Path]) ->
 %% Cell ranges (A1:A5, R1C2:R2C10 etc).
 %% In a range, the path of second ref **must** be ./
 funcall(':', [{ref, Col1, Row1, Path1}, {ref, Col2, Row2, "./"}]) ->
-    Rowidx1 = toidx(Row1),
-    Colidx1 = toidx(Col1),
-    Rowidx2 = toidx(Row2),
-    Colidx2 = toidx(Col2),
+    [Rowidx1, Colidx1, Rowidx2, Colidx2] = map(?Lx(toidx(X)),
+                                               [Row1, Col1, Row2, Col2]),
     Cells = muin_util:expand_cellrange(Rowidx1, Rowidx2, Colidx1, Colidx2),
     map(fun({C, R}) -> do_cell(Path1, R, C) end,
         Cells);
@@ -154,10 +123,7 @@ funcall(':', [{ref, Col1, Row1, Path1}, {ref, Col2, Row2, "./"}]) ->
 %%     Addr;
 
 %% Hypernumber function and its shorthand.
-
-funcall(hypernumber, [Url_]) ->
-    %% Remove trailing ?hypernumber if needed.
-    {ok, Url, _} = regexp:gsub(Url_, "\\?hypernumber$", ""),
+funcall(hypernumber, [Url]) ->
     #page{site = RSite, path = RPath,
           ref = {cell, {RX, RY}}} = hn_util:parse_url(Url),
     F = ?L(hn_main:get_hypernumber(?msite, ?mpath, ?mx, ?my,
@@ -181,8 +147,8 @@ funcall(Fname, Args) ->
 %% Try the userdef module first, then Ruby, Gnumeric, R, whatever.
 userdef_call(Fname, Args) ->
     case (catch userdef:Fname(Args)) of
-        {'EXIT', {undef, _}} -> % Not there, try Ruby.
-                    ?ERR_NAM
+        {'EXIT', {undef, _}} -> ?ERR_NAME;
+        Val                  -> Val
     end.
 
 %% Returns value in the cell + get_value_and_link() is called behind the

@@ -29,7 +29,7 @@ process(Input) ->
                         [{'-'}, {int, I}]   -> {number, -I};
                         [{error, E}]        -> {error, E};
                         _ ->
-                            io:format("IN superparser:process/1, SHOULD NOT HAPPEN. ~p~n",
+                            io:format("UNEXPECTED in superparser:process ~n~p~n",
                                       [Toks2])
                     
                     end
