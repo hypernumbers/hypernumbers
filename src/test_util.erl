@@ -217,7 +217,7 @@ hnget(Path, Ref) ->
   
 hnpost(Path, Ref, Postdata) ->
     Url = ?HNSERVER ++ Path ++ Ref,
-    Postreq = "<create><formula>" ++ Postdata ++ "</formula></create>",
+    Postreq = "<create><formula><![CDATA[" ++ Postdata ++ "]]></formula></create>",
     Return = http:request(post,
                           {Url, [], "text/xml", Postreq},
                           [], []),
