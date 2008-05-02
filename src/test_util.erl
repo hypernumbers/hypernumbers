@@ -16,7 +16,8 @@
          conv_from_get/1,
          cmp/2,
          hnpost/3,
-         hnget/2
+         hnget/2,
+         float_cmp/3
 	]).
 
 -include("excel_errors.hrl").
@@ -57,6 +58,10 @@ equal_to_digit(F1,F2,DigitIdx) ->
     As=string:substr(As0,1,DigitIdx+2), 
     Bs=string:substr(Bs0,1,DigitIdx+2),
     As==Bs.
+
+float_cmp(Res, Expres, Digit) ->
+    abs(Res - Expres) < math:pow(0.1, Digit).
+    
 
 excel_equal("-2146826281","#DIV/0!") -> true;
 excel_equal("-2146826246","#N/A")    -> true;
@@ -217,14 +222,19 @@ hnpost(Path, Ref, Postdata) ->
                           {Url, [], "text/xml", Postreq},
                           [], []),
     {ok, {{_V, Code, _R}, _H, Body}} = Return,
-    io:format("Posted ~p to ~p~p.~nResponse code: ~p. Response body: ~p.~n~n", 
-              [Postdata, Path, Ref, Code, Body]),
-    Return.
+    if Code =/= 200 ->
+            io:format("HTTP POST error, code:~n~pbody:~n~p~n", [Code, Body]),
+            io:format("Tried posting ~p to ~p~n", [Postdata, Path ++ Ref]),
+            Return;
+       true ->
+            io:format("Posting to ~p OK.", [Path ++ Ref]),
+            Return
+    end.
 
 cmp(G, E) ->
     Val = conv_from_get(G),
-    if is_float(G) andalso is_float(E) ->
-            equal_to_digit(Val, E, 5);
+    if is_float(Val) andalso is_float(E) ->
+            float_cmp(Val, E, 5);
        true ->
             Val == E
     end.
@@ -233,11 +243,15 @@ conv_from_get(Val) ->
     case Val of
         [34 | Tl] -> % String
             hslists:init(Tl);
-        X = [35 | Tl] -> % Starts with # -> error value.
+        X = [35 | _] -> % Starts with # -> error value.
             list_to_atom(X);
         "TRUE" ->
             true;
         "FALSE" ->
+            false;
+        "true" ->
+            true;
+        "false" ->
             false;
         _ ->
             tconv:to_num(Val)
