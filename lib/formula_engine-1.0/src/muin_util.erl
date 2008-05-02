@@ -25,13 +25,14 @@ conv(false, int) ->
 conv(X, num) when is_number(X) ->
     X.
 
+%% TODO: Something like null is easier to type/remember than the full thing.
 error('#NULL!')  -> throw({error, '#NULL!'});
 error('#DIV/0!') -> throw({error, '#DIV/0!'});
 error('#VALUE!') -> throw({error, '#VALUE!'});
 error('#REF!')   -> throw({error, '#REF!'});
 error('#NAME?')  -> throw({error, '#NAME?'});
 error('#NUM!')   -> throw({error, '#NUM'});
-error('#N/A!')   -> throw({error, '#N/A!'}).
+error('#N/A')    -> throw({error, '#N/A'}).
 
 %% Splits ssref to [Path, Ref]
 split_ssref(Ssref) ->

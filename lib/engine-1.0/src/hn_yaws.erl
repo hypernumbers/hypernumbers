@@ -143,7 +143,7 @@ process_GET(Arg,User,Page) ->
                 
     reference -> 
         case hn_db:get_item(page_to_ref(Page)) of
-        []   -> {{plain},"0"};
+        []   -> {{plain}, "blank"};
         List -> 
             F = fun(X) -> 
                 ?COND((X#hn_item.addr)#ref.name == value,true,false)

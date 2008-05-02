@@ -156,7 +156,7 @@ get_cell_info(Site,Path,X,Y) ->
     Value   = get_val(hn_db:get_item(Ref#ref{name=value})),
     DepTree = get_val(hn_db:get_item(Ref#ref{name='dependancy-tree'})),   
      
-    Val = ?COND(Value == [],0,Value),
+    Val = ?COND(Value == [], blank, Value),
         
     F = fun({url,[{type,Type}],[Url]}) ->
         #page{site=S,path=P,ref={cell,{X1,Y1}}} = hn_util:parse_url(Url),

@@ -20,8 +20,8 @@ process(Input) ->
                 _ ->
                     %% TODO: Try to detect dates here (locale-specific,
                     %% default to en_US).
-                    {ok, Toks} = muin_lexer:lex(Up, {1,1}),
-                    case Toks of
+                    {ok, Toks2} = muin_lexer:lex(Up, {1,1}),
+                    case Toks2 of
                         [{bool, B}]         -> {bool, B};
                         [{float, F}]        -> {number, F};
                         [{int, I}]          -> {number, I};
@@ -30,7 +30,7 @@ process(Input) ->
                         [{error, E}]        -> {error, E};
                         _ ->
                             io:format("IN superparser:process/1, SHOULD NOT HAPPEN. ~p~n",
-                                      [Toks])
+                                      [Toks2])
                     
                     end
             end

@@ -65,7 +65,6 @@ to_b26(Int) when is_integer(Int) ->
 
 to_b26(0, Value) ->
     Value;
-
 to_b26(Int, Value) ->
     Div = Int/26,
     DivInt = trunc(Div),
