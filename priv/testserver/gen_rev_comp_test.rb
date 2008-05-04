@@ -125,32 +125,35 @@ File.open("#{modname}.erl", "w") do |suite|
   test_names = []
 
   data.each_with_index { |sheetdata, sheetidx|
+    currange = ranges[sheetidx] == nil ? [] : expand_range(ranges[sheetidx])
     sheetdata.slice(1..-1).map { |rowdata|
       if rowdata.length > 1
         rowdata.map { |celldata|
           if celldata.kind_of?(Array)
-            cellname = itob26(celldata[0]) + rowdata[0].to_s # make A1-style name
-            casename = "sheet#{sheetidx + 1}_#{cellname}"
-            test_names << casename
+            if currange == [] || currange.include?([celldata[0], rowdata[0]])
+              cellname = itob26(celldata[0]) + rowdata[0].to_s # make A1-style name
+              casename = "sheet#{sheetidx + 1}_#{cellname}"
+              test_names << casename
 
-            got, type = case get_type(celldata[1][:value])
-                        when :formula
-                          ["\"#{celldata[1][:formula].gsub("\\", "\\\\\\").gsub("\"", "\\\"")}\"", :formula]
-                        when :number
-                          ["#{celldata[1][:value]}", :number]
-                        when :boolean
-                          ["#{celldata[1][:value]}", :boolean]
-                        when :string
-                          ["\"#{celldata[1][:value].gsub("\\", "\\\\\\").gsub("\"", "\\\"")}\"", :string]
-                        when :date
-                          ["\"#{celldata[1][:value]}\"", :date]
-                        else
-                          ["\"not tested (type not supported by generatetest.rb yet)\"", 0, :not_supported]
-                        end
-
-            got2 = "{#{type.to_s},#{got}}"
-            key="{\"#{sheetdata[0]}\",#{rowdata[0]-1},#{celldata[0]-1}}"
-            suite << erl_testcase(casename, key, got2)
+              got, type = case get_type(celldata[1][:value])
+                          when :formula
+                            ["\"#{celldata[1][:formula].gsub("\\", "\\\\\\").gsub("\"", "\\\"")}\"", :formula]
+                          when :number
+                            ["#{celldata[1][:value]}", :number]
+                          when :boolean
+                            ["#{celldata[1][:value]}", :boolean]
+                          when :string
+                            ["\"#{celldata[1][:value].gsub("\\", "\\\\\\").gsub("\"", "\\\"")}\"", :string]
+                          when :date
+                            ["\"#{celldata[1][:value]}\"", :date]
+                          else
+                            ["\"not tested (type not supported by generatetest.rb yet)\"", 0, :not_supported]
+                          end
+              
+              got2 = "{#{type.to_s},#{got}}"
+              key="{\"#{sheetdata[0]}\",#{rowdata[0]-1},#{celldata[0]-1}}"
+              suite << erl_testcase(casename, key, got2)
+            end
           end
         }
       end
