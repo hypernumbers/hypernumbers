@@ -31,14 +31,14 @@ function soc_error()
     $("#footer img").attr("src","/img/cross.png");
 }
             
-            // Called when socket is closed
+// Called when socket is closed
 function soc_closed()
 {
     $("#footer span").text("disconnected");
     $("#footer img").attr("src","/img/cross.png");
 }
             
-            // Called when socket receives message
+// Called when socket receives message
 function soc_msg(msg)
 {
     var x = msg.split("\n");
@@ -48,8 +48,7 @@ function soc_msg(msg)
 
         if(arr.shift() == "change")
         {
-            handle_attr(arr.shift(),arr.shift(),
-                arr.shift(),arr.shift());
+            handle_attr(arr.join(" "));
         }        
     });
 }

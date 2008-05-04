@@ -51,21 +51,17 @@ write_item(Addr,Val) when is_record(Addr,ref) ->
     {atomic, ok} = mnesia:transaction(Fun),
     
     %% Send a change notification to the remoting server, which 
-    %% notifies web clients 
-    V = hn_util:text(Val),
-    case io_lib:deep_char_list(V) of
-    false -> ok;
-    true  ->
-    
-        #ref{site=Site,path=Path,ref={Type,Ref},name=Name} = Addr,
-        
-        Msg = io_lib:format("change ~s ~s ~s ~s",
-            [hn_util:text(Type),
-             hn_util:ref_to_str({Type,Ref}),
-             hn_util:text(Name),
-             hn_util:text(V)]),
+    %% notifies web clients     
+    case Addr#ref.name of
+    "__"++_ -> false;
+    _ ->
+        Msg = io_lib:format("change ~s",
+            [simplexml:to_xml_string(
+                hn_util:item_to_xml(#hn_item{addr = Addr, val = Val})
+            )]),
             
-        gen_server:call(remoting_reg,{change,Site,Path,Msg},?TIMEOUT)
+        gen_server:call(remoting_reg,{change,
+            Addr#ref.site,Addr#ref.path,Msg},?TIMEOUT)
         
     end,
             
@@ -334,8 +330,6 @@ read_remote_links(Index, Relation,Type) ->
 %% it and outgoing hypernumbers
 dirty_refs_changed(dirty_cell, Ref) ->
     
-    Val = get_item_val((to_ref(Ref))#ref{name=value}),
-    
     {atomic, {ok,Outgoing}} = mnesia:transaction(fun() ->
             
         %% Update local cells
@@ -354,6 +348,9 @@ dirty_refs_changed(dirty_cell, Ref) ->
             parent=Ref,type=outgoing,_='_'}),
         {ok,list_hn(Links,[])}
     end),
+    
+    [V] = get_item_val((to_ref(Ref))#ref{name=value}),
+    Val = hn_util:xml_to_val(V),
         
     %Update Remote Hypernumbers
     lists:foreach(
@@ -471,16 +468,17 @@ get_hn(Url,From,To)->
 
         [Hn] -> Hn;
         
-		[]->	  
-            XML = hn_util:req(Url++"?hypernumber"),
-            %% TODO: Handle remote server being down
+		[]->	
+            XML = hn_util:req(Url),
             
+             %% TODO: Handle remote server being down            
             {hypernumber,[],[
-                {value,[],              Tmp},
+                {value,[],              [Tmp]},
                 {'dependancy-tree',[],  Tree}]
             } = simplexml:from_xml_string(XML),
-                                 
-            Val = lists:flatten(Tmp),
+                    
+            Val = hn_util:xml_to_val(Tmp),
+            
             V = ?COND(Val == [],0,
                 ?COND(hn_util:is_numeric(Val) == true,
                     util2:make_num(Val),

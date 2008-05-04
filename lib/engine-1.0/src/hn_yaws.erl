@@ -92,12 +92,10 @@ process_GET(Arg,User,Page) ->
     attribute ->
         Addr = page_to_ref(Page),
         
-        %% Bit ugly, some values are simplexml lists, others
-        %% are strings / ints. simplexml is left unchanged, 
-        %% ints/strings are returned as ["99"] ["string"]
+        %% Convert 'hnxml' into xml, leave strings alone
         F = fun(Val) ->
-            V = hn_util:text(Val),
-            ?COND(io_lib:char_list(V) == true, [V], Val)
+            ?COND(io_lib:char_list(Val) == true, 
+                Val, hn_util:hnxml_to_xml(Val))
         end,
 
         %% Switch to filter on the db api later
@@ -110,51 +108,47 @@ process_GET(Arg,User,Page) ->
             end,
             hn_db:get_item(Addr)),
 
-        List = lists:map
-        (
-            fun(#hn_item{addr=A,val=Val}) -> 
-     
-                Type = hn_util:text(element(1,A#ref.ref)),
-                Str  = hn_util:ref_to_str(A#ref.ref),
+        List = lists:map(fun hn_util:item_to_xml/1 , Items),
 
-                {ref,[{type,Type},{ref,Str}],[
-                    {A#ref.name,[],F(Val)}
-                ]}
-            end,
-            Items
-        ),
-        
         {Page#page.format,{attr,[],List}};
         
     pages ->
         {Page#page.format,{dir,[],[]}};
         
     hypernumber ->
+    
         Addr = page_to_ref(Page),
         
-        F = fun(Name) -> 
-            hn_db:get_item_val(Addr#ref{name=Name})
+        Val = fun() ->
+            case hn_db:get_item_val(Addr#ref{name=value}) of
+            []    -> {blank,[],[]};
+            [Tmp] -> hn_util:hnxml_to_xml(Tmp)
+            end
         end,
           
         {Page#page.format,{hypernumber,[],[
-            {value,[], [hn_util:text(F(value))]},
-            {'dependancy-tree',[],F('dependancy-tree')}
+            {value,[], [Val()]},
+            {'dependancy-tree',[],
+                hn_db:get_item_val(Addr#ref{name='dependancy-tree'})
+            }
         ]}};
+        
                 
     reference -> 
         case hn_db:get_item(page_to_ref(Page)) of
         []   -> {{plain}, "blank"};
         List -> 
+        
             F = fun(X) -> 
                 ?COND((X#hn_item.addr)#ref.name == value,true,false)
             end,
             
-            Val = case lists:filter(F,List) of
-            [] -> 0;
+            [Val] = case lists:filter(F,List) of
+            [] -> [0];
             [#hn_item{val=Value}] -> Value
             end,
             
-            {{plain}, hn_util:text(Val)}
+            {{plain}, hn_util:text(hn_util:xml_to_val(Val))}
         end
     end,
     

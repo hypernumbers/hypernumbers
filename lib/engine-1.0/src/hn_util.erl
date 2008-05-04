@@ -16,6 +16,8 @@
 -export([
     %% HyperNumbers Utils
     index_to_url/1,     page_to_index/1,    ref_to_str/1,
+    hnxml_to_xml/1,     val_to_xml/1,       xml_to_val/1,
+    item_to_xml/1,
     %% HTTP Utils
     req/1,              post/2,             post/3,
     parse_url/1,
@@ -50,6 +52,66 @@ ref_to_str({column,X})   -> tconv:to_b26(X);
 ref_to_str({range,{X1,Y1,X2,Y2}}) ->
     tconv:to_b26(X1)++text(Y1)++":"++tconv:to_b26(X2)++text(Y2).
  
+%% Because we dont want to discard native types for internal storage 
+%% (ie floats stay stored as float, even in the xml structure)
+%% we need to change 'hnxml' to real xml, which stores
+%% everything as strings
+hnxml_to_xml({string,Attr,Val})     -> {string,Attr,Val};
+hnxml_to_xml({integer,Attr,[Val]})  -> {integer,Attr,[integer_to_list(Val)]};
+hnxml_to_xml({float,Attr,[Val]})    -> {float,Attr,[float_to_list(Val)]};
+hnxml_to_xml({boolean,Attr,[Val]})  -> {boolean,Attr,[atom_to_list(Val)]};
+hnxml_to_xml({error,Attr,[Val]})    -> {error,Attr,[atom_to_list(Val)]};
+hnxml_to_xml({matrix,Attr,Rows}) -> 
+    NewRows = lists:map(
+        fun({row,A,Val}) ->
+            {row,A,lists:map(fun hnxml_to_xml/1, Val)}
+        end, 
+        Rows),
+    {matrix,Attr,NewRows};
+%% we have custom types (dependancy-tree etc), these are required
+%% to be valid xml before stored
+hnxml_to_xml(Else) -> Else.
+
+%% convert raw values into 'hnxml' format, which is simplexml
+%% but with raw values stored as native types instead of strings
+val_to_xml(true)  -> {boolean,[],[true]};
+val_to_xml(false) -> {boolean,[],[false]};
+val_to_xml(Ref) when is_atom(Ref)    -> {error,[],[Ref]};
+val_to_xml(Ref) when is_float(Ref)   -> {float,[],[Ref]};
+val_to_xml(Ref) when is_integer(Ref) -> {integer,[],[Ref]};
+val_to_xml(Ref) when is_list(Ref) -> 
+    case io_lib:char_list(Ref) of
+    %% Normal String
+    true  -> {string,[],[Ref]};
+    %% Currently only matrix is other valid type
+    false ->
+        F = fun(X) ->
+            {row,[],lists:map(fun val_to_xml/1 ,X)}
+        end,
+        {matrix,[], lists:map(F,Ref)}
+    end.
+        
+%%  Pull the value out of 'hnxml'
+xml_to_val({boolean,[],[true]})  -> true;
+xml_to_val({boolean,[],[false]}) -> false;
+xml_to_val({error,[],[Ref]})     -> Ref;
+xml_to_val({float,[],[Ref]})     -> Ref;
+xml_to_val({integer,[],[Ref]})   -> Ref;
+xml_to_val({string,[],[Ref]})    -> Ref;
+xml_to_val(Else)                 -> Else.
+
+%% Turn a hn_item record into its xml <ref> display
+item_to_xml(#hn_item{addr=A,val=V}) ->
+
+    Type = hn_util:text(element(1,A#ref.ref)),
+    Str  = hn_util:ref_to_str(A#ref.ref),
+    
+    {ref,[{type,Type},{ref,Str}],[
+        {A#ref.name,[],
+            ?COND(io_lib:char_list(V) == true, 
+                [V], lists:map(fun hnxml_to_xml/1, V))
+        }
+    ]}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -303,7 +365,7 @@ text(X) when is_integer(X) -> integer_to_list(X);
 text(X) when is_float(X)   -> float_to_list(X);
 text(X) when is_list(X)    -> "\"" ++ lists:flatten(X) ++ "\"";
 text(X) when is_atom(X)    -> atom_to_list(X);
-text(X) -> X.
+text(_X) -> "". %% quick fix for the "plain" api
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%

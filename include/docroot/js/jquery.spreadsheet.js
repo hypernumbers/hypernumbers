@@ -302,6 +302,7 @@ $.fn.spreadsheet = function(options)
         
         root.find(".columns table, .data table").width(cols * width);
         root.find(".columns table th, .data table td").width(width);
+        root.find(".data table td div").width(width-6);
 
         root.find(".data").scroll(function (e) 
         {
@@ -318,6 +319,8 @@ $.fn.spreadsheet = function(options)
                 - fmargin - 110;
                             
             root.find(".data,.rows").height(h);
+            
+            $("#formula").width(root.width()-200);
         });
         
         $(window).resize();
@@ -499,21 +502,22 @@ $.fn.spreadsheet = function(options)
                 if( leftclick(e.button) && $(e.target).is(cell))
                 {
                     document.onselectstart=new Function ("return true");
+                    
                     if(e.shiftKey)
                     {
                          $this.state = $.fn.states.SELECT;
-                            $this.hover(e.target);
-                            $this.end(e.target);
-                            set_name(root,$this);
-                        }
-                        else if($this.state == $.fn.states.SELECT 
-                            || $this.state == $.fn.states.DRAG)
-                        {
-                            $this.end(e.target);
-                            set_name(root,$this);
-                        }
+                         $this.hover(e.target);
+                         $this.end(e.target);
+                         set_name(root,$this);
                     }
-                    return true;
+                    else if($this.state == $.fn.states.SELECT 
+                            || $this.state == $.fn.states.DRAG)
+                    {
+                        $this.end(e.target);
+                        set_name(root,$this);
+                    }
+                }
+                return true;
             });
                     
             this.root.find("div.data").scroll(function (e) 
@@ -773,14 +777,16 @@ $.fn.spreadsheet = function(options)
     var set_width = function(root,col,width)
     {
         var column = $.fn.from_b26(col); 
-        var td = root.find(".data").find("tr td:nth-child("+column+"):first");
+        var td = root.find(".data").find("tr td:nth-child("+column+")");
             
         root.find(".columns tr th:nth-child("+column+")").width(width);
     
         var total = root.find("div.data table").width() + (width - td.width());
         root.find(".data table").width(total);
         root.find(".columns .roottbl , .columns table").width(total);
+        
         td.width(width);
+        td.find("div").width(width-6);
     };
     
     var cell = function(root,x,y)
@@ -880,7 +886,25 @@ $.fn.spreadsheet = function(options)
         {
             var ref = $.fn.parse_cell(args[1]);
             var tbl = $(this).find(".data table");
-			cell_div(tbl,ref[0]-1,ref[1]-1).text(args[2]);
+            if(typeof args[2] == "string")
+            {
+                cell_div(tbl,ref[0]-1,ref[1]-1).text(args[2]);
+            }
+            else
+            {
+                switch(args[2][0])
+                {
+                    case "matrix" :
+                        console.log(args[2][1]);
+                        break;
+                    case "integer" : 
+                    case "float" :
+                    case "string" :
+                    case "boolean" :
+                        cell_div(tbl,ref[0]-1,ref[1]-1).text(args[2][1][0]);
+                        break;
+                }
+            }
         }
         
         else if(args[0] == "setStyle")

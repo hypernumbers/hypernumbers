@@ -1,16 +1,27 @@
 var formulae = new Array();
 var css_attrs = ["font-style","font-weight","text-align","text-decoration"];
         
-var handle_attr = function(type,ref,name,value)
+var handle_attr = function(refxml)
 {
+    var el = $(refxml);
+       
+    var ref   = el.attr("ref");
+    var name  = ((el.children()[0]).nodeName).toLowerCase();
+    var value = el.text();
+    
+    console.log(ref + ":" + name + ":" + value);
+
     if( jQuery.inArray(name, css_attrs) != -1 )
         $("#hn").spreadsheet("setStyle",ref,name,value);
             
     else if(name == "formula") formulae[ref] = value;  
-    else if(name == "height")  $("#hn").spreadsheet("setHeight",ref,value);
-    else if(name == "width")   $("#hn").spreadsheet("setWidth",ref,value);
+    else if(name == "height")  $("#hn").spreadsheet("setHeight",ref,parseInt(value));
+    else if(name == "width")   $("#hn").spreadsheet("setWidth",ref,parseInt(value));
     else if(name == "name")    $("#hn").spreadsheet("addName",ref,value);
-    else if(name == "value")   $("#hn").spreadsheet("setValue",ref,value);    
+    else if(name == "value")
+    {
+        $("#hn").spreadsheet("setValue",ref,value);
+    }
 }
     
 $(function()
@@ -103,18 +114,17 @@ $(function()
             
 	$("#hn").spreadsheet(defaults);
             
-	$.getJSON(url+"?attr&format=json", function(data) 
+	$.get(url+"?attr", function(data) 
 	{
-		$(data[1]).each(function(y)
+		$(data).find("ref").each(function(y)
 		{
-            var t = this[1];
-            handle_attr(t[0].type,t[1].ref,t[2][0],t[2][1][0]);
+		    handle_attr(this);
 		});
 	});
             
     $.clipboardReady(function()
     {
-        $('#hn .tabledata').contextMenu('myMenu1',
+        $('#hn .data').contextMenu('myMenu1',
         {
 			bindings:
             {

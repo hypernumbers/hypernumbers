@@ -259,6 +259,7 @@ conv_from_get(Val) ->
 
 %% TODO: Some of these conversion need to be done inside the reader itself.
 conv_for_post(Val) ->
+    io:format("Val is ~p ~n",[Val]),
     case Val of
         {_, boolean, true} -> "true";
         {_, boolean, false} -> "false";
