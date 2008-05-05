@@ -143,8 +143,8 @@ right([Str_, Len]) ->
     ?pr(substr(Str, ustring:len(Str) - Len + 1, Len)).
     
 concatenate([Strs_]) ->
-    Strs = map(?funX(new(X)), Strs_),
-    ?pr(foldl(?funXAcc(concat(Acc, X)),
+    Strs = map(?Lx(new(X)), Strs_),
+    ?pr(foldl(?Lxacc(concat(Acc, X)),
               ustring:empty(),
               Strs)).
 
