@@ -8,8 +8,6 @@ var handle_attr = function(refxml)
     var ref   = el.attr("ref");
     var name  = ((el.children()[0]).nodeName).toLowerCase();
     var value = el.text();
-    
-    console.log(ref + ":" + name + ":" + value);
 
     if( jQuery.inArray(name, css_attrs) != -1 )
         $("#hn").spreadsheet("setStyle",ref,name,value);
