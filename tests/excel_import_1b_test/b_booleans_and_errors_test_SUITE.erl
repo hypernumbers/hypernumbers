@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_booleans_and_errors.xls
-% Generated on: Sun Apr 13 20:21:23 +0100 2008
+% Generated on: Mon May 05 12:34:27 +0100 2008
 
 -module(b_booleans_and_errors_test_SUITE).
 -compile(export_all).
@@ -12,7 +12,7 @@
 init_per_suite(Config) ->
     code:add_patha("../../../../../ebin"),
     production_boot:setup_paths(),
-    Data = test_util:read_excel_file("../../../../excel_files/Win Excel 2007 (as 97)/b_booleans_and_errors.xls"),
+    Data = test_util:read_excel_file("../../../../excel_files/Win_Excel07_As_97/b_booleans_and_errors.xls"),
     %% io:format("in init_per_suite Data is ~p~n",[Data]),
     Pid=spawn(test_util,test_state,[Data]),
     io:format("in init_per_suite Pid is ~p~n",[Pid]),
@@ -28,36 +28,8 @@ end_per_testcase(_TestCase, _Config) -> ok.
 read_from_excel_data(Config,{Sheet,Row,Col}) ->
   test_util:read_from_excel_data(Config,b_booleans_and_errors_test_SUITE,{Sheet,Row,Col}).
 
-sheet1_a5_test(doc) -> [{userdata,[{""}]}];
-sheet1_a5_test(Config) -> 
-  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
-  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",4,0}]),
-  Pid ! {msg,self(),?MODULE,{"Sheet1",4,0}},
-  receive
-    Msg -> 
-      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
-      test_util:expected2(Msg, {number,-2146826273})
-  after
-    500 -> io:format("timed out in test case!~n"),
-            exit("die in flames!")
-  end.
-  
-sheet1_a6_test(doc) -> [{userdata,[{""}]}];
-sheet1_a6_test(Config) -> 
-  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
-  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",5,0}]),
-  Pid ! {msg,self(),?MODULE,{"Sheet1",5,0}},
-  receive
-    Msg -> 
-      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=#REF!"}]),
-      test_util:expected2(Msg, {formula,"=#REF!"})
-  after
-    500 -> io:format("timed out in test case!~n"),
-            exit("die in flames!")
-  end.
-  
-sheet1_a1_test(doc) -> [{userdata,[{""}]}];
-sheet1_a1_test(Config) -> 
+sheet1_A1(doc) -> [{userdata,[{""}]}];
+sheet1_A1(Config) -> 
   {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
   io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",0,0}]),
   Pid ! {msg,self(),?MODULE,{"Sheet1",0,0}},
@@ -70,22 +42,8 @@ sheet1_a1_test(Config) ->
             exit("die in flames!")
   end.
   
-sheet1_a7_test(doc) -> [{userdata,[{""}]}];
-sheet1_a7_test(Config) -> 
-  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
-  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",6,0}]),
-  Pid ! {msg,self(),?MODULE,{"Sheet1",6,0}},
-  receive
-    Msg -> 
-      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=EVEN(bob)"}]),
-      test_util:expected2(Msg, {formula,"=EVEN(bob)"})
-  after
-    500 -> io:format("timed out in test case!~n"),
-            exit("die in flames!")
-  end.
-  
-sheet1_a2_test(doc) -> [{userdata,[{""}]}];
-sheet1_a2_test(Config) -> 
+sheet1_A2(doc) -> [{userdata,[{""}]}];
+sheet1_A2(Config) -> 
   {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
   io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",1,0}]),
   Pid ! {msg,self(),?MODULE,{"Sheet1",1,0}},
@@ -98,22 +56,8 @@ sheet1_a2_test(Config) ->
             exit("die in flames!")
   end.
   
-sheet1_a8_test(doc) -> [{userdata,[{""}]}];
-sheet1_a8_test(Config) -> 
-  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
-  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",7,0}]),
-  Pid ! {msg,self(),?MODULE,{"Sheet1",7,0}},
-  receive
-    Msg -> 
-      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
-      test_util:expected2(Msg, {number,-2146826252})
-  after
-    500 -> io:format("timed out in test case!~n"),
-            exit("die in flames!")
-  end.
-  
-sheet1_a3_test(doc) -> [{userdata,[{""}]}];
-sheet1_a3_test(Config) -> 
+sheet1_A3(doc) -> [{userdata,[{""}]}];
+sheet1_A3(Config) -> 
   {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
   io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",2,0}]),
   Pid ! {msg,self(),?MODULE,{"Sheet1",2,0}},
@@ -126,8 +70,78 @@ sheet1_a3_test(Config) ->
             exit("die in flames!")
   end.
   
-sheet1_a9_test(doc) -> [{userdata,[{""}]}];
-sheet1_a9_test(Config) -> 
+sheet1_A4(doc) -> [{userdata,[{""}]}];
+sheet1_A4(Config) -> 
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",3,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",3,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826281}]),
+      test_util:expected2(Msg, {number,-2146826281})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
+  
+sheet1_A5(doc) -> [{userdata,[{""}]}];
+sheet1_A5(Config) -> 
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",4,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",4,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826273}]),
+      test_util:expected2(Msg, {number,-2146826273})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
+  
+sheet1_A6(doc) -> [{userdata,[{""}]}];
+sheet1_A6(Config) -> 
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",5,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",5,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826265}]),
+      test_util:expected2(Msg, {number,-2146826265})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
+  
+sheet1_A7(doc) -> [{userdata,[{""}]}];
+sheet1_A7(Config) -> 
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",6,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",6,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826259}]),
+      test_util:expected2(Msg, {number,-2146826259})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
+  
+sheet1_A8(doc) -> [{userdata,[{""}]}];
+sheet1_A8(Config) -> 
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",7,0}]),
+  Pid ! {msg,self(),?MODULE,{"Sheet1",7,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,-2146826252}]),
+      test_util:expected2(Msg, {number,-2146826252})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
+  
+sheet1_A9(doc) -> [{userdata,[{""}]}];
+sheet1_A9(Config) -> 
   {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
   io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",8,0}]),
   Pid ! {msg,self(),?MODULE,{"Sheet1",8,0}},
@@ -140,29 +154,15 @@ sheet1_a9_test(Config) ->
             exit("die in flames!")
   end.
   
-sheet1_a4_test(doc) -> [{userdata,[{""}]}];
-sheet1_a4_test(Config) -> 
-  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
-  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",3,0}]),
-  Pid ! {msg,self(),?MODULE,{"Sheet1",3,0}},
-  receive
-    Msg -> 
-      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=1/0"}]),
-      test_util:expected2(Msg, {formula,"=1/0"})
-  after
-    500 -> io:format("timed out in test case!~n"),
-            exit("die in flames!")
-  end.
-  
 all() -> 
-    [sheet1_a5_test,
-   sheet1_a6_test,
-   sheet1_a1_test,
-   sheet1_a7_test,
-   sheet1_a2_test,
-   sheet1_a8_test,
-   sheet1_a3_test,
-   sheet1_a9_test,
-   sheet1_a4_test
+    [sheet1_A1,
+   sheet1_A2,
+   sheet1_A3,
+   sheet1_A4,
+   sheet1_A5,
+   sheet1_A6,
+   sheet1_A7,
+   sheet1_A8,
+   sheet1_A9
     ].
   

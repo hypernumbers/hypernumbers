@@ -4,6 +4,7 @@
 -compile(export_all).
 -include("ct.hrl").
 -import(lists, [foreach/2, map/2]).
+-import(test_util, [conv_for_post/1, conv_from_get/1, cmp/2, hnpost/3, hnget/2, readxls/1]).
 
 -define(print_error_or_return(Res, Testcase),
         case Res of
@@ -26,7 +27,6 @@
 %% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ?test(sheet1_A1, "/Result/", "A1", "EQUAL").
 ?test(sheet1_C1, "/Result/", "C1", "Success").
-?test(sheet1_E1, "/Result/", "E1", "This set of results was calculated on Excel 97 SR-2").
 ?test(sheet1_A2, "/Result/", "A2", "GT").
 ?test(sheet1_C2, "/Result/", "C2", "Success").
 ?test(sheet1_A3, "/Result/", "A3", "LT").
@@ -60,7 +60,7 @@ init_per_suite(Config) ->
     test_util:wait(),
     io:format("Current path:~n"),
     c:pwd(),
-    Celldata = test_util:readxls("../../excel_files/Win_Excel07_As_97/" ++
+    Celldata = readxls("../../excel_files/Win_Excel07_As_97/" ++
                                  "e_gnumeric_operators.xls"),
     io:format("DATA:~n~p~n~n", [Celldata]),
     Postcell =
@@ -87,7 +87,6 @@ all() ->
     [
         sheet1_A1,
         sheet1_C1,
-        sheet1_E1,
         sheet1_A2,
         sheet1_C2,
         sheet1_A3,
@@ -113,50 +112,3 @@ all() ->
         sheet1_A16,
         sheet1_B16
     ].
-
--define(HNSERVER, "http://127.0.0.1:9000").
-
-hnget(Path, Ref) ->
-    Url = ?HNSERVER ++ Path ++ Ref,
-    {ok, {{_V, Code, _R}, _H, Body}} = http:request(get, {Url, []}, [], []),
-    io:format("Code for ~p~p is ~p.~nBody is: ~p~n~n", [Path, Ref, Code, Body]),
-    Body.
-  
-hnpost(Path, Ref, Postdata) ->
-    Url = ?HNSERVER ++ Path ++ Ref,
-    Postreq = "<create><formula>" ++ Postdata ++ "</formula></create>",
-    Return = http:request(post,
-                          {Url, [], "text/xml", Postreq},
-                          [], []),
-    {ok, {{_V, Code, _R}, _H, Body}} = Return,
-    io:format("Posted ~p to ~p~p.~nResponse code: ~p. Response body: ~p.~n~n", 
-              [Postdata, Path, Ref, Code, Body]),
-    Return.
-
-cmp(G, E) ->
-    Val = conv_from_get(G),
-    Val == E.
-
-conv_from_get(Val) ->
-    case Val of
-        [34 | Tl] -> % String
-            hslists:init(Tl);
-        [39 | Tl] -> % Atom, i.e. an error value.
-            list_to_atom(hslists:init(Tl));
-        "TRUE" ->
-            true;
-        "FALSE" ->
-            false;
-        _ ->
-            tconv:to_num(Val)
-    end.
-
-conv_for_post(Val) ->
-    case Val of
-        {_, boolean, true} -> "true";
-        {_, boolean, fase} -> "false";
-        {_, number, N}     -> tconv:to_s(N);
-        {_, error, E}      -> E;
-        {string, X}        -> "\"" ++ X ++ "\"";
-        {formula, F}       -> F
-    end.

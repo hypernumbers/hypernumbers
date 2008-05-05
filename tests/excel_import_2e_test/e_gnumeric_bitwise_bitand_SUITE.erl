@@ -4,6 +4,7 @@
 -compile(export_all).
 -include("ct.hrl").
 -import(lists, [foreach/2, map/2]).
+-import(test_util, [conv_for_post/1, conv_from_get/1, cmp/2, hnpost/3, hnget/2, readxls/1]).
 
 -define(print_error_or_return(Res, Testcase),
         case Res of
@@ -88,10 +89,6 @@
 ?test(sheet1_T3, "/Bitand/", "T3", '#NAME?').
 ?test(sheet1_U3, "/Bitand/", "U3", '#NAME?').
 ?test(sheet1_V3, "/Bitand/", "V3", '#NAME?').
-?test(sheet1_X3, "/Bitand/", "X3", 7.0).
-?test(sheet1_Y3, "/Bitand/", "Y3", 5.0).
-?test(sheet1_Z3, "/Bitand/", "Z3", 3.0).
-?test(sheet1_AA3, "/Bitand/", "AA3", 1.0).
 ?test(sheet1_A4, "/Bitand/", "A4", "errors").
 ?test(sheet1_B4, "/Bitand/", "B4", '#VALUE!').
 ?test(sheet1_C4, "/Bitand/", "C4", '#NAME?').
@@ -114,10 +111,6 @@
 ?test(sheet1_T4, "/Bitand/", "T4", '#NAME?').
 ?test(sheet1_U4, "/Bitand/", "U4", '#NAME?').
 ?test(sheet1_V4, "/Bitand/", "V4", '#NAME?').
-?test(sheet1_X4, "/Bitand/", "X4", 8.0).
-?test(sheet1_Y4, "/Bitand/", "Y4", 9.0).
-?test(sheet1_Z4, "/Bitand/", "Z4", 10.0).
-?test(sheet1_AA4, "/Bitand/", "AA4", 11.0).
 ?test(sheet1_A5, "/Bitand/", "A5", "errors").
 ?test(sheet1_B5, "/Bitand/", "B5", '#REF!').
 ?test(sheet1_C5, "/Bitand/", "C5", '#NAME?').
@@ -140,10 +133,6 @@
 ?test(sheet1_T5, "/Bitand/", "T5", '#NAME?').
 ?test(sheet1_U5, "/Bitand/", "U5", '#NAME?').
 ?test(sheet1_V5, "/Bitand/", "V5", '#NAME?').
-?test(sheet1_X5, "/Bitand/", "X5", 9.0).
-?test(sheet1_Y5, "/Bitand/", "Y5", 13.0).
-?test(sheet1_Z5, "/Bitand/", "Z5", 17.0).
-?test(sheet1_AA5, "/Bitand/", "AA5", 21.0).
 ?test(sheet1_A6, "/Bitand/", "A6", "errors").
 ?test(sheet1_B6, "/Bitand/", "B6", '#NAME?').
 ?test(sheet1_C6, "/Bitand/", "C6", '#NAME?').
@@ -166,10 +155,6 @@
 ?test(sheet1_T6, "/Bitand/", "T6", '#NAME?').
 ?test(sheet1_U6, "/Bitand/", "U6", '#NAME?').
 ?test(sheet1_V6, "/Bitand/", "V6", '#NAME?').
-?test(sheet1_X6, "/Bitand/", "X6", 10.0).
-?test(sheet1_Y6, "/Bitand/", "Y6", 17.0).
-?test(sheet1_Z6, "/Bitand/", "Z6", 24.0).
-?test(sheet1_AA6, "/Bitand/", "AA6", 31.0).
 ?test(sheet1_A7, "/Bitand/", "A7", "errors").
 ?test(sheet1_B7, "/Bitand/", "B7", '#NUM!').
 ?test(sheet1_C7, "/Bitand/", "C7", '#NAME?').
@@ -1333,7 +1318,7 @@ init_per_suite(Config) ->
     test_util:wait(),
     io:format("Current path:~n"),
     c:pwd(),
-    Celldata = test_util:readxls("../../excel_files/Win_Excel07_As_97/" ++
+    Celldata = readxls("../../excel_files/Win_Excel07_As_97/" ++
                                  "e_gnumeric_bitwise_bitand.xls"),
     io:format("DATA:~n~p~n~n", [Celldata]),
     Postcell =
@@ -1422,10 +1407,6 @@ all() ->
         sheet1_T3,
         sheet1_U3,
         sheet1_V3,
-        sheet1_X3,
-        sheet1_Y3,
-        sheet1_Z3,
-        sheet1_AA3,
         sheet1_A4,
         sheet1_B4,
         sheet1_C4,
@@ -1448,10 +1429,6 @@ all() ->
         sheet1_T4,
         sheet1_U4,
         sheet1_V4,
-        sheet1_X4,
-        sheet1_Y4,
-        sheet1_Z4,
-        sheet1_AA4,
         sheet1_A5,
         sheet1_B5,
         sheet1_C5,
@@ -1474,10 +1451,6 @@ all() ->
         sheet1_T5,
         sheet1_U5,
         sheet1_V5,
-        sheet1_X5,
-        sheet1_Y5,
-        sheet1_Z5,
-        sheet1_AA5,
         sheet1_A6,
         sheet1_B6,
         sheet1_C6,
@@ -1500,10 +1473,6 @@ all() ->
         sheet1_T6,
         sheet1_U6,
         sheet1_V6,
-        sheet1_X6,
-        sheet1_Y6,
-        sheet1_Z6,
-        sheet1_AA6,
         sheet1_A7,
         sheet1_B7,
         sheet1_C7,
@@ -2659,50 +2628,3 @@ all() ->
         sheet1_U64,
         sheet1_V64
     ].
-
--define(HNSERVER, "http://127.0.0.1:9000").
-
-hnget(Path, Ref) ->
-    Url = ?HNSERVER ++ Path ++ Ref,
-    {ok, {{_V, Code, _R}, _H, Body}} = http:request(get, {Url, []}, [], []),
-    io:format("Code for ~p~p is ~p.~nBody is: ~p~n~n", [Path, Ref, Code, Body]),
-    Body.
-  
-hnpost(Path, Ref, Postdata) ->
-    Url = ?HNSERVER ++ Path ++ Ref,
-    Postreq = "<create><formula>" ++ Postdata ++ "</formula></create>",
-    Return = http:request(post,
-                          {Url, [], "text/xml", Postreq},
-                          [], []),
-    {ok, {{_V, Code, _R}, _H, Body}} = Return,
-    io:format("Posted ~p to ~p~p.~nResponse code: ~p. Response body: ~p.~n~n", 
-              [Postdata, Path, Ref, Code, Body]),
-    Return.
-
-cmp(G, E) ->
-    Val = conv_from_get(G),
-    Val == E.
-
-conv_from_get(Val) ->
-    case Val of
-        [34 | Tl] -> % String
-            hslists:init(Tl);
-        [39 | Tl] -> % Atom, i.e. an error value.
-            list_to_atom(hslists:init(Tl));
-        "TRUE" ->
-            true;
-        "FALSE" ->
-            false;
-        _ ->
-            tconv:to_num(Val)
-    end.
-
-conv_for_post(Val) ->
-    case Val of
-        {_, boolean, true} -> "true";
-        {_, boolean, fase} -> "false";
-        {_, number, N}     -> tconv:to_s(N);
-        {_, error, E}      -> E;
-        {string, X}        -> "\"" ++ X ++ "\"";
-        {formula, F}       -> F
-    end.

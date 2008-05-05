@@ -4,6 +4,7 @@
 -compile(export_all).
 -include("ct.hrl").
 -import(lists, [foreach/2, map/2]).
+-import(test_util, [conv_for_post/1, conv_from_get/1, cmp/2, hnpost/3, hnget/2, readxls/1]).
 
 -define(print_error_or_return(Res, Testcase),
         case Res of
@@ -24,37 +25,9 @@
                ?print_error_or_return(Res, Func)).
 
 %% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-?test(sheet1_A1, "/Sheet1/", "A1", "This tests the basics of functions").
-?test(sheet1_A2, "/Sheet1/", "A2", "Erlang Ref").
-?test(sheet1_B2, "/Sheet1/", "B2", "Formula").
-?test(sheet1_C2, "/Sheet1/", "C2", "Answer").
-?test(sheet1_E2, "/Sheet1/", "E2", "Data And Databases").
-?test(sheet1_M2, "/Sheet1/", "M2", "Notes").
-?test(sheet1_A3, "/Sheet1/", "A3", " countif/2,").
 ?test(sheet1_B3, "/Sheet1/", "B3", 0.0).
-?test(sheet1_E3, "/Sheet1/", "E3", "Data ->").
-?test(sheet1_F3, "/Sheet1/", "F3", "{1,2,3}").
-?test(sheet1_G3, "/Sheet1/", "G3", "{0,1,2}").
-?test(sheet1_H3, "/Sheet1/", "H3", "bed").
-?test(sheet1_I3, "/Sheet1/", "I3", "bad").
-?test(sheet1_J3, "/Sheet1/", "J3", "bid").
-?test(sheet1_A4, "/Sheet1/", "A4", " covar/2,").
 ?test(sheet1_B4, "/Sheet1/", "B4", -2.0).
-?test(sheet1_E4, "/Sheet1/", "E4", "Data ->").
-?test(sheet1_F4, "/Sheet1/", "F4", 12.0).
-?test(sheet1_G4, "/Sheet1/", "G4", 13.0).
-?test(sheet1_H4, "/Sheet1/", "H4", 14.0).
-?test(sheet1_I4, "/Sheet1/", "I4", 12.0).
-?test(sheet1_J4, "/Sheet1/", "J4", 7.0).
-?test(sheet1_K4, "/Sheet1/", "K4", 6.0).
-?test(sheet1_A5, "/Sheet1/", "A5", " covar/2,").
 ?test(sheet1_B5, "/Sheet1/", "B5", -3.0).
-?test(sheet1_E5, "/Sheet1/", "E5", "Data ->").
-?test(sheet1_F5, "/Sheet1/", "F5", 12.0).
-?test(sheet1_H5, "/Sheet1/", "H5", 14.0).
-?test(sheet1_I5, "/Sheet1/", "I5", 12.0).
-?test(sheet1_J5, "/Sheet1/", "J5", 7.0).
-?test(sheet1_K5, "/Sheet1/", "K5", 6.0).
 ?test(sheet2_A1, "/Sheet2/", "A1", "abs/1,").
 ?test(sheet2_A2, "/Sheet2/", "A2", " acos/1,").
 ?test(sheet2_A3, "/Sheet2/", "A3", " acosh/1,").
@@ -377,7 +350,7 @@ init_per_suite(Config) ->
     test_util:wait(),
     io:format("Current path:~n"),
     c:pwd(),
-    Celldata = test_util:readxls("../../excel_files/Win_Excel07_As_97/" ++
+    Celldata = readxls("../../excel_files/Win_Excel07_As_97/" ++
                                  "b_rel_references.xls"),
     io:format("DATA:~n~p~n~n", [Celldata]),
     Postcell =
@@ -402,37 +375,9 @@ end_per_testcase(_TestCase, _Config) ->
 
 all() ->
     [
-        sheet1_A1,
-        sheet1_A2,
-        sheet1_B2,
-        sheet1_C2,
-        sheet1_E2,
-        sheet1_M2,
-        sheet1_A3,
         sheet1_B3,
-        sheet1_E3,
-        sheet1_F3,
-        sheet1_G3,
-        sheet1_H3,
-        sheet1_I3,
-        sheet1_J3,
-        sheet1_A4,
         sheet1_B4,
-        sheet1_E4,
-        sheet1_F4,
-        sheet1_G4,
-        sheet1_H4,
-        sheet1_I4,
-        sheet1_J4,
-        sheet1_K4,
-        sheet1_A5,
         sheet1_B5,
-        sheet1_E5,
-        sheet1_F5,
-        sheet1_H5,
-        sheet1_I5,
-        sheet1_J5,
-        sheet1_K5,
         sheet2_A1,
         sheet2_A2,
         sheet2_A3,
@@ -747,50 +692,3 @@ all() ->
         sheet2_C220,
         sheet2_D220
     ].
-
--define(HNSERVER, "http://127.0.0.1:9000").
-
-hnget(Path, Ref) ->
-    Url = ?HNSERVER ++ Path ++ Ref,
-    {ok, {{_V, Code, _R}, _H, Body}} = http:request(get, {Url, []}, [], []),
-    io:format("Code for ~p~p is ~p.~nBody is: ~p~n~n", [Path, Ref, Code, Body]),
-    Body.
-  
-hnpost(Path, Ref, Postdata) ->
-    Url = ?HNSERVER ++ Path ++ Ref,
-    Postreq = "<create><formula>" ++ Postdata ++ "</formula></create>",
-    Return = http:request(post,
-                          {Url, [], "text/xml", Postreq},
-                          [], []),
-    {ok, {{_V, Code, _R}, _H, Body}} = Return,
-    io:format("Posted ~p to ~p~p.~nResponse code: ~p. Response body: ~p.~n~n", 
-              [Postdata, Path, Ref, Code, Body]),
-    Return.
-
-cmp(G, E) ->
-    Val = conv_from_get(G),
-    Val == E.
-
-conv_from_get(Val) ->
-    case Val of
-        [34 | Tl] -> % String
-            hslists:init(Tl);
-        [39 | Tl] -> % Atom, i.e. an error value.
-            list_to_atom(hslists:init(Tl));
-        "TRUE" ->
-            true;
-        "FALSE" ->
-            false;
-        _ ->
-            tconv:to_num(Val)
-    end.
-
-conv_for_post(Val) ->
-    case Val of
-        {_, boolean, true} -> "true";
-        {_, boolean, fase} -> "false";
-        {_, number, N}     -> tconv:to_s(N);
-        {_, error, E}      -> E;
-        {string, X}        -> "\"" ++ X ++ "\"";
-        {formula, F}       -> F
-    end.

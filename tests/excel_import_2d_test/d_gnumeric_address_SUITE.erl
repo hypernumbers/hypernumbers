@@ -4,6 +4,7 @@
 -compile(export_all).
 -include("ct.hrl").
 -import(lists, [foreach/2, map/2]).
+-import(test_util, [conv_for_post/1, conv_from_get/1, cmp/2, hnpost/3, hnget/2, readxls/1]).
 
 -define(print_error_or_return(Res, Testcase),
         case Res of
@@ -26,13 +27,11 @@
 %% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ?test(sheet1_B2, "/Summary/", "B2", "Pass").
 ?test(sheet1_D2, "/Summary/", "D2", "Tolerance").
-?test(sheet1_E2, "/Summary/", "E2", 1.0e-06).
 ?test(sheet1_A3, "/Summary/", "A3", "Address").
 ?test(sheet1_B3, "/Summary/", "B3", false).
 ?test(sheet1_B5, "/Summary/", "B5", "Current").
 ?test(sheet1_C5, "/Summary/", "C5", "Previous").
 ?test(sheet1_D5, "/Summary/", "D5", "Result").
-?test(sheet1_E5, "/Summary/", "E5", 0.0).
 ?test(sheet1_A6, "/Summary/", "A6", "address(0,2)").
 ?test(sheet1_B6, "/Summary/", "B6", '#VALUE!').
 ?test(sheet1_C6, "/Summary/", "C6", '#VALUE!').
@@ -526,9 +525,6 @@
 ?test(sheet2_U3, "/Address/", "U3", '#DIV/0!').
 ?test(sheet2_V3, "/Address/", "V3", '#DIV/0!').
 ?test(sheet2_X3, "/Address/", "X3", 7.0).
-?test(sheet2_Y3, "/Address/", "Y3", 5.0).
-?test(sheet2_Z3, "/Address/", "Z3", 3.0).
-?test(sheet2_AA3, "/Address/", "AA3", 1.0).
 ?test(sheet2_A4, "/Address/", "A4", "errors").
 ?test(sheet2_B4, "/Address/", "B4", '#VALUE!').
 ?test(sheet2_C4, "/Address/", "C4", '#VALUE!').
@@ -552,9 +548,6 @@
 ?test(sheet2_U4, "/Address/", "U4", '#VALUE!').
 ?test(sheet2_V4, "/Address/", "V4", '#VALUE!').
 ?test(sheet2_X4, "/Address/", "X4", 8.0).
-?test(sheet2_Y4, "/Address/", "Y4", 9.0).
-?test(sheet2_Z4, "/Address/", "Z4", 10.0).
-?test(sheet2_AA4, "/Address/", "AA4", 11.0).
 ?test(sheet2_A5, "/Address/", "A5", "errors").
 ?test(sheet2_B5, "/Address/", "B5", '#REF!').
 ?test(sheet2_C5, "/Address/", "C5", '#REF!').
@@ -578,9 +571,6 @@
 ?test(sheet2_U5, "/Address/", "U5", '#REF!').
 ?test(sheet2_V5, "/Address/", "V5", '#REF!').
 ?test(sheet2_X5, "/Address/", "X5", 9.0).
-?test(sheet2_Y5, "/Address/", "Y5", 13.0).
-?test(sheet2_Z5, "/Address/", "Z5", 17.0).
-?test(sheet2_AA5, "/Address/", "AA5", 21.0).
 ?test(sheet2_A6, "/Address/", "A6", "errors").
 ?test(sheet2_B6, "/Address/", "B6", '#NAME?').
 ?test(sheet2_C6, "/Address/", "C6", '#NAME?').
@@ -604,9 +594,6 @@
 ?test(sheet2_U6, "/Address/", "U6", '#NAME?').
 ?test(sheet2_V6, "/Address/", "V6", '#NAME?').
 ?test(sheet2_X6, "/Address/", "X6", 10.0).
-?test(sheet2_Y6, "/Address/", "Y6", 17.0).
-?test(sheet2_Z6, "/Address/", "Z6", 24.0).
-?test(sheet2_AA6, "/Address/", "AA6", 31.0).
 ?test(sheet2_A7, "/Address/", "A7", "errors").
 ?test(sheet2_B7, "/Address/", "B7", '#NUM!').
 ?test(sheet2_C7, "/Address/", "C7", '#NUM!').
@@ -5626,7 +5613,7 @@ init_per_suite(Config) ->
     test_util:wait(),
     io:format("Current path:~n"),
     c:pwd(),
-    Celldata = test_util:readxls("../../excel_files/Win_Excel07_As_97/" ++
+    Celldata = readxls("../../excel_files/Win_Excel07_As_97/" ++
                                  "d_gnumeric_address.xls"),
     io:format("DATA:~n~p~n~n", [Celldata]),
     Postcell =
@@ -5653,13 +5640,11 @@ all() ->
     [
         sheet1_B2,
         sheet1_D2,
-        sheet1_E2,
         sheet1_A3,
         sheet1_B3,
         sheet1_B5,
         sheet1_C5,
         sheet1_D5,
-        sheet1_E5,
         sheet1_A6,
         sheet1_B6,
         sheet1_C6,
@@ -6153,9 +6138,6 @@ all() ->
         sheet2_U3,
         sheet2_V3,
         sheet2_X3,
-        sheet2_Y3,
-        sheet2_Z3,
-        sheet2_AA3,
         sheet2_A4,
         sheet2_B4,
         sheet2_C4,
@@ -6179,9 +6161,6 @@ all() ->
         sheet2_U4,
         sheet2_V4,
         sheet2_X4,
-        sheet2_Y4,
-        sheet2_Z4,
-        sheet2_AA4,
         sheet2_A5,
         sheet2_B5,
         sheet2_C5,
@@ -6205,9 +6184,6 @@ all() ->
         sheet2_U5,
         sheet2_V5,
         sheet2_X5,
-        sheet2_Y5,
-        sheet2_Z5,
-        sheet2_AA5,
         sheet2_A6,
         sheet2_B6,
         sheet2_C6,
@@ -6231,9 +6207,6 @@ all() ->
         sheet2_U6,
         sheet2_V6,
         sheet2_X6,
-        sheet2_Y6,
-        sheet2_Z6,
-        sheet2_AA6,
         sheet2_A7,
         sheet2_B7,
         sheet2_C7,
@@ -11245,50 +11218,3 @@ all() ->
         sheet2_U254,
         sheet2_V254
     ].
-
--define(HNSERVER, "http://127.0.0.1:9000").
-
-hnget(Path, Ref) ->
-    Url = ?HNSERVER ++ Path ++ Ref,
-    {ok, {{_V, Code, _R}, _H, Body}} = http:request(get, {Url, []}, [], []),
-    io:format("Code for ~p~p is ~p.~nBody is: ~p~n~n", [Path, Ref, Code, Body]),
-    Body.
-  
-hnpost(Path, Ref, Postdata) ->
-    Url = ?HNSERVER ++ Path ++ Ref,
-    Postreq = "<create><formula>" ++ Postdata ++ "</formula></create>",
-    Return = http:request(post,
-                          {Url, [], "text/xml", Postreq},
-                          [], []),
-    {ok, {{_V, Code, _R}, _H, Body}} = Return,
-    io:format("Posted ~p to ~p~p.~nResponse code: ~p. Response body: ~p.~n~n", 
-              [Postdata, Path, Ref, Code, Body]),
-    Return.
-
-cmp(G, E) ->
-    Val = conv_from_get(G),
-    Val == E.
-
-conv_from_get(Val) ->
-    case Val of
-        [34 | Tl] -> % String
-            hslists:init(Tl);
-        [39 | Tl] -> % Atom, i.e. an error value.
-            list_to_atom(hslists:init(Tl));
-        "TRUE" ->
-            true;
-        "FALSE" ->
-            false;
-        _ ->
-            tconv:to_num(Val)
-    end.
-
-conv_for_post(Val) ->
-    case Val of
-        {_, boolean, true} -> "true";
-        {_, boolean, fase} -> "false";
-        {_, number, N}     -> tconv:to_s(N);
-        {_, error, E}      -> E;
-        {string, X}        -> "\"" ++ X ++ "\"";
-        {formula, F}       -> F
-    end.

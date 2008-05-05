@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_wierd_failures.xls
-% Generated on: Sun Apr 13 20:21:30 +0100 2008
+% Generated on: Mon May 05 12:34:30 +0100 2008
 
 -module(b_wierd_failures_test_SUITE).
 -compile(export_all).
@@ -12,7 +12,7 @@
 init_per_suite(Config) ->
     code:add_patha("../../../../../ebin"),
     production_boot:setup_paths(),
-    Data = test_util:read_excel_file("../../../../excel_files/Win Excel 2007 (as 97)/b_wierd_failures.xls"),
+    Data = test_util:read_excel_file("../../../../excel_files/Win_Excel07_As_97/b_wierd_failures.xls"),
     %% io:format("in init_per_suite Data is ~p~n",[Data]),
     Pid=spawn(test_util,test_state,[Data]),
     io:format("in init_per_suite Pid is ~p~n",[Pid]),
@@ -28,22 +28,22 @@ end_per_testcase(_TestCase, _Config) -> ok.
 read_from_excel_data(Config,{Sheet,Row,Col}) ->
   test_util:read_from_excel_data(Config,b_wierd_failures_test_SUITE,{Sheet,Row,Col}).
 
-sheet1_a1_test(doc) -> [{userdata,[{""}]}];
-sheet1_a1_test(Config) -> 
+sheet1_A1(doc) -> [{userdata,[{""}]}];
+sheet1_A1(Config) -> 
   {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
   io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",0,0}]),
   Pid ! {msg,self(),?MODULE,{"Sheet1",0,0}},
   receive
     Msg -> 
-      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SUM(B1:D1)"}]),
-      test_util:expected2(Msg, {formula,"=SUM(B1:D1)"})
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,12.0}]),
+      test_util:expected2(Msg, {number,12.0})
   after
     500 -> io:format("timed out in test case!~n"),
             exit("die in flames!")
   end.
   
-sheet1_b1_test(doc) -> [{userdata,[{""}]}];
-sheet1_b1_test(Config) -> 
+sheet1_B1(doc) -> [{userdata,[{""}]}];
+sheet1_B1(Config) -> 
   {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
   io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Sheet1",0,1}]),
   Pid ! {msg,self(),?MODULE,{"Sheet1",0,1}},
@@ -57,7 +57,7 @@ sheet1_b1_test(Config) ->
   end.
   
 all() -> 
-    [sheet1_a1_test,
-   sheet1_b1_test
+    [sheet1_A1,
+   sheet1_B1
     ].
   

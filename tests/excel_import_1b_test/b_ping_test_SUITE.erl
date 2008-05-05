@@ -2,7 +2,7 @@
 % DO NOT EDIT MANUALLY.
 %
 % Source file: b_ping.xls
-% Generated on: Sun Apr 13 20:21:27 +0100 2008
+% Generated on: Mon May 05 12:34:28 +0100 2008
 
 -module(b_ping_test_SUITE).
 -compile(export_all).
@@ -12,7 +12,7 @@
 init_per_suite(Config) ->
     code:add_patha("../../../../../ebin"),
     production_boot:setup_paths(),
-    Data = test_util:read_excel_file("../../../../excel_files/Win Excel 2007 (as 97)/b_ping.xls"),
+    Data = test_util:read_excel_file("../../../../excel_files/Win_Excel07_As_97/b_ping.xls"),
     %% io:format("in init_per_suite Data is ~p~n",[Data]),
     Pid=spawn(test_util,test_state,[Data]),
     io:format("in init_per_suite Pid is ~p~n",[Pid]),
@@ -28,171 +28,261 @@ end_per_testcase(_TestCase, _Config) -> ok.
 read_from_excel_data(Config,{Sheet,Row,Col}) ->
   test_util:read_from_excel_data(Config,b_ping_test_SUITE,{Sheet,Row,Col}).
 
-ping_sheet1_b5_test(doc) -> [{userdata,[{""}]}];
-ping_sheet1_b5_test(Config) -> 
-  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
-  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Ping_Sheet1",4,1}]),
-  Pid ! {msg,self(),?MODULE,{"Ping_Sheet1",4,1}},
-  receive
-    Msg -> 
-      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SUM('c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[b_pong.xls]Pong Sheet3'!$A$2:$A$6)"}]),
-      test_util:expected2(Msg, {formula,"=SUM('c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[b_pong.xls]Pong Sheet3'!$A$2:$A$6)"})
-  after
-    500 -> io:format("timed out in test case!~n"),
-            exit("die in flames!")
-  end.
-  
-ping_sheet1_b11_test(doc) -> [{userdata,[{""}]}];
-ping_sheet1_b11_test(Config) -> 
-  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
-  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Ping_Sheet1",10,1}]),
-  Pid ! {msg,self(),?MODULE,{"Ping_Sheet1",10,1}},
-  receive
-    Msg -> 
-      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SUM(Ping_Sheet2!A2:A5)"}]),
-      test_util:expected2(Msg, {formula,"=SUM(Ping_Sheet2!A2:A5)"})
-  after
-    500 -> io:format("timed out in test case!~n"),
-            exit("die in flames!")
-  end.
-  
-ping_sheet1_b6_test(doc) -> [{userdata,[{""}]}];
-ping_sheet1_b6_test(Config) -> 
-  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
-  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Ping_Sheet1",5,1}]),
-  Pid ! {msg,self(),?MODULE,{"Ping_Sheet1",5,1}},
-  receive
-    Msg -> 
-      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"='c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[b_pang.xls]Pang Sheet1'!$A$2"}]),
-      test_util:expected2(Msg, {formula,"='c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[b_pang.xls]Pang Sheet1'!$A$2"})
-  after
-    500 -> io:format("timed out in test case!~n"),
-            exit("die in flames!")
-  end.
-  
-ping_sheet1_b12_test(doc) -> [{userdata,[{""}]}];
-ping_sheet1_b12_test(Config) -> 
-  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
-  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Ping_Sheet1",11,1}]),
-  Pid ! {msg,self(),?MODULE,{"Ping_Sheet1",11,1}},
-  receive
-    Msg -> 
-      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=SUM(Ping_Sheet2:Ping_Sheet3!A8)"}]),
-      test_util:expected2(Msg, {formula,"=SUM(Ping_Sheet2:Ping_Sheet3!A8)"})
-  after
-    500 -> io:format("timed out in test case!~n"),
-            exit("die in flames!")
-  end.
-  
-ping_sheet1_b7_test(doc) -> [{userdata,[{""}]}];
-ping_sheet1_b7_test(Config) -> 
-  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
-  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Ping_Sheet1",6,1}]),
-  Pid ! {msg,self(),?MODULE,{"Ping_Sheet1",6,1}},
-  receive
-    Msg -> 
-      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"='c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[b_pang.xls]Pang Sheet2'!$A$1"}]),
-      test_util:expected2(Msg, {formula,"='c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[b_pang.xls]Pang Sheet2'!$A$1"})
-  after
-    500 -> io:format("timed out in test case!~n"),
-            exit("die in flames!")
-  end.
-  
-ping_sheet1_b2_test(doc) -> [{userdata,[{""}]}];
-ping_sheet1_b2_test(Config) -> 
+sheet1_B2(doc) -> [{userdata,[{""}]}];
+sheet1_B2(Config) -> 
   {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
   io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Ping_Sheet1",1,1}]),
   Pid ! {msg,self(),?MODULE,{"Ping_Sheet1",1,1}},
   receive
     Msg -> 
-      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"='c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[b_pong.xls]Pong Sheet1'!$A$2"}]),
-      test_util:expected2(Msg, {formula,"='c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[b_pong.xls]Pong Sheet1'!$A$2"})
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"from Pong Sheet 1"}]),
+      test_util:expected2(Msg, {string,"from Pong Sheet 1"})
   after
     500 -> io:format("timed out in test case!~n"),
             exit("die in flames!")
   end.
   
-ping_sheet1_b8_test(doc) -> [{userdata,[{""}]}];
-ping_sheet1_b8_test(Config) -> 
-  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
-  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Ping_Sheet1",7,1}]),
-  Pid ! {msg,self(),?MODULE,{"Ping_Sheet1",7,1}},
-  receive
-    Msg -> 
-      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"='c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[b_pang.xls]Pang Sheet3'!$A$1"}]),
-      test_util:expected2(Msg, {formula,"='c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[b_pang.xls]Pang Sheet3'!$A$1"})
-  after
-    500 -> io:format("timed out in test case!~n"),
-            exit("die in flames!")
-  end.
-  
-ping_sheet1_b3_test(doc) -> [{userdata,[{""}]}];
-ping_sheet1_b3_test(Config) -> 
+sheet1_B3(doc) -> [{userdata,[{""}]}];
+sheet1_B3(Config) -> 
   {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
   io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Ping_Sheet1",2,1}]),
   Pid ! {msg,self(),?MODULE,{"Ping_Sheet1",2,1}},
   receive
     Msg -> 
-      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"='c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[b_pong.xls]Pong Sheet2'!$A$1"}]),
-      test_util:expected2(Msg, {formula,"='c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[b_pong.xls]Pong Sheet2'!$A$1"})
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"from Pong Sheet 2"}]),
+      test_util:expected2(Msg, {string,"from Pong Sheet 2"})
   after
     500 -> io:format("timed out in test case!~n"),
             exit("die in flames!")
   end.
   
-ping_sheet1_b9_test(doc) -> [{userdata,[{""}]}];
-ping_sheet1_b9_test(Config) -> 
-  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
-  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Ping_Sheet1",8,1}]),
-  Pid ! {msg,self(),?MODULE,{"Ping_Sheet1",8,1}},
-  receive
-    Msg -> 
-      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"='c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[b_pang.xls]Pang Sheet1'!$A$6"}]),
-      test_util:expected2(Msg, {formula,"='c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[b_pang.xls]Pang Sheet1'!$A$6"})
-  after
-    500 -> io:format("timed out in test case!~n"),
-            exit("die in flames!")
-  end.
-  
-ping_sheet1_b4_test(doc) -> [{userdata,[{""}]}];
-ping_sheet1_b4_test(Config) -> 
+sheet1_B4(doc) -> [{userdata,[{""}]}];
+sheet1_B4(Config) -> 
   {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
   io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Ping_Sheet1",3,1}]),
   Pid ! {msg,self(),?MODULE,{"Ping_Sheet1",3,1}},
   receive
     Msg -> 
-      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"='c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[b_pong.xls]Pong Sheet3'!$A$1"}]),
-      test_util:expected2(Msg, {formula,"='c:\opt\code\trunk\tests\excel_files\Win Excel 2007 (as 97)\[b_pong.xls]Pong Sheet3'!$A$1"})
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"from Pong Sheet 3"}]),
+      test_util:expected2(Msg, {string,"from Pong Sheet 3"})
   after
     500 -> io:format("timed out in test case!~n"),
             exit("die in flames!")
   end.
   
-ping_sheet1_b10_test(doc) -> [{userdata,[{""}]}];
-ping_sheet1_b10_test(Config) -> 
+sheet1_B5(doc) -> [{userdata,[{""}]}];
+sheet1_B5(Config) -> 
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Ping_Sheet1",4,1}]),
+  Pid ! {msg,self(),?MODULE,{"Ping_Sheet1",4,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,15.0}]),
+      test_util:expected2(Msg, {number,15.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
+  
+sheet1_B6(doc) -> [{userdata,[{""}]}];
+sheet1_B6(Config) -> 
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Ping_Sheet1",5,1}]),
+  Pid ! {msg,self(),?MODULE,{"Ping_Sheet1",5,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"from Pang Sheet 1"}]),
+      test_util:expected2(Msg, {string,"from Pang Sheet 1"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
+  
+sheet1_B7(doc) -> [{userdata,[{""}]}];
+sheet1_B7(Config) -> 
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Ping_Sheet1",6,1}]),
+  Pid ! {msg,self(),?MODULE,{"Ping_Sheet1",6,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"from Pang Sheet 2"}]),
+      test_util:expected2(Msg, {string,"from Pang Sheet 2"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
+  
+sheet1_B8(doc) -> [{userdata,[{""}]}];
+sheet1_B8(Config) -> 
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Ping_Sheet1",7,1}]),
+  Pid ! {msg,self(),?MODULE,{"Ping_Sheet1",7,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"from Pang Sheet 3"}]),
+      test_util:expected2(Msg, {string,"from Pang Sheet 3"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
+  
+sheet1_B9(doc) -> [{userdata,[{""}]}];
+sheet1_B9(Config) -> 
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Ping_Sheet1",8,1}]),
+  Pid ! {msg,self(),?MODULE,{"Ping_Sheet1",8,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,6.0}]),
+      test_util:expected2(Msg, {number,6.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
+  
+sheet1_B10(doc) -> [{userdata,[{""}]}];
+sheet1_B10(Config) -> 
   {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
   io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Ping_Sheet1",9,1}]),
   Pid ! {msg,self(),?MODULE,{"Ping_Sheet1",9,1}},
   receive
     Msg -> 
-      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{formula,"=Ping_Sheet2!A1"}]),
-      test_util:expected2(Msg, {formula,"=Ping_Sheet2!A1"})
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"from Sheet 2 in Ping"}]),
+      test_util:expected2(Msg, {string,"from Sheet 2 in Ping"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
+  
+sheet1_B11(doc) -> [{userdata,[{""}]}];
+sheet1_B11(Config) -> 
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Ping_Sheet1",10,1}]),
+  Pid ! {msg,self(),?MODULE,{"Ping_Sheet1",10,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,10.0}]),
+      test_util:expected2(Msg, {number,10.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
+  
+sheet1_B12(doc) -> [{userdata,[{""}]}];
+sheet1_B12(Config) -> 
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Ping_Sheet1",11,1}]),
+  Pid ! {msg,self(),?MODULE,{"Ping_Sheet1",11,1}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,77.0}]),
+      test_util:expected2(Msg, {number,77.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
+  
+sheet2_A1(doc) -> [{userdata,[{""}]}];
+sheet2_A1(Config) -> 
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Ping_Sheet2",0,0}]),
+  Pid ! {msg,self(),?MODULE,{"Ping_Sheet2",0,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{string,"from Sheet 2 in Ping"}]),
+      test_util:expected2(Msg, {string,"from Sheet 2 in Ping"})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
+  
+sheet2_A2(doc) -> [{userdata,[{""}]}];
+sheet2_A2(Config) -> 
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Ping_Sheet2",1,0}]),
+  Pid ! {msg,self(),?MODULE,{"Ping_Sheet2",1,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,1.0}]),
+      test_util:expected2(Msg, {number,1.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
+  
+sheet2_A3(doc) -> [{userdata,[{""}]}];
+sheet2_A3(Config) -> 
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Ping_Sheet2",2,0}]),
+  Pid ! {msg,self(),?MODULE,{"Ping_Sheet2",2,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,2.0}]),
+      test_util:expected2(Msg, {number,2.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
+  
+sheet2_A4(doc) -> [{userdata,[{""}]}];
+sheet2_A4(Config) -> 
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Ping_Sheet2",3,0}]),
+  Pid ! {msg,self(),?MODULE,{"Ping_Sheet2",3,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,3.0}]),
+      test_util:expected2(Msg, {number,3.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
+  
+sheet2_A5(doc) -> [{userdata,[{""}]}];
+sheet2_A5(Config) -> 
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Ping_Sheet2",4,0}]),
+  Pid ! {msg,self(),?MODULE,{"Ping_Sheet2",4,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,4.0}]),
+      test_util:expected2(Msg, {number,4.0})
+  after
+    500 -> io:format("timed out in test case!~n"),
+            exit("die in flames!")
+  end.
+  
+sheet2_A8(doc) -> [{userdata,[{""}]}];
+sheet2_A8(Config) -> 
+  {value,{_,Pid}}=lists:keysearch(?MODULE,1,Config),
+  io:format("in test case Pid is ~p MODULE is ~p~n Key is ~p",[Pid,?MODULE,{"Ping_Sheet2",7,0}]),
+  Pid ! {msg,self(),?MODULE,{"Ping_Sheet2",7,0}},
+  receive
+    Msg -> 
+      io:format("Expected is :~p~nGot is      :~p~n",[Msg,{number,33.0}]),
+      test_util:expected2(Msg, {number,33.0})
   after
     500 -> io:format("timed out in test case!~n"),
             exit("die in flames!")
   end.
   
 all() -> 
-    [ping_sheet1_b5_test,
-   ping_sheet1_b11_test,
-   ping_sheet1_b6_test,
-   ping_sheet1_b12_test,
-   ping_sheet1_b7_test,
-   ping_sheet1_b2_test,
-   ping_sheet1_b8_test,
-   ping_sheet1_b3_test,
-   ping_sheet1_b9_test,
-   ping_sheet1_b4_test,
-   ping_sheet1_b10_test
+    [sheet1_B2,
+   sheet1_B3,
+   sheet1_B4,
+   sheet1_B5,
+   sheet1_B6,
+   sheet1_B7,
+   sheet1_B8,
+   sheet1_B9,
+   sheet1_B10,
+   sheet1_B11,
+   sheet1_B12,
+   sheet2_A1,
+   sheet2_A2,
+   sheet2_A3,
+   sheet2_A4,
+   sheet2_A5,
+   sheet2_A8
     ].
   

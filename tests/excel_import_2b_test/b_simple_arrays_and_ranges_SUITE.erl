@@ -4,6 +4,7 @@
 -compile(export_all).
 -include("ct.hrl").
 -import(lists, [foreach/2, map/2]).
+-import(test_util, [conv_for_post/1, conv_from_get/1, cmp/2, hnpost/3, hnget/2, readxls/1]).
 
 -define(print_error_or_return(Res, Testcase),
         case Res of
@@ -65,12 +66,6 @@
 ?test(sheet1_G11, "/Sheet1/", "G11", 6.0).
 ?test(sheet1_H11, "/Sheet1/", "H11", 5.0).
 ?test(sheet1_I11, "/Sheet1/", "I11", 4.0).
-?test(sheet1_B12, "/Sheet1/", "B12", "Complex II").
-?test(sheet1_C12, "/Sheet1/", "C12", 7.0).
-?test(sheet1_D12, "/Sheet1/", "D12", 3.0).
-?test(sheet1_E12, "/Sheet1/", "E12", 4.0).
-?test(sheet1_F12, "/Sheet1/", "F12", 5.0).
-?test(sheet1_G12, "/Sheet1/", "G12", 6.0).
 %% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 init_per_suite(Config) ->
@@ -80,7 +75,7 @@ init_per_suite(Config) ->
     test_util:wait(),
     io:format("Current path:~n"),
     c:pwd(),
-    Celldata = test_util:readxls("../../excel_files/Win_Excel07_As_97/" ++
+    Celldata = readxls("../../excel_files/Win_Excel07_As_97/" ++
                                  "b_simple_arrays_and_ranges.xls"),
     io:format("DATA:~n~p~n~n", [Celldata]),
     Postcell =
@@ -145,58 +140,5 @@ all() ->
         sheet1_F11,
         sheet1_G11,
         sheet1_H11,
-        sheet1_I11,
-        sheet1_B12,
-        sheet1_C12,
-        sheet1_D12,
-        sheet1_E12,
-        sheet1_F12,
-        sheet1_G12
+        sheet1_I11
     ].
-
--define(HNSERVER, "http://127.0.0.1:9000").
-
-hnget(Path, Ref) ->
-    Url = ?HNSERVER ++ Path ++ Ref,
-    {ok, {{_V, Code, _R}, _H, Body}} = http:request(get, {Url, []}, [], []),
-    io:format("Code for ~p~p is ~p.~nBody is: ~p~n~n", [Path, Ref, Code, Body]),
-    Body.
-  
-hnpost(Path, Ref, Postdata) ->
-    Url = ?HNSERVER ++ Path ++ Ref,
-    Postreq = "<create><formula>" ++ Postdata ++ "</formula></create>",
-    Return = http:request(post,
-                          {Url, [], "text/xml", Postreq},
-                          [], []),
-    {ok, {{_V, Code, _R}, _H, Body}} = Return,
-    io:format("Posted ~p to ~p~p.~nResponse code: ~p. Response body: ~p.~n~n", 
-              [Postdata, Path, Ref, Code, Body]),
-    Return.
-
-cmp(G, E) ->
-    Val = conv_from_get(G),
-    Val == E.
-
-conv_from_get(Val) ->
-    case Val of
-        [34 | Tl] -> % String
-            hslists:init(Tl);
-        [39 | Tl] -> % Atom, i.e. an error value.
-            list_to_atom(hslists:init(Tl));
-        "TRUE" ->
-            true;
-        "FALSE" ->
-            false;
-        _ ->
-            tconv:to_num(Val)
-    end.
-
-conv_for_post(Val) ->
-    case Val of
-        {_, boolean, true} -> "true";
-        {_, boolean, fase} -> "false";
-        {_, number, N}     -> tconv:to_s(N);
-        {_, error, E}      -> E;
-        {string, X}        -> "\"" ++ X ++ "\"";
-        {formula, F}       -> F
-    end.

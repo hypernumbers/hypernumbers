@@ -4,6 +4,7 @@
 -compile(export_all).
 -include("ct.hrl").
 -import(lists, [foreach/2, map/2]).
+-import(test_util, [conv_for_post/1, conv_from_get/1, cmp/2, hnpost/3, hnget/2, readxls/1]).
 
 -define(print_error_or_return(Res, Testcase),
         case Res of
@@ -42,7 +43,6 @@
 ?test(sheet1_G11, "/Sheet1/", "G11", "John").
 ?test(sheet1_H11, "/Sheet1/", "H11", "Jos").
 ?test(sheet1_I11, "/Sheet1/", "I11", "John").
-?test(sheet1_J11, "/Sheet1/", "J11", "Jos").
 ?test(sheet1_A12, "/Sheet1/", "A12", ">30").
 ?test(sheet1_B12, "/Sheet1/", "B12", ">34000").
 ?test(sheet1_C12, "/Sheet1/", "C12", "male").
@@ -51,13 +51,11 @@
 ?test(sheet1_G12, "/Sheet1/", "G12", 23324.0).
 ?test(sheet1_H12, "/Sheet1/", "H12", 45345.0).
 ?test(sheet1_I12, "/Sheet1/", "I12", 27234.0).
-?test(sheet1_J12, "/Sheet1/", "J12", 44323.0).
 ?test(sheet1_A13, "/Sheet1/", "A13", 23.0).
 ?test(sheet1_D13, "/Sheet1/", "D13", 33.0).
 ?test(sheet1_G13, "/Sheet1/", "G13", 24433.0).
 ?test(sheet1_H13, "/Sheet1/", "H13", 34443.0).
 ?test(sheet1_I13, "/Sheet1/", "I13", 31323.0).
-?test(sheet1_J13, "/Sheet1/", "J13", 32123.0).
 ?test(sheet1_A15, "/Sheet1/", "A15", "Name").
 ?test(sheet1_B15, "/Sheet1/", "B15", "Age").
 ?test(sheet1_C15, "/Sheet1/", "C15", "Salary").
@@ -65,7 +63,6 @@
 ?test(sheet1_G15, "/Sheet1/", "G15", "John").
 ?test(sheet1_H15, "/Sheet1/", "H15", "Jos").
 ?test(sheet1_I15, "/Sheet1/", "I15", "John2").
-?test(sheet1_J15, "/Sheet1/", "J15", "Jos2").
 ?test(sheet1_A16, "/Sheet1/", "A16", "Bill").
 ?test(sheet1_B16, "/Sheet1/", "B16", 23.0).
 ?test(sheet1_C16, "/Sheet1/", "C16", 23532.0).
@@ -74,7 +71,6 @@
 ?test(sheet1_G16, "/Sheet1/", "G16", 47757.0).
 ?test(sheet1_H16, "/Sheet1/", "H16", 79788.0).
 ?test(sheet1_I16, "/Sheet1/", "I16", 58557.0).
-?test(sheet1_J16, "/Sheet1/", "J16", 76446.0).
 ?test(sheet1_A17, "/Sheet1/", "A17", "Jack").
 ?test(sheet1_B17, "/Sheet1/", "B17", 32.0).
 ?test(sheet1_C17, "/Sheet1/", "C17", 34212.0).
@@ -236,7 +232,7 @@ init_per_suite(Config) ->
     test_util:wait(),
     io:format("Current path:~n"),
     c:pwd(),
-    Celldata = test_util:readxls("../../excel_files/Win_Excel07_As_97/" ++
+    Celldata = readxls("../../excel_files/Win_Excel07_As_97/" ++
                                  "d_gnumeric_db.xls"),
     io:format("DATA:~n~p~n~n", [Celldata]),
     Postcell =
@@ -279,7 +275,6 @@ all() ->
         sheet1_G11,
         sheet1_H11,
         sheet1_I11,
-        sheet1_J11,
         sheet1_A12,
         sheet1_B12,
         sheet1_C12,
@@ -288,13 +283,11 @@ all() ->
         sheet1_G12,
         sheet1_H12,
         sheet1_I12,
-        sheet1_J12,
         sheet1_A13,
         sheet1_D13,
         sheet1_G13,
         sheet1_H13,
         sheet1_I13,
-        sheet1_J13,
         sheet1_A15,
         sheet1_B15,
         sheet1_C15,
@@ -302,7 +295,6 @@ all() ->
         sheet1_G15,
         sheet1_H15,
         sheet1_I15,
-        sheet1_J15,
         sheet1_A16,
         sheet1_B16,
         sheet1_C16,
@@ -311,7 +303,6 @@ all() ->
         sheet1_G16,
         sheet1_H16,
         sheet1_I16,
-        sheet1_J16,
         sheet1_A17,
         sheet1_B17,
         sheet1_C17,
@@ -465,50 +456,3 @@ all() ->
         sheet1_A45,
         sheet1_H45
     ].
-
--define(HNSERVER, "http://127.0.0.1:9000").
-
-hnget(Path, Ref) ->
-    Url = ?HNSERVER ++ Path ++ Ref,
-    {ok, {{_V, Code, _R}, _H, Body}} = http:request(get, {Url, []}, [], []),
-    io:format("Code for ~p~p is ~p.~nBody is: ~p~n~n", [Path, Ref, Code, Body]),
-    Body.
-  
-hnpost(Path, Ref, Postdata) ->
-    Url = ?HNSERVER ++ Path ++ Ref,
-    Postreq = "<create><formula>" ++ Postdata ++ "</formula></create>",
-    Return = http:request(post,
-                          {Url, [], "text/xml", Postreq},
-                          [], []),
-    {ok, {{_V, Code, _R}, _H, Body}} = Return,
-    io:format("Posted ~p to ~p~p.~nResponse code: ~p. Response body: ~p.~n~n", 
-              [Postdata, Path, Ref, Code, Body]),
-    Return.
-
-cmp(G, E) ->
-    Val = conv_from_get(G),
-    Val == E.
-
-conv_from_get(Val) ->
-    case Val of
-        [34 | Tl] -> % String
-            hslists:init(Tl);
-        [39 | Tl] -> % Atom, i.e. an error value.
-            list_to_atom(hslists:init(Tl));
-        "TRUE" ->
-            true;
-        "FALSE" ->
-            false;
-        _ ->
-            tconv:to_num(Val)
-    end.
-
-conv_for_post(Val) ->
-    case Val of
-        {_, boolean, true} -> "true";
-        {_, boolean, fase} -> "false";
-        {_, number, N}     -> tconv:to_s(N);
-        {_, error, E}      -> E;
-        {string, X}        -> "\"" ++ X ++ "\"";
-        {formula, F}       -> F
-    end.
