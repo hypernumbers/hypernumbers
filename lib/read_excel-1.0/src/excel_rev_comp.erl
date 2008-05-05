@@ -1014,7 +1014,7 @@ macro_to_string(337) -> "POWER";
 %%      COUNTIF,COUNTBLANK,SCENARIO.GET,OPTIONS.LISTS.GET
 macro_to_string(342) -> "RADIANS";
 macro_to_string(343) -> "DEGREES";
-macro_to_string(344) -> "SUBOTAL";
+macro_to_string(344) -> "SUBTOTAL";
 macro_to_string(345) -> "SUMIF";
 macro_to_string(346) -> "COUNTIF";
 macro_to_string(347) -> "COUNTBLANK";
