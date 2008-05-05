@@ -33,7 +33,8 @@ compile(Fla, {X, Y}) ->
     case (catch try_parse(Fla, {X, Y})) of
         {ok, Pcode} ->
             {ok, Pcode};
-        _Else ->
+        Else ->
+            error_logger:error_msg("muin:compile ~p~n",[Else]),
             {error, error_in_formula}
     end.
 

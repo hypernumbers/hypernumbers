@@ -893,7 +893,6 @@ $.fn.spreadsheet = function(options)
                 switch(args[2][0])
                 {
                     case "matrix" :
-                        console.log(args[2][1]);
                         break;
                     case "integer" : 
                     case "float" :
