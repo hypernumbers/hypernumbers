@@ -2,14 +2,6 @@
 
 load "gen_util.rb"
 
-# Determines the type of a cell given its contents (formula & value as read by Excel).
-def get_type(val)
-  return :formula if val.kind_of?(String) && val.length > 1 && val[0].chr == "="
-  return :number if val.kind_of?(Numeric)
-  return :string if val.kind_of?(String)
-  return :boolean if (val.class == TrueClass || val.class == FalseClass)
-end
-
 # ====================================
 # = Erlang code generation functions =
 # ====================================
@@ -135,21 +127,30 @@ File.open("#{modname}.erl", "w") do |suite|
               casename = "sheet#{sheetidx + 1}_#{cellname}"
               test_names << casename
 
-              got, type = case get_type(celldata[1][:value])
-                          when :formula
-                            ["\"#{celldata[1][:formula].gsub("\\", "\\\\\\").gsub("\"", "\\\"")}\"", :formula]
-                          when :number
-                            ["#{celldata[1][:value]}", :number]
-                          when :boolean
-                            ["#{celldata[1][:value]}", :boolean]
-                          when :string
-                            ["\"#{celldata[1][:value].gsub("\\", "\\\\\\").gsub("\"", "\\\"")}\"", :string]
-                          when :date
-                            ["\"#{celldata[1][:value]}\"", :date]
-                          else
-                            ["\"not tested (type not supported by generatetest.rb yet)\"", 0, :not_supported]
-                          end
+              value = celldata[1][:value]
+              formula = celldata[1][:formula]
               
+              type = (if formula.length > 1 && formula[0].chr == "="
+                        :formula
+                      elsif value.kind_of?(Numeric)
+                        :number
+                      elsif value.kind_of?(String)
+                        :string
+                      elsif value.kind_of?(TrueClass)
+                        :boolean
+                      elsif value.kind_of?(FalseClass)
+                        :boolean
+                      end)
+              
+              got = (if type == :formula
+                       formula.inspect # gsub("\\", "\\\\\\").gsub("\"", "\\\"") +
+                     elsif type == :string
+                       value.inspect
+                     elsif type == :number
+                       value
+                     else # boolean
+                       value.to_s
+                     end)
               got2 = "{#{type.to_s},#{got}}"
               key="{\"#{sheetdata[0]}\",#{rowdata[0]-1},#{celldata[0]-1}}"
               suite << erl_testcase(casename, key, got2)
