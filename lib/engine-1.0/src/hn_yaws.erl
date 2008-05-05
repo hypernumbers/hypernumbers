@@ -71,8 +71,9 @@ out(Arg) -> try
 
     %% Globally catch any errors during processing
     catch
-    _:Err -> 
-        io:format("Error:~p~n~p",[Err,erlang:get_stacktrace()]),
+    _:Err ->
+        error_logger:error_msg(
+            "~p~n~p",[Err,erlang:get_stacktrace()]),
         {status,400}
     end.
 

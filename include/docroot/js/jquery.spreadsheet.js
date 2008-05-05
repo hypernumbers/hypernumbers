@@ -8,8 +8,6 @@
  **/
  
 /**
- *  
- *
  *  <div class="spreadsheet">
  *      <div class="toolbar" />
  *      <div class="formulabar" />

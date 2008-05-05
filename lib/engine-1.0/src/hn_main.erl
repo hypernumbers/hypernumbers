@@ -67,15 +67,11 @@ set_cell(Addr, Val) ->
                     "="++Formula, NPar, NDep);
             
             {error, Reason} when is_atom(Reason) ->
-                write_cell(Addr,[{error,[],[Reason]}],"="++Formula,[],[]);
-            
-            {error, Reason} when is_list(Reason) ->
-                write_cell(Addr,Reason,"="++Formula,[],[])
-
+                write_cell(Addr,[{error,[],[Reason]}],"="++Formula,[],[])
             end;
                 
         {error, error_in_formula} ->
-            write_cell(Addr,"Invalid Formula",Formula,[],[])
+            write_cell(Addr,[{string,[],["Invalid Formula"]}],"="++Formula,[],[])
         end;
         
     {number, N} when is_integer(N) ->  

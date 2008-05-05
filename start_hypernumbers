@@ -1,3 +1,7 @@
 #! /bin/bash
 cd ebin
-erl -s production_boot start toolbar -sname arrian -env ERL_MAX_ETS_TABLES 20000
+erl -s production_boot start toolbar \
+    -sname arrian \
+    -env ERL_MAX_ETS_TABLES 20000 \
+    -boot start_sasl \
+    -config sasl_dev_conf
