@@ -103,7 +103,7 @@ ranges = ARGV.slice(1..-1)
 data = eval(IO.readlines(datafile).join)
 
 basename = File.basename(ARGV[0], ".dat").downcase
-modname = "#{basename}_test_SUITE"
+modname = "#{basename}_SUITE"
 
 File.open("#{modname}.erl", "w") do |suite|
   suite << (module_header("#{basename}.xls", Time.now.to_s, modname) +
