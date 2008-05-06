@@ -7,33 +7,18 @@
 -define(upcase(S),
         ustring:pr(ustring:upcase(ustring:new(S)))).
 
-process(Input) ->
-    {ok, Toks} = muin_lexer:lex(Input, {1,1}), %% FIXME: If fails, complain.
+process([$= | Tl]) when Tl =/= [] ->
+    {formula, upcase(Tl)};
+process(Input) ->    
+    {ok, Toks} = muin_lexer:lex(upcase(Input), {1, 1}),
     case Toks of
-        [{str, Str}] ->
-            {string, Str};
-        _ ->
-            Up = upcase(Input),
-            case Up of
-                [$= | Tl] ->
-                    {formula, Tl};
-                _ ->
-                    %% TODO: Try to detect dates here (locale-specific,
-                    %% default to en_US).
-                    {ok, Toks2} = muin_lexer:lex(Up, {1,1}),
-                    case Toks2 of
-                        [{bool, B}]         -> {bool, B};
-                        [{float, F}]        -> {number, F};
-                        [{int, I}]          -> {number, I};
-                        [{'-'}, {float, F}] -> {number, -F};
-                        [{'-'}, {int, I}]   -> {number, -I};
-                        [{error, E}]        -> {error, E};
-                        _ ->
-                            io:format("UNEXPECTED in superparser:process ~n~p~n",
-                                      [Toks2])
-                    
-                    end
-            end
+        [{bool, B}]         -> {bool, B};
+        [{float, F}]        -> {float, F};
+        [{int, I}]          -> {int, I};
+        [{'-'}, {float, F}] -> {float, -F};
+        [{'-'}, {int, I}]   -> {int, -I};
+        [{errval, E}]       -> {errval, E};
+        _Else               -> {string, Input} %% TODO: What can go wrong here?
     end.
 
 %% Converts formula to upper-case, leaving only string literals as-is.

@@ -44,44 +44,43 @@ set_cell(Addr, Val) ->
     #ref{site=Site,path=Path,ref={cell,{X,Y}}} = Addr,
 
     case superparser:process(Val) of
-    %% Formula
-    {formula, Formula} ->  
-        case muin:compile(Formula, {X, Y}) of
-        {ok, Ast} ->
-            case muin:run(Ast,[{site,Site},{path,Path},{x,X},{y,Y}]) of
-            {ok, {Value, DepTree, _, Parents}} ->
-               %% Store syntax tree
-                db_put(Addr,"__ast",Ast),
-                           
-                %% Transform parents and deptree from tuple list to
-                %% simplexml
-                F = fun({Type,{S,P,X1,Y1}}) ->
-                    Url = hn_util:index_to_url({index,S,P,X1,Y1}),
-                    {url,[{type,Type}],[Url]}
-                end,
-                           
-                NPar = lists:map(F,Parents),
-                NDep = lists:map(F,DepTree),
+        {formula, Formula} ->  
+            case muin:compile(Formula, {X, Y}) of
+                {ok, Ast} ->
+                    case muin:run(Ast,[{site,Site},{path,Path},{x,X},{y,Y}]) of
+                        {ok, {Value, DepTree, _, Parents}} ->
+                            %% Store syntax tree
+                            db_put(Addr,"__ast",Ast),
                             
-                write_cell(Addr, [hn_util:val_to_xml(Value)],
-                    "="++Formula, NPar, NDep);
-            
-            {error, Reason} when is_atom(Reason) ->
-                write_cell(Addr,[{error,[],[Reason]}],"="++Formula,[],[])
-            end;
+                            %% Transform parents and deptree from tuple list to
+                            %% simplexml
+                            F = fun({Type,{S,P,X1,Y1}}) ->
+                                        Url = hn_util:index_to_url({index,S,P,X1,Y1}),
+                                        {url,[{type,Type}],[Url]}
+                                end,
+                            
+                            NPar = lists:map(F,Parents),
+                            NDep = lists:map(F,DepTree),
+                            
+                            write_cell(Addr, [hn_util:val_to_xml(Value)],
+                                       "="++Formula, NPar, NDep);
+                        
+                        {error, Reason} when is_atom(Reason) ->
+                            write_cell(Addr,[{error,[],[Reason]}],"="++Formula,[],[])
+                    end;
                 
-        {error, error_in_formula} ->
-            write_cell(Addr,[{string,[],["Invalid Formula"]}],"="++Formula,[],[])
-        end;
+                {error, error_in_formula} ->
+                    write_cell(Addr,[{string,[],["Invalid Formula"]}],"="++Formula,[],[])
+            end;
         
-    {number, N} when is_integer(N) ->  
-        write_cell(Addr, [{integer,[],[N]}], integer_to_list(N), [], []);
-    {number, N} when is_float(N) ->  
-        write_cell(Addr, [{float,[],[N]}], float_to_list(N), [], []);
-    
-    {string, S} ->  write_cell(Addr, [{string, [],[S]}], S, [], []);
-    {bool, B} ->    write_cell(Addr, [{boolean,[],[B]}],atom_to_list(B), [], []);
-    {error, E} ->   write_cell(Addr, E, E, [], [])
+        {int, N} ->  
+            write_cell(Addr, [{integer,[],[N]}], integer_to_list(N), [], []);
+        {float, N} ->  
+            write_cell(Addr, [{float,[],[N]}], float_to_list(N), [], []);
+        
+        {string, S} -> write_cell(Addr, [{string, [],[S]}], S, [], []);
+        {bool, B}   -> write_cell(Addr, [{boolean,[],[B]}],atom_to_list(B), [], []);
+        {errval, E} -> write_cell(Addr, E, E, [], [])
     end.
 
     
