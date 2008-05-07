@@ -150,17 +150,20 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
 %%%               formula parser about a cell, ie its direct
 %%%               parents/ dependancy tree, and value
 %%%-----------------------------------------------------------------
-get_cell_info(Site,Path,X,Y) ->
-
+get_cell_info(Site, Path, X, Y) ->
     Ref = #ref{site=Site,path=Path,ref={cell,{X,Y}}},
     
     Value   = get_val(hn_db:get_item(Ref#ref{name=value})),
     DepTree = get_val(hn_db:get_item(Ref#ref{name='dependancy-tree'})),   
 
     Val = case Value of
-        []          -> blank;
-        [{_,_,[V]}] -> V       %% Strip type info, might want in parser
-    end,
+              [] ->
+                  blank;
+              [{matrix, _, [V]}] ->
+                  {matrix, V};
+              [{_, _, [V]}] -> %% Strip other type tags.
+                  V
+          end,
        
     F = fun({url,[{type,Type}],[Url]}) ->
         #page{site=S,path=P,ref={cell,{X1,Y1}}} = hn_util:parse_url(Url),
