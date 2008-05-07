@@ -28,7 +28,6 @@
 %%%--------------------%%%
 
 %%% @doc Parses formula, and returns AST as an s-expression.
-%%% @spec parse(Formula :: string()) -> {ok, {Ast :: list()}}
 compile(Fla, {X, Y}) ->
     case (catch try_parse(Fla, {X, Y})) of
         {ok, Pcode} ->
@@ -52,9 +51,10 @@ run(Pcode, Bindings) ->
     case (catch eval(Pcode)) of
         {error, R}  -> {error, R};
         {'EXIT', R} -> throw(R); 
-        Value ->
+        Val ->
             {RefTree, Errors, References} = get(retvals),
-            {ok, {Value, RefTree, Errors, References}}
+            {ok, {?COND(Val == blank, 0, Val), %% Cells referencing blank cells become 0.
+                  RefTree, Errors, References}}
     end.
 
 %%%---------------------%%%
@@ -104,8 +104,7 @@ preproc(Sexp) ->
 funcall(ref, [Col, Row, Path]) ->
     Rowidx = toidx(Row),
     Colidx = toidx(Col),
-    Val = do_cell(Path, Rowidx, Colidx),
-    ?COND(Val == blank, 0, Val); %% Cells referencing blank cells become 0.
+    do_cell(Path, Rowidx, Colidx);
 
 %% Cell ranges (A1:A5, R1C2:R2C10 etc).
 %% In a range, the path of second ref **must** be ./
