@@ -81,6 +81,7 @@ set_cell(Addr, Val) ->
         {string, S} -> write_cell(Addr, [{string, [],[S]}], S, [], []);
         {bool, B}   -> write_cell(Addr, [{boolean,[],[B]}],atom_to_list(B), [], []);
         {errval, E} -> write_cell(Addr, E, E, [], [])
+        
     end.
 
     

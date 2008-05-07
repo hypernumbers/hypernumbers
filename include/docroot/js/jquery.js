@@ -1,13 +1,13 @@
 (function(){
 /*
- * jQuery 1.2.3 - New Wave Javascript
+ * jQuery 1.2.4a - New Wave Javascript
  *
  * Copyright (c) 2008 John Resig (jquery.com)
  * Dual licensed under the MIT (MIT-LICENSE.txt)
  * and GPL (GPL-LICENSE.txt) licenses.
  *
- * $Date: 2008-02-06 00:21:25 -0500 (Wed, 06 Feb 2008) $
- * $Rev: 4663 $
+ * $Date: 2008-04-09 21:17:07 -0400 (Wed, 09 Apr 2008) $
+ * $Rev: 5225 $
  */
 
 // Map over jQuery in case of overwrite
@@ -101,7 +101,7 @@ jQuery.fn = jQuery.prototype = {
 	},
 	
 	// The current version of jQuery being used
-	jquery: "1.2.3",
+	jquery: "1.2.4a",
 
 	// The number of elements contained in the matched element set
 	size: function() {
@@ -596,7 +596,7 @@ jQuery.extend = jQuery.fn.extend = function() {
 
 				// Recurse if we're merging object values
 				if ( deep && options[ name ] && typeof options[ name ] == "object" && target[ name ] && !options[ name ].nodeType )
-					target[ name ] = jQuery.extend( target[ name ], options[ name ] );
+					target[ name ] = jQuery.extend( deep, target[ name ], options[ name ] );
 
 				// Don't bring in undefined values
 				else if ( options[ name ] != undefined )
@@ -1122,7 +1122,7 @@ jQuery.extend({
 		var ret = [];
 
 		// Need to use typeof to fight Safari childNodes crashes
-		if ( typeof array != "array" )
+		if ( array.constructor != Array )
 			for ( var i = 0, length = array.length; i < length; i++ )
 				ret.push( array[ i ] );
 		else
@@ -3405,4 +3405,32 @@ jQuery.fn.offset = function() {
 
 	return results;
 };
-})();
+
+// Create innerHeight, innerWidth, outerHeight and outerWidth methods
+jQuery.each(["Height", "Width"], function(i, name){
+
+	var tl = name == "Height" ? "Top"    : "Left",  // top or left
+		br = name == "Height" ? "Bottom" : "Right"; // bottom or right
+	
+	// innerHeight and innerWidth
+	jQuery.fn["inner" + name] = function(){
+		return this[ name.toLowerCase() ]() + 
+			num(this, "padding" + tl) + 
+			num(this, "padding" + br);
+	};
+	
+	// outerHeight and outerWidth
+	jQuery.fn["outer" + name] = function(margin) {
+		return this["inner" + name]() + 
+			num(this, "border" + tl + "Width") +
+			num(this, "border" + br + "Width") +
+			(!!margin ? 
+				num(this, "margin" + tl) + num(this, "margin" + br) : 0);
+	};
+	
+});
+
+function num(elem, prop) {
+	elem = elem.jquery ? elem[0] : elem;
+	return elem && parseInt( jQuery.curCSS(elem, prop, true) ) || 0;
+}})();

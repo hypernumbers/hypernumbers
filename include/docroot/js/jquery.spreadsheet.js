@@ -369,7 +369,7 @@ $.fn.spreadsheet = function(options)
             <div class="clearfix toolbar" />\
             <div class="clearfix formulabar">\
                 <input type="text" id="name" />\
-                <input type="button" id="functions" value="f(x)" />\
+                <input type="button" id="functionbutton" value="f(x)" />\
                 <input type="text" id="formula"/>\
             </div>\
             <div class="datatable">\
@@ -385,7 +385,19 @@ $.fn.spreadsheet = function(options)
                         <table cellpadding="0" cellspacing="0"></table>\
                     </div>\
                 </div>\
-            </div>';
+            </div>\
+            <div class="dialog" id="functions">\
+                <h2>Functions</h2>\
+                <div class="clearfix">\
+                    <ul id="categories" />\
+                    <div class="functionlist" />\
+                </div>\
+                <div class="functioninput">\
+                    <input type="text" id="curfunction">\
+                    <input type="button" id="insertfunction" value="insert formula" />\
+                </div>\
+            </div>\
+        ';
 
         root.append($(html));
         
@@ -768,6 +780,98 @@ $.fn.spreadsheet = function(options)
    
        td.find("div,textarea").height(height+1);
    };
+
+
+    var select_category = function(root,category)
+    {   
+        root.find("#functions .functionlist ul").hide();
+        root.find("#functions #categories li").removeClass("selected_cat");
+        root.find("#functions #categories li."+category).addClass("selected_cat");
+        root.find("#functions .functionlist ul."+category).show();
+    };
+   /**
+    */      
+   var init_dialogs = function(root)
+   {
+        root.find("#functionbutton").click(function()
+        {
+            $("#functions").toggle();
+            select_category(root,($("#functions #categories li:first a").text()).toLowerCase());
+        });
+
+        root.find("#insertfunction").click(function()
+        {
+            var txt = root.find("#curfunction").val();
+            
+            if(txt != "")
+            {
+                var formula = root.find("#formula");
+                var newval = (formula.val() == "") 
+                    ? txt : formula.val() + txt.substring(1);
+                formula.val(newval);
+            }
+        });
+
+        $("#functions").css("top",(root.offset().top+50)+"px");
+        $("#functions").css("left",(root.offset().left+50)+"px");
+        
+        $(".dialog").each(function()
+        {
+            var d = $(this);
+            
+            $("<div class='close' />").appendTo(d).click(function()
+            {
+                d.toggle();
+            });
+            
+            d.draggable(
+            {
+                handle:"h2",
+                containment:'document',
+                cursor : "move",
+                start  : function(event, ui) {
+                     $(this).css('cursor','move');
+                },
+                stop  : function(event, ui) {
+                     $(this).css('cursor','default');
+                }
+            });
+        });
+   };
+
+    /**
+     */  
+    var add_function_to_menu = function(root,category,func,funtext)
+    {
+        var c = category.toLowerCase();
+        var cat = root.find("#functions #categories li."+c);
+        var list = null;
+        
+        if(cat.size() == 0)
+        {
+            cat = $("<li class='"+c+"'><a>"
+                +category+"</a></li>").appendTo(root.find("#categories"));
+                
+            cat.find("a").click(function()
+            {
+                select_category(root,c);                
+            });
+            
+            list = $("<ul class='"+c+"' />").appendTo(
+                root.find(".functionlist"));
+        }
+        else
+        {
+            list = root.find("#functions .functionlist ul."+c);
+        }
+        
+        var link = $("<li><a>"+func+"</a></li>").appendTo(list);
+        
+        link.click(function()
+        {
+            root.find("#curfunction").val(funtext);   
+        });
+    };
     
     /**
      * Set the width of a column
@@ -826,6 +930,7 @@ $.fn.spreadsheet = function(options)
             write_formula_bar($this,$sel);
             write_button_menu($this,$sel,$.fn.toolbar);
             set_display_values($this,range[0],opts.fmargin);
+            init_dialogs($this);
                          
             $("#name").textbox(
             {                
@@ -903,12 +1008,16 @@ $.fn.spreadsheet = function(options)
                 }
             }
         }
-        
         else if(args[0] == "setStyle")
         {
             var ref = $.fn.parse_cell(args[1]);
             var tbl = $(this).find(".data table");
 			cell_div(tbl,ref[0]-1,ref[1]-1).css(args[2],args[3]);
+        }
+        
+        else if(args[0] == "addFunction")
+        {
+            add_function_to_menu($(this),args[1],args[2],args[3]);
         }
     });
 };

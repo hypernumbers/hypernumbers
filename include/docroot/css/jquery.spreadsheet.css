@@ -46,7 +46,7 @@
     padding:        3px;
 }
 
-.spreadsheet #functions
+.spreadsheet #functionbutton
 {
     border-width:   0px 1px 0px 1px;
     border-style:   outset;
@@ -138,7 +138,7 @@
     border:         1px solid transparent;
     height:         20px;
     overflow:       hidden;
-    cursor:         default;
+    cursor:         cell;
 }
 
 /******************************************************************************
@@ -256,6 +256,102 @@
     background-image:  url('../img/text_underline.png'); }
 .spreadsheet .toolbar .strike {
     background-image:  url('../img/text_strikethrough.png'); }
+
+/******************************************************************************
+	GLOBAL STYLES
+******************************************************************************/
+.spreadsheet #functions
+{
+    width:  370px;
+}
+
+.spreadsheet .dialog
+{
+    position:   absolute;
+    display:    none;
+    background: white;
+    min-width:  200px;
+    -moz-border-radius: 3px 3px 3px 3px;
+    border:     1px solid #666;
+    z-index:    99999;
+}
+
+.spreadsheet .dialog ul
+{
+    list-style-type:    none;
+}
+
+.spreadsheet .dialog ul#categories
+{
+    height:     200px;
+    background: lightblue;
+    width:      150px;
+    float:      left;
+    padding:    4px;
+}
+
+.spreadsheet .dialog ul#categories a 
+{
+    display:    block;
+    padding:    3px;
+    cursor:     pointer;
+}
+
+.spreadsheet .dialog ul#categories .selected_cat
+{
+    background: white;
+}
+
+.spreadsheet .dialog .functionlist 
+{
+    float:      right;
+    width:      200px;
+    height:     200px;
+    overflow:   scroll;
+    padding:    5px;
+}
+
+.spreadsheet .dialog .functionlist a 
+{
+    display:    block;
+    padding:    3px;
+    cursor:     pointer;
+    color:      blue;
+    text-decoration:underline;
+    border-bottom:1px solid #CCC;
+}
+
+.spreadsheet .dialog .functioninput
+{
+    background: #EEE;
+    padding:    5px;
+}
+
+.spreadsheet .dialog .functioninput #curfunction
+{
+    width: 250px;
+}
+
+.spreadsheet .dialog h2
+{
+    display:    block;
+    font:       bold 10px sans-serif;
+    padding:    4px;
+    border-bottom:1px solid #66AA00;
+    -moz-border-radius: 3px 3px 0px 0px;
+    background: orange;
+}
+
+.spreadsheet .dialog .close
+{
+    position:   absolute;
+    top:        5px;
+    right:      5px;
+    height:     11px;
+    width:      11px;
+    background: url(../img/close_icon.gif) no-repeat;
+}
+
 
 /******************************************************************************
 		HACKS

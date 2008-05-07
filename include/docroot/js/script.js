@@ -1,4 +1,5 @@
 var formulae = new Array();
+var links    = new Array();
 var css_attrs = ["font-style","font-weight","text-align","text-decoration"];
         
 var handle_attr = function(refxml)
@@ -19,6 +20,10 @@ var handle_attr = function(refxml)
     else if(name == "value")
     {
         $("#hn").spreadsheet("setValue",ref,value);
+    }
+    else if(name == "parents")
+    {
+        //var obj = new Object();
     }
 }
     
@@ -49,7 +54,7 @@ $(function()
 			x.close();
 		});
 	});
-			
+	
 	$.get(url+"?pages&format=xml", function(data)
 	{
         var add = function(root,dir,path)
@@ -111,6 +116,22 @@ $(function()
     };
             
 	$("#hn").spreadsheet(defaults);
+	
+//	$.get(url+"funs.xml", function(data)
+//	{
+//	    $(data).find("functions > category").each(function()
+//	    {
+//	        var category = $(this).attr("name");
+//	        $(this).children("function").each(function()
+//	        {
+//                var label = $(this).attr("label");
+//                var data  = $(this).attr("data");
+//                
+//	             $("#hn").spreadsheet("addFunction",
+//	                category,label,data);
+//	        });
+//	    });
+//	});
             
 	$.get(url+"?attr", function(data) 
 	{

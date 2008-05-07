@@ -22,6 +22,13 @@
          "/lib/utilities-1.0/",
          "/lib/mochi-1.0/"]).
 
+-define(EXTRA_ERL_FILES,
+        ["src/misc_util.erl",   
+         "priv/muin/leex.erl",
+         "src/bits.erl",
+         "src/production_boot.erl",
+         "src/test_util.erl"]).
+
 start() ->
     compile().
 
@@ -29,16 +36,16 @@ compile() ->
     [_File, _Ebin | Rest] =
         reverse(string:tokens(code:which(compile_code), "/")),
 
-	Pre = case os:type() of
-              {win32,_} -> ""; 
-              _ ->         "/" 
-          end,
-
+	Pre = case os:type() of 
+	    {win32,_} -> "";
+	    _ ->         "/"
+	end,
     App_rt_dir = Pre++string:join(reverse(Rest),"/")++"/",
 
     io:fwrite("~nStarting the compilation~n~n", []),
 
     code:add_pathz(App_rt_dir ++ "/lib/eunit/ebin"),
+    
     %% First set up the include file
     Inc_list = [{i, App_rt_dir ++ "/include"},
                 {i, App_rt_dir ++ "/lib/read_excel-1.0/include"},
@@ -46,16 +53,16 @@ compile() ->
 
     %% List of {ErlangFile, OutputDirectory} tuples.
     Dirs = flatten(map(fun(X) ->
-                       map(fun(Y) -> {Y, App_rt_dir ++ X ++ "ebin"} end,
-                           filelib:wildcard(App_rt_dir ++ X ++ "src/*.erl"))
-                       end,
-                       ?DIRS)),
+        map(fun(Y) -> {Y, App_rt_dir ++ X ++ "ebin"} end,
+        filelib:wildcard(App_rt_dir ++ X ++ "src/*.erl"))
+        end,
+        ?DIRS)),
 
-    Extra = [
-             {App_rt_dir++"priv/muin/leex.erl",App_rt_dir++"ebin"},
-             {App_rt_dir++"src/bits.erl",App_rt_dir++"ebin"},
-             {App_rt_dir++"src/production_boot.erl",App_rt_dir++"ebin"},
-             {App_rt_dir++"src/test_util.erl",App_rt_dir++"ebin"}],
+    Extra = lists:map(
+        fun(X) ->
+            {App_rt_dir++X,App_rt_dir++"ebin"}
+        end,
+        ?EXTRA_ERL_FILES),
     
     compile_funcs(Dirs++Extra, Inc_list).
 
