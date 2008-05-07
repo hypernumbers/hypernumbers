@@ -122,18 +122,34 @@
 %%% Basic arithmetics %%%
 %%% ----------------- %%%
 
+'+'([blank, Num2]) ->
+    '+'([0, Num2]);
+'+'([Num1, blank]) ->
+    '+'([Num1, 0]);
 '+'([Num1, Num2]) ->
     ?ensure_numbers([Num1, Num2]),
     Num1 + Num2.
 
+'-'([blank, Num2]) ->
+    '-'([0, Num2]);
+'-'([Num1, blank]) ->
+    '-'([Num1, 0]);
 '-'([Num1, Num2]) ->
     ?ensure_numbers([Num1, Num2]),
     Num1 - Num2.
 
+'*'([blank, Num2]) ->
+    '*'([0, Num2]);
+'*'([Num1, blank]) ->
+    '*'([Num1, 0]);
 '*'([Num1, Num2]) ->
     ?ensure_numbers([Num1, Num2]),
     Num1 * Num2.
 
+'/'([blank, Num2]) ->
+    '/'([0, Num2]);
+'/'([_, blank]) ->
+    ?ERR_DIV;
 '/'([Num, Divisor]) ->
     ?ensure_numbers([Num, Divisor]),
     ?ensure_nonzero(Divisor),
