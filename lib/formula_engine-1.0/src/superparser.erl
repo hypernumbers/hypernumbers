@@ -1,5 +1,4 @@
-%%% @doc The super-parser: all input goes through it, and it decides
-%%% what to do with it.
+%%% @doc Pre-processes incoming data.
 %%% <hasan@hypernumbers.com>
 
 -module(superparser).
@@ -9,7 +8,9 @@
 
 process([$= | Tl]) when Tl =/= [] ->
     {formula, upcase(Tl)};
-process(Input) ->    
+process([39 | Tl]) -> %% 39 -> single quote
+    {string, Tl};
+process(Input) ->
     {ok, Toks} = muin_lexer:lex(upcase(Input), {1, 1}),
     case Toks of
         [{bool, B}]         -> {bool, B};
@@ -38,8 +39,6 @@ upcase(Str) ->
 upcase1([Hd | Tl], Intermbuf, Res) when is_number(Hd) ->
     upcase1(Tl, Intermbuf ++ [Hd], Res);
 upcase1([{string, Val} | Tl], Intermbuf, Res) ->
-    upcase1(Tl, [], lists:append([Res,
-                                  ?upcase(Intermbuf),
-                                  Val]));
+    upcase1(Tl, [], lists:append([Res, ?upcase(Intermbuf), Val]));
 upcase1([], Intermbuf, Res) ->
     lists:append([Res, ?upcase(Intermbuf)]).
