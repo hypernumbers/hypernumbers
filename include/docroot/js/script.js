@@ -117,21 +117,21 @@ $(function()
             
 	$("#hn").spreadsheet(defaults);
 	
-//	$.get(url+"funs.xml", function(data)
-//	{
-//	    $(data).find("functions > category").each(function()
-//	    {
-//	        var category = $(this).attr("name");
-//	        $(this).children("function").each(function()
-//	        {
-//                var label = $(this).attr("label");
-//                var data  = $(this).attr("data");
-//                
-//	             $("#hn").spreadsheet("addFunction",
-//	                category,label,data);
-//	        });
-//	    });
-//	});
+	$.get(url+"funs.xml", function(data)
+	{
+	    $(data).find("functions > category").each(function()
+	    {
+	        var category = $(this).attr("name");
+	        $(this).children("function").each(function()
+	        {
+                var label = $(this).attr("label");
+                var data  = $(this).attr("data");
+                
+	             $("#hn").spreadsheet("addFunction",
+	                category,label,data);
+	        });
+	    });
+	});
             
 	$.get(url+"?attr", function(data) 
 	{
