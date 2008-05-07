@@ -25,7 +25,6 @@ conv(false, int) ->
 conv(X, num) when is_number(X) ->
     X.
 
-%% TODO: Something like null is easier to type/remember than the full thing.
 error('#NULL!')  -> throw({error, '#NULL!'});
 error('#DIV/0!') -> throw({error, '#DIV/0!'});
 error('#VALUE!') -> throw({error, '#VALUE!'});
@@ -80,3 +79,12 @@ expand_cellrange(StartRow, EndRow, StartCol, EndCol) ->
     %% Flatten Cells; can't use flatten/1 because there are strings in there.
     foldl(fun(X, Acc) -> append([Acc, X]) end,
           [], Cells).
+
+%% Catch errors from error-throwing functions.
+attempt(F, Args) ->
+  case catch apply(F, Args) of
+    {'EXIT', Reason} ->
+          {error, Reason};
+      Val ->
+          {ok, Val}
+  end.
