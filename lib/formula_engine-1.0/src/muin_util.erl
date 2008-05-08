@@ -4,12 +4,35 @@
          just_path/1,
          just_ref/1,
          expand_cellrange/4,
-         walk_path/2]).
+         walk_path/2,
+         attempt/2]).
 
 -import(string, [rchr/2, tokens/2]).
 -import(tconv, [to_i/1]).
 
 -include("handy_macros.hrl").
+-include("typechecks.hrl").
+
+%% Booleans
+cast(0, bool) ->
+    false;
+cast(X, bool) when is_number(X) ->
+    true;
+cast(X, bool) when is_boolean(X) ->
+    X;
+
+%% Numbers
+cast(X, num) when is_number(X) ->
+    X;
+cast(true, num) ->
+    1;
+cast(false, num) ->
+    0;
+cast(S, num) when is_list(S) ->
+    case tconv:to_num(S) of
+        {error, nan} -> ?ERR_VAL;
+        N            -> N
+    end.
 
 conv(X, int) when is_integer(X) ->
     X;
