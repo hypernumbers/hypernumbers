@@ -13,18 +13,28 @@
         ?IF(not(is_number(Num)), ?ERR_VAL)).
 
 -define(ensure_numbers(L),
-        AllNumbers_x = lists:all(fun(X_x) ->
-                                       is_number(X_x)
-                               end,
-                               L),
-        ?IF(not(AllNumbers_x), ?ERR_VAL)).
+        Allokx = lists:all(fun(X_x) -> is_number(X_x) end, L),
+        ?IF(not(Allokx), ?ERR_VAL)).
 
 -define(ensure_nonzero(Num),
         ?IF(Num == 0, ?ERR_DIV)).
 
-%% Ensures number is not less than 0.
+%% Ensures number is >= 0.
+-define(ensure_non_negative(Num),
+        ?ensure_non_negative_ex(Num, ?ERR_NUM)).
+
+-define(ensure_non_negatives(L),
+        Allokx = lists:all(fun(X_x) -> is_number(X_x) andalso X_x >= 0 end,
+                           L),
+        ?IF(not(Allokx), ?ERR_NUM)).
+        
+
 -define(ensure_non_negative_ex(Num, Action),
         ?IF(not(is_number(Num) andalso Num >= 0), Action)).
+
+%% Ensures number is > 0.
+-define(ensure_positive(Num),
+        ?ensure_positive_ex(Num, ?ERR_NUM)).
 
 -define(ensure_positive_ex(Num, Action),
         ?IF(not(is_number(Num) andalso Num > 0), Action)).
@@ -32,14 +42,27 @@
 %% Looks at a list of values, and if an error value is found, that error
 %% value is returned.
 -define(ensure_no_errvals(Values),
-        lists:foreach(fun(X_x) ->
-                              ?IF(stdfuns_info:iserror([X_x]),
-                                  muin_util:error(X_x))
-                      end,
-                      Values)).
+        lists:map(fun(X_x) ->
+                          ?COND(stdfuns_info:iserror([X_x]),
+                                muin_util:error(X_x),
+                                X_x)
+                  end,
+                  Values)).
 
 -define(ensure(Test, Action),
         case (Test) of
             true  -> nothing;
             false -> Action
         end).
+
+-define(filter_numbers(Vals),
+        [X || X <- Vals, is_number(X)]).
+
+%% L is a list that may contain {matrix, _, [X]} tuples.
+-define(flatten(L),
+        (foldl(fun({matrix, _, Xs}, Acc) ->
+                       append([Acc, Xs]);
+                  (X, Acc) ->
+                       append([Acc, [X]])
+               end,
+               [], L))).
