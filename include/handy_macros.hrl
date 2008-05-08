@@ -18,6 +18,7 @@
                 nth/2,
                 reverse/1,
                 seq/2,
+                sort/1,
                 sublist/2,
                 sublist/3,
                 takewhile/2,
