@@ -61,9 +61,27 @@
          max/1,
          maxa/1,
          median/1,
-
+         min/1,
+         mina/1,
+         mode/1,
+         %%negbinomdist/1,
+         normdist/1,
+         %%norminv/1,
+         normsdist/1,
+         %%normsinv/1,
+         pearson/1,
          percentile/1,
-         quartile/1
+         %%percentrank/1,
+         permut/1,
+         %%poisson/1,
+         %%prob/1,
+         quartile/1,
+         rank/1,
+         %%rsq/1,
+         skew/1,
+         %%slope/1,
+         small/1
+         
         ]).
 
 avedev(Vals) ->
@@ -266,14 +284,114 @@ median([L]) ->
     Nums = ?filter_numbers(?ensure_no_errvals(?flatten(L))),
     quartile1(Nums, 2).
 
+min([L]) ->
+    Flatl = ?ensure_no_errvals(?flatten(L)),
+    Nums = map(fun(X) when is_number(X) ->
+                       X;
+                  (S) when is_list(S) ->
+                       case tconv:to_num(S) of
+                           {error, nan} -> ?ERR_VAL;
+                           V            -> V
+                       end
+               end,
+               Flatl),
+    ?COND(length(Nums) == 0, 0, lists:min(Nums)).
+
+mina([L]) ->
+    Flatl = ?ensure_no_errvals(?flatten(L)),
+    Nums = map(fun(X) -> cast(X, num) end, Flatl),
+    ?COND(length(Nums) == 0, 0, lists:min(Nums)).
+
+mode([L]) ->
+    %% TODO: ?filter_cast_numbers macro.
+    Flatl = ?ensure_no_errvals(?flatten(L)),
+    Nums = map(fun(X) -> cast(X, num) end, Flatl),
+    mode1(Nums).
+mode1(Nums) ->
+    Maptbl = mode1(Nums, []),
+    {Num, Count} = foldl(fun(Elt = {_, Cnt}, Acc = {_, Maxcnt}) ->
+                                 ?COND(Cnt > Maxcnt, Elt, Acc)
+                         end,
+                         hd(Maptbl), tl(Maptbl)),
+    ?COND(Count == 1,
+          ?ERR_NA, % no duplicates
+          Num).
+                
+mode1([H|T], Maptbl) ->
+    case keysearch(H, 1, Maptbl) of
+        {value, {H, Cnt}} -> % update count
+            mode1(T, lists:keyreplace(H, 1, {H, Cnt + 1}, Maptbl));
+        false -> % create entry
+            mode1(T, [Maptbl | [{H, 1}]])
+    end;
+mode1([], Maptbl) ->
+    Maptbl.
+
+normdist([N0, Mean, Stdev, Cum]) ->
+    N = cast(N0, num),
+    ?ensure_numbers([N, Mean, Stdev]),
+    ?ensure_positive(Stdev),
+    normdist1(N, Mean, Stdev, cast(Cum, bool)).
+normdist1(N, Mean, Stdev, true) ->
+    0; %% TODO:
+normdist1(N, Mean, Stdev, false) ->
+    0. %% TODO:
+
+normsdist([Z]) ->
+    normdist([Z, 0, 1, true]).
+
+pearson([A1, A2]) ->
+    Nums1 = ?filter_numbers(?ensure_no_errvals(?flatten(A1))),
+    Nums2 = ?filter_numbers(?ensure_no_errvals(?flatten(A2))),
+    pearson1(Nums1, Nums2).
+pearson1(_, _) ->
+    0. %% TODO:
+
 percentile([L, K]) ->
     Nums = ?filter_numbers(?ensure_no_errvals(?flatten(L))),
     ?ensure(length(Nums) > 0, ?ERR_NUM),
     ?ensure_number(K),
     ?ensure((K >= 0) and (K =< 1), ?ERR_NUM),
     percentile1(Nums, K).
-percentile1(_Nums, _K) ->
-    0. %% TODO:
+percentile1(Nums, K) ->
+    L = map(fun(X) -> X / lists:sum(Nums) end,
+            cumulate(Nums)),
+    firstgte(L, K).
+
+permut([N, K]) ->
+    ?ensure_numbers([N, K]),
+    ?ensure_positive(N),
+    ?ensure(N >= K, ?ERR_NUM),
+    ?ensure_non_negative(K),
+    permut1(trunc(N), trunc(K)).
+permut1(N, K) ->
+    stdfuns_math:fact1(N) div stdfuns_math:fact1(N - K).
+
+rank([Num, L]) ->
+    rank([Num, L, 0]);
+rank([Num, L, Order]) ->
+    ?ensure_number(Num),
+    Nums = ?filter_numbers(?ensure_no_errvals(?flatten(L))),
+    rank1(Num, Nums, cast(Order, bool)).
+rank1(N, Nums, true) ->
+    firstgte(sort(Nums), N);
+rank1(N, Nums, false) ->
+    (length(Nums) + 1) - rank1(N, Nums, true).
+
+skew([L]) ->
+    Nums = ?filter_numbers(?ensure_no_errvals(?flatten(L))),
+    ?ensure(length(Nums) >= 3, ?ERR_DIV),
+    skew1(Nums).
+skew1(Nums) ->
+    moment(Nums, 3) / math:pow(moment(Nums, 2), 1.5).
+
+small([A, K]) ->
+    Nums = ?filter_numbers(?ensure_no_errvals(?flatten(A))),
+    ?ensure_number(K),
+    ?ensure_positive(K),
+    small1(Nums, K).
+small1(Nums, K) ->
+    nth(K, sort(Nums)).
 
 
 quartile([L, Q]) ->
@@ -285,10 +403,29 @@ quartile([L, Q]) ->
 quartile1(Nums, Q) ->
     nth(percentile1(Nums, Q * 0.25), Nums).
 
+
     
 
 
 %%% Private functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+%% Finds index of first element in L that's >= N.
+firstgte(L, N) ->
+    firstgte(L, N, 1).
+firstgte([H|T], N, C) when H < N ->
+    firstgte(T, N, C + 1);
+firstgte([H|_T], N, C) when H >= N ->
+    C;
+firstgte([], _, _) ->
+    0.
+
+%% Returns list in element at position n equals the sum of elements 1 to n in
+%% the original list.
+cumulate([Hd | Tl]) ->
+    reverse(foldl(fun(X, [H | T]) ->
+                          [X + H, H | T]
+                  end,
+                  [Hd], Tl)).
 
 moment(Vals, M) ->
     Avg = average1(Vals),
