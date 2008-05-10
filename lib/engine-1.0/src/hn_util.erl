@@ -17,7 +17,7 @@
     %% HyperNumbers Utils
     index_to_url/1,     page_to_index/1,    ref_to_str/1,
     hnxml_to_xml/1,     val_to_xml/1,       xml_to_val/1,
-    item_to_xml/1,
+    item_to_xml/1,      xml_to_hnxml/1,
     %% HTTP Utils
     req/1,              post/2,             post/3,
     parse_url/1,
@@ -52,6 +52,11 @@ ref_to_str({column,X})   -> tconv:to_b26(X);
 ref_to_str({range,{X1,Y1,X2,Y2}}) ->
     tconv:to_b26(X1)++text(Y1)++":"++tconv:to_b26(X2)++text(Y2).
  
+ 
+%% TODO :   Seriously strip down this code and clean it out
+%%          val_to_xml makes assertions on type and can be 
+%%          taken out if the compiler returned type
+
 %% Because we dont want to discard native types for internal storage 
 %% (ie floats stay stored as float, even in the xml structure)
 %% we need to change 'hnxml' to real xml, which stores
@@ -71,6 +76,14 @@ hnxml_to_xml({matrix,Attr,Rows}) ->
 %% we have custom types (dependancy-tree etc), these are required
 %% to be valid xml before stored
 hnxml_to_xml(Else) -> Else.
+
+xml_to_hnxml({string,[],[V]})  -> {string,[],[V]};
+xml_to_hnxml({float,[],[V]})   -> {float,[],[list_to_float(V)]};
+xml_to_hnxml({integer,[],[V]}) -> {integer,[],[list_to_integer(V)]};
+xml_to_hnxml({error,[],[V]})   -> {error,[],[list_to_atom(V)]};
+xml_to_hnxml({boolean,[],[V]}) -> {boolean,[],[list_to_atom(V)]};
+xml_to_hnxml({blank,[],[]})    -> {blank,[],[]};
+xml_to_hnxml({matrix,[],Rows}) -> {matrix,[],Rows}.
 
 %% convert raw values into 'hnxml' format, which is simplexml
 %% but with raw values stored as native types instead of strings

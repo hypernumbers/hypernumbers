@@ -25,15 +25,31 @@ hr
     margin-bottom:5px;
 }
 
+strong
+{
+    font-weight:bold;
+}
+
+#contextmenu #hnumber:hover
+{
+    background: #EEE;
+}
+
+#contextmenu a 
+{
+    display:        block;
+    margin-left:    10px;
+}
+
 #header
 {
-    background:#000;
-    border-bottom:4px solid #888;
+    background:     #000;
+    border-bottom:  4px solid #888;
 }
 
 #header img 
 {
-    margin:3px 10px;
+    margin:         3px 10px;
 }
 
 #menu

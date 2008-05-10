@@ -151,7 +151,7 @@ remove_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
     
         %% If Name is defined, match it
         N = ?COND(Name == undef,'_',Name),
-        Attr  = #ref{site=Site, path=Path, name=N, _ = '_'},
+        Attr  = #ref{site=Site, path=Path,ref=Ref, name=N, _ = '_'},
         Match = #hn_item{addr = Attr, _ = '_'},
         
         lists:map(
@@ -234,7 +234,29 @@ del_remote_link(Obj) when Obj#remote_cell_link.type == outgoing ->
 del_remote_link(Obj) when Obj#remote_cell_link.type == incoming ->
 
     {atomic, Hn} = mnesia:transaction(fun() ->
-        Remote = Obj#remote_cell_link.parent,
+    
+        Remote = Obj#remote_cell_link.parent,    
+    
+        %% Remove the relevant child attribute
+        ParentRef = #ref{
+            site=Remote#index.site,
+            path=Remote#index.path,
+            ref= {cell,{Remote#index.column,Remote#index.row}},
+            name = children},
+            
+        ChildUrl = hn_util:index_to_url(Obj#remote_cell_link.child),
+            
+        Children = lists:filter( 
+            fun(X) ->
+                ?COND(X == {url,[{type,"remote"}],[ChildUrl]} , false, true)
+            end,
+            get_item_val(ParentRef)),
+                    
+        case Children of 
+        [] -> hn_db:remove_item(ParentRef);
+        _  -> hn_db:write_item(ParentRef,Children)
+        end,
+    
         mnesia:dirty_delete_object(Obj),
         [Hn] = mnesia:match_object(#incoming_hn{remote=Remote,_='_'}),
 
@@ -269,6 +291,17 @@ del_remote_link(Obj) when Obj#remote_cell_link.type == incoming ->
 write_remote_link(Parent,Child,Type) ->
 
     {atomic , {ok,Link}} = mnesia:transaction(fun()-> 
+    
+         ParentRef = #ref{
+            site=Parent#index.site,
+            path=Parent#index.path,
+            ref= {cell,{Parent#index.column,Parent#index.row}},
+            name = children},
+            
+        Children = [{url,[{type,"remote"}],[hn_util:index_to_url(Child)]}
+            | get_item_val(ParentRef)],
+            
+        hn_db:write_item(ParentRef,Children),   
     
         Link = #remote_cell_link{parent=Parent,child=Child,type=Type},
         case mnesia:match_object(Link) of
@@ -437,12 +470,7 @@ update_hn(From,Bic,Val,_Version)->
         Rec   = #incoming_hn{ remote = Index, biccie = Bic, _='_'},
         [Obj] = mnesia:match_object(Rec),
 
-        V = ?COND(Val == [],0,
-            ?COND(hn_util:is_numeric(Val) == true,
-                util2:make_num(Val),
-                util2:make_text(Val))),
-
-        mnesia:write(Obj#incoming_hn{value=V}),
+        mnesia:write(Obj#incoming_hn{value=hn_util:xml_to_hnxml(Val)}),
         mark_dirty(Index,hypernumber),
 
         ok
@@ -473,19 +501,12 @@ get_hn(Url,From,To)->
             
              %% TODO: Handle remote server being down            
             {hypernumber,[],[
-                {value,[],              [Tmp]},
+                {value,[],              [Val]},
                 {'dependancy-tree',[],  Tree}]
             } = simplexml:from_xml_string(XML),
-                    
-            Val = hn_util:xml_to_val(Tmp),
             
-            V = ?COND(Val == [],0,
-                ?COND(hn_util:is_numeric(Val) == true,
-                    util2:make_num(Val),
-                    util2:make_text(Val))),
-
             HNumber = #incoming_hn{
-                value   = V,
+                value   = hn_util:xml_to_hnxml(Val),
                 deptree = Tree,
                 remote  = To,
                 biccie  = util2:get_biccie()},
@@ -532,7 +553,7 @@ notify_remote_change(Hn,Value) ->
             {biccie,      [],[Hn#outgoing_hn.biccie]},
             {cell,        [],[hn_util:index_to_url(Cell)]},
             {type,        [],["change"]},
-            {value,       [],[hn_util:text(Value)]},
+            {value,       [],[hn_util:hnxml_to_xml(hn_util:val_to_xml(Value))]},
             {version,     [],["1"]}
         ]}),
  

@@ -843,14 +843,16 @@ $.fn.spreadsheet = function(options)
      */  
     var add_function_to_menu = function(root,category,func,funtext)
     {
+        var dialog = root.find("#functions");
+        
         var c = category.toLowerCase();
-        var cat = root.find("#functions #categories li."+c);
+        var cat = dialog.find("#categories li."+c);
         var list = null;
         
         if(cat.size() == 0)
         {
             cat = $("<li class='"+c+"'><a>"
-                +category+"</a></li>").appendTo(root.find("#categories"));
+                +category+"</a></li>").appendTo(dialog.find("#categories"));
                 
             cat.find("a").click(function()
             {
@@ -858,18 +860,18 @@ $.fn.spreadsheet = function(options)
             });
             
             list = $("<ul class='"+c+"' />").appendTo(
-                root.find(".functionlist"));
+                dialog.find(".functionlist"));
         }
         else
         {
-            list = root.find("#functions .functionlist ul."+c);
+            list = dialog.find(".functionlist:first > ul."+c);
         }
         
         var link = $("<li><a>"+func+"</a></li>").appendTo(list);
         
         link.click(function()
         {
-            root.find("#curfunction").val(funtext);   
+            dialog.find("#curfunction").val(funtext);   
         });
     };
     

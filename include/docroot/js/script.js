@@ -1,5 +1,6 @@
 var formulae = new Array();
-var links    = new Array();
+var parents  = new Array();
+var children = new Array();
 var css_attrs = ["font-style","font-weight","text-align","text-decoration"];
         
 var handle_attr = function(refxml)
@@ -21,9 +22,20 @@ var handle_attr = function(refxml)
     {
         $("#hn").spreadsheet("setValue",ref,value);
     }
-    else if(name == "parents")
+    else if(name == "parents" || name == "children")
     {
-        //var obj = new Object();
+        var arr = new Array();
+
+        el.find("url").each(function()
+        {
+            if($(this).attr("type") == "remote")
+            {
+                arr.push($(this).text());
+            }
+        });
+        
+        if(name == "parents")       parents[ref] = arr;
+        else if(name == "children") children[ref] = arr;
     }
 }
     
@@ -129,7 +141,7 @@ $(function()
                 
 	             $("#hn").spreadsheet("addFunction",
 	                category,label,data);
-	        });
+	        }); 
 	    });
 	});
             
@@ -143,7 +155,7 @@ $(function()
             
     $.clipboardReady(function()
     {
-        $('#hn .data').contextMenu('myMenu1',
+        $('#hn .data').contextMenu('contextmenu',
         {
 			bindings:
             {
@@ -154,7 +166,7 @@ $(function()
 			},
 			menuStyle:
             {
-				width: '150px'
+				width: '200px'
 			},
 			itemStyle:
             {
@@ -164,7 +176,7 @@ $(function()
 			},
 			itemHoverStyle:
             {
-				background: '#EEE',
+				background: '#FFF',
 				border: 'none'
 			},
 			onContextMenu: function(e) 
@@ -174,6 +186,27 @@ $(function()
 				    var ref = $.fn.cell_index(e.target);
 				    var refstr = $.fn.to_b26(ref[0]+1)+(ref[1]+1);
                     $("#texttocopy").text("=hn(\""+url+refstr+"?hypernumber\")");
+                    
+                    $("#parents,#children").empty();
+                    
+                    if(typeof parents[refstr] != "undefined")
+                    {
+                        $.each(parents[refstr],function()
+                        {
+                            $("#parents").append($("<a href='"
+                                +this+"'>"+this+"</a><br/>"));
+                        }); 
+                    }
+                    
+                    if(typeof children[refstr] != "undefined")
+                    {
+                        $.each(children[refstr],function()
+                        {
+                            $("#children").append($("<a href='"
+                                +this+"'>"+this+"</a><br/>"));
+                        }); 
+                    }
+                    
                     return true;
                 }
                 return false;

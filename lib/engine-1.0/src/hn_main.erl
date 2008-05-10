@@ -44,44 +44,40 @@ set_cell(Addr, Val) ->
     #ref{site=Site,path=Path,ref={cell,{X,Y}}} = Addr,
 
     case superparser:process(Val) of
-        {formula, Formula} ->  
-            case muin:compile(Formula, {X, Y}) of
-                {ok, Ast} ->
-                    case muin:run(Ast,[{site,Site},{path,Path},{x,X},{y,Y}]) of
-                        {ok, {Value, DepTree, _, Parents}} ->
-                            %% Store syntax tree
-                            db_put(Addr,"__ast",Ast),
+    {formula, Formula} ->  
+        case muin:compile(Formula, {X, Y}) of
+        {ok, Ast} ->
+            case muin:run(Ast,[{site,Site},{path,Path},{x,X},{y,Y}]) of
+            {ok, {Value, DepTree, _, Parents}} ->
+                %% Store syntax tree
+                db_put(Addr,"__ast",Ast),
+                           
+                %% Transform parents and deptree from tuple list to
+                %% simplexml
+                F = fun({Type,{S,P,X1,Y1}}) ->
+                    Url = hn_util:index_to_url({index,S,P,X1,Y1}),
+                    {url,[{type,Type}],[Url]}
+                end,
                             
-                            %% Transform parents and deptree from tuple list to
-                            %% simplexml
-                            F = fun({Type,{S,P,X1,Y1}}) ->
-                                        Url = hn_util:index_to_url({index,S,P,X1,Y1}),
-                                        {url,[{type,Type}],[Url]}
-                                end,
+                NPar = lists:map(F,Parents),
+                NDep = lists:map(F,DepTree),
                             
-                            NPar = lists:map(F,Parents),
-                            NDep = lists:map(F,DepTree),
-                            
-                            write_cell(Addr, [hn_util:val_to_xml(Value)],
-                                       "="++Formula, NPar, NDep);
+                write_cell(Addr, [hn_util:val_to_xml(Value)],
+                    "="++Formula, NPar, NDep);
                         
-                        {error, Reason} when is_atom(Reason) ->
-                            write_cell(Addr,[{error,[],[Reason]}],"="++Formula,[],[])
-                    end;
-                
-                {error, error_in_formula} ->
-                    write_cell(Addr,[{string,[],["Invalid Formula"]}],"="++Formula,[],[])
+                {error, Reason} when is_atom(Reason) ->
+                    write_cell(Addr,[{error,[],[Reason]}],"="++Formula,[],[])
             end;
+                
+            {error, error_in_formula} ->
+                write_cell(Addr,[{string,[],["Invalid Formula"]}],"="++Formula,[],[])
+        end;
         
-        {int, N} ->  
-            write_cell(Addr, [{integer,[],[N]}], integer_to_list(N), [], []);
-        {float, N} ->  
-            write_cell(Addr, [{float,[],[N]}], float_to_list(N), [], []);
-        
-        {string, S} -> write_cell(Addr, [{string, [],[S]}], S, [], []);
-        {bool, B}   -> write_cell(Addr, [{boolean,[],[B]}],atom_to_list(B), [], []);
-        {errval, E} -> write_cell(Addr, E, E, [], [])
-        
+    {int, N} ->    write_cell(Addr, [{integer,[],[N]}], integer_to_list(N), [], []);
+    {float, N} ->  write_cell(Addr, [{float,[],[N]}], float_to_list(N), [], []);
+    {string, S} -> write_cell(Addr, [{string, [],[S]}], S, [], []);
+    {bool, B}   -> write_cell(Addr, [{boolean,[],[B]}],atom_to_list(B), [], []);
+    {errval, E} -> write_cell(Addr, E, E, [], [])       
     end.
 
     
@@ -101,13 +97,13 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
         
     %% Delete attribute if empty, else store
     Set = fun(Ref,Val) ->
+    
         case Val of
         [] -> hn_db:remove_item(Ref);
         _  -> hn_db:write_item(Ref,Val)
         end
     end,
            
-    %% These arent written if empty
     Set(Addr#ref{name=parents},Parents),
     Set(Addr#ref{name='dependancy-tree'},DepTree),
         
@@ -158,13 +154,10 @@ get_cell_info(Site, Path, X, Y) ->
     DepTree = get_val(hn_db:get_item(Ref#ref{name='dependancy-tree'})),   
 
     Val = case Value of
-              [] ->
-                  blank;
-              [{matrix, _, [V]}] ->
-                  {matrix, V};
-              [{_, _, [V]}] -> %% Strip other type tags.
-                  V
-          end,
+    []                  -> blank;
+    [{matrix, _, [V]}]  -> {matrix, V};
+    [{_, _, [V]}]       -> V %% Strip other type tags.
+    end,
        
     F = fun({url,[{type,Type}],[Url]}) ->
         #page{site=S,path=P,ref={cell,{X1,Y1}}} = hn_util:parse_url(Url),
@@ -206,7 +199,12 @@ get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY)->
     To = #index{site=FSite,path=FPath,column=FX,row=FY},
     Fr = #index{site=TSite,path=TPath,column=TX,row=TY},
 
-    #incoming_hn{value=V,deptree=T} = hn_db:get_hn(URL,Fr,To),
+    #incoming_hn{value=Val,deptree=T} = hn_db:get_hn(URL,Fr,To),
+    
+    RtVal = case Val of
+    {blank,[],[]} -> blank;
+    {_, _, [V]}   -> V %% Strip other type tags.
+    end,
 
     F = fun({url,[{type,Type}],[Url]}) ->
         #page{site=S,path=P,ref={cell,{X,Y}}} = hn_util:parse_url(Url),
@@ -215,7 +213,7 @@ get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY)->
     
     Dep = lists:map(F,T) ++ [{"remote",{FSite,FPath,FX,FY}}],
     
-    {V,Dep,[],[{"remote",{FSite,FPath,FX,FY}}]}.
+    {RtVal,Dep,[],[{"remote",{FSite,FPath,FX,FY}}]}.
 
 %%%-----------------------------------------------------------------
 %%% Helper Functions

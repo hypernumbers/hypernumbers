@@ -10,19 +10,12 @@
 %%--------------------------------------------------------------------
 -include("yaws_api.hrl").
 -include("spriki.hrl").
--include("regexp.hrl").
 -include("handy_macros.hrl").
 
 %%%-----------------------------------------------------------------
 %%% Exported Functions
 %%%-----------------------------------------------------------------
 -export([ out/1 ]).
-
-%%%-----------------------------------------------------------------
-%%% Imported Functions
-%%%-----------------------------------------------------------------
--import(tconv, [to_l/1, to_s/1, to_b26/1]).
--compile(export_all).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%
@@ -86,18 +79,12 @@ out(Arg) -> try
 process_GET(_Arg,_User,#page{ref={page,_},vars=[]}) ->
     {page,"/html/index.html"};
 
-process_GET(Arg,User,Page) ->
+process_GET(_Arg,_User,Page) ->
     
     {Format,Data} = case request_type(Page) of
     
     attribute ->
         Addr = page_to_ref(Page),
-        
-        %% Convert 'hnxml' into xml, leave strings alone
-        F = fun(Val) ->
-            ?COND(io_lib:char_list(Val) == true, 
-                Val, hn_util:hnxml_to_xml(Val))
-        end,
 
         %% Switch to filter on the db api later
         Items = lists:filter(
@@ -296,8 +283,8 @@ import([{_Name,Tid}|T],Page)->
                 {formula,Form}     -> Form;
                 {string,Str}       -> Str
             end,
-            hn_util:post(Req,"<create><value>"++
-                hn_util:text(V)++"</value></create>","text/xml");
+            hn_util:post(Req,"<create><formula>"++
+                hn_util:text(V)++"</formula></create>","text/xml");
         _ -> false
         end
     end,
@@ -312,13 +299,13 @@ api_create(Data, Page) ->
     
     lists:map
     (
-        fun({Attr,[],Val}) ->
-            V = case Val of
-                []    -> [];
-                [Tmp] -> Tmp
-            end,
+        fun({Attr,[],[Val]}) ->
             Addr = #ref{site=Site,path=Path,ref=Ref,name=Attr},
-            hn_main:set_attribute(Addr,V)
+            %% cant set [], should use clear / delete
+            case Val of
+            [] -> throw(empty_val); 
+            _  -> hn_main:set_attribute(Addr,Val)
+            end
         end,
         Data
     ),
@@ -371,15 +358,10 @@ api_change(Data,_Page)->
     [   {biccie,[],     [Bic]},
         {cell,[],       [Cell]},
         {type,[],       ["change"]},
-        {value,[],      Val},
+        {value,[],      [Val]},
         {version,[],    [Version]}] = Data,
-        
-    V = case Val of 
-        []    -> [];
-        [Tmp] -> Tmp
-    end,
   
-    hn_db:update_hn(Cell,Bic,V,Version),
+    hn_db:update_hn(Cell,Bic,Val,Version),
     
     {ok,"thanks"}.
 
