@@ -52,8 +52,8 @@ $(function()
 	// Import SpreadSheet
 	$("#m_import").click( function()
 	{
-		$("#filemenu ul").toggle();
-		var x = $("#import").modal();
+		$("#filemenu ul").hide();
+        $("#import").show();
 		$("#Filedata").change(function()
 		{
 			$.ajaxFileUpload
@@ -63,9 +63,9 @@ $(function()
 				datatype: "json",
 				fileElementId:'Filedata'
 			})
-			x.close();
+			$("#import").hide();
 		});
-	});
+    });
 	
 	$.get(url+"?pages&format=xml", function(data)
 	{
@@ -155,62 +155,67 @@ $(function()
             
     $.clipboardReady(function()
     {
-        $('#hn .data').contextMenu('contextmenu',
+        $("#context").bind("contextmenu", function(e) 
+        { 
+            return false; 
+        });
+        
+        $('#hn .data').bind("contextmenu", function(e)
         {
-			bindings:
+            if($(e.target).is("div.cell"))
             {
-				'hnumber': function(t)
+			    var ref = $.fn.cell_index(e.target);
+			    var refstr = $.fn.to_b26(ref[0]+1)+(ref[1]+1);
+                $("#texttocopy").text("=hn(\""+url+refstr+"?hypernumber\")");
+                
+                $("#contextlinks").empty();
+ 
+                var get_base_url = function(url) 
                 {
-                    $.clipboard($("#texttocopy").text());
-				}
-			},
-			menuStyle:
-            {
-				width: '200px'
-			},
-			itemStyle:
-            {
-				font: '8px',
-				border: 'none',
-				padding: '3px'
-			},
-			itemHoverStyle:
-            {
-				background: '#FFF',
-				border: 'none'
-			},
-			onContextMenu: function(e) 
-			{
-				if($(e.target).is("div.cell"))
-				{
-				    var ref = $.fn.cell_index(e.target);
-				    var refstr = $.fn.to_b26(ref[0]+1)+(ref[1]+1);
-                    $("#texttocopy").text("=hn(\""+url+refstr+"?hypernumber\")");
-                    
-                    $("#parents,#children").empty();
-                    
-                    if(typeof parents[refstr] != "undefined")
+                    return url.substring(0,url.lastIndexOf("/"));
+                };
+                
+                if(typeof parents[refstr] != "undefined")
+                {
+                    var par = $("<div id='parents'><strong>Parents"
+                        +"</strong><div></div></div>").appendTo($("#contextlinks"));
+
+                    $.each(parents[refstr],function()
                     {
-                        $.each(parents[refstr],function()
-                        {
-                            $("#parents").append($("<a href='"
-                                +this+"'>"+this+"</a><br/>"));
-                        }); 
-                    }
-                    
-                    if(typeof children[refstr] != "undefined")
-                    {
-                        $.each(children[refstr],function()
-                        {
-                            $("#children").append($("<a href='"
-                                +this+"'>"+this+"</a><br/>"));
-                        }); 
-                    }
-                    
-                    return true;
+                        par.find("div").append($("<a href='"
+                            +get_base_url(this)+"'>"+this+"</a><br/>"));
+                    }); 
                 }
-                return false;
+                
+                if(typeof children[refstr] != "undefined")
+                {
+                    var par = $("<div id='children'><strong>Children"
+                        +"</strong><div></div></div>").appendTo($("#contextlinks"));
+                                  
+                    $.each(children[refstr],function()
+                    {
+                        par.find("div").append($("<a href='"
+                            +get_base_url(this)+"'>"+this+"</a><br/>"));
+                    }); 
+                }
+                        
+                var menu = $("#context");
+                menu.css("top",e.clientY+"px").css("left",e.clientX);
+                menu.show();   
+                
+                $("body").one('click', function()
+                {
+                    $("#context").hide();    
+                });
             }
-		});                     
+            
+            return false;
+        });
+        
+        $("#copyhypernumber").click(function()
+        {
+            $.clipboard($("#texttocopy").text());    
+        });
+                             
     },{swfpath: "/swf/jquery.clipboard.swf"}); 
 });

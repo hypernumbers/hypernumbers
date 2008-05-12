@@ -9,9 +9,9 @@
     <title>Hypernumbers</title>
 
 	<style type="text/css">
+    	@import "/css/clickmenu.css";
+	
 		@import "/css/base.css";
-		@import "/css/modal.css";
-		@import "/css/clickmenu.css";
 		@import "/css/jquery.spreadsheet.css";
         @import "/css/jquery.textbox.css";
 	</style>
@@ -19,12 +19,12 @@
     <script type="text/javascript" src="/js/jquery.js"></script>
     <script type="text/javascript" src="/js/ui.base.js"></script>
     <script type="text/javascript" src="/js/ui.draggable.js"></script>
-	<script type="text/javascript" src="/js/jquery.contextmenu.js"></script>
-	<script type="text/javascript" src="/js/jquery.simplemodal.js"></script>
+    
 	<script type="text/javascript" src="/js/ajaxfileupload.js"></script>
 	<script type="text/javascript" src="/js/jquery.clipboard.js"></script>
 	<script type="text/javascript" src="/js/jquery.bgiframe.min.js"></script>
 	<script type="text/javascript" src="/js/jquery.clickmenu.js"></script>
+	
 	<script type="text/javascript" src="/js/jquery.textbox.js"></script>
     <script type="text/javascript" src="/js/jquery.tableresizer.js"></script>
 	<script type="text/javascript" src="/js/jquery.spreadsheet.js"></script>
@@ -56,7 +56,15 @@
 			</li>
 		</ul>
 		
-		<div id="hn"></div>
+		<div id="hn">
+			<div id="import" class="dialog">
+			    <h2>Import File</h2>
+			    <div style="padding:8px;">
+			        <p>Import a file to this websheet (currently xls files are supported)</p>
+			        <input type="file" name="Filedata" id="Filedata" value="Upload Spreadsheet" />
+			    </div>
+    		</div>
+		</div>
 
 		<div id="footer">
 			<div id="connection">
@@ -71,26 +79,13 @@
 
 		<textarea id="texttocopy"></textarea>
 
-		<div class="contextMenu" id="contextmenu">
-			<ul>
-				<li id="hnumber">Copy as Hypernumber</li>
-				<li><strong>Parents : </strong><br />
-				    <div id="parents" />
-				</li>
-                <li><strong>Children : </strong>
-                    <div id="children" />
-                </li>
-			</ul>
+		<div id="context">
+			<a id="copyhypernumber" class="item">Copy as Hypernumber</a>
+
+            <hr />
+			<div id="contextlinks"></div>
 		</div>
-
-		<div id="import">
-			<h2>Import File</h2>
-			<hr />
-			<p>Import a file to this websheet (currently xls files are supported)</p>
-			<input type="file" name="Filedata" id="Filedata" value="Upload Spreadsheet" />
-		</div>
-
-
+		
 	</body>
 
 </html>

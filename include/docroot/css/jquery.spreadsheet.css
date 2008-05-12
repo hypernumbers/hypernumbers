@@ -64,7 +64,7 @@
     width:          6px;
     height:         6px !important;
     background:     blue;
-    z-index:        9999;
+    z-index:        999;
 }
 
 .spreadsheet .dragleft   { border-left:  1px dashed #000 !important; }

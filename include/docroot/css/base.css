@@ -30,17 +30,6 @@ strong
     font-weight:bold;
 }
 
-#contextmenu #hnumber:hover
-{
-    background: #EEE;
-}
-
-#contextmenu a 
-{
-    display:        block;
-    margin-left:    10px;
-}
-
 #header
 {
     background:     #000;
@@ -108,4 +97,41 @@ strong
 .window
 {
     display:none;
+}
+
+#context ul
+{
+    list-style-type: none;
+}
+
+#context
+{
+    display:    none;
+    background: white;
+    padding:    3px;
+    position:   absolute;
+    border:     1px solid #CCC;
+    z-index:        9999;
+}
+
+#context a.item
+{
+    cursor:     pointer;
+    display:    block;
+    padding:    5px;
+}
+
+#context a.item:hover
+{
+    background: #EEE;
+}
+
+#context hr 
+{
+    border-top: 1px solid #EEE;
+}
+
+#context #parents,#context #children
+{
+    padding:    5px;
 }

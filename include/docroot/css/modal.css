@@ -10,20 +10,7 @@
     left:0px;    
 }
 
-/* Container */
-#import 
-{
-    position:absolute;
-    height:100px;
-    width:400px; 
-    left: 50%;
-    top: 50%;
-    margin-left:-200px;
-    margin-top: -50px;
-    background-color:#fff; 
-    border:3px solid #ccc;
-    padding:5px;
-}
+
 
 #modalContainer a.modalCloseImg 
 {
