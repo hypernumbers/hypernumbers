@@ -109,6 +109,8 @@
          radians/1
         ]).
 
+-compile(export_all).
+
 -define(is_multiple(Num, Mult),
         (erlang:trunc(Num / Mult) * Mult) == (Num * 1.0)).
 

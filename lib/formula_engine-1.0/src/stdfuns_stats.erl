@@ -1,4 +1,4 @@
-%%% Stats functions fosho.
+%%% Stats functions.
 %%% <hasan@hypernumbers.com>
 
 %%% IMPORTANT NOTES:
@@ -80,8 +80,24 @@
          %%rsq/1,
          skew/1,
          %%slope/1,
-         small/1
-         
+         small/1,
+         standardize/1,
+         stdev/1,
+         stdeva/1,
+         stdevp/1,
+         stdevpa/1,
+         steyx/1,
+         %%tdist/1,
+         %%tinv/1,
+         trend/1,
+         trimmean/1,
+         %%ttest/1,
+         var/1,
+         vara/1,
+         varp/1,
+         varpa/1,
+         weibull/1
+         %%ztest/1
         ]).
 
 avedev(Vals) ->
@@ -303,8 +319,7 @@ mina([L]) ->
     ?COND(length(Nums) == 0, 0, lists:min(Nums)).
 
 mode([L]) ->
-    %% TODO: ?filter_cast_numbers macro.
-    Flatl = ?ensure_no_errvals(?flatten(L)),
+    Flatl = ?filter_numbers_with_cast(?ensure_no_errvals(?flatten(L))),
     Nums = map(fun(X) -> cast(X, num) end, Flatl),
     mode1(Nums).
 mode1(Nums) ->
@@ -332,9 +347,9 @@ normdist([N0, Mean, Stdev, Cum]) ->
     ?ensure_numbers([N, Mean, Stdev]),
     ?ensure_positive(Stdev),
     normdist1(N, Mean, Stdev, cast(Cum, bool)).
-normdist1(N, Mean, Stdev, true) ->
+normdist1(_N, _Mean, _Stdev, true) ->
     0; %% TODO:
-normdist1(N, Mean, Stdev, false) ->
+normdist1(_N, _Mean, _Stdev, false) ->
     0. %% TODO:
 
 normsdist([Z]) ->
@@ -344,7 +359,7 @@ pearson([A1, A2]) ->
     Nums1 = ?filter_numbers(?ensure_no_errvals(?flatten(A1))),
     Nums2 = ?filter_numbers(?ensure_no_errvals(?flatten(A2))),
     pearson1(Nums1, Nums2).
-pearson1(_, _) ->
+pearson1(_Ys, _Xs) ->
     0. %% TODO:
 
 percentile([L, K]) ->
@@ -366,6 +381,15 @@ permut([N, K]) ->
     permut1(trunc(N), trunc(K)).
 permut1(N, K) ->
     stdfuns_math:fact1(N) div stdfuns_math:fact1(N - K).
+
+quartile([L, Q]) ->
+    Nums = ?filter_numbers(?ensure_no_errvals(?flatten(L))),
+    ?ensure(length(Nums) > 0, ?ERR_NUM),
+    ?ensure_number(Q),
+    ?ensure((Q >= 0) and (Q =< 4), ?ERR_NUM),
+    quartile1(Nums, trunc(Q)).
+quartile1(Nums, Q) ->
+    nth(percentile1(Nums, Q * 0.25), Nums).
 
 rank([Num, L]) ->
     rank([Num, L, 0]);
@@ -393,19 +417,86 @@ small([A, K]) ->
 small1(Nums, K) ->
     nth(K, sort(Nums)).
 
+standardize([Num, Mean, Stdev]) ->
+    ?ensure_number(Num),
+    ?ensure_number(Mean),
+    ?ensure_number(Stdev),
+    ?ensure_positive(Stdev),
+    standardize1(Num, Mean, Stdev).
+standardize1(Num, Mean, Stdev) ->
+    (Num - Mean) / math:sqrt(Stdev).
 
-quartile([L, Q]) ->
+stdev([L]) ->
     Nums = ?filter_numbers(?ensure_no_errvals(?flatten(L))),
-    ?ensure(length(Nums) > 0, ?ERR_NUM),
-    ?ensure_number(Q),
-    ?ensure((Q >= 0) and (Q =< 4), ?ERR_NUM),
-    quartile1(Nums, trunc(Q)).
-quartile1(Nums, Q) ->
-    nth(percentile1(Nums, Q * 0.25), Nums).
+    stdev1(Nums).
+stdev1(Nums) ->
+    math:sqrt(devsq1(Nums) / (length(Nums) - 1)).
 
+stdeva([L]) ->
+    Nums = ?filter_numbers_with_cast(?ensure_no_errvals(?flatten(L))),
+    stdev1(Nums).
 
+stdevp([L]) ->
+    Nums = ?filter_numbers(?ensure_no_errvals(?flatten(L))),
+    stdevp1(Nums).
+stdevp1(Nums) ->
+    math:sqrt(devsq1(Nums) / (length(Nums) - 1)).
+
+stdevpa([L]) ->
+    Nums = ?filter_numbers_with_cast(?ensure_no_errvals(?flatten(L))),
+    stdevp1(Nums).
+
+steyx([Ys0, Xs0]) ->
+    Ys = ?filter_numbers(?ensure_no_errvals(?flatten(Ys0))),
+    Xs = ?filter_numbers(?ensure_no_errvals(?flatten(Xs0))),
+    steyx1(Ys, Xs).
+steyx1(Ys, Xs) ->
+    math:pow(pearson1(Ys, Xs), 2).
+
+trend([_Kys0, _Kxs0, _Nxs0, _Const]) -> 
+    0. %% TODO:
+
+trimmean([A0, Percent]) ->
+    Nums = ?filter_numbers(?ensure_no_errvals(?flatten(A0))),
+    ?ensure_number(Percent),
+    ?ensure_non_negative(Percent),
+    ?ensure(Percent =< 1, ?ERR_NUM),
+    trimmean1(Nums, Percent).
+trimmean1(Nums, Percent) ->
+    N = round((Percent / 100) * length(Nums)) div 2,
+    average1(sublist(sort(Nums), N + 1, length(Nums) - 2 * N)).
+
+var([L]) ->
+    Nums = ?filter_numbers(?ensure_no_errvals(?flatten(L))),
+    var1(Nums).
+var1(Nums) ->
+    math:pow(stdev1(Nums), 2).
+
+vara([L]) ->
+    Nums = ?filter_numbers_with_cast(?ensure_no_errvals(?flatten(L))),
+    var1(Nums).
+
+varp([L]) ->
+    Nums = ?filter_numbers(?ensure_no_errvals(?flatten(L))),
+    varp1(Nums).
+varp1(Nums) ->
+    math:pow(stdevp1(Nums), 2).
+
+varpa([L]) ->
+    Nums = ?filter_numbers_with_cast(?ensure_no_errvals(?flatten(L))),
+    varp1(Nums).
+
+weibull([X, Alpha, Beta, Cum]) ->
+    ?ensure_numbers([X, Alpha, Beta]),
+    ?ensure_non_negative(X),
+    ?ensure_non_negative(Alpha),
+    ?ensure_non_negative(Beta),
+    weibull1(X, Alpha, Beta, cast(Cum, bool)).
+weibull1(X, Alpha, Beta, true) ->
+    1 - math:exp(-1 * math:pow(X, Alpha) / Beta);
+weibull1(X, Alpha, Beta, false) ->
+    (Alpha / Beta) * math:pow(X, Alpha - 1) * math:exp(-1 * math:pow(X, Alpha) / Beta).
     
-
 
 %%% Private functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
