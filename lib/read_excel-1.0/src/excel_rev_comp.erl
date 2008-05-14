@@ -198,11 +198,20 @@ reverse_compile(Index,[{attributes,Attributes}|T],TokenArray,Stack,
 %%	tEndSheet
 
 %%	tErr
-reverse_compile(Index,[{error,{tErr,[{value,_Value}],{return,_Return}}}|T],
-                TokenArray,Stack,Residuum,Tables)  ->
-    %% io:format("in excel_rev_comp:reverse_compile in tErr~n"),
-    NewStack = push(Stack,{string,"#REF!"}),
-    reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
+reverse_compile(Index,[{error,{tErr,[{value,Value}],{return,_Return}}}|T],
+               TokenArray,Stack,Residuum,Tables)  ->
+   %% io:format("in excel_rev_comp:reverse_compile in tErr~n"),
+   Error = case Value of
+               ?NullError    -> "#NULL!";
+               ?DivZeroError -> "#DIV/0!";
+               ?ValueError   -> "#VALUE!";
+               ?RefError     -> "#REF!";
+               ?NameError    -> "#NAME?";
+               ?NumError     -> "#NUM!";
+               ?NAError      -> "#N/A"
+           end,
+   NewStack = push(Stack,{string,Error}),
+   reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
 
 %%	tBool   
 reverse_compile(Index,[{boolean,{tBool,[{value,Value}],{return,value}}}|T],
@@ -930,7 +939,7 @@ macro_to_string(252) -> "FREQUENCY";
 macro_to_string(255) -> "FUNCTIONDOESNTEXIST";
 %%  260=SPELLING.CHECK,ERROR.TYPE,APP.TITLE,WINDOW.TITLE,SAVE.TOOLBAR,
 %%      ENABLE.TOOL,PRESS.TOOL,REGISTER.ID,GET.WORKBOOK,AVEDEV
-macro_to_string(261) -> "ERRORTYPE";
+macro_to_string(261) -> "ERROR.TYPE";
 macro_to_string(269) -> "AVEDEV";
 %%  270=BETADIST,GAMMALN,BETAINV,BINOMDIST,CHIDIST,CHIINV,COMBIN,
 %%      CONFIDENCE,CRITBINOM,EVEN
