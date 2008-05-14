@@ -19,12 +19,16 @@
 %%%      e.g. ABS. If wrong number of arguments is entered, Excel displays an
 %%%      error dialog, and doesn't attempt to evaluate the formula. Most of
 %%%      the time, our implementations will return #VALUE!.
-
+%%%
+%%%   3. Our SUBTOTAL does not care about hidden values. SUBTOTAL(1, A1:A5),
+%%%      and SUBTOTAL(101, A1:A5) will do the same thing.
 
 -module(stdfuns_math).
 
 -include("handy_macros.hrl").
 -include("typechecks.hrl").
+
+-import(muin_util, [cast/2]).
 
 -export([
          %% Basics
@@ -83,10 +87,10 @@
 
          %% Summation
          %%seriessum/1,
-         %%subtotal/1,
-         %%sumif/1,
-         %%sumproduct/1,
-         %%sumsq/1,
+         subtotal/1,
+         sumif/1,
+         sumproduct/1,
+         sumsq/1,
          %%sumx2my2/1,
          %%sumx2py2/1,
          %%sumxmy2/1,
@@ -450,7 +454,63 @@ roman1(_Num, _Form) ->
 %%% Summation %%%
 %%% --------- %%%
 
-%% Not yet. :(
+subtotal([1, L])  -> stdfuns_stats:average([L]);
+subtotal([2, L])  -> stdfuns_stats:count([L]);
+subtotal([3, L])  -> stdfuns_stats:counta([L]);
+subtotal([4, L])  -> stdfuns_stats:max([L]);
+subtotal([5, L])  -> stdfuns_stats:min([L]);
+subtotal([6, L])  -> product([L]);
+subtotal([7, L])  -> stdfuns_stats:stdev([L]);
+subtotal([8, L])  -> stdfuns_stats:stdevp([L]);
+subtotal([9, L])  -> sum([L]);
+subtotal([10, L]) -> stdfuns_stats:var([L]);
+subtotal([11, L]) -> stdfuns_stats:varp([L]);
+
+subtotal([100, L])  -> stdfuns_stats:average([L]);
+subtotal([102, L])  -> stdfuns_stats:count([L]);
+subtotal([103, L])  -> stdfuns_stats:counta([L]);
+subtotal([104, L])  -> stdfuns_stats:max([L]);
+subtotal([105, L])  -> stdfuns_stats:min([L]);
+subtotal([106, L])  -> product([L]);
+subtotal([107, L])  -> stdfuns_stats:stdev([L]);
+subtotal([108, L])  -> stdfuns_stats:stdevp([L]);
+subtotal([109, L])  -> sum([L]);
+subtotal([110, L]) -> stdfuns_stats:var([L]);
+subtotal([111, L]) -> stdfuns_stats:varp([L]);
+
+subtotal([_, _]) -> ?ERR_VAL.
+
+sumif([L, Crit]) ->
+    sumif([L, Crit, L]);
+sumif([L, Crit, L2]) ->
+    F = string_funs:make(Crit),
+    foldl(fun(X, {Sum, Idx}) ->
+                  ?COND(F(X),
+                        {Sum + cast(nth(Idx, L2), num), Idx + 1},
+                        {Sum, Idx + 1})
+          end,
+          {0, 1}, L).
+
+sumproduct([L]) ->
+    Numlists = map(fun(Xs) ->
+                           [cast(X, num) ||
+                               X <- ?ensure_no_errvals(?flatten(L))]
+                   end,
+                   L),
+    Len = length(hd(Numlists)),
+    Allok = all(fun(X) -> length(X) == Len end,
+                tl(Numlists)),
+    ?COND(Allok, sumproduct1(Numlists), ?ERR_VAL).
+sumproduct1(Numlists) ->
+    foldl(fun(Xs, Acc) -> Acc + product1(tuple_to_list(Xs)) end,
+          0, hslists:zipn(Numlists)).
+
+sumsq([L]) ->
+    Nums = ?filter_numbers(?ensure_no_errvals(?flatten(L))),
+    sumsq1(Nums).
+sumsq1(Nums) ->
+    foldl(fun(X, Acc) -> Acc + X * X end, 0, Nums).
+          
 
 %%% ------------ %%%
 %%% Trigonometry %%%
