@@ -35,7 +35,6 @@ d_gnumeric_lookup A1:L44
 d_gnumeric_maths A1:L81
 d_gnumeric_stats A1:N99
 d_gnumeric_text A1:I44
-e_gnumeric_bitwise A1:E7
 e_gnumeric_bitwise_bitand A1:V64
 e_gnumeric_bitwise_bitor A1:V64
 e_gnumeric_bitwise_bitxor A1:V64

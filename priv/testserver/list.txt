@@ -40,8 +40,6 @@ d_gnumeric_lookup.xls
 d_gnumeric_maths.xls
 d_gnumeric_stats.xls
 d_gnumeric_text.xls
-e_bitwise.xls
-e_gnumeric_bitwise.xls
 e_gnumeric_bitwise_bitand.xls
 e_gnumeric_bitwise_bitlshift.xls
 e_gnumeric_bitwise_bitor.xls
@@ -63,8 +61,6 @@ e_gnumeric_operators_sub.xls
 e_gnumeric_trig.xls
 e_gnumeric_trig_atan2.xls
 e_gnumeric_trig_trig.xls
-e_operator.xls
-e_trig.xls
 manual_tests.xls
 minitest.xls
 x_nested_functions_spaces_crs.xls

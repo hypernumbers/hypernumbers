@@ -5,11 +5,7 @@
 #   ruby regen_tests.rb 1x a -- to regenerate the a suite only.
 #   ruby regen_tests.rb 2x abc -- to regeneratee suites a, b, and c.
 
-PATH_TO_DATA_FILES = if File.exist?("C:") # Windows/Cygwin
-                       "C:\\\\data_files\\\\"
-                     else # Sane system
-                       "../../tests/excel_files/Win_Excel07_As_97/DATA/"
-                     end
+PATH_TO_DATA_FILES = "../../tests/excel_files/Win_Excel07_As_97/DATA/"
 
 generator = (ARGV[0].downcase == "1x" ? "gen_rev_comp_test.rb" : "gen_full_test.rb")
 series = ARGV[0].downcase[0].chr
@@ -44,7 +40,7 @@ mvs = if ARGV[1]
 mvs.each do |char|
   dir = "excel_import_#{series}#{char}_test"
   `mkdir ../../tests/#{dir}`
-  `mv #{char}*.erl ../../tests/#{dir}`
+   `mv #{PATH_TO_DATA_FILES}/#{char}*.erl ../../tests/#{dir}`
 end
 
 puts "ALL DONE."
