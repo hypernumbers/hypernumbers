@@ -58,6 +58,9 @@
 -define(filter_numbers(Vals),
         [X || X <- Vals, is_number(X)]).
 
+-define(filter_numbers_with_cast(Vals),
+        [X || X <- Vals, is_number(muin_util:cast(X, num))]).
+        
 %% L is a list that may contain {matrix, _, [X]} tuples.
 -define(flatten(L),
         (foldl(fun({matrix, _, Xs}, Acc) ->
