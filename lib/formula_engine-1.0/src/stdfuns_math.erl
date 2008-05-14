@@ -48,15 +48,15 @@
          sign/1,
          exp/1,
          fact/1,
-         %%gcd/1,
-         %%lcm/1,
+         gcd/1,
+         lcm/1,
          mod/1,
 
          %% Arrays and matrices
          mdeterm/1,
          minverse/1,
          mmult/1,
-         %%multinomial
+         multinomial/1,
 
          %% Logarithms
          ln/1,
@@ -86,14 +86,14 @@
          roman/1,
 
          %% Summation
-         %%seriessum/1,
+         seriessum/1,
          subtotal/1,
          sumif/1,
          sumproduct/1,
          sumsq/1,
-         %%sumx2my2/1,
-         %%sumx2py2/1,
-         %%sumxmy2/1,
+         sumx2my2/1,
+         sumx2py2/1,
+         sumxmy2/1,
 
          %% Trigonometry
          sin/1,
@@ -118,11 +118,6 @@
 -define(is_multiple(Num, Mult),
         (erlang:trunc(Num / Mult) * Mult) == (Num * 1.0)).
 
-
-%% is_error(X) when is_atom(X) ->
-%%     ?COND(is_number(stdfuns:error_type(X)), true, false);
-%% is_error(_) ->
-%%     false.
 
 %%% ----------------- %%%
 %%% Basic arithmetics %%%
@@ -230,6 +225,20 @@ fact1(Num) ->
           1,
           seq(1, Num)).
 
+gcd([A, B]) ->
+    ?ensure_numbers([A, B]),
+    gcd1(A, B).
+gcd1(A, 0) ->
+    A;
+gcd1(A, B) ->
+    gcd1(B, A rem B).
+
+lcm([A, B]) ->
+    ?ensure_numbers([A, B]),
+    lcm1(A, B).
+lcm1(A, B) ->
+    A * B / gcd1(A, B).
+
 %% Returns the remainder after number is divided by divisor. The result
 %% has the same sign as divisor.
 mod([Num, Divisor]) ->
@@ -271,7 +280,16 @@ mmult([L1, L2]) ->
             ?ERR_VAL
     end.
 
-
+multinomial([L]) ->
+    Nums = ?filter_numbers_with_cast(?ensure_no_errvals(?flatten(L))),
+    Allok = all(fun(X) -> X >= 1 end, Nums),
+    ?COND(Allok, multinomial1(Nums), ?ERR_NUM).
+multinomial1(Nums) ->
+    fact(sum(Nums)) / foldl(fun(X, Acc) ->
+                                    Acc * fact(X)
+                            end,
+                            1, Nums).
+    
 %%% ---------- %%%
 %%% Logarithms %%%
 %%% ---------- %%%
@@ -454,6 +472,20 @@ roman1(_Num, _Form) ->
 %%% Summation %%%
 %%% --------- %%%
 
+seriessum([K, N, M, Coeffs]) ->
+    ?ensure_numbers([K, N, M]),
+    ?ensure_numbers(?ensure_no_errvals(?flatten(Coeffs))),
+    Nums = ?flatten(Coeffs),
+    seriessum1(K, N, M, Nums).
+seriessum1(K, N, M, As) ->
+    {Res, _} = foldl(fun(A, {Sum, I}) ->
+                             {Sum + A * math:pow(K, N + M * I),
+                              I + 1}
+                     end,
+                     {0, 0},
+                     As),
+    Res.
+    
 subtotal([1, L])  -> stdfuns_stats:average([L]);
 subtotal([2, L])  -> stdfuns_stats:count([L]);
 subtotal([3, L])  -> stdfuns_stats:counta([L]);
@@ -475,8 +507,8 @@ subtotal([106, L])  -> product([L]);
 subtotal([107, L])  -> stdfuns_stats:stdev([L]);
 subtotal([108, L])  -> stdfuns_stats:stdevp([L]);
 subtotal([109, L])  -> sum([L]);
-subtotal([110, L]) -> stdfuns_stats:var([L]);
-subtotal([111, L]) -> stdfuns_stats:varp([L]);
+subtotal([110, L])  -> stdfuns_stats:var([L]);
+subtotal([111, L])  -> stdfuns_stats:varp([L]);
 
 subtotal([_, _]) -> ?ERR_VAL.
 
@@ -484,17 +516,18 @@ sumif([L, Crit]) ->
     sumif([L, Crit, L]);
 sumif([L, Crit, L2]) ->
     F = string_funs:make(Crit),
-    foldl(fun(X, {Sum, Idx}) ->
-                  ?COND(F(X),
-                        {Sum + cast(nth(Idx, L2), num), Idx + 1},
-                        {Sum, Idx + 1})
-          end,
-          {0, 1}, L).
+    {Res, _} = foldl(fun(X, {Sum, Idx}) ->
+                             ?COND(F(X),
+                                   {Sum + cast(nth(Idx, L2), num), Idx + 1},
+                                   {Sum, Idx + 1})
+                     end,
+                     {0, 1}, L),
+    Res.
 
 sumproduct([L]) ->
     Numlists = map(fun(Xs) ->
                            [cast(X, num) ||
-                               X <- ?ensure_no_errvals(?flatten(L))]
+                               X <- ?ensure_no_errvals(?flatten(Xs))]
                    end,
                    L),
     Len = length(hd(Numlists)),
@@ -510,7 +543,39 @@ sumsq([L]) ->
     sumsq1(Nums).
 sumsq1(Nums) ->
     foldl(fun(X, Acc) -> Acc + X * X end, 0, Nums).
-          
+
+sumx2my2([A1, A2]) ->
+    Nums1 = ?filter_numbers(?ensure_no_errvals(?flatten(A1))),
+    Nums2 = ?filter_numbers(?ensure_no_errvals(?flatten(A2))),
+    ?ensure(length(Nums1) == length(Nums2), ?ERR_VAL),
+    sumx2my2_1(Nums1, Nums2).
+sumx2my2_1(Nums1, Nums2) ->
+    sum(map(fun({X, Y}) ->
+                    (X * X) - (Y * Y)
+            end,
+            zip(Nums1, Nums2))).
+
+sumx2py2([A1, A2]) ->
+    Nums1 = ?filter_numbers(?ensure_no_errvals(?flatten(A1))),
+    Nums2 = ?filter_numbers(?ensure_no_errvals(?flatten(A2))),
+    ?ensure(length(Nums1) == length(Nums2), ?ERR_VAL),
+    sumx2py2_1(Nums1, Nums2).
+sumx2py2_1(Nums1, Nums2) ->
+    sum(map(fun({X, Y}) ->
+                    (X * X) + (Y * Y)
+            end,
+            zip(Nums1, Nums2))).
+
+sumxmy2([A1, A2]) ->
+    Nums1 = ?filter_numbers(?ensure_no_errvals(?flatten(A1))),
+    Nums2 = ?filter_numbers(?ensure_no_errvals(?flatten(A2))),
+    ?ensure(length(Nums1) == length(Nums2), ?ERR_VAL),
+    sumxmy2_1(Nums1, Nums2).
+sumxmy2_1(Nums1, Nums2) ->
+    sum(map(fun({X, Y}) ->
+                    math:pow(X - Y, 2)
+            end,
+            zip(Nums1, Nums2))).    
 
 %%% ------------ %%%
 %%% Trigonometry %%%
