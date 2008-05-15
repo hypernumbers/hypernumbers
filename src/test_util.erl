@@ -17,7 +17,8 @@
          cmp/2,
          hnpost/3,
          hnget/2,
-         float_cmp/3
+         float_cmp/3,
+         stripfileref/1
 	]).
 
 -include("excel_errors.hrl").
@@ -25,6 +26,28 @@
 -define(FILEDIR, "../../../../excel_files/").
 -define(EXCEL_IMPORT_FLOAT_PRECISION, 13).
 -define(DEFAULT,1000000).
+
+
+%% Nasty function to convert 
+%% stuff'C:\\cygwin\\stuff\\[e_gnumeric_bitwise.xls]Name'!stuff
+%% to 
+%% ../e_gnumeric_bitwise/Name!stuff"
+stripfileref(Str) ->
+    case string:str(Str,"'C:\\") of
+    0 -> Str;
+    X -> 
+        Pre = string:sub_string(Str,1,X-1),
+        Post = string:sub_string(Str,X+1),
+        File = "../"++string:sub_string(Post,string:chr(Post,$[)+1),
+        Pos = string:chr(File,$'),%'       
+        Content = string:sub_string(File,1,Pos-1),
+        Rest    = string:sub_string(File,Pos+1),
+        {ok,S1,_Count} = regexp:gsub(Content,"\\]","/"),
+        {ok,S2,_Count} = regexp:gsub(S1,".xls",""),
+        
+        Pre ++ S2 ++ Rest
+    end.
+        
 
 test_state(State)->
   receive
@@ -76,9 +99,10 @@ excel_equal(String1,String2) when is_list(String1), is_list(String2) ->
     Return=regexp:gsub(String2,"ERROR.TYPE","ERRORTYPE"),
     io:format("Return is ~p~n",[Return]),
     {ok,String2a,_}=Return,
-    io:format("String1 is ~p and String2a is ~p~n",[String1,String2a]),
+    R2 = stripfileref(String2a),
+    io:format("String1 is ~p and R2 is ~p~n",[String1,R2]),
     Result = case String1 of
-            String2a -> true;
+            R2 -> true;
             _        -> false
       end,
     %% if the strings aren't the same try and make numbers of them and compare then
@@ -104,9 +128,10 @@ excel_equal2({formula, Fla1}, {formula, Fla2}) ->
     Return=regexp:gsub(Fla2,"ERROR.TYPE","ERRORTYPE"),
     io:format("Return is ~p~n",[Return]),
     {ok,Fla2a,_}=Return,
-    io:format("Fla1 is  ~p~nFla2a is ~p~n",[Fla1,Fla2a]),
+    R2 = stripfileref(Fla2a),
+    io:format("Fla1 is  ~p~nR2 is ~p~n",[Fla1,R2]),
     case Fla1 of
-      Fla2a -> true;
+      R2 -> true;
       _     -> false
     end;
 excel_equal2({boolean,Boolean1},{boolean,Boolean2}) ->
