@@ -40,7 +40,7 @@ mvs = if ARGV[1]
 mvs.each do |char|
   dir = "excel_import_#{series}#{char}_test"
   `mkdir ../../tests/#{dir}`
-   `mv #{PATH_TO_DATA_FILES}/#{char}*.erl ../../tests/#{dir}`
+  `mv #{char}*.erl ../../tests/#{dir}` 
 end
 
 puts "ALL DONE."
