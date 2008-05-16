@@ -1,6 +1,9 @@
 %%% @doc    Lexer for Muin's formula language.
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 
+%%% NOTE: Expects all input to be in upper case (apart from
+%%% contents of strings)!
+
 Definitions.
 
 %%% Basic types.
@@ -12,9 +15,9 @@ STR    = (\"[^"\n]*\")
 %%" % Syntax highlighting fix.
 
 %% Column names, function names.
-NAME = ([a-zA-Z][a-zA-Z0-9_\.]*)
-%% Names of cells / ranges.
-VAR = \@{NAME}
+ATOM = ([a-zA-Z][a-zA-Z0-9_\.]*)
+%% Named cells / ranges.
+NAME = \@{ATOM}
 
 ERROR = \#NULL\!|\#DIV\/0\!|\#VALUE\!|\#REF\!|\#NAME\?|\#NUM\!|\#N\/A
 
@@ -28,11 +31,12 @@ RCREF = ((R|r)({INT}|{OFFSET_RC})(C|c)({INT}|{OFFSET_RC}))
 %% Same-site references.
 %% "/" or "./" or "../" or the same but with "!"s instead.
 START_OF_SSREF = ((\/|\!)|(\.\.(\/|\!))+|\.(\/|\!))
-%% NAMEs or "."s or ".." separated with "/"s or "!"s.
-MAYBE_PATH = (((({NAME})|(\.)|(\.\.))(\/|\!))*)
+%% ATOMs or "."s or ".." separated with "/"s or "!"s.
+MAYBE_PATH = (((({ATOM})|(\.)|(\.\.))(\/|\!))*)
 
-SSA1REF = {START_OF_SSREF}{MAYBE_PATH}{A1REF}
-SSRCREF = {START_OF_SSREF}{MAYBE_PATH}{RCREF}
+SSA1REF  = {START_OF_SSREF}{MAYBE_PATH}{A1REF}
+SSRCREF  = {START_OF_SSREF}{MAYBE_PATH}{RCREF}
+SSNAMEREF = {START_OF_SSREF}{MAYBE_PATH}{NAME}
 
 %% Whitespace.
 WHITESPACE = ([\000-\s]*)
@@ -41,11 +45,12 @@ WHITESPACE = ([\000-\s]*)
 Rules.
 
 %% These are converted to universal refs, see lex/1.
-{A1REF}   : {token, {a1ref, YYtext}}.
-{SSA1REF} : {token, {ssa1ref, debang(YYtext)}}.
-{RCREF}   : {token, {rcref, YYtext}}.
-{SSRCREF} : {token, {ssrcref, debang(YYtext)}}.
-
+{A1REF}    : {token, {a1ref, YYtext}}.
+{SSA1REF}  : {token, {ssa1ref, debang(YYtext)}}.
+{RCREF}    : {token, {rcref, YYtext}}.
+{SSRCREF}  : {token, {ssrcref, debang(YYtext)}}.
+{SSNAMEREF} : {token, {ssnameref, debang(YYtext)}}.
+                
 %% Basic data types.
 {INT}      : {token, {int, tconv:to_i(YYtext)}}.
 {FLOATDEC} : {token, {float, tconv:to_f(YYtext)}}.
@@ -54,8 +59,8 @@ Rules.
 {STR}      : {token, {str, hslists:mid(YYtext)}}.
 
 {ERROR} : {token, {error, list_to_atom(YYtext)}}.
-{NAME}  : {token, {name,  string:to_lower(YYtext)}}.
-{VAR}   : {token, {var,   tl(string:to_lower(YYtext))}}.
+{ATOM}  : {token, {atom,  string:to_lower(YYtext)}}.
+{NAME}  : {token, {name,  tl(string:to_lower(YYtext))}}.
 
 %% Discard whitespace.
 {WHITESPACE} : .
@@ -153,6 +158,11 @@ normalize({ssrcref, Refstr}) ->
     {Path, Cellref} = split_ssref(Refstr),
     {ref, R, C, "./"} = normalize({rcref, Cellref}),
     {ref, R, C, Path};
+normalize({ssnameref, Refstr}) ->
+    {Path, Name} = split_ssref(Refstr),
+    {name, Name, Path};
+normalize({name, Name}) ->
+    {name, Name, "./"};
 normalize(Other) ->
     Other.
 
@@ -196,8 +206,6 @@ split_ssref(Ssref) ->
     Cellref = lists:nthtail(Lastslash, Ssref),
     {Path, Cellref}.
 
-%% Checks if an integer or a list containing exactly one integer can represent
-%% an alpha character.
 is_alpha(Char) when is_integer(Char) ->
     (member(Char, seq($A, $Z)) orelse
      member(Char, seq($a, $z)));
@@ -206,7 +214,6 @@ is_alpha([Char]) ->
 
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 
 -include_lib("eunit/include/eunit.hrl").
 %% Check representation of cells C1 and C2 are same from cell Cfrom.
