@@ -52,10 +52,11 @@
          right/1,
          %%search/1, TODO:
 
+         '&'/1,
          concatenate/1,
          %%replace/1, TODO:
-         rept/1
-         %% substitute/1, TODO:
+         rept/1,
+         substitute/1
 
          %% Work with full-width text TODO:
         ]).
@@ -133,8 +134,11 @@ left([Str, Len]) ->
 
 right([Str, Len]) ->
     string:substr(Str, string:len(Str) - Len + 1, Len).
-    
-concatenate([Strs]) ->
+
+'&'(Strs) ->
+    concatenate(Strs).
+
+concatenate(Strs) ->
     foldl(fun(X, Acc) ->
                   Acc ++ X
           end,
@@ -142,6 +146,10 @@ concatenate([Strs]) ->
 
 rept([Str, Reps]) ->
     concatenate([map(fun(_) -> (Str) end, lists:seq(1, Reps))]).
+
+substitute([Text, Oldtext, Newtext]) ->
+    {ok, Res, _Repcnt} = regexp:gsub(Text, Oldtext, Newtext),
+    Res.
 
 %%% ----------------- %%%
 %%% Private functions %%%

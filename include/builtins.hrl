@@ -3,7 +3,6 @@
 {avedev, stdfuns_stats},
 {average, stdfuns_stats},
 {averagea, stdfuns_stats},
-{averageif, stdfuns_stats},
 {binomdist, stdfuns_stats},
 {chidist, stdfuns_stats},
 {correl, stdfuns_stats},
@@ -123,8 +122,10 @@
 {find, stdfuns_text},
 {left, stdfuns_text},
 {right, stdfuns_text},
+{'&', stdfuns_text},
 {concatenate, stdfuns_text},
 {rept, stdfuns_text},
+{substitute, stdfuns_text},
 {error_type, stdfuns_info},
 {iserr, stdfuns_info},
 {iserror, stdfuns_info},
@@ -154,5 +155,7 @@
 {ipmt, stdfuns_financial},
 {ispmt, stdfuns_financial},
 {nominal, stdfuns_financial},
-{pv, stdfuns_financial}
+{pv, stdfuns_financial},
+{delta, stdfuns_eng},
+{gestep, stdfuns_eng}
 ]).
