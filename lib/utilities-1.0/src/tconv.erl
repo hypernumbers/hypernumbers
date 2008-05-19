@@ -36,7 +36,7 @@ to_num(Str) when is_list(Str) ->
             try to_f(Str)
             catch
                 error:_ ->
-                    {error, value}
+                    {error, nan}
             end
     end.
 
