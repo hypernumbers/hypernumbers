@@ -4,11 +4,11 @@
 -module(superparser).
 -export([process/1]).
 -define(upcase(S),
-        ustring:pr(ustring:upcase(ustring:new(S)))).
+        string:to_upper(S)).
 
 process([$= | Tl]) when Tl =/= [] ->
     {formula, upcase(Tl)};
-process([39 | Tl]) -> %% 39 -> single quote
+process([$' | Tl]) -> %%' %% quoted string
     {string, Tl};
 process(Input) ->
     {ok, Toks} = muin_lexer:lex(upcase(Input), {1, 1}),

@@ -7,13 +7,15 @@
 -include("typechecks.hrl").
 -import(muin_util, [conv/2, cast/2]).
 
--export([db/1,
+-export([
+         db/1,
          effect/1,
          fv/1,
          ipmt/1,
          ispmt/1,
          nominal/1,
-         pv/1]).
+         pv/1
+        ]).
 
 db([Cost, Salvage, Life, Period]) ->
     db([Cost, Salvage, Life, Period, 12]);
@@ -89,7 +91,6 @@ nominal([Effrate, Npery]) ->
     nominal1(Effrate, trunc(Npery)).
 nominal1(Effrate, Npery) ->
     Npery * (math:pow(Effrate + 1, -Npery) - 1).
-
 
 pv([Rate, Nper, Pmt, Fv, Type]) ->
     ?ensure_numbers([Rate, Nper, Pmt, Fv, Type]),

@@ -118,7 +118,7 @@ funcall(':', [{ref, Col1, Row1, Path1}, {ref, Col2, Row2, "./"}]) ->
 %% TODO: Column & row ranges.
 
 %% TODO: Names.
-%% funcall(var, [Name]) ->
+%% funcall(name, [Name, Path]) ->
 %%     Addr = hn_db:get_ref_from_name(Name),
 %%     Addr;
 

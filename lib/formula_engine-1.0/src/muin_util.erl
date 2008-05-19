@@ -16,6 +16,8 @@
 %% Booleans
 cast(0, bool) ->
     false;
+cast(X, bool) when is_list(X) ->
+    string:to_upper(X) == "TRUE";
 cast(X, bool) when is_number(X) ->
     true;
 cast(X, bool) when is_boolean(X) ->
@@ -30,23 +32,9 @@ cast(false, num) ->
     0;
 cast(S, num) when is_list(S) ->
     case tconv:to_num(S) of
-        {error, nan} -> ?ERR_VAL;
-        N            -> N
+        N when is_number(N) -> N;
+        E = {error, nan}    -> E
     end.
-
-conv(X, int) when is_integer(X) ->
-    X;
-conv(X, int) when is_float(X) ->
-    erlang:trunc(X);
-conv(X, int) when is_list(X) ->
-    erlang:trunc(tconv:to_num(X));
-conv(true, int) ->
-    1;
-conv(false, int) ->
-    0;
-
-conv(X, num) when is_number(X) ->
-    X.
 
 error('#NULL!')  -> throw({error, '#NULL!'});
 error('#DIV/0!') -> throw({error, '#DIV/0!'});

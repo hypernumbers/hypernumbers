@@ -1,14 +1,5 @@
 %%% @doc Excel-compatible text functions.
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
-%%% @end
-
-%%% Doing the simplest thing that will work for now, which is: assuming that
-%%% strings are lists of UTF-8 code units everywhere else in the application,
-%%% and creating ustrings from them in these functions.
-
-%%% TODO:
-%%%   * Treat incoming strings as ustrings.
-%%%   * Add type and error checks.
 
 %%% INCOMPATIBILITY NOTES:
 %%%
@@ -32,9 +23,6 @@
 -include("typechecks.hrl").
 
 -import(tconv, [to_i/1, to_l/1, to_s/1]).
-
--import(ustring, [new/1, exact/2, eql/2, upcase/1, downcase/1, capitalize/1,
-                  concat/2, substr/2, substr/3, index/2, rindex/2, gsub/3]).
 
 %% Excel 2004 API.
 -export([
@@ -72,16 +60,19 @@
          %% Work with full-width text TODO:
         ]).
 
-exact([Str1, Str2]) ->
-    exact(new(Str1), new(Str2)).
-
+exact([Str1, Str1]) ->
+    true;
+exact(_) ->
+    false.
+    
 len([Str]) ->
-    ustring:len(new(Str)).
+    length(Str).
 
 mid([Str, Start, Len]) ->
-    substr(new(Str), Start, Len).
+    mid1(Str, ?ensure_number(Start), ?ensure_number(Len)).
+mid1(Str, Start, Len) ->
+    string:substr(Str, Start, Len).
 
-%% FIXME: Make work with text in any language (with uregex).
 clean([Str]) ->
     Clean = fun(X) -> (X > 31 andalso X < 123) end,
     filter(Clean, Str).
@@ -112,47 +103,45 @@ fixed([Num, Decimals, NoCommas]) ->
     end.
 
 lower([Str]) ->
-    ?pr(downcase(new(Str))).
+    string:to_lower(Str).
 
 proper([Str]) ->
-    ?pr(capitalize(new(Str))).
+    {ok, Words} = regexp:split(Str, "\\s+"),
+    Capwords = map(fun([H|T]) -> string:to_upper([H]) ++ T end,
+                   Words),
+    string:join(Capwords, " ").
 
 upper([Str]) ->
-    ?pr(upcase(new(Str))).
+    string:to_upper(Str).
 
 char([Code]) ->
     xmerl_ucs:to_utf8([Code]).
 
 code([Str]) ->
-    xmerl_ucs:from_utf8(?pr(substr(new(Str), 1))).
+    xmerl_ucs:from_utf8(string:substr(Str, 1)).
 
 find([Substr, Str]) ->
     find([Substr, Str, 1]);
-find([Substr_, Str_, Start]) ->
-    Str = new(Str_),
-    Substr = new(Substr_),
-    SearchStr = substr(Str, Start, ustring:len(Str) - Start + 1), %% Slice from Start to end
-    Idx = index(SearchStr, Substr),
-    Idx + (ustring:len(Str) - (ustring:len(Str) - Start + 1)).
+find([Substr, Str, Start]) ->
+    SearchStr = string:substr(Str, Start,
+                              string:len(Str) - Start + 1), %% Slice from Start to end
+    Idx = string:str(SearchStr, Substr),
+    Idx + (string:len(Str) - (string:len(Str) - Start + 1)).
 
 left([Str, Len]) ->
-    ?pr(substr(new(Str), 1, Len)).
+    string:substr(Str, 1, Len).
 
-right([Str_, Len]) ->
-    Str = new(Str_),
-    ?pr(substr(Str, ustring:len(Str) - Len + 1, Len)).
+right([Str, Len]) ->
+    string:substr(Str, string:len(Str) - Len + 1, Len).
     
-concatenate([Strs_]) ->
-    Strs = map(?Lx(new(X)), Strs_),
-    ?pr(foldl(?Lxacc(concat(Acc, X)),
-              ustring:empty(),
-              Strs)).
+concatenate([Strs]) ->
+    foldl(fun(X, Acc) ->
+                  Acc ++ X
+          end,
+          "", Strs).
 
-rept([Str_, Reps]) ->
-    Str = new(Str_),
+rept([Str, Reps]) ->
     concatenate([map(fun(_) -> (Str) end, lists:seq(1, Reps))]).
-
-
 
 %%% ----------------- %%%
 %%% Private functions %%%
