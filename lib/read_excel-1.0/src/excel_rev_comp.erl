@@ -517,7 +517,7 @@ get_range(SubRec,FirstSheet,LastSheet,Tables)->
     %% lists:nth is '1' based but the index is 'zero' based!
     Sheet1=lists:nth(FirstSheet+1,SheetList),
     Sheet2=lists:nth(LastSheet+1, SheetList), 
-    lists:concat([Prefix,Sheet1,";",Sheet2]).
+    lists:concat([Prefix,Sheet1,":",Sheet2]).
 
 %% Looks up a reference to an externsheet and turns it into a sheet ref
 %% get_sheet_ref(Index,Tables)->
@@ -608,7 +608,7 @@ read_token_array(N,<<?ErrorArrayEl:8/little-unsigned-integer,
                 ?RefError     -> "#REF!";
                 ?NameError    -> "#NAME?";
                 ?NumError     -> "#NUM!";
-                ?NAError      -> "N/A"
+                ?NAError      -> "#N/A"
             end,
     read_token_array(N-1,Rest,[{string,Value}|Residuum]).
 
