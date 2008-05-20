@@ -216,7 +216,7 @@ fact([Num_]) ->
     ?ensure_number(Num_),
     Num = erlang:trunc(Num_),
     ?ensure(Num =< 8192, ?ERR_NUM),
-    ?ensure_non_negative_ex(Num, ?ERR_NUM),
+    ?ensure_non_negative(Num),
     fact1(Num).
 fact1(0) ->
     1;
@@ -295,15 +295,15 @@ multinomial1(Nums) ->
 %%% ---------- %%%
 
 ln([Num]) ->
-    ?ensure_positive_ex(Num, ?ERR_NUM),
+    ?ensure_positive(Num),
     math:log(Num).
 
 log([Num]) ->
     log([Num, 10]);
 log([Num, Base]) ->
     ?ensure_numbers([Num, Base]),
-    ?ensure_positive_ex(Num, ?ERR_NUM),
-    ?ensure_positive_ex(Base, ?ERR_NUM),
+    ?ensure_positive(Num),
+    ?ensure_positive(Base),
     ?IF(Base == 1, ?ERR_DIV),
     math:log(Num) / math:log(Base).
 
@@ -388,8 +388,8 @@ combin([0, 0]) ->
     1;
 combin([N, Chosen]) ->
     ?ensure_numbers([N, Chosen]),
-    ?ensure_non_negative_ex(N, ?ERR_NUM),
-    ?ensure_non_negative_ex(Chosen, ?ERR_NUM),
+    ?ensure_non_negative(N),
+    ?ensure_non_negative(Chosen),
     ?ensure(N >= Chosen, ?ERR_NUM),
     fact(N) div (fact(Chosen) * fact(N - Chosen)).
 
@@ -453,7 +453,7 @@ pi() ->
 
 sqrtpi([Num]) ->
     ?ensure_number(Num),
-    ?ensure_non_negative_ex(Num, ?ERR_NUM),
+    ?ensure_non_negative(Num),
     math:sqrt(Num * math:pi()).
 
 %%% TODO: Implement. Also, remember that the result is a string.
@@ -461,7 +461,7 @@ roman([Num]) ->
     roman([Num, 0]);
 roman([Num, Form]) ->
     ?ensure_numbers([Num, Form]),
-    ?ensure_non_negative_ex(Num, ?ERR_VAL),
+    ?ensure_non_negative(Num),
     ?ensure(Num =< 3999, ?ERR_VAL),
     ?ensure(member(Form, [1, 2, 3, 4, true, false]), ?ERR_VAL),
     roman1(Num, Form).

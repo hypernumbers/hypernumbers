@@ -38,7 +38,9 @@ to_num(Str) when is_list(Str) ->
                 error:_ ->
                     {error, nan}
             end
-    end.
+    end;
+to_num(Num) when is_number(Num) ->
+    Num.
 
 %% Integer -> string. %Floats as well surely?
 to_s(Int) when is_integer(Int) ->

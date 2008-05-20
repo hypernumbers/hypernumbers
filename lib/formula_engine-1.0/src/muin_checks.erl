@@ -68,9 +68,11 @@ filter_numbers(Vs) ->
 
 filter_numbers_all(Vs) ->
     [cast(X, num) || X <- Vs, is_number(cast(X, num))].
-                      
+
 deck([H|T]) ->
-    deck1(H, T, []).
+    deck1(H, T, []);
+deck(Z) ->
+    deck1(Z, [], []).
 deck1(_, [], Acc) ->
     Acc;
 deck1({matrix, _, L}, [H|T], Acc) ->

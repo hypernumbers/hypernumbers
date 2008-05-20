@@ -1,5 +1,6 @@
 -module(muin_util).
--export([error/1,
+-export([cast/2,
+         error/1,
          split_ssref/1,
          just_path/1,
          just_ref/1,
