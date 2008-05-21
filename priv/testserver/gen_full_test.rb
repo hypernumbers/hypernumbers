@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby -wKU
 
+# Generates a test suite for Muin (from our reader's output).
 # <hasan@hypernumbers.com>
 
 # USAGE: gen_full_test.rb /path/to/data_file [RANGE:ONE, RANGE:TWO etc]
@@ -7,6 +8,8 @@
 # If a range is given, test cases will be generated for cells in that
 # range only. If more than one range is given, they are taken to mean
 # ranges on sheets.
+
+$KCODE = 'u'
 
 require "erb"
 load "gen_util.rb"

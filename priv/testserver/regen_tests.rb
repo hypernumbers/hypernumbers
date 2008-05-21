@@ -7,7 +7,7 @@
 
 PATH_TO_DATA_FILES = "../../tests/excel_files/Win_Excel07_As_97/DATA/"
 
-generator = (ARGV[0].downcase == "1x" ? "gen_rev_comp_test.rb" : "gen_full_test.rb")
+generator = (ARGV[0].downcase == "1x" ? "genrevcomp.rb" : "gen_full_test.rb")
 series = ARGV[0].downcase[0].chr
 
 rawlines = IO.readlines("readlist.txt").map { |line| line.strip }

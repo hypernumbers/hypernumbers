@@ -1,0 +1,45 @@
+%%% This file is generated; DO NOT EDIT MANUALLY.
+
+-module(<%= @basename %>_SUITE).
+-compile(export_all).
+-include("ct.hrl").
+
+-define(test(Name, Key, Expval),
+        Name(Config) ->
+               {value, {_, Pid}} = lists:keysearch(?MODULE, 1, Config),
+                Pid ! {msg, self(), ?MODULE, Key},
+                receive
+                    Msg ->
+                        test_util:expected2(Msg, Expval)
+                after 500 ->
+                        exit("timeout in ~s~n", [Name])
+                end).
+
+init_per_suite(Config) ->
+    code:add_patha("../../../../../ebin"),
+    production_boot:setup_paths(),
+    Xlsfile = "../../../../excel_files/Win_Excel07_As_97/<%= @basename + ".xls"%>",
+    Data = test_util:read_excel_file(Xlsfile),
+    Pid = spawn(test_util, test_state, [Data]),
+    [{?MODULE, Pid} | Config].
+
+end_per_suite(_Config) ->
+    ok.
+
+init_per_testcase(_TestCase, Config) ->
+    Config.
+
+end_per_testcase(_TestCase, _Config) ->
+    ok.
+
+read_from_excel_data(Config, {Sheet, Row, Col}) ->
+    test_util:read_from_excel_data(Config, <%= @basename + "_SUITE" %>, {Sheet, Row, Col}).
+
+%%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+<%= @testcasedata.map { |rec| "?test(#{rec[0]}, #{rec[1]}, #{rec[2]}).\n" } %>
+%%% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+all() ->
+    [
+        <%= @testcasedata.map { |rec| rec[0] }.join(",\n        ") %>
+    ].
