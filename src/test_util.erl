@@ -24,7 +24,7 @@
 -include("excel_errors.hrl").
 
 -define(FILEDIR, "../../../../excel_files/").
--define(EXCEL_IMPORT_FLOAT_PRECISION, 13).
+-define(EXCEL_IMPORT_FLOAT_PRECISION, 9).
 -define(DEFAULT,1000000).
 
 

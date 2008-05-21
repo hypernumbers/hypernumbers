@@ -32,7 +32,6 @@ reverse_compile(Index,Tokens,TokenArray,Tables)->
 
 %% When the tokens are exhausted the Stack is just flattened to a string
 reverse_compile(_Index,[],_TokenArray,Stack,_Residuum,_Tables) ->
-    io:format("Stack ~p~n",[Stack]),
     "="++to_str(Stack);
 
 %%	tExp    
@@ -149,12 +148,16 @@ reverse_compile(Index,[{attributes,Attributes}|T],TokenArray,Stack,
     %% io:format("in excel_rev_comp:reverse_compile in tAttr~n"),
     NR = {return,none},
     NewStack = case Attributes of
-    {tAttrVolatile,volatile_attribute,[],NR} -> Stack; % do nothing, don't care
-    {tAttrIf,if_attribute,[{jump,_Jump}],NR} -> Stack; % do nothing, don't care
+    % do nothing, don't care
+    {tAttrVolatile,volatile_attribute,[],NR} -> Stack; 
+    % do nothing, don't care
+    {tAttrIf,if_attribute,[{jump,_Jump}],NR} -> Stack; 
+    % do nothing, don't care
     {tAttrChoose,choose_attribute,[{no_of_choices,_NumberOfChoices},
         {jump_table,_JumpTable}, {error_jump,_ErrorJump}],NR}->
-        Stack; % do nothing, don't care
-    {tAttrSkip,skip_attribute,[{skip,_Skip}],NR} -> Stack; % do nothing, don't care
+        Stack; 
+    % do nothing, don't care
+    {tAttrSkip,skip_attribute,[{skip,_Skip}],NR} -> Stack;
     {tAttrSum,sum_attribute,[],NR}-> 
         SplitLen=length(Stack)-1,
         %% this is an attribute of SUM with 1 arg...
@@ -168,8 +171,7 @@ reverse_compile(Index,[{attributes,Attributes}|T],TokenArray,Stack,
         push(Stack,{space, lists:flatten(lists:duplicate(Chars, " "))});
         
     _List -> push(Stack,fucked7)   
-    end,
-    io:format("NewStacl ~p~n",[NewStack]),                   
+    end,                  
     reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
@@ -648,8 +650,6 @@ operator_to_string(comma)                  -> ",".
 
 to_str({func,Var,Args})    ->
 
-    io:format("Args ~p~n",[Args]),
-
     R = fun(Item) -> 
         case Item of
         {space,Val} -> Val;
@@ -679,9 +679,12 @@ to_str({func,Var,Args})    ->
             macro_to_string(Var)++"("++string:strip(TmpArgs,right, $,)++")"
         end
     end;
+    
 to_str([])  -> "";
 to_str({H}) -> to_str(H);
 to_str([H]) -> to_str(H);
+to_str([H|T]) -> to_str(H)++to_str(T);
+to_str({space,S}) -> " ";
 to_str({open,O,close}) -> "(" ++ to_str(O) ++ ")";
 to_str({L,O,R}) -> to_str(L) ++ operator_to_string(O) ++ to_str(R);
 to_str({string,String}) -> String;
@@ -731,8 +734,12 @@ push(List,Val)  ->
     lists:reverse(lists:flatten([Val,lists:reverse(List)])).
 
 pop([H|[]]) -> {H,[]};
-pop(List)   -> [Pop|NewList]=lists:reverse(List),
-               {Pop,lists:reverse(NewList)}.
+pop(List)   ->
+    [Pop|NewList]=lists:reverse(List),
+    case Pop of    %%
+    {space,Val} -> pop(lists:reverse(NewList));
+    _Else       -> {Pop,lists:reverse(NewList)}
+    end.
 
 %% this function makes a range from the start and end cell specifications
 make_range(StartCell,EndCell)->
