@@ -6,7 +6,7 @@
 %%%               formula back into the original form that the user
 %%%               entered into the cell
 %%%
-%%% Created     : 11th Jan 2008 by Gordon Guthrie
+%%% Created     : 11th Jan 2008 by Gordon Guthriet
 %%%-------------------------------------------------------------------
 -module(excel_rev_comp).
 
@@ -32,6 +32,7 @@ reverse_compile(Index,Tokens,TokenArray,Tables)->
 
 %% When the tokens are exhausted the Stack is just flattened to a string
 reverse_compile(_Index,[],_TokenArray,Stack,_Residuum,_Tables) ->
+    io:format("Stack ~p~n",[Stack]),
     "="++to_str(Stack);
 
 %%	tExp    
@@ -146,32 +147,29 @@ reverse_compile(Index,[{string,{tStr,[{value,Binary}],
 reverse_compile(Index,[{attributes,Attributes}|T],TokenArray,Stack,
                 Residuum,Tables)  ->
     %% io:format("in excel_rev_comp:reverse_compile in tAttr~n"),
+    NR = {return,none},
     NewStack = case Attributes of
-                   {tAttrVolatile,volatile_attribute,[],{return,none}} -> 
-                       Stack; % do nothing, don't care
-                   {tAttrIf,if_attribute,[{jump,_Jump}],{return,none}} ->
-                       Stack; % do nothing, don't care
-                   {tAttrChoose,choose_attribute,
-                    [{no_of_choices,_NumberOfChoices},
-                     {jump_table,_JumpTable},
-                     {error_jump,_ErrorJump}],{return,none}}->
-                       Stack; % do nothing, don't care
-                   {tAttrSkip,skip_attribute,[{skip,_Skip}],{return,none}}
-                   -> Stack; % do nothing, don't care
-                   {tAttrSum,sum_attribute,[],{return,none}}-> 
-                       SplitLen=length(Stack)-1,
-                       %% this is an attribute of SUM with 1 arg...
-                       {Rest,FunArgs} = lists:split(SplitLen,Stack),
-                       %% 4 is the index to the func SUM
-                       push(Rest,{func,4,FunArgs}); 
-                   {tAttrAssign,assign_attribute,[],{return,none}}-> 
-                       Stack; % do nothing, don't care
-                   {tAttrSpace,special_character,
-                    [{char,_Type},{no_of_chars,_NoOfSpecChars}],
-                    {return,none}} -> 
-                       Stack; % do nothing, don't care
-                   _List  -> 
-                       push(Stack,fucked7)   end,
+    {tAttrVolatile,volatile_attribute,[],NR} -> Stack; % do nothing, don't care
+    {tAttrIf,if_attribute,[{jump,_Jump}],NR} -> Stack; % do nothing, don't care
+    {tAttrChoose,choose_attribute,[{no_of_choices,_NumberOfChoices},
+        {jump_table,_JumpTable}, {error_jump,_ErrorJump}],NR}->
+        Stack; % do nothing, don't care
+    {tAttrSkip,skip_attribute,[{skip,_Skip}],NR} -> Stack; % do nothing, don't care
+    {tAttrSum,sum_attribute,[],NR}-> 
+        SplitLen=length(Stack)-1,
+        %% this is an attribute of SUM with 1 arg...
+        {Rest,FunArgs} = lists:split(SplitLen,Stack),
+        %% 4 is the index to the func SUM
+        push(Rest,{func,4,FunArgs}); 
+    {tAttrAssign,assign_attribute,[],NR}-> Stack; % do nothing, don't care
+    
+    %% Preserve Spaces
+    {tAttrSpace,special_character,[{char,_Type}, {no_of_chars,Chars}],NR} -> 
+        push(Stack,{space, lists:flatten(lists:duplicate(Chars, " "))});
+        
+    _List -> push(Stack,fucked7)   
+    end,
+    io:format("NewStacl ~p~n",[NewStack]),                   
     reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
@@ -261,11 +259,11 @@ reverse_compile(Index,[{functional_index,{Function,[{value,FuncVar},
        Function =:= tFuncVarV ;Function =:= tFuncVarR ; 
        Function =:= tFuncVarA ->
     %% io:format("in excel_rev_comp:reverse_compile in tFunc~n"),
+    %% lists:reverse has to be overused because Stack is build backwards
+    %% (new items append to tail opposed to head
     NumArgs=macro_no_of_args(FuncVar),
-    SplitLen=length(Stack)-NumArgs,
-    {Rest,FunArgs} = lists:split(SplitLen,Stack),
-    NewStack = push(Rest,{func,FuncVar,FunArgs}),
-    reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
+    {Rest,FunArgs} = popVars(NumArgs,lists:reverse(Stack),[]),
+    NewStack = push(lists:reverse(Rest),{func,FuncVar,lists:reverse(FunArgs)}),        reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
 
 %%	tFuncVar
 reverse_compile(Index,[{var_func_idx,{Function,[{value,FuncVar},
@@ -278,9 +276,10 @@ reverse_compile(Index,[{var_func_idx,{Function,[{value,FuncVar},
                                                        Function =:= tFuncVarR ; 
                                                        Function =:= tFuncVarA ->
     %% io:format("in excel_rev_comp:reverse_compile in tFuncVar~n"),
-    SplitLen=length(Stack)-NumArgs,
-    {Rest,FunArgs} = lists:split(SplitLen,Stack),
-    NewStack = push(Rest,{func,FuncVar,FunArgs}),
+    %% lists:reverse has to be overused because Stack is build backwards
+    %% (new items append to tail opposed to head
+    {Rest,FunArgs} = popVars(NumArgs,lists:reverse(Stack),[]),
+    NewStack = push(lists:reverse(Rest),{func,FuncVar,lists:reverse(FunArgs)}),
     reverse_compile(Index,T,TokenArray,NewStack,Residuum,Tables);
 
 %%	tName   
@@ -460,8 +459,7 @@ reverse_compile(_Index,[Head|T],TokenArray,_Stack,_Residuum,_Tables) ->
     io:format("in reverse compile missing tokens are ~p with a TokenArray of ~n",
               [Head,TokenArray]),
     exit("missing tokens in excel_rev_comp:reverse_compile").
-%% reverse_compile(Index,T,TokenArray,Stack,Residuum,Tables).
-
+%% reverse_compile(Index,T,TokenArray,Stack,Residuum,Tables).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                         %%%
@@ -621,13 +619,13 @@ read_token_array(N,<<?ErrorArrayEl:8/little-unsigned-integer,
 %%--------------------------------------------------------------------
 implode(List, Token) ->
     F = fun(X, Acc) ->
-                if
-                    is_integer(X) -> [Token,integer_to_list(X)|Acc];
-                    %% float like "2.000" to come back as "2"
-                    is_float(X)   -> [Token,to_str({float,X})|Acc]; 
-                    true          -> [Token,X|Acc]
-                end
-        end,
+        if
+            is_integer(X) -> [Token,integer_to_list(X)|Acc];
+            %% float like "2.000" to come back as "2"
+            is_float(X)   -> [Token,to_str({float,X})|Acc]; 
+            true          -> [Token,X|Acc]
+        end
+    end,
     [_TrailingToken|RealList]=lists:foldl(F, [], List),
     lists:flatten(lists:reverse(RealList)).
 
@@ -649,25 +647,37 @@ operator_to_string(intersect)              -> " ";
 operator_to_string(comma)                  -> ",".
 
 to_str({func,Var,Args})    ->
+
+    io:format("Args ~p~n",[Args]),
+
     R = fun(Item) -> 
-                case Item of
-                    {_Type,L} -> L;
-                    Other    -> to_str(Other)
-                end
-        end,
+        case Item of
+        {space,Val} -> Val;
+        {return}    -> "\r\n";
+        Other       -> to_str(Other) ++ ","
+        end
+    end,
+    
+    Imp = 
+    
     %% If the Value of Var is 255 then this is a non-excel function
     %% and the 'first arg' is the name that the user actually typed in
     case Var of
-        255    -> [{string,FuncName}|Args2]=Args,
-                  case Args2 of
-                      [] -> FuncName++"()";
-                      _  -> FuncName++"("++implode(lists:map(R,Args2),",")++")"
-                  end;
-        _Other -> case Args of
-                      [] -> macro_to_string(Var)++"()";
-                      _  -> macro_to_string(Var)++"("++implode(lists:map(R,Args),
-                                                               ",")++")"
-                  end
+    255 -> 
+        [{string,FuncName}|Args2]=Args,
+        case Args2 of
+        [] -> FuncName++"()";
+        _  -> 
+            TmpArgs = lists:flatten(lists:map(R,Args2)), 
+            FuncName++"("++string:strip(TmpArgs,right, $,)++")"
+        end;
+    _Other -> 
+        case Args of
+        [] -> macro_to_string(Var)++"()";
+        _  ->
+            TmpArgs = lists:flatten(lists:map(R,Args)), 
+            macro_to_string(Var)++"("++string:strip(TmpArgs,right, $,)++")"
+        end
     end;
 to_str([])  -> "";
 to_str({H}) -> to_str(H);
@@ -707,6 +717,14 @@ array_to_str([H|T],NoCols,N,Residuum)-> % list seperator is a comma
     NewResiduum=[to_str(H)|Residuum],
     NewResiduum2=[","|NewResiduum],
     array_to_str(T,NoCols,N+1,NewResiduum2).
+
+
+%% Used in tFunc, will grab the last I items from the list that
+%% arent {space,Spaces} or {return} 
+popVars(0,Stack,Args)           -> {Stack,lists:reverse(Args)};
+popVars(I,[{space,Val}|T],Args) -> popVars(I,T,[{space,Val}|Args]);
+popVars(I,[{return}|T],Args)    -> popVars(I,T,[{return}|Args]);  
+popVars(I,[Else|T],Args)        -> popVars(I-1,T,[Else|Args]).
 
 push([],Val)    -> [lists:append([],Val)];
 push(List,Val)  -> 
