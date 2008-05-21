@@ -178,21 +178,15 @@ expected(Expected, Got) ->
     end.
 
 expected2(Expected, Got) ->
-    Result=excel_equal2(Expected,Got),
-    io:format("in test_util:expected2 Result is ~p~n",[Result]),
+    Result = excel_equal2(Expected, Got),
     case Result of
         true ->
-            io:format("SUCCESS~nExpected : ~p~nGot     : ~p~n",[Expected,Got]),
+            io:format("<b style=\"color:green\">SUCCESS</b>~nExpected: ~p~nGot: ~p~n",
+                      [Expected, Got]),
             {test, ok};
         false ->
-                %%case file:open("C:/tmp/fails.txt", [append]) of
-                %%  {ok, Id} ->
-                %%    io:fwrite(Id, "E:~p G:~p~n", [Expected,Got]),
-                %%    file:close(Id);
-                %%_ ->
-                %%  exit("file open error"),
-                %%  error
-                %%end,
+            io:format("<b style=\"color:red\">FAIL</b>~nExpected: ~p~nGot: ~p~n",
+                      [Expected, Got]),
             exit({fail, expected, Expected, got, Got})
     end.
 
@@ -243,18 +237,19 @@ hnget(Path, Ref) ->
 hnpost(Path, Ref, Postdata) ->
     Url = ?HNSERVER ++ Path ++ Ref,
     Postreq = "<create><formula><![CDATA[" ++ Postdata ++ "]]></formula></create>",
+    io:format("Posting ~p to ~s...", [Postdata, Path ++ Ref]),
     Return = http:request(post,
                           {Url, [], "text/xml", Postreq},
-                          [], []),
-    {ok, {{_V, Code, _R}, _H, Body}} = Return,
-    if Code =/= 200 ->
-            io:format("HTTP POST error, code:~n~pbody:~n~p~n", [Code, Body]),
-            io:format("Tried posting ~p to ~p~n", [Postdata, Path ++ Ref]),
-            Return;
-       true ->
-            io:format("Posting to ~p OK.", [Path ++ Ref]),
-            Return
-    end.
+                          [{timeout, 5000}],
+                          []),
+    handle_return(Return).
+
+handle_return({error, timeout}) ->
+    io:format("<b style=\"color:red;font-size:21px\">TIMEOUT</b>~n");
+handle_return({ok, {{_V, 200, _R}, _H, Body}}) ->
+    io:format("OK.~n");
+handle_return({ok, {{_V, Code, _R}, _H, Body}}) ->
+    io:format("HTTP POST error, code:~n~pbody:~n~p~n", [Code, Body]).
 
 cmp(G, E) ->
     Val = conv_from_get(G),
@@ -284,7 +279,6 @@ conv_from_get(Val) ->
 
 %% TODO: Some of these conversion need to be done inside the reader itself.
 conv_for_post(Val) ->
-    io:format("Val is ~p ~n",[Val]),
     case Val of
         {_, boolean, true} -> "true";
         {_, boolean, false} -> "false";
