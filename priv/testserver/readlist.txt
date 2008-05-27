@@ -20,10 +20,17 @@ b_simple_arrays_and_ranges A1:I11
 b_sum_with_one_arg A1:I12
 b_three_dee_ref A1:B8
 b_wierd_failures A1:B8
-c_basic_functions_tests_a_e B3:B1130
-c_basic_functions_tests_f_k B3:B1219
-c_basic_functions_tests_l_t B3:B1284
-c_basic_functions_tests_u_z B3:B705
+c_basic_functions_A_B B3:B330
+c_basic_functions_C_D B3:B676
+c_basic_functions_E_F B3:B516
+c_basic_functions_G_H B3:B279
+c_basic_functions_I_J B3:B522
+c_basic_functions_K_L B3:B308
+c_basic_functions_M_N B3:B360
+c_basic_functions_O_P B3:B147
+c_basic_functions_Q_R B3:B350
+c_basic_functions_S_T B3:B803
+c_basic_functions_U_Z B3:B160
 d_gnumeric_address A1:D113 A1:X254
 d_gnumeric_date_and_time A1:I39
 d_gnumeric_db A1:I45
