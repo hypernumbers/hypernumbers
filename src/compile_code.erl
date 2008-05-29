@@ -28,7 +28,8 @@
          "priv/muin/leex.erl",
          "src/bits.erl",
          "src/production_boot.erl",
-         "src/test_util.erl"]).
+         "src/test_util.erl",
+	 "src/timeout_test.erl"]).
 
 start() ->
     compile().

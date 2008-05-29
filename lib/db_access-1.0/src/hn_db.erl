@@ -45,6 +45,8 @@
 %%--------------------------------------------------------------------
 write_item(Addr,Val) when is_record(Addr,ref) ->
 
+    %%Time1=calendar:now_to_local_time(now()),
+
     Fun = fun() ->
         mnesia:write(#hn_item{addr = Addr, val = Val})
     end,
@@ -64,7 +66,9 @@ write_item(Addr,Val) when is_record(Addr,ref) ->
             Addr#ref.site,Addr#ref.path,Msg},?TIMEOUT)
         
     end,
-            
+    %%Time2=calendar:now_to_local_time(now()),
+    %%Elapsed=calendar:time_difference(Time1,Time2),
+    %%bits:log(io_lib:fwrite("in hn_db:write_item elapsed: ~p~n",[Elapsed])),
     ok.
     
 %%--------------------------------------------------------------------

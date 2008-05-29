@@ -237,7 +237,7 @@ hnget(Path, Ref) ->
 hnpost(Path, Ref, Postdata) ->
     Url = ?HNSERVER ++ Path ++ Ref,
     Postreq = "<create><formula><![CDATA[" ++ Postdata ++ "]]></formula></create>",
-    io:format("Posting ~p to ~s...", [Postdata, Path ++ Ref]),
+    io:format("Posting ~p to ~s...~n", [Postdata, Path ++ Ref]),
     Return = http:request(post,
                           {Url, [], "text/xml", Postreq},
                           [{timeout, 5000}],
@@ -245,6 +245,7 @@ hnpost(Path, Ref, Postdata) ->
     handle_return(Return).
 
 handle_return({error, timeout}) ->
+    bits:log("TIMEOUT!"),
     io:format("<b style=\"color:red;font-size:21px\">TIMEOUT</b>~n");
 handle_return({ok, {{_V, 200, _R}, _H, Body}}) ->
     io:format("OK.~n");

@@ -280,6 +280,8 @@ create_ets()->
      {externsheets,   ets:new(externsheets,   [ordered_set,private])},
      {sheetnames,     ets:new(sheetnames,     [ordered_set,private])},
      {externalrefs,   ets:new(externalrefs,   [ordered_set,private])},
+     {formats,        ets:new(formats,        [ordered_set,private])},
+     {xf,             ets:new(xf,             [ordered_set,private])},
      {lacunae,        ets:new(lacunae,        [ordered_set,private])},
      {misc,           ets:new(misc,           [ordered_set,private])}].
 
@@ -312,7 +314,7 @@ bodge_string(<<Char:16/little-signed-integer,Rest/binary>>,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 test_DEBUG()->
-    File="minitest.xls",
+    %%File="minitest.xls",
     %%File="e_gnumeric_operators_add.xls",
     %%File="b_array_formulae.xls",
     %%File="c_basic_functions_tests_a_e.xls",
@@ -323,8 +325,9 @@ test_DEBUG()->
     %%File="b_three_dee_ref.xls",
     %%File="b_floats.xls",
     %%File="b_simple_arrays_and_ranges.xls",
+    File="d_gnumeric_address.xls",
     FileRoot="C:/opt/code/trunk/tests/"++
-     	"excel_files/Win Excel 2007 (as 97)",
+     	"excel_files/Win_Excel07_As_97",
     io:format("in filefilters:test_DEBUG FileRoot is ~p and File is ~p~n",
               [FileRoot,File]),
     read(excel,FileRoot++"/"++File),
@@ -334,11 +337,15 @@ dump([])-> io:format("All tables dumped~n");
 %%dump([{cell_tokens,_}|T])->
 %%  io:format("~nSkipping out cell_tokens in dump~n"),
 %% dump(T);
-dump([{lacunae,_}|T])->
-    io:format("~nSkipping out lacunae in dump~n"),
-    dump(T);
-dump([{Name,Tid}|T])->
+%%dump([{lacunae,_}|T])->
+%%    io:format("~nSkipping out lacunae in dump~n"),
+%%    dump(T);
+dump([{formats,Tid}|T])->
+    Name=formats,
     io:format("~nDumping table: ~p~n",[Name]),
     Fun = fun(X,_Y) -> io:format("~p: ~p~n",[Name,X]) end,
     ets:foldl(Fun,[],Tid),
+    dump(T);
+dump([{Table,_}|T])->
+    io:format("~nSkipping out ~p in dump~n",[Table]),
     dump(T).

@@ -361,7 +361,7 @@ parse_rec(?SCENPROTECT,_Bin,_Name,CurrentFormula,Tables)->
                                      {source,excel_records.erl},
                                      {msg,"not being processed"}]),
     {ok,CurrentFormula};
-parse_rec(?XF2,_Bin,_Name,CurrentFormula,Tables)->
+parse_rec(?XF2,Bin,_Name,CurrentFormula,Tables)->
     excel_util:write(Tables,lacunae,[{identifier,"XF2"},
                                      {source,excel_records.erl},
                                      {msg,"not being processed"}]),
@@ -607,10 +607,16 @@ parse_rec(?STYLE,_Bin,_Name,CurrentFormula,Tables)->
                                      {source,excel_records.erl},
                                      {msg,"not being processed"}]),
     {ok,CurrentFormula};
-parse_rec(?FORMAT2,_Bin,_Name,CurrentFormula,Tables)->
-    excel_util:write(Tables,lacunae,[{identifier,"FORMAT2"},
-                                     {source,excel_records.erl},
-                                     {msg,"not being processed"}]),
+parse_rec(?FORMAT2,Bin,_Name,CurrentFormula,Tables)->
+    <<FormatIndex:16/little-unsigned-integer,
+     FormatBin/binary>>=Bin,
+    Return=excel_util:parse_CRS_Uni16(FormatBin),
+    %%io:format("in excel_records:parse_rec Return is ~p~n",[Return]),
+    FormatString=excel_util:get_utf8(Return),
+    %%io:format("in excel_records:parse_rec FormatString is ~p~n",
+    %%	      [FormatString]),
+    excel_util:write(Tables,formats,[{format_index,FormatIndex},
+				     {format,FormatString}]),
     {ok,CurrentFormula};
 parse_rec(?SHRFMLA,Bin,Name,CurrentFormula,Tables)->
     <<Range:6/binary,
