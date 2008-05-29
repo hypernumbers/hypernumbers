@@ -6,14 +6,13 @@
         <reldir>lib/read_excel-1.0/ebin</reldir>
         <reldir>lib/remoting-1.0/ebin</reldir>
         <reldir>lib/utilities-1.0/ebin</reldir>
-        <reldir>lib/yaws-1.74/ebin</reldir>
+        <reldir>lib/yaws-1.76/ebin</reldir>
         <reldir>lib/hypernumbers.com-1.0/ebin</reldir>
         <reldir>lib/formula_engine-1.0/ebin</reldir>
         <reldir>lib/parser-1.0/ebin</reldir>
         <reldir>lib/engine-1.0/ebin</reldir>
         <reldir>lib/mochi-1.0/ebin</reldir>
         <reldir>lib/starling/ebin</reldir>
-        <reldir>ebin</reldir>
     </includes>
 
     <mnesia>
@@ -23,10 +22,9 @@
     <yawsconf>
 
         <trace>false</trace>
-        <yaws_dir><reldir>lib/yaws-1.73</reldir></yaws_dir>
+        <yaws_dir><reldir>lib/yaws-1.76</reldir></yaws_dir>
         <log><reldir>priv/log</reldir></log>
         <yaws>Hypernumbers 1.0</yaws>
-        <tmpdir>/tmp</tmpdir>
 
         <servers>
             <group port="9000">           

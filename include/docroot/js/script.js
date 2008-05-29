@@ -96,8 +96,18 @@ $(function()
         fmargin    : 24,
         cellChange  : function(x,y,val)
         {
-            $.post(url+$.fn.to_b26(x+1)+y+"?attr",
-                "<create><formula><![CDATA["+val+"]]></formula></create>",null,"xml");
+            var fullurl = url+$.fn.to_b26(x+1)+y+"?attr";
+            
+            if(val == "")
+            {
+                $.post(fullurl,
+                   "<delete><formula /><value/></delete>",null,"xml");
+            }
+            else
+            {
+                $.post(fullurl,
+                   "<create><formula><![CDATA["+val+"]]></formula></create>",null,"xml");
+            }
         },
         cellSelect : function(x,y,el)
         {

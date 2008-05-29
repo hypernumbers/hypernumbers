@@ -93,21 +93,22 @@ get_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
             
                 case {Ref, ItemRef} of
                 
-                {{page,_},_}            -> true; %% All Attr on that Page
-                {X,X}                   -> true; %% Same Ref
-                {{row,Y},{cell,_,Y}}    -> true; %% Cell on same row
-                {{column,X},{cell,X,_}} -> true; %% Cell on same col
+                {{page,_},_}              -> true; %% All Attr on that Page
+                {X,X}                     -> true; %% Same Ref
+                {{row,Y},{cell,{_,Y}}}    -> true; %% Cell on same row
+                {{column,X},{cell,{X,_}}} -> true; %% Cell on same col
                 
                 {{range,{_,Y1,_,Y2}},{row,Y}}
                     when Y > Y1 andalso Y < Y2 -> true; 
                 {{range,{X1,_,X2,_}},{column,X}}
                     when X > X1 andalso X < X2 -> true;
                     
-                {{range,{X1,Y1,X2,Y2}},{cell,X,Y}}
-                    when Y > Y1 andalso Y < Y2 andalso
-                         X > X1 andalso X < X2 -> true;
+                {{range,{X1,Y1,X2,Y2}},{cell,{X,Y}}}
+                    when Y >= Y1 andalso Y =< Y2 andalso
+                         X >= X1 andalso X =< X2 -> true;
                          
-                _ -> false
+                _ -> 
+                    false
                 end
             end,
             List

@@ -15,7 +15,7 @@
 %%%-----------------------------------------------------------------
 %%% Exported Functions
 %%%-----------------------------------------------------------------
--export([ out/1 ]).
+-export([ out/1, get_last_index/3 ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%
@@ -84,8 +84,9 @@ process_GET(_Arg,_User,Page) ->
     {Format,Data} = case request_type(Page) of
     
     attribute ->
-        Addr = page_to_ref(Page),
-
+    
+        Addr = page_to_ref(Page),     
+        
         %% Switch to filter on the db api later
         Items = lists:filter(
             fun(#hn_item{addr=A}) -> 
@@ -145,32 +146,62 @@ process_GET(_Arg,_User,Page) ->
 %% Utility GET functions
 %%--------------------------------------------------------------------
 request_type(Page) ->
-    Vars = Page#page.vars,
-    case lists:member({attr},Vars) of
+    case lists:member({attr},Page#page.vars) of
     true  -> attribute;
     false ->
-        case lists:member({hypernumber},Vars) of
+        case lists:member({hypernumber},Page#page.vars) of
         true  -> hypernumber;
         false ->
-            case lists:member({pages},Vars) of
+            case lists:member({pages},Page#page.vars) of
             true  -> pages;
             false -> reference
             end
         end
     end.        
 
-page_to_ref(#page{site=Site, path=Path, ref=Ref}) ->
-    #ref{site=Site, path=Path, ref=Ref}.
+page_to_ref(#page{site=Site, path=Path, ref=Ref,vars=Vars}) ->
+    NewRef = case lists:member({lastrow},Vars) of
+    true  -> {row,get_last_index(Site,Path,row)};
+    false -> 
+        case lists:member({lastcol},Vars) of
+        true  -> {column,get_last_index(Site,Path,column)};
+        false -> Ref
+        end
+    end,
+    #ref{site=Site, path=Path, ref=NewRef}.
 
 %% Format the output depending on the requested format.
 format_output(Format,Data) ->
     case Format of
-    {xml}   -> {content,"text/xml",simplexml:to_xml_string(Data)};
+    {xml}   -> {content,"text/xml","<?xml version=\"1.0\" encoding=\"utf-8\" ?>"++simplexml:to_xml_string(Data)};
     {json}  -> {content,"text/plain",simplexml:to_json_string(Data)};
     {plain} -> {content,"text/plain",Data};
     {json,nocallback} -> 
         {content,"text/plain","hn("++simplexml:to_json_string(Data)++");"}
     end.
+    
+    
+%% Get the index of the last populated row or column
+get_last_index(Site,Path,RowCol) ->
+    case hn_db:get_item(#ref{site=Site,path=Path,ref={page,"/"}}) of
+    []   -> 0;
+    Else -> 
+        %% Only count cell value attributes
+        CellList = lists:filter( fun(#hn_item{addr=Ref}) -> 
+            case Ref of
+            #ref{name=value, ref = {cell,_}} -> true;
+            _ -> false
+            end end,Else),
+        
+        List = lists:sort( 
+            fun(#hn_item{addr=#ref{ref = {cell,{X1,Y1}}}},
+                #hn_item{addr=#ref{ref = {cell,{X2,Y2}}}}) ->
+                ?COND(RowCol == column,X1 < X2,Y1 < Y2)
+            end,CellList),
+            
+        #hn_item{addr=#ref{ref={cell,{X,Y}}}} = lists:last(List),
+        ?COND(RowCol == column,X,Y)
+    end.    
 
 %% Takes an unfiltered list of spriki records, extracts the path
 %% they are from and constructs a tree
@@ -252,7 +283,7 @@ process_POST(Arg,PostData,_User,Page) ->
     [{A,"logout"}]       -> api_logout();
     [{A,"clear"}|R]      -> api_clear(R,Page);
     [{A,"insert"}|R]     -> api_insert(R,Page);
-    [{A,"delete"}|R]     -> api_delete(R,Page);
+    {delete,[],Data}     -> api_delete(Data,Page);
     {register,[],Data}   -> api_reg(Data,Page);
     {unregister,[],Data} -> api_unreg(Data,Page);
     {notify,[],Data}     -> api_notify(Data,Page)
@@ -295,18 +326,27 @@ import([{_Name,Tid}|T],Page)->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 api_create(Data, Page) ->
 
-    #page{site=Site,path=Path,ref=Ref,vars=_Vars} = Page,
-    
-    lists:map
+    #page{site=Site,path=Path,ref=Ref,vars=Vars} = Page,
+    Addr = page_to_ref(Page),
+
+    lists:foldl
     (
-        fun({Attr,[],[Val]}) ->
-            Addr = #ref{site=Site,path=Path,ref=Ref,name=Attr},
-            %% cant set [], should use clear / delete
+        fun({Attr,[],[Val]},Sum) ->
+            
+            NewAddr = case lists:member({lastrow},Vars) of
+            true  -> 
+                {row,X} = Addr#ref.ref,
+                #ref{site=Site,path=Path,ref={cell,{Sum,X+1}},name=Attr};
+            false -> Addr#ref{name=Attr}
+            end,
+                        
             case Val of
             [] -> throw(empty_val); 
-            _  -> hn_main:set_attribute(Addr,Val)
-            end
+            _  -> hn_main:set_attribute(NewAddr,Val)
+            end,
+            Sum+1
         end,
+        1,
         Data
     ),
     ok.
@@ -321,7 +361,18 @@ api_insert(_R,_Page) -> ok.
 
 %%% API call - DELETE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-api_delete(_R,_Page) -> ok.
+api_delete(Data,Page) ->
+    
+    #page{site=Site,path=Path,ref=Ref,vars=_Vars} = Page,
+    
+    lists:map
+    (
+        fun({Attr,[],[]}) ->
+            hn_db:remove_item(#ref{site=Site,path=Path,ref=Ref,name=Attr})
+        end,
+        Data
+    ),
+    ok.
 
 %%% API call - UNREGISTER
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

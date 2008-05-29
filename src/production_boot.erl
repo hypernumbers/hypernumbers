@@ -66,6 +66,7 @@ start_apps(Conf,Toolbar)->
     {Gconf,Sconf} = hn_util:create_conf(Conf),
     application:set_env(yaws, embedded, true),
     application:start(yaws),
+    
     yaws_api:setconf(Gconf,Sconf),
 
     %% Get Mnesia Directory
@@ -83,7 +84,7 @@ start_apps(Conf,Toolbar)->
     application:start(mnesia),
 
     %% if clean startup of mnesia, create the db
-    %% TODO : This is probably the wrong way to handly multiple
+    %% TODO : This is the wrong way to handly multiple
     %% nodes, but as we are removing mnesia, will do for now
     case mnesia:system_info(tables) of
         [schema] -> bits:clear_db();

@@ -447,7 +447,7 @@ format_vars([]) -> {{xml},[]};
 format_vars(Query) ->
 
     %% list of valid vars
-    Valid = ["links","format","last","nocallback","loggedin","info","attr",
+    Valid = ["links","format","lastrow","nocallback","loggedin","info","attr",
          "toolbar","last","hypernumber","pages","login","admin","import"],
 
     F = fun({K,V}) ->
@@ -512,28 +512,18 @@ sconf_vals(Conf,[{listen,[],Val}|T]) ->
         list_to_integer(X) end, string:tokens(Val,".")),
     sconf_vals(Conf#sconf{listen = {N1,N2,N3,N4}},T).
 
+%% ew, TODO: CLEANUP
 gconf_vals(C,[]) -> C;
-gconf_vals(C,[{log,[],[{absdir,[],Dir}]}|T]) ->
-    gconf_vals(C#gconf{logdir = Dir},T);
-gconf_vals(C,[{log,[],[{reldir,[],Dir}]}|T]) ->
-    gconf_vals(C#gconf{logdir = production_boot:root()++Dir},T);
-gconf_vals(C,[{yaws_dir,[],[{absdir,[],Dir}]}|T]) ->
-    gconf_vals(C#gconf{yaws_dir = Dir},T);
-gconf_vals(C,[{yaws_dir,[],[{reldir,[],Dir}]}|T]) ->
-    gconf_vals(C#gconf{yaws_dir = production_boot:root()++Dir},T);
-gconf_vals(C,[{yaws,[],V}|T]) ->
-    gconf_vals(C#gconf{yaws = V},T);
-gconf_vals(C,[{tmpdir,[],V}|T]) ->
-    gconf_vals(C#gconf{tmpdir = V},T);
-gconf_vals(C,[{phpexe,[],V}|T]) ->
-    gconf_vals(C#gconf{phpexe = V},T);
-gconf_vals(C,[{trace,[],V}|T]) ->
-    gconf_vals(C#gconf{trace = list_to_atom(V)},T);
-gconf_vals(C,[{ebin,[],V}|T]) ->
-    gconf_vals(C#gconf{ebin_dir = values([],V)},T);
-gconf_vals(C,[{include,[],V}|T]) ->
-    gconf_vals(C#gconf{include_dir = values([],V)},T);
-gconf_vals(C,[{servers,[],_V}|T]) -> gconf_vals(C,T).
+gconf_vals(C,[{log,[],[{absdir,[],Dir}]}|T]) ->      gconf_vals(C#gconf{logdir = Dir},T);
+gconf_vals(C,[{log,[],[{reldir,[],Dir}]}|T]) ->      gconf_vals(C#gconf{logdir = production_boot:root()++Dir},T);
+gconf_vals(C,[{yaws_dir,[],[{absdir,[],Dir}]}|T]) -> gconf_vals(C#gconf{yaws_dir = Dir},T);
+gconf_vals(C,[{yaws_dir,[],[{reldir,[],Dir}]}|T]) -> gconf_vals(C#gconf{yaws_dir = production_boot:root()++Dir},T);
+gconf_vals(C,[{yaws,[],V}|T]) ->                     gconf_vals(C#gconf{yaws = V},T);
+gconf_vals(C,[{phpexe,[],V}|T]) ->                   gconf_vals(C#gconf{phpexe = V},T);
+gconf_vals(C,[{trace,[],V}|T]) ->                    gconf_vals(C#gconf{trace = list_to_atom(V)},T);
+gconf_vals(C,[{ebin,[],V}|T]) ->                     gconf_vals(C#gconf{ebin_dir = values([],V)},T);
+gconf_vals(C,[{include,[],V}|T]) ->                  gconf_vals(C#gconf{include_dir = values([],V)},T);
+gconf_vals(C,[{servers,[],_V}|T]) ->                 gconf_vals(C,T).
 
 multipart(A,State,Name,Fun) ->
     Parse = yaws_api:parse_multipart_post(A),
