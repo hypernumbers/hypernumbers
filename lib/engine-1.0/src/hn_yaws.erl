@@ -328,8 +328,6 @@ import([{_Name,Tid}|T],Page)->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 api_create(Data, Page) ->
 
-    %%Time1=calendar:now_to_local_time(now()),
-
     #page{site=Site,path=Path,ref=Ref,vars=Vars} = Page,
     Addr = page_to_ref(Page),
 
@@ -353,10 +351,7 @@ api_create(Data, Page) ->
         1,
         Data
     ),
-    %%Time2=calendar:now_to_local_time(now()),
-    %%Elapsed=calendar:time_difference(Time1,Time2),
-    %%bits:log(io_lib:fwrite("in hn_db:write_item elapsed: ~p~n",[Elapsed])),
-    ok.
+    {ok,"thanks"}.
 
 %%% API call - CLEAR
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

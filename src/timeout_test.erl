@@ -12,7 +12,6 @@ run_test() ->
     c:pwd(),
     Celldata = readxls("../../tests/excel_files/Win_Excel07_As_97/" ++
                                  "timeout_tests.xls"),
-    %%io:format("DATA:~n~p~n~n", [Celldata]),
     Postcell =
         fun({{{sheet, Sheetname}, {row_index, Row}, {col_index, Col}}, Val}) ->
                 Postdata = conv_for_post(Val),

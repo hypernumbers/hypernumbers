@@ -45,12 +45,11 @@
 %%--------------------------------------------------------------------
 write_item(Addr,Val) when is_record(Addr,ref) ->
 
-    %%Time1=calendar:now_to_local_time(now()),
-
     Fun = fun() ->
         mnesia:write(#hn_item{addr = Addr, val = Val})
     end,
     {atomic, ok} = mnesia:transaction(Fun),
+
     
     %% Send a change notification to the remoting server, which 
     %% notifies web clients     
@@ -66,9 +65,6 @@ write_item(Addr,Val) when is_record(Addr,ref) ->
             Addr#ref.site,Addr#ref.path,Msg},?TIMEOUT)
         
     end,
-    %%Time2=calendar:now_to_local_time(now()),
-    %%Elapsed=calendar:time_difference(Time1,Time2),
-    %%bits:log(io_lib:fwrite("in hn_db:write_item elapsed: ~p~n",[Elapsed])),
     ok.
     
 %%--------------------------------------------------------------------
@@ -89,37 +85,34 @@ get_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
 
         Attr  = #ref{site=Site, path=Path, name=N, _ = '_'},
         Match = #hn_item{addr = Attr, _ = '_'},
-        List  = mnesia:match_object(hn_item,Match,read),
+        mnesia:match_object(hn_item,Match,read)
         
-        lists:filter
-        (
-            fun(#hn_item{addr=#ref{ref=ItemRef}}) ->
-            
-                case {Ref, ItemRef} of
-                
-                {{page,_},_}              -> true; %% All Attr on that Page
-                {X,X}                     -> true; %% Same Ref
-                {{row,Y},{cell,{_,Y}}}    -> true; %% Cell on same row
-                {{column,X},{cell,{X,_}}} -> true; %% Cell on same col
-                
-                {{range,{_,Y1,_,Y2}},{row,Y}}
-                    when Y > Y1 andalso Y < Y2 -> true; 
-                {{range,{X1,_,X2,_}},{column,X}}
-                    when X > X1 andalso X < X2 -> true;
-                    
-                {{range,{X1,Y1,X2,Y2}},{cell,{X,Y}}}
-                    when Y >= Y1 andalso Y =< Y2 andalso
-                         X >= X1 andalso X =< X2 -> true;
-                         
-                _ -> 
-                    false
-                end
-            end,
-            List
-        )
     end),
     
-    List.
+    lists:filter
+    (
+        fun(#hn_item{addr=#ref{ref=ItemRef}}) ->
+        
+            case {Ref, ItemRef} of
+            
+            {{page,_},_}              -> true; %% All Attr on that Page
+            {X,X}                     -> true; %% Same Ref
+            {{row,Y},{cell,{_,Y}}}    -> true; %% Cell on same row
+            {{column,X},{cell,{X,_}}} -> true; %% Cell on same col
+            
+            {{range,{_,Y1,_,Y2}},{row,Y}}
+                when Y > Y1 andalso Y < Y2 -> true; 
+            {{range,{X1,_,X2,_}},{column,X}}
+                when X > X1 andalso X < X2 -> true;
+                
+            {{range,{X1,Y1,X2,Y2}},{cell,{X,Y}}}
+                when Y >= Y1 andalso Y =< Y2 andalso
+                        X >= X1 andalso X =< X2 -> true;
+                        
+            _ -> false
+            end
+        end, 
+        List).
     
 %%--------------------------------------------------------------------
 %% Function    : get_item_val/2
@@ -367,36 +360,34 @@ read_remote_links(Index, Relation,Type) ->
 %% This is called when a cell changes, update other cells using
 %% it and outgoing hypernumbers
 dirty_refs_changed(dirty_cell, Ref) ->
-    
-    {atomic, {ok,Outgoing}} = mnesia:transaction(fun() ->
-            
-        %% Update local cells
-        lists:foreach(
-            fun({local_cell_link, _, RefTo}) ->
-                hn_main:recalc(RefTo)
-            end,
-            read_links(Ref,parent) 
-        ),
         
-        mnesia:delete({dirty_cell, Ref}),
-        
+    {atomic, {ok,Remote,Local}} = mnesia:transaction(fun() ->
+
         %% Make a list of hypernumbers listening
         %% to this cell, (update outside transaction)
         Links = mnesia:match_object(#remote_cell_link{
             parent=Ref,type=outgoing,_='_'}),
-        {ok,list_hn(Links,[])}
+        {ok,list_hn(Links,[]),read_links(Ref,parent)}
     end),
-    
+
     [V] = get_item_val((to_ref(Ref))#ref{name=value}),
     Val = hn_util:xml_to_val(V),
         
+    %% Update local cells
+    lists:foreach(
+        fun({local_cell_link, _, RefTo}) ->
+            hn_main:recalc(RefTo)
+        end,
+        Local
+    ),
+
     %Update Remote Hypernumbers
     lists:foreach(
         fun(Cell) ->
             notify_remote_change(Cell,Val)
         end,
-        Outgoing),
-    
+        Remote),
+             
     ok;
 
 %% This is called when a remote hypernumber changes
