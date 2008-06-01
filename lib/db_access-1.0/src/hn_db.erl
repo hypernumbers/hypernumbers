@@ -27,7 +27,7 @@
     %% hypernumbers
     register_hn/5,  update_hn/4,    get_hn/3,
   	%% dirty tables
-    dirty_refs_changed/2, get_first_dirty/1, mark_dirty/2
+    dirty_refs_changed/2, mark_dirty/2
     ]).
 
 %%-------------------------------------------------------------------
@@ -50,21 +50,23 @@ write_item(Addr,Val) when is_record(Addr,ref) ->
     end,
     {atomic, ok} = mnesia:transaction(Fun),
 
-    
     %% Send a change notification to the remoting server, which 
     %% notifies web clients     
-    case Addr#ref.name of
-    "__"++_ -> false;
-    _ ->
-        Msg = io_lib:format("change ~s",
-            [simplexml:to_xml_string(
-                hn_util:item_to_xml(#hn_item{addr = Addr, val = Val})
-            )]),
+    spawn( fun() ->
+        case Addr#ref.name of
+        "__"++_ -> false;
+        _ ->
+            Msg = io_lib:format("change ~s",
+                [simplexml:to_xml_string(
+                    hn_util:item_to_xml(#hn_item{addr = Addr, val = Val})
+                )]),
+                
+            gen_server:call(remoting_reg,{change,
+                Addr#ref.site,Addr#ref.path,Msg},?TIMEOUT)
             
-        gen_server:call(remoting_reg,{change,
-            Addr#ref.site,Addr#ref.path,Msg},?TIMEOUT)
-        
-    end,
+        end
+    end),
+    
     ok.
     
 %%--------------------------------------------------------------------
@@ -407,21 +409,6 @@ dirty_refs_changed(dirty_hypernumber, Ref) ->
         mnesia:delete({dirty_hypernumber, Ref})
     end),
     ok.   
-
-%%--------------------------------------------------------------------
-%% Function    : get_first_dirty/1
-%%
-%% Description : reads the first value out of the dirty table
-%%--------------------------------------------------------------------
-get_first_dirty(Table)->
-    {atomic, List} = mnesia:transaction(
-        fun()-> 
-            case mnesia:dirty_first(Table) of
-            '$end_of_table' -> [];
-            Key -> mnesia:dirty_read(Table,Key)
-	        end
-	    end),   
-    List.
 
 %%--------------------------------------------------------------------
 %% Function    : mark_dirty/2

@@ -1,5 +1,5 @@
 -module(misc_util).
--export([stdfuns_export_xml/0,import_xml_attributes/2]).
+-export([stdfuns_export_xml/0,import_xml_attributes/2,profile/2]).
 -include("builtins.hrl").
 -include("spriki.hrl").
 
@@ -57,3 +57,16 @@ import_xml_attributes(File,Url) ->
             end
         end,Refs
     ).
+    
+profile(N,F) ->
+    statistics(runtime),
+    statistics(wall_clock),
+    for(1,N,F),
+    {_,Time1} = statistics(runtime),
+    {_,Time2} = statistics(wall_clock),
+    {Time1,Time2}.
+    
+for(N,N,F) -> [F()];
+for(I,N,F) -> [F()|for(I+1,N,F)].
+
+    

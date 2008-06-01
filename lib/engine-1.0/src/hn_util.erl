@@ -22,8 +22,7 @@
     req/1,              post/2,             post/3,
     parse_url/1,
     %% XML Utils
-    xml_to_string/1,    readxml_string/1,   readxml_file/1,
-    xmlsearch/3,        values/2,           clear_whitespace/1,
+    xmlsearch/3,        values/2,
     %% File Utils
     read/1,
     %% List Utils
@@ -51,7 +50,7 @@ ref_to_str({row,Y})      -> text(Y);
 ref_to_str({column,X})   -> tconv:to_b26(X);
 ref_to_str({range,{X1,Y1,X2,Y2}}) ->
     tconv:to_b26(X1)++text(Y1)++":"++tconv:to_b26(X2)++text(Y2).
- 
+
  
 %% TODO :   Seriously strip down this code and clean it out
 %%          val_to_xml makes assertions on type and can be 
@@ -191,34 +190,6 @@ parse_url(Url) when is_record(Url,url) ->
 %%% XML Utils                                                                %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-readxml_string(String) ->
-    {Xml,_Misc} = xmerl_scan:string(String,[{space,normalize}]),
-    xmerl_lib:simplify_element(Xml).
-
-readxml_file(File) ->
-    readxml_string(binary_to_list(element(2,file:read_file(File)))).
-
-%%--------------------------------------------------------------------
-%% Function:    clear_whitespace/1
-%% Description: Clears the empty xml elements created by
-%%              Insignificant whitespace
-%%--------------------------------------------------------------------
-clear_whitespace(Children) when is_list(Children) ->
-    case io_lib:deep_char_list(Children) of
-    true  -> lists:flatten(Children);
-    false ->
-        Clear = lists:filter(
-            fun(X) ->
-                case X of " " -> false; _ -> true end
-            end,Children),
-
-        lists:map(fun(X) ->
-            clear_whitespace(X) end, Clear)
-    end;
-
-clear_whitespace({Name,Attr,Children}) ->
-    {Name,Attr,clear_whitespace(Children)}.
-
 %%--------------------------------------------------------------------
 %% Function:    xmlsearch/3
 %% Description: Searchs an xml tree for elements with name Name,
@@ -252,22 +223,6 @@ values(Rtn,[{_Root,_Attr,Children}|T]) ->
     end,
     lists:append(AddChild,values(Rtn,T)).
 
-%%--------------------------------------------------------------------
-%% Function:    xml_to_string/1
-%% Description: Creates a string representation of xml
-%%--------------------------------------------------------------------
-xml_to_string(List) when is_list(List) ->
-    case io_lib:deep_char_list(List) of
-    true  -> lists:flatten(List);
-    false ->
-        lists:flatten(lists:map(fun(X) -> xml_to_string(X) end,List))
-    end;
-
-xml_to_string({Name,Attr,Children}) ->
-    N = atom_to_list(Name),
-    F = fun({K,V}) -> atom_to_list(K)++"=\""++V++"\" " end,
-    "<"++N++" "++lists:map(F,Attr)++">"++xml_to_string(Children)++"</"++N++">".
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% File Utils                                                               %%%
@@ -293,11 +248,9 @@ read(FileName) ->
 %%--------------------------------------------------------------------
 add_uniq(List,Item) -> 
 
-    lists:filter(
+    [Item] ++ lists:filter(
         fun(X) -> ?COND(X == Item,false,true) end,
-        List) 
-        
-    ++ [Item].
+        List).
     
 %%--------------------------------------------------------------------
 %% Function:    str_replace/2
@@ -452,21 +405,20 @@ format_vars(Query) ->
 
     F = fun({K,V}) ->
         case lists:member(K,Valid) of
-            true ->
+        true ->
             case V of
-                undefined -> {list_to_atom(K)};
-                _         -> {list_to_atom(K),V}
+            undefined -> {list_to_atom(K)};
+            _         -> {list_to_atom(K),V}
             end;
-            _   -> {invalid}
-
+        _   -> {invalid}
         end
     end,
 
     Split = fun(X) -> 
         case string:chr(X,$=) of
-            0 -> {X,undefined};
-            _ -> [Key,Val] = string:tokens(X,"="),
-                {Key,Val}
+        0 -> {X,undefined};
+        _ -> [Key,Val] = string:tokens(X,"="),
+             {Key,Val}
         end
     end,
     
@@ -486,9 +438,13 @@ format_vars(Query) ->
         _ -> true end end,Vars),
     {Format,lists:keysort(1,Tmp2)}.
 
+
 create_sconf({group,[{port,Port}],Groups}) ->
-    lists:map(fun(X) -> sconf_servers(X,list_to_integer(Port))
-        end,xmlsearch([],Groups,server)).
+    lists:map(
+        fun(X) -> 
+            sconf_servers(X,list_to_integer(Port)) 
+        end,
+        xmlsearch([],Groups,server)).
 
 sconf_servers({server,[{name,Name}],Vals},Port) ->
     sconf_vals(#sconf{port=Port,servername=Name},Vals).

@@ -27,10 +27,8 @@
 %%------------------------------------------------------------------------------
 start(_Type, _StartArgs) ->
     case engine_sup:start_link() of
-	    {ok, Pid} ->
-		{ok, Pid};
-	    Error ->
-		Error
+    {ok, Pid} -> {ok, Pid};
+    Error ->     Error
     end.
 
 %%------------------------------------------------------------------------------
@@ -39,9 +37,4 @@ start(_Type, _StartArgs) ->
 %% has stopped. It is intended to be the opposite of Module:start/2 and
 %% should do any necessary cleaning up. The return value is ignored.
 %%------------------------------------------------------------------------------
-stop(_State) ->
-    ok.
-
-%%==============================================================================
-%% Internal functions
-%%==============================================================================
+stop(_State) -> ok.

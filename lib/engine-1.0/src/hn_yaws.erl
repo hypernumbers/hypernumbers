@@ -15,7 +15,7 @@
 %%%-----------------------------------------------------------------
 %%% Exported Functions
 %%%-----------------------------------------------------------------
--export([ out/1, get_last_index/3 ]).
+-export([ out/1 ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%
@@ -175,7 +175,7 @@ page_to_ref(#page{site=Site, path=Path, ref=Ref,vars=Vars}) ->
 %% Format the output depending on the requested format.
 format_output(Format,Data) ->
     case Format of
-    {xml}   -> {content,"text/xml","<?xml version=\"1.0\" encoding=\"utf-8\" ?>"++simplexml:to_xml_string(Data)};
+    {xml}   -> {content,"text/xml",simplexml:to_xml_string(Data)};
     {json}  -> {content,"text/plain",simplexml:to_json_string(Data)};
     {plain} -> {content,"text/plain",Data};
     {json,nocallback} -> 
