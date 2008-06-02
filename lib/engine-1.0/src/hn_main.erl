@@ -183,14 +183,17 @@ get_cell_info(Site, Path, X, Y) ->
 %%%               recalculate its value
 %%%-----------------------------------------------------------------
 recalc(Index) ->
-    #index{site=Site,path=Path,column=X,row=Y} = Index,
-    Addr = #ref{ site=Site, path=Path, ref={cell,{X,Y}}},
+    #index{site=Site, path=Path, column=X, row=Y} = Index,
+    Addr = #ref{site=Site, path=Path, ref={cell, {X, Y}}},
     Ast  = hn_db:get_item_val(Addr#ref{name="__ast"}),
-    
-    V = case muin:run(Ast,[{site,Site},{path,Path},{x,X},{y,Y}]) of
-        {ok,{Val, _, _, _}} -> [hn_util:val_to_xml(Val)];
-        {error, Reason}     -> [{error,[],[Reason]}]
-    end,
+    Pid = spawn(muin, run, []),
+    Pid ! {run, {Ast, [{site,Site},{path,Path},{x,X},{y,Y}]}, self()},
+    V = receive
+            {ok, {Val, _, _, _}} ->
+                [hn_util:val_to_xml(Val)];
+            {error, Reason} ->
+                [{error,[],[Reason]}]
+        end,
     
     hn_db:write_item(Addr#ref{name=value},V),
     hn_db:mark_dirty(Index,cell),
