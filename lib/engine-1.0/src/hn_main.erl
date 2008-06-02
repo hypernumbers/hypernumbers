@@ -34,50 +34,57 @@
 set_attribute(R,Val) when R#ref.name == formula -> set_cell(R,Val);
 set_attribute(Ref,Val) -> hn_db:write_item(Ref,Val).        
 
+%% Runs the formula through Muin and returns the tuple
+%% {CompiledFormula, ValueAsSimpleXML, Parents, Dependencies}
+run_formula(Formula, {X, Y}, Bindings) ->
+    case muin:compile(Formula, {X, Y}) of
+        {ok, Pcode} ->
+            Pid = spawn(muin, run, []),
+            Pid ! {run, {Pcode, Bindings}, self()},
+            receive
+                {ok, {Val, Deptree, _, Parents}} ->
+
+                    %% Transform parents and deptree to simplexml
+                    F = fun({Type, {S, P, X1, Y1}}) ->
+                                Url = hn_util:index_to_url({index, S, P, X1, Y1}),
+                                {url, [{type, Type}], [Url]}
+                        end,
+                            
+                    Npar = lists:map(F, Parents),
+                    Ndep = lists:map(F, Deptree),
+                    {Pcode, hn_util:val_to_xml(Val), Npar, Ndep};
+                {error, Reason} when is_atom(Reason) ->
+                    {nil, {error, [], [Reason]}, [], []}
+            end;
+        {error, error_in_formula} ->
+            {nil, {string, [], "Invalid formula"}, [], []}
+    end.
+
 %%%-----------------------------------------------------------------
 %%% Function    : set_cell/2
 %%% Types       : 
 %%% Description : process the string input to a cell
 %%%-----------------------------------------------------------------
 set_cell(Addr, Val) ->
-
-    #ref{site=Site,path=Path,ref={cell,{X,Y}}} = Addr,
-
+    #ref{site=Site, path=Path, ref={cell, {X, Y}}} = Addr,
+    
     case superparser:process(Val) of
-    {formula, Formula} ->  
-        case muin:compile(Formula, {X, Y}) of
-        {ok, Ast} ->
-            case muin:run(Ast,[{site,Site},{path,Path},{x,X},{y,Y}]) of
-            {ok, {Value, DepTree, _, Parents}} ->
-                %% Store syntax tree
-                db_put(Addr,"__ast",Ast),
-                           
-                %% Transform parents and deptree from tuple list to
-                %% simplexml
-                F = fun({Type,{S,P,X1,Y1}}) ->
-                    Url = hn_util:index_to_url({index,S,P,X1,Y1}),
-                    {url,[{type,Type}],[Url]}
-                end,
-                            
-                NPar = lists:map(F,Parents),
-                NDep = lists:map(F,DepTree),
-                            
-                write_cell(Addr, [hn_util:val_to_xml(Value)],
-                    "="++Formula, NPar, NDep);
-                        
-                {error, Reason} when is_atom(Reason) ->
-                    write_cell(Addr,[{error,[],[Reason]}],"="++Formula,[],[])
-            end;
-                
-            {error, error_in_formula} ->
-                write_cell(Addr,[{string,[],["Invalid Formula"]}],"="++Formula,[],[])
-        end;
-        
-    {int, N} ->    write_cell(Addr, [{integer,[],[N]}], integer_to_list(N), [], []);
-    {float, N} ->  write_cell(Addr, [{float,[],[N]}], float_to_list(N), [], []);
-    {string, S} -> write_cell(Addr, [{string, [],[S]}], S, [], []);
-    {bool, B}   -> write_cell(Addr, [{boolean,[],[B]}],atom_to_list(B), [], []);
-    {errval, E} -> write_cell(Addr, E, E, [], [])       
+        {formula, Formula} ->
+            Bindings = [{site, Site},{path, Path},{x, X},{y, Y}],
+            {Pcode, Resval, Npar, Ndep} = run_formula(Formula, {X, Y}, Bindings),
+            ?IF(Pcode =/= nil, 
+                db_put(Addr, "__ast", Pcode)),
+            write_cell(Addr, [Resval], "=" ++ Formula, Npar, Ndep);
+        {int, N}    ->
+            write_cell(Addr, [{integer, [], [N]}], integer_to_list(N), [], []);
+        {float, N}  ->
+            write_cell(Addr, [{float, [], [N]}], float_to_list(N), [], []);
+        {string, S} ->
+            write_cell(Addr, [{string, [], [S]}], S, [], []);
+        {bool, B}   ->
+            write_cell(Addr, [{boolean, [], [B]}], atom_to_list(B), [], []);
+        {errval, E} ->
+            write_cell(Addr, E, E, [], [])       
     end.
 
     

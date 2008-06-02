@@ -4,7 +4,7 @@
 %%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -module(muin).
--export([compile/2, run/2]).
+-export([compile/2, run/0]).
 
 -include("spriki.hrl").
 -include("builtins.hrl").
@@ -43,18 +43,27 @@ try_parse(Fla, {X, Y}) ->
     {ok, _Ast} = muin_parser:parse(Toks). % Match to enforce the contract.
 
 %% @doc Runs compiled formula.
-run(Pcode, Bindings) ->
-    %% Populate the process dictionary.
-    foreach(fun({K, V}) -> put(K, V) end,
-            Bindings ++ [{retvals, {[], [], []}}]),
+run() ->
+    receive
+        {run, {Pcode, Bindings}, Caller} ->
+            %% Populate the process dictionary.
+            foreach(fun({K, V}) -> put(K, V) end,
+                    Bindings ++ [{retvals, {[], [], []}}]),
              
-    case (catch eval(Pcode)) of
-        {error, R}  -> {error, R};
-        {'EXIT', R} -> throw(R); 
-        Val ->
-            {RefTree, Errors, References} = get(retvals),
-            {ok, {?COND(Val == blank, 0, Val), %% Cells referencing blank cells become 0.
-                  RefTree, Errors, References}}
+            case (catch eval(Pcode)) of
+                {error, R}  ->
+                    Caller ! {error, R};
+                Val ->
+                    {RefTree, Errors, References} = get(retvals),
+                     %% Cells referencing blank cells become 0.
+                    Res = {ok, {?COND(Val == blank, 0, Val),
+                                RefTree, Errors, References}},
+                    Caller ! Res
+            end;
+        Else ->
+            Msg = io_lib:format("Unexpected message in muin:run(): ~p"),
+            io:format("~s~n", [Msg]),
+            error_logger:error_msg(Msg)
     end.
 
 %%%---------------------%%%
