@@ -10,6 +10,7 @@ run_test() ->
     test_util:wait(),
     io:format("Current path:~n"),
     c:pwd(),
+    gen_server:cast(dirty_cell,{setstate,passive}),
     Celldata = readxls("../../tests/excel_files/Win_Excel07_As_97/" ++
                                  "timeout_tests.xls"),
     Postcell =
@@ -20,5 +21,7 @@ run_test() ->
                 hnpost(Path, Ref, Postdata)
         end,
     foreach(Postcell, Celldata),
+    gen_server:cast(dirty_cell,{setstate,active}),
+    gen_server:call(dirty_cell,flush,infinity),
     {ok,ok}.
 

@@ -33,6 +33,7 @@ init_per_suite(Config) ->
     production_boot:start(),
     bits:clear_db(),
     test_util:wait(),
+    gen_server:cast(dirty_cell,{setstate,passive}),
     io:format("Current path:~n"),
     c:pwd(),
     Celldata = readxls("../../excel_files/Win_Excel07_As_97/" ++
@@ -46,6 +47,8 @@ init_per_suite(Config) ->
                 hnpost(Path, Ref, Postdata)
         end,
     foreach(Postcell, Celldata),
+    gen_server:cast(dirty_cell,{setstate,active}),
+    gen_server:call(dirty_cell,flush),
     Config.
 
 end_per_suite(_Config) ->

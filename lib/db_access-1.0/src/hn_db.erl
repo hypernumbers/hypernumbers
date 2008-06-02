@@ -362,34 +362,7 @@ read_remote_links(Index, Relation,Type) ->
 %% This is called when a cell changes, update other cells using
 %% it and outgoing hypernumbers
 dirty_refs_changed(dirty_cell, Ref) ->
-        
-    {atomic, {ok,Remote,Local}} = mnesia:transaction(fun() ->
-
-        %% Make a list of hypernumbers listening
-        %% to this cell, (update outside transaction)
-        Links = mnesia:match_object(#remote_cell_link{
-            parent=Ref,type=outgoing,_='_'}),
-        {ok,list_hn(Links,[]),read_links(Ref,parent)}
-    end),
-
-    [V] = get_item_val((to_ref(Ref))#ref{name=value}),
-    Val = hn_util:xml_to_val(V),
-        
-    %% Update local cells
-    lists:foreach(
-        fun({local_cell_link, _, RefTo}) ->
-            hn_main:recalc(RefTo)
-        end,
-        Local
-    ),
-
-    %Update Remote Hypernumbers
-    lists:foreach(
-        fun(Cell) ->
-            notify_remote_change(Cell,Val)
-        end,
-        Remote),
-             
+    hn_main:recalc(Ref),               
     ok;
 
 %% This is called when a remote hypernumber changes
@@ -405,9 +378,9 @@ dirty_refs_changed(dirty_hypernumber, Ref) ->
                 Cell = To#remote_cell_link.child,
                 hn_main:recalc(Cell)
             end,
-            Links),       
-        mnesia:delete({dirty_hypernumber, Ref})
+            Links)
     end),
+    
     ok.   
 
 %%--------------------------------------------------------------------
@@ -417,17 +390,40 @@ dirty_refs_changed(dirty_hypernumber, Ref) ->
 %%               means cells that use its value needs to be 
 %%               recalculated (this triggers the recalc)
 %%--------------------------------------------------------------------
-mark_dirty(Index,Type) ->
+mark_dirty(Index,cell) ->
 
-    Obj = case Type of
-    cell ->         #dirty_cell{index=Index};
-    hypernumber ->  #dirty_hypernumber{index=Index}
-    end,
-
-    {atomic, _Okay} = mnesia:transaction(fun() ->
-        mnesia:write(Obj)
+    {atomic, List} = mnesia:transaction(fun() ->
+        %% Mark all local parents as dirty
+        lists:foreach(
+            fun({local_cell_link, _, RefTo}) ->
+                mnesia:write(#dirty_cell{index=RefTo})
+            end,
+            read_links(Index,parent)),
+        
+        %% Find all remote hypernumbers and send update    
+        Links = mnesia:match_object(#remote_cell_link{
+            parent=Index,type=outgoing,_='_'}),
+        list_hn(Links,[])                          
     end),
-    ok.
+
+    case List of
+    []   -> ok;
+    Else ->
+        [V] = get_item_val((to_ref(Index))#ref{name=value}),
+        Val = hn_util:xml_to_val(V),
+        %Update Remote Hypernumbers
+        lists:foreach(
+            fun(Cell) ->
+                notify_remote_change(Cell,Val)
+            end,
+            List)
+    end,
+    ok;
+    
+mark_dirty(Index,hypernumber) ->
+    {atomic, _Okay} = mnesia:transaction(fun() ->
+        mnesia:write(#dirty_hypernumber{index=Index})
+    end).
 
 %%-------------------------------------------------------------------
 %% Table : incoming_hn , outgoing_hn

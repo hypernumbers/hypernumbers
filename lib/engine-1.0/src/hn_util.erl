@@ -253,12 +253,7 @@ add_uniq(List,Item) ->
         List).
     
 %%--------------------------------------------------------------------
-%% Function:    str_replace/2
-%%
-%% Description: Takes a list of key/value pairs, and a string, and
-%%              replaces {key} with value in the string
-%%              cleans {key} pairs that arent replaces out of the
-%%              string
+%% Function:    trim/2
 %%--------------------------------------------------------------------
 trim(String) -> strip_ws(lists:reverse(strip_ws(lists:reverse(String)))).
 
