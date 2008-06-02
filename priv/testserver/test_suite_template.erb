@@ -3,7 +3,7 @@
 -module(<%= @basename %>_SUITE).
 -compile(export_all).
 -include("ct.hrl").
--import(lists, [foreach/2, map/2]).
+-import(lists, [foldl/3, foreach/2, map/2]).
 -import(test_util, [conv_for_post/1, conv_from_get/1, cmp/2, hnpost/3, hnget/2, readxls/1]).
 
 -define(print_error_or_return(Res, Testcase),
@@ -32,23 +32,34 @@ init_per_suite(Config) ->
     code:add_patha("../../../../../ebin"),
     production_boot:start(),
     bits:clear_db(),
-    test_util:wait(),
-    gen_server:cast(dirty_cell,{setstate,passive}),
-    io:format("Current path:~n"),
-    c:pwd(),
+    %%test_util:wait(),
     Celldata = readxls("../../excel_files/Win_Excel07_As_97/" ++
-                                 "<%= @basename + ".xls" %>"),
-    io:format("DATA:~n~p~n~n", [Celldata]),
-    Postcell =
-        fun({{{sheet, Sheetname}, {row_index, Row}, {col_index, Col}}, Val}) ->
-                Postdata = conv_for_post(Val),
-                Path = "/" ++ "<%= @basename %>" ++ "/" ++ Sheetname ++ "/",
-                Ref = tconv:to_b26(Col + 1) ++ tconv:to_s(Row + 1),
-                hnpost(Path, Ref, Postdata)
-        end,
-    foreach(Postcell, Celldata),
-    gen_server:cast(dirty_cell,{setstate,active}),
-    gen_server:call(dirty_cell,flush),
+                       "<%= @basename + ".xls" %>"),
+    {Lits, Flas} = % split data into literals and formulas
+        foldl(fun(X, Acc = {Ls, Fs}) ->
+                      {{{sheet, Sheet}, {row_index, Row}, {col_index, Col}}, Val} = X,
+                      Postdata = conv_for_post(Val),
+                      Path = "/" ++ "<%= @basename %>" ++ "/" ++ Sheet ++ "/",
+                      Ref = tconv:to_b26(Col + 1) ++ tconv:to_s(Row + 1),
+                      Datatpl = {Path, Ref, Postdata},
+                      case Postdata of
+                          [$= | _ ] -> % formula
+                              {Ls, Fs ++ [Datatpl]};
+                          _ ->
+                              {Ls ++ [Datatpl], Fs}
+                      end
+              end,
+              {[], []}, Celldata),
+    
+    Dopost = fun({Path, Ref, Postdata}) ->
+                     hnpost(Path, Ref, Postdata)
+             end,
+
+    gen_server:cast(dirty_cell,  {setstate, passive}),
+    foreach(Dopost, Lits),
+    foreach(Dopost, Flas),
+    gen_server:cast(dirty_cell, {setstate, active}),
+    gen_server:call(dirty_cell, flush),
     Config.
 
 end_per_suite(_Config) ->
