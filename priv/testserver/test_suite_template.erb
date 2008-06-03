@@ -36,7 +36,7 @@ init_per_suite(Config) ->
     Celldata = readxls("../../excel_files/Win_Excel07_As_97/" ++
                        "<%= @basename + ".xls" %>"),
     {Lits, Flas} = % split data into literals and formulas
-        foldl(fun(X, Acc = {Ls, Fs}) ->
+        foldl(fun(X, _Acc = {Ls, Fs}) ->
                       {{{sheet, Sheet}, {row_index, Row}, {col_index, Col}}, Val} = X,
                       Postdata = conv_for_post(Val),
                       Path = "/" ++ "<%= @basename %>" ++ "/" ++ Sheet ++ "/",
@@ -59,7 +59,7 @@ init_per_suite(Config) ->
     foreach(Dopost, Lits),
     foreach(Dopost, Flas),
     gen_server:cast(dirty_cell, {setstate, active}),
-    gen_server:call(dirty_cell, flush),
+    gen_server:call(dirty_cell, flush, infinity),
     Config.
 
 end_per_suite(_Config) ->
