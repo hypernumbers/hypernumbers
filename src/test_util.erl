@@ -247,7 +247,7 @@ hnpost(Path, Ref, Postdata) ->
 handle_return({error, timeout}) ->
     bits:log("TIMEOUT!");
     %%io:format("<b style=\"color:red;font-size:21px\">TIMEOUT</b>~n");
-handle_return({ok, {{_V, 200, _R}, _H, Body}}) ->
+handle_return({ok, {{_V, 200, _R}, _H, _Body}}) ->
     ok;%%io:format("OK.~n");
 handle_return({ok, {{_V, Code, _R}, _H, Body}}) ->
     io:format("HTTP POST error, code:~n~pbody:~n~p~n", [Code, Body]).
@@ -265,8 +265,8 @@ conv_from_get("false") -> false;
 conv_from_get("TRUE") -> true;
 conv_from_get("FALSE") -> false;
 conv_from_get(X) ->
-    case lists:member(["#NULL!", "#DIV/0!", "#VALUE!",
-                       "#REF!", "#NAME?", "#NUM!", "#N/A"], X) of
+    case lists:member(X, ["#NULL!", "#DIV/0!", "#VALUE!",
+                          "#REF!", "#NAME?", "#NUM!", "#N/A"]) of
         true -> % error value
             list_to_atom(X);
         false ->
