@@ -8,7 +8,7 @@
 
 process([$= | Tl]) when Tl =/= [] ->
     {formula, upcase(Tl)};
-process([$' | Tl]) -> %%' %% quoted string
+process([39 | Tl]) -> %% singly quoted string
     {string, Tl};
 process(Input) ->
     {ok, Toks} = muin_lexer:lex(upcase(Input), {1, 1}),

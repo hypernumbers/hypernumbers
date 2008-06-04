@@ -260,22 +260,22 @@ cmp(G, E) ->
             Val == E
     end.
 
-conv_from_get(Val) ->
-    case Val of
-        [34 | Tl] -> % String
-            hslists:init(Tl);
-        X = [35 | _] -> % Starts with # -> error value.
+conv_from_get("true") -> true;
+conv_from_get("false") -> false;
+conv_from_get("TRUE") -> true;
+conv_from_get("FALSE") -> false;
+conv_from_get(X) ->
+    case lists:member(["#NULL!", "#DIV/0!", "#VALUE!",
+                       "#REF!", "#NAME?", "#NUM!", "#N/A"], X) of
+        true -> % error value
             list_to_atom(X);
-        "TRUE" ->
-            true;
-        "FALSE" ->
-            false;
-        "true" ->
-            true;
-        "false" ->
-            false;
-        _ ->
-            tconv:to_num(Val)
+        false ->
+            case tconv:to_num(X) of
+                N when is_number(N) -> % number
+                    N;
+                {error, nan} -> % string
+                    X
+            end
     end.
 
 %% TODO: Some of these conversion need to be done inside the reader itself.
@@ -285,7 +285,7 @@ conv_for_post(Val) ->
         {_, boolean, false} -> "false";
         {_, number, N}     -> tconv:to_s(N);
         {_, error, E}      -> E;
-        {string, X}        -> "\"" ++ X ++ "\"";
+        {string, X}        -> X;
         {formula, F}       -> F
     end.
 
