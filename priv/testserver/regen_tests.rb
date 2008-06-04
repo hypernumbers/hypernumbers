@@ -34,7 +34,7 @@ mvs = if ARGV[1]
         ARGV[1].each_byte { |b| chars << b.chr }
         chars
       else
-        ["a", "b", "c", "d", "e"]
+        ["a", "b", "c", "d", "e", "x"]
       end
 
 mvs.each do |char|
