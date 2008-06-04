@@ -34,32 +34,6 @@
 set_attribute(R,Val) when R#ref.name == formula -> set_cell(R,Val);
 set_attribute(Ref,Val) -> hn_db:write_item(Ref,Val).        
 
-%% Runs the formula through Muin and returns the tuple
-%% {CompiledFormula, ValueAsSimpleXML, Parents, Dependencies}
-run_formula(Formula, {X, Y}, Bindings) ->
-    case muin:compile(Formula, {X, Y}) of
-        {ok, Pcode} ->
-            Pid = spawn(muin, run, []),
-            Pid ! {run, {Pcode, Bindings}, self()},
-            receive
-                {ok, {Val, Deptree, _, Parents}} ->
-
-                    %% Transform parents and deptree to simplexml
-                    F = fun({Type, {S, P, X1, Y1}}) ->
-                                Url = hn_util:index_to_url({index, S, P, X1, Y1}),
-                                {url, [{type, Type}], [Url]}
-                        end,
-                            
-                    Npar = lists:map(F, Parents),
-                    Ndep = lists:map(F, Deptree),
-                    {Pcode, hn_util:val_to_xml(Val), Npar, Ndep};
-                {error, Reason} when is_atom(Reason) ->
-                    {nil, {error, [], [Reason]}, [], []}
-            end;
-        {error, error_in_formula} ->
-            {nil, {string, [], "Invalid formula"}, [], []}
-    end.
-
 %%%-----------------------------------------------------------------
 %%% Function    : set_cell/2
 %%% Types       : 
@@ -185,19 +159,20 @@ get_cell_info(Site, Path, X, Y) ->
 recalc(Index) ->
     #index{site=Site, path=Path, column=X, row=Y} = Index,
     Addr = #ref{site=Site, path=Path, ref={cell, {X, Y}}},
-    Ast  = hn_db:get_item_val(Addr#ref{name="__ast"}),
-    Pid = spawn(muin, run, []),
-    Pid ! {run, {Ast, [{site,Site},{path,Path},{x,X},{y,Y}]}, self()},
-    V = receive
-            {ok, {Val, _, _, _}} ->
-                [hn_util:val_to_xml(Val)];
-            {error, Reason} ->
-                [{error,[],[Reason]}]
-        end,
-    
-    hn_db:write_item(Addr#ref{name=value},V),
-    hn_db:mark_dirty(Index,cell),
+    Pcode = hn_db:get_item_val(Addr#ref{name="__ast"}),
+    Bindings = [{site, Site}, {path, Path}, {x, X}, {y, Y}],
+
+    Val = case muin:run(Pcode, Bindings) of
+              {ok, {V, _, _, _}} ->
+                  hn_util:val_to_xml(V);
+              {error, Reason} when is_atom(Reason) ->
+                  {error, [], [Reason]}
+          end,
+
+    hn_db:write_item(Addr#ref{name=value}, [Val]),
+    hn_db:mark_dirty(Index, cell),
     ok.
+    
 
 %%%-----------------------------------------------------------------
 %%% Function    : get_hypernumber/lots
@@ -238,3 +213,25 @@ db_put(Addr,Name,Value) ->
 to_index(#ref{site=Site,path=Path,ref={cell,{X,Y}}}) ->
     #index{site=Site,path=Path,column=X,row=Y}.
             
+%% Runs the formula through Muin and returns the tuple
+%% {CompiledFormula, ValueAsSimpleXML, Parents, Dependencies}
+run_formula(Formula, {X, Y}, Bindings) ->
+    case muin:compile(Formula, {X, Y}) of
+        {ok, Pcode} ->
+            case muin:run(Pcode, Bindings) of
+                {ok, {Val, Deptree, _, Parents}} ->
+                    %% Transform parents and deptree to simplexml
+                    F = fun({Type, {S, P, X1, Y1}}) ->
+                                Url = hn_util:index_to_url({index, S, P, X1, Y1}),
+                                {url, [{type, Type}], [Url]}
+                        end,
+                            
+                    Npar = lists:map(F, Parents),
+                    Ndep = lists:map(F, Deptree),
+                    {Pcode, hn_util:val_to_xml(Val), Npar, Ndep};
+                {error, Reason} when is_atom(Reason) ->
+                    {nil, {error, [], [Reason]}, [], []}
+            end;
+        {error, error_in_formula} ->
+            {nil, {string, [], "Invalid formula"}, [], []}
+    end.

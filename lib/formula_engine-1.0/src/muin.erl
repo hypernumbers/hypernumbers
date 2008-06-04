@@ -4,7 +4,8 @@
 %%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -module(muin).
--export([compile/2, run/0]).
+-export([compile/2, run/2]).
+-export([run/0]).
 
 -include("spriki.hrl").
 -include("builtins.hrl").
@@ -23,9 +24,7 @@
 -define(isfuncall(X),
         is_atom(X) andalso X =/= true andalso X =/= false).
 
-%%%--------------------%%%
-%%%  Public functions  %%%
-%%%--------------------%%%
+%%% PUBLIC ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 %%% @doc Parses formula, and returns AST as an s-expression.
 compile(Fla, {X, Y}) ->
@@ -37,12 +36,21 @@ compile(Fla, {X, Y}) ->
             {error, error_in_formula}
     end.
 
+%% @doc Runs compiled formula.
+run(Pcode, Bindings) ->
+    Pid = spawn(?MODULE, run, []),
+    Pid ! {run, {Pcode, Bindings}, self()},
+    Res = receive X -> X end,
+    Res.
+
+%%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 try_parse(Fla, {X, Y}) ->
     Trans = translator:do(Fla),
     {ok, Toks} = muin_lexer:lex(Trans, {X, Y}),
     {ok, _Ast} = muin_parser:parse(Toks). % Match to enforce the contract.
 
-%% @doc Runs compiled formula.
+        
 run() ->
     receive
         {run, {Pcode, Bindings}, Caller} ->
@@ -61,8 +69,8 @@ run() ->
                     Caller ! Res
             end;
         Else ->
-            Msg = io_lib:format("Unexpected message in muin:run(): ~p"),
-            io:format("~s~n", [Msg]),
+            Msg = io_lib:format("Unexpected message in muin:run(): ~p", [Else]),
+            io:format("~p~n", [Msg]),
             error_logger:error_msg(Msg)
     end.
 
