@@ -9,8 +9,35 @@
     <title>Demo</title>
 
 	<style type="text/css">
+        *
+        {
+            margin: 0px;
+            padding:0px;
+            font: 11px sans-serif;
+        }
+
+        html,body { height:100%; background: #f0f8ff; }
+       
+	    #wrapper
+	    { 
+	        height:100%;
+	        padding:10px;
+	        width:650px; 
+	        margin:0px auto;
+	        background:#FFF;
+	        font: 11px sans-serif; 
+	        border-left:1px solid #999;
+	        border-right:1px solid #999; 
+	    }
+	    
 	    label { display:block; margin:5px; vertical-align:top; }
 	    #details label span { display:block; width:140px; float:left; }
+	    h1 { font: 22px sans-serif; margin-bottom:10px; }
+        h2 { font: 16px sans-serif; }
+        hr { border-top:1px solid #EEE; margin-bottom:10px; }
+        p { margin:6px 0px 6px 0px; }
+        #head { padding: 10px; background:#eee; margin-bottom:10px; }
+        #head h1 { display:inline; font-weight:bold;} 
 	</style>
 	
     <script type="text/javascript" src="/js/jquery.js"></script>
@@ -56,7 +83,7 @@
                             var n = $(this).find("value > string").text();
                             var el = $("<input type='radio' name="+params[4]+" value='"+n+"' \>");
                             inputs.push(el);
-                            $(params[1]).append(el).append($("<span>"+n+"</span>"));
+                            $(params[1]).append(el).append($("<span> "+n+"</span>"));
                         }
                     });
                     post_vars.push({type:"radio",input:inputs,destination:params[3]}); 
@@ -73,7 +100,7 @@
             {
                 var el = $("<textarea></textarea>");
                 $(params[1]).append($("<label><span>" + params[2]
-                    + "</span+</label>").append(el));
+                    + "</span><br /></label>").append(el));
                 post_vars.push({type:"textarea",input:el,destination:params[3]});  
             }
             else if(params[0] == "text")
@@ -166,23 +193,27 @@
     </script>
     
 </head>
-<body>  
+<body><div id="wrapper">
+
+    <div id="head"><h1>domain.com</h1></div>
 
     <h1 id="header"></h1>
     
     <h2>Personal Details</h2>
+    <hr />
     <p>Please Collect the customers details :</p>
     <div id="details"></div>
     
     <h2>Enquiry Details</h2>
-    <p>Please collect the details of the customerts enquiry:</p>
+    <hr />
+    <p>Please collect the details of the customers enquiry:</p>
     
-    <div>Where did they hear about us: <span id="where"></span></div>
-    <div>What is the enquiry about: <span id="about"></span></div>
+    <p>Where did they hear about us: <span id="where"></span></p>
+    <p>What is the enquiry about: <span id="about"></span></p>
     
     <div id="detailstext"></div>
+    <br />
+    <input type="submit" value="submit" />
     
-    <input type="submit" />
-    
-</body>
+</div></body>
 </html>
