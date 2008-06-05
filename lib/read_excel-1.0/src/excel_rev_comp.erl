@@ -29,14 +29,12 @@
 %% The formulae are stored in reverse Polish Notation within excel
 %% The reverse compiler recreates the original formula by running the RPN
 reverse_compile(Index,Tokens,TokenArray,Tables)->
-    io:format("Tokens ~p~n",[Tokens]),    
     rev_comp(Index,Tokens,TokenArray,[],Tables).
 
 %% When the tokens are exhausted the Stack is just flattened to a string
 rev_comp(_Index,[],_TokenArray,Stack,_Tables) ->
-    io:format("Stack ~p~n",[lists:reverse(Stack)]),
     "="++to_str(lists:reverse(Stack));
-
+    
 %%	tExp    
 %% tExp is a placeholder for a shared or array formula so first we
 %% read the array/shared formula  then we push the shared formula onto
@@ -50,14 +48,18 @@ rev_comp(I,[{expr_formula_range,{tExp,[Sheet,Row,Col], {return,none}}}|T], TokAr
 %% tAdd tSub tMul tDiv tPower tConcat tLT tLE tEQ tGE tGT tNE tIsect
 %% Pop two of the stack and the build an operator set backwards
 %% ie second first and first second...
-rev_comp(I,[{Op,_Token}|T],TokArr,[First,Second|Rest],Tbl) when
+rev_comp(I,[{Op,_Token}|T],TokArr,Stack,Tbl) when
         Op =:= addition ;   Op =:= subtraction;
         Op =:= divide ;     Op =:= power;
         Op =:= less_than;   Op =:= less_than_or_equal; 
         Op =:= equals;      Op =:= greater_than_or_equal;
         Op =:= greater_than;Op =:= not_equal;
         Op =:= multiply;    Op =:= concatenate ->
-    rev_comp(I,T,TokArr,[{Second,Op,First}|Rest],Tbl);
+    
+    {Spaces1,[First |Rest]} = popSpaces(Stack),
+    {Spaces2,[Second|Last]} = popSpaces(Rest),
+
+    rev_comp(I,T,TokArr,[{Second,Spaces2,Op,Spaces1,First}|Last],Tbl);
 
 % tIsect
 %% Pop two of the stack and the build an operator set backwards
@@ -112,8 +114,7 @@ rev_comp(I,[{attributes,Attributes}|T],TokArr,Stack,Tbl)  ->
         [{func,4,lists:flatten([FunArgs])}|Rest];
     %% Preserve Spaces
     {tAttrSpace,special_character,[{char,_Type}, {no_of_chars,Chars}],_Ret} -> 
-        Stack
-        %%[{space, flatten(duplicate(Chars, " "))} | Stack]
+        [{space, flatten(duplicate(Chars, " "))} | Stack]
     end,
     
     rev_comp(I,T,TokArr,NewStack,Tbl);
@@ -483,7 +484,6 @@ to_str({func,Var,Args})    ->
     R = fun(Item) -> 
         case Item of
         {space,Val} -> Val;
-        {return}    -> "\r\n";
         Other       -> to_str(Other) ++ ","
         end
     end,
@@ -512,10 +512,15 @@ to_str({func,Var,Args})    ->
     
 to_str([])  -> "";
 to_str({H}) -> to_str(H);
-to_str([H]) -> to_str(H);
-to_str([{space,S},H|T]) -> to_str(H)++""++to_str(T);
-to_str({space,S}) -> "";
-to_str([H|T]) -> to_str(H)++to_str(T);
+to_str({space,S}) -> S;
+to_str(List) when is_list(List) -> 
+    case io_lib:deep_char_list(List) of
+    true -> lists:flatten(List);
+    false ->       
+        [H|T] = List, 
+        to_str(H)++to_str(T)
+    end;
+    
 to_str({open,O,close}) -> "(" ++ to_str(O) ++ ")";
 to_str({L,O,R}) -> to_str(L) ++ operator_to_string(O) ++ to_str(R);
 to_str({string,String}) -> String;
@@ -527,6 +532,7 @@ to_str({float,Val}) ->
                {_,String2,_}=regexp:gsub(String,[e],$e),
                String2
     end;
+    
 to_str({abs_ref,Y,X,rel_row,rel_col}) -> 
     util2:make_b26(X)++integer_to_list(Y);
 to_str({abs_ref,Y,X,abs_row,rel_col}) -> 
@@ -534,7 +540,10 @@ to_str({abs_ref,Y,X,abs_row,rel_col}) ->
 to_str({abs_ref,Y,X,rel_row,abs_col}) -> 
     "$"++util2:make_b26(X)++integer_to_list(Y);
 to_str({abs_ref,Y,X,abs_row,abs_col}) -> 
-    "$"++util2:make_b26(X)++"$"++integer_to_list(Y).
+    "$"++util2:make_b26(X)++"$"++integer_to_list(Y);
+    
+to_str({L,S1,O,S2,R}) -> 
+    to_str(L)++S1++operator_to_string(O)++S2++to_str(R).
 
 %% builds up 2D arrays - 1st dimension is given by "," and second by ";"
 array_to_str(Array,NoCols,_NoRows) -> 
@@ -552,6 +561,9 @@ array_to_str([H|T],NoCols,N,Residuum)-> % list seperator is a comma
     NewResiduum2=[","|NewResiduum],
     array_to_str(T,NoCols,N+1,NewResiduum2).
 
+
+popSpaces([{space,Val}|T]) -> {{space,Val},T};
+popSpaces(List) -> {[],List}.
 
 %% Used in tFunc, will grab the last I items from the list that
 %% arent {space,Spaces} or {return} 

@@ -1,5 +1,5 @@
 -module(misc_util).
--export([stdfuns_export_xml/0,import_xml_attributes/2,profile/2]).
+-export([stdfuns_export_xml/0,import_xml_attributes/2,profile/2,testa/0]).
 -include("builtins.hrl").
 -include("spriki.hrl").
 
@@ -41,6 +41,9 @@ stdfuns_export_xml() ->
 
     {function,[],Cats}.
 
+testa() -> testb(foo).
+testb(bar) -> "foo".
+
 import_xml_attributes(File,Url) ->
     {ok,String} = hn_util:read(File),
     {attr,[],Refs} = simplexml:from_xml_string(String),
@@ -67,6 +70,4 @@ profile(N,F) ->
     {Time1,Time2}.
     
 for(N,N,F) -> [F()];
-for(I,N,F) -> [F()|for(I+1,N,F)].
-
-    
+for(I,N,F) -> [F()|for(I+1,N,F)].    

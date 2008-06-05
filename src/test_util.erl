@@ -122,10 +122,20 @@ excel_equal(String1,String2) when is_list(String1), is_list(String2) ->
         
 excel_equal2({number, F1}, {number, F2}) ->
     equal_to_digit(F1, F2, ?EXCEL_IMPORT_FLOAT_PRECISION);
-excel_equal2({formula, Fla1}, {formula, Fla2}) ->
-  %% fix-up the fact that we have changed the name of the function Error.Type to ErrorType
-  %% Ugly bodge
+excel_equal2({formula, PreFla1}, {formula, Fla2}) ->
+
+    %% if row address, strip the column bounds (=$A169:$IV169) becomes (=169:169)
+    Fla1 = case regexp:match(PreFla1,"\\$A[0-9]+:\\$IV[0-9]+") of
+    {match,_,_} ->
+        {ok,Str,_Count} = regexp:gsub(PreFla1,"\\$A|\\$IV",""),
+        Str;
+    _ -> PreFla1
+    end,
+
+    %% fix-up the fact that we have changed the name of the function Error.Type to ErrorType
+    %% Ugly bodge    
     Return=regexp:gsub(Fla2,"ERROR.TYPE","ERRORTYPE"),
+    
     io:format("Return is ~p~n",[Return]),
     {ok,Fla2a,_}=Return,
     R2 = stripfileref(Fla2a),
