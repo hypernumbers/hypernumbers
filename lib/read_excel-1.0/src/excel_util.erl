@@ -40,7 +40,7 @@ get_utf8({[{'uni16-16',String}],_B,_C})->
     io:format("* in excel_util:get_utf8          *~n"),
     io:format("* This should not be being called *~n"),
     io:format("***********************************~n"),
-    xmerl_ucs:to_utf8(binary_to_list(String)).
+    xmerl_ucs:to_utf8(xmerl_ucs:from_utf16le(binary_to_list(String))).
 
 
 get_bound_sheet(Bin,_Tables)->

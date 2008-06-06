@@ -29,10 +29,12 @@
 %% The formulae are stored in reverse Polish Notation within excel
 %% The reverse compiler recreates the original formula by running the RPN
 reverse_compile(Index,Tokens,TokenArray,Tables)->
+    io:format("Stack ~p~n",[Tokens]),
     rev_comp(Index,Tokens,TokenArray,[],Tables).
 
 %% When the tokens are exhausted the Stack is just flattened to a string
 rev_comp(_Index,[],_TokenArray,Stack,_Tables) ->
+    io:format("Formula ~p~n",[to_str(lists:reverse(Stack))]),
     "="++to_str(lists:reverse(Stack));
     
 %%	tExp    
@@ -58,8 +60,7 @@ rev_comp(I,[{Op,_Token}|T],TokArr,Stack,Tbl) when
     
     {Spaces1,[First |Rest]} = popSpaces(Stack),
     {Spaces2,[Second|Last]} = popSpaces(Rest),
-
-    rev_comp(I,T,TokArr,[{Second,Spaces2,Op,Spaces1,First}|Last],Tbl);
+    rev_comp(I,T,TokArr,[{Second,Spaces1,Op,Spaces2,First}|Last],Tbl);
 
 % tIsect
 %% Pop two of the stack and the build an operator set backwards
@@ -86,8 +87,9 @@ rev_comp(I,[{percent,{tPercent,[{op_type,unary}],{return,_Value}}}|T],TokArr,[Fi
     rev_comp(I,T,TokArr,[{string,to_str(First)++"%"}|Rest],Tbl);
 
 %%	tParen  
-rev_comp(I,[{parentheses,{tParen,[],{return,none}}}|T],TokArr,[First|Rest],Tbl) ->
-    rev_comp(I,T,TokArr,[{open,First,close}|Rest],Tbl);
+rev_comp(I,[{parentheses,{tParen,[],{return,none}}}|T],TokArr,Stack,Tbl) ->
+    {Spaces1,[First |Rest]} = popSpaces(Stack),
+    rev_comp(I,T,TokArr,[{open,First,close,Spaces1}|Rest],Tbl);
 
 %%	tMissArg
 rev_comp(I,[{missing_argument,{tMissArg,[],{return,value}}}|T],TokArr,Stack,Tbl) ->
@@ -464,27 +466,28 @@ implode(List, Token) ->
 
 %%% set of functions used by reverse_compile to generate the actual 
 %%% Formula Strings that are in the cells
-operator_to_string(addition)               -> "+";           
-operator_to_string(subtraction)            -> "-";
-operator_to_string(multiply)               -> "*";
-operator_to_string(divide)                 -> "/";
-operator_to_string(power)                  -> "^";
-operator_to_string(concatenate)            -> "&";
-operator_to_string(less_than)              -> "<";
-operator_to_string(less_than_or_equal)    -> "<=";
-operator_to_string(equals)                 -> "=";
-operator_to_string(greater_than_or_equal) -> ">=";
-operator_to_string(greater_than)           -> ">";
-operator_to_string(not_equal)             -> "!=";
-operator_to_string(intersect)              -> " ";
-operator_to_string(comma)                  -> ",".
+to_str(addition)               -> "+";           
+to_str(subtraction)            -> "-";
+to_str(multiply)               -> "*";to_str(divide)                 -> "/";
+to_str(power)                  -> "^";
+to_str(concatenate)            -> "&";
+to_str(less_than)              -> "<";
+to_str(less_than_or_equal)    -> "<=";
+to_str(equals)                 -> "=";
+to_str(greater_than_or_equal) -> ">=";
+to_str(greater_than)           -> ">";
+to_str(not_equal)             -> "!=";
+to_str(intersect)              -> " ";
+to_str(comma)                  -> ",";
 
 to_str({func,Var,Args})    ->
 
     R = fun(Item) -> 
         case Item of
         {space,Val} -> Val;
-        Other       -> to_str(Other) ++ ","
+        Other       -> 
+            Tmp = to_str(Other),
+            Tmp ++ ","
         end
     end,
     
@@ -522,7 +525,8 @@ to_str(List) when is_list(List) ->
     end;
     
 to_str({open,O,close}) -> "(" ++ to_str(O) ++ ")";
-to_str({L,O,R}) -> to_str(L) ++ operator_to_string(O) ++ to_str(R);
+to_str({open,O,close,S}) -> to_str(S)++"(" ++ to_str(O) ++ ")";
+to_str({L,O,R}) -> to_str(L) ++ to_str(O) ++ to_str(R);
 to_str({string,String}) -> String;
 to_str({integer,Val}) -> integer_to_list(Val);
 to_str({float,Val}) ->
@@ -543,7 +547,7 @@ to_str({abs_ref,Y,X,abs_row,abs_col}) ->
     "$"++util2:make_b26(X)++"$"++integer_to_list(Y);
     
 to_str({L,S1,O,S2,R}) -> 
-    to_str(L)++S1++operator_to_string(O)++S2++to_str(R).
+    to_str(L)++to_str(S1)++to_str(O)++to_str(S2)++to_str(R).
 
 %% builds up 2D arrays - 1st dimension is given by "," and second by ";"
 array_to_str(Array,NoCols,_NoRows) -> 
@@ -597,7 +601,7 @@ make_cell({Row,Col,abs_row,rel_col}) ->
     string:to_upper(util2:make_b26(Col+1)++"$"++integer_to_list(Row+1));
 make_cell({Row,Col,rel_row,abs_col}) ->
     string:to_upper("$"++util2:make_b26(Col+1)++integer_to_list(Row+1));
-make_cell({Row,Col,abs_row,abs_col}) ->
+make_cell({Row,Col,abs_row,abs_col}) ->io:
     string:to_upper("$"++util2:make_b26(Col+1)++"$"++integer_to_list(Row+1)).
 
 %% this function looks up the Func ID and converts it to a name

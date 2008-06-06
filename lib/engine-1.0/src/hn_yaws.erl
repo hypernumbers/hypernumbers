@@ -125,7 +125,7 @@ process_GET(_Arg,_User,Page) ->
             }
         ]}};
         
-                
+       
     reference -> 
         case hn_db:get_item(page_to_ref(Page)) of
         []   -> {{plain}, "blank"};

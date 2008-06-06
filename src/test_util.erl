@@ -195,7 +195,7 @@ expected2(Expected, Got) ->
                       [Expected, Got]),
             {test, ok};
         false ->
-            io:format("<b style=\"color:red\">FAIL</b>~nExpected: ~p~nGot: ~p~n",
+            io:format("<b style=\"color:red\">FAIL</b>~nExpected: ~w~nGot: ~w~n",
                       [Expected, Got]),
             exit({fail, expected, Expected, got, Got})
     end.

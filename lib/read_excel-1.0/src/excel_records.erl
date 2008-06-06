@@ -781,7 +781,6 @@ parse_SST(StringNo,NoOfStrings,Tables,[BinHead|BinTail])->
     end,
     Return=excel_util:parse_CRS_Uni16(ParseBin,2),
     String=excel_util:get_utf8(Return),
-    io:format("SST ~p~n",[BinHead]),
     {[{_Type,BinString}],_StringLen,_RestLen}=Return,    
     Len=string:len(binary_to_list(BinString)),
     BinLen=8*(Len+3), % add an offset for the 2 byte index and 1 byte flags
