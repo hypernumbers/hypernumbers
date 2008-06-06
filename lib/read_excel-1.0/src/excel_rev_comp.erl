@@ -601,7 +601,7 @@ make_cell({Row,Col,abs_row,rel_col}) ->
     string:to_upper(util2:make_b26(Col+1)++"$"++integer_to_list(Row+1));
 make_cell({Row,Col,rel_row,abs_col}) ->
     string:to_upper("$"++util2:make_b26(Col+1)++integer_to_list(Row+1));
-make_cell({Row,Col,abs_row,abs_col}) ->io:
+make_cell({Row,Col,abs_row,abs_col}) ->
     string:to_upper("$"++util2:make_b26(Col+1)++"$"++integer_to_list(Row+1)).
 
 %% this function looks up the Func ID and converts it to a name
