@@ -104,7 +104,8 @@ process_GET(_Arg,_User,Page) ->
         {Page#page.format,{attr,[],List}};
         
     pages ->
-        {Page#page.format,{dir,[],[]}};
+        Items = mnesia:dirty_match_object(#hn_item{_ = '_'}),
+        {Page#page.format,create_pages_tree(Items)};
         
     hypernumber ->
     
@@ -213,7 +214,7 @@ create_pages_tree(List) ->
         fun(X) ->
             create_tree(string:tokens(X,"/"))
         end,
-    path_list(List,[])),
+        path_list(List,[])),
 
     {dir,[{path,"/"}],merge_trees(Trees)}.
 
@@ -248,12 +249,12 @@ create_tree([H|T]) ->
     {dir,[{path,H}],[create_tree(T)]}.    
 
 %% Filter records and remove duplicates
-path_list([],PathList) -> PathList.
-%path_list([#spriki{index=#index{path=Path}}|T],List) ->
-%    case lists:member(Path,List) of
-%    true  -> path_list(T,List);
-%    false -> path_list(T,[Path|List])
-%    end.
+path_list([],PathList) -> PathList;
+path_list([#hn_item{addr = #ref{path=Path}}|T],List) ->
+    case lists:member(Path,List) of
+    true  -> path_list(T,List);
+    false -> path_list(T,[Path|List])
+    end.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%
 %%% POST handlers, 

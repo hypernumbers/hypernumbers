@@ -11,7 +11,6 @@
          wait/1,
          test_state/1,
          make_float/1,
-
          conv_for_post/1,
          conv_from_get/1,
          cmp/2,
@@ -94,6 +93,7 @@ excel_equal("-2146826252","#NUM!")   -> true;
 excel_equal("-2146826265","#REF!")   -> true;
 excel_equal("-2146826273","#VALUE!") -> true;
 %% Checks that two Excel values are equal.
+
 excel_equal(String1,String2) when is_list(String1), is_list(String2) ->
   %% fix-up the fact that we have changed the name of the function Error.Type to ErrorType
     Return=regexp:gsub(String2,"ERROR.TYPE","ERRORTYPE"),
@@ -122,6 +122,7 @@ excel_equal(String1,String2) when is_list(String1), is_list(String2) ->
         
 excel_equal2({number, F1}, {number, F2}) ->
     equal_to_digit(F1, F2, ?EXCEL_IMPORT_FLOAT_PRECISION);
+    
 excel_equal2({formula, PreFla1}, {formula, Fla2}) ->
 
     %% if row address, strip the column bounds (=$A169:$IV169) becomes (=169:169)
@@ -131,19 +132,18 @@ excel_equal2({formula, PreFla1}, {formula, Fla2}) ->
         Str;
     _ -> PreFla1
     end,
-
     %% fix-up the fact that we have changed the name of the function Error.Type to ErrorType
     %% Ugly bodge    
-    Return=regexp:gsub(Fla2,"ERROR.TYPE","ERRORTYPE"),
-    
-    io:format("Return is ~p~n",[Return]),
-    {ok,Fla2a,_}=Return,
+    {ok,Fla2a,_} = regexp:gsub(Fla2,"ERROR.TYPE","ERRORTYPE"),
+        
     R2 = stripfileref(Fla2a),
-    io:format("Fla1 is  ~p~nR2 is ~p~n",[Fla1,R2]),
+    
+    io:format("Fla1 is  ~p~n is ~p~n",[Fla1,R2]),
     case Fla1 of
-      R2 -> true;
-      _     -> false
+    R2 -> true;
+    _  -> false
     end;
+    
 excel_equal2({boolean,Boolean1},{boolean,Boolean2}) ->
     case Boolean1 of
         Boolean2 -> true;
