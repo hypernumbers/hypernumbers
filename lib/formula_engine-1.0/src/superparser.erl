@@ -4,7 +4,7 @@
 -module(superparser).
 -export([process/1]).
 -define(upcase(S),
-        string:to_upper(S)).
+        ustring:pr(ustring:to_upper(ustring:new(S)))).
 
 process([$= | Tl]) when Tl =/= [] ->
     {formula, upcase(Tl)};
