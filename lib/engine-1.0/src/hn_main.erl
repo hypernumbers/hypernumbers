@@ -109,7 +109,7 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
     lists:map( 
         fun({url,[{type,Type}],[Url]}) ->
             #page{site=Site,path=Path,ref={cell,{X,Y}}} = hn_util:parse_url(Url),
-            Parent = {index,Site,Path,X,Y},
+            Parent = {index,Site,string:to_lower(Path),X,Y},
             case Type of
             "local"  -> hn_db:write_local_link(Parent,Index);
             "remote" -> hn_db:write_remote_link(Parent,Index,incoming)
@@ -129,7 +129,7 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
 %%%               parents/ dependancy tree, and value
 %%%-----------------------------------------------------------------
 get_cell_info(Site, Path, X, Y) ->
-    Ref = #ref{site=Site,path=Path,ref={cell,{X,Y}}},
+    Ref = #ref{site=string:to_lower(Site),path=string:to_lower(Path),ref={cell,{X,Y}}},
     
     Value   = get_val(hn_db:get_item(Ref#ref{name=value})),
     DepTree = get_val(hn_db:get_item(Ref#ref{name='dependancy-tree'})),   

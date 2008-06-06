@@ -754,29 +754,34 @@ parse_SST(StringNo,NoOfStrings,Tables,[BinHead|BinTail])->
     %% This clause handles the case where a record falls over a continuation
     %% if it does it rejigs parse_SST to move down the Binary List
     if
-	(BinLen1 > BinLen2+3) ->NewBinHead = BinHead,
-                                NewBinTail = BinTail,
-                                ParseBin=BinHead;
-	(BinLen1 == BinLen2+3)->case BinTail of
-                                    []     -> H1 = [],
-                                              T1 = [];
-                                    _Other -> [H1|T1]=BinTail
-                                end,
-                                NewBinTail=T1,
-                                ParseBin=BinHead,
-                                NewBinHead=list_to_binary([ParseBin,H1]);
-	true                  ->ExtLen=BinLen2+3-BinLen1,
-                                [H2|T2] = BinTail,
-                                %% remember to discard the 8 byte unicode flag
-                                <<_Bits:1/binary,Ext:ExtLen/binary,
-                                 NewBinHeadPart/binary>>=H2,
-                                NewBinTail=T2,
-                                ParseBin=list_to_binary([BinHead,Ext]),
-                                NewBinHead=list_to_binary([ParseBin,
-                                                           NewBinHeadPart])
+	(BinLen1 > BinLen2+3) ->
+	    NewBinHead = BinHead,
+        NewBinTail = BinTail,
+        ParseBin=BinHead;
+	(BinLen1 == BinLen2+3)->
+	    case BinTail of
+        [] -> 
+            H1 = [],
+            T1 = [];
+        _Other -> 
+            [H1|T1] = BinTail
+        end,
+        NewBinTail=T1,
+        ParseBin=BinHead,
+        NewBinHead=list_to_binary([ParseBin,H1]);
+    true ->
+        ExtLen=BinLen2+3-BinLen1,
+        [H2|T2] = BinTail,
+        %% remember to discard the 8 byte unicode flag
+        <<_Bits:1/binary,Ext:ExtLen/binary,NewBinHeadPart/binary>>=H2,
+        NewBinTail=T2,
+        ParseBin=list_to_binary([BinHead,Ext]),
+        NewBinHead=list_to_binary([ParseBin,
+        NewBinHeadPart])
     end,
     Return=excel_util:parse_CRS_Uni16(ParseBin,2),
     String=excel_util:get_utf8(Return),
+    io:format("SST ~p~n",[BinHead]),
     {[{_Type,BinString}],_StringLen,_RestLen}=Return,    
     Len=string:len(binary_to_list(BinString)),
     BinLen=8*(Len+3), % add an offset for the 2 byte index and 1 byte flags
