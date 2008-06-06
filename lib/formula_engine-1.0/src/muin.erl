@@ -171,9 +171,10 @@ userdef_call(Fname, Args) ->
 %% Returns value in the cell + get_value_and_link() is called behind the
 %% scenes.
 do_cell(RelPath, Rowidx, Colidx) ->
-    ?IF(Colidx == ?mx andalso Rowidx == ?my,
-        throw({error, self_reference})),
     Path = muin_util:walk_path(?mpath, RelPath),
+    ?IF(Colidx == ?mx andalso Rowidx == ?my andalso Path == ?mpath,
+        throw({error, self_reference})),
+
     FetchFun = ?L(hn_main:get_cell_info(?msite, Path, Colidx, Rowidx)),
     get_value_and_link(FetchFun).
 
