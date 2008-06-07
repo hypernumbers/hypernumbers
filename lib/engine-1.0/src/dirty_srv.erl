@@ -32,11 +32,11 @@ init([Type]) ->
 %% Func: handle_info/2
 %% Handles incoming messages from mnesia:subscribe
 %%----------------------------------------------------------------------   
-handle_info({mnesia_table_event,{write,_,Rec,[],_}},State) ->
+handle_info({mnesia_table_event,{write,_,Rec,_,_}},State) ->
 
     case State#state.state of
     passive -> ok;
-    active ->  trigger_recalc(Rec,State#state.type)
+    active  -> trigger_recalc(Rec,State#state.type)
     end,
         
     {noreply, State};
@@ -54,7 +54,7 @@ handle_call(flush, _From, State) ->
     end),
 
     lists:foreach(
-        fun(X) -> 
+        fun(X) ->
             trigger_recalc(X,State#state.type)
         end,
         List),
@@ -75,7 +75,10 @@ trigger_recalc(Rec,Type) ->
     Index = ?COND(Type == dirty_cell,
         Rec#dirty_cell.index,
         Rec#dirty_hypernumber.index),
-
-    hn_db:dirty_refs_changed(Type, Index),    
+ 
+    spawn(fun() ->
+        hn_db:dirty_refs_changed(Type, Index)
+    end),
+    
     mnesia:dirty_delete({Type, Index}).
 

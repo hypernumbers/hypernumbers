@@ -375,7 +375,7 @@ dirty_refs_changed(dirty_cell, Ref) ->
 
     [V] = get_item_val((to_ref(Ref))#ref{name=value}),
     Val = hn_util:xml_to_val(V),
-        
+    
     %% Update local cells
     lists:foreach(
         fun({local_cell_link, _, RefTo}) ->

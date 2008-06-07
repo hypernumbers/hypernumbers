@@ -157,17 +157,16 @@ get_cell_info(Site, Path, X, Y) ->
 %%%               recalculate its value
 %%%-----------------------------------------------------------------
 recalc(Index) ->
+
     #index{site=Site, path=Path, column=X, row=Y} = Index,
     Addr = #ref{site=Site, path=Path, ref={cell, {X, Y}}},
     Pcode = hn_db:get_item_val(Addr#ref{name="__ast"}),
     Bindings = [{site, Site}, {path, Path}, {x, X}, {y, Y}],
-
+    
     Val = case muin:run(Pcode, Bindings) of
-              {ok, {V, _, _, _}} ->
-                  hn_util:val_to_xml(V);
-              {error, Reason} when is_atom(Reason) ->
-                  {error, [], [Reason]}
-          end,
+    {ok, {V, _, _, _}} ->                   hn_util:val_to_xml(V);
+    {error, Reason} when is_atom(Reason) -> {error, [], [Reason]}
+    end,
 
     hn_db:write_item(Addr#ref{name=value}, [Val]),
     hn_db:mark_dirty(Index, cell),

@@ -239,16 +239,16 @@ wait(N) -> internal_wait(?DEFAULT * N).
 -define(HNSERVER, "http://127.0.0.1:9000").
 
 hnget(Path, Ref) ->
-    Url = ?HNSERVER ++ Path ++ Ref,
+    Url = Url = string:to_lower(?HNSERVER ++ Path ++ Ref),
+    io:format("hnget Url ~p~n",[Url]),
     {ok, {{_V, Code, _R}, _H, Body}} = http:request(get, {Url, []}, [], []),
     io:format("Code for ~p~p is ~p.~nBody is: ~p~n~n", [Path, Ref, Code, Body]),
     Body.
   
 hnpost(Path, Ref, Postdata) ->
-    Url = ?HNSERVER ++ Path ++ Ref,
-    io:format("hnpost Url ~p~n",[Url]),
+    Url = string:to_lower(?HNSERVER ++ Path ++ Ref),
     Postreq = "<create><formula><![CDATA[" ++ Postdata ++ "]]></formula></create>",
-    %%io:format("Posting ~p to ~s...~n", [Postdata, Path ++ Ref]),
+    io:format("Posting ~p to ~s...~n", [Postdata, Url]),
     Return = http:request(post,
                           {Url, [], "text/xml", Postreq},
                           [{timeout, 5000}],
