@@ -246,6 +246,7 @@ hnget(Path, Ref) ->
   
 hnpost(Path, Ref, Postdata) ->
     Url = ?HNSERVER ++ Path ++ Ref,
+    io:format("hnpost Url ~p~n",[Url]),
     Postreq = "<create><formula><![CDATA[" ++ Postdata ++ "]]></formula></create>",
     %%io:format("Posting ~p to ~s...~n", [Postdata, Path ++ Ref]),
     Return = http:request(post,

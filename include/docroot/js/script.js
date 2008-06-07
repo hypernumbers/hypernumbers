@@ -139,7 +139,7 @@ $(function()
             
 	$("#hn").spreadsheet(defaults);
 	
-	$.get(url+"funs.xml", function(data)
+	$.get("/funs.xml", function(data)
 	{
 	    $(data).find("functions > category").each(function()
 	    {
