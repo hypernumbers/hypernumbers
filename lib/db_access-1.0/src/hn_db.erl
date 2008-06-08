@@ -84,38 +84,45 @@ get_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
     
         %% If Name is defined, match it
         N = ?COND(Name == undef,'_',Name),
-
-        Attr  = #ref{site=Site, path=Path, name=N, _ = '_'},
+                
+        Attr = case Ref of
+        {cell,{X,Y}} -> #ref{site=Site, path=Path, name=N, ref={cell,{X,Y}}};
+        _ ->            #ref{site=Site, path=Path, name=N, _ = '_'}
+        end,
         Match = #hn_item{addr = Attr, _ = '_'},
         
         mnesia:match_object(hn_item,Match,read)
         
     end),
-    
-    lists:filter
-    (
-        fun(#hn_item{addr=#ref{ref=ItemRef}}) ->
-        
-            case {Ref, ItemRef} of
-            
-            {{page,_},_}              -> true; %% All Attr on that Page
-            {X,X}                     -> true; %% Same Ref
-            {{row,Y},{cell,{_,Y}}}    -> true; %% Cell on same row
-            {{column,X},{cell,{X,_}}} -> true; %% Cell on same col
-            
-            {{range,{_,Y1,_,Y2}},{row,Y}}
-                when Y > Y1 andalso Y < Y2 -> true; 
-            {{range,{X1,_,X2,_}},{column,X}}
-                when X > X1 andalso X < X2 -> true;
+
+    case Ref of
+    {cell,_} -> List;
+    {page,_} -> List;
+    _ -> 
+        %% If a request for row / column or range, need to include all
+        %% items contained within it
+        lists:filter
+        (
+            fun(#hn_item{addr=#ref{ref=ItemRef}}) ->
+                case {Ref, ItemRef} of
+                {X,X}                     -> true; %% Same Ref
+                {{row,Y},{cell,{_,Y}}}    -> true; %% Cell on same row
+                {{column,X},{cell,{X,_}}} -> true; %% Cell on same col
                 
-            {{range,{X1,Y1,X2,Y2}},{cell,{X,Y}}}
-                when Y >= Y1 andalso Y =< Y2 andalso
-                        X >= X1 andalso X =< X2 -> true;
-                        
-            _ -> false
-            end
-        end, 
-        List).
+                {{range,{_,Y1,_,Y2}},{row,Y}}
+                    when Y > Y1 andalso Y < Y2 -> true; 
+                {{range,{X1,_,X2,_}},{column,X}}
+                    when X > X1 andalso X < X2 -> true;
+                    
+                {{range,{X1,Y1,X2,Y2}},{cell,{X,Y}}}
+                    when Y >= Y1 andalso Y =< Y2 andalso
+                            X >= X1 andalso X =< X2 -> true;
+                            
+                _ -> false
+                end
+            end, 
+            List)
+    end.
     
 %%--------------------------------------------------------------------
 %% Function    : get_item_val/2

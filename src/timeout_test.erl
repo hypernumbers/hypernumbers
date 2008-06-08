@@ -6,13 +6,13 @@
 -export([run_test/0]).
 
 run_test() ->
-    bits:clear_db(),
-    test_util:wait(),
-    io:format("Current path:~n"),
-    c:pwd(),
+    %%bits:clear_db(),
+    %%test_util:wait(),
+    %%io:format("Current path:~n"),
+    %%c:pwd(),
+    
     gen_server:cast(dirty_cell,{setstate,passive}),
-    Celldata = readxls("../../tests/excel_files/Win_Excel07_As_97/" ++
-                                 "timeout_tests.xls"),
+    Celldata = readxls("../../tests/excel_files/Win_Excel07_As_97/timeout_tests.xls"),
     Postcell =
         fun({{{sheet, Sheetname}, {row_index, Row}, {col_index, Col}}, Val}) ->
                 Postdata = conv_for_post(Val),

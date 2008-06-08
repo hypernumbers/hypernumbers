@@ -476,7 +476,7 @@ to_str(less_than_or_equal)    -> "<=";
 to_str(equals)                 -> "=";
 to_str(greater_than_or_equal) -> ">=";
 to_str(greater_than)           -> ">";
-to_str(not_equal)             -> "!=";
+to_str(not_equal)             -> "<>";
 to_str(intersect)              -> " ";
 to_str(comma)                  -> ",";
 
@@ -845,7 +845,7 @@ macro_to_string(292) -> "NEGBINOMDIST";
 macro_to_string(293) -> "NORMDIST";
 macro_to_string(294) -> "NORMSDIST";
 macro_to_string(295) -> "NORMINV";
-macro_to_string(296) -> "NORMSINB";
+macro_to_string(296) -> "NORMSINV";
 macro_to_string(297) -> "STANDARDIZE";
 macro_to_string(298) -> "ODD";
 macro_to_string(299) -> "PERMUT";

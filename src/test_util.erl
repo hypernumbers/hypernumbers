@@ -240,15 +240,15 @@ wait(N) -> internal_wait(?DEFAULT * N).
 
 hnget(Path, Ref) ->
     Url = Url = string:to_lower(?HNSERVER ++ Path ++ Ref),
-    io:format("hnget Url ~p~n",[Url]),
+    %io:format("hnget Url ~p~n",[Url]),
     {ok, {{_V, Code, _R}, _H, Body}} = http:request(get, {Url, []}, [], []),
-    io:format("Code for ~p~p is ~p.~nBody is: ~p~n~n", [Path, Ref, Code, Body]),
+    %io:format("Code for ~p~p is ~p.~nBody is: ~p~n~n", [Path, Ref, Code, Body]),
     Body.
   
 hnpost(Path, Ref, Postdata) ->
     Url = string:to_lower(?HNSERVER ++ Path ++ Ref),
     Postreq = "<create><formula><![CDATA[" ++ Postdata ++ "]]></formula></create>",
-    io:format("Posting ~p to ~s...~n", [Postdata, Url]),
+    %io:format("Posting ~p to ~s...~n", [Postdata, Url]),
     Return = http:request(post,
                           {Url, [], "text/xml", Postreq},
                           [{timeout, 5000}],

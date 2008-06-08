@@ -76,9 +76,9 @@ trigger_recalc(Rec,Type) ->
         Rec#dirty_cell.index,
         Rec#dirty_hypernumber.index),
  
-    spawn(fun() ->
-        hn_db:dirty_refs_changed(Type, Index)
-    end),
+    %spawn(fun() ->
+        hn_db:dirty_refs_changed(Type, Index),
+    %end),
     
     mnesia:dirty_delete({Type, Index}).
 
