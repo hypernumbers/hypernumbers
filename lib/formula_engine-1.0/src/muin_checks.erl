@@ -18,10 +18,18 @@ number(N) ->
     N2 = cast(N, num),
     ?COND(is_number(N2), N2, ?ERR_VAL).
 
+number_rule(V, Rules) ->
+    ?COND(member(type(V), Rules), % if type of V is in the rules
+          cast(V, num),           % try to cast
+          ?ERR_VAL).              % otherwise throw error
+
 numbers(L) ->
     L2 = map(fun(X) -> cast(X, num) end, L),
     Ok = all(fun(X) -> is_number(X) end, L2),
     ?COND(Ok, L2, ?ERR_VAL).
+
+int(N) ->
+    erlang:trunc(number(N)).
 
 nonzero(0) ->
     ?ERR_DIV;
@@ -58,16 +66,21 @@ die_on_errval(Vs) ->
         Vs).
 
 %% Lazy test.
-ensure(true, Action) ->
-    Action();
-ensure(false, _Action) ->
-    ok.
+ensure(true, _Action) ->
+    ok;
+ensure(false, Action) ->
+    Action().
 
 filter_numbers(Vs) ->
     [X || X <- Vs, is_number(Vs)].
 
 filter_numbers_all(Vs) ->
     [cast(X, num) || X <- Vs, is_number(cast(X, num))].
+
+
+%% List of values -> list of booleans or error if a value can't be cast.
+filter_bools_with_cast(Vs) ->
+    [cast(X, bool) || X <- Vs].
 
 deck([H|T]) ->
     deck1(H, T, []);
@@ -79,3 +92,12 @@ deck1({matrix, _, L}, [H|T], Acc) ->
     deck1(H, T, append([Acc, L]));
 deck1(Val, [H|T], Acc) ->
     deck1(H, T, append([Acc, [Val]])).
+
+type(V) when is_number(V) ->
+    num;
+type(V) when is_boolean(B) ->
+    bool;
+type({date, _}) ->
+    date;
+type(V) when is_list(V) ->
+    str.
