@@ -50,8 +50,8 @@ gte0s(Ns) ->
     Ns2 = map(fun(X) -> cast(X, num) end,
               Ns),
     Ok = all(fun(X) -> is_number(X) andalso X >= 0 end,
-             Ns),
-    ?COND(Ok, Ns, ?ERR_NUM).
+             Ns2),
+    ?COND(Ok, Ns2, ?ERR_NUM).
 
 %% Ensure number(s) are positive.
 gt0(N) when is_number(N) andalso N > 0 ->
@@ -95,7 +95,7 @@ deck1(Val, [H|T], Acc) ->
 
 type(V) when is_number(V) ->
     num;
-type(V) when is_boolean(B) ->
+type(V) when is_boolean(V) ->
     bool;
 type({date, _}) ->
     date;
