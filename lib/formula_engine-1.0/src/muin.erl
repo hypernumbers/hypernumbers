@@ -30,7 +30,7 @@
 %%% @doc Parses formula, and returns AST as an s-expression.
 compile(Fla, {X, Y}) ->
     case attempt(?MODULE, try_parse, [Fla, {X, Y}]) of
-        {ok, Pcode} ->
+        {ok, {ok, Pcode}} ->
             {ok, Pcode};
         {error, Reason} ->
             error_logger:error_msg("muin:compile ~p~n", [Reason]),
