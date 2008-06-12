@@ -29,12 +29,10 @@
 %% The formulae are stored in reverse Polish Notation within excel
 %% The reverse compiler recreates the original formula by running the RPN
 reverse_compile(Index,Tokens,TokenArray,Tables)->
-    io:format("Stack ~p~n",[Tokens]),
     rev_comp(Index,Tokens,TokenArray,[],Tables).
 
 %% When the tokens are exhausted the Stack is just flattened to a string
 rev_comp(_Index,[],_TokenArray,Stack,_Tables) ->
-    io:format("Formula ~p~n",[to_str(lists:reverse(Stack))]),
     "="++to_str(lists:reverse(Stack));
     
 %%	tExp    
@@ -491,8 +489,15 @@ to_str({func,Var,Args})    ->
         end
     end,
     
-    Imp = 
-    
+    %% Above function will always append an extra comma, strip it
+    %% without stripping any spaces after it
+    F = fun(X,Self) ->
+        case X of
+        [$,|Rest] -> lists:reverse(Rest);
+        [32|Rest] -> Self(Rest,Self)++" ";
+        Else      -> lists:reverse(Else)
+        end
+    end,
     %% If the Value of Var is 255 then this is a non-excel function
     %% and the 'first arg' is the name that the user actually typed in
     case Var of
@@ -508,8 +513,8 @@ to_str({func,Var,Args})    ->
         case Args of
         [] -> macro_to_string(Var)++"()";
         _  ->
-            TmpArgs = lists:flatten(lists:map(R,Args)), 
-            macro_to_string(Var)++"("++string:strip(TmpArgs,right, $,)++")"
+            TmpArgs = lists:flatten(lists:map(R,Args)),
+            macro_to_string(Var)++"("++F(lists:reverse(TmpArgs),F)++")"
         end
     end;
     

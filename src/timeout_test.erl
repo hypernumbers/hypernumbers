@@ -21,6 +21,7 @@ run_test() ->
                 hnpost(Path, Ref, Postdata)
         end,
     foreach(Postcell, Celldata),
+    io:format("finish posting ~n",[]),
     gen_server:cast(dirty_cell,{setstate,active}),
     gen_server:call(dirty_cell,flush,infinity),
     {ok,ok}.

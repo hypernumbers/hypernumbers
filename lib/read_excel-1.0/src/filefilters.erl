@@ -333,7 +333,7 @@ test_DEBUG()->
     read(excel,FileRoot++"/"++File),
     io:format("~s processed~n",[File]).
 
-dump([])-> io:format("All tables dumped~n");
+dump([])-> ok; %io:format("All tables dumped~n");
 %%dump([{cell_tokens,_}|T])->
 %%  io:format("~nSkipping out cell_tokens in dump~n"),
 %% dump(T);
@@ -342,10 +342,10 @@ dump([])-> io:format("All tables dumped~n");
 %%    dump(T);
 dump([{formats,Tid}|T])->
     Name=formats,
-    io:format("~nDumping table: ~p~n",[Name]),
+    %io:format("~nDumping table: ~p~n",[Name]),
     Fun = fun(X,_Y) -> io:format("~p: ~p~n",[Name,X]) end,
     ets:foldl(Fun,[],Tid),
     dump(T);
 dump([{Table,_}|T])->
-    io:format("~nSkipping out ~p in dump~n",[Table]),
+    %io:format("~nSkipping out ~p in dump~n",[Table]),
     dump(T).

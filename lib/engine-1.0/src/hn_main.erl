@@ -157,7 +157,6 @@ get_cell_info(Site, Path, X, Y) ->
 %%%               recalculate its value
 %%%-----------------------------------------------------------------
 recalc(Index) ->
-
     #index{site=Site, path=Path, column=X, row=Y} = Index,
     Addr = #ref{site=Site, path=Path, ref={cell, {X, Y}}},
     Pcode = hn_db:get_item_val(Addr#ref{name="__ast"}),
@@ -211,26 +210,25 @@ db_put(Addr,Name,Value) ->
     
 to_index(#ref{site=Site,path=Path,ref={cell,{X,Y}}}) ->
     #index{site=Site,path=Path,column=X,row=Y}.
-            
+       
 %% Runs the formula through Muin and returns the tuple
 %% {CompiledFormula, ValueAsSimpleXML, Parents, Dependencies}
 run_formula(Formula, {X, Y}, Bindings) ->
     case muin:compile(Formula, {X, Y}) of
-        {ok, Pcode} ->
-            case muin:run(Pcode, Bindings) of
-                {ok, {Val, Deptree, _, Parents}} ->
-                    %% Transform parents and deptree to simplexml
-                    F = fun({Type, {S, P, X1, Y1}}) ->
-                                Url = hn_util:index_to_url({index, S, P, X1, Y1}),
-                                {url, [{type, Type}], [Url]}
-                        end,
-                            
-                    Npar = lists:map(F, Parents),
-                    Ndep = lists:map(F, Deptree),
-                    {Pcode, hn_util:val_to_xml(Val), Npar, Ndep};
-                {error, Reason} when is_atom(Reason) ->
-                    {nil, {error, [], [Reason]}, [], []}
-            end;
-        {error, error_in_formula} ->
-            {nil, {string, [], "Invalid formula"}, [], []}
+    {ok, Pcode} ->
+        case muin:run(Pcode, Bindings) of
+        {ok, {Val, Deptree, _, Parents}} ->
+            %% Transform parents and deptree to simplexml
+            F = fun({Type, {S, P, X1, Y1}}) ->
+                Url = hn_util:index_to_url({index, S, P, X1, Y1}),
+                {url, [{type, Type}], [Url]}
+            end,
+            Npar = lists:map(F, Parents),
+            Ndep = lists:map(F, Deptree),
+            {Pcode, hn_util:val_to_xml(Val), Npar, Ndep};
+        {error, Reason} when is_atom(Reason) ->
+            {nil, {error, [], [Reason]}, [], []}
+        end;
+   {error, error_in_formula} ->
+        {nil, {string, [], "Invalid formula"}, [], []}
     end.

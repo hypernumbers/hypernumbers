@@ -141,7 +141,7 @@ parse_rec(?DATEMODE,_Bin,_Name,CurrentFormula,Tables)->
                                      {msg,"not being processed"}]),
     {ok,CurrentFormula};
 parse_rec(?EXTERNNAME2,Bin,_Name,CurrentFormula,Tables)->
-    io:format("in excel_records EXTERNNAME~n"),
+    %io:format("in excel_records EXTERNNAME~n"),
     parse_externname(Bin,Tables),
     {ok,CurrentFormula};
 parse_rec(?LEFTMARGIN,_Bin,_Name,CurrentFormula,Tables)->
@@ -689,9 +689,9 @@ parse_FRM_Results(<<>>,_Name)->
 parse_FRM_Results(Bin,Name) ->
     <<Size:16/little-unsigned-integer,Rest/binary>>=Bin,
     {Tks,TkArray2}=case Size of
-                       0        -> io:format("in excel_records:"++
-                                             "parse_FRM_Results "++
-                                             "- zero length formula!"),
+                       0        -> %io:format("in excel_records:"++
+                                   %          "parse_FRM_Results "++
+                                   %          "- zero length formula!"),
                                    {[],[]};
                        RPN_Size -> <<RPN:RPN_Size/binary,TkArray/binary>>=Rest,
                                    excel_tokens:parse_tokens(RPN,Name,TkArray,[])
@@ -712,8 +712,8 @@ parse_Name(OptionFlag,_KybdShortCut,NameLength,_Size,SheetIndex,
      _FuncGroup5:1/integer,_FuncGroup6:1/integer,
      _Binary:1/integer,_A:1/integer,_B:1/integer,_C:1/integer>>=OptionFlag,
     <<_Options:1/binary,Name:NameLength/binary,_Rest/binary>>=Bin,
-    io:format("Just ignoring the compression options for "++
-              "Unicode names at the moment - will wig when not using Latin-1~n"),
+    %io:format("Just ignoring the compression options for "++
+    %          "Unicode names at the moment - will wig when not using Latin-1~n"),
     Scope = case SheetIndex of
                 0 -> global;
                 _ -> local
@@ -747,7 +747,9 @@ parse_XF_RK(<<XFIndex:16/little-unsigned-integer,
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 parse_SST(NoOfStrings,NoOfStrings,_Tables,_)->
-    io:format("String table parsed~n");
+    %io:format("String table parsed~n");
+    ok;
+    
 parse_SST(StringNo,NoOfStrings,Tables,[BinHead|BinTail])->
     BinLen1=length(binary_to_list(BinHead)),
     <<BinLen2:16/little-unsigned-integer,_Rest/binary>>=BinHead,
@@ -868,7 +870,7 @@ snip_xls(Bin)->
     end.
 
 parse_externname(Bin,Tables)->
-    io:format("in excel_records:parse_externname Bin is ~p~n",[Bin]),
+    %io:format("in excel_records:parse_externname Bin is ~p~n",[Bin]),
     %% we dont care mostly but for the first 4 bits (the minioptions) and
     %%  we chuck the remaining 12 bits away (the discard) mostly - except
     %% when we don't :(

@@ -46,7 +46,7 @@ read_excel(Directory,SAT,SSAT,SectorSize,ShortSectorSize,
 	   _MinStreamSize,{{SubLoc,SubSID},SubStreams},FileIn,Tables)->
     %% Bear in mind that if the location is short stream the 'SID' returned
     %% is actually an SSID!
-    io:format("~n~nNow going to parse the Excel Workbook only!~n"),
+    %io:format("~n~nNow going to parse the Excel Workbook only!~n"),
     {Location,SID}=get_named_SID(Directory,?EXCEL_WORKBOOK),
     Bin=case Location of
 	    normal_stream -> get_normal_stream(SID,Directory,SAT,SectorSize,
@@ -88,7 +88,7 @@ parse_substream(SubSID,Location,SubStream,Directory,SAT,SSAT,SectorSize,
 		ShortSectorSize,FileIn,Tables)->
     {{[{Type,NameBin}],_,_},Offset}=SubStream,
     Name=binary_to_list(NameBin),
-    io:format("Now parsing stream ~p~n",[Name]),
+    %io:format("Now parsing stream ~p~n",[Name]),
     Bin=case Location of 
 	    normal_stream -> get_normal_stream(SubSID,Directory,SAT,SectorSize,
 					       FileIn);
@@ -110,10 +110,10 @@ parse_bin(Bin,SubStreamName,CurrentFormula,Tables)->
     Name=binary_to_list(NameBin),
     case Identifier of
  	?EOF ->	    
- 	    io:format("workstream ~p read!~n",[Name]),
+ 	    %io:format("workstream ~p read!~n",[Name]),
  	    ok;
 	?SST ->
-	    io:format("In excel:parse_bin Name is ~p~n",[Name]),
+	    %io:format("In excel:parse_bin Name is ~p~n",[Name]),
 	    {ok,BinList,Rest2}=get_single_SST(Bin),
 	    {ok,NewCurrentFormula}=excel_records:parse_rec(Identifier,BinList,
                                                            Name,CurrentFormula,
@@ -215,7 +215,7 @@ get_bound_list(Bin,Residuum,Tables)->
      RecordSize:16/little-unsigned-integer,Rest/binary>>=Bin,
     case Identifier of
  	?EOF ->	    
- 	    io:format("workstream read!~n"),
+ 	    %io:format("workstream read!~n"),
  	    Residuum;
 	?BOUNDSHEET ->
  	    <<Record:RecordSize/binary,Rest2/binary>>=Rest,
@@ -274,7 +274,7 @@ post_process_tables(Tables)->
     %%filefilters:dump(Tables),
     fix_up_externalrefs(Tables),
     fix_up_cells(Tables),
-    io:format("Post-processed Tables are ~p~n",[Tables]),
+    %io:format("Post-processed Tables are ~p~n",[Tables]),
     filefilters:dump(Tables),
     ok.
 
@@ -304,8 +304,8 @@ fix_up_externalrefs(Tables)->
                 end
         end,
     case ets:info(ExternalRefs,size) of
-        0 -> io:format("in excel:post_process_tables no records in file "++
-                       "ExternalRefs~n"),
+        0 -> %io:format("in excel:post_process_tables no records in file "++
+             %          "ExternalRefs~n"),
              ok;
         _ -> [Index]=ets:foldl(Fun,[],ExternalRefs),
              SheetNames=lists:reverse(get_sheetnames(Tables)),

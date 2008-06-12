@@ -64,9 +64,11 @@ to_l(T) when is_tuple(T) ->
 %% Integer -> base 26 number as string.
 to_b26(Int) when is_integer(Int) ->
     to_b26(Int, []).
-
+    
 to_b26(0, Value) ->
     Value;
+to_b26(Int, Value) when Int =< 26 ->
+    [Int+96 | Value];        
 to_b26(Int, Value) ->
     Div = Int/26,
     DivInt = trunc(Div),
