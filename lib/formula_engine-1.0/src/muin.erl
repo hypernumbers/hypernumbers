@@ -1,11 +1,9 @@
-%%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %%% @doc Interface to the formula engine. Also, the interpreter.
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
-%%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -module(muin).
 -export([compile/2, run/2]).
-%-export([run/0]).
+%%-export([run/0]).
 
 -include("spriki.hrl").
 -include("builtins.hrl").
@@ -37,11 +35,22 @@ compile(Fla, {X, Y}) ->
     end.
 
 %% @doc Runs compiled formula.
-%run(Pcode, Bindings) ->
-    %Pid = spawn(?MODULE, run, []),
-    %Pid ! {run, {Pcode, Bindings}, self()},
-    %Res = receive X -> X end,
-    %Res.
+run(Pcode, Bindings) ->
+    %% Populate the process dictionary.
+    foreach(fun({K, V}) -> put(K, V) end,
+            Bindings ++ [{retvals, {[], [], []}}]),
+    put(recompile, false),
+
+    case (catch eval(Pcode)) of
+        {error, R}  ->
+            {error,R};
+        Val ->
+            {RefTree, Errors, References} = get(retvals),
+            %% Cells referencing blank cells become 0.
+            {ok, {?COND(Val == blank, 0, Val),
+                  RefTree, Errors, References, get(recompile)}}
+    end.
+
 
 %%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -49,36 +58,6 @@ try_parse(Fla, {X, Y}) ->
     Trans = translator:do(Fla),
     {ok, Toks} = muin_lexer:lex(Trans, {X, Y}),
     {ok, _Ast} = muin_parser:parse(Toks). % Match to enforce the contract.
-
-        
-run(Pcode, Bindings) ->
-%%    receive
-%        {run, {Pcode, Bindings}, Caller} ->
-            %% Populate the process dictionary.
-            foreach(fun({K, V}) -> put(K, V) end,
-                    Bindings ++ [{retvals, {[], [], []}}]),
-             
-            case (catch eval(Pcode)) of
-                {error, R}  ->
-                    {error,R};
-                    %Caller ! {error, R};
-                Val ->
-                    {RefTree, Errors, References} = get(retvals),
-                     %% Cells referencing blank cells become 0.
-                    Res = {ok, {?COND(Val == blank, 0, Val),
-                                RefTree, Errors, References}},
-                    Res
-                    %Caller ! Res
-            end.
-%        Else ->
-%            Msg = io_lib:format("Unexpected message in muin:run(): ~p", [Else]),
-%            io:format("~p~n", [Msg]),
-%            error_logger:error_msg(Msg)
-%    end.
-
-%%%---------------------%%%
-%%%  Private functions  %%%
-%%%---------------------%%%
 
 %% @doc Evaluates an s-expression, pre-processing subexps as needed.
 eval([Func0 | Args0]) when ?isfuncall(Func0) ->
@@ -94,7 +73,6 @@ plain_eval([Func | Args]) when ?isfuncall(Func) ->
     funcall(Func, CallArgs);
 plain_eval(Value) ->
     Value.
-
 
 %% @doc Transforms certain types of s-exps. @end
 preproc([':', StartExpr, EndExpr]) ->
@@ -112,10 +90,13 @@ preproc([':', StartExpr, EndExpr]) ->
 preproc([indirect, Arg]) ->
     Str = plain_eval(Arg),
     {ok, Toks} = muin_lexer:lex(Str, {?mx, ?my}),
-    ?ifmatch(Toks,
-             [{ref, R, C, P}],
-             [ref, R, C, P],
-             ?ERR_REF);
+    case Toks of
+        [{ref, R, C, P}] ->
+            put(recompile, true),
+            [ref, R, C, P];
+        _ ->
+            ?ERR_REF
+    end;
 preproc(Sexp) ->
     Sexp.
 
