@@ -45,9 +45,10 @@ set_cell(Addr, Val) ->
     case superparser:process(Val) of
         {formula, Formula} ->
             Bindings = [{site, Site},{path, Path},{x, X},{y, Y}],
-            {Pcode, Resval, Npar, Ndep} = run_formula(Formula, {X, Y}, Bindings),
-            ?IF(Pcode =/= nil, 
-                db_put(Addr, "__ast", Pcode)),
+            {Pcode, Resval, Npar, Ndep, Recompile} = 
+                run_formula(Formula, {X, Y}, Bindings),
+            ?IF(Pcode =/= nil, db_put(Addr, "__ast", Pcode)),
+            ?IF(Recompile == true, db_put(Addr, "__recompile", true)),
             write_cell(Addr, [Resval], "=" ++ Formula, Npar, Ndep);
         {int, N}    ->
             write_cell(Addr, [{integer, [], [N]}], integer_to_list(N), [], []);
@@ -157,17 +158,24 @@ get_cell_info(Site, Path, X, Y) ->
 %%%               recalculate its value
 %%%-----------------------------------------------------------------
 recalc(Index) ->
+
     #index{site=Site, path=Path, column=X, row=Y} = Index,
     Addr = #ref{site=Site, path=Path, ref={cell, {X, Y}}},
-    Pcode = hn_db:get_item_val(Addr#ref{name="__ast"}),
-    Bindings = [{site, Site}, {path, Path}, {x, X}, {y, Y}],
     
-    Val = case muin:run(Pcode, Bindings) of
-    {ok, {V, _, _, _}} ->                   hn_util:val_to_xml(V);
-    {error, Reason} when is_atom(Reason) -> {error, [], [Reason]}
+    case hn_db:get_item_val(Addr#ref{name="__recompile"}) of
+    %% Muin flags cells to force full recompile if parents may change
+    true ->
+        set_cell(Addr,hn_db:get_item_val(Addr#ref{name=formula}));
+    _ ->
+        Pcode = hn_db:get_item_val(Addr#ref{name="__ast"}),
+        Bindings = [{site, Site}, {path, Path}, {x, X}, {y, Y}],
+        Val = case muin:run(Pcode, Bindings) of
+        {ok, {V, _, _, _, _}} ->                hn_util:val_to_xml(V);
+        {error, Reason} when is_atom(Reason) -> {error, [], [Reason]}
+        end,
+        hn_db:write_item(Addr#ref{name=value}, [Val])
     end,
-
-    hn_db:write_item(Addr#ref{name=value}, [Val]),
+    
     hn_db:mark_dirty(Index, cell),
     ok.
     
@@ -217,7 +225,7 @@ run_formula(Formula, {X, Y}, Bindings) ->
     case muin:compile(Formula, {X, Y}) of
     {ok, Pcode} ->
         case muin:run(Pcode, Bindings) of
-        {ok, {Val, Deptree, _, Parents}} ->
+        {ok, {Val, Deptree, _, Parents, Recompile}} ->
             %% Transform parents and deptree to simplexml
             F = fun({Type, {S, P, X1, Y1}}) ->
                 Url = hn_util:index_to_url({index, S, P, X1, Y1}),
@@ -225,10 +233,10 @@ run_formula(Formula, {X, Y}, Bindings) ->
             end,
             Npar = lists:map(F, Parents),
             Ndep = lists:map(F, Deptree),
-            {Pcode, hn_util:val_to_xml(Val), Npar, Ndep};
+            {Pcode, hn_util:val_to_xml(Val), Npar, Ndep, Recompile};
         {error, Reason} when is_atom(Reason) ->
-            {nil, {error, [], [Reason]}, [], []}
+            {nil, {error, [], [Reason]}, [], [],true}
         end;
    {error, error_in_formula} ->
-        {nil, {string, [], "Invalid formula"}, [], []}
+        {nil, {string, [], "Invalid formula"}, [], [],true}
     end.

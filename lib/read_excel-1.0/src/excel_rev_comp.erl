@@ -768,7 +768,7 @@ macro_to_string(189) -> "DPRODUCT";
 macro_to_string(190) -> "ISNONTEXT";
 macro_to_string(193) -> "STDEVP";
 macro_to_string(194) -> "VARP";
-macro_to_string(195) -> "DSDEVP";
+macro_to_string(195) -> "DSTDEVP";
 macro_to_string(196) -> "DVARP";
 macro_to_string(197) -> "TRUNC";
 macro_to_string(198) -> "ISLOGICAL";
