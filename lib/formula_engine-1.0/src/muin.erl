@@ -41,16 +41,17 @@ run(Pcode, Bindings) ->
             Bindings ++ [{retvals, {[], [], []}}]),
     put(recompile, false),
 
-    case (catch eval(Pcode)) of
-        {error, R}  ->
-            {error,R};
+    try eval(Pcode) of
         Val ->
             {RefTree, Errors, References} = get(retvals),
             %% Cells referencing blank cells become 0.
             {ok, {?COND(Val == blank, 0, Val),
                   RefTree, Errors, References, get(recompile)}}
+    catch
+        throw:X -> {error, X};
+        exit:X -> {error, X};
+        error:X -> {error, X}
     end.
-
 
 %%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
