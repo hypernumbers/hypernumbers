@@ -5,12 +5,15 @@
 -export([compile/2, run/2]).
 %%-export([run/0]).
 
+-compile(export_all).
+
 -include("spriki.hrl").
 -include("builtins.hrl").
 -include("handy_macros.hrl").
 -include("typechecks.hrl").
 
 -import(tconv, [to_b26/1, to_i/1, to_i/2, to_s/1]).
+-import(muin_util, [attempt/3]).
 
 %% These are read-only.
 -define(mx, get(x)).
@@ -26,11 +29,11 @@
 
 %%% @doc Parses formula, and returns AST as an s-expression.
 compile(Fla, {X, Y}) ->
-    case (catch try_parse(Fla, {X, Y})) of
+    case attempt(?MODULE, try_parse, [Fla, {X, Y}]) of
         {ok, Pcode} ->
             {ok, Pcode};
-        Else ->
-            error_logger:error_msg("muin:compile ~p~n",[Else]),
+        {error, Reason} ->
+            error_logger:error_msg("muin:compile ~p~n", [Reason]),
             {error, error_in_formula}
     end.
 
@@ -40,17 +43,14 @@ run(Pcode, Bindings) ->
     foreach(fun({K, V}) -> put(K, V) end,
             Bindings ++ [{retvals, {[], [], []}}]),
     put(recompile, false),
-
-    try eval(Pcode) of
-        Val ->
+    case attempt(?MODULE, eval, [Pcode]) of
+        {ok, Val} ->
             {RefTree, Errors, References} = get(retvals),
             %% Cells referencing blank cells become 0.
             {ok, {?COND(Val == blank, 0, Val),
-                  RefTree, Errors, References, get(recompile)}}
-    catch
-        throw:X -> {error, X};
-        exit:X -> {error, X};
-        error:X -> {error, X}
+                  RefTree, Errors, References, get(recompile)}};
+        {error, Reason} ->
+            {error, Reason}
     end.
 
 %%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

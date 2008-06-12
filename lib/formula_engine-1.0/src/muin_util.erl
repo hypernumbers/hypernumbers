@@ -6,7 +6,7 @@
          just_ref/1,
          expand_cellrange/4,
          walk_path/2,
-         attempt/2]).
+         attempt/3]).
 
 -import(string, [rchr/2, tokens/2]).
 -import(tconv, [to_i/1]).
@@ -93,10 +93,11 @@ expand_cellrange(StartRow, EndRow, StartCol, EndCol) ->
           [], Cells).
 
 %% Catch errors from error-throwing functions.
-attempt(F, Args) ->
-  case catch apply(F, Args) of
-    {'EXIT', Reason} ->
-          {error, Reason};
-      Val ->
-          {ok, Val}
-  end.
+attempt(Mod, F, Args) ->
+    try apply(Mod, F, Args) of
+        Val -> {ok, Val}
+    catch
+        throw:X -> {error, X};
+        exit:X  -> {error, X};
+        error:X -> {error, X}
+    end.
