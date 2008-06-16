@@ -5,10 +5,10 @@
 -define(ASC_PLUS,43).
 -define(ASC_COMMA,44).
 -define(ASC_MINUS,45).
--define(ASC_FULLS,46).
+-define(ASC_FULLSTOP,46).
 -define(ASC_ZERO,48).
 -define(ASC_LT,60).
 -define(ASC_EQ,61).
 -define(ASC_GT,62).
--define(ASC_QU,63).
+-define(ASC_Q,63).
 

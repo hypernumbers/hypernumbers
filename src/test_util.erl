@@ -3,6 +3,7 @@
 -export([
          expected/2,
          expected2/2,
+	 expected3/2,
          readxls/1,
          read_excel_file/1,
          equal_to_digit/3,
@@ -176,6 +177,7 @@ make_err_val(?ErrValueInt) -> "#VALUE!";
 make_err_val(X)            -> X.
 
 expected(Expected, Got) ->
+    io:format(" in test_util:expected Expected is ~p and Got is ~p~n",[Expected,Got]),
     Expected2 = yaws_api:url_encode(Expected),
     Got2 = yaws_api:url_encode(Got),
     case Got2 of
@@ -198,6 +200,17 @@ expected2(Expected, Got) ->
             io:format("<b style=\"color:red\">FAIL</b>~nExpected: ~w~nGot: ~w~n",
                       [Expected, Got]),
             exit({fail, expected, Expected, got, Got})
+    end.
+
+
+expected3(Expected, Got) ->
+    case Got of
+        Expected ->
+            io:format("SUCCESS~nExpected : ~p~nGot     : ~p~n",
+                      [Expected,Got]),
+            {test, ok};
+        _Else ->
+            exit({"E:", Expected, "G:", Got})
     end.
 
 readxls(Filename) ->

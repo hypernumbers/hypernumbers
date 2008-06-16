@@ -196,6 +196,19 @@
                   {string,"\"tttt\""},
                   {format,"0000.0"}]).
 
+%% Test 42
+-define(INPUT42, "General").
+-define(OUTPUT42,[{general, "General"}]).
+
+%% Test 43
+-define(INPUT43, "cGeneral").
+-define(OUTPUT43,[{char, "c"},
+		  {general, "General"}].
+
+%% Test 44
+-define(INPUT44, "Generalc").
+-define(OUTPUT44,[{general, "General"},
+		  {char,"c"}].
 
 %% Test server callback functions
 %%------------------------------------------------------------------------------
@@ -297,7 +310,10 @@ all() ->
      num_lexer_test38,
      num_lexer_test39,
      num_lexer_test40,
-     num_lexer_test41
+     num_lexer_test41,
+     num_lexer_test42,
+     num_lexer_test43,
+     num_lexer_test44
     ].
 
 %% Test cases starts here.
@@ -310,14 +326,14 @@ num_lexer_test1(suite) ->
 
 num_lexer_test1(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT1),
-    test_util:expected(?OUTPUT1,Output).
+    test_util:expected3(?OUTPUT1,Output).
 
 num_lexer_test2() -> 
     [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_lexer_test2(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT2),
-    test_util:expected(?OUTPUT2,Output).
+    test_util:expected3(?OUTPUT2,Output).
 
 
 num_lexer_test3() -> 
@@ -325,7 +341,7 @@ num_lexer_test3() ->
 
 num_lexer_test3(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT3),
-    test_util:expected(?OUTPUT3,Output).
+    test_util:expected3(?OUTPUT3,Output).
 
 
 num_lexer_test4() -> 
@@ -333,7 +349,7 @@ num_lexer_test4() ->
 
 num_lexer_test4(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT4),
-    test_util:expected(?OUTPUT4,Output).
+    test_util:expected3(?OUTPUT4,Output).
 
 
 num_lexer_test5() -> 
@@ -341,7 +357,7 @@ num_lexer_test5() ->
 
 num_lexer_test5(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT5),
-    test_util:expected(?OUTPUT5,Output).
+    test_util:expected3(?OUTPUT5,Output).
 
 
 num_lexer_test6() -> 
@@ -349,7 +365,7 @@ num_lexer_test6() ->
 
 num_lexer_test6(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT6),
-    test_util:expected(?OUTPUT6,Output).
+    test_util:expected3(?OUTPUT6,Output).
 
 
 num_lexer_test7() -> 
@@ -357,7 +373,7 @@ num_lexer_test7() ->
 
 num_lexer_test7(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT7),
-    test_util:expected(?OUTPUT7,Output).
+    test_util:expected3(?OUTPUT7,Output).
 
 
 num_lexer_test8() -> 
@@ -365,7 +381,7 @@ num_lexer_test8() ->
 
 num_lexer_test8(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT8),
-    test_util:expected(?OUTPUT8,Output).
+    test_util:expected3(?OUTPUT8,Output).
 
 
 num_lexer_test9() -> 
@@ -373,7 +389,7 @@ num_lexer_test9() ->
 
 num_lexer_test9(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT9),
-    test_util:expected(?OUTPUT9,Output).
+    test_util:expected3(?OUTPUT9,Output).
 
 
 num_lexer_test10() -> 
@@ -381,7 +397,7 @@ num_lexer_test10() ->
 
 num_lexer_test10(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT10),
-    test_util:expected(?OUTPUT10,Output).
+    test_util:expected3(?OUTPUT10,Output).
 
 
 num_lexer_test11() -> 
@@ -389,7 +405,7 @@ num_lexer_test11() ->
 
 num_lexer_test11(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT12),
-    test_util:expected(?OUTPUT12,Output).
+    test_util:expected3(?OUTPUT12,Output).
 
 
 num_lexer_test12() -> 
@@ -397,7 +413,7 @@ num_lexer_test12() ->
 
 num_lexer_test12(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT12),
-    test_util:expected(?OUTPUT12,Output).
+    test_util:expected3(?OUTPUT12,Output).
 
 
 num_lexer_test13() -> 
@@ -405,7 +421,7 @@ num_lexer_test13() ->
 
 num_lexer_test13(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT13),
-    test_util:expected(?OUTPUT13,Output).
+    test_util:expected3(?OUTPUT13,Output).
 
 
 num_lexer_test14() -> 
@@ -413,7 +429,7 @@ num_lexer_test14() ->
 
 num_lexer_test14(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT14),
-    test_util:expected(?OUTPUT14,Output).
+    test_util:expected3(?OUTPUT14,Output).
 
 
 num_lexer_test15() -> 
@@ -421,7 +437,7 @@ num_lexer_test15() ->
 
 num_lexer_test15(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT15),
-    test_util:expected(?OUTPUT15,Output).
+    test_util:expected3(?OUTPUT15,Output).
 
 
 num_lexer_test16() -> 
@@ -429,7 +445,7 @@ num_lexer_test16() ->
 
 num_lexer_test16(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT16),
-    test_util:expected(?OUTPUT16,Output).
+    test_util:expected3(?OUTPUT16,Output).
 
 
 num_lexer_test17() -> 
@@ -437,7 +453,7 @@ num_lexer_test17() ->
 
 num_lexer_test17(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT17),
-    test_util:expected(?OUTPUT17,Output).
+    test_util:expected3(?OUTPUT17,Output).
 
 
 num_lexer_test18() -> 
@@ -445,7 +461,7 @@ num_lexer_test18() ->
 
 num_lexer_test18(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT18),
-    test_util:expected(?OUTPUT18,Output).
+    test_util:expected3(?OUTPUT18,Output).
 
 
 num_lexer_test19() -> 
@@ -453,7 +469,7 @@ num_lexer_test19() ->
 
 num_lexer_test19(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT19),
-    test_util:expected(?OUTPUT19,Output).
+    test_util:expected3(?OUTPUT19,Output).
 
 
 num_lexer_test20() -> 
@@ -461,7 +477,7 @@ num_lexer_test20() ->
 
 num_lexer_test20(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT20),
-    test_util:expected(?OUTPUT20,Output).
+    test_util:expected3(?OUTPUT20,Output).
 
 
 num_lexer_test21() -> 
@@ -469,7 +485,7 @@ num_lexer_test21() ->
 
 num_lexer_test21(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT21),
-    test_util:expected(?OUTPUT21,Output).
+    test_util:expected3(?OUTPUT21,Output).
 
 
 num_lexer_test22() -> 
@@ -477,7 +493,7 @@ num_lexer_test22() ->
 
 num_lexer_test22(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT22),
-    test_util:expected(?OUTPUT22,Output).
+    test_util:expected3(?OUTPUT22,Output).
 
 
 num_lexer_test23() -> 
@@ -485,7 +501,7 @@ num_lexer_test23() ->
 
 num_lexer_test23(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT23),
-    test_util:expected(?OUTPUT23,Output).
+    test_util:expected3(?OUTPUT23,Output).
 
 
 num_lexer_test24() -> 
@@ -493,14 +509,14 @@ num_lexer_test24() ->
 
 num_lexer_test24(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT24),
-    test_util:expected(?OUTPUT24,Output).
+    test_util:expected3(?OUTPUT24,Output).
 
 num_lexer_test25() -> 
     [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_lexer_test25(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT25),
-    test_util:expected(?OUTPUT25,Output).
+    test_util:expected3(?OUTPUT25,Output).
 
 
 num_lexer_test26() -> 
@@ -508,7 +524,7 @@ num_lexer_test26() ->
 
 num_lexer_test26(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT26),
-    test_util:expected(?OUTPUT26,Output).
+    test_util:expected3(?OUTPUT26,Output).
 
 
 num_lexer_test27() -> 
@@ -516,7 +532,7 @@ num_lexer_test27() ->
 
 num_lexer_test27(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT27),
-    test_util:expected(?OUTPUT27,Output).
+    test_util:expected3(?OUTPUT27,Output).
 
 
 num_lexer_test28() -> 
@@ -524,95 +540,116 @@ num_lexer_test28() ->
 
 num_lexer_test28(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT28),
-    test_util:expected(?OUTPUT28,Output).
+    test_util:expected3(?OUTPUT28,Output).
 
 num_lexer_test29() -> 
     [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_lexer_test29(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT29),
-    test_util:expected(?OUTPUT29,Output).
+    test_util:expected3(?OUTPUT29,Output).
 
 num_lexer_test30() -> 
     [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_lexer_test30(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT30),
-    test_util:expected(?OUTPUT30,Output).
+    test_util:expected3(?OUTPUT30,Output).
 
 num_lexer_test31() -> 
     [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_lexer_test31(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT31),
-    test_util:expected(?OUTPUT31,Output).
+    test_util:expected3(?OUTPUT31,Output).
 
 num_lexer_test32() -> 
     [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_lexer_test32(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT32),
-    test_util:expected(?OUTPUT32,Output).
+    test_util:expected3(?OUTPUT32,Output).
 
 num_lexer_test33() -> 
     [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_lexer_test33(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT33),
-    test_util:expected(?OUTPUT33,Output).
+    test_util:expected3(?OUTPUT33,Output).
 
 num_lexer_test34() -> 
     [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_lexer_test34(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT34),
-    test_util:expected(?OUTPUT34,Output).
+    test_util:expected3(?OUTPUT34,Output).
 
 num_lexer_test35() -> 
     [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_lexer_test35(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT35),
-    test_util:expected(?OUTPUT35,Output).
+    test_util:expected3(?OUTPUT35,Output).
 
 num_lexer_test36() -> 
     [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_lexer_test36(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT36),
-    test_util:expected(?OUTPUT36,Output).
+    test_util:expected3(?OUTPUT36,Output).
 
 num_lexer_test37() -> 
     [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_lexer_test37(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT37),
-    test_util:expected(?OUTPUT37,Output).
+    test_util:expected3(?OUTPUT37,Output).
 
 num_lexer_test38() -> 
     [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_lexer_test38(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT38),
-    test_util:expected(?OUTPUT38,Output).
+    test_util:expected3(?OUTPUT38,Output).
 
 num_lexer_test39() -> 
     [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_lexer_test39(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT39),
-    test_util:expected(?OUTPUT39,Output).
+    test_util:expected3(?OUTPUT39,Output).
 
 num_lexer_test40() -> 
     [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_lexer_test40(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT40),
-    test_util:expected(?OUTPUT40,Output).
+    test_util:expected3(?OUTPUT40,Output).
 
 num_lexer_test41() -> 
     [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_lexer_test41(Config) when is_list(Config) -> 
     {ok,Output,_}=num_format_lexer:string(?INPUT41),
-    test_util:expected(?OUTPUT41,Output).
+    test_util:expected3(?OUTPUT41,Output).
+
+num_lexer_test42() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_lexer_test42(Config) when is_list(Config) -> 
+    {ok,Output,_}=num_format_lexer:string(?INPUT42),
+    test_util:expected3(?OUTPUT42,Output).
+
+num_lexer_test43() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_lexer_test43(Config) when is_list(Config) -> 
+    {ok,Output,_}=num_format_lexer:string(?INPUT43),
+    test_util:expected3(?OUTPUT43,Output).
+
+num_lexer_test44() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_lexer_test44(Config) when is_list(Config) -> 
+    {ok,Output,_}=num_format_lexer:string(?INPUT44),
+    test_util:expected3(?OUTPUT44,Output).

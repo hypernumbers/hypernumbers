@@ -1,8 +1,8 @@
 Definitions.
 
-CONDITION1 = (\[([[><=]|((>=)|(=<)))(-)?([0-9]+)\])
-CONDITION2 = (\[([[><=]|((>=)|(=<)))(-)?([0-9]+\.[0-9])*\])
-CONDITION3 = (\[([[><=]|((>=)|(=<)))(-)?([0-9]+\.[0-9]+((E|e))(\+|\-)?[0-9]+)\])
+CONDITION1 = (\[([><=]|(>=)|(=>)|(=<)|(<=))(-)?([0-9]+)\])
+CONDITION2 = (\[([><=]|(>=)|(=>)|(=<)|(<=))(-)?([0-9]+\.[0-9])*\])
+CONDITION3 = (\[([><=]|(>=)|(=>)|(=<)|(<=))(-)?([0-9]+\.[0-9]+((E|e))(\+|\-)?[0-9]+)\])
 
 BLACK      = (\[(B|b)(L|l)(A|a)(C|c)(K|k)\])
 BLUE       = (\[(B|b)(L|l)(U|u)(E|e)\])
@@ -13,10 +13,17 @@ RED        = (\[(R|r)(E|e)(D|d)\])
 WHITE      = (\[(W|w)(H|h)(I|i)(T|t)(E|e)\])
 YELLOW     = (\[(Y|y)(E|e)(L|l)(L|l)(O|o)(W|w)\])
 
+GENERAL    = (G|g)(E|e)(N|n)(E|e)(R|r)(A|a)(L|l)
+
 STRING     = (\"[^"\n]*\")
 
-FORMAT     = ((([#\?0]+,)*)([#\?0]+(\.([#\?0]+([E|e][+|-][0-9]+)?)?)?),*)
+FORMAT1    = ((([#\?0]+,)*)([#\?0]+(\.([#\?0]+([E|e][\+|-][0-9]+)?)?)?))
+FORMAT2    = ([#\?0]+([E|e][\+|-][0-9]+))
 FRACTION   = ([#\?0]+(\s)[#\?0]+/[#\?O]+)
+
+ELAPSED_H = (\[(H|h)\])
+ELAPSED_M = (\[(M|m)\])
+ELAPSED_S = (\[(S|s)\])
 
 Rules.
 
@@ -29,14 +36,21 @@ Rules.
 {WHITE}      : {token, {colour, white}}.
 {YELLOW}     : {token, {colour, yellow}}.
 
+{GENERAL}    : {token, {general, YYtext}}.
+
 {STRING}     : {token, {string, YYtext}}. 
 
-{FORMAT}     : {token, {format, YYtext}}.
+{FORMAT1}    : {token, {format, YYtext}}.
+{FORMAT2}    : {token, {format, YYtext}}.
 {FRACTION}   : {token, {fraction, YYtext}}.
 
 {CONDITION1} : {token, {condition, YYtext}}.
 {CONDITION2} : {token, {condition, YYtext}}.
 {CONDITION3} : {token, {condition, YYtext}}.
+
+{ELAPSED_M}  : {token, {min,     elapsed}}.
+{ELAPSED_H}  : {token, {hour,    elapsed}}.
+{ELAPSED_S}  : {token, {sec,     elapsed}}.
 
 \$           : {token, {dollar, "$"}}.
 \-           : {token, {minus, "-"}}.

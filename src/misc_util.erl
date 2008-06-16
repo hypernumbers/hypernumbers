@@ -1,5 +1,9 @@
 -module(misc_util).
--export([stdfuns_export_xml/0,import_xml_attributes/2,profile/2,testa/0]).
+-export([stdfuns_export_xml/0,
+	 import_xml_attributes/2,
+	 profile/2,
+	 testa/0,
+	 cheat/1]).
 -include("builtins.hrl").
 -include("spriki.hrl").
 
@@ -10,6 +14,9 @@
     {stdfuns_stats,     "Statistical"},
     {stdfuns_info,      "Informational"}
     ]).
+
+cheat(1) -> import_xml_attributes("c:\\opt\\code\\trunk\\priv\\dale\\data.xml","http://127.0.0.1:9000/data/");
+cheat(2) -> import_xml_attributes("/cygdeive/c/opt/code/trunk/priv/dale/data.xml","http://127.0.0.1:9000/data/").
 
 %% Read std_funs and produce a workable 
 %% xml document for the functions list

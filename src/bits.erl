@@ -9,7 +9,7 @@
 
 %% API
 -export([clear_db/0,
-	log/1]).
+	 log/1]).
 
 %%==============================================================================
 %% API
@@ -38,9 +38,10 @@ log(String) ->
 	  end,
     Return=filelib:ensure_dir(File),
     case file:open(File, [append]) of
-       {ok, Id} ->
-           io:fwrite(Id, "~s~n", [String]),
-           file:close(Id);
-       _ ->
-           error
+	{ok, Id} ->
+	    io:fwrite(Id, "~s~n", [String]),
+	    file:close(Id);
+	_ ->
+	    error
     end.
+
