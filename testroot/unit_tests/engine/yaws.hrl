@@ -1,1 +1,0 @@
-/usr/local/lib/yaws/include/yaws.hrl
