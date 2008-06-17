@@ -7,11 +7,14 @@
 %%%-----------------------------------------------------------------------------
 -module(hypernumbers_test_SUITE).
 
-%% Note: This directive should only be used in test suites.
 -compile(export_all).
 
 -include("ct.hrl").
 -include("../../include/spriki.hrl").
+
+-define(str(Str,List),lists:flatten(io_lib:format(Str,List))).
+-define(POST,"<create><formula>~s</formula></create>").
+-define(URL,"~s/~s?attr").
 
 %% Test server callback functions
 %%------------------------------------------------------------------------------
@@ -28,36 +31,55 @@ init_per_testcase(_TestCase, Config) -> bits:clear_db(),Config.
 end_per_testcase(_TestCase, _Config) -> ok.
 
 all() ->
-    [hn1,hn2,hn3,hn4].
+    [test_post1,test_post2,test_post3,test_post4,test_post5,
+     test_update1,test_update2,test_update3,
+     test_update4,test_update5,test_update6,
+     test_blank1].
 
 %% Test cases starts here.
 %%------------------------------------------------------------------------------
-hn1() -> [{userdata,[{doc,"Test Simple Hypernumber"}]}].
-hn1(Config) when is_list(Config) ->
-    Hn = "=hypernumber(\""++?HN_URL1++"/a1?hypernumber\")",
-    hn_util:post(?HN_URL1++"/a1?attr","<create><formula>99</formula></create>","text/xml"),
-    hn_util:post(?HN_URL2++"/a1?attr","<create><formula>"++Hn++"</formula></create>","text/xml"),
-    "99" = hn_util:req(?HN_URL2++"/a1").
+-define(testpost(Name, Ref, Value, Answer),
+    Name(_Config) ->
+        HNum = ?str("=hypernumber(\"~s/~s?hypernumber\")",[?HN_URL1,Ref]),
+        hn_util:post(?str(?URL,[?HN_URL1,Ref]),?str(?POST,[Value]),"text/xml"),
+        hn_util:post(?str(?URL,[?HN_URL2,Ref]),?str(?POST,[HNum]),"text/xml"),
+        timer:sleep(500),
+        Xml = simplexml:from_xml_string(hn_util:req(?str(?URL,[?HN_URL2,Ref]))),
+        Answer = simplexml:search(Xml,value)
+    ).
+    
+-define(testupdate(Name, Ref, Value, NewValue, Answer),
+    Name(_Config) ->
+        HNum = ?str("=hypernumber(\"~s/~s?hypernumber\")",[?HN_URL1,Ref]),
+        hn_util:post(?str(?URL,[?HN_URL1,Ref]),?str(?POST,[Value]),"text/xml"),
+        hn_util:post(?str(?URL,[?HN_URL2,Ref]),?str(?POST,[HNum]),"text/xml"),
+        hn_util:post(?str(?URL,[?HN_URL1,Ref]),?str(?POST,[NewValue]),"text/xml"),
+        timer:sleep(500),
+        Xml = simplexml:from_xml_string(hn_util:req(?str(?URL,[?HN_URL2,Ref]))),
+        Answer = simplexml:search(Xml,value)
+    ).
+    
+-define(testblank(Name, Ref, Answer),
+    Name(_Config) ->
+        HNum = ?str("=hypernumber(\"~s/~s?hypernumber\")",[?HN_URL1,Ref]),
+        hn_util:post(?str(?URL,[?HN_URL2,Ref]),?str(?POST,[HNum]),"text/xml"),
+        timer:sleep(500),
+        Xml = simplexml:from_xml_string(hn_util:req(?str(?URL,[?HN_URL2,Ref]))),
+        Answer = simplexml:search(Xml,value)
+    ).
+    
 
-hn2() -> [{userdata,[{doc,"Test Hypernumber Change"}]}].
-hn2(Config) when is_list(Config) ->
-    Hn = "=hypernumber(\""++?HN_URL1++"/a1?hypernumber\")",
-    hn_util:post(?HN_URL1++"/a1?attr","<create><formula>99</formula></create>","text/xml"),
-    hn_util:post(?HN_URL2++"/a1?attr","<create><formula>"++Hn++"</formula></create>","text/xml"),
-    hn_util:post(?HN_URL1++"/a1?attr","<create><formula>66</formula></create>","text/xml"),
-    timer:sleep(500),
-    "66" = hn_util:req(?HN_URL2++"/a1").
-    
-hn3() -> [{userdata,[{doc,"Test setting empty hynumber"}]}].
-hn3(Config) when is_list(Config) ->
-    Hn = "=hypernumber(\""++?HN_URL1++"/a1?hypernumber\")",
-    hn_util:post(?HN_URL2++"/a1?attr","<create><formula>"++Hn++"</formula></create>","text/xml"),
-    "0" = hn_util:req(?HN_URL2++"/a1").
-    
-hn4() -> [{userdata,[{doc,"Test setting then changing empty hynumber"}]}].
-hn4(Config) when is_list(Config) ->
-    Hn = "=hypernumber(\""++?HN_URL1++"/a1?hypernumber\")",
-    hn_util:post(?HN_URL2++"/a1?attr","<create><formula>"++Hn++"</formula></create>","text/xml"),
-    hn_util:post(?HN_URL1++"/a1?attr","<create><formula>66</formula></create>","text/xml"),
-    timer:sleep(1000),
-    "66" = hn_util:req(?HN_URL2++"/a1").
+?testpost(test_post1,"a1","99",[{value,[],[{integer,[],["99"]}]}]).
+?testpost(test_post2,"a1","2.0",[{value,[],[{float,[],["2.00"]}]}]).
+?testpost(test_post3,"a1","abc",[{value,[],[{string,[],["abc"]}]}]).
+?testpost(test_post4,"a1","=AVERAGE(2,4)",[{value,[],[{float,[],["3.0"]}]}]).
+?testpost(test_post5,"a1","={1,2,3}",[{value,[],[{matrix,[],[{row,[],[{integer,[],["1"]},{integer,[],["2"]},{integer,[],["3"]}]}]}]}]).
+
+?testupdate(test_update1,"a1","99","66",[{value,[],[{integer,[],["66"]}]}]).
+?testupdate(test_update2,"a1","99","abc",[{value,[],[{string,[],["abc"]}]}]).
+?testupdate(test_update3,"a1","99","2.0",[{value,[],[{float,[],["2.0"]}]}]).
+?testupdate(test_update4,"a1","abc","66",[{value,[],[{integer,[],["66"]}]}]).
+?testupdate(test_update5,"a1","2.0","abc",[{value,[],[{string,[],["abc"]}]}]).
+?testupdate(test_update6,"a1","66","=AVERAGE(2,4)",[{value,[],[{float,[],["99"]}]}]).
+
+?testblank(test_blank1,"a1",[{value,[],[{integer,[],["0"]}]}]).
