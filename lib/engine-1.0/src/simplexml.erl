@@ -13,7 +13,8 @@
     from_json/1,
     from_json_string/1,
     to_xml_string/1,
-    from_xml_string/1 ]).
+    from_xml_string/1,
+    search/2 ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -92,3 +93,18 @@ rm_spaces({El,Attr,Children}) ->
 
 rm_spaces(String) -> 
     String.
+
+search(Xml,Name) -> lists:flatten(do_search(Xml,Name)).
+
+do_search({Name,Attr,Children},Name) ->
+    {Name,Attr,Children};  
+do_search({_DiffName,_Attr,Children},Name) ->
+    do_search(Children,Name);    
+do_search([{Name,Attr,Children}|T],Name) ->
+    [{Name,Attr,Children},do_search(T,Name)];
+do_search([{_Name,_Attr,Children}|T],Name) ->
+    [do_search(Children,Name),do_search(T,Name)];
+do_search(_Else,_Name) ->
+    [].
+    
+    

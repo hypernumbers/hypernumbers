@@ -193,7 +193,13 @@ get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY)->
     #incoming_hn{value=Val,deptree=T} = hn_db:get_hn(URL,Fr,To),
     
     RtVal = case Val of
-    {blank,[],[]} -> blank;
+    {blank,[],[]}   -> blank;
+    {matrix,_,Rows} ->
+        lists:map(fun({row,_,Children})->
+            lists:map(fun({integer,[],[Ref]})->
+                list_to_integer(Ref)
+            end,Children)
+        end,Rows);
     {_, _, [V]}   -> V %% Strip other type tags.
     end,
 
