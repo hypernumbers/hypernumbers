@@ -10,21 +10,21 @@ require "net/smtp"
 require "smtp_tls"
 
 RECIPIENT = "dev-ml@hypernumbers.com"
-SMTP_LOGIN = "buildbot@hypernumbers.com"
-SMTP_PASSWORD = "security? what security?"
+SMTP_LOGIN = "build@hypernumbers.com"
+SMTP_PASSWORD = "security"
 
 def send_email(from, from_alias, to, to_alias, subject, message)
   msg = <<END_OF_MESSAGE
 From: #{from_alias} <#{from}>
 To: #{to_alias} <#{to}>
 Subject: #{subject}
-	
+
 #{message}
 END_OF_MESSAGE
-  
-  Net::SMTP.start("smtp.server", 597, "localhost.localdomain", 
+
+  Net::SMTP.start("mail.hypernumbers.com", 25, "localhost", 
                   SMTP_LOGIN, SMTP_PASSWORD, "plain") { |smtp|
-    smtp.send_message(msg, RECIPIENT) 
+    smtp.send_message(msg, from, to) 
   }
 end
 
@@ -44,6 +44,8 @@ stats = (doc/"table/tr")[0..-2].map { |tr|
 
 day, month, year = [Time.now.day, Time.now.month, Time.now.year]
 subject = "Nightly test run - #{day}/#{month}/#{year}"
-send_email(SMTP_LOGIN, "Buildbot", RECIPIENT, "",
+
+send_email(SMTP_LOGIN, "Buildbot",
+           RECIPIENT, "dev-ml",
            subject,
-           stats.map { |row| row.join "  " })
+           stats.map { |row| row.join "  " }.join("\n"))
