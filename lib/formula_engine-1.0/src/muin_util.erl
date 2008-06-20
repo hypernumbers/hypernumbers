@@ -1,6 +1,5 @@
 -module(muin_util).
 -export([cast/2,
-         error/1,
          split_ssref/1,
          just_path/1,
          just_ref/1,
@@ -9,7 +8,7 @@
          attempt/3]).
 
 -import(string, [rchr/2, tokens/2]).
--import(tconv, [to_i/1]).
+-import(tconv, [to_i/1, to_s/1]).
 
 -include("handy_macros.hrl").
 -include("typechecks.hrl").
@@ -17,12 +16,20 @@
 %% Booleans
 cast(0, bool) ->
     false;
+cast(0.0, bool) ->
+    false;
 cast(X, bool) when is_list(X) ->
-    string:to_upper(X) == "TRUE";
+    case string:to_upper(X) of
+        "TRUE" -> true;
+        "FALSE" -> false;
+        _ -> {error, nab}
+    end;
 cast(X, bool) when is_number(X) ->
     true;
 cast(X, bool) when is_boolean(X) ->
     X;
+cast(_, bool) ->
+    {error, nab};
 
 %% Numbers
 cast(X, num) when is_number(X) ->
@@ -32,18 +39,19 @@ cast(true, num) ->
 cast(false, num) ->
     0;
 cast(S, num) when is_list(S) ->
-    case tconv:to_num(S) of
-        N when is_number(N) -> N;
-        E = {error, nan}    -> E
-    end.
+    tconv:to_num(S);
+cast(_, num) ->
+    ?ERR_VAL;
 
-error('#NULL!')  -> throw({error, '#NULL!'});
-error('#DIV/0!') -> throw({error, '#DIV/0!'});
-error('#VALUE!') -> throw({error, '#VALUE!'});
-error('#REF!')   -> throw({error, '#REF!'});
-error('#NAME?')  -> throw({error, '#NAME?'});
-error('#NUM!')   -> throw({error, '#NUM'});
-error('#N/A')    -> throw({error, '#N/A'}).
+%% Strings
+cast(true, str) ->
+    "true";
+cast(false, str) ->
+    "false";
+cast(N, str) when is_number(N) ->
+    tconv:to_s(N);
+cast(_, str) ->
+    ?ERR_VAL.
 
 %% Splits ssref to [Path, Ref]
 split_ssref(Ssref) ->
