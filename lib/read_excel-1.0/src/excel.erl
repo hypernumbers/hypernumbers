@@ -87,7 +87,7 @@ read_excel(Directory,SAT,SSAT,SectorSize,ShortSectorSize,
 parse_substream(SubSID,Location,SubStream,Directory,SAT,SSAT,SectorSize,
 		ShortSectorSize,FileIn,Tables)->
     {{[{Type,NameBin}],_,_},Offset}=SubStream,
-    Name=binary_to_list(NameBin),
+    %Name=binary_to_list(NameBin),
     %io:format("Now parsing stream ~p~n",[Name]),
     Bin=case Location of 
 	    normal_stream -> get_normal_stream(SubSID,Directory,SAT,SectorSize,
@@ -272,11 +272,44 @@ get_short_bin(Bin,[H|T],SectorSize,Residuum) ->
 post_process_tables(Tables)->
     %%io:format("Output Tables are ~p~n",[Tables]),
     %%filefilters:dump(Tables),
+    %% Excel has a number of built in formats
+    {ok,ok}=add_built_in_formats(Tables),
+    type_formats(Tables),
     fix_up_externalrefs(Tables),
     fix_up_cells(Tables),
     %io:format("Post-processed Tables are ~p~n",[Tables]),
     filefilters:dump(Tables),
     ok.
+
+%% this function adds the data type to format information
+%% eg is this format for text, numbers or dates or general
+type_formats(Tables) ->
+    {value,{formats,Tid}}=lists:keysearch(formats,1,Tables),
+    Fun = fun(X,_Residuum) ->
+		  {Index,[{type,Type1},Category,{format,Format}]}=X,
+		  io:format("in excel:type_formats Index is ~p Type1 is ~p Category is ~p "++
+			    "and Format is ~p~n",[Index,Type1,Category,Format]),
+		  Return=format:get_src(Format),
+		  io:format("in excel:type_formats Return is ~p~n",[Return]),
+		  case Return of
+		      {erlang,{Type2,Output}} -> 
+			  io:format("in excel:type_formats Type2 "++
+				    "is ~p and Output is ~p~n",
+				    [Type2,Output]),
+			  ok;
+		      {error,error_in_format} -> 
+			  io:format("in excel:type_formats bug in "++
+				    "format parser for format: ~p~n",
+				    [Format]),
+			  Type2='needed to make the case safe',
+			  exit("number format parser bug!")
+		  end,
+		  NewFormat={format,Format},
+		  ets:insert(Tid,[{Index,[{type,Type2},Category,{NewFormat}]}])
+	  end,
+    Return=ets:foldl(Fun,[],Tid),
+    io:format("in excel:type_formats Return is ~p~n",[Return]),
+    Return.
 
 %% reverse compile the basic cells
 %% this fun reverse compiles all the tokens in the table 'cell_tokens' and 
@@ -285,13 +318,13 @@ post_process_tables(Tables)->
 fix_up_cells(Tables)->
     {value,{cell_tokens,Cell_TokensId}}=lists:keysearch(cell_tokens,1,Tables),
     {value,{cell,CellId}}              =lists:keysearch(cell,1,Tables),
-    Fun2=fun(X,_Residuum)->
+    Fun=fun(X,_Residuum)->
                  {Index,[XF,{tokens,Tokens},{tokenarrays,TokenArray}]}=X,
                  Formula=excel_rev_comp:reverse_compile(Index,Tokens,TokenArray,
                                                         Tables),
                  ets:insert(CellId,[{Index,[XF,{formula,Formula}]}])
          end,
-    CellList=ets:foldl(Fun2,[],Cell_TokensId).
+    ets:foldl(Fun,[],Cell_TokensId).
 
 %% This function merges the contents of the ets table 'sheetnames' into 
 %% 'externalrefs'
@@ -320,36 +353,36 @@ get_sheetnames(Tables)->
     {value,{sheetnames,SheetNames}}=lists:keysearch(sheetnames,1,Tables),
     ets:foldl(Fun,[],SheetNames).
 
-update_cell(Sheet,Tokens,TokenArrays,LastRow,LastCol,
-            FirstRow,FirstCol,LastRow,LastCol,
-            CellId,Tables)->
-    update_cell2(Sheet,Tokens,TokenArrays,LastRow,LastCol,CellId,
-                 FirstRow,FirstCol,Tables),
-    ok;
-update_cell(Sheet,Tokens,TokenArrays,LastRow,Col,
-            FirstRow,FirstCol,LastRow,LastCol,CellId,Tables)->
-    update_cell2(Sheet,Tokens,TokenArrays,LastRow,Col,CellId,
-                 FirstRow,FirstCol,Tables),
-    update_cell(Sheet,Tokens,TokenArrays,FirstRow,Col+1,
-                FirstRow,FirstCol,LastRow,LastCol,CellId,Tables);
-update_cell(Sheet,Tokens,TokenArrays,Row,Col,
-            FirstRow,FirstCol,LastRow,LastCol,CellId,Tables)->
-    update_cell2(Sheet,Tokens,TokenArrays,Row,Col,CellId
-                 ,FirstRow,FirstCol,Tables),
-    update_cell(Sheet,Tokens,TokenArrays,Row+1,Col,
-                FirstRow,FirstCol,LastRow,LastCol,CellId,Tables).
+%%update_cell(Sheet,Tokens,TokenArrays,LastRow,LastCol,
+%%            FirstRow,FirstCol,LastRow,LastCol,
+%%            CellId,Tables)->
+%%    update_cell2(Sheet,Tokens,TokenArrays,LastRow,LastCol,CellId,
+%%                 FirstRow,FirstCol,Tables),
+%%    ok;
+%%update_cell(Sheet,Tokens,TokenArrays,LastRow,Col,
+%%            FirstRow,FirstCol,LastRow,LastCol,CellId,Tables)->
+%%    update_cell2(Sheet,Tokens,TokenArrays,LastRow,Col,CellId,
+%%                 FirstRow,FirstCol,Tables),
+%%    update_cell(Sheet,Tokens,TokenArrays,FirstRow,Col+1,
+%%                FirstRow,FirstCol,LastRow,LastCol,CellId,Tables);
+%%update_cell(Sheet,Tokens,TokenArrays,Row,Col,
+%%            FirstRow,FirstCol,LastRow,LastCol,CellId,Tables)->
+%%    update_cell2(Sheet,Tokens,TokenArrays,Row,Col,CellId
+%%                 ,FirstRow,FirstCol,Tables),
+%%    update_cell(Sheet,Tokens,TokenArrays,Row+1,Col,
+%%                FirstRow,FirstCol,LastRow,LastCol,CellId,Tables).
 
-update_cell2(Sheet,Tokens,TokenArrays,Row,Col,CellId,TopRow,TopCol,Tables)->
-    Index={{sheet,Sheet},{row_index,Row},{col_index,Col}},
-    TopIndex={{sheet,Sheet},{row_index,TopRow},{col_index,TopCol}},
-    FormulaExists=ets:lookup(CellId,{{sheet,Sheet},{row_index,Row},
-                                     {col_index,Col}}),
-    case FormulaExists of
-        []   -> Formula=excel_rev_comp:reverse_compile(TopIndex,Tokens,
-                                                       TokenArrays,Tables),
-                ets:insert(CellId,{Index,[{xf_index,"bug?"},{formula,Formula}]});
-        _    -> ok
-    end.
+%%update_cell2(Sheet,Tokens,TokenArrays,Row,Col,CellId,TopRow,TopCol,Tables)->
+%%    Index={{sheet,Sheet},{row_index,Row},{col_index,Col}},
+%%    TopIndex={{sheet,Sheet},{row_index,TopRow},{col_index,TopCol}},
+%%    FormulaExists=ets:lookup(CellId,{{sheet,Sheet},{row_index,Row},
+%%                                     {col_index,Col}}),
+%%    case FormulaExists of
+%%        []   -> Formula=excel_rev_comp:reverse_compile(TopIndex,Tokens,
+%%                                                       TokenArrays,Tables),
+%%                ets:insert(CellId,{Index,[{xf_index,"bug?"},{formula,Formula}]});
+%%        _    -> ok
+%%    end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                     %%%
@@ -381,3 +414,111 @@ read_storage_stream(FileHandle,SIDList,SectorSize,Position,Size)->
 	    {ok,Bin}=file:read(FileHandle,Size)
     end,
     Bin.
+
+%% Excel has a number of built in number formats
+%% These are described in Section 5.49 of excelfileformatV1-41.pdf
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                            %%
+%% BUG     - this routine just sticks in a Dollar sign - but it should be the %%
+%%           appropriate currency symbol of the country that Excel is using!  %%
+%%                                                                            %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+add_built_in_formats(Tables) ->
+    L=[[{format_index,0},{type,general},{category,general},
+	{format,"General"}],
+       [{format_index,1},{type,number},{category,decimal},
+	{format,"0"}],
+       [{format_index,2},{type,number},{category,decimal},
+	{format,"0.00"}],
+       [{format_index,3},{type,number},{category,decimal},
+	{format,"#,##0"}],
+       [{format_index,4},{type,number},{category,decimal},
+	{format,"#,##0.00"}],
+       [{format_index,5},{type,number},{category,currency},
+	{format,"\"$\"##0_);"++
+	 "(\"$\"#,##0)"}],
+       [{format_index,6},{type,number},{category,currency},
+	{format,"\"$\"##0_);"++
+	 "[Red](\"$\"#,##0)"}],
+       [{format_index,7},{type,number},{category,currency},
+	{format,"\"$\"##0.00_);"++
+	 "(\"$\"#,##0.00)"}],
+       [{format_index,8},{type,number},{category,currency},
+	{format,"\"$\"##0.00_);"++
+	 "[Red](\"$\"#,##0.00)"}],
+       [{format_index,9},{type,number},{category,percent},
+	{format,"0%"}],
+       [{format_index,10},{type,number},{category,percent},
+	{format,"0.00%"}],
+       [{format_index,11},{type,number},{category,scientific},
+	{format,"0.00e+00"}],
+       [{format_index,12},{type,number},{category,fraction},
+	{format,"#?/?"}],
+       [{format_index,13},{type,number},{category,fraction},
+	{format,"#??/??"}],
+       [{format_index,14},{type,date},{category,date},
+	{format,"M/D/YY"}],
+       [{format_index,15},{type,date},{category,date},
+	{format,"D-MMM-YY"}],
+       [{format_index,16},{type,date},{category,date},
+	{format,"D-MMM"}],
+       [{format_index,17},{type,date},{category,date},
+	{format,"MMM-YY"}],
+       [{format_index,18},{type,date},{category,time},
+	{format,"h:mm AM/PM"}],
+       [{format_index,19},{type,date},{category,time},
+	{format,"h:mm:ss AM/PM"}],
+       [{format_index,20},{type,date},{category,time},
+	{format,"h:mm"}],
+       [{format_index,21},{type,date},{category,time},
+	{format,"h:mm:ss"}],
+       [{format_index,22},{type,date},{category,datetime},
+	{format,"M/D/YY h:mm"}],
+       [{format_index,37},{type,number},{category,account},
+	{format,"_(#,##0_);(#,###0)"}],
+       [{format_index,38},{type,number},{category,account},
+	{format,"_(#,##0_);"++
+	 "[Red](#,###0)"}],
+       [{format_index,39},{type,number},{category,account},
+	{format,"_(#,##0.00_);"++
+	 "(#,###0.00)"}],
+       [{format_index,40},{type,number},{category,account},
+	{format,"_(#,##0.00_);"++
+	 "[Red](#,###0.00)"}],
+       %% these formats are different in the Microsoft Book
+       %% Microsoft Excel97 Developers Kit p427!
+       %% index 41 and 42 are transposed as are index 43 and 44!
+       [{format_index,41},{type,number},{category,currency},
+	{format,"_(\"$\"*#,##0_);"++
+	 "_(\"$\"*(#,##0);"++
+	 "_(\$\"*\"-\"_);"++
+	 "_(@_)"}],
+       [{format_index,42},{type,number},{category,currency},
+	{format,"_(*#,##0_);"++
+	 "_(*(#,##0);"++
+	 "_(*\"-\"_);"++
+	 "_(@_)"}],
+       [{format_index,43},{type,number},{category,currency},
+	{format,"_(\"$\"*#,##0.00_);"++
+	 "_(\"$\"*(#,##0.00);"++
+	 "_(\$\"*\"-\"??_);"++
+	 "_(@_)"}],
+       [{format_index,44},{type,number},{category,currency},
+	{format,"_(*#,##0.00_);"++
+	 "_(*(#,##0.00);"++
+	 "_(*\"-\"??_);"++
+	 "_(@_)"}],
+       [{format_index,45},{type,date},{category,time},
+	{format,"mm:ss"}],
+       [{format_index,46},{type,date},{category,time},
+	{format,"[h]:mm:ss"}],
+       [{format_index,47},{type,date},{category,time},
+	{format,"mm:ss.0"}],
+       [{format_index,48},{type,number},{category,scientific},
+	{format,"##0.0E+0"}],
+       [{format_index,49},{type,string},{category,text},
+	{format,"@"}]],
+    Fun = fun(Record,[]) -> excel_util:write(Tables,formats,Record), [] end,
+    []=lists:foldl(Fun,[],L),
+    io:format("in excel:add_built_in_formats All built in formats added!~n"),
+    {ok,ok}.

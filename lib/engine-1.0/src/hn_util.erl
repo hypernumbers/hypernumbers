@@ -233,7 +233,9 @@ values(Rtn,[{_Root,_Attr,Children}|T]) ->
 %% Description: Reads a file into a string
 %%--------------------------------------------------------------------
 read(FileName) ->
-    {ok,Binary} = file:read_file(FileName),
+    Return = file:read_file(FileName),
+    %%io:format("in hn_util:read FileName is ~p and Return is ~p~n",[FileName,Return]),
+    {ok,Binary} = Return,
     {ok,binary_to_list(Binary)}. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

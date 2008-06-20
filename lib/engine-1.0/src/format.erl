@@ -29,11 +29,10 @@ get_src(Format)->
     end.
 
 get_src2(Format)->
-    io:format("in format:compile_format Format is ~p~n",[Format]),
     {ok,Tokens,_}=num_format_lexer:string(Format),
-    io:format("in format:compile_format Tokens are ~p~n",[Tokens]),
+    io:format("in format:get_src2 Tokens are ~p~n",[Tokens]),
     {ok,Output}=num_format_parser:parse(Tokens),
-    io:format("in format:compile_format Output is ~p~n",[Output]),
+    io:format("in format:get_src2 Output is ~p~n",[Output]),
     {erlang,Output}.
 
 %%% @doc takes a value and the src code for a format and returns the
@@ -41,13 +40,9 @@ get_src2(Format)->
 %%% @end
 %%% @spec run_format(Value::string(),Src::string()) -> {ok, Output::string()}
 run_format(X,Src)->
-    io:format("in format:run_format X is ~p and Src is ~p~n",[X,Src]),
     {ok,ErlTokens,_}=erl_scan:string(Src),
-    %%io:format("in format:run_format got to 1 ErlTokens are ~p~n",[ErlTokens]),
     {ok,ErlAbsForm}=erl_parse:parse_exprs(ErlTokens),
-    io:format("in format:run_format got to 2~n"),
     {value,Fun,_}=erl_eval:exprs(ErlAbsForm,[]),
-    io:format("in format:run_format got to 3~n"),
     {ok,Fun(X)}.
 
 %%% @doc Run-time interface not an API - this function should *NOT* be programmed against
@@ -68,58 +63,69 @@ format(X,{text,Format})   -> format(X,Format,[]).
 %%                                                                           %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 format_num(X,Format)->
-    io:format("in format:format_num Format is ~p~n",[Format]),
     {NewFormat,InsertList}=make_num_format(Format),
     X2=case is_percentage(Format) of
 	   true  -> X * 100;
 	   false -> X
        end,
-    io:format("in format:format_num X2 is ~p NewFormat is ~p InsertList is ~p~n",
-	      [X2,NewFormat,InsertList]),
+    %% we need to know the length of the format incluse of the decimal place (if any)
+    %% but exclusive of any commas
+    %% The reason for this is you might have a number like '1234' and a format like 'x0.00'
+    %% This will give a format of '0.00' and an insert point of '{4,x}'
+    %% the number 1234 busts out of the measure '0.00' to the left and the insert point needs
+    %% to realise that the x should be placed at the beginning to give 'x1234.00' and not
+    %% at the insert point of 4 because '123x4.00' is not right
     Number=lists:flatten(print_num(X2,NewFormat)),
-    io:format("in format:format_num Number is ~p~n",[Number]),
+    NewFmtLen=string:len(strip_commas(NewFormat)),
+    NumLen=string:len(Number),
+    NewInsertList=if
+		      (NumLen > NewFmtLen) -> fix_insert_list(InsertList,NumLen,NewFmtLen);
+		      true                 -> InsertList
+		  end,
     %% insert needs to know if there are commas in the output
     StrippedNumber=strip_commas(Number),
-    io:format("in format:format_num StrippedNumber is ~p~n",[StrippedNumber]),
     NewNumber = case StrippedNumber of
-		    Number -> insert(Number,InsertList,no_commas);
-		    _Other -> insert(Number,InsertList,commas)
+		    Number -> insert(Number,NewInsertList,no_commas);
+		    _Other -> insert(Number,NewInsertList,commas)
 		end,
-    io:format("in format:format_num NewNumber is ~p~n",[NewNumber]),
     NewNumber.
 
+fix_insert_list(InsertList,NumLen,FmtLen) -> fix_insert_list(InsertList,NumLen,FmtLen,[]).
+
+fix_insert_list([],_NumLen,_FmtLen,Acc)         -> lists:reverse(Acc);
+fix_insert_list([{N,Bits}|T],NumLen,FmtLen,Acc) ->
+    NewAcc = if
+		 N >= FmtLen -> {NumLen+1,Bits}; 
+		 true        -> {N,Bits}
+	     end,
+    fix_insert_list(T,NumLen,FmtLen,[NewAcc|Acc]).
+    
 %% this function scans a format and returns true if there is
 %% a percentage sign *anywhere* in the format
 is_percentage([])                 -> false;
 is_percentage([{percent,"%"}|_T]) -> true;
 is_percentage([_H|T])             -> is_percentage(T).
 
-%% this function takes a formatted number and interpolates any strings at the appropriate
-%% point if required
+%% this function takes a formatted number and interpolates any strings 
+%% at the appropriate point if required
 insert(Number,InsertList,Type) -> 
     DecPos=get_dec_pos(Number),
     insert(Number,InsertList,Type,DecPos,0).
 
-insert(Number,[],_Type,_DecPos,_Offset) -> Number;
+insert(Number,[],_Type,_DecPos,_Offset)           -> Number;
 insert(Number,[{Int,Insert}|T],Type,DecPos,Offset) ->
-    io:format("in format:insert Number is ~p Int is ~p Insert is ~p T is ~p Type is ~p "++
-	      "DecPos is ~p Offset is ~p~n",[Number,Int,Insert,T,Type,DecPos,Offset]),
     Len=length(Number),
-    NewInt=new_ins_pnt(Int,Offset,DecPos,Type),
-    io:format("in format:insert Len is ~p DecPos is ~p NewInt is ~p~n",[Len,DecPos,NewInt]),
-    InsertString=get_string(Insert),
-    NewOffset=Offset+length(InsertString),
-    io:format("in format:insert InsertString is ~p NewOffset is ~p~n",[InsertString,NewOffset]),
-    {LeftString,RightString}=if
-				 (Len-NewInt) =< 0 ->
-				     {"",Number};
-				 true ->
-				     {string:substr(Number,1,Len-NewInt),
-				     string:substr(Number,Len-NewInt+1,Len)}
-			     end,
-    NewNumber=lists:concat([LeftString,InsertString,RightString]),
-    io:format("in format:insert RightString is ~p LeftString is ~p NewNumber is ~p~n",
-	      [RightString,LeftString,NewNumber]),
+    {NewInt,NoOfCommas}=new_ins_pnt(Int,Offset,DecPos,Type),
+    InsertStr=get_string(Insert),
+    NewOffset=Offset+length(InsertStr),
+    {LeftStr,RightStr}=if
+			   %% if the new insert point busts the measure append it
+			   (Len-NewInt) =< 0  -> {"",Number};
+			   %% otherwise just split the string
+			   true               -> {string:substr(Number,1,Len-NewInt),
+						  string:substr(Number,Len-NewInt+1,Len)}
+		       end,
+    NewNumber=lists:concat([LeftStr,InsertStr,RightStr]),
     insert(NewNumber,T,Type,DecPos,NewOffset).
 
 get_dec_pos(Number)->
@@ -131,27 +137,20 @@ get_dec_pos(Number)->
 %% The new insert point has to be shifted by a comma point if there are commas and the
 %% current insert point is past the decimal point only - otherwise it just gets 
 %% the cumulative offset added to it (clear as mud)...
-%%new_ins_pnt(Int,Off,DP,commas) when (Int > DP) -> Int+Off+erlang:trunc((Int-DP-1)/3);
-new_ins_pnt(Int,Off,DP,commas) when (Int > DP) -> CommaOffset=erlang:trunc((Int-DP)/3),
-						  %% if there is to be a comma and a
-						  %% text insert at the same point
-						  %% the comma goes to the left
-						  %% the case statement deals with it
-						  Correction=case (((Int-DP)/3)-CommaOffset) of
-								 0.0 -> -1;
-								 _   -> 0
-							     end,
-						  io:format("in new_ins_pnt Int is ~p "++
-							    "Off is ~p DP is ~p "++
-							    "CommaOffset is ~p and "++
-							    "Correction is ~p~n",
-							    [Int,Off,DP,CommaOffset,Correction]),
-						  Int+Off+CommaOffset+Correction;
-new_ins_pnt(Int,Off,_DP,_Type)                 -> Int+Off.
+new_ins_pnt(Int,Off,DP,commas) when (Int > DP) -> 
+    CommaOffset=erlang:trunc((Int-DP)/3),
+    %% if there is to be a comma and a
+    %% text insert at the same point
+    %% the comma goes to the left
+    %% the case statement deals with it
+    Correction=case (((Int-DP)/3)-CommaOffset) of
+		   0.0 -> -1;
+		   _   -> 0
+	       end,
+    {Int+Off+CommaOffset+Correction,CommaOffset};
+new_ins_pnt(Int,Off,_DP,_Type) -> {Int+Off,0}.
 
-get_string({Type,String}) ->
-    io:format("in format:get_string Type is ~p String is ~p~n",[Type,String]),
-    String.
+get_string({_Type,String}) -> String.
 
 %% this function takes the parsed format string and strips out the decoration (eg strings
 %% and other stuff that must be interpolated the numberical/date or text value and returns
@@ -166,67 +165,48 @@ get_string({Type,String}) ->
 %% give "4a.0"
 %%
 %% We do lists:reverse cos we bust out the measure to the left 'cos of Arabic numerals...
-%% ie all insert point indexes go right to left on numerals so buy reversing we can
+%% ie all insert point indexes go right to left on numerals so by reversing we can
 %% count left to right
 make_num_format(Format) -> make_num_format(lists:reverse(Format),[],[]).
 
-make_num_format([],NewF,AccIL) ->
-    io:format("in format:make_num_format (1) NewF is ~p AccIL is ~p~n",[NewF,AccIL]),
+make_num_format([],NewF,AccIL) -> 
     {NewF,lists:reverse(AccIL)};
 make_num_format([{format,Format}|Rest],NewF,AccIL) -> 
-    io:format("in format:make_num_format (2) Format is ~p Rest is ~p "++
-	      "NewF is ~p AccIL is ~p~n",[Format,Rest,NewF,AccIL]),  
     make_num_format(Rest,lists:concat([Format,NewF]),AccIL);
 make_num_format([Other|Rest],NewF,AccIL) -> 
-    io:format("in format:make_num_format (3) Other is ~p Rest is ~p "++
-	      "NewF is ~p AccIL is ~p~n",[Other,Rest,NewF,AccIL]),
     %% It's important that the length is the length of the stripped comma
     %% format here... (trust me!)
     make_num_format(Rest,NewF,[{length(strip_commas(NewF)),Other}|AccIL]).
 
 print_num(_Output,[])    -> [];
 print_num(Output,Format) ->
-    io:format("in format:print_num Output is ~p Format is ~p~n",[Output,Format]),
     %% First up sort out the format
     Split=string:tokens(Format,"."),
-    io:format("in format:print_num Split is ~p~n",[Split]),
     {IntFormat,DecFormat} = case Split of
 				[A1,B1] -> {A1,B1};
 				[A1]    -> {A1,null}
 			    end,
-    io:format("in format:print_num IntFormat is ~p DecFormat is ~p~n",
-	      [IntFormat,DecFormat]),
     %% Now prepare the output
     %% Now round the output before formatting it
     Output2=round(Output,get_len(DecFormat)),
-    io:format("in format:print_num Output2 is ~p~n",[Output2]),
     Output3=make_list(Output2),
-    io:format("in format:print_num Output3 is ~p~n",[Output3]),
     Split2=string:tokens(Output3,"."),
-    io:format("in format:print_num Split2 is ~p~n",[Split2]),
     {Integers,Decimals} = case Split2 of
 			      [A2,B2] -> {A2,B2};
 			      [A2]    -> {A2,null}
 			  end,
-    io:format("in format:print_num Integers is ~p IntFormat is ~p Decimals is ~p "++
-	      "DecFormat is ~p~n",[Integers,IntFormat,Decimals,DecFormat]),
     get_num_output(Integers,IntFormat,Decimals,DecFormat).
 
 %% this function gets the actual formatted number PRIOR to interpolation
 %% of any additional strings stuff or other components...
 get_num_output(Integers,IntFormat,Decimals,DecFormat)->
     {ok,Has_Exp}=has(exponent,DecFormat),
-    io:format("in format:get_num_output Integers is ~p IntFormat is ~p Decimals is ~p "++
-	      "DecFormat is ~p Has_Exp is ~p~n",
-	      [Integers,IntFormat,Decimals,DecFormat,Has_Exp]),
     Return=case Has_Exp of
 	       false -> A=get_num_output1(Integers,IntFormat),
 			B=get_num_output2(Decimals,DecFormat),
-			io:format("in format:get_num_output A is ~p B is ~p~n",[A,B]),
 			A++B;
 	       true  -> get_num_exp(Integers,IntFormat,Decimals,DecFormat)
 	   end,
-    io:format("in format:get_num_output Return is ~p~n",[Return]),
     Return.
 
 get_num_output1(Integers,IntFormat)->
@@ -235,48 +215,34 @@ get_num_output1(Integers,IntFormat)->
 		   true  -> strip_commas(IntFormat);
 		   false -> IntFormat
 	       end,
-    io:format("in format:get_num_output1 Has_Commas is ~p~n",[Has_Commas]),
     %%Output=format_int(Integers,IntFormat2),
     Output=format_int(Integers,IntFormat2),
-    io:format("in format:get_num_output1 Output is ~p~n",[Output]),
     Return=case Has_Commas of
 	       true  -> add_commas(Output);
 	       false -> Output
 	   end,
-    io:format("In format:get_num_output1 Return is ~p~n",[Return]),
     Return.
 
 %% if the decimal format is null display no decimals
 get_num_output2(_Decimals,null) -> "";
 %% if there are no decimals make it a zero
 get_num_output2(null,DecFormat) -> 
-    io:format("in format:get_num_output2 (1) DecFormat is ~p~n",[DecFormat]),
     get_num_output2("0",DecFormat);
 %% if there are both decimals and a decimal output then format them
 get_num_output2(Decimals,DecFormat)->
-    io:format("In format:get_num_output2 (2) Decimals is ~p and DecFormat is ~p~n",
-	      [Decimals,DecFormat]),
     DecLen=string:len(Decimals),
     FormatLen=string:len(DecFormat),
-    io:format("in format:get_num_output2 (2) Decimals is ~p DecFormat is ~p "++
-	      "DecLen is ~p FormatLen is ~p~n",[Decimals,DecFormat,DecLen,FormatLen]),
     Return=case (DecLen >= FormatLen) of
 	       true  -> trunc(Decimals,DecLen-FormatLen);
 	       false -> Decimals
 	   end,
     %% Decimals are always truncated so nobust is used
     Return2=app_fmt(Return,DecFormat,nobust),
-    io:format("in format:get_num_output2 (2) Return is ~p Return2 is ~p "++
-	      "FormatLen is ~p~n",[Return,Return2,FormatLen]),
-    Return3=bodge2(Return2,FormatLen),
-    io:format("in get_num_output2 Return3 is ~p~n",[Return3]),
-    Return3.
+    bodge2(Return2,FormatLen).
 
 %% the fmt can be applied in either busting or not busting the measure
 app_fmt(Number,Format,Type) -> 
     Number2=string:strip(Number,right,?ASC_ZERO),
-    io:format("in format:app_fmt Number2 is ~p and Format is ~p Type is ~p~n",
-	      [Number2,Format,Type]),
     app_fmt(Number2,Format,Type,[]).
 
 %% the first line lets the measure be bust
@@ -298,7 +264,6 @@ app_fmt([],[?ASC_Q|T2],Type,A)                -> app_fmt([],T2,Type,[?ASC_SPACE|
 round(X,0)                           -> round(X);
 round(X,N) when N > 0, is_integer(N) ->
     X2=tconv:to_l(X),
-    io:format("in format:round X is ~p X2 is ~p and N is ~p~n",[X,X2,N]),
     case (no_of_decimals(X2) > N) of
 	true  -> round(X*math:pow(10,N))/math:pow(10,N);
 	false -> X
@@ -314,11 +279,8 @@ no_of_decimals(Number) when is_list(Number) ->
 
 %% get the number as an exponent
 get_num_exp(Integers,IntFormat,Decimals,DecFormat) ->
-    io:format("in format:get_num_exp Integers is ~p IntFormat is ~p Decimals is ~p DecFormat is ~p~n",
-	      [Integers,IntFormat,Decimals,DecFormat]),
     [DecFormat2,Exp]=string:tokens(string:to_upper(DecFormat),"E"),
     Offset=format_exp(Integers,Decimals,list_to_integer(Exp)),
-    io:format("in format:get_num_exp Offset is ~p~n",[Offset]),
     %% if the number is bigger than 10 you offset it by a negative
     %% number and 'make it up' in the exponent
     %% if the number is less than 1 you offset it by a positive number
@@ -351,29 +313,22 @@ make_number(Integers,Decimals) -> list_to_float(Integers++"."++Decimals).
 
 %% truncates a decimal value to a fixed length
 trunc(Decimals,Len) ->
-    io:format("in format:trunc Decimals is ~p Len is ~p~n",[Decimals,Len]),
     Divisor=math:pow(10,Len),
-    io:format("in format:trunc Divisor is ~p~n",[Divisor]),
     Trunc=round(list_to_integer(Decimals)/Divisor),
     %% we now strip off any trailing zeros
     %% because if the format is something like "00.0?" that trailing zero is
     %% to be replaced by a space...
     Trunc2=string:strip(integer_to_list(Trunc),right,?ASC_ZERO),
-    io:format("in format:trunc Trunc is ~p and Trunc2 is ~p~n",[Trunc,Trunc2]),
     Trunc2.
 
 %% formats integers that are passed in as strings
 format_int([?ASC_MINUS|Integers],Format)->
     bodge([?ASC_MINUS]++format_int(Integers,Format));
 format_int(Integers,Format)->
-    io:format("in format:format_int Integers  is ~p and Format is ~p~n",[Integers,Format]),
     %% we  have to feed in the integer and the format reversed...
     %% then obviously re-reverse the answer...
     %% this side always busts the measure so pass in bust
     Padded=lists:reverse(app_fmt(lists:reverse(Integers),lists:reverse(Format),bust)),
-%%    Return=display_num(Padded,lists:reverse(Format)),
-%%    io:format("in format:format_int Padded is ~p and Return is ~p~n",
-%%	      [Padded,Return]),
     bodge(Padded).
 
 %% bodge for when a negative zero is returned...
@@ -383,7 +338,6 @@ bodge(Number) -> Number.
 %% bodge for when a zero is returned that must be padded
 bodge2(0,FormatLen)                      -> "."++string:chars(?ASC_ZERO,FormatLen);
 bodge2(Num,_FormatLen) when is_list(Num) -> "."++Num.
-%%bodge2(Num,_FormatLen)                   -> "."++integer_to_list(Num).
 
 %% takes a number represented as a string and adds in commas as thousand
 %% delimiters
@@ -397,32 +351,6 @@ add_commas([],_,Acc)                               -> Acc;
 add_commas([H|T],1,Acc)                            -> add_commas(T,3,[?ASC_COMMA,H|Acc]);
 add_commas([H|T],N,Acc)                            -> add_commas(T,N-1,[H|Acc]).
 
-%%display_num(A,B)->
-%%    io:format("in format:display_num/2~n-A is ~p~n-B is ~p~n",[A,B]),
-%%    display_num(A,B,[],false).
-
-%%display_num([null|Rest1],_,Acc,true) ->
-%%    NewAcc=[?ASC_ZERO|Acc],
-%%    %% We no longer care about the format
-%%    display_num(Rest1,[],NewAcc,true);
-%%display_num(End,_,Acc,true)-> 
-%%    Return=lists:concat([lists:reverse(Acc),End]),
-%%    io:format("in format:display_num/4 Return is ~p~n",[Return]),
-%%    Return;
-%%display_num([null|Rest1],[H|Rest2],Acc,false)->
-%%    io:format("in format:display_num/4 (2) Acc is ~p~n",[Acc]),
-%%    NewAcc=[get_display_num(H)|Acc],
-%%    display_num(Rest1,Rest2,NewAcc,false);
-%%display_num(Number,Format,Acc,false)->
-%%    io:format("in format:display_num/4 (3)~n-Number is ~p~n-Format is ~p~n-Acc is ~p~n",
-%%	      [Number,Format,Acc]),
-%%    %% toggle 'true' to throw away the rest of the format
-%%    display_num(Number,Format,Acc,true).
-
-%%get_display_num(?ASC_ZERO) -> ?ASC_ZERO;
-%%get_display_num(?ASC_HASH) -> [];
-%%get_display_num(?ASC_Q)    -> ?ASC_SPACE.
-
 get_pad(N,_)    when N =< 0 -> "";
 get_pad(N,Char) when N  > 0 -> get_pad(N,Char,[]).
 
@@ -431,7 +359,6 @@ get_pad(N,Char,Acc)  -> get_pad(N-1,Char,[Char|Acc]).
 
 has(_Type,null) -> {ok,false};
 has(Type,Format) ->
-    io:format("in format:has Type is ~p and Format is ~p~n",[Type,Format]),
     RegExp=case Type of
 	       commas        -> ",";
 	       hashes        -> "#";
@@ -445,8 +372,6 @@ has(Type,Format) ->
 	_       -> {ok,true}
     end.
 
-%%get_decs(Format)-> {string:len(Format),false}.
-
 make_list(Number) when is_float(Number) -> 
     Float=float_to_list(Number),
     rejig(Float);
@@ -455,7 +380,6 @@ make_list(Number) when is_integer(Number) ->
 
 rejig(Float)->
     [Number,[Sign|Exp]]=string:tokens(Float,"e"),
-    io:format("in format:rejig Number is ~p Sign is ~p and Exp is ~p~n",[Number,Sign,Exp]),
     [Sign2|Rest]=Number,
     %% The number might start with a minus sign - so fix that...
     case Sign2 of
@@ -465,39 +389,27 @@ rejig(Float)->
 
 shift(Number,?ASC_PLUS,Exp) ->
     Exp2=list_to_integer(Exp),
-    io:format("in format:shift (+) Number is ~p Exp is ~p Exp2 is ~p~n",[Number,Exp,Exp2]),
     [Int,Dec]=string:tokens(Number,"."),
-    io:format("in format:shift (+) Int is ~p Dec is ~p~n",[Int,Dec]),
     X=(Exp2-length(Dec)),
-    io:format("in format:shift (+) X is ~p~n",[X]),
     Dec2=if X > 0 -> Int++Dec++get_pad(X,?ASC_ZERO)++".";
             X == 0 -> Int++".";
             true   -> Len=length(Dec),
 		      Front=string:substr(Dec,1,Exp2),
 		      Back=string:substr(Dec,1+Exp2,Len),
-		      io:format("in format:shift (+) Len is ~p Front is ~p Back is ~p~n",
-				[Len,Front,Back]),
 		      Front++"."++Back
 	 end,
-    io:format("in shift (+) Int is ~p Dec2 is ~p~n",[Int,Dec2]),
     Int++Dec2;
 shift(Number,?ASC_MINUS,Exp) ->
     Exp2=list_to_integer(Exp),
-    io:format("in shift (-) Number is ~p Exp is ~p Exp2 is ~p~n",[Number,Exp,Exp2]),
     [Int,Dec]=string:tokens(Number,"."),
-    io:format("in shift (-) Int is ~p Dec is ~p~n",[Int,Dec]),
     X=(Exp2-length(Int)),
-    io:format("in format:shift X is ~p~n",[X]),
     Int2=if X > 0 -> "0."++get_pad(X,?ASC_ZERO)++Int;
             X == 0 -> Dec;
             true   -> Len=length(Dec),
 		      Front=string:substr(Int,1,Exp2),
 		      Back=string:substr(Int,1+Exp2,Len-Exp2),
-		      io:format("in format:shift (-) Len is ~p Front is ~p Back is ~p~n",
-				[Len,Front,Back]),
 		      Front++"."++Back
 	 end,
-    io:format("in shift (-) Int2 is ~p Dec is ~p~n",[Int2,Dec]),
     Int2++Dec.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -511,108 +423,104 @@ format_date(X,Format)->
     format_date(X,Format,Has_AMPM,[]).
 
 format_date(_X,[],_Has_AMPM,Acc)  -> lists:flatten(lists:reverse(Acc));
-format_date(X,[H|T],Has_AMPM,Acc) -> io:format("in format:format (1) X is ~p H is ~p T is ~p "++
-					       "and Acc is ~p~n",[X,H,T,Acc]),
-				     format_date(X,T,Has_AMPM,[execute(X,H,Has_AMPM)|Acc]).
+format_date(X,[H|T],Has_AMPM,Acc) -> format_date(X,T,Has_AMPM,[execute(X,H,Has_AMPM)|Acc]).
 
 has_AMPM([])                -> false;
 has_AMPM([{ampm,_F}|_Rest]) -> true;
 has_AMPM([_H|T])            -> has_AMPM(T).
 
-execute(X,{year,two_digit},_)      -> {{Year,_M,_D},_T}=X,
-				      io:format("in format:execute Year is ~p~n",[Year]),
-				      get_last_two(pad_year(integer_to_list(Year)));
-execute(X,{year,four_digit},_)     -> {{Year,_M,_D},_T}=X,
-				      io:format("in format:execute Year is ~p~n",[Year]),
-				      pad_year(integer_to_list(Year));
-execute(X,{mon_min,no_zero},_)     -> {_D,{_H,Min,_S}}=X,
-				      io:format("in format:execute **************************"),
-				      io:format("in format:execute - problem with mon_min!!!!"),
-				      io:format("in format:execute - is it a min or a mon?   "),
-				      io:format("in format:execute **************************"),
-				      io:format("in format:execute Min is ~p~n",[Min]),
-				      integer_to_list(Min);
-execute(X,{mon_min,zero},_)        -> {{_Y,Mon,_D},_Time}=X,
-				      io:format("in format:execute **************************"),
-				      io:format("in format:execute - problem with mon_min!!!!"),
-				      io:format("in format:execute - is it a min or a mon?   "),
-				      io:format("in format:execute **************************"),
-				      io:format("in format:execute Mon is ~p~n",[Mon]),
-				      MM=integer_to_list(Mon),
-				      io:format("in format:execute MM is ~p~n",[MM]),
-				      pad_calendar(MM);
-execute(X,{mon,abbr},_)            -> {{_Y,Month,_D},_T}=X,
-				      io:format("in format:execute Month is ~p~n",[Month]),
-				      get_short_month(Month);
-execute(X,{mon,full},_)            -> {{_Y,Month,_D},_T}=X,
-				      io:format("in format:execute Month is ~p~n",[Month]),
-				      get_month(Month);
-execute(X,{min,elapsed},_)         ->  Secs=calendar:datetime_to_gregorian_seconds(X),
-				       io:format("in format:execute Elapsed Sec is ~p~n",[Secs]),
-				       integer_to_list(round(Secs/60));
-execute(X,{day,no_zero},_)         -> {{_Y,_M,Day},_T}=X,
-				      io:format("in format:execute Day is ~p~n",[Day]),
-				      integer_to_list(Day);
-execute(X,{day,zero},_)            -> {{_Y,_M,Day},_T}=X,
-				      io:format("in format:execute Day is ~p~n",[Day]),
-				      DD=integer_to_list(Day),
-				      io:format("in format:execute DD is ~p~n",[DD]),
-				      pad_calendar(DD);
-execute(X,{day,abbr},_)            -> {{_Y,_M,Day},_T}=X,
-				      io:format("in format:execute Day is ~p~n",[Day]),
-				      get_short_day(Day);
-execute(X,{day,full},_)            -> {{_Y,_M,Day},_T}=X,
-				      io:format("in format:execute Day is ~p~n",[Day]),
-				      get_day(Day);
-execute(X,{hour,no_zero},true)     -> {_D,{Hour,_M,_S}}=X,
-				      io:format("in format:execute Hour is ~p~n",[Hour]),
-				      integer_to_list(clock_12(Hour));
-execute(X,{hour,no_zero},false)    -> {_D,{Hour,_M,_S}}=X,
-				      io:format("in format:execute Hour is ~p~n",[Hour]),
-				      integer_to_list(Hour);
-execute(X,{hour,zero},true)        ->  {_D,{Hour,_M,_S}}=X,
-                                       io:format("in format:execute Hour is ~p~n",[Hour]),
-                                       pad_calendar(integer_to_list(clock_12(Hour)));
-execute(X,{hour,zero},false)       ->  {_D,{Hour,_M,_S}}=X,
-				       io:format("in format:execute Hour is ~p~n",[Hour]),
-				       pad_calendar(integer_to_list(Hour));
-execute(X,{hour,elapsed},_)        ->  Secs=calendar:datetime_to_gregorian_seconds(X),
-				       io:format("in format:execute Elapsed Secs is ~p~n",[Secs]),
-				       integer_to_list(round(Secs/3600));
-execute(X,{sec,no_zero},_)         ->  {_D,{_H,_M,Sec}}=X,
-                                       io:format("in format:execute Sec is ~p~n",[Sec]),
-                                       integer_to_list(Sec);
-execute(X,{sec,zero},_)            -> {_D,{_H,_M,Sec}}=X,
-				      io:format("in format:execute Sec is ~p~n",[Sec]),
-				      pad_calendar(integer_to_list(Sec));
-execute(X,{sec,elapsed},_)         ->  Secs=calendar:datetime_to_gregorian_seconds(X),
-				       io:format("in format:execute Elapsed Secs is ~p~n",[Secs]),
-				       integer_to_list(round(Secs));
-execute(X,{ampm,full_caps},_)      ->  {_D,{Hour,_M,_S}}=X,
-                                       io:format("in format:execute Hour is ~p~n",[Hour]),
-                                       case (Hour > 12) of
-					   true  -> "PM";
-					   false -> "AM"
-                                       end;
-execute(X,{ampm,full_lowercase},_) -> {_D,{Hour,_M,_S}}=X,
-				      io:format("in format:execute Hour is ~p~n",[Hour]),
-				      case (Hour > 12) of
-					  true  -> "pm";
-					  false -> "am"
-				      end;
-execute(X,{ampm,abbr_caps},_)      -> {_D,{Hour,_M,_S}}=X,
-				      io:format("in format:execute Hour is ~p~n",[Hour]),
-				      case (Hour > 12) of
-					  true  -> "P";
-					  false -> "A"
-				      end;
-execute(X,{ampm,abbr_lowercase},_) -> {_D,{Hour,_M,_S}}=X,
-				      io:format("in format:execute Hour is ~p~n",[Hour]),
-				      case (Hour > 12) of
-					  true  -> "p";
-					  false -> "a"
-				      end;
-execute(_X,{_Other,String},_)       -> String.
+execute(X,{year,two_digit},_) ->
+    {{Year,_M,_D},_T}=X,
+    get_last_two(pad_year(integer_to_list(Year)));
+execute(X,{year,four_digit},_) ->
+    {{Year,_M,_D},_T}=X,
+    pad_year(integer_to_list(Year));
+execute(X,{mon,no_zero},_) ->
+    {{_Y,Mon,_D},_T}=X,
+    integer_to_list(Mon);
+execute(X,{mon,zero},_) ->
+    {{_Y,Mon,_D},_Time}=X,
+    MM=integer_to_list(Mon),
+    pad_calendar(MM);
+execute(X,{mon,abbr},_) -> 
+    {{_Y,Month,_D},_T}=X,
+    get_short_month(Month);
+execute(X,{mon,full},_) ->
+    {{_Y,Month,_D},_T}=X,
+    get_month(Month);
+execute(X,{min,elapsed},_) ->
+    Secs=calendar:datetime_to_gregorian_seconds(X),
+    integer_to_list(round(Secs/60));
+execute(X,{day,no_zero},_) ->
+    {{_Y,_M,Day},_T}=X,
+    integer_to_list(Day);
+execute(X,{day,zero},_) ->
+    {{_Y,_M,Day},_T}=X,
+    DD=integer_to_list(Day),
+    pad_calendar(DD);
+execute(X,{day,abbr},_) ->
+    {{_Y,_M,Day},_T}=X,
+    get_short_day(Day);
+execute(X,{day,full},_) ->
+    {{_Y,_M,Day},_T}=X,
+    get_day(Day);
+execute(X,{hour,no_zero},true) ->
+    {_D,{Hour,_M,_S}}=X,
+    integer_to_list(clock_12(Hour));
+execute(X,{hour,no_zero},false) ->
+    {_D,{Hour,_M,_S}}=X,
+    integer_to_list(Hour);
+execute(X,{hour,zero},true) ->
+    {_D,{Hour,_M,_S}}=X,
+    pad_calendar(integer_to_list(clock_12(Hour)));
+execute(X,{hour,zero},false) ->
+    {_D,{Hour,_M,_S}}=X,
+    pad_calendar(integer_to_list(Hour));
+execute(X,{hour,elapsed},_) -> 
+    Secs=calendar:datetime_to_gregorian_seconds(X),
+    integer_to_list(round(Secs/3600));
+execute(X,{min,no_zero},_) ->
+    {_D,{_H,Min,_S}}=X,
+    integer_to_list(Min);
+execute(X,{min,zero},_) ->
+    {_D,{_H,Min,_S}}=X,
+    MM=integer_to_list(Min),
+    pad_calendar(MM);
+execute(X,{sec,no_zero},_) ->
+    {_D,{_H,_M,Sec}}=X,
+    integer_to_list(Sec);
+execute(X,{sec,zero},_) ->
+    {_D,{_H,_M,Sec}}=X,
+    pad_calendar(integer_to_list(Sec));
+execute(X,{sec,elapsed},_) ->
+    Secs=calendar:datetime_to_gregorian_seconds(X),
+    integer_to_list(round(Secs));
+execute(X,{ampm,full_caps},_) ->
+    {_D,{Hour,_M,_S}}=X,
+    case (Hour > 12) of
+	true  -> "PM";
+	false -> "AM"
+    end;
+execute(X,{ampm,full_lowercase},_) ->
+    {_D,{Hour,_M,_S}}=X,
+    case (Hour > 12) of
+	true  -> "pm";
+	false -> "am"
+    end;
+execute(X,{ampm,abbr_caps},_) ->
+    {_D,{Hour,_M,_S}}=X,
+    case (Hour > 12) of
+	true  -> "P";
+	false -> "A"
+    end;
+execute(X,{ampm,abbr_lowercase},_) -> 
+    {_D,{Hour,_M,_S}}=X,
+    case (Hour > 12) of
+	true  -> "p";
+	false -> "a"
+    end;
+execute(_X,{_Other,String},_) ->
+    String.
 
 clock_12(Hour) when (Hour > 12) -> Hour-12;
 clock_12(Hour)                   -> Hour.
@@ -673,10 +581,7 @@ get_month(10) -> "October";
 get_month(11) -> "November";
 get_month(12) -> "December".
 
-get_last_two(String) ->
-    Return=string:substr(String,length(String)-1,2),
-    io:format("In format:get_last_two Return is ~p~n",[Return]),
-    Return.
+get_last_two(String) -> string:substr(String,length(String)-1,2).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                           %%
@@ -685,10 +590,7 @@ get_last_two(String) ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 format(_X,[],Acc)             -> lists:flatten(lists:reverse(Acc));
 format(X,[{at,"@"}|T],Acc)    -> format(X,T,[X|Acc]);
-format(X,[{_Type,Bit}|T],Acc) -> io:format("in format:format (1) X is ~p Bit is ~p "++
-					   "T is ~p and Acc is ~p~n",
-					   [X,Bit,T,Acc]),
-				 format(X,T,[Bit|Acc]).
+format(X,[{_Type,Bit}|T],Acc) -> format(X,T,[Bit|Acc]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                           %%
@@ -704,5 +606,3 @@ get_len(List) when is_list(List) -> length(List).
 strip_commas(A) ->
     {ok,Return,_}=regexp:gsub(A,",",""),
     Return.
-
-

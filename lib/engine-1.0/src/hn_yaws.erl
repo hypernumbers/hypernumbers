@@ -328,7 +328,7 @@ import([{_Name,Tid}|T],Page)->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 api_create(Data, Page) ->
 
-    #page{site=Site,path=Path,ref=Ref,vars=Vars} = Page,
+    #page{site=Site,path=Path,ref=_Ref,vars=Vars} = Page,
     Addr = page_to_ref(Page),
 
     lists:foldl

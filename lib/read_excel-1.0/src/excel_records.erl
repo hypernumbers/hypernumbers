@@ -362,9 +362,24 @@ parse_rec(?SCENPROTECT,_Bin,_Name,CurrentFormula,Tables)->
                                      {msg,"not being processed"}]),
     {ok,CurrentFormula};
 parse_rec(?XF2,Bin,_Name,CurrentFormula,Tables)->
-    excel_util:write(Tables,lacunae,[{identifier,"XF2"},
-                                     {source,excel_records.erl},
-                                     {msg,"not being processed"}]),
+    <<_FontIndex:16/little-unsigned-integer,
+     FormatIndex:16/little-unsigned-integer,
+     _XFLocked:1/little-unsigned-integer,
+     _XFHidden:1/little-unsigned-integer,
+     XFType:1/little-unsigned-integer,
+     _XFTransitionNavKeys:1/little-unsigned-integer,
+     XFParentIndex:12/little-unsigned-integer,
+     _XFAlignment:8/little-unsigned-integer,
+     _XFRotation:8/little-unsigned-integer,
+     _XFIndentation:8/little-unsigned-integer,
+     _XFFlags:8/little-unsigned-integer,
+     _XFCellBorders:80/little-unsigned-integer>>=Bin,
+    Type = case XFType of
+	?rc_CELL_XF  -> cell;
+	?rc_STYLE_XF -> style
+    end,
+    excel_util:append(Tables,xf,[{format_index,FormatIndex},{type,Type},
+				{parent_index,XFParentIndex}]),
     {ok,CurrentFormula};
 parse_rec(?MERGEDCELLS,_Bin,_Name,CurrentFormula,Tables)->
     excel_util:write(Tables,lacunae,[{identifier,"MERGEDCELLS"},
@@ -524,34 +539,18 @@ parse_rec(?STRING2,_Bin,_Name,CurrentFormula,Tables)->
                                      {source,excel_records.erl},
                                      {msg,"not being processed"}]),
     {ok,CurrentFormula};
-parse_rec(?ROW2,_Bin,_Name,CurrentFormula,Tables)->
-    %%    case Bin of
-    %%	<<RowIndex:16/little-unsigned-integer,
-    %%	 FirstColIndex:16/little-unsigned-integer,
-    %%	 LastColIndex:16/little-unsigned-integer,
-    %%	 Height:16/little-unsigned-integer,
-    %%	 __NotUsed:16/little-unsigned-integer,
-    %%	 DefaultsFlag:8/little-unsigned-integer,
-    %%	 RelativeOffset:16/little-unsigned-integer>> ->
-    %%	<<RowIndex:16/little-unsigned-integer,
-    %%	 FirstColIndex:16/little-unsigned-integer,
-    %%	 LastColIndex:16/little-unsigned-integer,
-    %%	 Height:16/little-unsigned-integer,
-    %%	 __NotUsed:16/little-unsigned-integer,
-    %%	 DefaultsFlag:8/little-unsigned-integer,
-    %%	 RelativeOffset:16/little-unsigned-integer,
-    %%	 DefaultRowAttributes:24/little-unsigned-integer>> ->
-    %%	<<RowIndex:16/little-unsigned-integer,
-    %%	 FirstColIndex:16/little-unsigned-integer,
-    %%	 LastColIndex:16/little-unsigned-integer,
-    %%	 Height:16/little-unsigned-integer,
-    %%	 __NotUsed:16/little-unsigned-integer,
-    %%	 DefaultsFlag:8/little-unsigned-integer,
-    %%	 RelativeOffset:16/little-unsigned-integer,
-    %%	 XFIndex:16/little-unsigned-integer>> ->
-    %%    end,
-    %% io:format("in excel_records:parse_rec for ROW2~n"),
-    excel_util:write(Tables,lacunae,[{identifier,"ROW2"},
+parse_rec(?ROW2,Bin,_Name,CurrentFormula,Tables)->
+    <<_RowIndex:16/little-unsigned-integer,
+     _FirstColIndex:16/little-unsigned-integer,
+     _LastColIndex:16/little-unsigned-integer,
+     _Height:16/little-unsigned-integer,
+     _NotUsed:16/little-unsigned-integer,
+     _NotUsed2:16/little-unsigned-integer,
+     _Discard1:16/little-unsigned-integer,
+     XFRef:12/little-unsigned-integer,
+     _Discard2:4/little-unsigned-integer>>=Bin,
+     io:format("in excel_records:parse_rec for ROW2 XFRef is ~p~n",[XFRef]),
+     excel_util:write(Tables,lacunae,[{identifier,"ROW2"},
                                      {source,excel_records.erl},
                                      {msg,"not being processed"}]),
     {ok,CurrentFormula};
@@ -611,11 +610,10 @@ parse_rec(?FORMAT2,Bin,_Name,CurrentFormula,Tables)->
     <<FormatIndex:16/little-unsigned-integer,
      FormatBin/binary>>=Bin,
     Return=excel_util:parse_CRS_Uni16(FormatBin),
-    %%io:format("in excel_records:parse_rec Return is ~p~n",[Return]),
     FormatString=excel_util:get_utf8(Return),
-    %%io:format("in excel_records:parse_rec FormatString is ~p~n",
-    %%	      [FormatString]),
     excel_util:write(Tables,formats,[{format_index,FormatIndex},
+				     {type,unknown_as_yet},
+				     {category,userdefined},
 				     {format,FormatString}]),
     {ok,CurrentFormula};
 parse_rec(?SHRFMLA,Bin,Name,CurrentFormula,Tables)->
@@ -811,8 +809,6 @@ parse_externsheet(Bin,N,Tables)->
     excel_util:write(Tables,externsheets,Record),
     parse_externsheet(Rest,N+1,Tables).
 
-
-
 %% parses external references as defined in Section 5.99.1 of 
 %% excelvileformatV1.40.pdf only covers the sheet reference used and
 %% not the URL or file part of it
@@ -830,10 +826,10 @@ get_ext_ref_names(<<>>,Residuum)->
     lists:reverse(Residuum);
 get_ext_ref_names(Bin,Residuum)->
     Return=excel_util:parse_CRS_Uni16(Bin,2),
-    {[{_Type,String}],StringLen,_RestLen}=Return,
+    {[{_Type,_String}],StringLen,_RestLen}=Return,
     Utf8String=excel_util:get_utf8(Return),
     StringLen2=StringLen*8,
-    <<String2:StringLen2/little-unsigned-integer,Rest/binary>>=Bin,
+    <<_String2:StringLen2/little-unsigned-integer,Rest/binary>>=Bin,
     get_ext_ref_names(Rest,[list_to_binary(Utf8String)|Residuum]).
 
 parse_filename(<<?chEncode:8/little-unsigned-integer,
@@ -884,7 +880,7 @@ parse_externname(Bin,Tables)->
                                                    "Built-in functions"},
                                                   {source,excel_records.erl},
                                                   {msg,"not being processed"}]);
-                           Other -> write_externname(Rest,Tables)
+                           _  -> write_externname(Rest,Tables)
                        end;
         ?BUILT_IN   -> write_externname(Rest,Tables);
         ?MANUAL_DDE -> excel_util:write(Tables,lacunae,
@@ -905,6 +901,6 @@ parse_externname(Bin,Tables)->
                                          {msg,"not being processed"}])
     end.
 
-write_externname(<<_NotUsed:16/little-unsigned-integer,Rest/binary>>,Tables)->
+write_externname(<<_NotUsed:16/little-unsigned-integer,_Rest/binary>>,_Tables)->
     io:format("in excel_records DUNNO WHAT TO DO...~n"),
     ok.

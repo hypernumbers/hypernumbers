@@ -14,6 +14,10 @@
 %%% are they will be grouped here by the microsoftbiff.hrl
 %%% RECORD NAME
 
+%% XF BIFF8 Section 4.61 of excelfileformat.pdf V1.41
+-define(rc_CELL_XF,0).
+-define(rc_STYLE_XF,1).
+
 %% BOF BIFF8 Section 5.8.1 excelfileformat.pdf V1.40
 -define(rc_BOF_WorkbookGlobals,5).
 -define(rc_BOF_VBModule,6).

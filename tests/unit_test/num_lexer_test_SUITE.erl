@@ -99,7 +99,7 @@
 		  {minus,"-"},
 		  {underscore,"_"},
 		  {dollar,"$"},
-		  {forwardslash,"/"},
+		  {fwdslash,"/"},
 		  {open_bra,"("},
 		  {close_ket,")"},
 		  {colon,":"},

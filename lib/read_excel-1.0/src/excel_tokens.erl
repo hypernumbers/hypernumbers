@@ -464,7 +464,7 @@ parse_tokens(tFuncVar,Name,Bin,TokenArray,Type,Residuum)->
      R2/binary>>=Bin,
     {NArgs,UserPrompt} = case Flags band 16#80 of
 			     16#80 -> {Flags-16#80,true};
-			     _    -> {Flags,false}
+			     _     -> {Flags,false}
 			 end,
     {FuncIndex,_FuncType} = case Index band 16#8000 of
                                 16#8000 -> {Index-16#8000,built_in};

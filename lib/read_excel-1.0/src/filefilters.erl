@@ -11,7 +11,10 @@
 -export([read/3,read/2,filter_file/1,get_SIDs/2]).
 
 %%% Debugging exports - not for proper use
--export([test_DEBUG/0]).
+-export([test_DEBUG/0,
+	 create_ets_DEBUG/0,
+	 delete_ets_DEBUG/1,
+	 dump_DEBUG/1]).
 -export([dump/1]).
 
 -include("spriki.hrl").
@@ -313,6 +316,10 @@ bodge_string(<<Char:16/little-signed-integer,Rest/binary>>,
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+create_ets_DEBUG()       -> create_ets().
+delete_ets_DEBUG(Tables) -> delete_ets(Tables).
+dump_DEBUG(Tables)       -> dump(Tables).
+
 test_DEBUG()->
     %%File="minitest.xls",
     %%File="e_gnumeric_operators_add.xls",
@@ -325,7 +332,8 @@ test_DEBUG()->
     %%File="b_three_dee_ref.xls",
     %%File="b_floats.xls",
     %%File="b_simple_arrays_and_ranges.xls",
-    File="d_gnumeric_address.xls",
+    %%File="d_gnumeric_address.xls",
+    File="row_formats.xls",
     FileRoot="C:/opt/code/trunk/tests/"++
      	"excel_files/Win_Excel07_As_97",
     io:format("in filefilters:test_DEBUG FileRoot is ~p and File is ~p~n",
@@ -334,18 +342,22 @@ test_DEBUG()->
     io:format("~s processed~n",[File]).
 
 dump([])-> ok; %io:format("All tables dumped~n");
-%%dump([{cell_tokens,_}|T])->
-%%  io:format("~nSkipping out cell_tokens in dump~n"),
-%% dump(T);
-%%dump([{lacunae,_}|T])->
-%%    io:format("~nSkipping out lacunae in dump~n"),
-%%    dump(T);
-dump([{formats,Tid}|T])->
-    Name=formats,
-    %io:format("~nDumping table: ~p~n",[Name]),
-    Fun = fun(X,_Y) -> io:format("~p: ~p~n",[Name,X]) end,
-    ets:foldl(Fun,[],Tid),
+dump([{cell_tokens,_}|T])->
+  io:format("~nSkipping out cell_tokens in dump~n"),
+ dump(T);
+dump([{lacunae,_}|T])->
+    io:format("~nSkipping out lacunae in dump~n"),
     dump(T);
-dump([{Table,_}|T])->
-    %io:format("~nSkipping out ~p in dump~n",[Table]),
+dump([{Table,Tid}|T])->
+    case Table of
+	formats -> dump2(Table,Tid);
+	xf      -> dump2(Table,Tid);
+	cell    -> dump2(Table,Tid);
+	_       -> io:format("skipping Table ~p in filefilters:dump~n",[Table])
+    end,
     dump(T).
+
+dump2(Table,Tid)->
+    io:format("~nDumping table: ~p~n",[Table]),
+    Fun = fun(X,_Y) -> io:format("~p: ~p~n",[Table,X]) end,
+    ets:foldl(Fun,[],Tid).

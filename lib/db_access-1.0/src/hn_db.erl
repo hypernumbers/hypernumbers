@@ -15,19 +15,26 @@
 %%% Exported Functions
 %%%-----------------------------------------------------------------
 -export([
-    %% hn_item
-    write_item/2,   get_item/1,     get_item_val/1,  
-    remove_item/1,
-    get_ref_from_name/1,
-    %% local_cell_link
-  	read_links/2,   del_links/2,    write_local_link/2,
-  	read_remote_links/3, 
-  	write_remote_link/3,
-  	del_remote_link/1,
-    %% hypernumbers
-    register_hn/5,  update_hn/4,    get_hn/3,
-  	%% dirty tables
-    dirty_refs_changed/2, mark_dirty/2
+	 %% hn_item
+	 write_item/2,  
+	 get_item/1,
+	 get_item_val/1,  
+	 remove_item/1,
+	 get_ref_from_name/1,
+	 %% local_cell_link
+	 read_links/2,   
+	 del_links/2,
+	 write_local_link/2,
+	 read_remote_links/3, 
+	 write_remote_link/3,
+	 del_remote_link/1,
+	 %% hypernumbers
+	 register_hn/5, 
+	 update_hn/4,
+	 get_hn/3,
+	 %% dirty tables
+	 dirty_refs_changed/2,
+	 mark_dirty/2
     ]).
 
 %%-------------------------------------------------------------------
@@ -479,7 +486,7 @@ update_hn(From,Bic,Val,_Version)->
 %%               fetch its value, a 'biccie' is created which
 %%               must be quoted in registrations etc
 %%--------------------------------------------------------------------
-get_hn(Url,From,To)->
+get_hn(Url,_From,To)->
 
     {atomic, List} = mnesia:transaction(fun() ->
 
@@ -538,6 +545,8 @@ notify_remote_change(Hn,Value) ->
     
     {Server,Cell} = Hn#outgoing_hn.index,
     Version = hn_util:text(Hn#outgoing_hn.version + 1),
+    io:format("in hn_db:notify_remote_change *WARNING* notify remote change not using "++
+	      "version number ~p - ie it aint working - yet :(",[Version]),
 
     Actions = simplexml:to_xml_string(
         {notify,[],[

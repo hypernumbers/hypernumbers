@@ -399,127 +399,127 @@
 -define(FORMAT23,"h:mm AM/PM").
 
 -define(VALUE23a,round(0.5*86400)).
--define(OUTPUT23a,{date,{black,"12:01 AM"}}).
+-define(OUTPUT23a,{date,{black,"12:00 AM"}}).
 
 -define(VALUE23b,round(0.25*86400)).
--define(OUTPUT23b,{date,{black,"6:01 AM"}}).
+-define(OUTPUT23b,{date,{black,"6:00 AM"}}).
 
 -define(VALUE23c,round(0.75*86400)).
--define(OUTPUT23c,{date,{black,"6:01 PM"}}).
+-define(OUTPUT23c,{date,{black,"6:00 PM"}}).
 
 -define(VALUE23d,0).
--define(OUTPUT23d,{date,{black,"0:01 AM"}}).
+-define(OUTPUT23d,{date,{black,"0:00 AM"}}).
 
 -define(VALUE23e,86400).
--define(OUTPUT23e,{date,{black,"0:01 AM"}}).
+-define(OUTPUT23e,{date,{black,"0:00 AM"}}).
 
 %% Test 24
 -define(FORMAT24,"h:mm:ss AM/PM").
 
 -define(VALUE24a,round(0.5*86400)).
--define(OUTPUT24a,{date,{black,"12:01:00 AM"}}).
+-define(OUTPUT24a,{date,{black,"12:00:00 AM"}}).
 
 -define(VALUE24b,round(0.25*86400)).
--define(OUTPUT24b,{date,{black,"6:01:00 AM"}}).
+-define(OUTPUT24b,{date,{black,"6:00:00 AM"}}).
 
 -define(VALUE24c,round(0.75*86400)).
--define(OUTPUT24c,{date,{black,"6:01:00 PM"}}).
+-define(OUTPUT24c,{date,{black,"6:00:00 PM"}}).
 
 -define(VALUE24d,0).
--define(OUTPUT24d,{date,{black,"0:01:00 AM"}}).
+-define(OUTPUT24d,{date,{black,"0:00:00 AM"}}).
 
 -define(VALUE24e,86400).
--define(OUTPUT24e,{date,{black,"0:01:00 AM"}}).
+-define(OUTPUT24e,{date,{black,"0:00:00 AM"}}).
 
 %% Test 25
 -define(FORMAT25,"hh:mm").
 
 -define(VALUE25a,round(0.5*86400)).
--define(OUTPUT25a,{date,{black,"12:01"}}).
+-define(OUTPUT25a,{date,{black,"12:00"}}).
 
 -define(VALUE25b,round(0.25*86400)).
--define(OUTPUT25b,{date,{black,"06:01"}}).
+-define(OUTPUT25b,{date,{black,"06:00"}}).
 
 -define(VALUE25c,round(0.75*86400)).
--define(OUTPUT25c,{date,{black,"18:01"}}).
+-define(OUTPUT25c,{date,{black,"18:00"}}).
 
 -define(VALUE25d,0).
--define(OUTPUT25d,{date,{black,"00:01"}}).
+-define(OUTPUT25d,{date,{black,"00:00"}}).
 
 -define(VALUE25e,86400).
--define(OUTPUT25e,{date,{black,"00:01"}}).
+-define(OUTPUT25e,{date,{black,"00:00"}}).
 
 %% Test 26
 -define(FORMAT26,"hh:mm:ss").
 
 -define(VALUE26a,round(0.5*86400)).
--define(OUTPUT26a,{date,{black,"12:01:00"}}).
+-define(OUTPUT26a,{date,{black,"12:00:00"}}).
 
 -define(VALUE26b,round(0.25*86400)).
--define(OUTPUT26b,{date,{black,"06:01:00"}}).
+-define(OUTPUT26b,{date,{black,"06:00:00"}}).
 
 -define(VALUE26c,round(0.75*86400)).
--define(OUTPUT26c,{date,{black,"18:01:00"}}).
+-define(OUTPUT26c,{date,{black,"18:00:00"}}).
 
 -define(VALUE26d,0).
--define(OUTPUT26d,{date,{black,"00:01:00"}}).
+-define(OUTPUT26d,{date,{black,"00:00:00"}}).
 
 -define(VALUE26e,86400).
--define(OUTPUT26e,{date,{black,"00:01:00"}}).
+-define(OUTPUT26e,{date,{black,"00:00:00"}}).
 
 %% Test 27
 -define(FORMAT27,"dd/mm/yyyy hh:mm").
 
 -define(VALUE27a,round(0.5*86400)).
--define(OUTPUT27a,{date,{black,"01/01/0000 12:01"}}).
+-define(OUTPUT27a,{date,{black,"01/01/0000 12:00"}}).
 
 -define(VALUE27b,round(0.25*86400)).
--define(OUTPUT27b,{date,{black,"01/01/0000 06:01"}}).
+-define(OUTPUT27b,{date,{black,"01/01/0000 06:00"}}).
 
 -define(VALUE27c,round(0.75*86400)).
--define(OUTPUT27c,{date,{black,"01/01/0000 18:01"}}).
+-define(OUTPUT27c,{date,{black,"01/01/0000 18:00"}}).
 
 -define(VALUE27d,0).
--define(OUTPUT27d,{date,{black,"01/01/0000 00:01"}}).
+-define(OUTPUT27d,{date,{black,"01/01/0000 00:00"}}).
 
 -define(VALUE27e,86400).
--define(OUTPUT27e,{date,{black,"02/01/0000 00:01"}}).
+-define(OUTPUT27e,{date,{black,"02/01/0000 00:00"}}).
 
 %% Test 28
 -define(FORMAT28,"mm:ss").
 
 -define(VALUE28a,round(0.5*86400)).
--define(OUTPUT28a,{date,{black,"01:00"}}).
+-define(OUTPUT28a,{date,{black,"00:00"}}).
 
 -define(VALUE28b,round(0.25*86400)).
--define(OUTPUT28b,{date,{black,"01:00"}}).
+-define(OUTPUT28b,{date,{black,"00:00"}}).
 
 -define(VALUE28c,round(0.75*86400)).
--define(OUTPUT28c,{date,{black,"01:00"}}).
+-define(OUTPUT28c,{date,{black,"00:00"}}).
 
 -define(VALUE28d,0).
--define(OUTPUT28d,{date,{black,"01:00"}}).
+-define(OUTPUT28d,{date,{black,"00:00"}}).
 
 -define(VALUE28e,86400).
--define(OUTPUT28e,{date,{black,"01:00"}}).
+-define(OUTPUT28e,{date,{black,"00:00"}}).
 
 %% Test 29
 -define(FORMAT29,"mm:ss.0").
 
 -define(VALUE29a,round(0.5*86400)).
--define(OUTPUT29a,{date,{black,"01:00.0"}}).
+-define(OUTPUT29a,{date,{black,"00:00.0"}}).
 
 -define(VALUE29b,round(0.25*86400)).
--define(OUTPUT29b,{date,{black,"01:00.0"}}).
+-define(OUTPUT29b,{date,{black,"00:00.0"}}).
 
 -define(VALUE29c,round(0.75*86400)).
--define(OUTPUT29c,{date,{black,"01:00.0"}}).
+-define(OUTPUT29c,{date,{black,"00:00.0"}}).
 
 -define(VALUE29d,0).
--define(OUTPUT29d,{date,{black,"01:00.0"}}).
+-define(OUTPUT29d,{date,{black,"00:00.0"}}).
 
 -define(VALUE29e,86400).
--define(OUTPUT29e,{date,{black,"01:00.0"}}).
+-define(OUTPUT29e,{date,{black,"00:00.0"}}).
 
 %% Test 30
 -define(FORMAT30,"@").
@@ -528,19 +528,19 @@
 -define(FORMAT31,"[h]:mm:ss").
 
 -define(VALUE31a,round(0.5*86400)).
--define(OUTPUT31a,{date,{black,"12:01:00"}}).
+-define(OUTPUT31a,{date,{black,"12:00:00"}}).
 
 -define(VALUE31b,round(0.25*86400)).
--define(OUTPUT31b,{date,{black,"6:01:00"}}).
+-define(OUTPUT31b,{date,{black,"6:00:00"}}).
 
 -define(VALUE31c,round(0.75*86400)).
--define(OUTPUT31c,{date,{black,"18:01:00"}}).
+-define(OUTPUT31c,{date,{black,"18:00:00"}}).
 
 -define(VALUE31d,0).
--define(OUTPUT31d,{date,{black,"0:01:00"}}).
+-define(OUTPUT31d,{date,{black,"0:00:00"}}).
 
 -define(VALUE31e,86400).
--define(OUTPUT31e,{date,{black,"24:01:00"}}).
+-define(OUTPUT31e,{date,{black,"24:00:00"}}).
 
 %% Test 32
 -define(FORMAT32,"_-£* #,##0_-;-£* #,##0_-;_-£* \"-\"_-;_-@_-").
@@ -921,55 +921,55 @@
 -define(FORMAT56,"h:mm am/pm").
 
 -define(VALUE56a,round(0.5*86400)).
--define(OUTPUT56a,{date,{black,"12:01 am"}}).
+-define(OUTPUT56a,{date,{black,"12:00 am"}}).
 
 -define(VALUE56b,round(0.25*86400)).
--define(OUTPUT56b,{date,{black,"6:01 am"}}).
+-define(OUTPUT56b,{date,{black,"6:00 am"}}).
 
 -define(VALUE56c,round(0.75*86400)).
--define(OUTPUT56c,{date,{black,"6:01 pm"}}).
+-define(OUTPUT56c,{date,{black,"6:00 pm"}}).
 
 -define(VALUE56d,0).
--define(OUTPUT56d,{date,{black,"0:01 am"}}).
+-define(OUTPUT56d,{date,{black,"0:00 am"}}).
 
 -define(VALUE56e,86400).
--define(OUTPUT56e,{date,{black,"0:01 am"}}).
+-define(OUTPUT56e,{date,{black,"0:00 am"}}).
 
 %% Test 57
 -define(FORMAT57,"h:mm A/P").
 
 -define(VALUE57a,round(0.5*86400)).
--define(OUTPUT57a,{date,{black,"12:01 A"}}).
+-define(OUTPUT57a,{date,{black,"12:00 A"}}).
 
 -define(VALUE57b,round(0.25*86400)).
--define(OUTPUT57b,{date,{black,"6:01 A"}}).
+-define(OUTPUT57b,{date,{black,"6:00 A"}}).
 
 -define(VALUE57c,round(0.75*86400)).
--define(OUTPUT57c,{date,{black,"6:01 P"}}).
+-define(OUTPUT57c,{date,{black,"6:00 P"}}).
 
 -define(VALUE57d,0).
--define(OUTPUT57d,{date,{black,"0:01 A"}}).
+-define(OUTPUT57d,{date,{black,"0:00 A"}}).
 
 -define(VALUE57e,86400).
--define(OUTPUT57e,{date,{black,"0:01 A"}}).
+-define(OUTPUT57e,{date,{black,"0:00 A"}}).
 
 %% Test 58
 -define(FORMAT58,"h:mm a/p").
 
 -define(VALUE58a,round(0.5*86400)).
--define(OUTPUT58a,{date,{black,"12:01 a"}}).
+-define(OUTPUT58a,{date,{black,"12:00 a"}}).
 
 -define(VALUE58b,round(0.25*86400)).
--define(OUTPUT58b,{date,{black,"6:01 a"}}).
+-define(OUTPUT58b,{date,{black,"6:00 a"}}).
 
 -define(VALUE58c,round(0.75*86400)).
--define(OUTPUT58c,{date,{black,"6:01 p"}}).
+-define(OUTPUT58c,{date,{black,"6:00 p"}}).
 
 -define(VALUE58d,0).
--define(OUTPUT58d,{date,{black,"0:01 a"}}).
+-define(OUTPUT58d,{date,{black,"0:00 a"}}).
 
 -define(VALUE58e,86400).
--define(OUTPUT58e,{date,{black,"0:01 a"}}).
+-define(OUTPUT58e,{date,{black,"0:00 a"}}).
 
 %% Test 59
 -define(FORMAT59,"\"general\"0.0").
@@ -982,7 +982,6 @@
 
 -define(VALUE60,4).
 -define(OUTPUT60,{number,{black,"4.0general"}}).
-
 
 %% Test 61
 -define(FORMAT61,"[m]").
@@ -1019,6 +1018,78 @@
 
 -define(VALUE62e,86400).
 -define(OUTPUT62e,{date,{black,"86400"}}).
+
+%% These tests were as the result of bugs found in implementing formats 
+%% in the test suites
+
+%% Test 501
+-define(FORMAT501,"M/D/YY").
+
+-define(VALUE501,((12345-1+693960)*86400)).
+-define(OUTPUT501,{date,{black,"10/18/33"}}).
+
+%% Test 502
+-define(FORMAT502,"_(\\\"$\\\"*#,##0_);_(\\\"$\\\"*(#,##0);_($\\\"*\\\"-\\\"_);_(@_)").
+
+-define(VALUE502a,1234.56).
+-define(OUTPUT502a,{number,{black," \"$\"1,235 "}}).
+
+-define(VALUE502b,-1234.56).
+-define(OUTPUT502b,{number,{black," \"$\"(1,235)"}}).
+
+-define(VALUE502c,0).
+-define(OUTPUT502c,{number,{black," $\"\"-\" "}}).
+
+-define(VALUE502d,"bob").
+-define(OUTPUT502d,{number,{black," bob "}}).
+
+%% Test 503
+-define(FORMAT503,"\"$\"#,##0_);[Red]\\(\"$\"#,##0\\)").
+
+-define(VALUE503a,1234.56).
+-define(OUTPUT503a,{number,{black,"$1,235 "}}). 
+
+-define(VALUE503b,-1234.56).
+-define(OUTPUT503b,{number,{red,"\($1,235\)"}}).
+
+-define(VALUE503c,0).
+-define(OUTPUT503c,{number,{black,"$0 "}}).
+
+-define(VALUE503d,"bob").
+-define(OUTPUT503d,{number,{black,"bob"}}).
+
+%% Test 504
+-define(FORMAT504,"\\_0.00").
+
+-define(VALUE504,1234.5).
+-define(OUTPUT504,{number,{black,"_1234.50"}}). 
+
+%% Test 505
+-define(FORMAT505,"\\\\_0.00").
+
+-define(VALUE505,1234.5).
+-define(OUTPUT505,{number,{black,"_1234.50"}}). 
+
+%% Test 506
+-define(FORMAT506,"[Red](\"$\"#,##0\\)").
+
+-define(VALUE506a,1234.5).
+-define(OUTPUT506a,{number,{red,"($1,235)"}}). 
+
+-define(VALUE506b,-1234.5).
+-define(OUTPUT506b,{number,{red,"($-1,235)"}}). 
+
+-define(VALUE506c,0).
+-define(OUTPUT506c,{number,{red,"($0)"}}). 
+
+-define(VALUE506d,"bob").
+-define(OUTPUT506d,{number,{black,"bob"}}). 
+
+%% Test 507
+-define(FORMAT507,"m").
+
+-define(VALUE507,round(0.5*86400)).
+-define(OUTPUT507,{date,{black,"1"}}). 
 
 %% Failing tests
 -define(FORMAT_F1A,"00.00\"ttt\"00.00").
@@ -1361,6 +1432,22 @@ all() ->
      num_parser_test62c,
      num_parser_test62d,
      num_parser_test62e,
+     num_parser_test501,
+     num_parser_test502a,
+     num_parser_test502b,
+     num_parser_test502c,
+     num_parser_test502d,
+     num_parser_test503a,
+     num_parser_test503b,
+     num_parser_test503c,
+     num_parser_test503d,
+     num_parser_test504,
+     num_parser_test505,
+     num_parser_test506a,
+     num_parser_test506b,
+     num_parser_test506c,
+     num_parser_test506d,
+     num_parser_test507,
      num_parser_fail1a,
      num_parser_fail2a
     ].
@@ -3017,6 +3104,103 @@ num_parser_test62e() ->
 
 num_parser_test62e(Config) when is_list(Config) -> 
     executor(?FORMAT62,?VALUE62e,?OUTPUT62e).
+
+%% Bug fixes
+num_parser_test501() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test501(Config) when is_list(Config) -> 
+    executor(?FORMAT501,?VALUE501,?OUTPUT501).
+
+num_parser_test502a() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test502a(Config) when is_list(Config) -> 
+    executor(?FORMAT502,?VALUE502a,?OUTPUT502a).
+
+num_parser_test502b() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test502b(Config) when is_list(Config) -> 
+    executor(?FORMAT502,?VALUE502b,?OUTPUT502b).
+
+num_parser_test502c() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test502c(Config) when is_list(Config) -> 
+    executor(?FORMAT502,?VALUE502c,?OUTPUT502c).
+
+num_parser_test502d() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test502d(Config) when is_list(Config) -> 
+    executor(?FORMAT502,?VALUE502d,?OUTPUT502d).
+
+num_parser_test503a() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test503a(Config) when is_list(Config) -> 
+    executor(?FORMAT503,?VALUE503a,?OUTPUT503a).
+
+num_parser_test503b() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test503b(Config) when is_list(Config) -> 
+    executor(?FORMAT503,?VALUE503b,?OUTPUT503b).
+
+num_parser_test503c() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test503c(Config) when is_list(Config) -> 
+    executor(?FORMAT503,?VALUE503c,?OUTPUT503c).
+
+num_parser_test503d() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test503d(Config) when is_list(Config) -> 
+    executor(?FORMAT503,?VALUE503d,?OUTPUT503d).
+
+num_parser_test504() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test504(Config) when is_list(Config) -> 
+    executor(?FORMAT504,?VALUE504,?OUTPUT504).
+
+num_parser_test505() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test505(Config) when is_list(Config) -> 
+    executor(?FORMAT505,?VALUE505,?OUTPUT505).
+
+num_parser_test506a() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test506a(Config) when is_list(Config) -> 
+    executor(?FORMAT506,?VALUE506a,?OUTPUT506a).
+
+num_parser_test506b() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test506b(Config) when is_list(Config) -> 
+    executor(?FORMAT506,?VALUE506b,?OUTPUT506b).
+
+num_parser_test506c() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test506c(Config) when is_list(Config) -> 
+    executor(?FORMAT506,?VALUE506c,?OUTPUT506c).
+
+num_parser_test506d() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test506d(Config) when is_list(Config) -> 
+    executor(?FORMAT506,?VALUE506d,?OUTPUT506d).
+
+num_parser_test507() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test507(Config) when is_list(Config) -> 
+    executor(?FORMAT507,?VALUE507,?OUTPUT507).
 
 
 %% Failing tests

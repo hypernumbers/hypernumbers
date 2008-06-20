@@ -307,19 +307,19 @@ get_row(Row,TopRow,RowType)->
 
 get_col(Col,TopCol,ColType)->
     case ColType of
-        rel_col -> NewCol=Col+TopCol-256*erlang:round((Col+TopCol)/256);
+        rel_col -> Col+TopCol-256*erlang:round((Col+TopCol)/256);
         abs_col -> Col
     end.
 
 %% Looks up an external reference from the Supbook
-get_ref_name(RefIndex,NameIndex,Tables)->
+get_ref_name(_RefIndex,_NameIndex,_Tables)->
     "Excel_rev_comp:get_rev_name external names not being handled yet!".
 
 %% Looks up a reference to an externsheet and turns it into a sheet ref
 get_sheet_ref(Index,Tables)->
     Record1=excel_util:read(Tables,externsheets,Index),
     case Record1 of
-        [{_,[{subrec,SR},{firstsheet,?FF_Ref},{lastsheet,_}]}] -> 
+        [{_,[{subrec,_SR},{firstsheet,?FF_Ref},{lastsheet,_}]}] -> 
             "#REF";
         [{_,[{subrec,SR},{firstsheet,FS},{lastsheet,FS}]}]-> 
             get_ref(SR,FS,Tables);
@@ -450,17 +450,17 @@ read_token_array(N,<<?ErrorArrayEl:8/little-unsigned-integer,
 %%              interspace with 'Token' (number converted to strings).
 %%              (Token doesn't get added on to the last element).
 %%--------------------------------------------------------------------
-implode(List, Token) ->
-    F = fun(X, Acc) ->
-        if
-            is_integer(X) -> [Token,integer_to_list(X)|Acc];
-            %% float like "2.000" to come back as "2"
-            is_float(X)   -> [Token,to_str({float,X})|Acc]; 
-            true          -> [Token,X|Acc]
-        end
-    end,
-    [_TrailingToken|RealList]=lists:foldl(F, [], List),
-    lists:flatten(lists:reverse(RealList)).
+%%implode(List, Token) ->
+%%    F = fun(X, Acc) ->
+%%        if
+%%            is_integer(X) -> [Token,integer_to_list(X)|Acc];
+%%            %% float like "2.000" to come back as "2"
+%%            is_float(X)   -> [Token,to_str({float,X})|Acc]; 
+%%            true          -> [Token,X|Acc]
+%%        end
+%%    end,
+%%    [_TrailingToken|RealList]=lists:foldl(F, [], List),
+%%    lists:flatten(lists:reverse(RealList)).
 
 %%% set of functions used by reverse_compile to generate the actual 
 %%% Formula Strings that are in the cells
@@ -581,17 +581,17 @@ popVars(I,[{space,Val}|T],Args) -> popVars(I,T,[{space,Val}|Args]);
 popVars(I,[{return}|T],Args)    -> popVars(I,T,[{return}|Args]);  
 popVars(I,[Else|T],Args)        -> popVars(I-1,T,[Else|Args]).
 
-push([],Val)    -> [lists:append([],Val)];
-push(List,Val)  -> 
-    lists:reverse(lists:flatten([Val,lists:reverse(List)])).
+%%push([],Val)    -> [lists:append([],Val)];
+%%push(List,Val)  -> 
+%%    lists:reverse(lists:flatten([Val,lists:reverse(List)])).
 
-pop([H|[]]) -> {H,[]};
-pop(List)   ->
-    [Pop|NewList]=lists:reverse(List),
-    case Pop of    %%
-    {space,Val} -> pop(lists:reverse(NewList));
-    _Else       -> {Pop,lists:reverse(NewList)}
-    end.
+%%pop([H|[]]) -> {H,[]};
+%%pop(List)   ->
+%%    [Pop|NewList]=lists:reverse(List),
+%%    case Pop of    %%
+%%    {space,Val} -> pop(lists:reverse(NewList));
+%%    _Else       -> {Pop,lists:reverse(NewList)}
+%%    end.
 
 %% this function makes a range from the start and end cell specifications
 make_range(StartCell,EndCell)->

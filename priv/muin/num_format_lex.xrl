@@ -52,10 +52,11 @@ Rules.
 {ELAPSED_H}  : {token, {hour,    elapsed}}.
 {ELAPSED_S}  : {token, {sec,     elapsed}}.
 
-\$           : {token, {dollar, "$"}}.
-\-           : {token, {minus, "-"}}.
+\\"          : {token, {quote,"\""}}.
+\$           : {token, {dollar,"$"}}.
+\-           : {token, {minus,"-"}}.
 \+           : {token, {plus,"+"}}.
-/            : {token, {forwardslash,"/"}}.
+/            : {token, {fwdslash,"/"}}.
 \(           : {token, {open_bra,"("}}.
 \)           : {token, {close_ket,")"}}.
 :            : {token, {colon,":"}}.
@@ -67,23 +68,37 @@ Rules.
 _            : {token, {underscore,"_"}}.
 \%           : {token, {percent,"%"}}.
 
-\\           : {token, {esc, esc}}.
+\\           : {token, {esc, "\\"}}.
 @            : {token, {at, "@"}}.
 
 yy           : {token, {year,    two_digit}}.
+YY           : {token, {year,    two_digit}}.
 yyyy         : {token, {year,    four_digit}}.
+YYYY         : {token, {year,    four_digit}}.
 m            : {token, {mon_min, no_zero}}.
+M            : {token, {mon_min, no_zero}}.
 mm           : {token, {mon_min, zero}}.
+MM           : {token, {mon_min, zero}}.
 mmm          : {token, {mon,     abbr}}.
+MMM          : {token, {mon,     abbr}}.
 mmmm         : {token, {mon,     full}}.
+MMMM         : {token, {mon,     full}}.
 d            : {token, {day,     no_zero}}.
+D            : {token, {day,     no_zero}}.
 dd           : {token, {day,     zero}}.
+DD           : {token, {day,     zero}}.
 ddd          : {token, {day,     abbr}}.
+DDD          : {token, {day,     abbr}}.
 dddd         : {token, {day,     full}}.
+DDDD         : {token, {day,     full}}.
 h            : {token, {hour,    no_zero}}.
+H            : {token, {hour,    no_zero}}.
 hh           : {token, {hour,    zero}}.
+HH           : {token, {hour,    zero}}.
 s            : {token, {sec,     no_zero}}.
+S            : {token, {sec,     no_zero}}.
 ss           : {token, {sec,     zero}}.
+SS           : {token, {sec,     zero}}.
 AM/PM        : {token, {ampm,    full_caps}}.
 am/pm        : {token, {ampm,    full_lowercase}}.
 A/P          : {token, {ampm,    abbr_caps}}.

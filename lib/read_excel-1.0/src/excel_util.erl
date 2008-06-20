@@ -17,6 +17,7 @@
          read_cell_range_add_list/2,
          read_cell_range_addies/3,
          write/3,
+	 append/3,
          read/3,
          read_shared/2,
          get_length/2,
@@ -240,6 +241,12 @@ get_length(Tables,Name)->
     {_,{_,Length}}=lists:keysearch(size,1,Info),
     Length.
 
+%% append a value to a table that needs a sequential index
+append(Tables,Name,Record) ->
+    Index={index,get_length(Tables,Name)},
+    {value,{Name,Tid}}=lists:keysearch(Name,1,Tables),
+    ets:insert(Tid,{Index,Record}).
+
 %% write values to the tables
 write(Tables,Name,[H|T])->
     {value,{Name,Tid}}=lists:keysearch(Name,1,Tables),
@@ -276,8 +283,8 @@ read_shared(Tables,{{sheet,Name},{row_index,Row},{col_index,Col}})->
     ExShrdFn = fun(X,Residuum)->
                        case X of
                            {{{sheet,Name},{firstrow,Row},
-                             {firstcol,Col},{lastrow,LastRow},
-                             {lastcol,LastCol}},_Rest} -> [X|Residuum];
+                             {firstcol,Col},{lastrow,_LastRow},
+                             {lastcol,_LastCol}},_Rest} -> [X|Residuum];
                            _Other                      -> Residuum
                        end
                end,
