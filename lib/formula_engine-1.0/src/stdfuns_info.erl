@@ -23,35 +23,36 @@
 -include("handy_macros.hrl").
 -include("typechecks.hrl").
 
-error_type([{error, null}]) ->
-    1;
-error_type([{error, div0}]) ->
-    2;
-error_type([{error, value}]) ->
-    3;
-error_type([{error, ref}]) ->
-    4;
-error_type([{error, name}]) ->
-    5;
-error_type([{error, num}]) ->
-    6;
-error_type([{error, na}]) ->
-    7;
-error_type(_) ->
-    throw({error, na}).
+error_type([?ERRVAL_NULL]) -> 1;
+error_type([?ERRVAL_DIV])  -> 2;
+error_type([?ERRVAL_VAL])  -> 3;
+error_type([?ERRVAL_REF])  -> 4;
+error_type([?ERRVAL_NAME]) -> 5;
+error_type([?ERRVAL_NUM])  -> 6;
+error_type([?ERRVAL_NA])   -> 7;
+error_type(_)              -> ?ERR_NA.
 
 %% Returns the logical value TRUE if value refers to any error value except
 %% #N/A; otherwise it returns FALSE.
-iserr([{error, X}]) when X =/= na ->
+iserr([V]) when V == ?ERRVAL_NULL orelse
+                V == ?ERRVAL_DIV orelse
+                V == ?ERRVAL_VAL orelse
+                V == ?ERRVAL_REF orelse
+                V == ?ERRVAL_NAME orelse
+                V == ?ERRVAL_NUM ->
     true;
 iserr(_) ->
     false.
 
 %% Returns true if argument is any error value.
-iserror([{error, X}]) ->
-    ?COND(is_number(error_type([{error, X}])),
-          true,
-          false);
+iserror([V]) when V == ?ERRVAL_NULL orelse
+                  V == ?ERRVAL_DIV orelse
+                  V == ?ERRVAL_VAL orelse
+                  V == ?ERRVAL_REF orelse
+                  V == ?ERRVAL_NAME orelse
+                  V == ?ERRVAL_NUM orelse
+                  V == ?ERRVAL_NA ->
+    true;
 iserror(_) ->
     false.
 

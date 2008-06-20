@@ -1,8 +1,18 @@
 
--define(ERR_NULL, muin_util:error('#NULL!')).
--define(ERR_DIV,  muin_util:error('#DIV/0!')).
--define(ERR_VAL,  muin_util:error('#VALUE!')).
--define(ERR_REF,  muin_util:error('#REF!')).
--define(ERR_NAME, muin_util:error('#NAME?')).
--define(ERR_NUM,  muin_util:error('#NUM!')).
--define(ERR_NA,   muin_util:error('#N/A')).
+%% Literal error values.
+-define(ERRVAL_NULL, {errval, null}).
+-define(ERRVAL_DIV,  {errval, div0}).
+-define(ERRVAL_VAL,  {errval, value}).
+-define(ERRVAL_REF,  {errval, ref}).
+-define(ERRVAL_NAME, {errval, name}).
+-define(ERRVAL_NUM,  {errval, num}).
+-define(ERRVAL_NA,   {errval, na}).
+
+%% Return an error.
+-define(ERR_NULL, throw(?ERRVAL_NULL)).
+-define(ERR_DIV,  throw(?ERRVAL_DIV)).
+-define(ERR_VAL,  throw(?ERRVAL_VAL)).
+-define(ERR_REF,  throw(?ERRVAL_REF)).
+-define(ERR_NAME, throw(?ERRVAL_NAME)).
+-define(ERR_NUM,  throw(?ERRVAL_NUM)).
+-define(ERR_NA,   throw(?ERRVAL_NA)).
