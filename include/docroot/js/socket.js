@@ -41,7 +41,6 @@ function soc_closed()
 // Called when socket receives message
 function soc_msg(msg)
 {
-    console.log("Recieved: "+msg);
     var x = msg.split("\n");
     $.each(x,function(i)
     {
