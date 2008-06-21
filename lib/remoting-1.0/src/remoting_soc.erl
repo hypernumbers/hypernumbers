@@ -12,13 +12,12 @@
 -export([accept/1]).
 
 accept(Listen) ->
-
+    
     {ok, Soc} = gen_tcp:accept(Listen),
-
+    Pid = spawn(fun() -> loop(Soc) end),
     %% TODO : Fix possible? race condition, receives message
     %% before controlling process activates
-    gen_tcp:controlling_process(Soc,
-        spawn(fun() -> loop(Soc) end)),
+    gen_tcp:controlling_process(Soc,Pid),
     
     %% Start Listening for another connection
     remoting_soc:accept(Listen).
@@ -26,7 +25,7 @@ accept(Listen) ->
 loop(Socket)->
     receive
 
-    {tcp, Socket,"register"++Rest} ->   
+    {tcp, Socket,"register"++Rest} ->
         Page = hn_util:parse_url(hn_util:trim(Rest)),  
         self() ! gen_server:call(remoting_reg,{register,Page}),
         loop(Socket);

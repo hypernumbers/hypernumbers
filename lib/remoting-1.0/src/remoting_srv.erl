@@ -30,7 +30,8 @@ init([]) ->
         spawn_link(fun() -> remoting_soc:accept(Socket) end),
         {ok, []};
 
-    {error, Reason} -> {stop, Reason}
+    {error, Reason} -> 
+        {stop, Reason}
     end.
 
 handle_call(_Req, _F, State) -> {reply, ok, State}.

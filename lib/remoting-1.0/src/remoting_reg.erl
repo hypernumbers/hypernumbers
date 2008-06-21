@@ -29,10 +29,8 @@ init([]) ->
 %% when a number in Page -> Range changes
 handle_call({register,Page},{Pid,_},State) ->
     #page{site=Site,path=Path} = Page,
-    {reply,
-        {msg,"range registered"},    
-        lists:append(State,[{Site,Path,Pid}])
-    };
+    NewState = lists:append(State,[{Site,Path,Pid}]),
+    {reply, {msg,"range registered"},NewState};
 
 %% Unregisters a range, From will no longer
 %% Receive updates
@@ -40,11 +38,11 @@ handle_call({unregister},From,State) ->
     N = lists:filter(
         fun(X) ->
             case X of 
-            {_,_,_,From} -> true;
-            _ -> false
+            {_,_,_,From} -> false;
+            _ -> true
             end 
         end,State),
-    {reply,{msg,"range unregistered"}, N};
+    {reply,{msg,"range unregistered"},N};
 
 %% Change Message, find everyone listening to 
 %% that page then send them a change message
@@ -62,7 +60,9 @@ handle_call({change,Site,Path,Msg},_From,State) ->
 handle_call(_Request,_From,State) ->
     {reply,invalid_message, State}.
 
-handle_cast(_Msg, State) ->     {noreply, State}.
+handle_cast(Msg, State) ->
+    {noreply, State}.
+    
 handle_info(_Info, State) ->    {noreply, State}.
-terminate(_Reason, _State) ->   ok.
+terminate(_Reason, State) ->    ok.
 code_change(_Old, State, _E) -> {ok, State}.
