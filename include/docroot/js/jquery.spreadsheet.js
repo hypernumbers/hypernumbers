@@ -38,7 +38,7 @@
     
 $.fn.spreadsheet = function(options) 
 {    
-    // Builder for the toolbar, an <a> is sbuilt for each element
+    // Builder for the toolbar, an <a> is built for each element
     // the callback is called on click and is given info
     // on the current selection                    
     $.fn.toolbar = [
@@ -56,7 +56,7 @@ $.fn.spreadsheet = function(options)
         
     $.fn.spreadsheet.defaults = 
     {
-        range: "a1:z50",   // Default Range that is loaded
+        range: "a1:z50",    // Default Range that is loaded
         fmargin: 0,         // Footer Margin
         cellSelect:null,    // Callback on a cell being selected
         cellChange:null,    // Callback for a cell Changing
@@ -417,8 +417,89 @@ $.fn.spreadsheet = function(options)
             for(var n = 0; n < cols; n++)
                 row.append("<td><div class='"+($.fn.to_b26(n)+z)
                     + " cell'></div></td>");
+        }        
+    };
+    
+    /**
+     * Creates the basic table layout
+     */  
+    var setup_rowcol_selection = function(root,sel,maxcol,maxrow)
+    {
+        var is_th = function(e)
+        {
+            return e.target.nodeName == "TH";
         }
-    }
+    
+        var columns = root.find("div.columns table tr");
+        columns.bind('mousedown',function(e)
+        {
+            if(is_th(e) && $(this).css("cursor") !=  "col-resize")
+            {
+                if(sel.state != $.fn.states.INIT)
+                    sel.blurcell();
+            
+                sel.hide_selection();
+                var index = $.fn.from_b26($(e.target).text()) - 1;
+                sel.setbounds(index,0,index,0,index,maxcol); 
+                sel.set_selection();
+                sel.show_selection();
+                
+                columns.mouseover(function(e)
+                {
+                    if(is_th(e))
+                    {
+                        sel.hide_selection();
+                        var newindex = $.fn.from_b26($(e.target).text())-1;
+                        var start = index < newindex ? index : newindex;
+                        var end =   index > newindex ? index : newindex;
+                        sel.setbounds(index,0,start,0,end,maxcol); 
+                        sel.set_selection();
+                        sel.show_selection();
+                    }
+                });
+                
+                $("body").one('mouseup',function(e)
+                {
+                    columns.unbind('mouseover');
+                });
+            }
+        });
+        
+        var rows = root.find("div.rows table tr");
+        rows.bind('mousedown',function(e)
+        {
+            if($(this).css("cursor") !=  "row-resize")
+            {
+                if(sel.state != $.fn.states.INIT)
+                    sel.blurcell();
+            
+                sel.hide_selection();
+                var index = parseInt($(e.target).text())-1;
+                
+                sel.setbounds(0,index,0,index,maxrow,index); 
+                sel.set_selection();
+                sel.show_selection();
+                
+                rows.mouseover(function(e)
+                {
+                    sel.hide_selection();
+                    var newindex = parseInt($(e.target).text())-1;
+                    var start = index < newindex ? index : newindex;
+                    var end =   index > newindex ? index : newindex;
+                    sel.setbounds(0,index,0,start,maxrow,end); 
+                    sel.set_selection();
+                    sel.show_selection();
+                });
+                
+                $("body").one('mouseup',function(e)
+                {
+                    rows.unbind('mouseover');
+                });
+            }
+            
+            return false;
+        });
+    };
     
     /**
      * returns true if the mouse button clicked was a left button
@@ -555,6 +636,19 @@ $.fn.spreadsheet = function(options)
            
             this.hover(cell);
         };
+        
+        /**
+         * Set actively selected cell
+         */        
+        this.setbounds = function(x,y,startx,starty,endx,endy)
+        {
+            this.x = x;
+            this.y = y;
+            this.startx = startx;
+            this.starty = starty;
+            this.endx = endx;
+            this.endy = endy;   
+        };        
     
         /**
          * Set actively selected cell
@@ -563,8 +657,7 @@ $.fn.spreadsheet = function(options)
         {
             var index = $.fn.cell_index(cell);
             this.x = index[0];
-            this.y = index[1];            
-    
+            this.y = index[1];                
         };
     
         /**
@@ -617,18 +710,8 @@ $.fn.spreadsheet = function(options)
                 if(refs != null)
                 {
                     this.hide_selection();  
-
-                    this.x = i[0];
-                    this.y = i[1];
-                    this.startx = refs[0];
-                    this.starty = refs[1];
-                    this.endx = refs[2];
-                    this.endy = refs[3];
-
-                    var c =  root.children("div.data");
-                    this.range = this.tbl.find("tr:lt("+(this.endy+1)+"):gt("+(this.starty-1) + ")").find("td:lt("+(this.endx+1)+"):gt("+(this.startx-1)+")").children("div");
-                    this.rows_highlight = root.find("div.rows:first table").find("tr td:lt("+(this.endy+1)+"):gt("+(this.starty-1)+")");
-                    this.cols_highlight = root.find("div.columns:first table").find("tr th:lt("+(this.endx+1)+"):gt("+(this.startx-1)+")");
+                    this.setbounds(i[0],i[1],refs[0],refs[1],refs[2],refs[3]);
+                    this.set_selection();
                     this.show_selection();
                 }
             }
@@ -679,6 +762,14 @@ $.fn.spreadsheet = function(options)
             }
             return false;
         };
+        
+        this.set_selection = function()
+        {
+            var c =  root.children("div.data");
+            this.range = this.tbl.find("tr:lt("+(this.endy+1)+"):gt("+(this.starty-1) + ")").find("td:lt("+(this.endx+1)+"):gt("+(this.startx-1)+")").children("div");
+            this.rows_highlight = root.find("div.rows:first table").find("tr td:lt("+(this.endy+1)+"):gt("+(this.starty-1)+")");
+            this.cols_highlight = root.find("div.columns:first table").find("tr th:lt("+(this.endx+1)+"):gt("+(this.startx-1)+")");            
+        };
     
         /**
          * Adds the background to selected items, positions the drag handle
@@ -694,9 +785,7 @@ $.fn.spreadsheet = function(options)
             {
                 var c = cell(this.tbl,this.endx,this.endy);
                 var off = c.offset();
-
                 cell(this.tbl,this.x,this.y).addClass("current");
-  
                 // Hide of displayed above the table
                 if(off.top+c.height() < this.tbl.parent().parent().offset().top)
                 {
@@ -928,6 +1017,8 @@ $.fn.spreadsheet = function(options)
             create_table($this,range[1],range[0]);
                 
             var $sel = new Selection($this);
+
+            setup_rowcol_selection($this,$sel,range[1]-1,range[0]-1);
                 
             write_formula_bar($this,$sel);
             write_button_menu($this,$sel,$.fn.toolbar);

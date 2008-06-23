@@ -111,7 +111,7 @@ $.fn.tableresizer = function(options)
         
         tbl.mouseup(function(e) 
         {
-            endresize();   
+            endresize(); 
         });
                 
         tbl.bind("mouseleave",function(e)
@@ -129,7 +129,7 @@ $.fn.tableresizer = function(options)
                 resize = true;
                 // Stop ie selecting text
                 document.onselectstart=new Function ("return false");
-            }    
+            } 
             return false;
         });
         
@@ -181,7 +181,6 @@ $.fn.tableresizer = function(options)
                 // Stop ie selecting text
                 document.onselectstart=new Function ("return false");
             }
-            return false;
         });
         
         tbl.mouseup(function(e) 
