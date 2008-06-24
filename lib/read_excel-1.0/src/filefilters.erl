@@ -15,6 +15,7 @@
 	 create_ets_DEBUG/0,
 	 delete_ets_DEBUG/1,
 	 dump_DEBUG/1]).
+
 -export([dump/1]).
 
 -include("spriki.hrl").
@@ -343,18 +344,19 @@ test_DEBUG()->
 
 dump([])-> ok; %io:format("All tables dumped~n");
 dump([{cell_tokens,_}|T])->
-  io:format("~nSkipping out cell_tokens in dump~n"),
- dump(T);
+    io:format("~nSkipping out cell_tokens in dump~n"),
+    dump(T);
 dump([{lacunae,_}|T])->
     io:format("~nSkipping out lacunae in dump~n"),
     dump(T);
 dump([{Table,Tid}|T])->
-    case Table of
-	formats -> dump2(Table,Tid);
-	xf      -> dump2(Table,Tid);
-	cell    -> dump2(Table,Tid);
-	_       -> io:format("skipping Table ~p in filefilters:dump~n",[Table])
-    end,
+    %%    case Table of
+    %%	formats -> dump2(Table,Tid);
+    %%	xf      -> dump2(Table,Tid);
+    %%	cell    -> dump2(Table,Tid);
+    %%	_       -> io:format("skipping Table ~p in filefilters:dump~n",[Table])
+    %%    end,
+    dump2(Table,Tid),
     dump(T).
 
 dump2(Table,Tid)->

@@ -29,6 +29,8 @@
 %% The formulae are stored in reverse Polish Notation within excel
 %% The reverse compiler recreates the original formula by running the RPN
 reverse_compile(Index,Tokens,TokenArray,Tables)->
+    io:format("in excel_rev_comp:reverse_compile Index is ~p Tokens are ~p "++
+	      "and TokenArray is ~p~n",[Index,Tokens,TokenArray]),
     rev_comp(Index,Tokens,TokenArray,[],Tables).
 
 %% When the tokens are exhausted the Stack is just flattened to a string
@@ -49,12 +51,12 @@ rev_comp(I,[{expr_formula_range,{tExp,[Sheet,Row,Col], {return,none}}}|T], TokAr
 %% Pop two of the stack and the build an operator set backwards
 %% ie second first and first second...
 rev_comp(I,[{Op,_Token}|T],TokArr,Stack,Tbl) when
-        Op =:= addition ;   Op =:= subtraction;
-        Op =:= divide ;     Op =:= power;
-        Op =:= less_than;   Op =:= less_than_or_equal; 
-        Op =:= equals;      Op =:= greater_than_or_equal;
-        Op =:= greater_than;Op =:= not_equal;
-        Op =:= multiply;    Op =:= concatenate ->
+        Op =:= addition ;    Op =:= subtraction;
+        Op =:= divide ;      Op =:= power;
+        Op =:= less_than;    Op =:= less_than_or_equal; 
+        Op =:= equals;       Op =:= greater_than_or_equal;
+        Op =:= greater_than; Op =:= not_equal;
+        Op =:= multiply;     Op =:= concatenate ->
     
     {Spaces1,[First |Rest]} = popSpaces(Stack),
     {Spaces2,[Second|Last]} = popSpaces(Rest),
@@ -312,7 +314,9 @@ get_col(Col,TopCol,ColType)->
     end.
 
 %% Looks up an external reference from the Supbook
-get_ref_name(_RefIndex,_NameIndex,_Tables)->
+get_ref_name(RefIndex,NameIndex,_Tables)->
+    io:format("In excel_rev_comp:get_ref_name RefIndex is ~p "++
+	      "and NameIndex is ~p~n",[RefIndex,NameIndex]),
     "Excel_rev_comp:get_rev_name external names not being handled yet!".
 
 %% Looks up a reference to an externsheet and turns it into a sheet ref

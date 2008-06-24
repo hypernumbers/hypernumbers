@@ -275,10 +275,14 @@ post_process_tables(Tables)->
     %% Excel has a number of built in formats
     {ok,ok}=add_built_in_formats(Tables),
     type_formats(Tables),
+    io:format("in excel:post_process_tables got to 1~n"),
     fix_up_externalrefs(Tables),
+    io:format("in excel:post_process_tables got to 2~n"),
     fix_up_cells(Tables),
+    io:format("in excel:post_process_tables got to 3~n"),
     %io:format("Post-processed Tables are ~p~n",[Tables]),
     filefilters:dump(Tables),
+    io:format("in excel:post_process_tables got to 4~n"),
     ok.
 
 %% this function adds the data type to format information
@@ -287,15 +291,9 @@ type_formats(Tables) ->
     {value,{formats,Tid}}=lists:keysearch(formats,1,Tables),
     Fun = fun(X,_Residuum) ->
 		  {Index,[{type,Type1},Category,{format,Format}]}=X,
-		  io:format("in excel:type_formats Index is ~p Type1 is ~p Category is ~p "++
-			    "and Format is ~p~n",[Index,Type1,Category,Format]),
 		  Return=format:get_src(Format),
-		  io:format("in excel:type_formats Return is ~p~n",[Return]),
 		  case Return of
 		      {erlang,{Type2,Output}} -> 
-			  io:format("in excel:type_formats Type2 "++
-				    "is ~p and Output is ~p~n",
-				    [Type2,Output]),
 			  ok;
 		      {error,error_in_format} -> 
 			  io:format("in excel:type_formats bug in "++
@@ -308,7 +306,6 @@ type_formats(Tables) ->
 		  ets:insert(Tid,[{Index,[{type,Type2},Category,{NewFormat}]}])
 	  end,
     Return=ets:foldl(Fun,[],Tid),
-    io:format("in excel:type_formats Return is ~p~n",[Return]),
     Return.
 
 %% reverse compile the basic cells
@@ -319,11 +316,11 @@ fix_up_cells(Tables)->
     {value,{cell_tokens,Cell_TokensId}}=lists:keysearch(cell_tokens,1,Tables),
     {value,{cell,CellId}}              =lists:keysearch(cell,1,Tables),
     Fun=fun(X,_Residuum)->
-                 {Index,[XF,{tokens,Tokens},{tokenarrays,TokenArray}]}=X,
-                 Formula=excel_rev_comp:reverse_compile(Index,Tokens,TokenArray,
-                                                        Tables),
-                 ets:insert(CellId,[{Index,[XF,{formula,Formula}]}])
-         end,
+		{Index,[XF,{tokens,Tokens},{tokenarrays,TokenArray}]}=X,
+		Formula=excel_rev_comp:reverse_compile(Index,Tokens,TokenArray,
+						       Tables),
+		ets:insert(CellId,[{Index,[XF,{formula,Formula}]}])
+	end,
     ets:foldl(Fun,[],Cell_TokensId).
 
 %% This function merges the contents of the ets table 'sheetnames' into 

@@ -123,9 +123,7 @@ excel_equal(String1,String2) when is_list(String1), is_list(String2) ->
         
 excel_equal2({number, F1}, {number, F2}) ->
     equal_to_digit(F1, F2, ?EXCEL_IMPORT_FLOAT_PRECISION);
-    
 excel_equal2({formula, PreFla1}, {formula, Fla2}) ->
-
     %% if row address, strip the column bounds (=$A169:$IV169) becomes (=169:169)
     Fla1 = case regexp:match(PreFla1,"\\$A[0-9]+:\\$IV[0-9]+") of
     {match,_,_} ->
@@ -133,7 +131,8 @@ excel_equal2({formula, PreFla1}, {formula, Fla2}) ->
         Str;
     _ -> PreFla1
     end,
-    %% fix-up the fact that we have changed the name of the function Error.Type to ErrorType
+    %% fix-up the fact that we have changed the name of the function Error.Type 
+    %% to ErrorType
     %% Ugly bodge    
     {ok,Fla2a,_} = regexp:gsub(Fla2,"ERROR.TYPE","ERRORTYPE"),
         
@@ -144,7 +143,6 @@ excel_equal2({formula, PreFla1}, {formula, Fla2}) ->
     R2 -> true;
     _  -> false
     end;
-    
 excel_equal2({boolean,Boolean1},{boolean,Boolean2}) ->
     case Boolean1 of
         Boolean2 -> true;
@@ -165,7 +163,10 @@ excel_equal2({string,String1},{string,String2}) ->
     case String1 of
         String2 -> true;
         _       -> false
-    end.
+    end;
+excel_equal2({number,_Num},{string,_Str})->
+    io:format("in test_util:excel_equal2 trying to compare a number to a string?~n"),
+    false.
 
 make_err_val(?ErrDiv0Int)  -> "#DIV/0!";
 make_err_val(?ErrNAInt)    -> "#N/A";
@@ -254,7 +255,7 @@ wait(N) -> internal_wait(?DEFAULT * N).
 hnget(Path, Ref) ->
     Url = Url = string:to_lower(?HNSERVER ++ Path ++ Ref),
     %io:format("hnget Url ~p~n",[Url]),
-    {ok, {{_V, Code, _R}, _H, Body}} = http:request(get, {Url, []}, [], []),
+    {ok, {{_V, _Code, _R}, _H, Body}} = http:request(get, {Url, []}, [], []),
     %io:format("Code for ~p~p is ~p.~nBody is: ~p~n~n", [Path, Ref, Code, Body]),
     Body.
   

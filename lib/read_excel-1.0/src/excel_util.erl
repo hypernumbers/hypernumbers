@@ -209,24 +209,24 @@ read_cell_range_add_list(Bin,Size)->
 read_cell_range_addies(N,Size,Array)->
     read_cell_range_addies(N,Size,Array,[]).
 
-read_cell_range_addies(0,_Size,Bin,Residuum)->
-    {lists:reverse(Residuum),Bin};
-read_cell_range_addies(N,'16bit',Bin,Residuum)->
+read_cell_range_addies(0,_Size,Bin,Acc)->
+    {lists:reverse(Acc),Bin};
+read_cell_range_addies(N,'16bit',Bin,Acc)->
     <<FirstRowIdx:16/little-signed-integer,
      LastRowIdx:16/little-signed-integer,
      FirstColIdx:16/little-signed-integer,
      LastColIdx:16/little-signed-integer,
      Rest/binary>>=Bin,
-    NewResiduum=[{FirstRowIdx,LastRowIdx,FirstColIdx,LastColIdx}|Residuum],
-    read_cell_range_addies(N-1,'16bit',Rest,NewResiduum);
-read_cell_range_addies(N,'8bit',Bin,Residuum)->
+    NewAcc=[{FirstRowIdx,LastRowIdx,FirstColIdx,LastColIdx}|Acc],
+    read_cell_range_addies(N-1,'16bit',Rest,NewAcc);
+read_cell_range_addies(N,'8bit',Bin,Acc)->
     <<FirstRowIdx:16/little-signed-integer,
      LastRowIdx:16/little-signed-integer,
      FirstColIdx:8/little-signed-integer,
      LastColIdx:8/little-signed-integer,
      Rest/binary>>=Bin,
-    NewResiduum=[{FirstRowIdx,LastRowIdx,FirstColIdx,LastColIdx}|Residuum],
-    read_cell_range_addies(N-1,'8bit',Rest,NewResiduum).
+    NewAcc=[{FirstRowIdx,LastRowIdx,FirstColIdx,LastColIdx}|Acc],
+    read_cell_range_addies(N-1,'8bit',Rest,NewAcc).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -272,42 +272,71 @@ read_shared(Tables,{{sheet,Name},{row_index,Row},{col_index,Col}})->
     TableName=sh_arr_formula,
     {value,{_,Tid}}=lists:keysearch(TableName,1,Tables),
     %% this fun reads an array formula
-    ArrayFn=fun(X,Residuum)->
+    ArrayFn=fun(X,Acc)->
                     case X of
                         {{{sheet,Name},{row_index,Row},
-                          {col_index,Col}},_Rest} -> [X|Residuum];
-                        _Other                    -> Residuum
+                          {col_index,Col}},_Rest} -> [X|Acc];
+                        _Other                    -> Acc
                     end
             end,
     %% this fun reads an shared formula which matches at the top left
-    ExShrdFn = fun(X,Residuum)->
+    ExShrdFn = fun(X,Acc)->
                        case X of
                            {{{sheet,Name},{firstrow,Row},
                              {firstcol,Col},{lastrow,_LastRow},
-                             {lastcol,_LastCol}},_Rest} -> [X|Residuum];
-                           _Other                      -> Residuum
+                             {lastcol,_LastCol}},_Rest} -> [X|Acc];
+                           _Other                      -> Acc
                        end
                end,
     %% this fun reads a shared formula which intersects with the range
-    IntShrdFn=fun(X,Residuum)->
+    IntShrdFn=fun(X,Acc)->
                        case X of
                            {{{sheet,Name},{firstrow,FirstRow},
                              {firstcol,FirstCol},{lastrow,LastRow},
                              {lastcol,LastCol}},_Rest} 
                            when Row >= FirstRow, Row =< LastRow,
-                           Col >= FirstCol, Col =< LastCol       -> [X|Residuum];
-                           _Other                                -> Residuum
+                           Col >= FirstCol, Col =< LastCol       -> [X|Acc];
+                           _Other                                -> Acc
                        end
                end,
     FirstReturn = ets:foldl(ArrayFn,[],Tid),
+    io:format("in excel_util:read_shared FirstReturn is ~p~n",[FirstReturn]),
     SecondReturn = case FirstReturn of
                        []      -> ets:foldl(ExShrdFn,[],Tid);
                        _Other2 -> FirstReturn
                    end,
-    case SecondReturn of
-        []      -> ets:foldl(IntShrdFn,[],Tid);
-        _Other3 -> SecondReturn
-    end.
+    io:format("in excel_util:read_shared SecondReturn is ~p~n",[SecondReturn]),
+    ThirdReturn = case SecondReturn of
+		      []      -> ets:foldl(IntShrdFn,[],Tid);
+		      _Other3 -> SecondReturn
+		  end,
+    io:format("in excel_util:read_shared ThirdReturn is ~p~n",[ThirdReturn]),
+    ThirdReturn,
+    %% sometimes Excel will store two or more shared formulae that overlap
+    %% or more acurately it stores the same token set with two different ranges
+    %% this tends to cause things to wig...
+    %% so we need to check that when there is more than one formula returned
+    %% the tokens are the same
+    FourthReturn=check_formulae(ThirdReturn),
+    io:format("in excel_util:read_shared FourthReturn is ~p~n",[FourthReturn]),
+    FourthReturn.
+
+check_formulae([H|T]) -> case check_formulae([H|T],[]) of
+			     true  -> [H|[]];
+			     false -> exit("overlapping incompatible shared formulae")
+			 end.
+
+check_formulae([],Acc)    -> check2(Acc);
+check_formulae([H|T],Acc) ->
+    {{{sheet,Name},{firstrow,_A},{firstcol,_B},{lastrow,_C},{lastcol,_T}},Tokens} = H, 
+    check_formulae(T,[{Name,Tokens}|Acc]).
+
+check2(List) -> check2(List, []).
+
+check2([],X)      -> true;
+check2([H|T],[])  -> check2(T,H);
+check2([X|T],X)   -> check2(T,X);
+check2([H|T],Acc) -> false.
 
 %% read values from the tables
 read(Tables,Name,Key)->
@@ -343,12 +372,12 @@ lookup_string(Tables,SSTIndex)->
 shift_left2(Bin)->
     shift_left2(Bin,[]).
 
-shift_left2(<<End:6,_:2>>,Residuum)->
-    list_to_binary(lists:reverse([<<End:6,0:2>>|Residuum]));
-shift_left2(<<Rem1:6,_:2,Rem2:6,Shift:2,Rest/binary>>,Residuum)->
-    shift_left2(<<Rem2:6,Shift:2,Rest/binary>>,[<<Shift:2,Rem1:6>>|Residuum]);
-shift_left2(<<Rem1:6,_:2,Rem2:6,Shift:2>>,Residuum)->
-    shift_left2(<<Rem2:6,Shift:2>>,[<<Shift:2,Rem1:6>>|Residuum]).
+shift_left2(<<End:6,_:2>>,Acc)->
+    list_to_binary(lists:reverse([<<End:6,0:2>>|Acc]));
+shift_left2(<<Rem1:6,_:2,Rem2:6,Shift:2,Rest/binary>>,Acc)->
+    shift_left2(<<Rem2:6,Shift:2,Rest/binary>>,[<<Shift:2,Rem1:6>>|Acc]);
+shift_left2(<<Rem1:6,_:2,Rem2:6,Shift:2>>,Acc)->
+    shift_left2(<<Rem2:6,Shift:2>>,[<<Shift:2,Rem1:6>>|Acc]).
 
 check_flags(NFlags,Flag)->
     case NFlags band Flag of

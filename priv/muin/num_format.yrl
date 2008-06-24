@@ -178,19 +178,13 @@ resolve_date(DateFormat) ->
     %% First up strip out all guff from the format to get the underlying
     %% date format
     StrippedFormat=strip_date_format(DateFormat),
-    io:format("in num_format:resolve_date~n-DateFormat is ~p~n"++
-    "-StrippedFormat is ~p~n",[DateFormat,StrippedFormat]),
     %% Now examine each 'min_mon' format item in the context of what
     %% comes before and after it and decide if it is a 'min' or a 'mon'
     CorrectedFormat=corr(StrippedFormat),
-    io:format("in num_format:resolve_date CorrectFormat is ~p~n",
-    [CorrectedFormat]),
     %% Now we have to match up the corrected and stripped format and the
     %% original unstripped format and apply the changes to the unstripped
     %% format and return that
     FixedUpFormat=fix_up(DateFormat,CorrectedFormat),
-    io:format("in num_format:resolve_date FixedUpFormat is ~p~n",
-    [FixedUpFormat]),
     FixedUpFormat.
 
 fix_up(DateFormat,CorrectedFormat) -> fix_up(DateFormat,CorrectedFormat,[]).

@@ -30,9 +30,7 @@ get_src(Format)->
 
 get_src2(Format)->
     {ok,Tokens,_}=num_format_lexer:string(Format),
-    io:format("in format:get_src2 Tokens are ~p~n",[Tokens]),
     {ok,Output}=num_format_parser:parse(Tokens),
-    io:format("in format:get_src2 Output is ~p~n",[Output]),
     {erlang,Output}.
 
 %%% @doc takes a value and the src code for a format and returns the
@@ -115,7 +113,7 @@ insert(Number,InsertList,Type) ->
 insert(Number,[],_Type,_DecPos,_Offset)           -> Number;
 insert(Number,[{Int,Insert}|T],Type,DecPos,Offset) ->
     Len=length(Number),
-    {NewInt,NoOfCommas}=new_ins_pnt(Int,Offset,DecPos,Type),
+    {NewInt,_NoOfCommas}=new_ins_pnt(Int,Offset,DecPos,Type),
     InsertStr=get_string(Insert),
     NewOffset=Offset+length(InsertStr),
     {LeftStr,RightStr}=if
