@@ -256,6 +256,8 @@
     background-image:  url('../img/text_underline.png'); }
 .spreadsheet .toolbar .strike {
     background-image:  url('../img/text_strikethrough.png'); }
+.spreadsheet .toolbar .format {
+    background-image:  url('../img/style_edit.png'); }
 
 /******************************************************************************
 	GLOBAL STYLES

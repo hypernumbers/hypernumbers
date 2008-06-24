@@ -51,7 +51,8 @@ $.fn.spreadsheet = function(options)
         {css:"italic",  click:function(e,s){ s.range.each(function() { toggle_css(this,"font-style","normal","italic"); }); }},
         {css:"underl",  click:function(e,s){ s.range.each(function() { toggle_css(this,"text-decoration","none","underline"); }); }},
         {css:"strike",  click:function(e,s){ s.range.each(function() { toggle_css(this,"text-decoration","none","line-through"); }); }},
-        {css:"separator"}
+        {css:"separator"},
+        {css:"format",  click:function(e,s){ $("#formats").toggle(); }},
     ]; 
         
     $.fn.spreadsheet.defaults = 
@@ -384,6 +385,28 @@ $.fn.spreadsheet = function(options)
                     <div class="data">\
                         <table cellpadding="0" cellspacing="0"></table>\
                     </div>\
+                </div>\
+            </div>\
+            <div class="dialog" id="formats">\
+                <h2>Number Formats</h2>\
+                <div class="clearfix">\
+                    <ul id="categories">\
+                        <li><a>Common</a></li>\
+                        <li><a>Number</a></li>\
+                        <li><a>Currency</a></li>\
+                        <li><a>Accounting</a></li>\
+                        <li><a>Date</a></li>\
+                        <li><a>Time</a></li>\
+                        <li><a>Percentage</a></li>\
+                        <li><a>Fraction</a></li>\
+                        <li><a>Scientific</a></li>\
+                    </ul>\
+                    <div class="functionlist">\
+                        stuff\
+                    </div>\
+                </div>\
+                <div class="functioninput">\
+                    <input type="button" value="apply" />\
                 </div>\
             </div>\
             <div class="dialog" id="functions">\
@@ -901,10 +924,12 @@ $.fn.spreadsheet = function(options)
             }
         });
 
-        $("#functions").css("top",(root.offset().top+50)+"px");
-        $("#functions").css("left",(root.offset().left+50)+"px");
+        var dialogs = $(".dialog");
+
+        dialogs.css("top",(root.offset().top+50)+"px");
+        dialogs.css("left",(root.offset().left+50)+"px");
         
-        $(".dialog").each(function()
+        dialogs.each(function()
         {
             var d = $(this);
             
