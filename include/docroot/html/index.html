@@ -57,13 +57,50 @@
 		</ul>
 		
 		<div id="hn">
-			<div id="import" class="dialog">
+		
+			<div class="dialog" id="import">
 			    <h2>Import File</h2>
 			    <div style="padding:8px;">
 			        <p>Import a file to this websheet (currently xls files are supported)</p>
 			        <input type="file" name="Filedata" id="Filedata" value="Upload Spreadsheet" />
 			    </div>
     		</div>
+    		
+            <div class="dialog" id="formats">
+                <h2>Number Formats</h2>
+                <div class="clearfix">
+                    <ul class="section_list">
+                        <li class="custom"><a>Custom</a></li>
+                    </ul>
+                    <div class="content_list">
+                        <div class="custom">
+                            <strong>Custom</strong>
+                            <hr/>
+                            <select size="11">
+                                <option>General</option>
+                                <option>0</option>                                
+                                <option>0.00</option>
+                                <option>#,##0</option>
+                                <option>#,##0.00</option>
+                                <option>"$"##0_);("$"#,##0)</option>
+                                <option>"£"##0_);("£"#,##0)</option>                                
+                                <option>"$"##0_);[Red]("$"#,##0)</option>
+                                <option>"£"##0_);[Red]("£"#,##0)</option>                                
+                                <option>0.0</option> 
+                                <option>d/m/yy</option>
+                                <option>d/m/yyyy</option>                                
+                                <option>m/d/yy</option>
+                                <option>m/d/yyyy</option>
+                                <option>mmm-d-yy</option>                                                            
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="functioninput">
+                    <input type="text" class="format" />
+                    <input type="button" value="apply" class="submit" />
+                </div>
+            </div>
 		</div>
 
 		<div id="footer">
@@ -81,7 +118,8 @@
 
 		<div id="context">
 			<a id="copyhypernumber" class="item">Copy as Hypernumber</a>
-
+            <hr />
+            <a id="formatcell" class="item">Format Cells</a>
             <hr />
 			<div id="contextlinks"></div>
 		</div>

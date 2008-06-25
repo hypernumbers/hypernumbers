@@ -52,7 +52,7 @@ $.fn.spreadsheet = function(options)
         {css:"underl",  click:function(e,s){ s.range.each(function() { toggle_css(this,"text-decoration","none","underline"); }); }},
         {css:"strike",  click:function(e,s){ s.range.each(function() { toggle_css(this,"text-decoration","none","line-through"); }); }},
         {css:"separator"},
-        {css:"format",  click:function(e,s){ $("#formats").toggle(); }},
+        {css:"format",  click:function(e,s){ var f = $("#formats"); f.toggle(); select_frame(f,(f.find(".section_list li:first a").text()).toLowerCase()); }},
     ]; 
         
     $.fn.spreadsheet.defaults = 
@@ -61,6 +61,7 @@ $.fn.spreadsheet = function(options)
         fmargin: 0,         // Footer Margin
         cellSelect:null,    // Callback on a cell being selected
         cellChange:null,    // Callback for a cell Changing
+        formatChange:null,
         rowResize:null,
         colResize:null,
         cssChange:null,
@@ -387,33 +388,11 @@ $.fn.spreadsheet = function(options)
                     </div>\
                 </div>\
             </div>\
-            <div class="dialog" id="formats">\
-                <h2>Number Formats</h2>\
-                <div class="clearfix">\
-                    <ul id="categories">\
-                        <li><a>Common</a></li>\
-                        <li><a>Number</a></li>\
-                        <li><a>Currency</a></li>\
-                        <li><a>Accounting</a></li>\
-                        <li><a>Date</a></li>\
-                        <li><a>Time</a></li>\
-                        <li><a>Percentage</a></li>\
-                        <li><a>Fraction</a></li>\
-                        <li><a>Scientific</a></li>\
-                    </ul>\
-                    <div class="functionlist">\
-                        stuff\
-                    </div>\
-                </div>\
-                <div class="functioninput">\
-                    <input type="button" value="apply" />\
-                </div>\
-            </div>\
             <div class="dialog" id="functions">\
                 <h2>Functions</h2>\
                 <div class="clearfix">\
-                    <ul id="categories" />\
-                    <div class="functionlist" />\
+                    <ul class="section_list" />\
+                    <div class="content_list" />\
                 </div>\
                 <div class="functioninput">\
                     <input type="text" id="curfunction">\
@@ -863,6 +842,16 @@ $.fn.spreadsheet = function(options)
             this.drag.top.removeClass("dragtop");
             this.drag.bottom.removeClass("dragbottom");
         };
+ 
+        this.current_range = function()
+        {                       
+            if(typeof this.startx != "undefined")
+            {    
+                return $.fn.to_b26(this.startx+1) + "" + (this.starty+1)
+                    + ":"+$.fn.to_b26(this.endx+1)+""+(this.endy+1);
+            }
+            return false;            
+        };
     
         // I do this to make sure all the functions
         // are defined before they can be called
@@ -882,35 +871,53 @@ $.fn.spreadsheet = function(options)
    /**
     * Set the height of a row
     */  
-   var set_height = function(root,row,height)
-   {
-       var ind  = root.find(".rows table tr:nth-child("+row+") td");
-       var td = root.find(".data tr:nth-child("+row+") td");
+    var set_height = function(root,row,height)
+    {
+        var ind  = root.find(".rows table tr:nth-child("+row+") td");
+        var td = root.find(".data tr:nth-child("+row+") td");
        
-       td.height(height+1);
-       ind.height(height);
+        td.height(height+1);
+        ind.height(height);
    
-       td.find("div,textarea").height(height+1);
-   };
-
-
-    var select_category = function(root,category)
-    {   
-        root.find("#functions .functionlist ul").hide();
-        root.find("#functions #categories li").removeClass("selected_cat");
-        root.find("#functions #categories li."+category).addClass("selected_cat");
-        root.find("#functions .functionlist ul."+category).show();
+        td.find("div,textarea").height(height+1);
     };
+
+    var select_frame = function(dialog,category)
+    {   
+        dialog.find(".content_list > *").hide();
+        dialog.find(".section_list li").removeClass("selected_cat");
+        dialog.find(".section_list li."+category).addClass("selected_cat");
+        dialog.find(".content_list ."+category).show();
+    };
+
    /**
     */      
-   var init_dialogs = function(root)
+   var init_dialogs = function(root,sel)
    {
         root.find("#functionbutton").click(function()
         {
-            $("#functions").toggle();
-            select_category(root,($("#functions #categories li:first a").text()).toLowerCase());
+            var f   = $("#functions");
+            var cat = (f.find(".section_list li:first a").text()).toLowerCase();
+            f.toggle();
+            select_frame(f,cat);
         });
-
+        
+        var format_win = $("#formats");
+        
+        format_win.find(".submit").click(function()
+        {
+            var val = format_win.find("input.format").val();
+            var range = sel.current_range();
+            
+            if(range && typeof opts.formatChange == "function" && val != "") 
+                 opts.formatChange(range,val);    
+        });
+        
+        format_win.find("select").change(function(item)
+        {
+            format_win.find("input.format").val($(this).val());
+        });
+        
         root.find("#insertfunction").click(function()
         {
             var txt = root.find("#curfunction").val();
@@ -922,6 +929,12 @@ $.fn.spreadsheet = function(options)
                     ? txt : formula.val() + txt.substring(1);
                 formula.val(newval);
             }
+        });
+        
+        $("#formatcell").click(function()
+        {
+            format_win.toggle(); 
+            select_frame(format_win,(format_win.find(".section_list li:first a").text()).toLowerCase());
         });
 
         var dialogs = $(".dialog");
@@ -937,6 +950,14 @@ $.fn.spreadsheet = function(options)
             {
                 d.toggle();
             });
+            
+            d.find(".section_list a").click(function()
+            {
+                select_frame(d,$(this).text().toLowerCase());                
+            });
+            
+            var cat = (d.find(".section_list li:first a").text()).toLowerCase();
+            select_frame(d,cat);
             
             d.draggable(
             {
@@ -960,25 +981,25 @@ $.fn.spreadsheet = function(options)
         var dialog = root.find("#functions");
         
         var c = category.toLowerCase();
-        var cat = dialog.find("#categories li."+c);
+        var cat = dialog.find(".section_list li."+c);
         var list = null;
         
         if(cat.size() == 0)
         {
             cat = $("<li class='"+c+"'><a>"
-                +category+"</a></li>").appendTo(dialog.find("#categories"));
+                +category+"</a></li>").appendTo(dialog.find(".section_list"));
                 
             cat.find("a").click(function()
             {
-                select_category(root,c);                
+                select_frame(dialog,c);                
             });
             
             list = $("<ul class='"+c+"' />").appendTo(
-                dialog.find(".functionlist"));
+                dialog.find(".content_list"));
         }
         else
         {
-            list = dialog.find(".functionlist:first > ul."+c);
+            list = dialog.find(".content_list:first > ul."+c);
         }
         
         var link = $("<li><a>"+func+"</a></li>").appendTo(list);
@@ -1048,7 +1069,7 @@ $.fn.spreadsheet = function(options)
             write_formula_bar($this,$sel);
             write_button_menu($this,$sel,$.fn.toolbar);
             set_display_values($this,range[0],opts.fmargin);
-            init_dialogs($this);
+            init_dialogs($this,$sel);
                          
             $("#name").textbox(
             {                

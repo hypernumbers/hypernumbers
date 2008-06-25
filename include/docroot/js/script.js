@@ -109,6 +109,11 @@ $(function()
                    "<create><formula><![CDATA["+val+"]]></formula></create>",null,"xml");
             }
         },
+        formatChange  : function(range,val)
+        {
+            $.post(url+range,
+                "<create><format><![CDATA["+val+"]]></format></create>",null,"xml");
+        },
         cellSelect : function(x,y,el)
         {
             var f = formulae[($.fn.to_b26(x+1)+y)];
@@ -223,6 +228,11 @@ $(function()
         });
         
         $("#copyhypernumber").click(function()
+        {
+            $.clipboard($("#texttocopy").text());    
+        });
+        
+        $("#formatcell").click(function()
         {
             $.clipboard($("#texttocopy").text());    
         });

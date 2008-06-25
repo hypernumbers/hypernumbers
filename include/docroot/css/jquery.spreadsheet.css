@@ -267,6 +267,16 @@
     width:  370px;
 }
 
+.spreadsheet #formats select
+{
+    width:  183px;
+}
+
+.spreadsheet #formats input.format
+{
+    width:  300px;
+}
+
 .spreadsheet .dialog
 {
     position:   absolute;
@@ -283,7 +293,7 @@
     list-style-type:    none;
 }
 
-.spreadsheet .dialog ul#categories
+.spreadsheet .dialog ul.section_list
 {
     height:     200px;
     background: lightblue;
@@ -292,19 +302,19 @@
     padding:    4px;
 }
 
-.spreadsheet .dialog ul#categories a 
+.spreadsheet .dialog ul.section_list a 
 {
     display:    block;
     padding:    3px;
     cursor:     pointer;
 }
 
-.spreadsheet .dialog ul#categories .selected_cat
+.spreadsheet .dialog ul.section_list .selected_cat
 {
     background: white;
 }
 
-.spreadsheet .dialog .functionlist 
+.spreadsheet .dialog .content_list 
 {
     float:      right;
     width:      200px;
@@ -313,7 +323,7 @@
     padding:    5px;
 }
 
-.spreadsheet .dialog .functionlist a 
+.spreadsheet .dialog .content_list a 
 {
     display:    block;
     padding:    3px;
@@ -342,6 +352,11 @@
     border-bottom:1px solid #66AA00;
     -moz-border-radius: 3px 3px 0px 0px;
     background: orange;
+}
+
+.spreadsheet .dialog hr
+{
+    margin:     5px 0px;
 }
 
 .spreadsheet .dialog .close
