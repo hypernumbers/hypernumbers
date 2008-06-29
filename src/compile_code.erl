@@ -18,7 +18,6 @@
          "/lib/hypernumbers.com-1.0/",
          "/lib/formula_engine-1.0/",
          "/lib/read_excel-1.0/",
-         "/lib/remoting-1.0/",
          "/lib/mochi-1.0/"]).
 
 -define(EXTRA_ERL_FILES,
