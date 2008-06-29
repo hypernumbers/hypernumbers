@@ -29,8 +29,6 @@
 %% The formulae are stored in reverse Polish Notation within excel
 %% The reverse compiler recreates the original formula by running the RPN
 reverse_compile(Index,Tokens,TokenArray,Tables)->
-    io:format("in excel_rev_comp:reverse_compile Index is ~p Tokens are ~p "++
-	      "and TokenArray is ~p~n",[Index,Tokens,TokenArray]),
     rev_comp(Index,Tokens,TokenArray,[],Tables).
 
 %% When the tokens are exhausted the Stack is just flattened to a string
@@ -268,7 +266,10 @@ rev_comp(Index,[{relative_area,{tAreaN,[NewDetails|{type,_Type}],{return,referen
 %%	tFuncCE 
 
 %%	tNameX  
-rev_comp(I,[{name_xref,{tNameX,[{reference_index,Ref},{name_index,Name},_Type],_Ret}}|T],TokArr,Stack,Tbl) ->
+rev_comp(I,[{name_xref,{tNameX,[{reference_index,Ref},{name_index,Name},Type],Ret}}|T],TokArr,Stack,Tbl) ->
+    io:format("in excel_rev_comp:rev_comp for tNameX~n-Ref is ~p~n-"++
+	      "Name is ~p~n-Type is ~p~n-Ret is ~p~n-TokArr is ~p~n"++
+	      "-Stack is ~p~n-Tbl is ~p~n",[Ref,Name,Type,Ret,TokArr,Stack,Tbl]),
     rev_comp(I,T,TokArr,[{string,get_ref_name(Ref,Name,Tbl)}|Stack],Tbl);
 
 %%	tRef3d  	

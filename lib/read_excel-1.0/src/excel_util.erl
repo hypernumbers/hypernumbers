@@ -300,17 +300,17 @@ read_shared(Tables,{{sheet,Name},{row_index,Row},{col_index,Col}})->
                        end
                end,
     FirstReturn = ets:foldl(ArrayFn,[],Tid),
-    io:format("in excel_util:read_shared FirstReturn is ~p~n",[FirstReturn]),
+    %% io:format("in excel_util:read_shared FirstReturn is ~p~n",[FirstReturn]),
     SecondReturn = case FirstReturn of
                        []      -> ets:foldl(ExShrdFn,[],Tid);
                        _Other2 -> FirstReturn
                    end,
-    io:format("in excel_util:read_shared SecondReturn is ~p~n",[SecondReturn]),
+    %% io:format("in excel_util:read_shared SecondReturn is ~p~n",[SecondReturn]),
     ThirdReturn = case SecondReturn of
 		      []      -> ets:foldl(IntShrdFn,[],Tid);
 		      _Other3 -> SecondReturn
 		  end,
-    io:format("in excel_util:read_shared ThirdReturn is ~p~n",[ThirdReturn]),
+    %% io:format("in excel_util:read_shared ThirdReturn is ~p~n",[ThirdReturn]),
     ThirdReturn,
     %% sometimes Excel will store two or more shared formulae that overlap
     %% or more acurately it stores the same token set with two different ranges
@@ -318,7 +318,7 @@ read_shared(Tables,{{sheet,Name},{row_index,Row},{col_index,Col}})->
     %% so we need to check that when there is more than one formula returned
     %% the tokens are the same
     FourthReturn=check_formulae(ThirdReturn),
-    io:format("in excel_util:read_shared FourthReturn is ~p~n",[FourthReturn]),
+    %% io:format("in excel_util:read_shared FourthReturn is ~p~n",[FourthReturn]),
     FourthReturn.
 
 check_formulae([H|T]) -> case check_formulae([H|T],[]) of

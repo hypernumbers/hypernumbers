@@ -281,7 +281,7 @@ post_process_tables(Tables)->
     fix_up_cells(Tables),
     io:format("in excel:post_process_tables got to 3~n"),
     %io:format("Post-processed Tables are ~p~n",[Tables]),
-    filefilters:dump(Tables),
+    %%filefilters:dump(Tables),
     io:format("in excel:post_process_tables got to 4~n"),
     ok.
 
