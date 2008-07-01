@@ -4,7 +4,8 @@
 %%%----------------------------------------------------------------------------
 
 -module(stdfuns_date).
--export([datedif/1,
+-export([date/1,
+         datedif/1,
          datevalue/1,
          day/1,
          month/1,

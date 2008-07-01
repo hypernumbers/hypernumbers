@@ -12,7 +12,7 @@
          year/1, month/1, day/1,
          gt/2, dtdiff/2]).
 
--include("muin_dates.hrl").
+-include("muin_records.hrl").
 
 -define(EXCEL_MAC_EPOCH, {1904, 1, 1}).
 -define(EXCEL_WIN_EPOCH, {1900, 1, 1}).

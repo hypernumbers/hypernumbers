@@ -16,7 +16,7 @@
         muin_collect:collect_numbers(Xs, Rules)).
 
 %% Collect a date.
--define(date(X),
+-define(date(X, Rules),
         muin_collect:collect_date(X, Rules)).
 
 %% Collect dates from Xs.
