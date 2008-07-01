@@ -1,67 +1,64 @@
+%%%----------------------------------------------------------------------------
 %%% @doc Functions to convert between values of different types according to
-%%% sets of rules rather than with a pre-defined one-way conversion.
+%%%      sets of rules rather than with a pre-defined one-way conversion.
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
+%%%----------------------------------------------------------------------------
 
 %%% Rules are names of functions that the inputs get filtered through.
+
+%%% TODO:
+%%%   * collect_* functions should not give everything to filters, only
+%%%     stuff that doesn't match the target type.
+%%%   * lots of repetition -- clean up
 
 -module(muin_collect).
 
 -export([flatten_ranges/1, flatten_arrays/1,
-         collect_strings/2, collect_string/2,
          collect_numbers/2, collect_number/2,
-         collect_bools/2, collect_bool/2]).
+         collect_strings/2, collect_string/2,
+         collect_bools/2, collect_bool/2,
+         collect_dates/2, collect_date/2]).
 
 -compile(export_all). % For testing / to kill warnings.
 
 -include("handy_macros.hrl").
 -include("errvals.hrl").
 
-%% Replaces range objects with the values that they contain.
-%% flatten_ranges(Xs) ->
-%%     foldl(fun(#range{elts = Elts}, Acc) ->
-%%                   Vals = map(fun(#elt{val = Val}) ->
-%%                                      Val
-%%                              end,
-%%                              Elts),
-%%                   Acc ++ Vals;
-%%              (X, Acc) ->
-%%                   [X | Acc]
-%%           end,
-%%           [], Xs).
-
+%%-----------------------------------------------------------------------------
 %% @spec flatten_arrays(Vs :: [V]) -> [V]
 %% where
 %%   V = Str | number() | Blank | bool() | tuple()
 %%   Str = {ustr, binary()}
 %%   Blank = blank
-
+%%
 %% @doc Replaces array objects with the values they contain. (Used by
 %% implementations of SUM and PRODUCT for example).
+%%-----------------------------------------------------------------------------
 flatten_arrays(Vs) ->
     Vs.
 
+%%-----------------------------------------------------------------------------
 %% @spec flatten_ranges(Vs :: [V]) -> [V]
 %% where
 %%   V = Str | number() | Blank | bool() | tuple()
 %%   Str = {ustr, binary()}
 %%   Blank = blank
-
+%%
 %% @doc Replaces range objects with the values theycontain. (Used by
 %% implementations of SUM and PRODUCT for example).
+%%-----------------------------------------------------------------------------
 flatten_ranges(Vs) ->
     Vs.
 
-collect_strings(Vs, _Rules) ->
-    muin_checks:die_on_errval(Vs),
-    foldl(fun(X, Acc) -> {X, Acc} end, [], []).
-
-%% @doc Same as collect_strings but for one value.
-collect_string(V, Rules) ->
-    case collect_strings([V], Rules) of
-        []    -> ?ERR_VAL;
-        [Str] -> Str
-    end.
-
+%%-----------------------------------------------------------------------------
+%% @spec collect_numbers(Vs :: [V], Rules :: [Rule]) -> [number()]
+%% where
+%%   V = Str | number() | blank | bool() | tuple()
+%%   Str = {ustring, binary()}
+%%   Rule = ignore_strings | cast_strings | cast_strings_zero
+%%          ignore_bools | cast_bools | ignore_blanks | zero_blanks
+%%          ignore_dates | cast_dates
+%%-----------------------------------------------------------------------------
 collect_numbers(Vs, Rules) ->
     muin_checks:die_on_errval(Vs),
     foldl(fun(cast_strings, Acc) ->
@@ -73,13 +70,32 @@ collect_numbers(Vs, Rules) ->
           end,
           Vs, Rules).
 
+%%-----------------------------------------------------------------------------
 %% @doc Same as <code>collect_numbers</code>
+%%-----------------------------------------------------------------------------
 collect_number(V, Rules) ->
     case collect_numbers([V], Rules) of
         []    -> ?ERR_VAL;
         [Num] -> Num
     end.
 
+%%-----------------------------------------------------------------------------
+%% 
+%%-----------------------------------------------------------------------------
+collect_strings(Vs, _Rules) ->
+    muin_checks:die_on_errval(Vs),
+    foldl(fun(X, Acc) -> {X, Acc} end, [], []).
+
+%%-----------------------------------------------------------------------------
+%% @doc Same as collect_strings but for one value.
+%%-----------------------------------------------------------------------------
+collect_string(V, Rules) ->
+    case collect_strings([V], Rules) of
+        []    -> ?ERR_VAL;
+        [Str] -> Str
+    end.
+
+%%-----------------------------------------------------------------------------
 %% @spec collect_bools(Vs :: [V], Rules :: [Rule]) -> [bool()]
 %% where
 %%   V = Str | number() | Blank | bool() | tuple()
@@ -87,12 +103,14 @@ collect_number(V, Rules) ->
 %%   Blank = blank
 %%   Rule = ignore_strings | cast_strings | cast_strings_false |
 %%          ignore_numbers | cast_numbers | ignore_blanks | false_blanks
-
+%%
 %% @doc <p>Returns a list of booleans sourced from a list of values according to
 %% the specified rules.</p>
-%% <p>If <code>cast_strings</code> is given then <code>#VALUE!</code> will be returned if
-%%    a string cannot be coerced into a boolean. If <code>cast_strings_false</code>
-%%    is given instead, such strings will be replaced by <code>false</code>.</p>
+%% <p>If <code>cast_strings</code> is given then <code>#VALUE!</code> will be
+%% returned if a string cannot be coerced into a boolean.
+%% If <code>cast_strings_false</code> is given instead, such strings will be
+%% replaced by <code>false</code>.</p>
+%%-----------------------------------------------------------------------------
 collect_bools(Vs, Rules) ->
     muin_checks:die_on_errval(Vs),
     foldl(fun(cast_strings, Acc) ->
@@ -104,14 +122,33 @@ collect_bools(Vs, Rules) ->
           end,
           Vs, Rules).
 
+%%-----------------------------------------------------------------------------
 %% @doc Same as <code>collect_bools/2</code> but for one value.
+%%-----------------------------------------------------------------------------
 collect_bool(V, Rules) ->
-    case collect_bool([V], Rules) of
+    case collect_bools([V], Rules) of
         []  -> ?ERR_VAL;
         [B] -> B
     end.
 
-%%% PRIVATES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%%-----------------------------------------------------------------------------
+%%
+%%-----------------------------------------------------------------------------
+collect_dates(Vs, Rules) ->
+    muin_checks:die_on_errval(Vs),
+    Vs.
+
+%%-----------------------------------------------------------------------------
+%% @doc Same as <code>collect_dates/2</code> but only for one value.
+%%-----------------------------------------------------------------------------
+collect_date(V, Rules) ->
+    case collect_dates([V], Rules) of
+        []   -> ?ERR_VAL;
+        [Dt] -> Dt
+    end.
+             
+    
+%%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ignore_numbers(Xs) ->
     ignore(fun erlang:is_number/1, Xs).
