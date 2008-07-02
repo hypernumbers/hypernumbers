@@ -10,6 +10,7 @@
 
 -export([excel_mac_to_gregorian/1, excel_win_to_gregorian/1,
          year/1, month/1, day/1,
+         hour/1, minute/1, second/1,
          gt/2, dtdiff/2,
          next_day/1, foldl/4,
          mtest/0]).
@@ -58,6 +59,27 @@ month(_Dt = #datetime{date = {_, Month, _}}) ->
 %%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 day(_Dt = #datetime{date = {_, _, Day}}) ->
     Day.
+
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%% @spec hour(tuple()) -> int()
+%% @doc Read the hour field of a #datetime record.
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+hour(_Dt = #datetime{time = {Hour, _, _}}) ->
+    Hour.
+
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%% @spec minute(tuple()) -> int()
+%% @doc Read the minute field of a #datetime record.
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+minute(_Dt = #datetime{time = {_, Minute, _}}) ->
+    Minute.
+
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%% @spec second(tuple()) -> int()
+%% @doc Read the second field of a #datetime record.
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+second(_Dt = #datetime{time = {_, _, Second}}) ->
+    Second.
 
 %%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %% @spec gt(tuple(), tuple()) -> bool()
