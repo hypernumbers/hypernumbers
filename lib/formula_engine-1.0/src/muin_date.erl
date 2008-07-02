@@ -10,7 +10,8 @@
 
 -export([excel_mac_to_gregorian/1, excel_win_to_gregorian/1,
          year/1, month/1, day/1,
-         gt/2, dtdiff/2]).
+         gt/2, dtdiff/2,
+         next_day/1]).
 
 -include("muin_records.hrl").
 
@@ -67,6 +68,17 @@ dtdiff(Start, End) ->
     Enddays = calendar:date_to_gregorian_days(End#datetime.date),
     Enddays - Startdays.
 
+%% @spec next_day(tuple(), tuple()) -> tuple()
+%% @doc Returns the date one day after the given date.
+next_day(#datetime{date = {Year, 12, 31}} = Dt) ->
+    Dt#datetime{date = {Year + 1, 1, 1}};
+next_day(#datetime{date = {Year, Month, 31}} = Dt) ->
+    Dt#datetime{date = {Year, Month + 1, 1}};
+next_day(#datetime{date = {Year, Month, Day}} = Dt) ->
+    case calendar:last_day_of_the_month(Year, Month) of
+        Day -> Dt#datetime{date = {Year, Month + 1, 1}};
+        _   -> Dt#datetime{date = {Year, Month, Day + 1}}
+    end.
 
 %%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -125,4 +137,19 @@ excel_mac_to_gregorian_test_() ->
      ?dt(67831.98778, 2089, 9,  17, 23, 42, 24)
      %%?dt(123456.789,  2242, 1,  4,  18, 56, 10)
      %%?dt(9801.00001,  1930, 11, 1,  0,  0,  1)
+    ].
+
+next_date_test_() ->
+    [
+     ?_assert(next_day(#datetime{date = {1986, 8, 17}}) == #datetime{date = {1986, 8, 18}}),
+     ?_assert(next_day(#datetime{date = {1986, 8, 30}}) == #datetime{date = {1986, 8, 31}}),
+     ?_assert(next_day(#datetime{date = {1986, 8, 31}}) == #datetime{date = {1986, 9, 1}}),
+     ?_assert(next_day(#datetime{date = {2000, 2, 28}}) == #datetime{date = {2000, 2, 29}}),
+     ?_assert(next_day(#datetime{date = {2000, 2, 29}}) == #datetime{date = {2000, 3, 1}}),
+     ?_assert(next_day(#datetime{date = {2000, 12, 30}}) == #datetime{date = {2000, 12, 31}}),
+     ?_assert(next_day(#datetime{date = {2000, 12, 31}}) == #datetime{date = {2001, 1, 1}}),
+     ?_assert(next_day(#datetime{date = {1999, 12, 31}}) == #datetime{date = {2000, 1, 1}}),
+     ?_assert(next_day(#datetime{date = {2008, 7, 1}}) == #datetime{date = {2008, 7, 2}}),
+     ?_assert(next_day(#datetime{date = {1900, 1, 1}}) == #datetime{date = {1900, 1, 2}}),
+     ?_assert(next_day(#datetime{date = {1900, 2, 28}}) == #datetime{date = {1900, 3, 1}})
     ].
