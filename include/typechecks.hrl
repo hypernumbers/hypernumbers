@@ -15,6 +15,14 @@
 -define(numbers(Xs, Rules),
         muin_collect:collect_numbers(Xs, Rules)).
 
+%% Collect a number.
+-define(number(X, Rules),
+        muin_collect:collect_number(X, Rules)).
+
+%% Collect an int.
+-define(int(X, Rules),
+        erlang:trunc(?number(X, Rules))).
+
 %% Collect a date.
 -define(date(X, Rules),
         muin_collect:collect_date(X, Rules)).
