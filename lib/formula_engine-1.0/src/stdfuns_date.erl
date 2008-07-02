@@ -15,8 +15,12 @@
          networkdays/1,
          today/0,
          weekday/1,
-         weeknum/1]).
-
+         weeknum/1,
+         hour/1,
+         minute/1,
+         second/1,
+         now/0,
+         timevalue/1]).
 
 -include("typechecks.hrl").
 -include("handy_macros.hrl").
@@ -103,13 +107,13 @@ edate([V1, V2]) ->
     Start = ?date(V1, [cast_strings]),
     Months = ?int(V2, [cast_bools,
                        cast_strings,
-                       zero_blanks])),
+                       zero_blanks]),
     edate1(Start, Months).
 edate1(Start, Months) ->
     #datetime{date = {Startyr, Startmo, Startday}} = Start,
     Yrdelta = Months / 12,
     Modelta = Months - (Yrdelta * 12),
-    Start#datetime{date = {Startday + Yrdelta, Startmo + Modelta, Startday}}.
+    Start#datetime{date = {Startyr + Yrdelta, Startmo + Modelta, Startday}}.
 
 eomonth([V1, V2]) ->
     Start = ?date(V1, [cast_strings]),
@@ -120,7 +124,7 @@ eomonth([V1, V2]) ->
     eomonth1(Start, Months).
 eomonth1(Start, Months) ->
     Tdate = edate1(Start, Months),
-    #datetime{date = {Tyr, Tmo, Tday}} = Tdate,
+    #datetime{date = {Tyr, Tmo, _Tday}} = Tdate,
     Lastday = calendar:last_day_of_the_month(Tyr, Tmo),
     Tdate#datetime{date = {Tyr, Tmo, Lastday}}.
 
@@ -136,7 +140,6 @@ networkdays([V1, V2, V3]) ->
                end,
     networkdays1(Start, End, Holidays).
 networkdays1(Start, End, Holidays) ->
-    Dtdiff = muin_date:dtdiff(Start, End),
     muin_date:foldl(fun(X, Acc) ->
                             case calendar:day_of_the_week(X#datetime.date) of
                                 6 -> Acc; % Saturday
@@ -167,14 +170,9 @@ weekday([V1, V2]) ->
             ?ERR_NUM),
     weekday1(Dt, Rettype).
 weekday1(Dt, 1) ->
-    calendar:day_of_the_week(Dt#datetime.date) of
-        1 -> 2;
-        2 -> 3;
-        3 -> 4;
-        4 -> 5;
-        5 -> 6;
-        6 -> 7;
-        7 -> 1
+    case (calendar:day_of_the_week(Dt#datetime.date) + 1) rem 7 of
+        0 -> 7;
+        N -> N
     end;
 weekday1(Dt, 2) ->
     calendar:day_of_the_week(Dt#datetime.date);
@@ -194,15 +192,32 @@ weeknum1(Dt, Rettype) ->
                             case weekday1(X, Rettype) of
                                 1 -> Acc + 1; % Sunday for Rettype = 1, Monday for 2.
                                 _ -> Acc
+                            end
                     end,
                     1,
                     #datetime{date = {muin_date:year(Dt), 1, 1}},
                     #datetime{date = {muin_date:year(Dt), 12, 31}}).
 
-    
-    
-    
+hour([V1]) ->
+    Dt = ?date(V1, [cast_strings]),
+    muin_date:hour(Dt).
 
+minute([V1]) ->
+    Dt = ?date(V1, [cast_strings]),
+    muin_date:minute(Dt).
+
+second([V1]) ->
+    Dt = ?date(V1, [cast_strings]),
+    muin_date:second(Dt).
+
+now() ->
+    {Date, Time} = calendar:now_to_universal_time(erlang:now()),
+    #datetime{date = Date, time = Time}.
+
+timevalue([V1]) ->
+    ?date(V1, [cast_strings]).
+
+    
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -include_lib("eunit/include/eunit.hrl").
