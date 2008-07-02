@@ -11,8 +11,10 @@
 -export([excel_mac_to_gregorian/1, excel_win_to_gregorian/1,
          year/1, month/1, day/1,
          gt/2, dtdiff/2,
-         next_day/1]).
+         next_day/1, foldl/4,
+         mtest/0]).
 
+%%-include("handy_macros.hrl").
 -include("muin_records.hrl").
 
 -define(EXCEL_MAC_EPOCH, {1904, 1, 1}).
@@ -22,33 +24,45 @@
 
 %%% PUBLIC ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %% @spec excel_mac_to_gregorian(int()) -> tuple()
 %% @doc Convert number to date using Excel Mac's date system (1904 epoch).
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 excel_mac_to_gregorian(N) ->
     excel_to_gregorian(N, ?EXCEL_MAC_EPOCH).
 
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %% @spec excel_win_to_gregorian(int()) -> tuple()
 %% @doc Convert number to date using Excel Mac's date system (1900 epoch).
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 excel_win_to_gregorian(N) ->
     excel_to_gregorian(N, ?EXCEL_WIN_EPOCH).
 
-%% @spec myear(tuple()) -> int()
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%% @spec year(tuple()) -> int()
 %% @doc Read the year field of a #datetime record.
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 year(_Dt = #datetime{date = {Year, _, _}}) ->
     Year.
 
-%% @spec mmonth(tuple()) -> int()
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%% @spec month(tuple()) -> int()
 %% @doc Read the month field of a #datetime record.
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 month(_Dt = #datetime{date = {_, Month, _}}) ->
     Month.
 
-%% @spec mday(tuple()) -> int()
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%% @spec day(tuple()) -> int()
 %% @doc Read the day field of a #datetime record.
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 day(_Dt = #datetime{date = {_, _, Day}}) ->
     Day.
 
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %% @spec gt(tuple(), tuple()) -> bool()
 %% @doc Checks if Date1 is later than Date2.
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 gt(#datetime{date = {Yr1, _, _}}, #datetime{date = {Yr2, _, _}})
   when Yr1 > Yr2 ->
     true;
@@ -61,15 +75,19 @@ gt(#datetime{date = {Yr, Mo, Day1}}, #datetime{date = {Yr, Mo, Day2}})
 gt(_, _) ->
     false.
 
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %% @spec dtdiff(tuple(), tuple()) -> int()
 %% @doc Returns the difference between two dates in days.
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 dtdiff(Start, End) ->
     Startdays = calendar:date_to_gregorian_days(Start#datetime.date),
     Enddays = calendar:date_to_gregorian_days(End#datetime.date),
     Enddays - Startdays.
 
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %% @spec next_day(tuple(), tuple()) -> tuple()
 %% @doc Returns the date one day after the given date.
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 next_day(#datetime{date = {Year, 12, 31}} = Dt) ->
     Dt#datetime{date = {Year + 1, 1, 1}};
 next_day(#datetime{date = {Year, Month, 31}} = Dt) ->
@@ -80,22 +98,45 @@ next_day(#datetime{date = {Year, Month, Day}} = Dt) ->
         _   -> Dt#datetime{date = {Year, Month, Day + 1}}
     end.
 
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%% @spec foldl(fun(), term(), tuple(), tuple()) -> term()
+%% @doc Like lists:foldl/3, but the fun is applied to each date between
+%% Start and End
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+foldl(Fun, Acc, Start, End) ->
+    case gt(Start, End) of
+        true ->
+            Acc;
+        false ->
+            Nacc = Fun(Start, Acc),
+            foldl(Fun, Nacc, next_day(Start), End)
+    end.
+
+%% For testing in the shell.
+mtest() ->
+    foldl(fun(Dt, Acc) ->
+                   #datetime{date = {_, _, Day}} = Dt,
+                   Acc ++ [Day]
+           end,
+           [],
+           #datetime{date = {2008, 6, 30}}, #datetime{date = {2008, 7, 2}}).
+
 %%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-%% @spec excel_to_gregorian(int(), tuple()) -> tuple()
-%% @doc Convert an integer to #datetime relative to an epoch.
-excel_to_gregorian(N, Epoch) when is_integer(N) -> % day only, no time
-    Numdays = calendar:date_to_gregorian_days(Epoch) + N,
-    Date = calendar:gregorian_days_to_date(Numdays),
-    #datetime{date = Date};
-excel_to_gregorian(F, Epoch) when is_float(F) ->
-    Daysxl = trunc(F),
-    Numdays = calendar:date_to_gregorian_days(Epoch) + Daysxl,
-    Date = calendar:gregorian_days_to_date(Numdays),
-    Time = dayftotime(F - Daysxl),
-    Numsecs = calendar:datetime_to_gregorian_seconds({Date, Time}),
-    {Datef, Timef} = calendar:gregorian_seconds_to_datetime(Numsecs),
-    #datetime{date = Datef, time = Timef}.
+    %% @spec excel_to_gregorian(int(), tuple()) -> tuple()
+    %% @doc Convert an integer to #datetime relative to an epoch.
+        excel_to_gregorian(N, Epoch) when is_integer(N) -> % day only, no time
+                Numdays = calendar:date_to_gregorian_days(Epoch) + N,
+                Date = calendar:gregorian_days_to_date(Numdays),
+                #datetime{date = Date};
+        excel_to_gregorian(F, Epoch) when is_float(F) ->
+                Daysxl = trunc(F),
+                Numdays = calendar:date_to_gregorian_days(Epoch) + Daysxl,
+                Date = calendar:gregorian_days_to_date(Numdays),
+                Time = dayftotime(F - Daysxl),
+                Numsecs = calendar:datetime_to_gregorian_seconds({Date, Time}),
+                {Datef, Timef} = calendar:gregorian_seconds_to_datetime(Numsecs),
+                #datetime{date = Datef, time = Timef}.
 
 %% @spec dayftotime(float()) -> tuple()
 %% @doc Convert fraction of a day to time.
@@ -141,15 +182,29 @@ excel_mac_to_gregorian_test_() ->
 
 next_date_test_() ->
     [
+     %% Normal increments and end-of-year edge case.
      ?_assert(next_day(#datetime{date = {1986, 8, 17}}) == #datetime{date = {1986, 8, 18}}),
      ?_assert(next_day(#datetime{date = {1986, 8, 30}}) == #datetime{date = {1986, 8, 31}}),
      ?_assert(next_day(#datetime{date = {1986, 8, 31}}) == #datetime{date = {1986, 9, 1}}),
-     ?_assert(next_day(#datetime{date = {2000, 2, 28}}) == #datetime{date = {2000, 2, 29}}),
-     ?_assert(next_day(#datetime{date = {2000, 2, 29}}) == #datetime{date = {2000, 3, 1}}),
-     ?_assert(next_day(#datetime{date = {2000, 12, 30}}) == #datetime{date = {2000, 12, 31}}),
      ?_assert(next_day(#datetime{date = {2000, 12, 31}}) == #datetime{date = {2001, 1, 1}}),
      ?_assert(next_day(#datetime{date = {1999, 12, 31}}) == #datetime{date = {2000, 1, 1}}),
      ?_assert(next_day(#datetime{date = {2008, 7, 1}}) == #datetime{date = {2008, 7, 2}}),
      ?_assert(next_day(#datetime{date = {1900, 1, 1}}) == #datetime{date = {1900, 1, 2}}),
+     %% Leap years.
+     ?_assert(next_day(#datetime{date = {2000, 2, 28}}) == #datetime{date = {2000, 2, 29}}),
+     ?_assert(next_day(#datetime{date = {2000, 2, 29}}) == #datetime{date = {2000, 3, 1}}),
+     ?_assert(next_day(#datetime{date = {2000, 12, 30}}) == #datetime{date = {2000, 12, 31}}),
      ?_assert(next_day(#datetime{date = {1900, 2, 28}}) == #datetime{date = {1900, 3, 1}})
+    ].
+
+foldl_test_() ->
+    [
+     ?_assert(
+        foldl(fun(Dt, Acc) ->
+                       #datetime{date = {_, _, Day}} = Dt,
+                       Acc ++ [Day]
+               end,
+               [],
+               #datetime{date = {2008, 6, 30}}, #datetime{date = {2008, 7, 2}}) == [30, 1, 2])
+
     ].
