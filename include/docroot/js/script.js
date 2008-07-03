@@ -1,7 +1,7 @@
 var formulae = new Array();
 var parents  = new Array();
 var children = new Array();
-var css_attrs = ["font-style","font-weight","text-align","text-decoration"];
+var css_attrs = ["font-style","font-weight","text-align","text-decoration","color"];
         
 var handle_attr = function(refxml)
 {

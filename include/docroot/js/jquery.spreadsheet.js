@@ -1151,7 +1151,9 @@ $.fn.spreadsheet = function(options)
         {
             var ref = $.fn.parse_cell(args[1]);
             var tbl = $(this).find(".data table");
-			cell_div(tbl,ref[0]-1,ref[1]-1).css(args[2],args[3]);
+            
+            var cell = cell_div(tbl,ref[0]-1,ref[1]-1);
+			cell.css(args[2],args[3]);
         }
         
         else if(args[0] == "addFunction")

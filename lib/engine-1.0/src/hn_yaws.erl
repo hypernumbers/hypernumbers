@@ -34,26 +34,12 @@ out(Arg) -> try
     true -> {page,Url#url.path};
     false ->
 
-        PostData = get_post_data(Page#page.format,Arg,Page#page.vars),
         User     = hn_util:get_cookie((Arg#arg.headers)#headers.cookie),
         Perms    = ok,
-
-        %% Handle POST request, users need admin or edit permissions to make
-        %% a post request, unless they are trying to login
-        PostResult = case PostData of
-        [] -> ok;
-        _  ->
-            case true of
-            true -> 
-		    process_POST(Arg,PostData,User,Page);
-            _    ->
-                case Perms of 
-                N when N == admin ; N == edit ->
-                    process_POST(Arg,PostData,User,Page);
-                _ -> 
-                    {ok,[{"post",[],"error"}]}
-                end
-            end
+      
+        PostResult = case (Arg#arg.req)#http_request.method == 'POST' of
+        true  -> process_POST(Arg,User,Page);    
+        false -> ok
         end,
 
         %% If POST has nothing to return, handle GET
@@ -67,8 +53,7 @@ out(Arg) -> try
     %% Globally catch any errors during processing
     catch
     _:Err ->
-        error_logger:error_msg(
-            "~p~n~p",[Err,erlang:get_stacktrace()]),
+        error_logger:error_msg("~p~n~p",[Err,erlang:get_stacktrace()]),
         {status,400}
     end.
 
@@ -85,10 +70,7 @@ process_GET(_Arg,_User,Page) ->
     
     {Format,Data} = case request_type(Page) of
     
-    attribute ->
-    
-        Addr = page_to_ref(Page),     
-        
+    attribute ->        
         %% Switch to filter on the db api later
         Items = lists:filter(
             fun(#hn_item{addr=A}) -> 
@@ -97,7 +79,7 @@ process_GET(_Arg,_User,Page) ->
                 _ -> true
                 end
             end,
-            hn_db:get_item(Addr)),
+            hn_db:get_item(page_to_ref(Page))),
 
         List = lists:map(fun hn_util:item_to_xml/1 , Items),
 
@@ -107,17 +89,14 @@ process_GET(_Arg,_User,Page) ->
         Items = mnesia:dirty_match_object(#hn_item{_ = '_'}),
         {Page#page.format,create_pages_tree(Items)};
         
-    hypernumber ->
-    
-        Addr = page_to_ref(Page),
-        
+    hypernumber ->   
+        Addr = page_to_ref(Page),   
         Val = fun() ->
             case hn_db:get_item_val(Addr#ref{name=value}) of
             []    -> {blank,[],[]};
             [Tmp] -> hn_util:hnxml_to_xml(Tmp)
             end
-        end,
-          
+        end,       
         {Page#page.format,{hypernumber,[],[
             {value,[], [Val()]},
             {'dependancy-tree',[],
@@ -128,17 +107,14 @@ process_GET(_Arg,_User,Page) ->
     reference -> 
         case hn_db:get_item(page_to_ref(Page)) of
         []   -> {{plain}, "blank"};
-        List -> 
-        
+        List ->      
             F = fun(X) -> 
                 ?COND((X#hn_item.addr)#ref.name == value,true,false)
-            end,
-            
+            end,           
             [Val] = case lists:filter(F,List) of
             [] -> [0];
             [#hn_item{val=Value}] -> Value
-            end,
-            
+            end,          
             {{plain}, hn_util:text(hn_util:xml_to_val(Val))}
         end
     end,
@@ -223,20 +199,16 @@ merge_trees([H|T])      -> merge_trees([H],T).
 merge_trees(Tree,[])    -> Tree;
 merge_trees(Tree,[[]])  -> Tree;
 merge_trees(Tree,[H|T]) ->
-
     {dir,[{path,P}],C1} = H,
-
     {Match,Rest} = lists:partition(fun(X) ->
         case X of 
         {dir,[{path,P}],_} -> true;
         _ -> false
         end 
     end,Tree),
-
     case Match of
     %% No Matches, add entire tree
     [] -> merge_trees([H|Tree],T);
-
     %% Generate a new Tree on current path and 
     %% Add it to siblings
     [{dir,[{path,_}],C2}] ->
@@ -276,7 +248,8 @@ get_post_data({xml},Arg,_Dec) ->
 %% functionality needs to be supported
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Filter the API call (action)
-process_POST(Arg,PostData,_User,Page) ->
+process_POST(Arg,_User,Page) ->
+    PostData = get_post_data(Page#page.format,Arg,Page#page.vars),
     A = "action", 
     case PostData of
     [import]             -> api_import(Arg,Page);
@@ -378,9 +351,7 @@ api_delete(Data,Page) ->
 
 %%% API call - UNREGISTER
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-api_unreg(Data,Page) -> 
-
-    [{biccie,[],[Bic]},{url,[],[Url]}] = Data,
+api_unreg([{biccie,[],[Bic]},{url,[],[Url]}],Page) -> 
     hn_db:del_remote_link(#remote_cell_link{ 
         parent = hn_util:page_to_index(Page),
         child  = hn_util:page_to_index(hn_util:parse_url(Url)),
@@ -390,10 +361,7 @@ api_unreg(Data,Page) ->
 
 %%% API call - REGISTER
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-api_reg(Data,Page)->
-
-    [{biccie,[],[Bic]},{proxy,[],[Proxy]},{url,[],[Reg]}] = Data,
-    
+api_reg([{biccie,[],[Bic]},{proxy,[],[Proxy]},{url,[],[Reg]}],Page)->  
     hn_db:register_hn(
         hn_util:page_to_index(Page),
         hn_util:page_to_index(hn_util:parse_url(Reg)),
@@ -406,13 +374,11 @@ api_notify(Data,Page)->
     {value,{type,[],["change"]}} -> api_change(Data,Page)
     end.
 
-api_change(Data,_Page)->
-
-    [   {biccie,[],     [Bic]},
-        {cell,[],       [Cell]},
-        {type,[],       ["change"]},
-        {value,[],      [Val]},
-        {version,[],    [Version]}] = Data,
+api_change([{biccie,[],     [Bic]},
+            {cell,[],       [Cell]},
+            {type,[],       ["change"]},
+            {value,[],      [Val]},
+            {version,[],    [Version]}], _Page)->
   
     hn_db:update_hn(Cell,Bic,Val,Version),
     

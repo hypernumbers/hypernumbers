@@ -32,6 +32,7 @@
 %%%               formula of a cell
 %%%-----------------------------------------------------------------
 set_attribute(R,Val) when R#ref.name == formula -> set_cell(R,Val);
+set_attribute(R,Val) when R#ref.name == format  -> set_format(R,Val);
 set_attribute(Ref,Val) -> hn_db:write_item(Ref,Val).        
 
 %%%-----------------------------------------------------------------
@@ -39,6 +40,45 @@ set_attribute(Ref,Val) -> hn_db:write_item(Ref,Val).
 %%% Types       : 
 %%% Description : process the string input to a cell
 %%%-----------------------------------------------------------------
+apply_range(Addr,Fun,Args) ->
+    case Addr#ref.ref of
+    {range,{X1,Y1,X2,Y2}} ->
+        lists:foreach( fun(X) -> 
+            lists:foreach( fun(Y) ->
+                apply(Fun,[Addr#ref{ref={cell,{X,Y}}},Args])
+            end,lists:seq(Y1,Y2))
+        end,lists:seq(X1,X2));
+    {cell,{X,Y}} ->
+        apply(Fun,[Addr,Args])
+    end.
+
+set_format(Addr, FormatString) ->
+    {erlang,{Type,Output}} = format:get_src(FormatString),
+    apply_range(Addr,fun set_format_on_cell/2,Output).
+    
+set_format_on_cell(Addr,Format) ->
+    hn_db:write_item(Addr#ref{name="__formatast"},Format),
+    case hn_db:get_item_val(Addr#ref{name=rawvalue}) of
+    [] -> ok;
+    [Value] ->
+        Val = hn_util:xml_to_val(Value),
+        {ok,{Colour,V}}=format:run_format(Val,Format),
+        hn_db:write_item(Addr#ref{name=value},[{string,[],[V]}])
+    end,
+    ok.
+    
+set_cell_rawvalue(Addr,[Value]) ->
+    hn_db:write_item(Addr#ref{name=rawvalue},[Value]),
+    case hn_db:get_item_val(Addr#ref{name="__formatast"}) of
+    [] -> 
+        hn_db:write_item(Addr#ref{name=value},[Value]);
+    Ast ->
+        Val = hn_util:xml_to_val(Value),
+        {ok,{Colour,V}}=format:run_format(Val,Ast),
+        hn_db:write_item(Addr#ref{name=value},[{string,[],[V]}]),
+        hn_db:write_item(Addr#ref{name=color},atom_to_list(Colour))
+    end.        
+
 set_cell(Addr, Val) ->
     #ref{site=Site, path=Path, ref={cell, {X, Y}}} = Addr,
     
@@ -75,7 +115,7 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
     Index = to_index(Addr),
         
     hn_db:write_item(Addr#ref{name=formula},Formula),
-    hn_db:write_item(Addr#ref{name=value},Value),
+    set_cell_rawvalue(Addr,Value),
         
     %% Delete attribute if empty, else store
     Set = fun(Ref,Val) ->
@@ -132,7 +172,7 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
 get_cell_info(Site, Path, X, Y) ->
     Ref = #ref{site=string:to_lower(Site),path=string:to_lower(Path),ref={cell,{X,Y}}},
     
-    Value   = get_val(hn_db:get_item(Ref#ref{name=value})),
+    Value   = get_val(hn_db:get_item(Ref#ref{name=rawvalue})),
     DepTree = get_val(hn_db:get_item(Ref#ref{name='dependancy-tree'})),   
 
     Val = case Value of
@@ -173,7 +213,7 @@ recalc(Index) ->
         {ok, {V, _, _, _, _}} ->                hn_util:val_to_xml(V);
         {error, Reason} when is_atom(Reason) -> {error, [], [Reason]}
         end,
-        hn_db:write_item(Addr#ref{name=value}, [Val])
+        set_cell_rawvalue(Addr,[Val])
     end,
     
     hn_db:mark_dirty(Index, cell),
@@ -206,7 +246,7 @@ get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY)->
     F = fun({url,[{type,Type}],[Url]}) ->
         #page{site=S,path=P,ref={cell,{X,Y}}} = hn_util:parse_url(Url),
         {Type,{S,P,X,Y}}
-    end,
+    end,    
     
     Dep = lists:map(F,T) ++ [{"remote",{FSite,FPath,FX,FY}}],
     
