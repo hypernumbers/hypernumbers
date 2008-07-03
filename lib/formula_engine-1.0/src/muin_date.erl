@@ -18,10 +18,17 @@
 %%-include("handy_macros.hrl").
 -include("muin_records.hrl").
 
+%% Epochs are defined in Section 5.28 of the excelfileformatV1-41.pdf
+%% Windows has the Lotus-1-2-3 bug where it adds a 
+%% leap year in 1900 - the OO documentation saying the Windows epoch
+%% begins in 31/12/1899 (the Windows docos say it is 1/1/1900)
+%% This is because Open Office took a decision to make all dates
+%% between 31/12/1899 and 29/2/1900 'buggy'
+%% http://blogs.msdn.com/brian_jones/archive/2006/10/25/spreadsheetml-dates.aspx
+%% we need to fix this...
 -define(EXCEL_MAC_EPOCH, {1904, 1, 1}).
 -define(EXCEL_WIN_EPOCH, {1900, 1, 1}).
 -define(NUM_SECONDS_IN_A_DAY, 86400).
-
 
 %%% PUBLIC ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -30,14 +37,14 @@
 %% @doc Convert number to date using Excel Mac's date system (1904 epoch).
 %%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 excel_mac_to_gregorian(N) ->
-    excel_to_gregorian(N, ?EXCEL_MAC_EPOCH).
+    excel_to_gregorian(N, macintosh).
 
 %%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %% @spec excel_win_to_gregorian(int()) -> tuple()
 %% @doc Convert number to date using Excel Mac's date system (1900 epoch).
 %%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 excel_win_to_gregorian(N) ->
-    excel_to_gregorian(N, ?EXCEL_WIN_EPOCH).
+    excel_to_gregorian(N, windows).
 
 %%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %% @spec year(tuple()) -> int()
@@ -137,28 +144,29 @@ foldl(Fun, Acc, Start, End) ->
 %% For testing in the shell.
 mtest() ->
     foldl(fun(Dt, Acc) ->
-                   #datetime{date = {_, _, Day}} = Dt,
-                   Acc ++ [Day]
-           end,
-           [],
-           #datetime{date = {2008, 6, 30}}, #datetime{date = {2008, 7, 2}}).
+		  #datetime{date = {_, _, Day}} = Dt,
+		  Acc ++ [Day]
+	  end,
+	  [],
+	  #datetime{date = {2008, 6, 30}}, #datetime{date = {2008, 7, 2}}).
 
 %%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    %% @spec excel_to_gregorian(int(), tuple()) -> tuple()
-    %% @doc Convert an integer to #datetime relative to an epoch.
-        excel_to_gregorian(N, Epoch) when is_integer(N) -> % day only, no time
-                Numdays = calendar:date_to_gregorian_days(Epoch) + N,
-                Date = calendar:gregorian_days_to_date(Numdays),
-                #datetime{date = Date};
-        excel_to_gregorian(F, Epoch) when is_float(F) ->
-                Daysxl = trunc(F),
-                Numdays = calendar:date_to_gregorian_days(Epoch) + Daysxl,
-                Date = calendar:gregorian_days_to_date(Numdays),
-                Time = dayftotime(F - Daysxl),
-                Numsecs = calendar:datetime_to_gregorian_seconds({Date, Time}),
-                {Datef, Timef} = calendar:gregorian_seconds_to_datetime(Numsecs),
-                #datetime{date = Datef, time = Timef}.
+%% @spec excel_to_gregorian(int(), tuple()) -> tuple()
+%% @doc Convert an integer to #datetime relative to an epoch.
+excel_to_gregorian(N, Epoch) when is_integer(N) -> % day only, no time
+    Numdays = get_numdays(N,Epoch),
+    Date = calendar:gregorian_days_to_date(Numdays),
+    #datetime{date = Date};
+excel_to_gregorian(F, Epoch) when is_float(F) ->
+    Daysxl = trunc(F),
+    io:format("in muin_date:excel_to_gregorian Daysxl is ~p~n",[Daysxl]),
+    Numdays = get_numdays(Daysxl,Epoch),
+    Date = calendar:gregorian_days_to_date(Numdays),
+    Time = dayftotime(F - Daysxl),
+    Numsecs = calendar:datetime_to_gregorian_seconds({Date, Time}),
+    {Datef, Timef} = calendar:gregorian_seconds_to_datetime(Numsecs),
+    #datetime{date = Datef, time = Timef}.
 
 %% @spec dayftotime(float()) -> tuple()
 %% @doc Convert fraction of a day to time.
@@ -167,8 +175,23 @@ dayftotime(F) when is_float(F) andalso F < 1 ->
     Hour = trunc(Numsecs / 3600),
     Minute = trunc((Numsecs - (Hour * 3600)) / 60),
     Second = trunc(Numsecs - Hour * 3600 - Minute * 60),
+    io:format("in muin_date:dayftotime F is ~p Numsecs is ~p Hour is ~p Minutes is ~p Second is ~p~n",[F,Numsecs,Hour,Minute,second]),
     {Hour, Minute, Second}.
 
+%% @spec get_numdays(integer(),atom()) -> tuple()
+%% @doc converts Excel number of days since the epoch to times.
+get_numdays(N,Epoch)->
+    case Epoch of
+	macintosh -> Epoch2=?EXCEL_MAC_EPOCH,
+		     calendar:date_to_gregorian_days(Epoch2) + N - 1;
+	windows   -> Epoch2=?EXCEL_WIN_EPOCH,
+		     %% If we are in Windows numbering reset day 60 (eg 29/2/1900 
+		     %% which is a non-existant leap year) back to 28/2/1900
+		     if
+			 N >= 60 -> calendar:date_to_gregorian_days(Epoch2)+N-2;
+			 true    -> calendar:date_to_gregorian_days(Epoch2)+N-1
+		     end
+    end.
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -223,10 +246,10 @@ foldl_test_() ->
     [
      ?_assert(
         foldl(fun(Dt, Acc) ->
-                       #datetime{date = {_, _, Day}} = Dt,
-                       Acc ++ [Day]
-               end,
-               [],
-               #datetime{date = {2008, 6, 30}}, #datetime{date = {2008, 7, 2}}) == [30, 1, 2])
+		      #datetime{date = {_, _, Day}} = Dt,
+		      Acc ++ [Day]
+	      end,
+	      [],
+	      #datetime{date = {2008, 6, 30}}, #datetime{date = {2008, 7, 2}}) == [30, 1, 2])
 
     ].

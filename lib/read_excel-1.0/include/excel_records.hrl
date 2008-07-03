@@ -14,6 +14,10 @@
 %%% are they will be grouped here by the microsoftbiff.hrl
 %%% RECORD NAME
 
+%% DATEMODE BIFF8 Section 5.28 of excelfileformatV1-41.pdf
+-define(rc_DATEMODE_WINDOWS,0).
+-define(rc_DATEMODE_MACINTOSH,1).
+
 %% XF BIFF8 Section 4.61 of excelfileformat.pdf V1.41
 -define(rc_CELL_XF,0).
 -define(rc_STYLE_XF,1).

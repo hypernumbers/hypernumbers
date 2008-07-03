@@ -53,10 +53,7 @@ read_excel(excel,FileIn,Fun)->
 		     SectorSize,ShortSectorSize,
 		     MinStreamSize,SubStreams,FileIn,Tables),
     Fun(Tables);
-%% Now delete all the tables
-%%delete_ets(Tables),
-%%io:format("in filfilters:read_excel Return is ~p~n",[Return]),
-%%Return;
+
 read_excel(_Other,_,_) ->
     {error, file_type_not_supported}.
 
@@ -286,6 +283,7 @@ create_ets()->
      {externalrefs,   ets:new(externalrefs,   [ordered_set,private])},
      {formats,        ets:new(formats,        [ordered_set,private])},
      {xf,             ets:new(xf,             [ordered_set,private])},
+     {extra_fns,      ets:new(extra_fns,      [ordered_set,private])},
      {lacunae,        ets:new(lacunae,        [ordered_set,private])},
      {misc,           ets:new(misc,           [ordered_set,private])}].
 
@@ -322,19 +320,20 @@ delete_ets_DEBUG(Tables) -> delete_ets(Tables).
 dump_DEBUG(Tables)       -> dump(Tables).
 
 test_DEBUG()->
-    %%File="minitest.xls",
-    %%File="e_gnumeric_operators_add.xls",
-    %%File="b_array_formulae.xls",
-    %%File="c_basic_functions_tests_a_e.xls",
-    %%File="b_abs_and_rel_addressing.xls",
-    %%File="d_gnumeric_date_and_time.xls",
-    %%File="b_ping.xls",
-    %%File="b_basic_unicode_strings.xls",
-    %%File="b_three_dee_ref.xls",
-    %%File="b_floats.xls",
-    %%File="b_simple_arrays_and_ranges.xls",
-    %%File="d_gnumeric_address.xls",
-    File="row_formats.xls",
+    %% File="minitest.xls",
+    %% File="e_gnumeric_operators_add.xls",
+    %% File="b_array_formulae.xls",
+    %% File="c_basic_functions_tests_a_e.xls",
+    %% File="b_abs_and_rel_addressing.xls",
+    %% File="d_gnumeric_date_and_time.xls",
+    %% File="b_ping.xls",
+    %% File="b_basic_unicode_strings.xls",
+    %% File="b_three_dee_ref.xls",
+    %% File="b_floats.xls",
+    %% File="b_simple_arrays_and_ranges.xls",
+    %% File="d_gnumeric_address.xls",
+    %% File="junk_external_ref.xls",
+    File="b_extra_fns.xls",
     FileRoot="C:/opt/code/trunk/tests/"++
      	"excel_files/Win_Excel07_As_97",
     io:format("in filefilters:test_DEBUG FileRoot is ~p and File is ~p~n",
@@ -350,13 +349,15 @@ dump([{lacunae,_}|T])->
     io:format("~nSkipping out lacunae in dump~n"),
     dump(T);
 dump([{Table,Tid}|T])->
-    %%    case Table of
-    %%	formats -> dump2(Table,Tid);
-    %%	xf      -> dump2(Table,Tid);
-    %%	cell    -> dump2(Table,Tid);
-    %%	_       -> io:format("skipping Table ~p in filefilters:dump~n",[Table])
-    %%    end,
-    dump2(Table,Tid),
+        case Table of
+	    %% externalrefs -> dump2(Table,Tid);
+	    %% externsheets -> dump2(Table,Tid);
+	    %% misc         -> dump2(Table,Tid);
+	    extra_fns    -> dump2(Table,Tid);
+	    cell         -> dump2(Table,Tid);
+	    _            -> io:format("skipping Table ~p in filefilters:dump~n",[Table])
+        end,
+    %%dump2(Table,Tid),
     dump(T).
 
 dump2(Table,Tid)->

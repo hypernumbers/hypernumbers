@@ -135,13 +135,17 @@ parse_rec(?SELECTION,_Bin,_Name,CurrentFormula,Tables)->
                                      {source,excel_records.erl},
                                      {msg,"not being processed"}]),
     {ok,CurrentFormula};
-parse_rec(?DATEMODE,_Bin,_Name,CurrentFormula,Tables)->
-    excel_util:write(Tables,lacunae,[{identifier,"DATEMODE"},
-                                     {source,excel_records.erl},
-                                     {msg,"not being processed"}]),
+parse_rec(?DATEMODE,Bin,_Name,CurrentFormula,Tables)->
+    <<DateMode:16/little-unsigned-integer>>=Bin,
+    io:format("in excel_records:parse_rec for DATEMODE DateMode is ~p~n",[DateMode]),
+    DateMode2=case DateMode of
+		  ?rc_DATEMODE_WINDOWS   -> "Windows";
+		  ?rc_DATEMODE_MACINTOSH -> "Macintosh"
+	      end,
+    excel_util:write(Tables,misc,[{index,datemode},{value,DateMode2}]),
     {ok,CurrentFormula};
 parse_rec(?EXTERNNAME2,Bin,_Name,CurrentFormula,Tables)->
-    %io:format("in excel_records EXTERNNAME~n"),
+    %% Best described by Section 5.39 of excelfileformatV1-41.pdf
     parse_externname(Bin,Tables),
     {ok,CurrentFormula};
 parse_rec(?LEFTMARGIN,_Bin,_Name,CurrentFormula,Tables)->
@@ -375,11 +379,11 @@ parse_rec(?XF2,Bin,_Name,CurrentFormula,Tables)->
      _XFFlags:8/little-unsigned-integer,
      _XFCellBorders:80/little-unsigned-integer>>=Bin,
     Type = case XFType of
-	?rc_CELL_XF  -> cell;
-	?rc_STYLE_XF -> style
-    end,
+	       ?rc_CELL_XF  -> cell;
+	       ?rc_STYLE_XF -> style
+	   end,
     excel_util:append(Tables,xf,[{format_index,FormatIndex},{type,Type},
-				{parent_index,XFParentIndex}]),
+				 {parent_index,XFParentIndex}]),
     {ok,CurrentFormula};
 parse_rec(?MERGEDCELLS,_Bin,_Name,CurrentFormula,Tables)->
     excel_util:write(Tables,lacunae,[{identifier,"MERGEDCELLS"},
@@ -437,17 +441,18 @@ parse_rec(?DSF,_Bin,_Name,CurrentFormula,Tables)->
                                      {source,excel_records.erl},
                                      {msg,"not being processed"}]),
     {ok,CurrentFormula};
-parse_rec(?SUPBOOK,Bin,_Name,CurrentFormula,Tables)->
+parse_rec(?SUPBOOK,Bin,Name,CurrentFormula,Tables)->
     case Bin of
         <<NoSheets:16/little-unsigned-integer,
          ?InternalReferences:16/little-unsigned-integer>> ->
             write_externalref({this_file,placeholder},[],Tables),
-            excel_util:write(Tables,misc,[{noofsheets,NoSheets}]);
+            excel_util:write(Tables,misc,[{index,noofsheets},{value,NoSheets}]);
         <<?Add_In_Fns1:16/little-unsigned-integer,
          ?Add_In_Fns2:16/little-unsigned-integer>> ->
             write_externalref({skipped,add_ins},[],Tables),
-            excel_util:write(Tables,lacunae,[{identifier,"Add_In_Fns",Tables},
-                                             {source,excel_records.erl}]);
+            excel_util:write(Tables,lacunae,[{identifier,"Add_In_Fns"},
+                                             {source,excel_records.erl},
+					     {msg,"not being processed"}]);
         <<?DDE_OLE:16/little-unsigned-integer,_Rest/binary>> ->
             write_externalref({skipped,dde_ole},[],Tables),
             excel_util:write(Tables,lacunae,
@@ -549,8 +554,8 @@ parse_rec(?ROW2,Bin,_Name,CurrentFormula,Tables)->
      _Discard1:16/little-unsigned-integer,
      XFRef:12/little-unsigned-integer,
      _Discard2:4/little-unsigned-integer>>=Bin,
-     io:format("in excel_records:parse_rec for ROW2 XFRef is ~p~n",[XFRef]),
-     excel_util:write(Tables,lacunae,[{identifier,"ROW2"},
+    io:format("in excel_records:parse_rec for ROW2 XFRef is ~p~n",[XFRef]),
+    excel_util:write(Tables,lacunae,[{identifier,"ROW2"},
                                      {source,excel_records.erl},
                                      {msg,"not being processed"}]),
     {ok,CurrentFormula};
@@ -687,10 +692,7 @@ parse_FRM_Results(<<>>,_Name)->
 parse_FRM_Results(Bin,Name) ->
     <<Size:16/little-unsigned-integer,Rest/binary>>=Bin,
     {Tks,TkArray2}=case Size of
-                       0        -> %io:format("in excel_records:"++
-                                   %          "parse_FRM_Results "++
-                                   %          "- zero length formula!"),
-                                   {[],[]};
+                       0        -> {[],[]};
                        RPN_Size -> <<RPN:RPN_Size/binary,TkArray/binary>>=Rest,
                                    excel_tokens:parse_tokens(RPN,Name,TkArray,[])
                    end,
@@ -710,8 +712,8 @@ parse_Name(OptionFlag,_KybdShortCut,NameLength,_Size,SheetIndex,
      _FuncGroup5:1/integer,_FuncGroup6:1/integer,
      _Binary:1/integer,_A:1/integer,_B:1/integer,_C:1/integer>>=OptionFlag,
     <<_Options:1/binary,Name:NameLength/binary,_Rest/binary>>=Bin,
-    %io:format("Just ignoring the compression options for "++
-    %          "Unicode names at the moment - will wig when not using Latin-1~n"),
+    %% io:format("Just ignoring the compression options for "++
+    %% "Unicode names at the moment - will wig when not using Latin-1~n"),
     Scope = case SheetIndex of
                 0 -> global;
                 _ -> local
@@ -745,9 +747,9 @@ parse_XF_RK(<<XFIndex:16/little-unsigned-integer,
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 parse_SST(NoOfStrings,NoOfStrings,_Tables,_)->
-    %io:format("String table parsed~n");
+    %% io:format("String table parsed~n");
     ok;
-    
+
 parse_SST(StringNo,NoOfStrings,Tables,[BinHead|BinTail])->
     BinLen1=length(binary_to_list(BinHead)),
     <<BinLen2:16/little-unsigned-integer,_Rest/binary>>=BinHead,
@@ -756,28 +758,28 @@ parse_SST(StringNo,NoOfStrings,Tables,[BinHead|BinTail])->
     if
 	(BinLen1 > BinLen2+3) ->
 	    NewBinHead = BinHead,
-        NewBinTail = BinTail,
-        ParseBin=BinHead;
+	    NewBinTail = BinTail,
+	    ParseBin=BinHead;
 	(BinLen1 == BinLen2+3)->
 	    case BinTail of
-        [] -> 
-            H1 = [],
-            T1 = [];
-        _Other -> 
-            [H1|T1] = BinTail
-        end,
-        NewBinTail=T1,
-        ParseBin=BinHead,
-        NewBinHead=list_to_binary([ParseBin,H1]);
-    true ->
-        ExtLen=BinLen2+3-BinLen1,
-        [H2|T2] = BinTail,
-        %% remember to discard the 8 byte unicode flag
-        <<_Bits:1/binary,Ext:ExtLen/binary,NewBinHeadPart/binary>>=H2,
-        NewBinTail=T2,
-        ParseBin=list_to_binary([BinHead,Ext]),
-        NewBinHead=list_to_binary([ParseBin,
-        NewBinHeadPart])
+		[] -> 
+		    H1 = [],
+		    T1 = [];
+		_Other -> 
+		    [H1|T1] = BinTail
+	    end,
+	    NewBinTail=T1,
+	    ParseBin=BinHead,
+	    NewBinHead=list_to_binary([ParseBin,H1]);
+	true ->
+	    ExtLen=BinLen2+3-BinLen1,
+	    [H2|T2] = BinTail,
+	    %% remember to discard the 8 byte unicode flag
+	    <<_Bits:1/binary,Ext:ExtLen/binary,NewBinHeadPart/binary>>=H2,
+	    NewBinTail=T2,
+	    ParseBin=list_to_binary([BinHead,Ext]),
+	    NewBinHead=list_to_binary([ParseBin,
+				       NewBinHeadPart])
     end,
     Return=excel_util:parse_CRS_Uni16(ParseBin,2),
     String=excel_util:get_utf8(Return),
@@ -866,21 +868,28 @@ snip_xls(Bin)->
     end.
 
 parse_externname(Bin,Tables)->
-    %io:format("in excel_records:parse_externname Bin is ~p~n",[Bin]),
     %% we dont care mostly but for the first 4 bits (the minioptions) and
-    %%  we chuck the remaining 12 bits away (the discard) mostly - except
+    %% we chuck the remaining 12 bits away (the discard) mostly - except
     %% when we don't :(
     <<MiniOptions:4/little-unsigned-integer,
      Discard:12/little-unsigned-integer,
      Rest/binary>>=Bin,
+    io:format("in parse_externname Rest is ~p~n",[binary_to_list(Rest)]),
     case MiniOptions of
-        ?STANDARD   -> case Discard of
-                           0 -> excel_util:write(Tables,lacunae,
-                                                 [{identifier,
-                                                   "Built-in functions"},
-                                                  {source,excel_records.erl},
-                                                  {msg,"not being processed"}]);
-                           _  -> write_externname(Rest,Tables)
+        ?STANDARD   -> <<NameIndex:16/little-unsigned-integer,
+			_NotUsed:16/little-unsigned-integer,
+			Name/binary>>=Rest,
+		       {[{_,Name2}],Len1,Len2}=excel_util:parse_CRS_Uni16(Name,1),
+		       io:format("in excel_records:parse_externname Len1 is ~p "++
+				 "Len2 is ~p~n",[Len1,Len2]),
+		       NameLen=8*Len1,
+		       <<_Name:NameLen/little-unsigned-integer,Rest2/binary>>=Name,
+		       io:format("in excel_records:parse_externname Rest is ~p~n",
+				 [Rest2]),
+		       Name3=binary_to_list(Name2),
+		       case Discard of
+                           0 -> excel_util:append(Tables,extra_fns,[{name,Name3}]);
+                           _ -> write_externname(Name3,Tables)
                        end;
         ?BUILT_IN   -> write_externname(Rest,Tables);
         ?MANUAL_DDE -> excel_util:write(Tables,lacunae,
@@ -901,6 +910,7 @@ parse_externname(Bin,Tables)->
                                          {msg,"not being processed"}])
     end.
 
-write_externname(<<_NotUsed:16/little-unsigned-integer,_Rest/binary>>,_Tables)->
-    io:format("in excel_records DUNNO WHAT TO DO...~n"),
+write_externname(Name,_Tables)->
+    io:format("in excel_records Name is ~p~n",[Name]),
+    io:format("in excel_records JUST KINDA WIGGIN OUT...~n"),
     ok.

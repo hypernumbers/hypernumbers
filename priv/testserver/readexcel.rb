@@ -11,7 +11,9 @@ puts "xlsfile is #{xlsfile}"
 
 xl = WIN32OLE.new("Excel.Application")
 xl.visible=TRUE
-wb = xl.Workbooks.Open(xlsfile)
+methods=xl.Workbooks.ole_methods.collect!{|e| e.to_s }.sort
+puts methods
+wb = xl.Workbooks.open(xlsfile)
 
 xlsdata = []
 (1..wb.Worksheets.Count).each do |sheetidx|

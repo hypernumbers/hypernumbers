@@ -46,8 +46,10 @@ read_excel(Directory,SAT,SSAT,SectorSize,ShortSectorSize,
 	   _MinStreamSize,{{SubLoc,SubSID},SubStreams},FileIn,Tables)->
     %% Bear in mind that if the location is short stream the 'SID' returned
     %% is actually an SSID!
-    %io:format("~n~nNow going to parse the Excel Workbook only!~n"),
-    {Location,SID}=get_named_SID(Directory,?EXCEL_WORKBOOK),
+    %% io:format("~n~nNow going to parse the Excel Workbook only!~n"),
+    io:format("In excel:read_excel got to 1~n"),
+    {Location,SID}=get_workbook_SID(Directory),
+    io:format("In excel:read_excel got to 2~n"),
     Bin=case Location of
 	    normal_stream -> get_normal_stream(SID,Directory,SAT,SectorSize,
                                                FileIn);
@@ -87,8 +89,8 @@ read_excel(Directory,SAT,SSAT,SectorSize,ShortSectorSize,
 parse_substream(SubSID,Location,SubStream,Directory,SAT,SSAT,SectorSize,
 		ShortSectorSize,FileIn,Tables)->
     {{[{Type,NameBin}],_,_},Offset}=SubStream,
-    %Name=binary_to_list(NameBin),
-    %io:format("Now parsing stream ~p~n",[Name]),
+    %% Name=binary_to_list(NameBin),
+    %% io:format("Now parsing stream ~p~n",[Name]),
     Bin=case Location of 
 	    normal_stream -> get_normal_stream(SubSID,Directory,SAT,SectorSize,
 					       FileIn);
@@ -110,10 +112,10 @@ parse_bin(Bin,SubStreamName,CurrentFormula,Tables)->
     Name=binary_to_list(NameBin),
     case Identifier of
  	?EOF ->	    
- 	    %io:format("workstream ~p read!~n",[Name]),
+	    %% io:format("workstream ~p read!~n",[Name]),
  	    ok;
 	?SST ->
-	    %io:format("In excel:parse_bin Name is ~p~n",[Name]),
+	    %% io:format("In excel:parse_bin Name is ~p~n",[Name]),
 	    {ok,BinList,Rest2}=get_single_SST(Bin),
 	    {ok,NewCurrentFormula}=excel_records:parse_rec(Identifier,BinList,
                                                            Name,CurrentFormula,
@@ -127,7 +129,6 @@ parse_bin(Bin,SubStreamName,CurrentFormula,Tables)->
  	    parse_bin(Rest3,SubStreamName,NewCurrentFormula,Tables)
     end.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                     %%%
 %%% Functions to get a concatenated SST record                          %%%
@@ -164,7 +165,7 @@ get_file_structure(ParsedDirectory,SAT,SSAT,SectorSize,ShortSectorSize,
 		   _MinStreamSize,Tables,FileIn)->
     %% Remember that if the stream is a short stream the SID in the directory
     %% is actually an SSID!
-    {Location,SID}=excel:get_named_SID(ParsedDirectory,?EXCEL_WORKBOOK),
+    {Location,SID}=get_workbook_SID(ParsedDirectory),
     Bin=case Location of
 	    normal_stream ->
 		get_normal_stream(SID,ParsedDirectory,SAT,SectorSize,FileIn);
@@ -179,13 +180,27 @@ get_file_structure(ParsedDirectory,SAT,SSAT,SectorSize,ShortSectorSize,
 	end,
     {{Location,SID},get_bound_list(Bin,Tables)}.
 
+get_workbook_SID(ParsedDirectory)->
+    %% In Excel this SID is called 'Workbook' in the files written by 
+    %% whatever wrote the test files uses 'Book' so we need to look for
+    %% both of them
+    Response=excel:get_named_SID(ParsedDirectory,?EXCEL_WKBK1),
+    case Response of
+	{error,Err} -> {ok,Ret}=excel:get_named_SID(ParsedDirectory,?EXCEL_WKBK2),
+		       Ret;
+	{ok,Ret2}   -> Ret2
+    end.
+
 get_named_SID(Directory,Name)->
     SIDList=[{lists:keysearch(name,1,X),lists:keysearch(sid,1,X),
 	      lists:keysearch(location,1,X)} 
 	     || {_Y,X} <- Directory],
     Details=lists:keysearch({value,{name,Name}},1,SIDList),
-    {_,{_,{value,{sid,SID}},{value,{location,Location}}}}=Details,
-    {Location,SID}.
+    case Details of
+	false -> {error, "Named SID not found"};
+	_     -> {_,{_,{value,{sid,SID}},{value,{location,Location}}}}=Details,
+		 {ok,{Location,SID}}
+    end.
 
 get_normal_stream(SID,_ParsedDirectory,SAT,SectorSize,FileIn)->
     SIDs=filefilters:get_SIDs(SAT,SID),
@@ -195,6 +210,7 @@ get_short_stream(SSID,ParsedDirectory,SAT,SSAT,SectorSize,ShortSectorSize,
 		 FileIn)->
     %% First thing we are going to do is get the
     %% normal stream that contains the short stream
+    %% might have a problem here too
     {_,RootSID}=excel:get_named_SID(ParsedDirectory,?ROOT_ENTRY),
     Bin=get_normal_stream(RootSID,ParsedDirectory,SAT,SectorSize,FileIn),
     SSIDs=filefilters:get_SIDs(SSAT,SSID),
@@ -215,7 +231,7 @@ get_bound_list(Bin,Residuum,Tables)->
      RecordSize:16/little-unsigned-integer,Rest/binary>>=Bin,
     case Identifier of
  	?EOF ->	    
- 	    %io:format("workstream read!~n"),
+	    %%io:format("workstream read!~n"),
  	    Residuum;
 	?BOUNDSHEET ->
  	    <<Record:RecordSize/binary,Rest2/binary>>=Rest,
@@ -270,19 +286,14 @@ get_short_bin(Bin,[H|T],SectorSize,Residuum) ->
 %%%                                                                     %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    
 post_process_tables(Tables)->
-    %%io:format("Output Tables are ~p~n",[Tables]),
-    %%filefilters:dump(Tables),
     %% Excel has a number of built in formats
     {ok,ok}=add_built_in_formats(Tables),
-    type_formats(Tables),
-    io:format("in excel:post_process_tables got to 1~n"),
-    fix_up_externalrefs(Tables),
-    io:format("in excel:post_process_tables got to 2~n"),
-    fix_up_cells(Tables),
-    io:format("in excel:post_process_tables got to 3~n"),
-    %io:format("Post-processed Tables are ~p~n",[Tables]),
     %%filefilters:dump(Tables),
-    io:format("in excel:post_process_tables got to 4~n"),
+    type_formats(Tables),
+    fix_up_externalrefs(Tables),
+    fix_up_cells(Tables),
+    convert_dates(Tables),
+    %%filefilters:dump(Tables),
     ok.
 
 %% this function adds the data type to format information
@@ -293,7 +304,7 @@ type_formats(Tables) ->
 		  {Index,[{type,Type1},Category,{format,Format}]}=X,
 		  Return=format:get_src(Format),
 		  case Return of
-		      {erlang,{Type2,Output}} -> 
+		      {erlang,{Type2,_Output}} -> 
 			  ok;
 		      {error,error_in_format} -> 
 			  io:format("in excel:type_formats bug in "++
@@ -335,13 +346,45 @@ fix_up_externalrefs(Tables)->
         end,
     case ets:info(ExternalRefs,size) of
         0 -> %io:format("in excel:post_process_tables no records in file "++
-             %          "ExternalRefs~n"),
-             ok;
+						%          "ExternalRefs~n"),
+	    ok;
         _ -> [Index]=ets:foldl(Fun,[],ExternalRefs),
              SheetNames=lists:reverse(get_sheetnames(Tables)),
              excel_util:write(Tables,externalrefs,[Index,{this_file,expanded},
                                                    SheetNames])
     end.
+
+convert_dates(Tables)->
+    {value,{cell,Tid1}}   =lists:keysearch(cell,1,Tables),
+    {value,{xf,Tid2}}     =lists:keysearch(xf,1,Tables),
+    {value,{formats,Tid3}}=lists:keysearch(formats,1,Tables),
+    %%Fun looks up the values from the cells table and the format table 
+    %% (via XF) if the format is of type 'date' it switches the type 
+    %% of the number from 'number' to 'date'
+    Fun=fun(X,Acc) -> 
+		{Index,[{xf_index,XF},Body]}=X,
+		XFVal=ets:lookup(Tid2,{index,XF}),
+		[{_,[{format_index,Idx},_,_]}]=XFVal,
+		Format=ets:lookup(Tid3,{format_index,Idx}),
+		[{_,[{type,Type},_,_]}]=Format,
+		Body2=case Type of
+			  date   -> convert_dates2(Body,Tables);
+			  _      -> Body
+		      end,
+		{Index,Body2},
+		ets:insert(Tid1,[{Index,[{xf_format,XF},Body2]}])
+	end,
+    ets:foldl(Fun,[],Tid1).
+
+convert_dates2({value,number,Number},Tables) ->
+    [{_,[{value,DateMode}]}]=excel_util:read(Tables,misc,datemode),
+    io:format("in excel:convert_dates2 Number is ~p,DateMode is ~p~n",[Number,DateMode]),
+    Date=case DateMode of
+	  "Windows"   -> muin_date:excel_win_to_gregorian(Number);
+	  "Macintosh" -> muin_date:excel_mac_to_gregorian(Number)
+      end,
+    {value,date,Date};
+convert_dates2(Body,_Tables) -> Body.
 
 get_sheetnames(Tables)->
     Fun = fun({_Index,[{name,SheetName}]},Y) ->
@@ -349,37 +392,6 @@ get_sheetnames(Tables)->
           end,
     {value,{sheetnames,SheetNames}}=lists:keysearch(sheetnames,1,Tables),
     ets:foldl(Fun,[],SheetNames).
-
-%%update_cell(Sheet,Tokens,TokenArrays,LastRow,LastCol,
-%%            FirstRow,FirstCol,LastRow,LastCol,
-%%            CellId,Tables)->
-%%    update_cell2(Sheet,Tokens,TokenArrays,LastRow,LastCol,CellId,
-%%                 FirstRow,FirstCol,Tables),
-%%    ok;
-%%update_cell(Sheet,Tokens,TokenArrays,LastRow,Col,
-%%            FirstRow,FirstCol,LastRow,LastCol,CellId,Tables)->
-%%    update_cell2(Sheet,Tokens,TokenArrays,LastRow,Col,CellId,
-%%                 FirstRow,FirstCol,Tables),
-%%    update_cell(Sheet,Tokens,TokenArrays,FirstRow,Col+1,
-%%                FirstRow,FirstCol,LastRow,LastCol,CellId,Tables);
-%%update_cell(Sheet,Tokens,TokenArrays,Row,Col,
-%%            FirstRow,FirstCol,LastRow,LastCol,CellId,Tables)->
-%%    update_cell2(Sheet,Tokens,TokenArrays,Row,Col,CellId
-%%                 ,FirstRow,FirstCol,Tables),
-%%    update_cell(Sheet,Tokens,TokenArrays,Row+1,Col,
-%%                FirstRow,FirstCol,LastRow,LastCol,CellId,Tables).
-
-%%update_cell2(Sheet,Tokens,TokenArrays,Row,Col,CellId,TopRow,TopCol,Tables)->
-%%    Index={{sheet,Sheet},{row_index,Row},{col_index,Col}},
-%%    TopIndex={{sheet,Sheet},{row_index,TopRow},{col_index,TopCol}},
-%%    FormulaExists=ets:lookup(CellId,{{sheet,Sheet},{row_index,Row},
-%%                                     {col_index,Col}}),
-%%    case FormulaExists of
-%%        []   -> Formula=excel_rev_comp:reverse_compile(TopIndex,Tokens,
-%%                                                       TokenArrays,Tables),
-%%                ets:insert(CellId,{Index,[{xf_index,"bug?"},{formula,Formula}]});
-%%        _    -> ok
-%%    end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                     %%%

@@ -63,13 +63,17 @@ read_from_excel_data(State,{Sheet,Row,Col})->
   Return=lists:keysearch(Key, 1, State),
   {value, Result2}=Return,
   El=element(2, Result2),
+  io:format("in test_util:read_from_excel_data El is ~p~n",[El]),
   case El of
-      {value, number, Number} -> {number,Number};
-      {string,String}         -> {string,String};
-      {formula,Formula}       -> {formula,Formula};
-      {value,boolean,Boolean} -> {boolean,Boolean};
-      {value,error,Error}     -> {error, Error};
-      Other                   -> io:format("(in generatetest.rb - fix me Other is ~p~n",[Other])
+      {value,number,Number}       -> {number,Number};
+      {string,String}             -> {string,String};
+      {formula,Formula}           -> {formula,Formula};
+      {value,boolean,Boolean}     -> {boolean,Boolean};
+      {value,error,Error}         -> {error, Error};
+      {value,date,{datetime,D,T}} -> {date,{D,T}};
+      Other                       -> io:format("(in test_util:read_from_excel_date "++
+					       " fix generatetest.rb - Other is ~p~n",
+					       [Other])
 end.
 
 equal_to_digit(F1,F2,DigitIdx) ->
@@ -84,7 +88,6 @@ equal_to_digit(F1,F2,DigitIdx) ->
 
 float_cmp(Res, Expres, Digit) ->
     abs(Res - Expres) < math:pow(0.1, Digit).
-    
 
 excel_equal("-2146826281","#DIV/0!") -> true;
 excel_equal("-2146826246","#N/A")    -> true;
@@ -120,7 +123,24 @@ excel_equal(String1,String2) when is_list(String1), is_list(String2) ->
                                             ?EXCEL_IMPORT_FLOAT_PRECISION)
         end
     end.
-        
+
+eq(X,Y) ->
+    case X of
+	Y -> true;
+	_ -> false
+    end.
+
+excel_equal2({date,F1},{number,Number})->
+    io:format("in test_util:excel_equal2 F1 is ~p Number is ~p~n",[F1,Number]),
+    {datetime,D,T}=muin_date:excel_win_to_gregorian(Number),
+    F2={D,T},
+    io:format("in test_util:excel_equal2 F2 is ~p~n",[F2]),
+    eq(F1,F2);
+excel_equal2({date, F1}, {string, F2}) ->
+    io:format("in test_util:excel_equal2 F1 is ~p F2 is ~p~n",[F1,F2]),
+    F1String=make_date_string(F1),
+    io:format("in test_util:excel_equal2 F1String is ~p~n",[F1String]),
+    eq(F1String,F2);
 excel_equal2({number, F1}, {number, F2}) ->
     equal_to_digit(F1, F2, ?EXCEL_IMPORT_FLOAT_PRECISION);
 excel_equal2({formula, PreFla1}, {formula, Fla2}) ->
@@ -135,38 +155,35 @@ excel_equal2({formula, PreFla1}, {formula, Fla2}) ->
     %% to ErrorType
     %% Ugly bodge    
     {ok,Fla2a,_} = regexp:gsub(Fla2,"ERROR.TYPE","ERRORTYPE"),
-        
     R2 = stripfileref(Fla2a),
-    
-    io:format("Fla1 is  ~p~n is ~p~n",[Fla1,R2]),
-    case Fla1 of
-    R2 -> true;
-    _  -> false
-    end;
+    eq(Fla1,R2);
 excel_equal2({boolean,Boolean1},{boolean,Boolean2}) ->
-    case Boolean1 of
-        Boolean2 -> true;
-        _        -> false
-    end;
+    eq(Boolean1,Boolean2);
 excel_equal2({error,Error1},{number,ErrorVal}) ->
     Error2=make_err_val(ErrorVal),
-    case Error1 of
-        Error2 -> true;
-        _      -> false
-    end;
+    eq(Error1,Error2);
 excel_equal2({error,Error1},{error,Error2}) ->
-    case Error1 of
-        Error2 -> true;
-        _      -> false
-    end;
+    eq(Error1,Error2);
 excel_equal2({string,String1},{string,String2}) ->
-    case String1 of
-        String2 -> true;
-        _       -> false
-    end;
+    eq(String1,String2);
 excel_equal2({number,_Num},{string,_Str})->
     io:format("in test_util:excel_equal2 trying to compare a number to a string?~n"),
     false.
+
+make_date_string({Days,Time}) ->
+    make_day_string(Days)++" "++make_time_string(Time).
+
+make_day_string({Year,Month,Day}) ->
+    integer_to_list(Year)++"/"++pad(integer_to_list(Month))++"/"++pad(integer_to_list(Day)).
+
+make_time_string({Hour,Minute,Second})->
+    pad(integer_to_list(Hour))++":"++pad(integer_to_list(Minute))++":"++pad(integer_to_list(Second)).
+
+pad(X) when is_list(X) ->
+    case length(X) of
+	1 -> "0"++X;
+	_ -> X
+    end.
 
 make_err_val(?ErrDiv0Int)  -> "#DIV/0!";
 make_err_val(?ErrNAInt)    -> "#N/A";
@@ -260,6 +277,7 @@ hnget(Path, Ref) ->
     Body.
   
 hnpost(Path, Ref, Postdata) ->
+    io:format("in hnpost Path is ~p Ref is ~p PostData is ~p~n",[Path,Ref,Postdata]),
     Url = string:to_lower(?HNSERVER ++ Path ++ Ref),
     Postreq = "<create><formula><![CDATA[" ++ Postdata ++ "]]></formula></create>",
     %io:format("Posting ~p to ~s...~n", [Postdata, Url]),
@@ -285,33 +303,34 @@ cmp(G, E) ->
             Val == E
     end.
 
-conv_from_get("true") -> true;
+conv_from_get("true")  -> true;
 conv_from_get("false") -> false;
-conv_from_get("TRUE") -> true;
+conv_from_get("TRUE")  -> true;
 conv_from_get("FALSE") -> false;
-conv_from_get(X) ->
-    case lists:member(X, ["#NULL!", "#DIV/0!", "#VALUE!",
-                          "#REF!", "#NAME?", "#NUM!", "#N/A"]) of
-        true -> % error value
-            list_to_atom(X);
-        false ->
-            case tconv:to_num(X) of
-                N when is_number(N) -> % number
-                    N;
-                {error, nan} -> % string
-                    X
-            end
-    end.
+conv_from_get(X)       -> case lists:member(X, ["#NULL!", "#DIV/0!", "#VALUE!",
+						"#REF!", "#NAME?", "#NUM!", "#N/A"]) of
+			      true -> % error value
+				  list_to_atom(X);
+			      false ->
+				  case tconv:to_num(X) of
+				      N when is_number(N) -> % number
+					  N;
+				      {error, nan} -> % string
+					  X
+				  end
+			  end.
 
 %% TODO: Some of these conversion need to be done inside the reader itself.
 conv_for_post(Val) ->
+    io:format("in test_util:conv_for_post Val is ~p~n",[Val]),
     case Val of
-        {_, boolean, true} -> "true";
+        {_, boolean, true}  -> "true";
         {_, boolean, false} -> "false";
-        {_, number, N}     -> tconv:to_s(N);
-        {_, error, E}      -> E;
-        {string, X}        -> X;
-        {formula, F}       -> F
+	{_, date, D}        -> make_date_string(D);
+        {_, number, N}      -> tconv:to_s(N);
+        {_, error, E}       -> E;
+        {string, X}         -> X;
+        {formula, F}        -> F
     end.
 
 
@@ -322,12 +341,9 @@ conv_for_post(Val) ->
 %% Gets the list of xls table names and their ETS table ids, grabs the cell table
 %% and extracts cell information from it (sheet, row, col, contents).
 extract_cell_info(Tables) ->
-    {value, {cell,Tid}} = lists:keysearch(cell, 1, Tables),
-    Cells = ets:foldl(fun(X, Acc) -> [X | Acc] end,
-                      [], Tid),
-    Res = lists:map(fun({Index, [_, Body]}) -> {Index, Body} end,
-                    Cells),
-    Res.
+    {value,{cell,Tid1}}=lists:keysearch(cell,1,Tables),
+    Cells=ets:foldl(fun(X,Acc) -> [X|Acc] end,[],Tid1),
+    lists:map(fun({Index,[_,Body]}) -> {Index,Body} end,Cells).
 
 internal_wait(0) ->
     ok;

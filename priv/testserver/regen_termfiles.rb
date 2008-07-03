@@ -9,6 +9,7 @@ PATH_TO_XLS_FILES = "C:\\\\opt\\\\code\\\\trunk\\\\tests\\\\excel_files\\\\Win_E
 
 IO.readlines("list.txt").each do |s|
   x = PATH_TO_XLS_FILES + s.strip
+  puts "X is #{x}"
   `ruby readexcel.rb #{x}`
   puts "OK: #{s.strip}"
 end
