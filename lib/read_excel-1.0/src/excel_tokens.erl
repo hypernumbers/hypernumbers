@@ -25,7 +25,8 @@ parse_tokens(<<>>,_Name,TokenArray,Residuum)->
     Tokens=lists:reverse(Residuum),
     {Tokens,TokenArray};
 parse_tokens(Bin,Name,TokenArray,Residuum)->
-    <<BaseTokenID:8/little-unsigned-integer,_Rest/binary>>=Bin,
+    <<BaseTokenID:8/little-unsigned-integer,Rest/binary>>=Bin,
+    io:format("in excel_tokens:parse_tokens BaseTokenID is ~p Rest is ~p~n",[BaseTokenID,Rest]),
     parse_tokens(BaseTokenID,Name,Bin,TokenArray,Residuum).
 
 %% Parsing base tokens
@@ -611,6 +612,7 @@ parse_tokens(tNameX,Name,Bin,TokenArray,Type,Residuum)->
     <<_Tk:8/little-unsigned-integer,
      RefIndex:16/little-unsigned-integer,
      NameIndex:16/little-unsigned-integer,
+     _NotUsed:16/little-unsigned-integer,
      R2/binary>>=Bin,
     %% this is a *ONE* based index so drop it by one...
     parse_tokens(R2,Name,TokenArray,[{name_xref,{tNameX,

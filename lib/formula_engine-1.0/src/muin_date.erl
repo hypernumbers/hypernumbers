@@ -172,9 +172,9 @@ excel_to_gregorian(F, Epoch) when is_float(F) ->
 %% @doc Convert fraction of a day to time.
 dayftotime(F) when is_float(F) andalso F < 1 ->
     Numsecs = F * ?NUM_SECONDS_IN_A_DAY,
-    Hour = trunc(Numsecs / 3600),
-    Minute = trunc((Numsecs - (Hour * 3600)) / 60),
-    Second = trunc(Numsecs - Hour * 3600 - Minute * 60),
+    Hour = round(Numsecs / 3600),
+    Minute = round((Numsecs - (Hour * 3600)) / 60),
+    Second = round(Numsecs - Hour * 3600 - Minute * 60),
     io:format("in muin_date:dayftotime F is ~p Numsecs is ~p Hour is ~p Minutes is ~p Second is ~p~n",[F,Numsecs,Hour,Minute,second]),
     {Hour, Minute, Second}.
 

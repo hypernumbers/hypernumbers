@@ -25,6 +25,7 @@
 
 %%% Debugging exports
 -export([parse_CRS_RK_TESTING/1,shift_left2_TESTING/1]).
+-export([bodge_DEBUG/1]).
 
 %%% Include file for eunit testing
 -include_lib("eunit/include/eunit.hrl").
@@ -97,8 +98,6 @@ parse_CRS_Uni16(Bin)->
     catch
 	exit:_Reason ->
 	    %% Try again with an index of 2
-	    io:format("in parse_CRS_Uni16 "++
-		      "trying an index length of 2~n"),
 	    parse_CRS_Uni16(Bin,2);
 	  error:_Message ->
 	    %% Try again with an index of 2
@@ -119,9 +118,7 @@ parse_CRS_Uni16_intermediate(Bin)->
     {Return,BinLen1,BinLen2}=parse_CRS_Uni16(Bin,1),
     case BinLen1 of
 	BinLen2  -> {Return,BinLen1,BinLen2};
-	_Other   -> io:format("bombing out of parse_CRS_Uni16 "++
-			      "wrong index length~n"),
-		    exit("Wrong Index Length")
+	_Other   -> exit("Wrong Index Length")
     end.
 
 parse_CRS_Uni16(Bin,IndexSize)->
@@ -405,3 +402,16 @@ parse_RK_test_() ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 parse_CRS_RK_TESTING(Value) -> parse_CRS_RK(Value).
 shift_left2_TESTING(Bin)    -> shift_left2(Bin).
+
+bodge_DEBUG(Bin)->
+    Len=length(binary_to_list(Bin)),
+    bodge(Bin,Len,[]).
+
+bodge(<<>>,0,Acc)->
+    lists:reverse(Acc);
+bodge(<<Char:8/little-unsigned-integer,Rest/binary>>,Len,Acc) 
+  when Char < 32; Char > 126 ->
+    bodge(Rest,Len-1,[32|Acc]);
+bodge(<<Char:8/little-signed-integer,Rest/binary>>,Len,Acc)->
+    bodge(Rest,Len-1,[Char|Acc]).
+

@@ -1091,6 +1091,12 @@
 -define(VALUE507,round(0.5*86400)).
 -define(OUTPUT507,{date,{black,"1"}}). 
 
+%% Test 508
+-define(FORMAT508,"0.00").
+
+-define(VALUE508,0.142857143).
+-define(OUTPUT508,{date,{black,"0.14"}}). 
+
 %% Failing tests
 -define(FORMAT_F1A,"00.00\"ttt\"00.00").
 -define(FORMAT_F2A,"0.0.0").
@@ -1448,6 +1454,7 @@ all() ->
      num_parser_test506c,
      num_parser_test506d,
      num_parser_test507,
+     num_parser_test508,
      num_parser_fail1a,
      num_parser_fail2a
     ].
@@ -3202,6 +3209,11 @@ num_parser_test507() ->
 num_parser_test507(Config) when is_list(Config) -> 
     executor(?FORMAT507,?VALUE507,?OUTPUT507).
 
+num_parser_test508() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test508(Config) when is_list(Config) -> 
+    executor(?FORMAT508,?VALUE508,?OUTPUT508).
 
 %% Failing tests
 num_parser_fail1a() -> 

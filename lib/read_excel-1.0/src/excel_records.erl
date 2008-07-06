@@ -15,6 +15,7 @@
 -include("excel_externname.hrl").
 
 -export([parse_rec/5]).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% This function processes the main record types that are used in the       %%%
@@ -107,7 +108,7 @@ parse_rec(?NAME,Bin,_Name,CurrentFormula,Tables)->
      HelpTxtLen:8/little-unsigned-integer,
      StatusTxtLen:8/little-unsigned-integer,
      Rest/binary>>=Bin,
-    %% io:format("in excel_records:parse_rec for NAME~n"),
+    io:format("in excel_records:parse_rec for NAME Rest is ~p~n",[Rest]),
     parse_Name(OptionFlag,KybdShortCut,NameLength,Size,SheetIndex,
                MenuTxtLen,DescTxtLen,HelpTxtLen,StatusTxtLen,Rest,Tables),
     {ok,CurrentFormula};
@@ -137,15 +138,15 @@ parse_rec(?SELECTION,_Bin,_Name,CurrentFormula,Tables)->
     {ok,CurrentFormula};
 parse_rec(?DATEMODE,Bin,_Name,CurrentFormula,Tables)->
     <<DateMode:16/little-unsigned-integer>>=Bin,
-    io:format("in excel_records:parse_rec for DATEMODE DateMode is ~p~n",[DateMode]),
     DateMode2=case DateMode of
 		  ?rc_DATEMODE_WINDOWS   -> "Windows";
 		  ?rc_DATEMODE_MACINTOSH -> "Macintosh"
 	      end,
     excel_util:write(Tables,misc,[{index,datemode},{value,DateMode2}]),
     {ok,CurrentFormula};
-parse_rec(?EXTERNNAME2,Bin,_Name,CurrentFormula,Tables)->
+parse_rec(?EXTERNNAME2,Bin,Name,CurrentFormula,Tables)->
     %% Best described by Section 5.39 of excelfileformatV1-41.pdf
+    io:format("in excel_records:parse_rec for EXTERNNAME2 Name is ~p~n",[Name]),
     parse_externname(Bin,Tables),
     {ok,CurrentFormula};
 parse_rec(?LEFTMARGIN,_Bin,_Name,CurrentFormula,Tables)->
@@ -223,7 +224,7 @@ parse_rec(?DEFCOLWIDTH,_Bin,_Name,CurrentFormula,Tables)->
                                      {source,excel_records.erl},
                                      {msg,"not being processed"}]),
     {ok,CurrentFormula};
-parse_rec(?XCT,_Bin,_Name,CurrentFormula,Tables)->
+parse_rec(?XCT,Bin,_Name,CurrentFormula,Tables)->
     excel_util:write(Tables,lacunae,[{identifier,"XCT"},
                                      {source,excel_records.erl},
                                      {msg,"not being processed"}]),
@@ -664,7 +665,7 @@ parse_rec(?RANGEPROTECTION,_Bin,_Name,CurrentFormula,Tables)->
                                      {source,excel_records.erl},
                                      {msg,"not being processed"}]),
     {ok,CurrentFormula};
-parse_rec(Other,_Bin,_Name,CurrentFormula,Tables)->
+parse_rec(Other,Bin,_Name,CurrentFormula,Tables)->
     excel_util:write(Tables,lacunae,[{identifier,{"undocumented record type",
                                                   Other}},{source,
                                                            excel_records.erl},
@@ -694,7 +695,7 @@ parse_FRM_Results(Bin,Name) ->
     {Tks,TkArray2}=case Size of
                        0        -> {[],[]};
                        RPN_Size -> <<RPN:RPN_Size/binary,TkArray/binary>>=Rest,
-                                   excel_tokens:parse_tokens(RPN,Name,TkArray,[])
+				   excel_tokens:parse_tokens(RPN,Name,TkArray,[])
                    end,
     {Tks,TkArray2}.
 
@@ -711,7 +712,8 @@ parse_Name(OptionFlag,_KybdShortCut,NameLength,_Size,SheetIndex,
      _FuncGroup2:1/integer,_FuncGroup3:1/integer,_FuncGroup4:1/integer,
      _FuncGroup5:1/integer,_FuncGroup6:1/integer,
      _Binary:1/integer,_A:1/integer,_B:1/integer,_C:1/integer>>=OptionFlag,
-    <<_Options:1/binary,Name:NameLength/binary,_Rest/binary>>=Bin,
+    <<_Options:1/binary,Name:NameLength/binary,Rest/binary>>=Bin,
+    io:format("in excel_records:parse_rec for NAME Rest is ~p~n",[Rest]),
     %% io:format("Just ignoring the compression options for "++
     %% "Unicode names at the moment - will wig when not using Latin-1~n"),
     Scope = case SheetIndex of
@@ -874,18 +876,13 @@ parse_externname(Bin,Tables)->
     <<MiniOptions:4/little-unsigned-integer,
      Discard:12/little-unsigned-integer,
      Rest/binary>>=Bin,
-    io:format("in parse_externname Rest is ~p~n",[binary_to_list(Rest)]),
     case MiniOptions of
         ?STANDARD   -> <<NameIndex:16/little-unsigned-integer,
 			_NotUsed:16/little-unsigned-integer,
 			Name/binary>>=Rest,
 		       {[{_,Name2}],Len1,Len2}=excel_util:parse_CRS_Uni16(Name,1),
-		       io:format("in excel_records:parse_externname Len1 is ~p "++
-				 "Len2 is ~p~n",[Len1,Len2]),
 		       NameLen=8*Len1,
 		       <<_Name:NameLen/little-unsigned-integer,Rest2/binary>>=Name,
-		       io:format("in excel_records:parse_externname Rest is ~p~n",
-				 [Rest2]),
 		       Name3=binary_to_list(Name2),
 		       case Discard of
                            0 -> excel_util:append(Tables,extra_fns,[{name,Name3}]);

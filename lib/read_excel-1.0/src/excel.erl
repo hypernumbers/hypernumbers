@@ -47,9 +47,7 @@ read_excel(Directory,SAT,SSAT,SectorSize,ShortSectorSize,
     %% Bear in mind that if the location is short stream the 'SID' returned
     %% is actually an SSID!
     %% io:format("~n~nNow going to parse the Excel Workbook only!~n"),
-    io:format("In excel:read_excel got to 1~n"),
     {Location,SID}=get_workbook_SID(Directory),
-    io:format("In excel:read_excel got to 2~n"),
     Bin=case Location of
 	    normal_stream -> get_normal_stream(SID,Directory,SAT,SectorSize,
                                                FileIn);
@@ -121,8 +119,11 @@ parse_bin(Bin,SubStreamName,CurrentFormula,Tables)->
                                                            Name,CurrentFormula,
                                                            Tables),
  	    parse_bin(Rest2,SubStreamName,NewCurrentFormula,Tables);
-	_Other ->
+	Other ->
  	    <<Record:RecordSize/binary,Rest3/binary>>=Rest,
+	    %% Bodge=excel_records:bodge(Record),
+	    %% bits:log("Record is "++integer_to_list(Other)),
+	    %% bits:log("Record is "++Bodge),
 	    {ok,NewCurrentFormula}=excel_records:parse_rec(Identifier,Record,
                                                            Name,CurrentFormula,
                                                            Tables),
