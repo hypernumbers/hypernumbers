@@ -32,7 +32,15 @@
 %%%               formula of a cell
 %%%-----------------------------------------------------------------
 set_attribute(R,Val) when R#ref.name == formula -> set_cell(R,Val);
-set_attribute(R,Val) when R#ref.name == format  -> set_format(R,Val);
+set_attribute(Ref,Val) when Ref#ref.name == format ->
+    hn_db:write_item(Ref,Val),
+    F = fun(X,[]) ->
+        case hn_db:get_item_val(X#ref{name=rawvalue}) of
+        [] -> ok;
+        Value -> set_cell_rawvalue(X,Value)
+        end
+    end,
+    apply_range(Ref,F,[]);
 set_attribute(Ref,Val) -> hn_db:write_item(Ref,Val).        
 
 %%%-----------------------------------------------------------------
@@ -40,45 +48,6 @@ set_attribute(Ref,Val) -> hn_db:write_item(Ref,Val).
 %%% Types       : 
 %%% Description : process the string input to a cell
 %%%-----------------------------------------------------------------
-apply_range(Addr,Fun,Args) ->
-    case Addr#ref.ref of
-    {range,{X1,Y1,X2,Y2}} ->
-        lists:foreach( fun(X) -> 
-            lists:foreach( fun(Y) ->
-                apply(Fun,[Addr#ref{ref={cell,{X,Y}}},Args])
-            end,lists:seq(Y1,Y2))
-        end,lists:seq(X1,X2));
-    {cell,{X,Y}} ->
-        apply(Fun,[Addr,Args])
-    end.
-
-set_format(Addr, FormatString) ->
-    {erlang,{Type,Output}} = format:get_src(FormatString),
-    apply_range(Addr,fun set_format_on_cell/2,Output).
-    
-set_format_on_cell(Addr,Format) ->
-    hn_db:write_item(Addr#ref{name="__formatast"},Format),
-    case hn_db:get_item_val(Addr#ref{name=rawvalue}) of
-    [] -> ok;
-    [Value] ->
-        Val = hn_util:xml_to_val(Value),
-        {ok,{Colour,V}}=format:run_format(Val,Format),
-        hn_db:write_item(Addr#ref{name=value},[{string,[],[V]}])
-    end,
-    ok.
-    
-set_cell_rawvalue(Addr,[Value]) ->
-    hn_db:write_item(Addr#ref{name=rawvalue},[Value]),
-    case hn_db:get_item_val(Addr#ref{name="__formatast"}) of
-    [] -> 
-        hn_db:write_item(Addr#ref{name=value},[Value]);
-    Ast ->
-        Val = hn_util:xml_to_val(Value),
-        {ok,{Colour,V}}=format:run_format(Val,Ast),
-        hn_db:write_item(Addr#ref{name=value},[{string,[],[V]}]),
-        hn_db:write_item(Addr#ref{name=color},atom_to_list(Colour))
-    end.        
-
 set_cell(Addr, Val) ->
     #ref{site=Site, path=Path, ref={cell, {X, Y}}} = Addr,
     
@@ -161,7 +130,37 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
 
     hn_db:mark_dirty(Index,cell),    
     ok.
-       
+    
+set_cell_rawvalue(Addr,[Value]) ->
+    Val = hn_util:xml_to_val(Value),
+    hn_db:write_item(Addr#ref{name=rawvalue},[Value]),
+    {ok,Format} = hn_db:get_item_inherited(Addr#ref{name=format}, "General"),
+    {erlang,{Type,Output}} = format:get_src(Format),
+    {ok,{Color,V}}=format:run_format(Val,Output),
+    hn_db:write_item(Addr#ref{name=value},[{string,[],[V]}]),
+    hn_db:write_item(Addr#ref{name=color},atom_to_list(Color)),
+    ok.
+ 
+%%%-----------------------------------------------------------------
+%%% Function    : apply_range/2
+%%% Types       : 
+%%% Description : Apply a function to a range of cells, the 
+%%%               function called must take the address as the
+%%%               first arg
+%%%-----------------------------------------------------------------
+apply_range(Addr,Fun,Args) ->
+    case Addr#ref.ref of
+    {range,{X1,Y1,X2,Y2}} ->
+        lists:foreach( fun(X) -> 
+            lists:foreach( fun(Y) ->
+                apply(Fun,[Addr#ref{ref={cell,{X,Y}}},Args])
+            end,lists:seq(Y1,Y2))
+        end,lists:seq(X1,X2));
+    {cell,{_X,_Y}} ->
+        apply(Fun,[Addr,Args])
+    %% TODO : Add row / col / page?
+    end.
+    
 %%%-----------------------------------------------------------------
 %%% Function    : get_cell_info/2
 %%% Types       : 
@@ -170,7 +169,10 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
 %%%               parents/ dependancy tree, and value
 %%%-----------------------------------------------------------------
 get_cell_info(Site, Path, X, Y) ->
-    Ref = #ref{site=string:to_lower(Site),path=string:to_lower(Path),ref={cell,{X,Y}}},
+
+    NewPath = string:tokens(lists:flatten(Path),"/"),
+
+    Ref = #ref{site=string:to_lower(Site),path=NewPath,ref={cell,{X,Y}}},
     
     Value   = get_val(hn_db:get_item(Ref#ref{name=rawvalue})),
     DepTree = get_val(hn_db:get_item(Ref#ref{name='dependancy-tree'})),   
@@ -181,14 +183,14 @@ get_cell_info(Site, Path, X, Y) ->
     [{_, _, [V]}]       -> V %% Strip other type tags.
     end,
        
-    F = fun({url,[{type,Type}],[Url]}) ->
+    F = fun({url,[{type,Type}],[Url]}) -> 
         #page{site=S,path=P,ref={cell,{X1,Y1}}} = hn_util:parse_url(Url),
         {Type,{S,P,X1,Y1}}
     end,
     
-    Dep = lists:map(F,DepTree) ++ [{"local",{Site,Path,X,Y}}],
-    
-    {Val,Dep,[],[{"local",{Site,Path,X,Y}}]}.
+    Dep = lists:map(F,DepTree) ++ [{"local",{Site,NewPath,X,Y}}],
+        
+    {Val,Dep,[],[{"local",{Site,NewPath,X,Y}}]}.
        
 %%%-----------------------------------------------------------------
 %%% Function    : recalc/1
@@ -198,7 +200,7 @@ get_cell_info(Site, Path, X, Y) ->
 %%%               recalculate its value
 %%%-----------------------------------------------------------------
 recalc(Index) ->
-
+    io:format("recalc ~p~n",[Index]),
     #index{site=Site, path=Path, column=X, row=Y} = Index,
     Addr = #ref{site=Site, path=Path, ref={cell, {X, Y}}},
     
@@ -227,8 +229,11 @@ recalc(Index) ->
 %%%-----------------------------------------------------------------
 get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY)->
 
-    To = #index{site=FSite,path=FPath,column=FX,row=FY},
-    Fr = #index{site=TSite,path=TPath,column=TX,row=TY},
+    NewTPath = string:tokens(lists:flatten(TPath),"/"),
+    NewFPath = string:tokens(lists:flatten(FPath),"/"),
+    
+    To = #index{site=FSite,path=NewFPath,column=FX,row=FY},
+    Fr = #index{site=TSite,path=NewTPath,column=TX,row=TY},
 
     #incoming_hn{value=Val,deptree=T} = hn_db:get_hn(URL,Fr,To),
     
@@ -248,9 +253,9 @@ get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY)->
         {Type,{S,P,X,Y}}
     end,    
     
-    Dep = lists:map(F,T) ++ [{"remote",{FSite,FPath,FX,FY}}],
+    Dep = lists:map(F,T) ++ [{"remote",{FSite,NewFPath,FX,FY}}],
     
-    {RtVal,Dep,[],[{"remote",{FSite,FPath,FX,FY}}]}.
+    {RtVal,Dep,[],[{"remote",{FSite,NewFPath,FX,FY}}]}.
 
 %%%-----------------------------------------------------------------
 %%% Helper Functions

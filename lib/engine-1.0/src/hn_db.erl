@@ -19,6 +19,7 @@
 	 write_item/2,  
 	 get_item/1,
 	 get_item_val/1,  
+	 get_item_inherited/2,
 	 remove_item/1,
 	 get_ref_from_name/1,
 	 %% local_cell_link
@@ -69,8 +70,7 @@ write_item(Addr,Val) when is_record(Addr,ref) ->
                 )]),
                 
             gen_server:call(remoting_reg,{change,
-                Addr#ref.site,Addr#ref.path,Msg},?TIMEOUT)
-            
+                Addr#ref.site,Addr#ref.path,Msg},?TIMEOUT)        
         end
     end),
     
@@ -84,7 +84,13 @@ write_item(Addr,Val) when is_record(Addr,ref) ->
 %%               to a cell, all atributes referring to that cell, if
 %%               ref is a page, all cells / row / columns / ranges
 %%               in that page are returned
-%%--------------------------------------------------------------------    
+%%--------------------------------------------------------------------  
+match_address(Pattern) ->
+    {atomic, List} = mnesia:transaction(fun() ->
+        mnesia:match_object(hn_item,#hn_item{addr=Pattern,_='_'},read)    
+    end),
+    List.
+  
 get_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
     
     {atomic, List} = mnesia:transaction(fun() ->
@@ -130,7 +136,78 @@ get_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
             end, 
             List)
     end.
+ 
+%% @doc Get the value of a named attribute, if it doesnt exist for address
+%% check parent (cell -> range -> row -> column -> page -> root -> default)
+get_item_inherited(Addr,Default) ->
+
+    Return = case Addr#ref.ref of
+    {cell,_}  -> get_cell_inh(Addr);
+    {range,_} -> get_range_inh(Addr);
+    {row,_}   -> get_row_inh(Addr);
+    {col,_}   -> get_col_inh(Addr);
+    {page,_}  -> get_page_inh(Addr)
+    end,
     
+    case Return of 
+    {ok,Format} -> {ok,Format};
+    nomatch     -> {ok,Default}
+    end.
+
+get_page_inh(Addr) ->
+    get_page_inhx(Addr#ref{path=lists:reverse(Addr#ref.path)}).
+    
+get_page_inhx(#ref{site=Site,path=[],name=Name}) ->
+    case match_address(#ref{site=Site,path=[],ref={page,"/"},name=Name}) of
+    [] -> nomatch;
+    [#hn_item{val=Val}] -> {ok,Val}
+    end;
+    
+get_page_inhx(#ref{site=Site,path=[H|T],name=Name}) ->
+    Path = lists:reverse([H|T]),
+    match_stuff(
+        #ref{site=Site,path=T,name=Name},
+        #ref{site=Site,path=Path,ref={page,"/"},name=Name},
+        fun get_page_inh/1).
+
+get_col_inh(Addr) ->
+    case Addr#ref.ref of 
+    {cell,{_,Y}} -> match_stuff(Addr,Addr#ref{ref={col,Y}},fun get_page_inh/1);
+    _            -> get_page_inh(Addr)
+    end.
+
+get_row_inh(Addr) ->
+    case Addr#ref.ref of 
+    {cell,{X,_}} -> match_stuff(Addr,Addr#ref{ref={row,X}},fun get_page_inh/1);
+    _            -> get_page_inh(Addr)
+    end.
+
+get_cell_inh(Addr) ->
+    match_stuff(Addr,Addr,fun get_range_inh/1).
+    
+get_range_inh(Addr) ->
+    case match_address(Addr#ref{ref={range,'_'}}) of
+    [] -> get_row_inh(Addr);
+    List ->
+        case filter_range(List,Addr#ref.ref) of
+        nomatch -> get_row_inh(Addr);
+        Val     -> {ok,Val}
+        end
+    end.
+
+match_stuff(Addr,NewAddr,Fun) ->
+    case match_address(NewAddr) of 
+    [] -> Fun(Addr);
+    [#hn_item{val=Val}] -> {ok,Val}
+    end.
+
+filter_range([],_Cell)   -> nomatch;  
+filter_range([H|T],Cell) ->
+    case hn_util:in_range((H#hn_item.addr)#ref.ref,Cell) of
+    true -> H#hn_item.val;
+    _    -> filter_range(T,Cell)
+    end.
+        
 %%--------------------------------------------------------------------
 %% Function    : get_item_val/2
 %% 

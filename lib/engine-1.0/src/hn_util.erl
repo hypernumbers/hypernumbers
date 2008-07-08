@@ -18,6 +18,7 @@
     index_to_url/1,     page_to_index/1,    ref_to_str/1,
     hnxml_to_xml/1,     val_to_xml/1,       xml_to_val/1,
     item_to_xml/1,      xml_to_hnxml/1,
+    in_range/2,
     %% HTTP Utils
     req/1,              post/2,             post/3,
     parse_url/1,
@@ -39,7 +40,7 @@
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 index_to_url(#index{site=Site,path=Path,column=X,row=Y}) ->
-    lists:append([Site,Path,util2:make_b26(X),text(Y)]).
+    lists:append([Site,string:join(Path,"/"),"/",util2:make_b26(X),text(Y)]).
     
 page_to_index(#page{site=Site,path=Path,ref={cell,{X,Y}}}) ->
     #index{site=Site,path=Path,column=X,row=Y}.
@@ -124,6 +125,9 @@ item_to_xml(#hn_item{addr=A,val=V}) ->
                 [V], lists:map(fun hnxml_to_xml/1, V))
         }
     ]}.
+    
+in_range({range,{X1,Y1,X2,Y2}},{cell,{X,Y}}) ->
+    Y >= Y1 andalso Y =< Y2 andalso X >= X1 andalso X =< X2.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -160,11 +164,11 @@ parse_url(Url) when is_record(Url,url) ->
     {Format,Vars} = format_vars(Url#url.querypart),
 
     {Ref,Path} = case lists:last(Url#url.path) of
-        $/ -> {"/",Url#url.path};
+        $/ -> {"/",string:tokens(Url#url.path,"/")};
         _  ->
             Tokens = string:tokens(Url#url.path,"/"),
             [TmpRef|T] = lists:reverse(Tokens),
-            {TmpRef,util2:repath(T)}
+            {TmpRef,lists:reverse(T)}
     end,
 
     RefType = parse_reference(Ref),
