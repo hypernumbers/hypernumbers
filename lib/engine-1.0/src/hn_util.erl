@@ -40,7 +40,7 @@
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 index_to_url(#index{site=Site,path=Path,column=X,row=Y}) ->
-    lists:append([Site,string:join(Path,"/"),"/",util2:make_b26(X),text(Y)]).
+    lists:append([Site, string:join([Path], "/"), "/", tconv:to_b26(X), text(Y)]).
     
 page_to_index(#page{site=Site,path=Path,ref={cell,{X,Y}}}) ->
     #index{site=Site,path=Path,column=X,row=Y}.
