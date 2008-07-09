@@ -6,6 +6,34 @@
 %%% TODO:
 %%% * Proper types for #datetime's, not just tuple()'s.
 
+%%%----------------------------------------------------------------------------
+%%% Re the infamous Excel Windows leap year bug...
+%%%
+%%% Problem: Excel on Windows kept compatibility with Lotus 1-2-3 and treated
+%%% 1900 as a leap year, which means that in Excel on Windows:
+%%% 1 means 1/1/1900
+%%% 2 ----> 2/1/1900
+%%% 3 ----> 3/1/1900
+%%% ... and so on until ...
+%%% 59 ---> 28/2/1900
+%%% 60 ---> 29/2/1900
+%%% 61 ---> 1/3/1900
+%%% 62 ---> 2/3/1900
+%%% Which numbers that represent dates after 28/2/1900 are larger than they
+%%% should be by 1.
+%%%
+%%% OO Calc chose to fix the problem by setting their epoch to 31/12/1899, which
+%%% from Excel user's point of view breaks all dates between 1/1/1900 and
+%%% 29/2/1900 (yep, the non-existent one). This however ensures that all dates
+%%% 1/3/1900 onwards work.
+%%%
+%%% This is a fair trade-off for OO Calc because they have to operate within
+%%% the constraints of XLS files. We don't.
+%%% The approach I've taken to converting dates (see code for details) is to
+%%% break the behavior of 60 which will be converted to 1/3/1900 for
+%%% Hypernumbers, but keep the behavior of ALL other dates as expected.
+%%%----------------------------------------------------------------------------
+
 -module(muin_date).
 
 -export([excel_mac_to_gregorian/1, excel_win_to_gregorian/1,
@@ -16,17 +44,8 @@
          from_gregorian_seconds/1,
          mtest/0]).
 
-%%-include("handy_macros.hrl").
 -include("muin_records.hrl").
 
-%% Epochs are defined in Section 5.28 of the excelfileformatV1-41.pdf
-%% Windows has the Lotus-1-2-3 bug where it adds a 
-%% leap year in 1900 - the OO documentation saying the Windows epoch
-%% begins in 31/12/1899 (the Windows docos say it is 1/1/1900)
-%% This is because Open Office took a decision to make all dates
-%% between 31/12/1899 and 29/2/1900 'buggy'
-%% http://blogs.msdn.com/brian_jones/archive/2006/10/25/spreadsheetml-dates.aspx
-%% we need to fix this...
 -define(EXCEL_MAC_EPOCH, {1904, 1, 1}).
 -define(EXCEL_WIN_EPOCH, {1900, 1, 1}).
 -define(NUM_SECONDS_IN_A_DAY, 86400).
@@ -169,8 +188,7 @@ excel_to_gregorian(N, Epoch) when is_integer(N) -> % day only, no time
     #datetime{date = Date};
 excel_to_gregorian(F, Epoch) when is_float(F) ->
     Daysxl = trunc(F),
-    io:format("in muin_date:excel_to_gregorian Daysxl is ~p~n",[Daysxl]),
-    Numdays = get_numdays(Daysxl,Epoch),
+    Numdays = get_numdays(Daysxl, Epoch),
     Date = calendar:gregorian_days_to_date(Numdays),
     Time = dayftotime(F - Daysxl),
     Numsecs = calendar:datetime_to_gregorian_seconds({Date, Time}),
@@ -187,51 +205,84 @@ dayftotime(F) when is_float(F) andalso F < 1 ->
     io:format("in muin_date:dayftotime F is ~p Numsecs is ~p Hour is ~p Minutes is ~p Second is ~p~n",[F,Numsecs,Hour,Minute,second]),
     {Hour, Minute, Second}.
 
-%% @spec get_numdays(integer(),atom()) -> tuple()
-%% @doc converts Excel number of days since the epoch to times.
-get_numdays(N,Epoch)->
-    case Epoch of
-	macintosh -> Epoch2=?EXCEL_MAC_EPOCH,
-		     calendar:date_to_gregorian_days(Epoch2) + N - 1;
-	windows   -> Epoch2=?EXCEL_WIN_EPOCH,
-		     %% If we are in Windows numbering reset day 60 (eg 29/2/1900 
-		     %% which is a non-existant leap year) back to 28/2/1900
-		     if
-			 N >= 60 -> calendar:date_to_gregorian_days(Epoch2)+N-2;
-			 true    -> calendar:date_to_gregorian_days(Epoch2)+N-1
-		     end
-    end.
+%% @spec get_numdays(integer(), atom()) -> tuple()
+%% @doc Returns the number of Gregorian dates for Excel's number depending on
+%% epoch. To fix Excel's leap year bug on Windows, both 60 and 61 are taken to
+%% represent Mar 1 1900. All other numbers work as expected. (See tests.)
+get_numdays(N, macintosh) ->
+    calendar:date_to_gregorian_days(?EXCEL_MAC_EPOCH) + N;
+get_numdays(N, windows) when N =< 60 ->
+    calendar:date_to_gregorian_days(?EXCEL_WIN_EPOCH) + N - 1;
+get_numdays(N, windows) ->
+    calendar:date_to_gregorian_days(?EXCEL_WIN_EPOCH) + N - 2.
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -include_lib("eunit/include/eunit.hrl").
--define(d(N, Y, M, D),
+-define(dm(N, Y, M, D),
         ?_assert(excel_mac_to_gregorian(N) ==
                  #datetime{date = {Y, M, D}})).
--define(dt(F, Y, M, D, H, Min, S),
+-define(dtm(F, Y, M, D, H, Min, S),
         ?_assert(excel_mac_to_gregorian(F) ==
                  #datetime{date = {Y, M, D}, time = {H, Min, S}})).
 
+-define(dw(N, Y, M, D),
+        ?_assert(excel_win_to_gregorian(N) ==
+                 #datetime{date = {Y, M, D}})).
+-define(dtw(F, Y, M, D, H, Min, S),
+        ?_assert(excel_win_to_gregorian(F) ==
+                 #datetime{date = {Y, M, D}, time = {H, Min, S}})).
+
+excel_win_to_gregorian_test_() ->
+    [
+     %% IMPORTANT: Excel Windows starts from 1, Excel Mac starts from 0.
+     ?dw(1,  1900, 1, 1),
+
+     ?dw(2,  1900, 1, 2),
+     ?dw(31, 1900, 1, 31),
+     ?dw(32, 1900, 2, 1),
+     ?dw(59, 1900, 2, 28),
+     ?dw(60, 1900, 3, 1), % Resets to Mar 1 instead of Feb 29.
+     ?dw(61, 1900, 3, 1),
+     ?dw(62, 1900, 3, 2),
+
+     ?dw(13687, 1937, 6, 21),
+     ?dw(15104, 1941, 5, 8),
+     ?dw(30179, 1982, 8, 16),
+     ?dw(35063, 1995, 12, 30),
+     ?dw(35064, 1995, 12, 31),
+     ?dw(48944, 2033, 12, 31)
+     
+    ].
+
 excel_mac_to_gregorian_test_() ->
     [
-     %% Whole days.
-     ?d(0, 1904, 1, 1),
-     ?d(1, 1904, 1, 2),
-     ?d(13687, 1941, 6, 22),
-     ?d(15104, 1945, 5, 9),
-     ?d(30179, 1986, 8, 17),
-     ?d(35063, 1999, 12, 31),
-     ?d(35064, 2000, 1, 1),
-     ?d(48944, 2038, 1, 1),
+     ?dm(0, 1904, 1, 1),
+
+     ?dm(1,  1904, 1, 2),
+     ?dm(2,  1904, 1, 3),
+     ?dm(31, 1904, 2, 1),
+     ?dm(32, 1904, 2, 2),
+     ?dm(59, 1904, 2, 29),
+     ?dm(60, 1904, 3, 1),
+     ?dm(61, 1904, 3, 2),
+     ?dm(62, 1904, 3, 3),
+     
+     ?dm(13687, 1941, 6, 22),
+     ?dm(15104, 1945, 5, 9),
+     ?dm(30179, 1986, 8, 17),
+     ?dm(35063, 1999, 12, 31),
+     ?dm(35064, 2000, 1, 1),
+     ?dm(48944, 2038, 1, 1),
 
      %% Date and time.
      %% TODO: Some dates come out off by a second - investigate.
-     ?dt(38161.53911, 2008, 6,  24, 12, 56, 19),
-     %%?dt(30179.00273, 1986, 8,  17, 0,  3,  56),
-     ?dt(13687.16667, 1941, 6,  22, 4,  0,  0),
-     ?dt(67831.98778, 2089, 9,  17, 23, 42, 24)
-     %%?dt(123456.789,  2242, 1,  4,  18, 56, 10)
-     %%?dt(9801.00001,  1930, 11, 1,  0,  0,  1)
+     ?dtm(38161.53911, 2008, 6,  24, 12, 56, 19),
+     %?dmt(30179.00273, 1986, 8,  17, 0,  3,  56),
+     ?dtm(13687.16667, 1941, 6,  22, 4,  0,  0),
+     ?dtm(67831.98778, 2089, 9,  17, 23, 42, 24)
+     %%?dmt(123456.789,  2242, 1,  4,  18, 56, 10)
+     %%?dmt(9801.00001,  1930, 11, 1,  0,  0,  1)
     ].
 
 next_date_test_() ->
@@ -260,5 +311,4 @@ foldl_test_() ->
 	      end,
 	      [],
 	      #datetime{date = {2008, 6, 30}}, #datetime{date = {2008, 7, 2}}) == [30, 1, 2])
-
     ].
