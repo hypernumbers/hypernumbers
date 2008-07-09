@@ -3,7 +3,7 @@
 
 files = ["stdfuns_stats.erl", "stdfuns_math.erl", "stdfuns_text.erl",
          "stdfuns_info.erl", "stdfuns_logical.erl", "stdfuns_financial.erl",
-         "stdfuns_eng.erl"]
+         "stdfuns_eng.erl", "stdfuns_date.erl"]
 
 def get_export_list(file)
   ls = IO.readlines("../../lib/formula_engine-1.0/src/#{file}")

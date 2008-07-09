@@ -13,13 +13,13 @@
          edate/1,
          eomonth/1,
          networkdays/1,
-         today/0,
+         today/1,
          weekday/1,
          weeknum/1,
          hour/1,
          minute/1,
          second/1,
-         now/0,
+         now/1,
          timevalue/1]).
 
 -include("typechecks.hrl").
@@ -157,7 +157,7 @@ networkdays1(Start, End, Holidays) ->
 
 %% TODO: Potential for confusion if user & server are in different timezones, e.g.
 %% a Japanese user on a Californian server...
-today() ->
+today([]) ->
     {Date, _Time} = calendar:now_to_universal_time(erlang:now()),
     #datetime{date = Date}.
 
@@ -210,7 +210,7 @@ second([V1]) ->
     Dt = ?date(V1, [cast_strings]),
     muin_date:second(Dt).
 
-now() ->
+now([]) ->
     {Date, Time} = calendar:now_to_universal_time(erlang:now()),
     #datetime{date = Date, time = Time}.
 

@@ -10,6 +10,7 @@
 -include("yaws.hrl").
 -include("yaws_api.hrl").
 -include("handy_macros.hrl").
+-include("muin_records.hrl").
 
 -record(upload, {fd,filename, last}).
 
@@ -65,6 +66,7 @@ hnxml_to_xml({string,Attr,Val})     -> {string,Attr,Val};
 hnxml_to_xml({integer,Attr,[Val]})  -> {integer,Attr,[integer_to_list(Val)]};
 hnxml_to_xml({float,Attr,[Val]})    -> {float,Attr,[float_to_list(Val)]};
 hnxml_to_xml({boolean,Attr,[Val]})  -> {boolean,Attr,[atom_to_list(Val)]};
+hnxml_to_xml({datetime, Attr, [Secs]}) -> {datetime, Attr, [integer_to_list(Secs)]};
 hnxml_to_xml({error,Attr,[Val]})    -> {error,Attr,[atom_to_list(Val)]};
 hnxml_to_xml({matrix,Attr,Rows}) -> 
     NewRows = lists:map(
@@ -83,7 +85,8 @@ xml_to_hnxml({integer,[],[V]}) -> {integer,[],[list_to_integer(V)]};
 xml_to_hnxml({error,[],[V]})   -> {error,[],[list_to_atom(V)]};
 xml_to_hnxml({boolean,[],[V]}) -> {boolean,[],[list_to_atom(V)]};
 xml_to_hnxml({blank,[],[]})    -> {blank,[],[]};
-xml_to_hnxml({matrix,[],Rows}) -> {matrix,[],Rows}.
+xml_to_hnxml({matrix,[],Rows}) -> {matrix,[],Rows};
+xml_to_hnxml({datetime, [], [Secs]}) -> {datetime, [], [list_to_integer(Secs)]}.
 
 %% convert raw values into 'hnxml' format, which is simplexml
 %% but with raw values stored as native types instead of strings
@@ -92,6 +95,11 @@ val_to_xml(false) -> {boolean,[],[false]};
 val_to_xml(Ref) when is_atom(Ref)    -> {error,[],[Ref]};
 val_to_xml(Ref) when is_float(Ref)   -> {float,[],[Ref]};
 val_to_xml(Ref) when is_integer(Ref) -> {integer,[],[Ref]};
+%% #datetime records get stored as {date, N} tuples, where N is number of
+%% Gregorian seconds representing the same date & time.
+val_to_xml(#datetime{date = Date, time = Time}) ->
+    Secs = calendar:datetime_to_gregorian_seconds({Date, Time}),
+    {datetime, [], [Secs]};
 val_to_xml(Ref) when is_list(Ref) -> 
     case io_lib:char_list(Ref) of
     %% Normal String
@@ -111,6 +119,7 @@ xml_to_val({error,[],[Ref]})     -> Ref;
 xml_to_val({float,[],[Ref]})     -> Ref;
 xml_to_val({integer,[],[Ref]})   -> Ref;
 xml_to_val({string,[],[Ref]})    -> Ref;
+xml_to_val({datetime, [], [Ref]}) -> Ref;
 xml_to_val(Else)                 -> Else.
 
 %% Turn a hn_item record into its xml <ref> display

@@ -13,6 +13,7 @@
          hour/1, minute/1, second/1,
          gt/2, dtdiff/2,
          next_day/1, foldl/4,
+         from_gregorian_seconds/1,
          mtest/0]).
 
 %%-include("handy_macros.hrl").
@@ -140,6 +141,14 @@ foldl(Fun, Acc, Start, End) ->
             Nacc = Fun(Start, Acc),
             foldl(Fun, Nacc, next_day(Start), End)
     end.
+
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%% @spec from_gregorian_seconds(int()) -> tuple()
+%% @doc Creates a #datetime record from N Gregorian seconds.
+%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+from_gregorian_seconds(N) when is_integer(N) ->
+    {Date, Time} = calendar:gregorian_seconds_to_datetime(N),
+    #datetime{date = Date, time = Time}.
 
 %% For testing in the shell.
 mtest() ->

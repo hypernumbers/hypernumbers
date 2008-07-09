@@ -49,16 +49,23 @@ set_attribute(Ref,Val) -> hn_db:write_item(Ref,Val).
 %%% Description : process the string input to a cell
 %%%-----------------------------------------------------------------
 set_cell(Addr, Val) ->
-    #ref{site=Site, path=Path, ref={cell, {X, Y}}} = Addr,
-    
     case superparser:process(Val) of
-        {formula, Formula} ->
-            Bindings = [{site, Site},{path, Path},{x, X},{y, Y}],
-            {Pcode, Resval, Npar, Ndep, Recompile} = 
-                run_formula(Formula, {X, Y}, Bindings),
+        {formula, Fla} ->
+            {Pcode, Res, Parents, Deptree, Recompile} = muin:run_formula(Fla, Addr),
+
+            %% Convert stuff to SimpleXML.
+            ToSimpleXml = fun({Type, {S, P, X1, Y1}}) ->
+                                  Url = hn_util:index_to_url({index, S, P,
+                                                              X1, Y1}),
+                                  {url, [{type, Type}], [Url]}
+                          end,
+            Parxml = map(ToSimpleXml, Parents),
+            Deptreexml = map(ToSimpleXml, Deptree),
+            Resxml = hn_util:val_to_xml(Res),
+
             ?IF(Pcode =/= nil, db_put(Addr, "__ast", Pcode)),
             ?IF(Recompile == true, db_put(Addr, "__recompile", true)),
-            write_cell(Addr, [Resval], "=" ++ Formula, Npar, Ndep);
+            write_cell(Addr, [Resxml], "=" ++ Fla, Parxml, Deptreexml);
         {int, N}    ->
             write_cell(Addr, [{integer, [], [N]}], integer_to_list(N), [], []);
         {float, N}  ->
@@ -178,9 +185,10 @@ get_cell_info(Site, Path, X, Y) ->
     DepTree = get_val(hn_db:get_item(Ref#ref{name='dependancy-tree'})),   
 
     Val = case Value of
-    []                  -> blank;
-    [{matrix, _, [V]}]  -> {matrix, V};
-    [{_, _, [V]}]       -> V %% Strip other type tags.
+              []                   -> blank;
+              [{matrix, _, [V]}]   -> {matrix, V};
+              [{datetime, _, [N]}] -> muin_date:from_gregorian_seconds(N);
+              [{_, _, [V]}]        -> V %% Strip other type tags.
     end,
        
     F = fun({url,[{type,Type}],[Url]}) -> 
@@ -200,22 +208,20 @@ get_cell_info(Site, Path, X, Y) ->
 %%%               recalculate its value
 %%%-----------------------------------------------------------------
 recalc(Index) ->
-    io:format("recalc ~p~n",[Index]),
     #index{site=Site, path=Path, column=X, row=Y} = Index,
     Addr = #ref{site=Site, path=Path, ref={cell, {X, Y}}},
-    
+
+    %% Muin flags cells to force full recompile if parents may change.
     case hn_db:get_item_val(Addr#ref{name="__recompile"}) of
-    %% Muin flags cells to force full recompile if parents may change
-    true ->
-        set_cell(Addr,hn_db:get_item_val(Addr#ref{name=formula}));
-    _ ->
-        Pcode = hn_db:get_item_val(Addr#ref{name="__ast"}),
-        Bindings = [{site, Site}, {path, Path}, {x, X}, {y, Y}],
-        Val = case muin:run(Pcode, Bindings) of
-        {ok, {V, _, _, _, _}} ->                hn_util:val_to_xml(V);
-        {error, Reason} when is_atom(Reason) -> {error, [], [Reason]}
-        end,
-        set_cell_rawvalue(Addr,[Val])
+        true ->
+            set_cell(Addr,hn_db:get_item_val(Addr#ref{name=formula}));
+        _ ->
+            Pcode = hn_db:get_item_val(Addr#ref{name="__ast"}),
+            Val = case muin:run_code(Pcode, Addr) of
+                      {ok, {V, _, _, _, _}} ->                hn_util:val_to_xml(V);
+                      {error, Reason} when is_atom(Reason) -> {error, [], [Reason]}
+                  end,
+            set_cell_rawvalue(Addr,[Val])
     end,
     
     hn_db:mark_dirty(Index, cell),
@@ -269,25 +275,3 @@ db_put(Addr,Name,Value) ->
     
 to_index(#ref{site=Site,path=Path,ref={cell,{X,Y}}}) ->
     #index{site=Site,path=Path,column=X,row=Y}.
-       
-%% Runs the formula through Muin and returns the tuple
-%% {CompiledFormula, ValueAsSimpleXML, Parents, Dependencies}
-run_formula(Formula, {X, Y}, Bindings) ->
-    case muin:compile(Formula, {X, Y}) of
-    {ok, Pcode} ->
-        case muin:run(Pcode, Bindings) of
-        {ok, {Val, Deptree, _, Parents, Recompile}} ->
-            %% Transform parents and deptree to simplexml
-            F = fun({Type, {S, P, X1, Y1}}) ->
-                Url = hn_util:index_to_url({index, S, P, X1, Y1}),
-                {url, [{type, Type}], [Url]}
-            end,
-            Npar = lists:map(F, Parents),
-            Ndep = lists:map(F, Deptree),
-            {Pcode, hn_util:val_to_xml(Val), Npar, Ndep, Recompile};
-        {error, Reason} when is_atom(Reason) ->
-            {nil, {error, [], [Reason]}, [], [],true}
-        end;
-   {error, error_in_formula} ->
-        {nil, {string, [], "Invalid formula"}, [], [],true}
-    end.

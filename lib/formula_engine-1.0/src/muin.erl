@@ -2,8 +2,9 @@
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 
 -module(muin).
--export([compile/2, run/2]).
-%%-export([run/0]).
+-export([compile/2,
+         run_formula/2,
+         run_code/2]).
 
 -compile(export_all).
 
@@ -37,11 +38,28 @@ compile(Fla, {X, Y}) ->
             {error, error_in_formula}
     end.
 
+%% @doc Runs formula given as a string.
+run_formula(Fla, Bindings) when is_list(Fla) andalso is_record(Bindings, ref) ->
+    {cell, {X, Y}} = Bindings#ref.ref,
+    case compile(Fla, {X, Y}) of
+        {ok, Ecode} ->
+            case muin:run_code(Ecode, Bindings) of
+                {ok, {Val, Deptree, _, Parents, Recompile}} ->
+                    {Ecode, Val, Deptree, Parents, Recompile};
+                {error, Reason} ->
+                    {error, Reason}
+            end;
+        {error, error_in_formula} ->
+            {error, error_in_formula}
+    end.
+
 %% @doc Runs compiled formula.
-run(Pcode, Bindings) ->
-    %% Populate the process dictionary.
-    foreach(fun({K, V}) -> put(K, V) end,
-            Bindings ++ [{retvals, {[], [], []}}]),
+run_code(Pcode, #ref{site = Site, path = Path, ref = {cell, {X, Y}}}) ->
+    put(site, Site),
+    put(path, Path),
+    put(x, X),
+    put(y, Y),
+    put(retvals, {[], [], []}),
     put(recompile, false),
     case attempt(?MODULE, eval, [Pcode]) of
         {ok, Val} ->
