@@ -140,20 +140,20 @@ networkdays([V1, V2, V3]) ->
                end,
     networkdays1(Start, End, Holidays).
 networkdays1(Start, End, Holidays) ->
-    muin_date:foldl(fun(X, Acc) ->
-                            case calendar:day_of_the_week(X#datetime.date) of
-                                6 -> Acc; % Saturday
-                                7 -> Acc; % Sunday
-                                _ ->      % Check if the date falls on holiday
-                                    %% FIXME: Will break on #datetimes with the same date
-                                    %% but different time fields.
-                                    case member(X, Holidays) of
-                                        true -> Acc;
-                                        false -> Acc + 1
-                                    end
-                            end
-                    end,
-                    0, Start, End).
+    muin_date:walk(fun(X, Acc) ->
+                           case calendar:day_of_the_week(X#datetime.date) of
+                               6 -> Acc; % Saturday
+                               7 -> Acc; % Sunday
+                               _ ->      % Check if the date falls on holiday
+                                   %% FIXME: Will break on #datetimes with the same date
+                                   %% but different time fields.
+                                   case member(X, Holidays) of
+                                       true -> Acc;
+                                       false -> Acc + 1
+                                   end
+                           end
+                   end,
+                   0, Start, End).
 
 %% TODO: Potential for confusion if user & server are in different timezones, e.g.
 %% a Japanese user on a Californian server...
@@ -188,15 +188,15 @@ weeknum([V1, V2]) ->
             ?ERR_NUM),
     weeknum1(Dt, Rettype).
 weeknum1(Dt, Rettype) ->
-    muin_date:foldl(fun(X, Acc) ->
-                            case weekday1(X, Rettype) of
-                                1 -> Acc + 1; % Sunday for Rettype = 1, Monday for 2.
-                                _ -> Acc
-                            end
-                    end,
-                    1,
-                    #datetime{date = {muin_date:year(Dt), 1, 1}},
-                    #datetime{date = {muin_date:year(Dt), 12, 31}}).
+    muin_date:walk(fun(X, Acc) ->
+                           case weekday1(X, Rettype) of
+                               1 -> Acc + 1; % Sunday for Rettype = 1, Monday for 2.
+                               _ -> Acc
+                           end
+                   end,
+                   1,
+                   #datetime{date = {muin_date:year(Dt), 1, 1}},
+                   #datetime{date = {muin_date:year(Dt), 12, 31}}).
 
 hour([V1]) ->
     Dt = ?date(V1, [cast_strings]),
@@ -217,7 +217,7 @@ now([]) ->
 timevalue([V1]) ->
     ?date(V1, [cast_strings]).
 
-    
+
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -include_lib("eunit/include/eunit.hrl").
@@ -272,23 +272,23 @@ datedif_test_() ->
      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
                        #datetime{date = {1987, 8, 17}},
                        "YM") == 0),
-%%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
-%%                        #datetime{date = {1987, 8, 16}},
-%%                        "YM") == 11),
+     %%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
+     %%                        #datetime{date = {1987, 8, 16}},
+     %%                        "YM") == 11),
      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
                        #datetime{date = {1987, 8, 18}},
                        "YM") == 0),
-     
+
      %% Days -- years ignorned
-%%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
-%%                        #datetime{date = {1987, 8, 17}},
-%%                        "YD") == 0),
-%%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
-%%                        #datetime{date = {1987, 8, 16}},
-%%                        "YD") == 364),
-%%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
-%%                        #datetime{date = {1987, 8, 18}},
-%%                        "YD") == 1),
+     %%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
+     %%                        #datetime{date = {1987, 8, 17}},
+     %%                        "YD") == 0),
+     %%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
+     %%                        #datetime{date = {1987, 8, 16}},
+     %%                        "YD") == 364),
+     %%      ?_assert(datedif1(#datetime{date = {1986, 8, 17}},
+     %%                        #datetime{date = {1987, 8, 18}},
+     %%                        "YD") == 1),
 
      ?_assert(true)
     ].
