@@ -393,7 +393,7 @@ write_remote_link(Parent,Child,Type) ->
         Children = [{url,[{type,"remote"}],[hn_util:index_to_url(Child)]}
             | get_item_val(ParentRef)],
             
-        hn_db:write_item(ParentRef,Children),   
+        hn_db:write_item(ParentRef,{xml,Children}),   
     
         Link = #remote_cell_link{parent=Parent,child=Child,type=Type},
         case mnesia:match_object(Link) of
@@ -464,9 +464,8 @@ dirty_refs_changed(dirty_cell, Ref) ->
         {ok,list_hn(Links,[]),read_links(Ref,parent)}
     end),
 
-    [V] = get_item_val((to_ref(Ref))#ref{name=value}),
-    Val = hn_util:xml_to_val(V),
-    
+    Val = get_item_val((to_ref(Ref))#ref{name=rawvalue}),
+
     %% Update local cells
     lists:foreach(
         fun({local_cell_link, _, RefTo}) ->
@@ -474,7 +473,7 @@ dirty_refs_changed(dirty_cell, Ref) ->
         end,
         Local
     ),
-
+    
     %Update Remote Hypernumbers
     lists:foreach(
         fun(Cell) ->
@@ -545,7 +544,7 @@ update_hn(From,Bic,Val,_Version)->
         Rec   = #incoming_hn{ remote = Index, biccie = Bic, _='_'},
         [Obj] = mnesia:match_object(Rec),
 
-        mnesia:write(Obj#incoming_hn{value=hn_util:xml_to_hnxml(Val)}),
+        mnesia:write(Obj#incoming_hn{value=hn_util:xml_to_val(Val)}),
         mark_dirty(Index,hypernumber),
 
         ok
@@ -581,7 +580,7 @@ get_hn(Url,_From,To)->
             } = simplexml:from_xml_string(XML),
             
             HNumber = #incoming_hn{
-                value   = hn_util:xml_to_hnxml(Val),
+                value   = hn_util:xml_to_val(Val),
                 deptree = Tree,
                 remote  = To,
                 biccie  = util2:get_biccie()},
@@ -622,7 +621,7 @@ notify_remote_change(Hn,Value) ->
     
     {Server,Cell} = Hn#outgoing_hn.index,
     Version = hn_util:text(Hn#outgoing_hn.version + 1),
-    io:format("in hn_db:notify_remote_change *WARNING* notify remote change not using "++
+    error_logger:error_msg("in hn_db:notify_remote_change *WARNING* notify remote change not using "++
 	      "version number ~p - ie it aint working - yet :(",[Version]),
 
     Actions = simplexml:to_xml_string(
@@ -630,7 +629,7 @@ notify_remote_change(Hn,Value) ->
             {biccie,      [],[Hn#outgoing_hn.biccie]},
             {cell,        [],[hn_util:index_to_url(Cell)]},
             {type,        [],["change"]},
-            {value,       [],[hn_util:hnxml_to_xml(hn_util:val_to_xml(Value))]},
+            {value,       [],hn_util:to_xml(Value)},
             {version,     [],["1"]}
         ]}),
  

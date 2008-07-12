@@ -17,9 +17,10 @@
 -export([
     %% HyperNumbers Utils
     index_to_url/1,     page_to_index/1,    ref_to_str/1,
-    hnxml_to_xml/1,     val_to_xml/1,       xml_to_val/1,
-    item_to_xml/1,      xml_to_hnxml/1,
+    xml_to_val/1,
+    item_to_xml/1,
     in_range/2,
+    to_xml/1,
     %% HTTP Utils
     req/1,              post/2,             post/3,
     parse_url/1,
@@ -53,90 +54,49 @@ ref_to_str({column,X})   -> tconv:to_b26(X);
 ref_to_str({range,{X1,Y1,X2,Y2}}) ->
     tconv:to_b26(X1)++text(Y1)++":"++tconv:to_b26(X2)++text(Y2).
 
- 
-%% TODO :   Seriously strip down this code and clean it out
-%%          val_to_xml makes assertions on type and can be 
-%%          taken out if the compiler returned type
 
-%% Because we dont want to discard native types for internal storage 
-%% (ie floats stay stored as float, even in the xml structure)
-%% we need to change 'hnxml' to real xml, which stores
-%% everything as strings
-hnxml_to_xml({string,Attr,Val})     -> {string,Attr,Val};
-hnxml_to_xml({integer,Attr,[Val]})  -> {integer,Attr,[integer_to_list(Val)]};
-hnxml_to_xml({float,Attr,[Val]})    -> {float,Attr,[float_to_list(Val)]};
-hnxml_to_xml({boolean,Attr,[Val]})  -> {boolean,Attr,[atom_to_list(Val)]};
-hnxml_to_xml({datetime, Attr, [Secs]}) -> {datetime, Attr, [integer_to_list(Secs)]};
-hnxml_to_xml({error,Attr,[Val]})    -> {error,Attr,[atom_to_list(Val)]};
-hnxml_to_xml({matrix,Attr,Rows}) -> 
-    NewRows = lists:map(
-        fun({row,A,Val}) ->
-            {row,A,lists:map(fun hnxml_to_xml/1, Val)}
-        end, 
-        Rows),
-    {matrix,Attr,NewRows};
-%% we have custom types (dependancy-tree etc), these are required
-%% to be valid xml before stored
-hnxml_to_xml(Else) -> Else.
-
-xml_to_hnxml({string,[],[V]})  -> {string,[],[V]};
-xml_to_hnxml({float,[],[V]})   -> {float,[],[list_to_float(V)]};
-xml_to_hnxml({integer,[],[V]}) -> {integer,[],[list_to_integer(V)]};
-xml_to_hnxml({error,[],[V]})   -> {error,[],[list_to_atom(V)]};
-xml_to_hnxml({boolean,[],[V]}) -> {boolean,[],[list_to_atom(V)]};
-xml_to_hnxml({blank,[],[]})    -> {blank,[],[]};
-xml_to_hnxml({matrix,[],Rows}) -> {matrix,[],Rows};
-xml_to_hnxml({datetime, [], [Secs]}) -> {datetime, [], [list_to_integer(Secs)]}.
-
-%% convert raw values into 'hnxml' format, which is simplexml
-%% but with raw values stored as native types instead of strings
-val_to_xml(true)  -> {boolean,[],[true]};
-val_to_xml(false) -> {boolean,[],[false]};
-val_to_xml(Ref) when is_atom(Ref)    -> {error,[],[Ref]};
-val_to_xml(Ref) when is_float(Ref)   -> {float,[],[Ref]};
-val_to_xml(Ref) when is_integer(Ref) -> {integer,[],[Ref]};
-%% #datetime records get stored as {date, N} tuples, where N is number of
-%% Gregorian seconds representing the same date & time.
-val_to_xml(#datetime{date = Date, time = Time}) ->
-    Secs = calendar:datetime_to_gregorian_seconds({Date, Time}),
-    {datetime, [], [Secs]};
-val_to_xml(Ref) when is_list(Ref) -> 
-    case io_lib:char_list(Ref) of
-    %% Normal String
-    true  -> {string,[],[Ref]};
-    %% Currently only matrix is other valid type
-    false ->
-        F = fun(X) ->
-            {row,[],lists:map(fun val_to_xml/1 ,X)}
-        end,
-        {matrix,[], lists:map(F,Ref)}
-    end.
-        
-%%  Pull the value out of 'hnxml'
 xml_to_val({boolean,[],[true]})  -> true;
 xml_to_val({boolean,[],[false]}) -> false;
 xml_to_val({error,[],[Ref]})     -> Ref;
-xml_to_val({float,[],[Ref]})     -> Ref;
-xml_to_val({integer,[],[Ref]})   -> Ref;
+xml_to_val({float,[],[Ref]})     -> list_to_float(Ref);
+xml_to_val({int,[],[Ref]})       -> list_to_integer(Ref);
 xml_to_val({string,[],[Ref]})    -> Ref;
 xml_to_val({datetime, [], [Ref]}) -> Ref;
 xml_to_val(Else)                 -> Else.
 
 %% Turn a hn_item record into its xml <ref> display
 item_to_xml(#hn_item{addr=A,val=V}) ->
-
     Type = hn_util:text(element(1,A#ref.ref)),
     Str  = hn_util:ref_to_str(A#ref.ref),
     
-    {ref,[{type,Type},{ref,Str}],[
-        {A#ref.name,[],
-            ?COND(io_lib:char_list(V) == true, 
-                [V], lists:map(fun hnxml_to_xml/1, V))
-        }
-    ]}.
+    Value = case A#ref.name of
+    value    -> to_xml(V);
+    rawvalue -> to_xml(V);
+    Else     -> to_val(V)
+    end,
+    
+    {ref,[{type,Type},{ref,Str}],[{A#ref.name,[], Value}]}.
     
 in_range({range,{X1,Y1,X2,Y2}},{cell,{X,Y}}) ->
     Y >= Y1 andalso Y =< Y2 andalso X >= X1 andalso X =< X2.
+
+to_val({xml,Xml}) -> Xml;
+to_val(Else) ->
+    case io_lib:char_list(Else) of
+    true  -> [Else];
+    false -> throw({unmatched_type,Else})
+    end.
+
+to_xml(true)  -> [{bool,[],["true"]}];
+to_xml(false) -> [{bool,[],["false"]}];    
+to_xml(Val) when is_integer(Val) -> [{int,[],[integer_to_list(Val)]}];
+to_xml(Val) when is_float(Val)   -> [{float,[],[float_to_list(Val)]}];
+to_xml(Val) when is_atom(Val)    -> [{error,[],[atom_to_list(Val)]}];
+to_xml(Else) ->
+    case io_lib:char_list(Else) of
+    true  -> [{string,[],[Else]}];
+    false -> throw({unmatched_type,Else})
+    end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%

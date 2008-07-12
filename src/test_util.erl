@@ -277,7 +277,6 @@ hnget(Path, Ref) ->
     Body.
   
 hnpost(Path, Ref, Postdata) ->
-    io:format("in hnpost Path is ~p Ref is ~p PostData is ~p~n",[Path,Ref,Postdata]),
     Url = string:to_lower(?HNSERVER ++ Path ++ Ref),
     Postreq = "<create><formula><![CDATA[" ++ Postdata ++ "]]></formula></create>",
     %io:format("Posting ~p to ~s...~n", [Postdata, Url]),
@@ -322,7 +321,6 @@ conv_from_get(X)       -> case lists:member(X, ["#NULL!", "#DIV/0!", "#VALUE!",
 
 %% TODO: Some of these conversion need to be done inside the reader itself.
 conv_for_post(Val) ->
-    io:format("in test_util:conv_for_post Val is ~p~n",[Val]),
     case Val of
         {_, boolean, true}  -> "true";
         {_, boolean, false} -> "false";

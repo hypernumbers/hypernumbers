@@ -92,16 +92,21 @@ process_GET(_Arg,_User,Page) ->
     hypernumber ->   
         Addr = page_to_ref(Page),   
         Val = fun() ->
-            case hn_db:get_item_val(Addr#ref{name=value}) of
-            []    -> {blank,[],[]};
-            [Tmp] -> hn_util:hnxml_to_xml(Tmp)
+            case hn_db:get_item_val(Addr#ref{name=rawvalue}) of
+            []  -> {blank,[],[]};
+            Tmp -> 
+                hn_util:to_xml(Tmp)
             end
-        end,       
+        end,
+        
+        DepTree = case hn_db:get_item_val(Addr#ref{name='dependancy-tree'}) of
+            {xml,Tree} -> Tree;
+            []         -> []
+        end,
+            
         {Page#page.format,{hypernumber,[],[
-            {value,[], [Val()]},
-            {'dependancy-tree',[],
-                hn_db:get_item_val(Addr#ref{name='dependancy-tree'})
-            }
+            {value,[], Val()},
+            {'dependancy-tree',[], DepTree}
         ]}};
         
     reference -> 
@@ -109,13 +114,16 @@ process_GET(_Arg,_User,Page) ->
         []   -> {{plain}, "blank"};
         List ->      
             F = fun(X) -> 
-                ?COND((X#hn_item.addr)#ref.name == value,true,false)
-            end,           
-            [Val] = case lists:filter(F,List) of
-            [] -> [0];
+                ?COND((X#hn_item.addr)#ref.name == rawvalue,true,false)
+            end,
+                   
+            Val = case lists:filter(F,List) of
+            [] -> 0;
             [#hn_item{val=Value}] -> Value
-            end,          
-            {{plain}, hn_util:text(hn_util:xml_to_val(Val))}
+            end,  
+            
+                    
+            {{plain}, hn_util:text(Val)}
         end
     end,
     

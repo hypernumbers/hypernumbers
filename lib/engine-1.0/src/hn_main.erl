@@ -41,7 +41,7 @@ set_attribute(Ref,Val) when Ref#ref.name == format ->
         end
     end,
     apply_range(Ref,F,[]);
-set_attribute(Ref,Val) -> hn_db:write_item(Ref,Val).        
+set_attribute(Ref,Val) -> hn_db:write_item(Ref,Val).
 
 %%%-----------------------------------------------------------------
 %%% Function    : set_cell/2
@@ -54,30 +54,22 @@ set_cell(Addr, Val) ->
             {Pcode, Res, Parents, Deptree, Recompile} = muin:run_formula(Fla, Addr),
 
             %% Convert stuff to SimpleXML.
-            ToSimpleXml = fun({Type, {S, P, X1, Y1}}) ->
-                                  Url = hn_util:index_to_url({index, S, P,
-                                                              X1, Y1}),
-                                  {url, [{type, Type}], [Url]}
-                          end,
-            Parxml = map(ToSimpleXml, Parents),
-            Deptreexml = map(ToSimpleXml, Deptree),
-            Resxml = hn_util:val_to_xml(Res),
+            F = fun({Type, {S, P, X1, Y1}}) ->
+    			Url = hn_util:index_to_url({index, S, P, X1, Y1}),
+    			{url, [{type, Type}], [Url]}
+    		end,
 
-            ?IF(Pcode =/= nil, db_put(Addr, "__ast", Pcode)),
+            Parxml = map(F, Parents),
+            Deptreexml = map(F, Deptree),
+
+            ?IF(Pcode =/= nil,     db_put(Addr, "__ast", Pcode)),
             ?IF(Recompile == true, db_put(Addr, "__recompile", true)),
-            write_cell(Addr, [Resxml], "=" ++ Fla, Parxml, Deptreexml);
-        {int, N}    ->
-            write_cell(Addr, [{integer, [], [N]}], integer_to_list(N), [], []);
-        {float, N}  ->
-            write_cell(Addr, [{float, [], [N]}], float_to_list(N), [], []);
-        {string, S} ->
-            write_cell(Addr, [{string, [], [S]}], S, [], []);
-        {bool, B}   ->
-            write_cell(Addr, [{boolean, [], [B]}], atom_to_list(B), [], []);
-        {errval, E} ->
-            write_cell(Addr, E, E, [], [])       
-    end.
 
+            write_cell(Addr, Res, "=" ++ Fla, Parxml, Deptreexml);
+            
+        {Type,Value} ->
+            write_cell(Addr, Value, tconv:to_s(Value), [], [])
+    end.
     
 %%%-----------------------------------------------------------------
 %%% Function    : write_cell()
@@ -95,15 +87,14 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
         
     %% Delete attribute if empty, else store
     Set = fun(Ref,Val) ->
-    
         case Val of
-        [] -> hn_db:remove_item(Ref);
-        _  -> hn_db:write_item(Ref,Val)
+        {xml,[]} -> hn_db:remove_item(Ref);
+        _        -> hn_db:write_item(Ref,Val)
         end
     end,
            
-    Set(Addr#ref{name=parents},Parents),
-    Set(Addr#ref{name='dependancy-tree'},DepTree),
+    Set(Addr#ref{name=parents},{xml,Parents}),
+    Set(Addr#ref{name='dependancy-tree'},{xml,DepTree}),
         
     %% Delete the references
     hn_db:del_links(Index,child),
@@ -138,13 +129,12 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
     hn_db:mark_dirty(Index,cell),    
     ok.
     
-set_cell_rawvalue(Addr,[Value]) ->
-    Val = hn_util:xml_to_val(Value),
-    hn_db:write_item(Addr#ref{name=rawvalue},[Value]),
+set_cell_rawvalue(Addr,Value) ->
+    hn_db:write_item(Addr#ref{name=rawvalue},Value),
     {ok,Format} = hn_db:get_item_inherited(Addr#ref{name=format}, "General"),
     {erlang,{Type,Output}} = format:get_src(Format),
-    {ok,{Color,V}}=format:run_format(Val,Output),
-    hn_db:write_item(Addr#ref{name=value},[{string,[],[V]}]),
+    {ok,{Color,V}}=format:run_format(Value,Output),
+    hn_db:write_item(Addr#ref{name=value},V),
     hn_db:write_item(Addr#ref{name=color},atom_to_list(Color)),
     ok.
  
@@ -181,14 +171,17 @@ get_cell_info(Site, Path, X, Y) ->
 
     Ref = #ref{site=string:to_lower(Site),path=NewPath,ref={cell,{X,Y}}},
     
-    Value   = get_val(hn_db:get_item(Ref#ref{name=rawvalue})),
-    DepTree = get_val(hn_db:get_item(Ref#ref{name='dependancy-tree'})),   
+    Value   = hn_db:get_item_val(Ref#ref{name=rawvalue}),
+    
+    DepTree = case hn_db:get_item_val(Ref#ref{name='dependancy-tree'}) of
+        {xml,Tree} -> Tree;
+        []         -> []
+    end,
 
     Val = case Value of
-              []                   -> blank;
-              [{matrix, _, [V]}]   -> {matrix, V};
-              [{datetime, _, [N]}] -> muin_date:from_gregorian_seconds(N);
-              [{_, _, [V]}]        -> V %% Strip other type tags.
+        []                 -> blank;
+        {datetime, _, [N]} -> muin_date:from_gregorian_seconds(N);
+        Else               -> Else %% Strip other type tags.
     end,
        
     F = fun({url,[{type,Type}],[Url]}) -> 
@@ -197,9 +190,33 @@ get_cell_info(Site, Path, X, Y) ->
     end,
     
     Dep = lists:map(F,DepTree) ++ [{"local",{Site,NewPath,X,Y}}],
-        
+
     {Val,Dep,[],[{"local",{Site,NewPath,X,Y}}]}.
        
+%%%-----------------------------------------------------------------
+%%% Function    : get_hypernumber/lots
+%%% Types       : 
+%%% Description : 
+%%%-----------------------------------------------------------------
+get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY)->
+
+    NewTPath = string:tokens(lists:flatten(TPath),"/"),
+    NewFPath = string:tokens(lists:flatten(FPath),"/"),
+    
+    To = #index{site=FSite,path=NewFPath,column=FX,row=FY},
+    Fr = #index{site=TSite,path=NewTPath,column=TX,row=TY},
+
+    #incoming_hn{value=Val,deptree=T} = hn_db:get_hn(URL,Fr,To),
+
+    F = fun({url,[{type,Type}],[Url]}) ->
+        #page{site=S,path=P,ref={cell,{X,Y}}} = hn_util:parse_url(Url),
+        {Type,{S,P,X,Y}}
+    end,    
+    
+    Dep = lists:map(F,T) ++ [{"remote",{FSite,NewFPath,FX,FY}}],
+
+    {Val,Dep,[],[{"remote",{FSite,NewFPath,FX,FY}}]}.
+    
 %%%-----------------------------------------------------------------
 %%% Function    : recalc/1
 %%% Types       : 
@@ -218,50 +235,14 @@ recalc(Index) ->
         _ ->
             Pcode = hn_db:get_item_val(Addr#ref{name="__ast"}),
             Val = case muin:run_code(Pcode, Addr) of
-                      {ok, {V, _, _, _, _}} ->                hn_util:val_to_xml(V);
-                      {error, Reason} when is_atom(Reason) -> {error, [], [Reason]}
+                      {ok, {V, _, _, _, _}} ->                V;
+                      {error, Reason} when is_atom(Reason) -> Reason
                   end,
-            set_cell_rawvalue(Addr,[Val])
+            set_cell_rawvalue(Addr,Val)
     end,
     
     hn_db:mark_dirty(Index, cell),
     ok.
-    
-
-%%%-----------------------------------------------------------------
-%%% Function    : get_hypernumber/lots
-%%% Types       : 
-%%% Description : 
-%%%-----------------------------------------------------------------
-get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY)->
-
-    NewTPath = string:tokens(lists:flatten(TPath),"/"),
-    NewFPath = string:tokens(lists:flatten(FPath),"/"),
-    
-    To = #index{site=FSite,path=NewFPath,column=FX,row=FY},
-    Fr = #index{site=TSite,path=NewTPath,column=TX,row=TY},
-
-    #incoming_hn{value=Val,deptree=T} = hn_db:get_hn(URL,Fr,To),
-    
-    RtVal = case Val of
-    {blank,[],[]}   -> blank;
-    {matrix,_,Rows} ->
-        lists:map(fun({row,_,Children})->
-            lists:map(fun({integer,[],[Ref]})->
-                list_to_integer(Ref)
-            end,Children)
-        end,Rows);
-    {_, _, [V]}   -> V %% Strip other type tags.
-    end,
-
-    F = fun({url,[{type,Type}],[Url]}) ->
-        #page{site=S,path=P,ref={cell,{X,Y}}} = hn_util:parse_url(Url),
-        {Type,{S,P,X,Y}}
-    end,    
-    
-    Dep = lists:map(F,T) ++ [{"remote",{FSite,NewFPath,FX,FY}}],
-    
-    {RtVal,Dep,[],[{"remote",{FSite,NewFPath,FX,FY}}]}.
 
 %%%-----------------------------------------------------------------
 %%% Helper Functions
