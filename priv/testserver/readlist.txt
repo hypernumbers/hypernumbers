@@ -42,6 +42,5 @@ d_gnumeric_lookup A1:L44
 d_gnumeric_maths A1:L81
 d_gnumeric_stats A1:N99
 d_gnumeric_text A1:I44
-e_operator
 e_trig
 x_nested_functions_spaces_crs B2:B16

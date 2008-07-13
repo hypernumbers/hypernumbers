@@ -47,7 +47,6 @@ d_gnumeric_lookup.xls
 d_gnumeric_maths.xls
 d_gnumeric_stats.xls
 d_gnumeric_text.xls
-e_operator.xls
 e_trig.xls
 e_bitwise.xls
 manual_tests.xls
