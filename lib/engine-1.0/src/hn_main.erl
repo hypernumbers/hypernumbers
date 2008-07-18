@@ -51,8 +51,9 @@ set_attribute(Ref,Val) -> hn_db:write_item(Ref,Val).
 set_cell(Addr, Val) ->
     case superparser:process(Val) of
         {formula, Fla} ->
+        
             {Pcode, Res, Parents, Deptree, Recompile} = muin:run_formula(Fla, Addr),
-
+            
             %% Convert stuff to SimpleXML.
             F = fun({Type, {S, P, X1, Y1}}) ->
     			Url = hn_util:index_to_url({index, S, P, X1, Y1}),
@@ -165,11 +166,10 @@ apply_range(Addr,Fun,Args) ->
 %%%               formula parser about a cell, ie its direct
 %%%               parents/ dependancy tree, and value
 %%%-----------------------------------------------------------------
-get_cell_info(Site, Path, X, Y) ->
+get_cell_info(Site, TmpPath, X, Y) ->
 
-    NewPath = string:tokens(lists:flatten(Path),"/"),
-
-    Ref = #ref{site=string:to_lower(Site),path=NewPath,ref={cell,{X,Y}}},
+    Path = lists:filter(fun(Z) -> ?COND(Z==47,false,true) end,TmpPath),   
+    Ref = #ref{site=string:to_lower(Site),path=Path,ref={cell,{X,Y}}},
     
     Value   = hn_db:get_item_val(Ref#ref{name=rawvalue}),
     
@@ -186,12 +186,13 @@ get_cell_info(Site, Path, X, Y) ->
        
     F = fun({url,[{type,Type}],[Url]}) -> 
         #page{site=S,path=P,ref={cell,{X1,Y1}}} = hn_util:parse_url(Url),
-        {Type,{S,P,X1,Y1}}
+        P2 = string:tokens(P,"/"),
+        {Type,{S,P2,X1,Y1}}
     end,
     
-    Dep = lists:map(F,DepTree) ++ [{"local",{Site,NewPath,X,Y}}],
+    Dep = lists:map(F,DepTree) ++ [{"local",{Site,Path,X,Y}}],
 
-    {Val,Dep,[],[{"local",{Site,NewPath,X,Y}}]}.
+    {Val,Dep,[],[{"local",{Site,Path,X,Y}}]}.
        
 %%%-----------------------------------------------------------------
 %%% Function    : get_hypernumber/lots
@@ -199,6 +200,9 @@ get_cell_info(Site, Path, X, Y) ->
 %%% Description : 
 %%%-----------------------------------------------------------------
 get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY)->
+
+    NewTPath = lists:filter(fun(X) -> ?COND(X==47,false,true) end,TPath),   
+    NewFPath = lists:filter(fun(X) -> ?COND(X==47,false,true) end,FPath),   
 
     NewTPath = string:tokens(lists:flatten(TPath),"/"),
     NewFPath = string:tokens(lists:flatten(FPath),"/"),
@@ -210,7 +214,8 @@ get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY)->
 
     F = fun({url,[{type,Type}],[Url]}) ->
         #page{site=S,path=P,ref={cell,{X,Y}}} = hn_util:parse_url(Url),
-        {Type,{S,P,X,Y}}
+        P2 = string:tokens(P,"/"),
+        {Type,{S,P2,X,Y}}
     end,    
     
     Dep = lists:map(F,T) ++ [{"remote",{FSite,NewFPath,FX,FY}}],
