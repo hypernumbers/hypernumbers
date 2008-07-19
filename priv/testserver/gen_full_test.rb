@@ -26,7 +26,7 @@ data = eval(IO.readlines(datafile).join)
 
 def preptype(val)
   t = {
-    -2146826288 => "'NULL!'",
+    -2146826288 => "'#NULL!'",
     -2146826281 => "'#DIV/0!'",
     -2146826273 => "'#VALUE!'",
     -2146826265 => "'#REF!'",

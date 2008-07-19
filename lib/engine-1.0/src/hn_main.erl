@@ -68,7 +68,6 @@ set_cell(Addr, Val) ->
             write_cell(Addr, Res, "=" ++ Fla, Parxml, Deptreexml);
             
         {Type, Value} ->
-            io:format("Type: ~p, Value: ~p~n", [Type, Value]),
             write_cell(Addr, Value, tconv:to_s(Value), [], [])
     end.
     
