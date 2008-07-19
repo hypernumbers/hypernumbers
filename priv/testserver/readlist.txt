@@ -12,8 +12,9 @@ b_made_up_fn_names A3:A5
 b_multiple_sheets A1:A1 A1:A1 A1:A1
 b_nested_functions B4:B1
 b_ping B2:B12
+b_pang
+b_pong
 b_quadratic_equations A1:F8
-b_rel_references B3:B5
 b_shared_formulae A2:K20
 b_simple A1:B6
 b_simple_arrays_and_ranges A1:I11
