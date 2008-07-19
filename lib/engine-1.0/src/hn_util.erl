@@ -57,7 +57,7 @@ ref_to_str({range,{X1,Y1,X2,Y2}}) ->
 
 xml_to_val({boolean,[],[true]})  -> true;
 xml_to_val({boolean,[],[false]}) -> false;
-xml_to_val({error,[],[Ref]})     -> Ref;
+xml_to_val({errval,[],[Ref]})     -> Ref;
 xml_to_val({float,[],[Ref]})     -> list_to_float(Ref);
 xml_to_val({int,[],[Ref]})       -> list_to_integer(Ref);
 xml_to_val({string,[],[Ref]})    -> Ref;
@@ -70,12 +70,12 @@ item_to_xml(#hn_item{addr=A,val=V}) ->
     Str  = hn_util:ref_to_str(A#ref.ref),
     
     Value = case A#ref.name of
-    value    -> to_xml(V);
-    rawvalue -> to_xml(V);
-    Else     -> to_val(V)
+                value    -> to_xml(V);
+                rawvalue -> to_xml(V);
+                Else     -> to_val(V)
     end,
     
-    {ref,[{type,Type},{ref,Str}],[{A#ref.name,[], Value}]}.
+    {ref, [{type,Type}, {ref,Str}], [{A#ref.name, [], Value}]}.
     
 in_range({range,{X1,Y1,X2,Y2}},{cell,{X,Y}}) ->
     Y >= Y1 andalso Y =< Y2 andalso X >= X1 andalso X =< X2.
@@ -91,7 +91,8 @@ to_xml(true)  -> [{bool,[],["true"]}];
 to_xml(false) -> [{bool,[],["false"]}];    
 to_xml(Val) when is_integer(Val) -> [{int,[],[integer_to_list(Val)]}];
 to_xml(Val) when is_float(Val)   -> [{float,[],[float_to_list(Val)]}];
-to_xml(Val) when is_atom(Val)    -> [{error,[],[atom_to_list(Val)]}];
+to_xml({errval, Errval}) ->
+    [{errval, [], [atom_to_list(Errval)]}];
 to_xml(Else) ->
     case io_lib:char_list(Else) of
     true  -> [{string,[],[Else]}];
@@ -207,7 +208,6 @@ values(Rtn,[{_Root,_Attr,Children}|T]) ->
 %%--------------------------------------------------------------------
 read(FileName) ->
     Return = file:read_file(FileName),
-    %%io:format("in hn_util:read FileName is ~p and Return is ~p~n",[FileName,Return]),
     {ok,Binary} = Return,
     {ok,binary_to_list(Binary)}. 
 
@@ -300,7 +300,7 @@ is_numeric(Str) ->
 text(X) when is_integer(X) -> integer_to_list(X);
 text(X) when is_float(X)   -> float_to_list(X);
 text(X) when is_list(X)    -> lists:flatten(X);
-text(X) when is_atom(X)    -> atom_to_list(X);
+text({errval, Errval})     -> atom_to_list(Errval);
 text(_X) -> "". %% quick fix for the "plain" api
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

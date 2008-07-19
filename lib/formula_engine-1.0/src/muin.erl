@@ -46,6 +46,9 @@ run_formula(Fla, Bindings) when is_list(Fla) andalso is_record(Bindings, ref) ->
             case muin:run_code(Ecode, Bindings) of
                 {ok, {Val, Deptree, _, Parents, Recompile}} ->
                     {Ecode, Val, Deptree, Parents, Recompile};
+                %% FIXME: This is an ugly fix, and it's wrong.
+                {error, {errval, Errval}} ->
+                    {Ecode, {errval, Errval}, [], [], false};
                 {error, Reason} ->
                     {error, Reason}
             end;

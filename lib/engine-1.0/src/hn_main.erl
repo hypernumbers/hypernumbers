@@ -51,7 +51,6 @@ set_attribute(Ref,Val) -> hn_db:write_item(Ref,Val).
 set_cell(Addr, Val) ->
     case superparser:process(Val) of
         {formula, Fla} ->
-        
             {Pcode, Res, Parents, Deptree, Recompile} = muin:run_formula(Fla, Addr),
             
             %% Convert stuff to SimpleXML.

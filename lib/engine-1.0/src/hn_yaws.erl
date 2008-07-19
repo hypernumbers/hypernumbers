@@ -111,17 +111,16 @@ process_GET(_Arg,_User,Page) ->
         
     reference -> 
         case hn_db:get_item(page_to_ref(Page)) of
-        []   -> {{plain}, "blank"};
-        List ->      
-            F = fun(X) -> 
-                ?COND((X#hn_item.addr)#ref.name == rawvalue,true,false)
-            end,
+            []   -> {{plain}, "blank"};
+            List ->      
+                F = fun(X) -> 
+                            ?COND((X#hn_item.addr)#ref.name == rawvalue,true,false)
+                    end,
                    
-            Val = case lists:filter(F,List) of
-            [] -> 0;
-            [#hn_item{val=Value}] -> Value
-            end,  
-            
+                Val = case lists:filter(F,List) of
+                          [] -> 0;
+                          [#hn_item{val=Value}] -> Value
+                      end,  
                     
             {{plain}, hn_util:text(Val)}
         end
