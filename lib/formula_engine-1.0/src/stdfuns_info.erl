@@ -124,7 +124,7 @@ type([Ustr]) when is_binary(Ustr) ->
     2;
 type([Bool]) when is_boolean(Bool) ->
     4;
-type([{error, _X}]) ->
+type([{errval, _X}]) ->
     16;
 type([List]) when is_list(List) ->
     64;

@@ -125,6 +125,8 @@ lit({name, Data}) ->
     [name, Data];
 lit({ref, R, C, P}) ->
     [ref, R, C, P];
+lit({error, Errval}) ->
+    {errval, Errval};
 lit({_Type, Data}) ->
     Data.
 
