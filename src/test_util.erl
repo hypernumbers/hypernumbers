@@ -3,7 +3,7 @@
 -export([
          expected/2,
          expected2/2,
-	 expected3/2,
+         expected3/2,
          readxls/1,
          read_excel_file/1,
          equal_to_digit/3,
@@ -18,7 +18,8 @@
          hnpost/3,
          hnget/2,
          float_cmp/3,
-         stripfileref/1
+         stripfileref/1,
+         transform_reader_output/1
 	]).
 
 -include("excel_errors.hrl").
@@ -284,15 +285,15 @@ hnpost(Path, Ref, Postdata) ->
                           {Url, [], "text/xml", Postreq},
                           [{timeout, 5000}],
                           []),
-    handle_return(Return).
+    handle_return(Return, Ref).
 
-handle_return({error, timeout}) ->
+handle_return({error, timeout}, _Ref) ->
     bits:log("TIMEOUT!");
     %%io:format("<b style=\"color:red;font-size:21px\">TIMEOUT</b>~n");
-handle_return({ok, {{_V, 200, _R}, _H, _Body}}) ->
+handle_return({ok, {{_V, 200, _R}, _H, _Body}}, _Ref) ->
     ok;%%io:format("OK.~n");
-handle_return({ok, {{_V, Code, _R}, _H, Body}}) ->
-    io:format("HTTP POST error, code:~n~pbody:~n~p~n", [Code, Body]).
+handle_return({ok, {{_V, Code, _R}, _H, Body}}, Ref) ->
+    io:format("HTTP POST error (~s), code:~n~pbody:~n~p~n", [Ref, Code, Body]).
 
 cmp(G, E) ->
     Val = conv_from_get(G),
@@ -324,7 +325,7 @@ conv_for_post(Val) ->
     case Val of
         {_, boolean, true}  -> "true";
         {_, boolean, false} -> "false";
-	{_, date, D}        -> make_date_string(D);
+        {_, date, {datetime, Date, Time}} -> make_date_string({Date, Time});
         {_, number, N}      -> tconv:to_s(N);
         {_, error, E}       -> E;
         {string, X}         -> X;
@@ -335,6 +336,35 @@ conv_for_post(Val) ->
 %%------------------------------------------------------------------------------
 %% Internal functions
 %%------------------------------------------------------------------------------
+
+%% @doc Transforms reader's output to a nice regular structure:
+%% * Row and column indexes are 1-based.
+%% * Each entry is {{sheet, Sheet}, {row, Row}, {col, Col}, {Type, Value}}.
+%% * Some type tags are changed: boolean -> bool, error -> errval.
+transform_reader_output(O) ->
+    Mktypeval = fun(error, Value) ->
+                        {errval, list_to_atom(Value)};
+                   (boolean, Value) ->
+                        {bool, Value};
+                   (Type, Value) ->
+                        {Type, Value}
+                end,
+    
+    Mkrec = fun(Sheet, Row, Col, Type, Value) ->
+                    {{sheet, Sheet}, {row, Row + 1}, {col, Col + 1},
+                     Mktypeval(Type, Value)}
+            end,
+    
+    lists:foldl(fun({{{sheet, Sheet}, {row_index, Row}, {col_index, Col}},
+                     {Type, Value}}, Acc) ->
+                        R = Mkrec(Sheet, Row, Col, Type, Value),
+                        [R | Acc];
+                   ({{{sheet, Sheet}, {row_index, Row}, {col_index, Col}},
+                     {value, Type, Value}}, Acc) ->
+                        R = Mkrec(Sheet, Row, Col, Type, Value),
+                        [R | Acc]
+                end,
+                [], O).
 
 %% Gets the list of xls table names and their ETS table ids, grabs the cell table
 %% and extracts cell information from it (sheet, row, col, contents).
