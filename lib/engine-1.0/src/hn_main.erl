@@ -51,24 +51,27 @@ set_attribute(Ref,Val) -> hn_db:write_item(Ref,Val).
 set_cell(Addr, Val) ->
     case superparser:process(Val) of
         {formula, Fla} ->
-            {Pcode, Res, Parents, Deptree, Recompile} = muin:run_formula(Fla, Addr),
-            
-            %% Convert stuff to SimpleXML.
-            F = fun({Type, {S, P, X1, Y1}}) ->
-    			Url = hn_util:index_to_url({index, S, P, X1, Y1}),
-    			{url, [{type, Type}], [Url]}
-    		end,
 
-            Parxml = map(F, Parents),
-            Deptreexml = map(F, Deptree),
+            case muin:run_formula(Fla, Addr) of
+            {error,Error} -> ok;       
+            {Pcode, Res, Parents, Deptree, Recompile} ->            
+                %% Convert stuff to SimpleXML.
+                F = fun({Type, {S, P, X1, Y1}}) ->
+        			Url = hn_util:index_to_url({index, S, P, X1, Y1}),
+        			{url, [{type, Type}], [Url]}
+        		end,
 
-            ?IF(Pcode =/= nil,     db_put(Addr, "__ast", Pcode)),
-            ?IF(Recompile == true, db_put(Addr, "__recompile", true)),
+                Parxml = map(F, Parents),
+                Deptreexml = map(F, Deptree),
 
-            write_cell(Addr, Res, "=" ++ Fla, Parxml, Deptreexml);
+                ?IF(Pcode =/= nil,     db_put(Addr, "__ast", Pcode)),
+                ?IF(Recompile == true, db_put(Addr, "__recompile", true)),
+
+                write_cell(Addr, Res, "=" ++ Fla, Parxml, Deptreexml)
+            end;
             
         {Type, Value} ->
-            write_cell(Addr, Value, tconv:to_s(Value), [], [])
+            write_cell(Addr, Value, hn_util:text(Value), [], [])
     end.
     
 %%%-----------------------------------------------------------------
