@@ -48,7 +48,7 @@ end
 # [case name, path, A1-style cell ref, expected value]
 @testcasedata = []
 data.each_with_index { |sheetdata, sheetidx|
-  sheetname = sheetdata[0]
+  sheetname = sheetdata[0].gsub(/\s+/, "_") # No  whitespace in URLs eh.
   currange = ranges[sheetidx] == nil ? [] : expand_range(ranges[sheetidx])
   sheetdata.slice(1..-1).map { |rowdata|
     if rowdata.length > 1

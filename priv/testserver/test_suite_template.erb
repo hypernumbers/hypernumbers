@@ -37,7 +37,8 @@ init_per_suite(Config) ->
                        "<%= @basename + ".xls" %>"),
     {Lits, Flas} = % split data into literals and formulas
         foldl(fun(X, _Acc = {Ls, Fs}) ->
-                      {{{sheet, Sheet}, {row_index, Row}, {col_index, Col}}, Val} = X,
+                      {{{sheet, Sheetn}, {row_index, Row}, {col_index, Col}}, Val} = X,
+                      {ok, Sheet, _} = regexp:gsub(Sheetn, "\\s+", "_"), % No whitespace in URLs eh.
                       Postdata = conv_for_post(Val),
                       Path = "/" ++ "<%= @basename %>" ++ "/" ++ Sheet ++ "/",
                       Ref = tconv:to_b26(Col + 1) ++ tconv:to_s(Row + 1),
