@@ -55,8 +55,8 @@ ref_to_str({range,{X1,Y1,X2,Y2}}) ->
     tconv:to_b26(X1)++text(Y1)++":"++tconv:to_b26(X2)++text(Y2).
 
 
-xml_to_val({boolean,[],[true]})  -> true;
-xml_to_val({boolean,[],[false]}) -> false;
+xml_to_val({bool,[],[true]})  -> true;
+xml_to_val({bool,[],[false]}) -> false;
 xml_to_val({errval,[],[Ref]})     -> Ref;
 xml_to_val({float,[],[Ref]})     -> list_to_float(Ref);
 xml_to_val({int,[],[Ref]})       -> list_to_integer(Ref);
@@ -301,6 +301,7 @@ text(X) when is_integer(X) -> integer_to_list(X);
 text(X) when is_float(X)   -> float_to_list(X);
 text(X) when is_list(X)    -> lists:flatten(X);
 text({errval, Errval})     -> atom_to_list(Errval);
+text(X) when is_boolean(X) -> atom_to_list(X);
 text(_X) -> "". %% quick fix for the "plain" api
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

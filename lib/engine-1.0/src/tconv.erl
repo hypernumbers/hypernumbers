@@ -48,7 +48,9 @@ to_s(Int) when is_integer(Int) ->
 to_s(Flt) when is_float(Flt) ->
     float_to_list(Flt);
 to_s(Str) when is_list(Str) ->
-    Str.
+    Str;
+to_s(A) when is_atom(A) ->
+    atom_to_list(A).
 
 
 to_l(L) when is_list(L) ->
