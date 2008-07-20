@@ -41,17 +41,6 @@ strong
     margin:         3px 10px;
 }
 
-#menu
-{
-    height:26px;
-}
-
-#menu li
-{
-    font:   11px "Lucida Grande","Lucida Sans Unicode","Helvetica Neue", sans-serif;  
-    display:none;
-}
-
 #footer
 {
     position:absolute;
@@ -136,3 +125,105 @@ strong
 {
     padding:    5px;
 }
+
+#menu
+{
+    margin-left:5px;
+    height:     24px;
+}
+
+#menu a, #menu h2
+{
+    background: #FFF;
+    color:      #000;
+    font:       11px "Lucida Grande","Lucida Sans Unicode","Helvetica Neue", sans-serif; 
+    display:    block;
+    white-space:nowrap;
+    text-decoration:none;
+    margin:     0;
+}
+
+#menu h2
+{
+    margin:     0px 3px;
+    padding:    5px 10px 4px 10px;
+}
+
+#menu a
+{
+    padding:    5px 20px 4px 8px;
+}
+
+#menu a:hover
+{
+    background:     #eee;
+    text-decoration:none;
+}
+
+#menu ul
+{
+    width:      auto;
+    list-style: none;
+    margin:     0;
+    padding:    0;
+    float:      left;
+}
+
+#menu ul ul
+{
+    border:     1px solid #CCC;
+}
+
+#menu li
+{
+    position:   relative;
+}
+
+#menu ul ul
+{
+    position:   absolute;
+    z-index:    500;
+    top:        auto;
+    display:    none;
+}
+
+#menu ul ul ul
+{
+    top:        0;
+    left:       100%;
+}
+
+div#menu h2:hover
+{
+    background: #EEE;
+}
+
+div#menu li:hover
+{
+    cursor:     pointer;
+    z-index:    100;
+}
+
+div#menu li:hover ul ul,
+div#menu li li:hover ul ul,
+div#menu li li li:hover ul ul,
+div#menu li li li li:hover ul ul
+{display:none;}
+
+div#menu li li:hover ul,
+div#menu li li li:hover ul,
+div#menu li li li li:hover ul
+{display:block;}
+
+#menu a.x, #menu a.x:visited
+{
+    color:          #000;
+    background:     #FFF url(../img/arrow.png) no-repeat 100% 50%;
+}
+
+#menu a.x:hover
+{
+    background:     #EEE url(../img/arrow.png) no-repeat 100% 50%;
+}
+
+

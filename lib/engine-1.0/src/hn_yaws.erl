@@ -191,13 +191,15 @@ get_last_index(Site,Path,RowCol) ->
 %% Takes an unfiltered list of spriki records, extracts the path
 %% they are from and constructs a tree
 create_pages_tree(List) -> 
-
-    Trees = lists:map(
-        fun(X) ->
-            create_tree(string:tokens(X,"/"))
-        end,
+       
+    TmpTrees = lists:filter(
+        fun([]) -> false; (_) -> true end,
         path_list(List,[])),
-
+ 
+    Trees = lists:map(
+        fun(X) -> create_tree(X) end,
+        TmpTrees),
+       
     {dir,[{path,"/"}],merge_trees(Trees)}.
 
 merge_trees([])         -> [];
@@ -205,6 +207,7 @@ merge_trees([H|T])      -> merge_trees([H],T).
 
 merge_trees(Tree,[])    -> Tree;
 merge_trees(Tree,[[]])  -> Tree;
+merge_trees(Tree,[[]|T])-> merge_trees(Tree,T);
 merge_trees(Tree,[H|T]) ->
     {dir,[{path,P}],C1} = H,
     {Match,Rest} = lists:partition(fun(X) ->

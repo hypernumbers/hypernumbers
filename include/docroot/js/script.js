@@ -65,6 +65,7 @@ $(function()
 			})
 			$("#import").hide();
 		});
+		return false;
     });
 	
 	$.get(url+"?pages&format=xml", function(data)
@@ -79,13 +80,41 @@ $(function()
 				npath = (npath == "/") ? "" : npath;
 				var parent = $("<li><a href=\""+path+npath+"/\">/"+npath+"</a></li>").appendTo(list);
 				if($(this).children().size() > 0)
+				{
+				    parent.children("a").addClass("x");
 					add(parent,this,path+npath+"/");
+				}
 			});
 		}
 		
+		var tshow = function(el)
+		{
+		    var x = $(el);
+		    var list = x.next("ul");
+		    var hide = function()
+		    {
+		        list.hide();
+		        $(this).unbind();
+		        x.one('mouseup',function() 
+		        {
+		            x.one('click',function() { tshow(x); });
+		        });
+		    };
+		
+		    list.show();
+		    x.one('mouseup',function() 
+		    {
+		        x.one('click',function() { hide(); });
+		    });
+		}
+		
+		$("#menu > ul li h2").one('click',function()
+		{
+		    tshow(this);
+		});
+		
 		add($("#browse"),$(data),"");
-		$.fn.clickMenu.setDefaults({arrowSrc:"/img/arrow.png"});
-		$("#menu").clickMenu();
+
 		$("#menu li").css("display","block");
 	});
             

@@ -9,8 +9,6 @@
     <title>Hypernumbers</title>
 
 	<style type="text/css">
-    	@import "/css/clickmenu.css";
-	
 		@import "/css/base.css";
 		@import "/css/jquery.spreadsheet.css";
         @import "/css/jquery.textbox.css";
@@ -22,13 +20,11 @@
     
 	<script type="text/javascript" src="/js/ajaxfileupload.js"></script>
 	<script type="text/javascript" src="/js/jquery.clipboard.js"></script>
-	<script type="text/javascript" src="/js/jquery.bgiframe.min.js"></script>
-	<script type="text/javascript" src="/js/jquery.clickmenu.js"></script>
+	<script type="text/javascript" src="/js/swfobject.js"></script>
 	
 	<script type="text/javascript" src="/js/jquery.textbox.js"></script>
     <script type="text/javascript" src="/js/jquery.tableresizer.js"></script>
 	<script type="text/javascript" src="/js/jquery.spreadsheet.js"></script>
-	<script type="text/javascript" src="/js/swfobject.js"></script>
 	<script type="text/javascript" src="/js/socket.js"></script>	
 	<script type="text/javascript" src="/js/script.js"></script>
 
@@ -38,91 +34,93 @@
 
     <div id="header"><img src="/img/logo.jpg" alt="header" /></div>
 
-		<ul id="menu">
-			<li>File
-				<ul><li id="browse">Browse</li>
-					<li class="sep">&nbsp;</li>
-					<li id="m_import">Import SpreadSheet</li></ul>
-			</li>
-			<li>HyperNumbers
-				<ul><li>Incoming Links </li>
-					<li>Ougoing Links </li>
-				</ul>
-			</li>
-			<li>Help
-				<ul>
-					<li>About...</li>
-				</ul>
-			</li>
-		</ul>
+    <div id="menu">
+    	<ul>
+    		<li><h2>File</h2>
+    			<ul>
+    				<li><a id="browse" class="x">Browse</a></li>
+    				<li><a id="m_import">Import Spreadsheet</a></li>
+    			</ul>
+    		</li>
+    	</ul>
+
+    	<ul>
+    		<li><h2>Links</h2>
+    			<ul>
+    				<li><a class="x">Incoming</a></li>
+    				<li><a class="x">Outgoing</a></li>
+    			</ul>
+    		</li>
+    	</ul>
+    </div>
+
+	<div id="hn">
+	
+		<div class="dialog" id="import">
+		    <h2>Import File</h2>
+		    <div style="padding:8px;">
+		        <p>Import a file to this websheet (currently xls files are supported)</p>
+		        <input type="file" name="Filedata" id="Filedata" value="Upload Spreadsheet" />
+		    </div>
+		</div>
 		
-		<div id="hn">
-		
-			<div class="dialog" id="import">
-			    <h2>Import File</h2>
-			    <div style="padding:8px;">
-			        <p>Import a file to this websheet (currently xls files are supported)</p>
-			        <input type="file" name="Filedata" id="Filedata" value="Upload Spreadsheet" />
-			    </div>
-    		</div>
-    		
-            <div class="dialog" id="formats">
-                <h2>Number Formats</h2>
-                <div class="clearfix">
-                    <ul class="section_list">
-                        <li class="custom"><a>Custom</a></li>
-                    </ul>
-                    <div class="content_list">
-                        <div class="custom">
-                            <strong>Custom</strong>
-                            <hr/>
-                            <select size="11">
-                                <option>General</option>
-                                <option>0</option>                                
-                                <option>0.00</option>
-                                <option>#,##0</option>
-                                <option>#,##0.00</option>
-                                <option>"$"##0_);("$"#,##0)</option>
-                                <option>"£"##0_);("£"#,##0)</option>                                
-                                <option>"$"##0_);[Red]("$"#,##0)</option>
-                                <option>"£"##0_);[Red]("£"#,##0)</option>                                
-                                <option>0.0</option> 
-                                <option>d/m/yy</option>
-                                <option>d/m/yyyy</option>                                
-                                <option>m/d/yy</option>
-                                <option>m/d/yyyy</option>
-                                <option>mmm-d-yy</option>                                                            
-                            </select>
-                        </div>
+        <div class="dialog" id="formats">
+            <h2>Number Formats</h2>
+            <div class="clearfix">
+                <ul class="section_list">
+                    <li class="custom"><a>Custom</a></li>
+                </ul>
+                <div class="content_list">
+                    <div class="custom">
+                        <strong>Custom</strong>
+                        <hr/>
+                        <select size="11">
+                            <option>General</option>
+                            <option>0</option>                                
+                            <option>0.00</option>
+                            <option>#,##0</option>
+                            <option>#,##0.00</option>
+                            <option>"$"##0_);("$"#,##0)</option>
+                            <option>"£"##0_);("£"#,##0)</option>                                
+                            <option>"$"##0_);[Red]("$"#,##0)</option>
+                            <option>"£"##0_);[Red]("£"#,##0)</option>                                
+                            <option>0.0</option> 
+                            <option>d/m/yy</option>
+                            <option>d/m/yyyy</option>                                
+                            <option>m/d/yy</option>
+                            <option>m/d/yyyy</option>
+                            <option>mmm-d-yy</option>                                                            
+                        </select>
                     </div>
                 </div>
-                <div class="functioninput">
-                    <input type="text" class="format" />
-                    <input type="button" value="apply" class="submit" />
-                </div>
             </div>
-		</div>
+            <div class="functioninput">
+                <input type="text" class="format" />
+                <input type="button" value="apply" class="submit" />
+            </div>
+        </div>
+	</div>
 
-		<div id="footer">
-			<div id="connection">
-				<img src="/img/cross.png" alt="Socket Connection" /> 
-				<span>disconnected</span>
-			</div>
+	<div id="footer">
+		<div id="connection">
+			<img src="/img/cross.png" alt="Socket Connection" /> 
+			<span>disconnected</span>
 		</div>
+	</div>
 
-		<div id="flashcontent">
-			This text is replaced by the Flash movie.
-		</div>
+	<div id="flashcontent">
+		This text is replaced by the Flash movie.
+	</div>
 
-		<textarea id="texttocopy"></textarea>
+	<textarea id="texttocopy"></textarea>
 
-		<div id="context">
-			<a id="copyhypernumber" class="item">Copy as Hypernumber</a>
-            <hr />
-            <a id="formatcell" class="item">Format Cells</a>
-            <hr />
-			<div id="contextlinks"></div>
-		</div>
+	<div id="context">
+		<a id="copyhypernumber" class="item">Copy as Hypernumber</a>
+        <hr />
+        <a id="formatcell" class="item">Format Cells</a>
+        <hr />
+		<div id="contextlinks"></div>
+	</div>
 		
 	</body>
 
