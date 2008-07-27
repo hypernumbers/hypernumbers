@@ -26,7 +26,6 @@ parse_tokens(<<>>,_Name,TokenArray,Residuum)->
     {Tokens,TokenArray};
 parse_tokens(Bin,Name,TokenArray,Residuum)->
     <<BaseTokenID:8/little-unsigned-integer,Rest/binary>>=Bin,
-    io:format("in excel_tokens:parse_tokens BaseTokenID is ~p Rest is ~p~n",[BaseTokenID,Rest]),
     parse_tokens(BaseTokenID,Name,Bin,TokenArray,Residuum).
 
 %% Parsing base tokens

@@ -555,7 +555,6 @@ parse_rec(?ROW2,Bin,_Name,CurrentFormula,Tables)->
      _Discard1:16/little-unsigned-integer,
      XFRef:12/little-unsigned-integer,
      _Discard2:4/little-unsigned-integer>>=Bin,
-    io:format("in excel_records:parse_rec for ROW2 XFRef is ~p~n",[XFRef]),
     excel_util:write(Tables,lacunae,[{identifier,"ROW2"},
                                      {source,excel_records.erl},
                                      {msg,"not being processed"}]),
@@ -713,7 +712,6 @@ parse_Name(OptionFlag,_KybdShortCut,NameLength,_Size,SheetIndex,
      _FuncGroup5:1/integer,_FuncGroup6:1/integer,
      _Binary:1/integer,_A:1/integer,_B:1/integer,_C:1/integer>>=OptionFlag,
     <<_Options:1/binary,Name:NameLength/binary,Rest/binary>>=Bin,
-    io:format("in excel_records:parse_rec for NAME Rest is ~p~n",[Rest]),
     %% io:format("Just ignoring the compression options for "++
     %% "Unicode names at the moment - will wig when not using Latin-1~n"),
     Scope = case SheetIndex of

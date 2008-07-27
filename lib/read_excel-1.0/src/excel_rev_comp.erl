@@ -29,8 +29,6 @@
 %% The formulae are stored in reverse Polish Notation within excel
 %% The reverse compiler recreates the original formula by running the RPN
 reverse_compile(Index,Tokens,TokenArray,Tables)->
-    io:format("in excel_rev_comp:reverse_compile~n-Tokens are ~p~n-TokenArray is ~p~n",
-	      [Tokens,TokenArray]),
     rev_comp(Index,Tokens,TokenArray,[],Tables).
 
 %% When the tokens are exhausted the Stack is just flattened to a string
@@ -170,7 +168,6 @@ rev_comp(Index,[{functional_index,{Function,[{value,FuncVar},{type,_Type}],
   when Function =:= tFunc ; Function =:= tFuncVar ; 
        Function =:= tFuncVarV ;Function =:= tFuncVarR ; 
        Function =:= tFuncVarA ->
-    %% io:format("in excel_rev_comp:reverse_compile in tFunc~n"),
     %% lists:reverse has to be overused because Stack is build backwards
     %% (new items append to tail opposed to head
     {Rest,FunArgs} = popVars(macro_no_of_args(FuncVar),Stack,[]),
@@ -204,7 +201,6 @@ rev_comp(I,[{absolute_area,{tArea,[[{start_cell,Start}|{end_cell,End}]|_R1],
 %%	tMemArea
 rev_comp(Index,[{memory_area,{tMemArea,[{value,_MemArea},{type,_Type}],
 			      {return,reference}}}|T],TokenArray,Stack,Tables) ->
-    %% io:format("in excel_rev_comp:reverse_compile in tMemArea~n"),
     %% See discussion in Section 3.1.6 of excelfileformat.v1.40.pdf
     %%
     %% for tMemArea there is an appended set of tokens in the TokenArray
@@ -369,28 +365,6 @@ get_range(SubRec,FirstSheet,LastSheet,Tables)->
     Sheet1=lists:nth(FirstSheet+1,SheetList),
     Sheet2=lists:nth(LastSheet+1, SheetList), 
     lists:concat([Prefix,Sheet1,":",Sheet2]).
-
-%% Looks up a reference to an externsheet and turns it into a sheet ref
-%% get_sheet_ref(Index,Tables)->
-%%   [{{_,_},RefList}]=excel_util:read(Tables,externsheets,Index),
-%%   {_,{_,FirstSheet}}=lists:keysearch(firstsheet,1,RefList),
-%%   {_,{_,LastSheet}} =lists:keysearch(lastsheet,1,RefList),
-%%   SheetRef = case FirstSheet of
-%%     65535     -> "#REF";
-%%     LastSheet -> Return=excel_util:read(Tables,sheetnames,FirstSheet),
-%%                   io:format("in excel_rev_comp:get_sheet_ref Return is ~p~n",[Return]),
-%%                   [{{_,_},[{_,FirstSheetRef}]}]=Return,
-%%                   FirstSheetRef;
-%%     _Other    -> Return1=excel_util:read(Tables,sheetnames,FirstSheet),
-%%                  Return2=excel_util:read(Tables,sheetnames,LastSheet),
-%%                   io:format("in excel_rev_comp:get_sheet_ref~n-Return1 is ~p~n-Return2 is ~p",
-%%                       [Return1,Return2]),
-%%                  [{{_,_},[{_,FirstSheetRef}]}]=Return1,
-%%                  [{{_,_},[{_,LastSheetRef}]}]=Return2,
-%%                   FirstSheetRef++":"++LastSheetRef
-%%   end,
-%%   SheetRef.
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                         %%%

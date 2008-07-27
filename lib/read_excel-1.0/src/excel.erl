@@ -141,20 +141,17 @@ get_single_SST(Bin)->
 get_single_SST(Bin,Residuum)->    
     <<Identifier:16/little-unsigned-integer,Rest/binary>>=Bin,
     case Identifier of
-	?SST      -> %%io:format("in excel_get_single_SST for SST~n"),
-            <<RecordSize:16/little-unsigned-integer,Rest2/binary>>=Rest,
-            <<Record:RecordSize/binary,Rest3/binary>>=Rest2,
-            get_single_SST(Rest3,[Record|Residuum]);
-	?CONTINUE -> %%io:format("in excel_get_single_SST for CONTINUE~n"),
-            <<RecordSize:16/little-unsigned-integer,Rest2/binary>>=Rest,
-            <<Record:RecordSize/binary,Rest3/binary>>=Rest2,
-            get_single_SST(Rest3,[Record|Residuum]);
-	?EXTSST   -> %%io:format("in excel_get_single_SST for EXTSST~n"),
-            %% the EXTSST record is simply an index for fast lookup
-            %% on the SST record so we just chuck it...
-            <<RecordSize:16/little-unsigned-integer,Rest2/binary>>=Rest,
-            <<_Record:RecordSize/binary,Rest3/binary>>=Rest2,
-            {ok,lists:reverse(Residuum),Rest3}
+	?SST      -> <<RecordSize:16/little-unsigned-integer,Rest2/binary>>=Rest,
+		     <<Record:RecordSize/binary,Rest3/binary>>=Rest2,
+		     get_single_SST(Rest3,[Record|Residuum]);
+	?CONTINUE -> <<RecordSize:16/little-unsigned-integer,Rest2/binary>>=Rest,
+		     <<Record:RecordSize/binary,Rest3/binary>>=Rest2,
+		     get_single_SST(Rest3,[Record|Residuum]);
+	%% the EXTSST record is simply an index for fast lookup
+	%% on the SST record so we just chuck it...
+	?EXTSST   -> <<RecordSize:16/little-unsigned-integer,Rest2/binary>>=Rest,
+		     <<_Record:RecordSize/binary,Rest3/binary>>=Rest2,
+		     {ok,lists:reverse(Residuum),Rest3}
     end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -346,9 +343,7 @@ fix_up_externalrefs(Tables)->
                 end
         end,
     case ets:info(ExternalRefs,size) of
-        0 -> %io:format("in excel:post_process_tables no records in file "++
-						%          "ExternalRefs~n"),
-	    ok;
+        0 -> ok;
         _ -> [Index]=ets:foldl(Fun,[],ExternalRefs),
              SheetNames=lists:reverse(get_sheetnames(Tables)),
              excel_util:write(Tables,externalrefs,[Index,{this_file,expanded},
@@ -379,7 +374,6 @@ convert_dates(Tables)->
 
 convert_dates2({value,number,Number},Tables) ->
     [{_,[{value,DateMode}]}]=excel_util:read(Tables,misc,datemode),
-    io:format("in excel:convert_dates2 Number is ~p,DateMode is ~p~n",[Number,DateMode]),
     Date=case DateMode of
 	  "Windows"   -> muin_date:excel_win_to_gregorian(Number);
 	  "Macintosh" -> muin_date:excel_mac_to_gregorian(Number)

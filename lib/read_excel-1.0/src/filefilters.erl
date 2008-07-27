@@ -28,20 +28,16 @@
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 read(excel,FileIn,Fun)->
-    io:format("in filefilters:read/4 FileIn is ~p~n",[FileIn]),
-
     read_excel(excel,FileIn,Fun).
 
 read(excel,FileIn)->
-    Fun= fun(X) -> true    
-		 %% io:format("About to dump tables~n"),
-		 %% dump(X)
+    Fun= fun(X) -> io:format("About to dump tables~n"),
+		   dump(X)
 	 end,
     read_excel(excel,FileIn,Fun).
 
 read_excel(excel,FileIn,Fun)->
     Tables=create_ets(),
-    %% io:format("Tables created: ~p~n",[Tables]),
     {ok,Response}=filter_file(FileIn),
     {ParsedDirectory,ParsedSAT,ParsedSSAT,_SSAT_StartSID,
      SectorSize,ShortSectorSize,MinStreamSize}=Response,
@@ -257,15 +253,15 @@ print_structure(FileIn,Directory,{SubLocation,SubStreams})->
     %% output that is internal to Excel I think it will still continue
     %% to come in unicode16-8 format (suck'n'see fella)
     {SubLoc,_SID}=SubLocation,
-    io:format("~nThe structure of the Microsoft Coumpound Document Object ~p "++
-              "is:~n",[FileIn]),
-    List=[{lists:keysearch('bodge_name',1,X),lists:keysearch(location,1,X)} 
-	  || {_,X} <- Directory],
-    [io:format("* stream ~p is in ~p~n",
-	       [BodgeName,Location]) || {{_,{_,BodgeName}},
-					 {_,{_,Location}}} <- List],
-    io:format("the substreams in ~p are:~n",[SubLoc]),
-    [io:format("* substream: ~p~n",[X]) || {[{_,X}],_} <- SubStreams],
+    %%    io:format("~nThe structure of the Microsoft Coumpound Document Object ~p "++
+    %%              "is:~n",[FileIn]),
+    %%    List=[{lists:keysearch('bodge_name',1,X),lists:keysearch(location,1,X)} 
+    %%	  || {_,X} <- Directory],
+    %%    [io:format("* stream ~p is in ~p~n",
+    %%	       [BodgeName,Location]) || {{_,{_,BodgeName}},
+    %%					 {_,{_,Location}}} <- List],
+    %%    io:format("the substreams in ~p are:~n",[SubLoc]),
+    %%    [io:format("* substream: ~p~n",[X]) || {[{_,X}],_} <- SubStreams],
     ok.
 
 delete_ets([])    -> ok;
@@ -349,16 +345,16 @@ dump([{lacunae,_}|T])->
     io:format("~nSkipping out lacunae in dump~n"),
     dump(T);
 dump([{Table,Tid}|T])->
-        case Table of
+        %% case Table of
 	    %% externalrefs -> dump2(Table,Tid);
 	    %% externsheets -> dump2(Table,Tid);
 	    %% misc         -> dump2(Table,Tid);
 	    %% lacunae      -> dump2(Table,Tid);
-	    extra_fns    -> dump2(Table,Tid);
-	    cell         -> dump2(Table,Tid);
-	    _            -> io:format("skipping Table ~p in filefilters:dump~n",[Table])
-        end,
-    %%dump2(Table,Tid),
+	    %% extra_fns    -> dump2(Table,Tid);
+	    %% cell         -> dump2(Table,Tid);
+	    %% _            -> io:format("skipping Table ~p in filefilters:dump~n",[Table])
+        %% end,
+    dump2(Table,Tid),
     dump(T).
 
 dump2(Table,Tid)->

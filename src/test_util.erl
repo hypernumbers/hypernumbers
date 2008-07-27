@@ -172,7 +172,7 @@ excel_equal2({number,_Num},{string,_Str})->
     false.
 
 make_date_string({Days,Time}) ->
-    make_day_string(Days)++" "++make_time_string(Time).
+     make_day_string(Days)++" "++make_time_string(Time).
 
 make_day_string({Year,Month,Day}) ->
     integer_to_list(Year)++"/"++pad(integer_to_list(Month))++"/"++pad(integer_to_list(Day)).
@@ -323,15 +323,14 @@ conv_from_get(X)       -> case lists:member(X, ["#NULL!", "#DIV/0!", "#VALUE!",
 %% TODO: Some of these conversion need to be done inside the reader itself.
 conv_for_post(Val) ->
     case Val of
-        {_, boolean, true}  -> "true";
-        {_, boolean, false} -> "false";
-        {_, date, {datetime, Date, Time}} -> make_date_string({Date, Time});
-        {_, number, N}      -> tconv:to_s(N);
-        {_, error, E}       -> E;
-        {string, X}         -> X;
-        {formula, F}        -> F
+        {_, boolean, true}        -> "true";
+        {_, boolean, false}       -> "false";
+	{_, date, {datetime,D,T}} -> make_date_string({D,T});
+        {_, number, N}            -> tconv:to_s(N);
+        {_, error, E}             -> E;
+        {string, X}               -> X;
+        {formula, F}              -> F
     end.
-
 
 %%------------------------------------------------------------------------------
 %% Internal functions
