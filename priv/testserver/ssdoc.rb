@@ -10,7 +10,8 @@
 # > s.sheets[1].cell_at(1, 1).value
 # > s.sheets[1].cell_at(2, 3).format
 
-load "gen_util.rb"
+require "gen_util.rb"
+include GenUtil
 
 class Ssdoc
   attr_reader :sheets

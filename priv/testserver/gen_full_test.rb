@@ -9,15 +9,17 @@
 # range only. If more than one range is given, they are taken to mean
 # ranges on sheets.
 
+# TODO: Sort test cases nicely (row/column or column/row).
+
 $KCODE = 'u'
 
 require "erb"
-load "gen_util.rb"
+require "Ssdoc"
 
 datafile = ARGV[0]
 ranges = ARGV.slice(1..-1)
 
-data = eval(IO.readlines(datafile).join)
+ssdoc = Ssdoc.new(datafile)
 
 @basename = File.basename(datafile, ".dat").downcase
 
@@ -36,7 +38,7 @@ def preptype(val)
   }
 
   if val.kind_of?(String)
-    "\"" + val.gsub("\\", "\\\\\\").gsub("\"", "\\\"") + "\""
+    literal_or_utf8list(val)
   else
     t[val] or val
   end
@@ -47,27 +49,17 @@ end
 # populate test case data, which will be a list of
 # [case name, path, A1-style cell ref, expected value]
 @testcasedata = []
-data.each_with_index { |sheetdata, sheetidx|
-  sheetname = sheetdata[0].gsub(/\s+/, "_") # No  whitespace in URLs eh.
-  currange = ranges[sheetidx] == nil ? [] : expand_range(ranges[sheetidx])
-  sheetdata.slice(1..-1).map { |rowdata|
-    if rowdata.length > 1
-      rowdata.map { |celldata|
-        if celldata.kind_of?(Array)
-          puts currange.inspect
-          puts [celldata[0], rowdata[0]].inspect
-          if currange == [] || currange.include?([celldata[0], rowdata[0]])
-            cellname = itob26(celldata[0]) + rowdata[0].to_s # make A1-style name
-            casename = "sheet#{sheetidx + 1}_#{cellname}"
-            path = "/#{sheetname}/"
-            expval = preptype(celldata[1][:value])
-            @testcasedata << [casename, path, cellname, expval]
-          end
-        end
-      }
+ssdoc.sheets.each_with_index do |sheet, idx|
+  currange = ranges[idx] == nil ? [] : expand_range(ranges[idx])
+  sheet.cells.each do |cell|
+    if currange == [] || currange.include?([cell.col, cell.row])
+      casename = "sheet#{idx + 1}_#{cell.a1ref}"
+      path = "/#{sheet.name}/"
+      expval = preptype(cell.value)
+      @testcasedata << [casename, path, cell.a1ref, expval]
     end
-  }
-}
+  end
+end
 
 templ = ERB.new(IO.readlines("test_suite_template.erb").flatten.join, 0, "%<>")
 testcode = templ.result

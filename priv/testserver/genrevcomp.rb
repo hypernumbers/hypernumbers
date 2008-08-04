@@ -21,19 +21,6 @@ data = eval(IO.readlines(datafile).join)
 
 @basename = File.basename(datafile, ".dat").downcase
 
-def literal_or_utf8list(str)
-  if str.unpack("U*").any? { |x| x > 127 } # any non ASCII characters?
-    # write out as list of UTF-8 codepoints
-    bytes = []
-    str.each_byte { |b| bytes << b }
-    "[#{bytes.join(", ")}]"
-  else
-    # write as literal string
-    str.inspect
-  end
-end
-
-
 # Main generation code ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # populate test case data, which will be a list of
@@ -59,9 +46,7 @@ data.each_with_index { |sheetdata, sheetidx|
                       :number
                     elsif value.kind_of?(String)
                       :string
-                    elsif value.kind_of?(TrueClass)
-                      :boolean
-                    elsif value.kind_of?(FalseClass)
+                    elsif value.kind_of?(TrueClass) || value.kind_of?(FalseClass)
                       :boolean
                     end)
 
