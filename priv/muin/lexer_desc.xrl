@@ -192,7 +192,7 @@ getxy(Cellref0) ->
     Colname = takewhile(fun is_alpha/1,
                         string:to_lower(Cellref)),
     Rowstr = lists:nthtail(length(Colname), Cellref),
-    {tconv:to_i(Colname, b26), tconv:to_i(Rowstr)}.
+    {tconv:to_i(Colname), tconv:to_i(Rowstr)}.
 
 %% Replaces all !s with /s in a same-site ref.
 debang(Ssref) ->
@@ -213,7 +213,8 @@ is_alpha([Char]) ->
     is_alpha(Char).
 
 rmdots(Str) ->
-    regexp:gsub(string:to_lower(Str), "\\.", "").
+    {ok, Newstr, _} = regexp:gsub(string:to_lower(Str), "\\.", ""),
+    Newstr.
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

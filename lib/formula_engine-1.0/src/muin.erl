@@ -113,7 +113,7 @@ preproc([indirect, Arg]) ->
     Str = plain_eval(Arg),
     {ok, Toks} = muin_lexer:lex(Str, {?mx, ?my}),
     case Toks of
-        [{ref, R, C, P}] ->
+        [{ref, R, C, P, _}] ->
             put(recompile, true),
             [ref, R, C, P];
         _ ->
@@ -130,7 +130,7 @@ funcall(ref, [Col, Row, Path]) ->
 
 %% Cell ranges (A1:A5, R1C2:R2C10 etc).
 %% In a range, the path of second ref **must** be ./
-funcall(':', [{ref, Col1, Row1, Path1}, {ref, Col2, Row2, "./"}]) ->
+funcall(':', [{ref, Col1, Row1, Path1, _}, {ref, Col2, Row2, "./", _}]) ->
     
     [Rowidx1, Colidx1, Rowidx2, Colidx2] = map(?Lx(toidx(X)),
                                                [Row1, Col1, Row2, Col2]),

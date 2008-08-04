@@ -36,7 +36,7 @@ Nonassoc 800 ':'.
 
 %%% **Grammar definition**
 
-Formula -> E : '$1'.
+Formula -> E : postproc('$1').
 
 %% Comparison operators.
 E -> E '='  E : op('$1', '$2', '$3').
@@ -96,7 +96,8 @@ E -> Array : '$1'.
 %% Funcalls.
 Funcall -> atom '(' ')'      : [func_name('$1')].
 Funcall -> atom '(' Args ')' : func('$1', '$3').
-Funcall -> ref '(' ')'       : [func_name('$1')]. % ATAN2 etc.
+%% Special case for functions with names like ATAN2
+Funcall -> ref '(' ')'       : [func_name('$1')].
 Funcall -> ref '(' Args ')'  : func('$1', '$3').
     
 Args -> E                    : ['$1'].
@@ -165,3 +166,6 @@ to_native_list(Ary) ->
                      end,
                      [[]], %% <== See, here it is.
                      Ary))}.
+
+postproc(Ast) ->
+    Ast.
