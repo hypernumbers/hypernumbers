@@ -2,7 +2,8 @@
 %%% @doc Various utility functions used by the formula engine.
 
 -module(muin_util).
--export([cast/2,
+-export([array_at/3,
+         cast/2,
          split_ssref/1,
          just_path/1,
          just_ref/1,
@@ -16,6 +17,9 @@
 -include("handy_macros.hrl").
 -include("typechecks.hrl").
 -include("muin_records.hrl").
+
+array_at({array, Rows}, R, C) ->
+    nth(C, nth(R, Rows)).
 
 cast(X, Targtype) ->
     Xtype = get_type(X),
@@ -45,8 +49,8 @@ cast(X, str, bool) ->
                 _       -> {error, nab}
             end;    
 cast(X, bool, bool)  -> X;
-cast(X, date, bool)  -> true;
-cast(X, blank, bool) -> false;
+cast(_, date, bool)  -> true;
+cast(_, blank, bool) -> false;
 cast(_, _, bool) ->
     {error, nab};
 
@@ -56,7 +60,7 @@ cast(true, bool, num)  -> 1;
 cast(false, bool, num) -> 0;
 cast(X, str, num) ->
     tconv:to_num(X);
-cast(X, date, num) ->
+cast(_X, date, num) ->
     42; %% TODO:
 cast(_, blank, num) -> 0;
 cast(_, _, num) ->
@@ -68,13 +72,13 @@ cast(X, num, str) ->
 cast(X, str, str)      -> X;
 cast(true, bool, str)  -> "true";  % STR!
 cast(false, bool, str) -> "false"; % STR!
-cast(X, date, str) ->
+cast(_X, date, str) ->
     "1/1/1900"; % TODO:
 cast(_, blank, str) -> ""; % STR!
 cast(_, _, str) ->
     {error, nas};
 
-cast(X, _, date) ->
+cast(_X, _, date) ->
     #datetime{}. % TODO!
     
 %% Splits ssref to [Path, Ref]
