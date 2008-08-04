@@ -167,10 +167,9 @@ negate([Num]) ->
 %%% Arithmetic %%%
 %%% ---------- %%%
 
-sum(Vals) ->
-    Flatvals = flatten(Vals),
-    ?ensure_no_errvals(Flatvals),
-    Nums = [X || X <- Flatvals, is_number(X)],
+sum(Vs) ->
+    Flatvs = ?flatten_all(Vs),
+    Nums = ?numbers(Flatvs, ?default_rules),
     sum1(Nums).
 sum1(Nums) ->
     lists:sum(Nums).
@@ -374,8 +373,8 @@ roundup1(Num, NumDigits) ->
             end,                       
     Rndup(Num * Pow) / erlang:round(Pow).
 
-ceiling([Num, Multiple]) ->
-    ?ensure_numbers([Num, Multiple]),
+ceiling([V1, V2]) ->
+    [Num, Multiple] = ?numbers([V1, V2], ?default_rules),
     ceiling1(Num, Multiple).
 ceiling1(_Num, 0) ->
     0;

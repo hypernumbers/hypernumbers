@@ -145,9 +145,9 @@ binomdist1(Ns, Nt, Ps, false) ->
 binomdist1(Ns, Nt, Ps, true) ->
     binomdist1(Ns, Nt, Ps, false) + binomdist1(Ns - 1, Nt, Ps, true).
 
-chidist([X, Degfree_]) ->
-    ?ensure_numbers([X, Degfree_]),
-    Degfree = erlang:trunc(Degfree_),
+chidist([V1, V2]) ->
+    X = ?number(V1, ?default_rules),
+    Degfree = ?int(V2, ?default_rules),
     ?ensure_non_negative(X),
     ?ensure(Degfree >= 1, ?ERR_NUM),
     ?ensure(Degfree =< 1.0e+10, ?ERR_NUM),
@@ -162,15 +162,14 @@ correl([L1, L2]) ->
     _Nums2 = ?filter_numbers(?ensure_no_errvals(?flatten(L2))),
     0. %% TODO:
 
-count([L0]) ->
-    L = ?flatten(L0),
-    Nums = ?filter_numbers(L),
-    Dates = [X || X <- L, element(1, X) == date],
-    Strs  = [X || X <- L, tconv:to_num(X) =/= {error, nan}],
-    length(Nums) + length(Dates) + length(Strs).
+count(Vs) ->
+    Flatvs = ?flatten_all(Vs),
+    Nums = ?numbers(Flatvs, ?default_rules),
+    length(Nums).
                  
-countblank([L]) ->
-    length([X || X <- L, X == blank]).
+countblank(Vs) ->
+    Flatvs = ?flatten_all(Vs),
+    length([X || X <- Flatvs, muin_collect:is_blank(X)]).
 
 covar([L1, L2]) ->
     Ary1 = ?filter_numbers(L1),
@@ -182,12 +181,13 @@ covar([L1, L2]) ->
 covar1(_Ary1, _Ary2) ->
     0. %% TODO:
 
-critbinom([Trials0, Prob, Alpha]) ->
-    ?ensure_numbers([Trials0, Prob, Alpha]),
-    ?ensure(Trials0 >= 0, ?ERR_NUM),
+critbinom([V1, V2, V3]) ->
+    Trials = ?int(V1, ?default_rules),
+    [Prob, Alpha] = ?numbers([V2, V3], ?default_rules),
+    ?ensure(Trials >= 0, ?ERR_NUM),
     ?ensure(Prob >= 0 andalso Prob =< 1, ?ERR_NUM),
     ?ensure(Alpha >= 0 andalso Alpha =< 1, ?ERR_NUM),
-    critbinom1(trunc(Trials0), Prob, Alpha, 0).
+    critbinom1(Trials, Prob, Alpha, 0).
 critbinom1(Trials, Prob, Alpha, X) ->    
     Val = binomdist1(X, Trials, Prob, true),
     ?COND(Val >= Alpha,
