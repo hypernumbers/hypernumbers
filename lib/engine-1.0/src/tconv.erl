@@ -5,7 +5,6 @@
 -module(tconv).
 -export([to_b26/1,
          to_i/1,
-         to_i/2,
          to_l/1,
          to_f/1,
          to_s/1,
@@ -13,15 +12,15 @@
 
 %% String -> integer.
 to_i(Str) when is_list(Str) ->
-    list_to_integer(Str);
+    case to_num(Str) of
+        {error, nan} ->
+            b26_to_i(string:to_lower(lists:reverse(Str)), 0, 0);
+        Num ->
+            trunc(Num)
+    end;
 %% Number -> integer.
 to_i(Num) when is_number(Num) ->
     trunc(Num).
-%% Base 26 number as string -> integer.
-%% TODO: Can detect when string is base-26.
-to_i(Str, b26) when is_list(Str) ->
-    b26_to_i(string:to_lower(lists:reverse(Str)), 0, 0).
-
 
 %% String -> float.
 to_f(Str) when is_list(Str) ->
@@ -30,7 +29,7 @@ to_f(Str) when is_list(Str) ->
 
 %% String -> number.
 to_num(Str) when is_list(Str) ->
-    try to_i(Str)
+    try list_to_integer(Str)
     catch
         error:_ ->
             try to_f(Str)
