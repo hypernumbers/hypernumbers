@@ -42,7 +42,7 @@ db1(Cost, Salvage, Life, Period, Month) -> % Some other period
                      0, seq(1, Period - 1)),
     (Cost - Prevdepr) * ?dbrate.
 
-effect(Arg = [_, _]) ->
+effect(Args = [_, _]) ->
     [Nomrate, Npery] = ?numbers(Args, ?default_rules),
     ?ensure(Nomrate > 0, ?ERR_NUM),
     ?ensure(Npery >= 1, ?ERR_NUM),

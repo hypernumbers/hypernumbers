@@ -21,6 +21,6 @@ delta([V1, V2]) ->
 gestep([V1]) ->
     gestep([V1, 0]);
 gestep([V1, V2]) ->
-    [N, S] = ?numbers([V1, V2], ?default_rules),
+    [Num, Step] = ?numbers([V1, V2], ?default_rules),
     ?COND(Num >= Step, 1, 0).
     
