@@ -182,71 +182,66 @@ product(Vals) ->
 product1(Nums) ->
     foldl(?Lxacc(X * Acc), 1, Nums).
 
-quotient([Num, Divisor]) ->
+quotient([V1, V2]) ->
+    [Num, Divisor] = ?numbers([V1, V2], ?default_rules),
     ?MODULE:trunc('/'([Num, Divisor])).
 
 abs([V]) ->
     Num = ?number(V, ?default_rules),
     erlang:abs(Num).
     
-sqrt([Num]) ->
-    ?ensure_number(Num),
+sqrt([V1]) ->
+    Num = ?number(V1, ?default_rules),
     ?ensure(Num >= 0, ?ERR_NUM),
     math:sqrt(Num).
 
-power([Num, Pow]) ->
-    ?ensure_numbers([Num, Pow]),
+power([V1, V2]) ->
+    [Num, Pow] = ?numbers([V1, V2], ?default_rules),
     math:pow(Num, Pow).
 
-sign([Num]) ->
-    ?ensure_number(Num),
+sign([V1]) ->
+    Num = ?number(V1, ?default_rules),
     sign1(Num).
-sign1(0) ->
-    0;
-sign1(X) when X > 0 ->
-    1;
-sign1(X) when X < 0 ->
-    -1.
+sign1(0)            -> 0;
+sign1(X) when X > 0 -> 1;
+sign1(X) when X < 0 -> -1.
 
-exp([Num]) ->
-    ?ensure_number(Num),
+exp([V1]) ->
+    Num = ?number(V1, ?default_rules),
     math:exp(Num).
 
-%% NOTE: Num (artificially) limited to 8192 (Excel's limit is 170).
-fact([Num_]) ->
-    ?ensure_number(Num_),
-    Num = erlang:trunc(Num_),
-    ?ensure(Num =< 8192, ?ERR_NUM),
-    ?ensure_non_negative(Num),
+%% NOTE: Artificially limited to 256 (Excel's limit is 170).
+fact([V1]) ->
+    Num = ?int(V1, ?default_rules),
+    ?ensure(Num =< 256, ?ERR_NUM),
+    ?ensure(Num >= 0, ?ERR_NUM),
     fact1(Num).
 fact1(0) ->
     1;
 fact1(Num) ->
-    foldl(fun(X, Acc) -> X * Acc end, 1, seq(1, Num)).
+    foldl(fun(X, Acc) -> X * Acc end,
+          1, seq(1, Num)).
 
-gcd([A, B]) ->
-    ?ensure_numbers([A, B]),
+gcd([V1, V2]) ->
+    [A, B] = ?numbers([V1, V2], ?default_rules),
     gcd1(A, B).
-gcd1(A, 0) ->
-    A;
-gcd1(A, B) ->
-    gcd1(B, A rem B).
+gcd1(A, 0) -> A;
+gcd1(A, B) -> gcd1(B, A rem B).
 
-lcm([A, B]) ->
-    ?ensure_numbers([A, B]),
+lcm([V1, V2]) ->
+    [A, B] = ?numbers([V1, V2], ?default_rules),
     lcm1(A, B).
 lcm1(A, B) ->
     A * B / gcd1(A, B).
 
 %% Returns the remainder after number is divided by divisor. The result
 %% has the same sign as divisor.
-mod([Num, Divisor]) ->
-    ?ensure_numbers([Num, Divisor]),
+mod([V1, V2]) ->
+    [Num, Divisor] = ?numbers([V1, V2], ?default_rules),
     Num - Divisor * int('/'([Num, Divisor])).
 
-%%% ------------------- %%%
-%%% Arrays and matrices %%%
-%%% ------------------- %%%
+
+%%% Arrays and matrices ~~~~~
 
 mdeterm([L]) ->
     ?IF(not(is_list(L)), ?ERR_VAL),
@@ -289,44 +284,40 @@ multinomial1(Nums) ->
                             end,
                             1, Nums).
     
-%%% ---------- %%%
-%%% Logarithms %%%
-%%% ---------- %%%
+%%% Logarithms ~~~~~
 
-ln([Num]) ->
-    ?ensure_positive(Num),
+ln([V1]) ->
+    Num = ?number(V1, ?default_rules),
+    ?ensure(Num > 0, ?ERR_NUM),
     math:log(Num).
 
-log([Num]) ->
+log([V1]) ->
+    Num = ?number(V1, ?default_rules),
     log([Num, 10]);
-log([Num, Base]) ->
-    ?ensure_numbers([Num, Base]),
+log([V1, V2]) ->
+    [Num, Base] = ?numbers([V1, V2], ?default_rules),
     ?ensure_positive(Num),
     ?ensure_positive(Base),
     ?IF(Base == 1, ?ERR_DIV),
     math:log(Num) / math:log(Base).
 
-log10([Num]) ->
+log10([V1]) ->
+    Num = ?number(V1, ?default_rules),
     log([Num, 10]).
 
-%%% -------------- %%%
-%%% Random numbers %%%
-%%% -------------- %%%
+%%% Random numbers ~~~~~
 
 rand() ->
     random:uniform().
 
-randbetween([First, Last]) ->
-    ?ensure_numbers([First, Last]),
+randbetween([V1, V2]) ->
+    [First, Last] = ?numbers([V1, V2], ?default_rules),
     rand() * (Last - First) + First.
-    
 
-%%% ---------------- %%%
-%%% Rounding numbers %%%
-%%% ---------------- %%%
+%%% Rounding numbers ~~~~~
 
-round([Num, NumDigits]) ->
-    ?ensure_numbers([Num, NumDigits]),
+round([V1, V2]) ->
+    [Num, NumDigits] = ?numbers([V1, V2], ?default_rules),
     round1(Num, NumDigits).
 round1(Num, 0) ->
     erlang:round(Num);
@@ -337,8 +328,8 @@ round1(Num, NumDigits) ->
     Pow = math:pow(10, NumDigits),
     erlang:round(Num * Pow) / erlang:round(Pow).
 
-rounddown([Num, NumDigits]) ->
-    ?ensure_numbers([Num, NumDigits]),
+rounddown([V1, V2]) ->
+    [Num, NumDigits] = ?numbers([V1, V2], ?default_rules),
     rounddown1(Num, NumDigits).
 rounddown1(Num, 0) ->
     erlang:trunc(Num);
@@ -349,8 +340,8 @@ rounddown1(Num, NumDigits) when NumDigits > 0 ->
     Pow = math:pow(10, NumDigits),
     erlang:trunc(Num * Pow) / Pow.
 
-roundup([Num, NumDigits]) ->
-    ?ensure_numbers([Num, NumDigits]),
+roundup([V1, V2]) ->
+    [Num, NumDigits] = ?numbers([V1, V2], ?default_rules),
     roundup1(Num, NumDigits).
 roundup1(Num, 0) ->
     ?COND(erlang:trunc(Num) == Num,
@@ -392,8 +383,8 @@ combin([V1, V2]) ->
     ?ensure(N >= Chosen, ?ERR_NUM),
     fact1(N) div (fact1(Chosen) * fact1(N - Chosen)).
 
-even([Num]) ->
-    ?ensure_number(Num),
+even([V1]) ->
+    Num = ?number(V1, ?default_rules),
     even1(Num).
 even1(Num) when ?is_multiple(Num, 2) ->
     Num;
@@ -402,8 +393,8 @@ even1(Num) when Num > 0 ->
 even1(Num) when Num < 0 ->
     ceiling1(Num, -2).
 
-floor([Num, Multiple]) ->
-    ?ensure_numbers([Num, Multiple]),
+floor([V1, V2]) ->
+    [Num, Multiple] = ?numbers([V1, V2], ?default_rules),
     ?ensure(sign1(Num) == sign1(Multiple), ?ERR_NUM),
     floor1(Num, Multiple).
 floor1(_Num, 0) ->
@@ -413,22 +404,21 @@ floor1(Num, Multiple) when ?is_multiple(Num, Multiple) ->
 floor1(Num, Multiple) ->
     erlang:trunc(Num / Multiple) * Multiple.
 
-int([Num]) ->
-    ?ensure_number(Num),
+int([V1]) ->
+    Num = ?number(V1, ?default_rules),
     ?COND(erlang:round(Num) > Num,
           erlang:round(Num) - 1,
           erlang:round(Num)).
 
-%%% FIXME: Should be easy, offload to floor or ceiling depending on args.
-mround([Num, Multiple]) ->
-    ?ensure_numbers([Num, Multiple]),
+mround([V1, V2]) ->
+    [Num, Multiple] = ?numbers([V1, V2], ?default_rules),
     ?ensure(sign1(Num) == sign1(Multiple), ?ERR_NUM),
-    Num.
+    roundup1(Num, Multiple).
 
-odd([Num]) ->
-    ?ensure_number(Num),
+odd([V1]) ->
+    Num = ?number(V1, ?default_rules),
     odd1(Num).
-odd1(0) ->
+odd1(Num) when Num == 0 ->
     1;
 odd1(Num) ->
     E = even1(Num),
@@ -436,40 +426,35 @@ odd1(Num) ->
           E + sign1(Num),
           E - sign1(Num)).
 
-trunc([Num]) ->
-    erlang:trunc([Num, 0]);
-trunc([Num, NumDigits]) ->
-    ?ensure_numbers([Num, NumDigits]),
+trunc([V1]) ->
+    ?int(V1, ?default_rules);
+trunc([V1, V2]) ->
+    [Num, NumDigits] = ?numbers([V1, V2], ?default_rules),
     rounddown1(Num, NumDigits).
 
-
-%%% --------------- %%%
-%%% Special numbers %%%
-%%% --------------- %%%
+%%% Special numbers ~~~~~
 
 pi() ->
     math:pi().
 
-sqrtpi([Num]) ->
-    ?ensure_number(Num),
-    ?ensure_non_negative(Num),
+sqrtpi([V1]) ->
+    Num = ?number(V1, ?default_rules),
+    ?ensure(Num >= 0, ?ERR_NUM),
     math:sqrt(Num * math:pi()).
 
 %%% TODO: Implement. Also, remember that the result is a string.
-roman([Num]) ->
-    roman([Num, 0]);
-roman([Num, Form]) ->
-    ?ensure_numbers([Num, Form]),
-    ?ensure_non_negative(Num),
+roman([V1]) ->
+    roman([V1, 0]);
+roman([V1, V2]) ->
+    [Num, Form] = ?numbers([V1, V2], ?default_rules),
+    ?ensure(Num >= 0, ?ERR_NUM),
     ?ensure(Num =< 3999, ?ERR_VAL),
-    ?ensure(member(Form, [1, 2, 3, 4, true, false]), ?ERR_VAL),
+    ?ensure(member(Form, [1, 2, 3, 4]), ?ERR_VAL),
     roman1(Num, Form).
 roman1(_Num, _Form) ->
     0.
 
-%%% --------- %%%
-%%% Summation %%%
-%%% --------- %%%
+%%% Summation ~~~~~
 
 seriessum([K, N, M, Coeffs]) ->
     ?ensure_numbers([K, N, M]),
@@ -576,7 +561,7 @@ sumxmy2_1(Nums1, Nums2) ->
             end,
             zip(Nums1, Nums2))).    
 
-%%% Trigonometry ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%%% Trigonometry ~~~~~
 
 sin([V]) ->
     Num = ?number(V, ?default_rules),
