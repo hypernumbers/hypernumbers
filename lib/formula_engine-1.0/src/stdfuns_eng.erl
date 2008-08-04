@@ -18,11 +18,9 @@ delta([V1, V2]) ->
     [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
     ?COND(Num1 == Num2, 1, 0).
 
-gestep([N]) ->
-    gestep([N, 0]);
-gestep([N, S]) ->
-    Num = cast(N, num),
-    Step = cast(S, num),
-    ?ensure_numbers([Num, Step]),
+gestep([V1]) ->
+    gestep([V1, 0]);
+gestep([V1, V2]) ->
+    [N, S] = ?numbers([V1, V2], ?default_rules),
     ?COND(Num >= Step, 1, 0).
     

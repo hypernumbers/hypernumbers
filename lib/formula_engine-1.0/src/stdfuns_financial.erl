@@ -104,4 +104,3 @@ pv1(Rate, Nper, Pmt, Fv, Type) ->
     Bigass = (N - 1) / Rate,
     T = -(Pmt * (Rate * Type + 1) * Bigass + Fv),
     T / N.
-    
