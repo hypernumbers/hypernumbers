@@ -1,10 +1,9 @@
-%%%----------------------------------------------------------------------------
-%%% @doc Date functions.
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
-%%%----------------------------------------------------------------------------
+%%% @doc Date functions.
 
 -module(stdfuns_date).
--export([date/1,
+-export([
+         date/1,
          datedif/1,
          datevalue/1,
          day/1,
@@ -20,7 +19,8 @@
          minute/1,
          second/1,
          now/1,
-         timevalue/1]).
+         timevalue/1
+        ]).
 
 -include("typechecks.hrl").
 -include("handy_macros.hrl").
