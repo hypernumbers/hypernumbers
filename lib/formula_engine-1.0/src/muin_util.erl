@@ -1,3 +1,6 @@
+%%% @author Hasan Veldstra <hasan@hypernumbers.com>
+%%% @doc Various utility functions used by the formula engine.
+
 -module(muin_util).
 -export([cast/2,
          split_ssref/1,
@@ -12,47 +15,68 @@
 
 -include("handy_macros.hrl").
 -include("typechecks.hrl").
+-include("muin_records.hrl").
 
-%% Booleans
-cast(0, bool) ->
-    false;
-cast(0.0, bool) ->
-    false;
-cast(X, bool) when is_list(X) ->
-    case string:to_upper(X) of
-        "TRUE" -> true;
-        "FALSE" -> false;
-        _ -> {error, nab}
-    end;
-cast(X, bool) when is_number(X) ->
-    true;
-cast(X, bool) when is_boolean(X) ->
-    X;
-cast(_, bool) ->
+cast(X, Targtype) ->
+    Xtype = get_type(X),
+    cast(X, Xtype, Targtype).
+
+get_type(X) when is_number(X) ->
+    num;
+get_type(X) when is_boolean(X) ->
+    bool;
+get_type(X) when is_record(X, datetime) ->
+    date;
+get_type(blank) ->
+    blank;
+get_type(X) ->
+    case muin_collect:is_string(X) of
+        true -> str;
+        false -> unknown_type
+    end.
+
+%% X -> boolean
+cast(X, num, bool) ->
+    not(X == 0);
+cast(X, str, bool) ->
+            case string:to_upper(X) of
+                "TRUE"  -> true;
+                "FALSE" -> false;
+                _       -> {error, nab}
+            end;    
+cast(X, bool, bool)  -> X;
+cast(X, date, bool)  -> true;
+cast(X, blank, bool) -> false;
+cast(_, _, bool) ->
     {error, nab};
 
-%% Numbers
-cast(X, num) when is_number(X) ->
-    X;
-cast(true, num) ->
-    1;
-cast(false, num) ->
-    0;
-cast(S, num) when is_list(S) ->
-    tconv:to_num(S);
-cast(_, num) ->
-    ?ERR_VAL;
+%% X -> number
+cast(X, num, num)      -> X;
+cast(true, bool, num)  -> 1;
+cast(false, bool, num) -> 0;
+cast(X, str, num) ->
+    tconv:to_num(X);
+cast(X, date, num) ->
+    42; %% TODO:
+cast(_, blank, num) -> 0;
+cast(_, _, num) ->
+    {error, nan};
 
-%% Strings
-cast(true, str) ->
-    "true";
-cast(false, str) ->
-    "false";
-cast(N, str) when is_number(N) ->
-    tconv:to_s(N);
-cast(_, str) ->
-    ?ERR_VAL.
+%% X -> string
+cast(X, num, str) ->
+    tconv:to_s(X);
+cast(X, str, str)      -> X;
+cast(true, bool, str)  -> "true";  % STR!
+cast(false, bool, str) -> "false"; % STR!
+cast(X, date, str) ->
+    "1/1/1900"; % TODO:
+cast(_, blank, str) -> ""; % STR!
+cast(_, _, str) ->
+    {error, nas};
 
+cast(X, _, date) ->
+    #datetime{}. % TODO!
+    
 %% Splits ssref to [Path, Ref]
 split_ssref(Ssref) ->
     {just_path(Ssref), just_ref(Ssref)}.

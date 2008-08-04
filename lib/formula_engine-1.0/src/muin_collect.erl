@@ -1,170 +1,117 @@
-%%%----------------------------------------------------------------------------
-%%% @doc Functions to convert between values of different types according to
-%%%      sets of rules rather than with a pre-defined one-way conversion.
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
-%%%----------------------------------------------------------------------------
+%%% @doc Type casting/coercion functions.
 
-%%% Rules are names of functions that the inputs get filtered through.
-
-%%% TODO:
-%%%   * collect_* functions should not give everything to filters, only
-%%%     stuff that doesn't match the target type.
-%%%   * lots of repetition -- clean up
+%%% Collect functions are not guaranteed to be stable, i.e. the result list
+%%% may have cast values in different order from the original list.
 
 -module(muin_collect).
 
--export([flatten_ranges/1, flatten_arrays/1,
+-export([flatten_ranges/1,  flatten_arrays/1,
          collect_numbers/2, collect_number/2,
          collect_strings/2, collect_string/2,
-         collect_bools/2, collect_bool/2,
-         collect_dates/2, collect_date/2]).
+         collect_bools/2,   collect_bool/2,
+         collect_dates/2,   collect_date/2]).
 
 -compile(export_all). % For testing / to kill warnings.
 
 -include("handy_macros.hrl").
 -include("errvals.hrl").
+-include("muin_records.hrl").
 
-%%-----------------------------------------------------------------------------
-%% @spec flatten_arrays(Vs :: [V]) -> [V]
-%% where
-%%   V = Str | number() | Blank | bool() | tuple()
-%%   Str = {ustr, binary()}
-%%   Blank = blank
-%%
+-import(muin_util, [cast/2]).
+
 %% @doc Replaces array objects with the values they contain. (Used by
 %% implementations of SUM and PRODUCT for example).
-%%-----------------------------------------------------------------------------
 flatten_arrays(Vs) ->
     Vs.
 
-%%-----------------------------------------------------------------------------
-%% @spec flatten_ranges(Vs :: [V]) -> [V]
-%% where
-%%   V = Str | number() | Blank | bool() | tuple()
-%%   Str = {ustr, binary()}
-%%   Blank = blank
-%%
 %% @doc Replaces range objects with the values theycontain. (Used by
 %% implementations of SUM and PRODUCT for example).
-%%-----------------------------------------------------------------------------
 flatten_ranges(Vs) ->
     Vs.
 
-%%-----------------------------------------------------------------------------
-%% @spec collect_numbers(Vs :: [V], Rules :: [Rule]) -> [number()]
-%% where
-%%   V = Str | number() | blank | bool() | tuple()
-%%   Str = {ustring, binary()}
-%%   Rule = ignore_strings | cast_strings | cast_strings_zero
-%%          ignore_bools | cast_bools | ignore_blanks | zero_blanks
-%%          ignore_dates | cast_dates
-%%-----------------------------------------------------------------------------
+%% Rules:
+%% ignore_strings | cast_strings | cast_strings_zero | ban_strings
+%% ignore_bools | cast_bools | ban_bools
+%% ignore_dates | cast_dates | ban_dates
+%% ignore_blanks | cast_blanks | ban_blanks
 collect_numbers(Vs, Rules) ->
-    muin_checks:die_on_errval(Vs),
-    foldl(fun(cast_strings, Acc) ->
-                  cast_strings(Acc, num);
-             (cast_bools, Acc) ->
-                  cast_bools(Acc, num);
-             (Func, Acc) ->
-                  ?MODULE:Func(Acc)
-          end,
-          Vs, Rules).
+    generic_collect(Vs, Rules, fun erlang:is_number/1, num).
 
-%%-----------------------------------------------------------------------------
 %% @doc Same as <code>collect_numbers</code>
-%%-----------------------------------------------------------------------------
 collect_number(V, Rules) ->
-    case collect_numbers([V], Rules) of
-        []    -> ?ERR_VAL;
-        [Num] -> Num
-    end.
+    hd(collect_numbers([V], Rules)).
 
-%%-----------------------------------------------------------------------------
-%% 
-%%-----------------------------------------------------------------------------
-collect_strings(Vs, _Rules) ->
-    muin_checks:die_on_errval(Vs),
-    foldl(fun(X, Acc) -> {X, Acc} end, [], []).
+%% Rules:
+%% cast_numbers | ignore_numbers | ban_numbers
+%% cast_bools | ignore_bools | ban_bools
+%% cast_dates | ignore_dates | ban_dates
+%% cast_blanks | ignore_blanks | ban_blanks
+collect_strings(Vs, Rules) ->
+    generic_collect(Vs, Rules, fun is_string/1, str).
 
-%%-----------------------------------------------------------------------------
 %% @doc Same as collect_strings but for one value.
-%%-----------------------------------------------------------------------------
 collect_string(V, Rules) ->
-    case collect_strings([V], Rules) of
-        []    -> ?ERR_VAL;
-        [Str] -> Str
-    end.
+    hd(collect_strings([V], Rules)).
 
-%%-----------------------------------------------------------------------------
-%% @spec collect_bools(Vs :: [V], Rules :: [Rule]) -> [bool()]
-%% where
-%%   V = Str | number() | Blank | bool() | tuple()
-%%   Str = {ustr, binary()}
-%%   Blank = blank
-%%   Rule = ignore_strings | cast_strings | cast_strings_false |
-%%          ignore_numbers | cast_numbers | ignore_blanks | false_blanks
-%%
-%% @doc <p>Returns a list of booleans sourced from a list of values according to
-%% the specified rules.</p>
-%% <p>If <code>cast_strings</code> is given then <code>#VALUE!</code> will be
-%% returned if a string cannot be coerced into a boolean.
-%% If <code>cast_strings_false</code> is given instead, such strings will be
-%% replaced by <code>false</code>.</p>
-%%-----------------------------------------------------------------------------
+%% @doc
 collect_bools(Vs, Rules) ->
-    muin_checks:die_on_errval(Vs),
-    foldl(fun(cast_strings, Acc) ->
-                  cast_strings(Acc, bool);
-             (cast_numbers, Acc) ->
-                  cast_numbers(Acc, bool);
-             (Func, Acc) ->
-                  ?MODULE:Func(Acc)
-          end,
-          Vs, Rules).
+    generic_collect(Vs, Rules, fun erlang:is_boolean/1, bool).
 
-%%-----------------------------------------------------------------------------
 %% @doc Same as <code>collect_bools/2</code> but for one value.
-%%-----------------------------------------------------------------------------
 collect_bool(V, Rules) ->
-    case collect_bools([V], Rules) of
-        []  -> ?ERR_VAL;
-        [B] -> B
-    end.
+    hd(collect_bools([V], Rules)).
 
-%%-----------------------------------------------------------------------------
-%%
-%%-----------------------------------------------------------------------------
+%% @doc
 collect_dates(Vs, Rules) ->
-    muin_checks:die_on_errval(Vs),
-    Vs.
-
-%%-----------------------------------------------------------------------------
+    generic_collect(Vs, Rules, fun is_date/1, date).
+                            
 %% @doc Same as <code>collect_dates/2</code> but only for one value.
-%%-----------------------------------------------------------------------------
 collect_date(V, Rules) ->
-    case collect_dates([V], Rules) of
-        []   -> ?ERR_VAL;
-        [Dt] -> Dt
-    end.
-             
-    
+    hd(collect_dates([V], Rules)).
+
 %%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+generic_collect(Vs, Rules, PartitionFun, Targtype) ->
+    muin_checks:die_on_errval(Vs),
+    {Ok, Notok} = lists:partition(PartitionFun, Vs),
+    Ok2 = foldl(fun(cast_numbers, Acc) -> cast_numbers(Acc, Targtype);
+                   (cast_strings, Acc) -> cast_strings(Acc, Targtype);
+                   (cast_bools, Acc)   -> cast_bools(Acc, Targtype);
+                   (cast_dates, Acc)   -> cast_dates(Acc, Targtype);
+                   (cast_blanks, Acc)  -> cast_blanks(Acc, Targtype);
+                   (Func, Acc)         -> ?MODULE:Func(Acc)
+                end,
+                Notok, Rules),
+
+    Res = Ok ++ Ok2,
+
+    if(Res == []) -> ?ERR_VAL;
+      true        -> Res
+    end.
+
+%%% Ignores ~~~~~
 
 ignore_numbers(Xs) ->
     ignore(fun erlang:is_number/1, Xs).
 
 ignore_strings(Xs) ->
-    ignore(fun erlang:is_list/1, Xs). %% STR!
+    ignore(fun is_string/1, Xs).
 
 ignore_bools(Xs) ->
     ignore(fun erlang:is_boolean/1, Xs).
 
+ignore_dates(Xs) ->
+    ignore(fun is_date/1, Xs).
+                   
 ignore_blanks(Xs) ->
     ignore(fun(X) -> X == blank end, Xs).
 
-%% The opposite of lists:filter/2
+%% Complement of lists:filter/2
 ignore(Fun, Xs) ->
     filter(fun(X) -> not(Fun(X)) end, Xs).
+
+%%% Casts ~~~~~
 
 cast_strings(Xs, Targtype) ->
     cast_strings_with_opt(Xs, Targtype, fun() -> ?ERR_VAL end).
@@ -173,52 +120,79 @@ cast_strings_false(Xs) ->
 cast_strings_zero(Xs) ->
     cast_strings_with_opt(Xs, num, fun() -> 0 end).
 
-%% Action = what to do when the string can't be coerced into a value of
-%% target type.
 cast_strings_with_opt(Xs, Targtype, Action) ->
-    R = foldl(fun(X, Acc) when is_list(X) -> %% STR!
-                      case muin_util:cast(X, Targtype) of
-                          {error, _} -> Action();
-                          Val        -> [Val | Acc]
-                      end;
-                 (X, Acc) ->
-                      [X | Acc]
-              end,
-              [], Xs),
-    reverse(R).
-
-cast_bools(Xs, Targtype) ->
-    R = foldl(fun(B, Acc) when is_boolean(B) ->
-                      [muin_util:cast(B, Targtype) | Acc];
-                 (X, Acc) ->
-                      [X | Acc]
-              end,
-              [], Xs),
-    reverse(R).
-
-zero_blanks(Xs) ->
-    cast_blanks(Xs, 0).
-
-false_blanks(Xs) ->
-    cast_blanks(Xs, false).
-
-cast_blanks(Xs, Castval) ->
-    R = foldl(fun(blank, Acc) ->
-                      [Castval | Acc];
-                 (X, Acc) ->
-                      [X | Acc]
-              end,
-              [], Xs),
-    reverse(R).
+    Res = generic_cast(Xs, Targtype, fun is_string/1),
+    %% Swap all {error, _} for Action().
+    foldl(fun({error, _}, Acc) ->
+                  [Action() | Acc];
+             (X, Acc) ->
+                  [X | Acc]
+          end,
+          [], Res).
 
 cast_numbers(Xs, Targtype) ->
-    R = foldl(fun(N, Acc) when is_number(N) ->
-                      [muin_util:cast(N, Targtype) | Acc];
-                 (X, Acc) ->
-                      [X | Acc]
+    generic_cast(Xs, Targtype, fun erlang:is_number/1).
+
+cast_bools(Xs, Targtype) ->
+    generic_cast(Xs, Targtype, fun erlang:is_boolean/1).
+
+cast_dates(Xs, Targtype) ->
+    generic_cast(Xs, Targtype, fun is_date/1).
+
+cast_blanks(Xs, Targtype) ->
+    generic_cast(Xs, Targtype, fun is_blank/1).
+
+generic_cast(Xs, Targtype, Guardfun) ->
+    R = foldl(fun(X, Acc) ->
+                      case Guardfun(X) of
+                          true  -> [cast(X, Targtype) | Acc];
+                          false -> [X | Acc]
+                      end
               end,
               [], Xs),
     reverse(R).
+
+%%% Bans ~~~~~
+
+ban_numbers(Xs) ->
+    generic_ban(Xs, fun erlang:is_number/1).
+
+ban_strings(Xs) ->
+    generic_ban(Xs, fun is_string/1).
+
+ban_bools(Xs) ->
+    generic_ban(Xs, fun erlang:is_boolean/1).
+
+ban_dates(Xs) ->
+    generic_ban(Xs, fun is_date/1).
+
+ban_blanks(Xs) ->
+    generic_ban(Xs, fun is_blank/1).
+
+generic_ban(Xs, Detectorf) ->
+    case any(Detectorf, Xs) of
+        true  -> ?ERR_VAL;
+        false -> Xs
+    end.
+                           
+%%% Type checks ~~~~~
+
+is_string({ustr, Bin}) when is_binary(Bin) ->
+    true;
+is_string(L) when is_list(L) ->
+    io_lib:char_list(L);
+is_string(_) ->
+    false.
+
+is_date(X) when is_record(X, datetime) ->
+    true;
+is_date(_) ->
+    false.
+
+is_blank(blank) ->
+    true;
+is_blank(_) ->
+    false.
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
