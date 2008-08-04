@@ -31,7 +31,6 @@
 	 print_as_hex/2,
 	 make_paths/1,
 	 make_b26/1,
-	 mk_int_frm_b26/1,
 	 relative_error/2,
 	 sloppy_equals/2]).
 
@@ -117,7 +116,7 @@ strip_ref(Ref) ->
             end
         end,string:to_lower(Ref)),
     
-    {mk_int_frm_b26(X),list_to_integer(Y)}.
+    {tconv:to_i(X),list_to_integer(Y)}.
 
 get_page_path(Path) ->
     case util2:rev_chop(Path) of
@@ -212,12 +211,6 @@ make_paths(List) when is_list(List) ->
 %% TODO: Remove and fix all code that uses this function to use tconv:to_b26().
 make_b26(Int) when is_integer(Int) ->
     tconv:to_b26(Int). 
-
-%% this function takes an alpha string and thinks
-%% it is a base 26 integer
-%% TODO: Remove and fix all code that uses this function to use tconv:to_i/2.
-mk_int_frm_b26(X) when is_list(X)->
-    tconv:to_i(X, b26).
 
 %% This function computes relative error, which provides a way
 %% to compare two floats regardless of their range.
