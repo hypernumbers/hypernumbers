@@ -1,12 +1,9 @@
-# Generates builtins.hrl from stdfuns files.
-# <hasan@hypernumbers.com>
-
-files = ["stdfuns_stats.erl", "stdfuns_math.erl", "stdfuns_text.erl",
-         "stdfuns_info.erl", "stdfuns_logical.erl", "stdfuns_financial.erl",
-         "stdfuns_eng.erl", "stdfuns_date.erl"]
+### Generates builtins.hrl from stdfuns files.
+### Depends on each function being on a separate line in the exports list!
+### <hasan@hypernumbers.com>
 
 def get_export_list(file)
-  ls = IO.readlines("../../lib/formula_engine-1.0/src/#{file}")
+  ls = IO.readlines(file)
 
   first = 0
   last = 0
@@ -34,6 +31,8 @@ def get_export_list(file)
 
   functions
 end
+
+files = Dir["../../lib/formula_engine-1.0/src/stdfuns_*.erl"]
 
 res = files.inject("") do |acc, name|
   mod = File.basename(name, ".erl")
