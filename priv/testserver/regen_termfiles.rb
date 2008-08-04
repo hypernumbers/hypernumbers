@@ -5,11 +5,15 @@
 # USAGE: Amend the path below, and run. Make sure to separate directories with
 # 4 slashes.
 
-PATH_TO_XLS_FILES = "C:\\\\opt\\\\code\\\\trunk\\\\tests\\\\excel_files\\\\Win_Excel07_As_97\\\\"
+# TODO: Use readlist.txt and simply discard range information.
+# TODO: Get path to XLS files on the command line.
+# TODO: Load read function from readexcel.rb & invoke them in here rather than creating
+#       a new process to do it.
+
+path = ARGV[0].gsub('\\', '\\\\\\\\') + '\\\\'
 
 IO.readlines("list.txt").each do |s|
-  x = PATH_TO_XLS_FILES + s.strip
-  puts "X is #{x}"
+  x = path + s.strip
   `ruby readexcel.rb #{x}`
   puts "OK: #{s.strip}"
 end

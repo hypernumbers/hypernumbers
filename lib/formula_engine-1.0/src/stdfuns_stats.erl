@@ -12,7 +12,7 @@
 
 -include("handy_macros.hrl").
 -include("typechecks.hrl").
--import(muin_util, [conv/2, cast/2]).
+%%-import(muin_util, [conv/2, cast/2]).
 
 -export([
          avedev/1,
@@ -65,7 +65,7 @@
          mina/1,
          mode/1,
          %%negbinomdist/1,
-         normdist/1,
+         %%normdist/1,
          %%norminv/1,
          normsdist/1,
          %%normsinv/1,
@@ -101,6 +101,7 @@
         ]).
 
 -define(default_rules, [cast_strings, cast_bools, cast_blanks, cast_dates]).
+-define(default_rules_bools, [cast_numbers, cast_strings, cast_blanks, cast_dates]).
 
 avedev(Vs) ->
     Flatvs = ?flatten_all(Vs),
@@ -133,7 +134,7 @@ averagea(Vs) ->
 binomdist([V1, V2, V3, V4]) ->
     [Succn, Trials] = ?ints([V1, V2], ?default_rules),
     Succprob = ?number(V3, ?default_rules),
-    Cumul = ?bool(V4, [cast_strings, cast_blanks, cast_dates]),
+    Cumul = ?bool(V4, ?default_rules_bools),
     ?ensure(Succn =< Trials, ?ERR_NUM),
     ?ensure_non_negatives([Succn, Succprob]),
     ?ensure(Succprob =< 1, ?ERR_NUM),
@@ -157,10 +158,9 @@ chidist1(X, Degfree) ->
     Chi = 1 / (math:pow(2, Alpha) * stdfuns_math:fact1(Alpha)),
     math:pow(Chi, (Alpha - 1)) * math:exp(X * -0.5).
 
-correl([L1, L2]) ->
-    _Nums1 = ?filter_numbers(?ensure_no_errvals(?flatten(L1))),
-    _Nums2 = ?filter_numbers(?ensure_no_errvals(?flatten(L2))),
-    0. %% TODO:
+%% TODO:
+correl([_V1, _V2]) ->
+    0.
 
 count(Vs) ->
     Flatvs = ?flatten_all(Vs),
@@ -171,15 +171,9 @@ countblank(Vs) ->
     Flatvs = ?flatten_all(Vs),
     length([X || X <- Flatvs, muin_collect:is_blank(X)]).
 
-covar([L1, L2]) ->
-    Ary1 = ?filter_numbers(L1),
-    Ary2 = ?filter_numbers(L2),
-    ?ensure_nonzero(length(Ary1)),
-    ?ensure_nonzero(length(Ary2)),
-    ?ensure(length(Ary1) == length(Ary2), ?ERR_NA),
-    covar1(Ary1, Ary2).
-covar1(_Ary1, _Ary2) ->
-    0. %% TODO:
+%% TODO:
+covar([_, _]) ->
+    0.
 
 critbinom([V1, V2, V3]) ->
     Trials = ?int(V1, ?default_rules),
@@ -201,117 +195,97 @@ devsq(Vs) ->
 devsq1(Vals) ->
     moment(Vals, 2) * length(Vals).
 
-expondist([X, Lambda, Cum]) ->
-    ?ensure_numbers([X, Lambda]),
-    ?ensure_non_negatives([X, Lambda]),
-    expondist1(X, Lambda, cast(Cum, bool)).
+expondist([V1, V2, V3]) ->
+    [X, Lambda] = ?numbers([V1, V2], ?default_rules),
+    Cumul = ?bool(V3, ?default_rules_bools),
+    ?ensure(X >= 0, ?ERR_NUM),
+    ?ensure(Lambda >= 0, ?ERR_NUM),
+    expondist1(X, Lambda, Cumul).
 expondist1(X, Lambda, true) ->
     1 - math:exp(-1 * X / Lambda);
 expondist1(X, Lambda, false) ->
     math:exp(-1 * X / Lambda) / Lambda.
 
-forecast([N, L1, L2]) ->
-    ?ensure_number(N),
-    Kys = ?filter_numbers(?ensure_no_errvals(?flatten(L1))),
-    Kxs = ?filter_numbers(?ensure_no_errvals(?flatten(L2))),
-    ?ensure(length(Kys) > 0 andalso length(Kys) == length(Kxs), ?ERR_NA),
-    forecast1(N, Kys, Kxs).
-forecast1(X, Kys, Kxs) ->
-    {matrix, [B1, B0]} = linest1(Kys, Kxs),
-    B1 * X + B0.
+%% TODO:
+forecast([_, _, _]) ->
+    0.
+%% forecast1(X, Kys, Kxs) ->
+%%     {matrix, [B1, B0]} = linest1(Kys, Kxs),
+%%     B1 * X + B0.
 
-frequency([L1, L2]) ->
-    Data = ?filter_numbers(?ensure_no_errvals(?flatten(L1))),
-    Bins = ?filter_numbers(?ensure_no_errvals(?flatten(L2))),
-    frequency1(Data, Bins).
-frequency1(_Data, _Bins) ->
-    0. %% TODO:
+%% TODO:
+frequency([_, _]) ->
+    0.
 
-gammadist([X, Alpha, Beta, Cum]) ->
-    ?ensure_numbers([X, Alpha, Beta]),
-    ?ensure_non_negative(X),
-    ?ensure_positive(Alpha),
-    ?ensure_positive(Beta),
-    gammadist1(X, Alpha, Beta, cast(Cum, bool)).
+gammadist([V1, V2, V3, V4]) ->
+    [X, Alpha, Beta] = ?numbers([V1, V2, V3], ?default_rules),
+    Cumul = ?bool(V4, ?default_rules_bools),
+    ?ensure(X >= 0, ?ERR_NUM),
+    ?ensure(Alpha > 0, ?ERR_NUM),
+    ?ensure(Beta > 0, ?ERR_NUM),
+    gammadist1(X, Alpha, Beta, Cumul).
 gammadist1(X, Alpha, Beta, false) ->
     Top = math:pow(X, Alpha - 1) * math:exp(-1 * X / Beta),
     Top / (math:pow(Beta, Alpha) * stdfuns_math:fact1(round(Alpha)));
 gammadist1(_X, _Alpha, _Beta, true) ->
     0. %% TODO:
 
-intercept([L1, L2]) ->
-    Kys = ?filter_numbers(?ensure_no_errvals(?flatten(L1))),
-    Kxs = ?filter_numbers(?ensure_no_errvals(?flatten(L2))),
-    intercept1(Kys, Kxs).
-intercept1(Kys, Kxs) ->
-    {matrix, [M, C]} = linest1(Kys, Kxs),
-    C / M.
+%% TODO:
+intercept([_, _]) ->
+    0.
+%% intercept1(Kys, Kxs) ->
+%%     {matrix, [M, C]} = linest1(Kys, Kxs),
+%%     C / M.
 
-kurt([L]) ->
-    Nums = ?filter_numbers(?ensure_no_errvals(?flatten(L))),
+kurt([V1]) ->
+    Flatvs = ?flatten_all(V1),
+    Nums = ?numbers(Flatvs, ?default_rules),
     ?ensure(length(Nums) > 3, ?ERR_DIV),
     kurt1(Nums).
 kurt1(Nums) ->
     (moment(Nums, 4) / math:pow(moment(Nums, 2), 2)) - 3.
 
-large([L, K]) ->
-    Nums = ?filter_numbers(?ensure_no_errvals(?flatten(L))),
-    ?ensure(length(Nums) > 0, ?ERR_NUM),
-    ?ensure_number(K),
-    ?ensure_positive(K),
+large([V1, V2]) ->
+    Nums = ?flatten_all(V1),
+    K = ?number(V2, ?default_rules),
+    ?ensure(K > 0, ?ERR_NUM),
     ?ensure(length(Nums) >= K, ?ERR_NUM),
     large1(Nums, K).
 large1(Nums, K) ->
     nth(K, reverse(sort(Nums))).
 
+%% TODO:
 linest(_) ->
-    linest1(0, 0).
+    0.
 linest1(_, _) ->
-    {matrix, [0, 0]}. %% TODO:
+    0.
 
-max([L]) ->
-    Flatl = ?ensure_no_errvals(?flatten(L)),
-    Nums = map(fun(X) when is_number(X) ->
-                       X;
-                  (S) when is_list(S) ->
-                       case tconv:to_num(S) of
-                           {error, nan} -> ?ERR_VAL;
-                           V            -> V
-                       end
-               end,
-               Flatl),
+max([V1]) ->
+    Flatvs = ?flatten_all(V1),
+    Nums = ?numbers(Flatvs, ?default_rules),
     ?COND(length(Nums) == 0, 0, lists:max(Nums)).
     
-maxa([L]) ->
-    Flatl = ?ensure_no_errvals(?flatten(L)),
-    Nums = map(fun(X) -> cast(X, num) end, Flatl),
+maxa([V1]) ->
+    Flatvs = ?flatten_all(V1),
+    Nums = ?numbers(Flatvs,
+                    ?default_rules -- [cast_strings] ++ [cast_strings_zero]),
     ?COND(length(Nums) == 0, 0, lists:max(Nums)).
 
-median([L]) ->
-    Nums = ?filter_numbers(?ensure_no_errvals(?flatten(L))),
+median([V1]) ->
+    Nums = ?numbers(?flatten_all(V1), ?default_rules),
     quartile1(Nums, 2).
 
-min([L]) ->
-    Flatl = ?ensure_no_errvals(?flatten(L)),
-    Nums = map(fun(X) when is_number(X) ->
-                       X;
-                  (S) when is_list(S) ->
-                       case tconv:to_num(S) of
-                           {error, nan} -> ?ERR_VAL;
-                           V            -> V
-                       end
-               end,
-               Flatl),
+min([V1]) ->
+    Nums = ?numbers(?flatten_all(V1), ?default_rules),
     ?COND(length(Nums) == 0, 0, lists:min(Nums)).
 
-mina([L]) ->
-    Flatl = ?ensure_no_errvals(?flatten(L)),
-    Nums = map(fun(X) -> cast(X, num) end, Flatl),
+mina([V1]) ->
+    Nums = ?numbers(?flatten_all(V1),
+                    ?default_rules -- [cast_strings] ++ [cast_strings_zero]),
     ?COND(length(Nums) == 0, 0, lists:min(Nums)).
 
-mode([L]) ->
-    Flatl = ?filter_numbers_with_cast(?ensure_no_errvals(?flatten(L))),
-    Nums = map(fun(X) -> cast(X, num) end, Flatl),
+mode([V1]) ->
+    Nums = ?numbers(?flatten_all(V1), ?default_rules),
     mode1(Nums).
 mode1(Nums) ->
     Maptbl = mode1(Nums, []),
@@ -333,156 +307,147 @@ mode1([H|T], Maptbl) ->
 mode1([], Maptbl) ->
     Maptbl.
 
-normdist([N0, Mean, Stdev, Cum]) ->
-    N = cast(N0, num),
-    ?ensure_numbers([N, Mean, Stdev]),
-    ?ensure_positive(Stdev),
-    normdist1(N, Mean, Stdev, cast(Cum, bool)).
-normdist1(_N, _Mean, _Stdev, true) ->
-    0; %% TODO:
-normdist1(_N, _Mean, _Stdev, false) ->
-    0. %% TODO:
+%% TODO:
+normsdist([_, _, _, _]) ->
+    0.
 
-normsdist([Z]) ->
-    normdist([Z, 0, 1, true]).
+%% TODO:
+pearson([_, _]) ->
+    0.
+pearson1(_, _) ->
+    0.
 
-pearson([A1, A2]) ->
-    Nums1 = ?filter_numbers(?ensure_no_errvals(?flatten(A1))),
-    Nums2 = ?filter_numbers(?ensure_no_errvals(?flatten(A2))),
-    pearson1(Nums1, Nums2).
-pearson1(_Ys, _Xs) ->
-    0. %% TODO:
-
-percentile([L, K]) ->
-    Nums = ?filter_numbers(?ensure_no_errvals(?flatten(L))),
+percentile([V1, V2]) ->
+    Nums = ?numbers(?flatten_all(V1), ?default_rules),
+    K = ?number(V2, ?default_rules),
     ?ensure(length(Nums) > 0, ?ERR_NUM),
-    ?ensure_number(K),
-    ?ensure((K >= 0) and (K =< 1), ?ERR_NUM),
+    ?ensure((K >= 0) andalso (K =< 1), ?ERR_NUM),
     percentile1(Nums, K).
 percentile1(Nums, K) ->
     L = map(fun(X) -> X / lists:sum(Nums) end,
             cumulate(Nums)),
     firstgte(L, K).
 
-permut([N, K]) ->
-    ?ensure_numbers([N, K]),
-    ?ensure_positive(N),
+permut([V1, V2]) ->
+    [N, K] = ?numbers([V1, V2], ?default_rules),
+    ?ensure(N > 0, ?ERR_NUM),
+    ?ensure(K >= 0, ?ERR_NUM),
     ?ensure(N >= K, ?ERR_NUM),
-    ?ensure_non_negative(K),
     permut1(trunc(N), trunc(K)).
 permut1(N, K) ->
     stdfuns_math:fact1(N) div stdfuns_math:fact1(N - K).
 
-quartile([L, Q]) ->
-    Nums = ?filter_numbers(?ensure_no_errvals(?flatten(L))),
+quartile([V1, V2]) ->
+    Nums = ?numbers(?flatten_all(V1), ?default_rules),
+    Q = ?int(V2, ?default_rules),
     ?ensure(length(Nums) > 0, ?ERR_NUM),
-    ?ensure_number(Q),
     ?ensure((Q >= 0) and (Q =< 4), ?ERR_NUM),
-    quartile1(Nums, trunc(Q)).
+    quartile1(Nums, Q).
 quartile1(Nums, Q) ->
     nth(percentile1(Nums, Q * 0.25), Nums).
 
-rank([Num, L]) ->
-    rank([Num, L, 0]);
-rank([Num, L, Order]) ->
-    ?ensure_number(Num),
-    Nums = ?filter_numbers(?ensure_no_errvals(?flatten(L))),
-    rank1(Num, Nums, cast(Order, bool)).
+rank([V1, V2]) ->
+    rank([V1, V2, 0]);
+rank([V1, V2, V3]) ->
+    Num = ?number(V1, ?default_rules),
+    Nums = ?numbers(?flatten_all(V2), ?default_rules),
+    Order = ?bool(V3, ?default_rules_bools),
+    rank1(Num, Nums, Order).
 rank1(N, Nums, true) ->
     firstgte(sort(Nums), N);
 rank1(N, Nums, false) ->
     (length(Nums) + 1) - rank1(N, Nums, true).
 
-skew([L]) ->
-    Nums = ?filter_numbers(?ensure_no_errvals(?flatten(L))),
+skew([V1]) ->
+    Nums = ?numbers(?flatten_all(V1), ?default_rules),
     ?ensure(length(Nums) >= 3, ?ERR_DIV),
     skew1(Nums).
 skew1(Nums) ->
     moment(Nums, 3) / math:pow(moment(Nums, 2), 1.5).
 
-small([A, K]) ->
-    Nums = ?filter_numbers(?ensure_no_errvals(?flatten(A))),
-    ?ensure_number(K),
-    ?ensure_positive(K),
+small([V1, V2]) ->
+    Nums = ?numbers(?flatten_all(V1), ?default_rules),
+    K = ?number(V2, ?default_rules),
+    ?ensure(K > 0, ?ERR_NUM),
     small1(Nums, K).
 small1(Nums, K) ->
     nth(K, sort(Nums)).
 
-standardize([Num, Mean, Stdev]) ->
-    ?ensure_number(Num),
-    ?ensure_number(Mean),
-    ?ensure_number(Stdev),
-    ?ensure_positive(Stdev),
+standardize(Arg = [_, _, _]) ->
+    [Num, Mean, Stdev] = ?numbers(Arg, ?default_rules),
+    ?ensure(Stdev > 0, ?ERR_NUM),
     standardize1(Num, Mean, Stdev).
 standardize1(Num, Mean, Stdev) ->
     (Num - Mean) / math:sqrt(Stdev).
 
-stdev([L]) ->
-    Nums = ?filter_numbers(?ensure_no_errvals(?flatten(L))),
+stdev([V1]) ->
+    Nums = ?numbers(?flatten_all(V1), ?default_rules),
     stdev1(Nums).
 stdev1(Nums) ->
     math:sqrt(devsq1(Nums) / (length(Nums) - 1)).
 
-stdeva([L]) ->
-    Nums = ?filter_numbers_with_cast(?ensure_no_errvals(?flatten(L))),
+stdeva([V1]) ->
+    Nums = ?numbers(?flatten_all(V1), ?default_rules),
     stdev1(Nums).
 
-stdevp([L]) ->
-    Nums = ?filter_numbers(?ensure_no_errvals(?flatten(L))),
+stdevp([V1]) ->
+    Nums = ?numbers(?flatten_all(V1), ?default_rules),
     stdevp1(Nums).
 stdevp1(Nums) ->
     math:sqrt(devsq1(Nums) / (length(Nums) - 1)).
 
-stdevpa([L]) ->
-    Nums = ?filter_numbers_with_cast(?ensure_no_errvals(?flatten(L))),
+stdevpa([V1]) ->
+    Nums = ?numbers(?flatten_all(V1), ?default_rules),
     stdevp1(Nums).
 
-steyx([Ys0, Xs0]) ->
-    Ys = ?filter_numbers(?ensure_no_errvals(?flatten(Ys0))),
-    Xs = ?filter_numbers(?ensure_no_errvals(?flatten(Xs0))),
+steyx([V1, V2]) ->
+    Ys = ?numbers(?flatten_all(V1), ?default_rules),
+    Xs = ?numbers(?flatten_all(V2), ?default_rules),
     steyx1(Ys, Xs).
 steyx1(Ys, Xs) ->
     math:pow(pearson1(Ys, Xs), 2).
 
+%% TODO:
 trend([_Kys0, _Kxs0, _Nxs0, _Const]) -> 
-    0. %% TODO:
+    0.
 
-trimmean([A0, Percent]) ->
-    Nums = ?filter_numbers(?ensure_no_errvals(?flatten(A0))),
-    ?ensure_number(Percent),
-    ?ensure_non_negative(Percent),
+trimmean([V1, V2]) ->
+    Nums = ?numbers(?flatten_all(V1), ?default_rules),
+    Percent = ?number(V2, ?default_rules),
+    ?ensure(Percent >= 0, ?ERR_NUM),
     ?ensure(Percent =< 1, ?ERR_NUM),
     trimmean1(Nums, Percent).
 trimmean1(Nums, Percent) ->
     N = round((Percent / 100) * length(Nums)) div 2,
     average1(sublist(sort(Nums), N + 1, length(Nums) - 2 * N)).
 
-var([L]) ->
-    Nums = ?filter_numbers(?ensure_no_errvals(?flatten(L))),
+var([V1]) ->
+    Nums = ?numbers(?flatten_all(V1), ?default_rules),
     var1(Nums).
 var1(Nums) ->
     math:pow(stdev1(Nums), 2).
 
-vara([L]) ->
-    Nums = ?filter_numbers_with_cast(?ensure_no_errvals(?flatten(L))),
+vara([V1]) ->
+    Nums = ?numbers(?flatten_all(V1), ?default_rules),
     var1(Nums).
 
-varp([L]) ->
-    Nums = ?filter_numbers(?ensure_no_errvals(?flatten(L))),
+varp([V1]) ->
+    Nums = ?numbers(?flatten_all(V1), ?default_rules),    
     varp1(Nums).
 varp1(Nums) ->
     math:pow(stdevp1(Nums), 2).
 
-varpa([L]) ->
-    Nums = ?filter_numbers_with_cast(?ensure_no_errvals(?flatten(L))),
+varpa([V1]) ->
+    Nums = ?numbers(?flatten_all(V1), ?default_rules),    
     varp1(Nums).
 
-weibull([X, Alpha, Beta, Cum]) ->
-    ?ensure_numbers([X, Alpha, Beta]),
-    ?ensure_non_negative(X),
-    ?ensure_non_negative(Alpha),
-    ?ensure_non_negative(Beta),
-    weibull1(X, Alpha, Beta, cast(Cum, bool)).
+weibull([V1, V2, V3, V4]) ->
+    [X, Alpha, Beta] = ?numbers([V1, V2, V3], ?default_rules),
+    Cumul = ?bool(V4, ?default_rules_bools),
+    ?ensure(X >= 0, ?ERR_NUM),
+    ?ensure(Alpha >= 0, ?ERR_NUM),
+    ?ensure(Beta >= 0, ?ERR_NUM),
+    weibull1(X, Alpha, Beta, Cumul).
 weibull1(X, Alpha, Beta, true) ->
     1 - math:exp(-1 * math:pow(X, Alpha) / Beta);
 weibull1(X, Alpha, Beta, false) ->

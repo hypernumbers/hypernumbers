@@ -7,12 +7,8 @@ require "win32ole"
 xlsfile = ARGV[0]
 
 WIN32OLE.codepage = WIN32OLE::CP_UTF8
-puts "xlsfile is #{xlsfile}"
 
 xl = WIN32OLE.new("Excel.Application")
-xl.visible=TRUE
-methods=xl.Workbooks.ole_methods.collect!{|e| e.to_s }.sort
-puts methods
 wb = xl.Workbooks.open(xlsfile)
 
 xlsdata = []

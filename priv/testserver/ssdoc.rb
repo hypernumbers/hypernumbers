@@ -16,7 +16,6 @@ include GenUtil
 class Ssdoc
   attr_reader :sheets
   
-  # Create an Ssdoc object from a DAT file created by regen_termfiles.rb
   def initialize(datfile)
     data = eval(IO.readlines(datfile).join)
 
