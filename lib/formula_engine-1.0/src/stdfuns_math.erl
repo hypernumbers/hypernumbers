@@ -37,7 +37,7 @@
          '*'/1,
          '/'/1,
          negate/1,
-         
+
          %% Arithmetic
          sum/1,
          product/1,
@@ -189,7 +189,7 @@ quotient([V1, V2]) ->
 abs([V]) ->
     Num = ?number(V, ?default_rules),
     erlang:abs(Num).
-    
+
 sqrt([V1]) ->
     Num = ?number(V1, ?default_rules),
     ?ensure(Num >= 0, ?ERR_NUM),
@@ -283,7 +283,7 @@ multinomial1(Nums) ->
                                     Acc * fact(X)
                             end,
                             1, Nums).
-    
+
 %%% Logarithms ~~~~~
 
 ln([V1]) ->
@@ -361,7 +361,7 @@ roundup1(Num, NumDigits) ->
                     erlang:round(X) - 1;
                (X) ->
                     erlang:round(X)
-            end,                       
+            end,
     Rndup(Num * Pow) / erlang:round(Pow).
 
 ceiling([V1, V2]) ->
@@ -442,17 +442,23 @@ sqrtpi([V1]) ->
     ?ensure(Num >= 0, ?ERR_NUM),
     math:sqrt(Num * math:pi()).
 
-%%% TODO: Implement. Also, remember that the result is a string.
+-define(DEC_ROMAN_TABLE,
+        [{1000, "M"}, {900, "CM"}, {500, "D"}, {400,"CD"},
+         {100,"C"}, {90,"XC"}, {50,"L"}, {40,"XL"}, {10,"X"},
+         {9,"IX"}, {5,"V"}, {4,"IV"}, {1,"I"}]).
+
 roman([V1]) ->
-    roman([V1, 0]);
-roman([V1, V2]) ->
-    [Num, Form] = ?numbers([V1, V2], ?default_rules),
-    ?ensure(Num >= 0, ?ERR_NUM),
+    Num = ?number(V1, ?default_rules),
+    ?ensure(Num > 0, ?ERR_NUM),
     ?ensure(Num =< 3999, ?ERR_VAL),
-    ?ensure(member(Form, [1, 2, 3, 4]), ?ERR_VAL),
-    roman1(Num, Form).
-roman1(_Num, _Form) ->
-    0.
+    roman1(Num, "", ?DEC_ROMAN_TABLE).
+
+roman1(Num, S, [{Dec, Rom} | Tl]) when Num < Dec ->
+    roman1(Num, S, Tl);
+roman1(Num, S, Tbl = [{Dec, Rom} | _]) ->
+    roman1(Num - Dec, S ++ Rom, Tbl);
+roman1(_Num, S, []) ->
+    S.
 
 %%% Summation ~~~~~
 
@@ -469,7 +475,7 @@ seriessum1(K, N, M, As) ->
                      {0, 0},
                      As),
     Res.
-    
+
 subtotal([1, L])  -> stdfuns_stats:average([L]);
 subtotal([2, L])  -> stdfuns_stats:count([L]);
 subtotal([3, L])  -> stdfuns_stats:counta([L]);
@@ -559,7 +565,7 @@ sumxmy2_1(Nums1, Nums2) ->
     sum(map(fun({X, Y}) ->
                     math:pow(X - Y, 2)
             end,
-            zip(Nums1, Nums2))).    
+            zip(Nums1, Nums2))).
 
 %%% Trigonometry ~~~~~
 
