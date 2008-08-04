@@ -21,7 +21,8 @@
 db([V1, V2, V3, V4]) ->
     db([V1, V2, V3, V4, 12]);
 db([V1, V2, V3, V4, V5]) ->
-    [Cost, Salvage, Life, Period, Month] = ?numbers([V1, V2, V3, V4, V5], ?default_rules),
+    [Cost, Salvage, Life, Period, Month] = ?numbers([V1, V2, V3, V4, V5],
+                                                    ?default_rules),
     ?ensure((Month >= 1) andalso (Month =< 12), ?ERR_NUM), 
     db1(Cost, Salvage, Life, Period, Month).
 -define(dbrate,
@@ -41,18 +42,18 @@ db1(Cost, Salvage, Life, Period, Month) -> % Some other period
                      0, seq(1, Period - 1)),
     (Cost - Prevdepr) * ?dbrate.
 
-effect([Nomrate, Npery]) ->
-    ?ensure_numbers([Nomrate, Npery]),
-    ?ensure_positive(Nomrate),
+effect(Arg = [_, _]) ->
+    [Nomrate, Npery] = ?numbers(Args, ?default_rules),
+    ?ensure(Nomrate > 0, ?ERR_NUM),
     ?ensure(Npery >= 1, ?ERR_NUM),
     effect1(Nomrate, trunc(Npery)).
 effect1(Nomrate, Npery) ->
     math:pow(1 + (Nomrate / Npery), Npery) - 1.
 
-fv([Rate, Nper, Pmt, Pv]) ->
-    fv([Rate, Nper, Pmt, Pv, 0]);
-fv([Rate, Nper, Pmt, Pv, Type]) ->
-    ?ensure_numbers([Rate, Nper, Pmt, Pv, Type]),
+fv([V1, V2, V3, V4]) ->
+    fv([V1, V2, V3, V4, 0]);
+fv(Args = [_, _, _, _, _]) ->
+    [Rate, Nper, Pmt, Pv, Type] = ?numbers(Args, ?default_rules),
     ?ensure(Type == 0 orelse Type == 1, ?ERR_NUM),
     fv1(Rate, Nper, Pmt, Pv, Type).
 fv1(_Rate, 0, _Pmt, Pv, 0) ->
@@ -64,12 +65,12 @@ fv1(_Rate, 0, _Pmt, Pv, 1) ->
 fv1(Rate, Nper, Pmt, Pv, 1) ->
     fv1(Rate, Nper - 1, Pmt, (Pv + Pmt) * Rate, 1).
 
-ipmt([Rate, Per, Nper, Pv]) ->
-    ipmt([Rate, Per, Nper, Pv, 0, 0]);
-ipmt([Rate, Per, Nper, Pv, Fv]) ->
-    ipmt([Rate, Per, Nper, Pv, Fv, 0]);
-ipmt([Rate, Per, Nper, Pv, Fv, Type]) ->
-    ?ensure_numbers([Rate, Per, Nper, Pv, Fv, Type]),
+ipmt([V1, V2, V3, V4]) ->
+    ipmt([V1, V2, V3, V4, 0, 0]);
+ipmt([V1, V2, V3, V4, V5]) ->
+    ipmt([V1, V2, V3, V4, V5, 0]);
+ipmt(Args = [_, _, _, _, _, _]) ->
+    [Rate, Per, Nper, Pv, Fv, Type] = ?numbers(Args, ?default_rules),
     ?ensure(Type == 0 orelse Type == 1, ?ERR_NUM),
     ipmt1(Rate, Per, Nper, Pv, Fv, Type).
 ipmt1(Rate, Per, Nper, Pv, Fv, 0) ->
@@ -79,22 +80,22 @@ ipmt1(Rate, Per, Nper, Pv, Fv, 0) ->
 ipmt1(_Rate, _Per, _Nper, _Pv, _Fv, 1) ->
     0. %% TODO:
 
-ispmt([Rate, Per, Nper, Pv]) ->
-    ?ensure_numbers([Rate, Per, Nper, Pv]),
+ispmt(Args = [_, _, _, _]) ->
+    [Rate, Per, Nper, Pv] = ?numbers(Args, ?default_rules),
     ispmt1(Rate, Per, Nper, Pv).
 ispmt1(Rate, Per, Nper, Pv) ->
     (math:pow(1 + (Rate * Per), Nper) - 1) * Pv.
 
-nominal([Effrate, Npery]) ->
-    ?ensure_numbers([Effrate, Npery]),
-    ?ensure_positive(Effrate),
+nominal(Args = [_, _]) ->
+    [Effrate, Npery] = ?numbers(Args, ?default_rules),
+    ?ensure(Effrate > 0, ?ERR_NUM),
     ?ensure(Npery >= 1, ?ERR_NUM),
     nominal1(Effrate, trunc(Npery)).
 nominal1(Effrate, Npery) ->
     Npery * (math:pow(Effrate + 1, -Npery) - 1).
 
-pv([Rate, Nper, Pmt, Fv, Type]) ->
-    ?ensure_numbers([Rate, Nper, Pmt, Fv, Type]),
+pv(Args = [_, _, _, _, _]) ->
+    [Rate, Nper, Pmt, Fv, Type] = ?numbers(Args, ?default_rules),
     pv1(Rate, Nper, Pmt, Fv, Type).
 pv1(0, Nper, Pmt, Fv, _Type) ->
     -(Pmt * Nper + Fv);
