@@ -59,8 +59,8 @@ Rules.
 {STR}      : {token, {str, hslists:mid(YYtext)}}.
 
 {ERROR} : {token, {error, list_to_atom(YYtext)}}.
-{ATOM}  : {token, {atom,  string:to_lower(YYtext)}}.
-{NAME}  : {token, {name,  tl(string:to_lower(YYtext))}}.
+{ATOM}  : {token, {atom, rmdots(string:to_lower(YYtext))}}.
+{NAME}  : {token, {name, rmdots(tl(string:to_lower(YYtext)))}}.
 
 %% Discard whitespace.
 {WHITESPACE} : .
@@ -212,6 +212,8 @@ is_alpha(Char) when is_integer(Char) ->
 is_alpha([Char]) ->
     is_alpha(Char).
 
+rmdots(Str) ->
+    regexp:gsub(string:to_lower(Str), "\\.", "").
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
