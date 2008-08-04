@@ -118,6 +118,8 @@
 -define(is_multiple(Num, Mult),
         (erlang:trunc(Num / Mult) * Mult) == (Num * 1.0)).
 
+%% A lot of math functions simply cast everything.
+-define(default_rules, [cast_strings, cast_bools, zero_blanks, cast_dates]).
 
 %%% ----------------- %%%
 %%% Basic arithmetics %%%
@@ -184,8 +186,8 @@ product1(Nums) ->
 quotient([Num, Divisor]) ->
     ?MODULE:trunc('/'([Num, Divisor])).
 
-abs([Num]) ->
-    ?ensure_number(Num),
+abs([V]) ->
+    Num = ?number(V, ?default_rules),
     erlang:abs(Num).
     
 sqrt([Num]) ->
@@ -577,71 +579,69 @@ sumxmy2_1(Nums1, Nums2) ->
             end,
             zip(Nums1, Nums2))).    
 
-%%% ------------ %%%
-%%% Trigonometry %%%
-%%% ------------ %%%
+%%% Trigonometry ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-sin([Num]) ->
-    ?ensure_number(Num),
+sin([V]) ->
+    Num = ?number(V, ?default_rules),
     math:sin(Num).
 
-cos([Num]) ->
-    ?ensure_number(Num),
+cos([V]) ->
+    Num = ?number(V, ?default_rules),
     math:cos(Num).
 
-tan([Num]) ->
-    ?ensure_number(Num),
+tan([V]) ->
+    Num = ?number(V, ?default_rules),
     math:tan(Num).
 
-asin([Num]) ->
-    ?ensure_number(Num),
+asin([V]) ->
+    Num = ?number(V, ?default_rules),
     ?ensure(Num >= -1 andalso Num =< 1, ?ERR_NUM),
     math:asin(Num).
 
-acos([Num]) ->
-    ?ensure_number(Num),
+acos([V]) ->
+    Num = ?number(V, ?default_rules),
     ?ensure(Num >= -1 andalso Num =< 1, ?ERR_NUM),
     math:acos(Num).
 
-atan([Num]) ->
-    ?ensure_number(Num),
+atan([V]) ->
+    Num = ?number(V, ?default_rules),
     ?ensure(Num >= -1 andalso Num =< 1, ?ERR_NUM),
     math:atan(Num).
 
-atan2([X, Y]) ->
-    ?ensure_numbers([X, Y]),
+atan2([V1, V2]) ->
+    [X, Y] = ?numbers([V1, V2], ?default_rules),
     ?ensure(X =/= 0 andalso Y =/= 0, ?ERR_DIV),
-    math:atan2(Y, X). %% Yep, this is correct.
+    math:atan2(Y, X). % Yep, the order of args is reversed.
 
-sinh([Num]) ->
-    ?ensure_number(Num),
+sinh([V]) ->
+    Num = ?number(V, ?default_rules),
     math:sinh(Num).
 
-cosh([Num]) ->
-    ?ensure_number(Num),
+cosh([V]) ->
+    Num = ?number(V, ?default_rules),
     math:cosh(Num).
 
-tanh([Num]) ->
-    ?ensure_number(Num),
+tanh([V]) ->
+    Num = ?number(V, ?default_rules),
     math:tanh(Num).
 
-asinh([Num]) ->
-    ?ensure_number(Num),
+asinh([V]) ->
+    Num = ?number(V, ?default_rules),
     math:asinh(Num).
 
-acosh([Num]) ->
-    ?ensure_number(Num),
+acosh([V]) ->
+    Num = ?number(V, ?default_rules),
     math:acosh(Num).
 
-atanh([Num]) ->
-    ?ensure_number(Num),
+atanh([V]) ->
+    Num = ?number(V, ?default_rules),
     ?ensure(Num >= -1 andalso Num =< 1, ?ERR_NUM),
     math:atanh(Num).
 
-degrees([Angle]) ->
-    ?ensure_number(Angle),
+degrees([V]) ->
+    Angle = ?number(V, ?default_rules),
     Angle / math:pi() * 180.
 
-radians([Angle]) ->
-    ?ensure_number(Angle),
+radians([V]) ->
+    Angle = ?number(V, ?default_rules),
     Angle * math:pi() / 180.

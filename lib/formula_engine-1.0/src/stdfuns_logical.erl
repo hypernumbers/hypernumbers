@@ -41,11 +41,10 @@ gte([A, B]) ->
 'if'([Test, TrueVal, FalseVal]) ->
     ?COND(to_b(Test), TrueVal, FalseVal).
 
-'and'([Vals]) ->
-    Flatvals = flatten(Vals),
-    ?ensure_no_errvals(Flatvals),
-    all(fun(X) -> X =/= false end,
-        Flatvals).
+'and'([Vs]) ->
+    Flatvs = ?flatten_all(Vs),
+    Bools = ?bools(Flatvs, [cast_strings, cast_numbers, false_blanks, cast_dates]),
+    all(fun(X) -> X =/= false end, Bools).
 
 'not'([Val]) ->
     ?ensure_no_errvals([Val]),

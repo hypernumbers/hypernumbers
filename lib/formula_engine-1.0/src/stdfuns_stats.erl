@@ -100,10 +100,11 @@
          %%ztest/1
         ]).
 
-avedev(Vals) ->
-    Flatvals = flatten(Vals),
-    ?ensure_no_errvals(Flatvals),
-    Nums = [X || X <- Flatvals, is_number(X)],
+-define(default_rules, [cast_strings, cast_bools, zero_blanks, cast_dates]).
+
+avedev(Vs) ->
+    Flatvs = ?flatten_all(Vs),
+    Nums = ?numbers(Flatvs, ?default_rules),
     ?ensure_nonzero(length(Nums)),
     avedev1(Nums).
 avedev1(Nums) ->
@@ -111,42 +112,30 @@ avedev1(Nums) ->
     Deviation = foldl(fun(X, Acc) ->
                               Acc + erlang:abs(Avg - X)
                       end,
-                      0,
-                      Nums),
+                      0, Nums),
     Deviation / length(Nums).
 
-average(Vals) ->
-    Flatvals = flatten(Vals),
-    ?ensure_no_errvals(Flatvals),
-    Nums = [X || X <- Flatvals, is_number(X)],
+average(Vs) ->
+    Flatvs = ?flatten_all(Vs),
+    Nums = ?numbers(Flatvs, ?default_rules),
     ?ensure_nonzero(length(Nums)),
     average1(Nums).
 average1(Nums) ->
     lists:sum(Nums) / length(Nums).
 
-averagea(Vals) ->
-    Flatvals = flatten(Vals),
-    ?ensure_no_errvals(Flatvals),
-    MaybeNums = map(fun(X) -> conv(X, num) end, Flatvals),
-    %% Now convert {error, value}s that may be there to 0s.
-    Nums = foldl(fun({error, value}, Acc) ->
-                         Acc ++ [0];
-                    (X, Acc) ->
-                         Acc ++ [X]
-                 end,
-                 [],
-                 MaybeNums),
-    ?ensure_nonzero(Nums),
+averagea(Vs) ->
+    Flatvs = ?flatten_all(Vs),
+    Nums = ?numbers(Flatvs, ?default_rules ++ [zero_errvals]),
+    ?ensure_nonzero(length(Nums)),
     average1(Nums).
 
-binomdist([Succn_, Trials_, Succprob, Cumul]) ->
-    ?ensure_numbers([Succn_, Trials_, Succprob]),
-    Succn = erlang:trunc(Succn_),
-    Trials = erlang:trunc(Trials_),
+binomdist([V1, V2, V3, V4]) ->
+    [Succn, Trials] = ?ints([V1, V2], ?default_rules),
+    Succprob = ?number(V3, ?default_rules),
     ?ensure(Succn =< Trials, ?ERR_NUM),
     ?ensure_non_negatives([Succn, Succprob]),
     ?ensure(Succprob =< 1, ?ERR_NUM),
-    ?ensure(is_boolean(Cumul), ?ERR_VAL),
+    Cumul = ?bool(V4, [cast_strings, false_blanks, cast_dates]),
     binomdist1(Succn, Trials, Succprob, Cumul).
 binomdist1(Ns, Nt, Ps, false) ->
     stdfuns_math:combin([Nt, Ps]) * math:pow(Ps, Ns) * math:pow((1 - Ps),
