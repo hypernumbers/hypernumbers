@@ -603,12 +603,15 @@ acos([V]) ->
 
 atan([V]) ->
     Num = ?number(V, ?default_rules),
-    ?ensure(Num >= -1 andalso Num =< 1, ?ERR_NUM),
     math:atan(Num).
 
 atan2([V1, V2]) ->
     [X, Y] = ?numbers([V1, V2], ?default_rules),
-    ?ensure(X =/= 0 andalso Y =/= 0, ?ERR_DIV),
+
+    if X == 0 andalso Y == 0 -> ?ERR_DIV;
+       true -> ok
+    end,
+
     math:atan2(Y, X). % Yep, the order of args is reversed.
 
 sinh([V]) ->
@@ -629,11 +632,12 @@ asinh([V]) ->
 
 acosh([V]) ->
     Num = ?number(V, ?default_rules),
+    ?ensure(Num >= 1, ?ERR_NUM),
     math:acosh(Num).
 
 atanh([V]) ->
     Num = ?number(V, ?default_rules),
-    ?ensure(Num >= -1 andalso Num =< 1, ?ERR_NUM),
+    ?ensure(Num > -1 andalso Num < 1, ?ERR_NUM),
     math:atanh(Num).
 
 degrees([V]) ->

@@ -133,10 +133,10 @@ averagea(Vs) ->
 binomdist([V1, V2, V3, V4]) ->
     [Succn, Trials] = ?ints([V1, V2], ?default_rules),
     Succprob = ?number(V3, ?default_rules),
+    Cumul = ?bool(V4, [cast_strings, cast_blanks, cast_dates]),
     ?ensure(Succn =< Trials, ?ERR_NUM),
     ?ensure_non_negatives([Succn, Succprob]),
     ?ensure(Succprob =< 1, ?ERR_NUM),
-    Cumul = ?bool(V4, [cast_strings, cast_blanks, cast_dates]),
     binomdist1(Succn, Trials, Succprob * 100, Cumul).
 binomdist1(Ns, Nt, Ps, false) ->
     stdfuns_math:combin([Ps, Nt]) * math:pow(Ps, Ns) * math:pow((1 - Ps),
