@@ -50,7 +50,7 @@ flatten_arrays(Vs) ->
 %% @doc Replaces range objects with the values theycontain. (Used by
 %% implementations of SUM and PRODUCT for example).
 flatten_ranges(Vs) ->
-    Vs.
+    flatten(Vs).
 
 %% Rules:
 %% ignore_strings | cast_strings | cast_strings_zero | ban_strings
