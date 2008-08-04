@@ -180,7 +180,8 @@ product(Vals) ->
     Nums = [X || X <- Flatvals, is_number(X)],
     product1(Nums).
 product1(Nums) ->
-    foldl(?Lxacc(X * Acc), 1, Nums).
+    foldl(fun(X, Acc) -> X * Acc end,
+          1, Nums).
 
 quotient([V1, V2]) ->
     [Num, Divisor] = ?numbers([V1, V2], ?default_rules),
