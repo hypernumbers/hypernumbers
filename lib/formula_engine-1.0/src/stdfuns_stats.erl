@@ -194,9 +194,10 @@ critbinom1(Trials, Prob, Alpha, X) ->
           X,
           critbinom1(Trials, Prob, Alpha, X + 1)).
 
-devsq([L]) ->
-    Vals = ?filter_numbers(?ensure_no_errvals(?flatten(L))),
-    devsq1(Vals).
+devsq(Vs) ->
+    Flatvs = ?flatten_all(Vs),
+    Nums = ?numbers(Flatvs, ?default_rules),
+    devsq1(Nums).
 devsq1(Vals) ->
     moment(Vals, 2) * length(Vals).
 

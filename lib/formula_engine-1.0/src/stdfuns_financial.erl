@@ -16,11 +16,12 @@
          nominal/1,
          pv/1
         ]).
+-define(default_rules, [cast_strings, cast_bools, cast_blanks, cast_dates]).
 
-db([Cost, Salvage, Life, Period]) ->
-    db([Cost, Salvage, Life, Period, 12]);
-db([Cost, Salvage, Life, Period, Month]) ->
-    ?ensure_numbers([Cost, Salvage, Life, Period, Month]),
+db([V1, V2, V3, V4]) ->
+    db([V1, V2, V3, V4, 12]);
+db([V1, V2, V3, V4, V5]) ->
+    [Cost, Salvage, Life, Period, Month] = ?numbers([V1, V2, V3, V4, V5], ?default_rules),
     ?ensure((Month >= 1) andalso (Month =< 12), ?ERR_NUM), 
     db1(Cost, Salvage, Life, Period, Month).
 -define(dbrate,

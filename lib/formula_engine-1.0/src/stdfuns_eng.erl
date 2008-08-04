@@ -12,11 +12,11 @@
          gestep/1
         ]).
 
-delta([N1, N2]) ->
-    Num1 = cast(N1, num),
-    Num2 = cast(N2, num),
-    ?ensure_numbers([Num1, Num2]),
-    ?COND(N1 == N2, 1, 0).
+-define(default_rules, [cast_strings, cast_bools, cast_blanks, cast_dates]).
+
+delta([V1, V2]) ->
+    [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
+    ?COND(Num1 == Num2, 1, 0).
 
 gestep([N]) ->
     gestep([N, 0]);

@@ -1,5 +1,5 @@
 %%% @doc Built-in information functions.
-%%% CELL, INFO, and ISREF are implemented in the interpreter because they need
+%%% CELL, INFO, and ISREF are implemented in the evaluator because they need
 %%% higher-level information.
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 
@@ -34,32 +34,28 @@ error_type(_)              -> ?ERR_NA.
 
 %% Returns the logical value TRUE if value refers to any error value except
 %% #N/A; otherwise it returns FALSE.
-iserr([V]) when V == ?ERRVAL_NULL orelse
-                V == ?ERRVAL_DIV orelse
-                V == ?ERRVAL_VAL orelse
-                V == ?ERRVAL_REF orelse
-                V == ?ERRVAL_NAME orelse
-                V == ?ERRVAL_NUM ->
-    true;
-iserr(_) ->
-    false.
+iserr([?ERRVAL_NULL]) -> true;
+iserr([?ERRVAL_DIV])  -> true;
+iserr([?ERRVAL_VAL])  -> true;
+iserr([?ERRVAL_REF])  -> true;
+iserr([?ERRVAL_NAME]) -> true;
+iserr([?ERRVAL_NUM])  -> true;
+iserr(_)              -> false.
 
 %% Returns true if argument is any error value.
-iserror([V]) when V == ?ERRVAL_NULL orelse
-                  V == ?ERRVAL_DIV orelse
-                  V == ?ERRVAL_VAL orelse
-                  V == ?ERRVAL_REF orelse
-                  V == ?ERRVAL_NAME orelse
-                  V == ?ERRVAL_NUM orelse
-                  V == ?ERRVAL_NA ->
-    true;
-iserror(_) ->
-    false.
+iserror([?ERRVAL_NULL]) -> true;
+iserror([?ERRVAL_DIV])  -> true;
+iserror([?ERRVAL_VAL])  -> true;
+iserror([?ERRVAL_REF])  -> true;
+iserror([?ERRVAL_NAME]) -> true;
+iserror([?ERRVAL_NUM])  -> true;
+iserror([?ERRVAL_NA])   -> true;
+iserror(_)              -> false.
 
 %% Returns TRUE if number is even, or FALSE if number is odd.
 %% The number is truncated, so ISEVEN(2.5) is true.
-iseven([Num]) ->
-    ?ensure_number(Num),
+iseven([V1]) ->
+    Num = ?number(V1, [cast_strings, cast_bools, cast_dates]),
     (trunc(Num) div 2) * 2 == trunc(Num).
 
 isodd([Num]) ->
