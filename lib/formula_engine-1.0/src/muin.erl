@@ -131,6 +131,7 @@ funcall(ref, [Col, Row, Path]) ->
 %% Cell ranges (A1:A5, R1C2:R2C10 etc).
 %% In a range, the path of second ref **must** be ./
 funcall(':', [{ref, Col1, Row1, Path1}, {ref, Col2, Row2, "./"}]) ->
+    
     [Rowidx1, Colidx1, Rowidx2, Colidx2] = map(?Lx(toidx(X)),
                                                [Row1, Col1, Row2, Col2]),
     Cells = muin_util:expand_cellrange(Rowidx1, Rowidx2, Colidx1, Colidx2),
@@ -197,9 +198,6 @@ get_value_and_link(FetchFun) ->
     Value.
 
 %% Row or Col information --> index.
-toidx(N) when is_number(N) ->
-    N;
-toidx({row, Offset}) ->
-    ?my + Offset;
-toidx({col, Offset}) ->
-    ?mx + Offset.
+toidx(N) when is_number(N) -> N;
+toidx({row, Offset})       -> ?my + Offset;
+toidx({col, Offset})       -> ?mx + Offset.
