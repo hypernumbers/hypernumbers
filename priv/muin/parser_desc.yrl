@@ -56,6 +56,7 @@ E -> E '*' E : op('$1', '$2',  '$3').
 E -> E '/' E : op('$1', '$2', '$3').
 E -> E '^' E : op('$1', {power}, '$3').
 E -> ref ref : special_div('$1', '$2').
+E -> E ref   : special_div('$1', '$2').
 
 %% Percent.
 E -> E '%' : ['/', '$1', [int, 100]].
@@ -95,9 +96,11 @@ E -> Array : '$1'.
 %% Funcalls.
 Funcall -> atom '(' ')'      : [func_name('$1')].
 Funcall -> atom '(' Args ')' : func('$1', '$3').
+Funcall -> ref '(' ')'       : [func_name('$1')]. % ATAN2 etc.
+Funcall -> ref '(' Args ')'  : func('$1', '$3').
+    
 Args -> E                    : ['$1'].
 Args -> E ',' Args           : ['$1'] ++ '$3'.
-
 
 %% Arrays: lists of rows, which are lists of values of allowed types.
 Array -> '{' ArrayRows '}' : to_native_list('$2').
@@ -119,11 +122,13 @@ Erlang code.
 
 %% Make a function name for the AST from lexer tokens.
 func_name({atom, NameAsStr}) ->
-    list_to_atom(NameAsStr).
-
+    list_to_atom(NameAsStr);
+func_name({ref, _, _, _, Refstr}) ->
+    list_to_atom(string:to_lower(Refstr)). % For ATAN2 etc.
+    
 lit({name, Data}) ->
     [name, Data];
-lit({ref, R, C, P}) ->
+lit({ref, R, C, P, _}) ->
     [ref, R, C, P];
 lit({error, Errval}) ->
     {errval, Errval};
@@ -134,13 +139,15 @@ lit({_Type, Data}) ->
 op(Arg1, {Op}, Arg2) ->
     [Op, Arg1, Arg2].
 
-special_div(Ref1 = {ref, _, _, _}, Ref2 = {ref, _, _, "/"}) ->
-    op(Ref1, {'/'}, Ref2).
+special_div(Ref1 = {ref, _, _, _, _}, Ref2 = {ref, _, _, "/", _}) ->
+    op(Ref1, {'/'}, Ref2);
+special_div(E, Ref = {ref, _, _, "/", _}) ->
+    op(E, {'/'}, Ref).
 
 %% Make a straight-up function call for the AST from a token and a
 %% list of args.
-func(IdTuple, Args) ->
-    [func_name(IdTuple)] ++ Args.
+func(Tuple, Args) ->
+    [func_name(Tuple)] ++ Args.
 
 %% Convert representation of array in AST into Erlang's native list-of-lists.
 to_native_list(Ary) ->
@@ -152,9 +159,9 @@ to_native_list(Ary) ->
     ?IF(not(Allok), throw(invalid_array)),
 
     %% Tail cos there'll be an extra [] in the list after the fold.
-    tl(foldl(fun(Row, Acc) ->
-                     {row, Elts} = Row,
-                     Acc ++ [Elts]
-             end,
-             [[]], %% <== See, here it is.
-             Ary)).
+    {array, tl(foldl(fun(Row, Acc) ->
+                             {row, Elts} = Row,
+                             Acc ++ [Elts]
+                     end,
+                     [[]], %% <== See, here it is.
+                     Ary))}.

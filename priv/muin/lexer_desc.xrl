@@ -133,11 +133,11 @@ normalize({a1ref, Refstr}) ->
     Isrowfixed = member($$, tl(Refstr)), % There's a dollar in the tail?
     {X, Y} = getxy(Refstr),
     {ref, R, C} = norma1({X, Y}, {Iscolfixed, Isrowfixed}),
-    {ref, R, C, "./"};
+    {ref, R, C, "./", Refstr};
 normalize({ssa1ref, Refstr}) ->
     {Path, Cellref} = split_ssref(Refstr),
-    {ref, R, C, "./"} = normalize({a1ref, Cellref}),
-    {ref, R, C, Path};
+    {ref, R, C, "./", _} = normalize({a1ref, Cellref}),
+    {ref, R, C, Path, Cellref};
 %% TODO: Rewrite this, too ugly.
 normalize({rcref, Refstr}) ->
     %% Extract ints or [ints].
@@ -153,11 +153,11 @@ normalize({rcref, Refstr}) ->
     Isrowfixed = not(member(91, Rowpart)), %% $[ -> 91
     Iscolfixed = not(member(91, Colpart)),
     {ref, R, C} = normrc({Colint, Rowint}, {Iscolfixed, Isrowfixed}),
-    {ref, R, C, "./"};
+    {ref, R, C, "./", Refstr};
 normalize({ssrcref, Refstr}) ->
     {Path, Cellref} = split_ssref(Refstr),
-    {ref, R, C, "./"} = normalize({rcref, Cellref}),
-    {ref, R, C, Path};
+    {ref, R, C, "./", _} = normalize({rcref, Cellref}),
+    {ref, R, C, Path, Cellref};
 normalize({ssnameref, Refstr}) ->
     {Path, Name} = split_ssref(Refstr),
     {name, Name, Path};
