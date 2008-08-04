@@ -43,7 +43,7 @@ gte([A, B]) ->
 
 'and'([Vs]) ->
     Flatvs = ?flatten_all(Vs),
-    Bools = ?bools(Flatvs, [cast_strings, cast_numbers, false_blanks, cast_dates]),
+    Bools = ?bools(Flatvs, [cast_strings, cast_numbers, cast_blanks, cast_dates]),
     all(fun(X) -> X =/= false end, Bools).
 
 'not'([Val]) ->

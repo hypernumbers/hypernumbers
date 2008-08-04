@@ -100,7 +100,7 @@
          %%ztest/1
         ]).
 
--define(default_rules, [cast_strings, cast_bools, zero_blanks, cast_dates]).
+-define(default_rules, [cast_strings, cast_bools, cast_blanks, cast_dates]).
 
 avedev(Vs) ->
     Flatvs = ?flatten_all(Vs),
@@ -123,9 +123,10 @@ average(Vs) ->
 average1(Nums) ->
     lists:sum(Nums) / length(Nums).
 
+%% TODO: errvals -> 0s in args.
 averagea(Vs) ->
     Flatvs = ?flatten_all(Vs),
-    Nums = ?numbers(Flatvs, ?default_rules ++ [zero_errvals]),
+    Nums = ?numbers(Flatvs, ?default_rules),
     ?ensure_nonzero(length(Nums)),
     average1(Nums).
 
@@ -135,10 +136,10 @@ binomdist([V1, V2, V3, V4]) ->
     ?ensure(Succn =< Trials, ?ERR_NUM),
     ?ensure_non_negatives([Succn, Succprob]),
     ?ensure(Succprob =< 1, ?ERR_NUM),
-    Cumul = ?bool(V4, [cast_strings, false_blanks, cast_dates]),
-    binomdist1(Succn, Trials, Succprob, Cumul).
+    Cumul = ?bool(V4, [cast_strings, cast_blanks, cast_dates]),
+    binomdist1(Succn, Trials, Succprob * 100, Cumul).
 binomdist1(Ns, Nt, Ps, false) ->
-    stdfuns_math:combin([Nt, Ps]) * math:pow(Ps, Ns) * math:pow((1 - Ps),
+    stdfuns_math:combin([Ps, Nt]) * math:pow(Ps, Ns) * math:pow((1 - Ps),
                                                                 (Nt - Ns));
 %% TODO: Rewrite to tail-recursive.
 binomdist1(Ns, Nt, Ps, true) ->

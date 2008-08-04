@@ -119,7 +119,7 @@
         (erlang:trunc(Num / Mult) * Mult) == (Num * 1.0)).
 
 %% A lot of math functions simply cast everything.
--define(default_rules, [cast_strings, cast_bools, zero_blanks, cast_dates]).
+-define(default_rules, [cast_strings, cast_bools, cast_blanks, cast_dates]).
 
 %%% ----------------- %%%
 %%% Basic arithmetics %%%
@@ -223,9 +223,7 @@ fact([Num_]) ->
 fact1(0) ->
     1;
 fact1(Num) ->
-    foldl(?Lxacc(X * Acc),
-          1,
-          seq(1, Num)).
+    foldl(fun(X, Acc) -> X * Acc end, 1, seq(1, Num)).
 
 gcd([A, B]) ->
     ?ensure_numbers([A, B]),
@@ -386,14 +384,14 @@ ceiling1(Num, Multiple) when ?is_multiple(Num, Multiple) ->
 ceiling1(Num, Multiple) ->
     erlang:trunc(Num / Multiple) * Multiple + Multiple.
 
-combin([0, 0]) ->
+combin([V1, V2]) when V1 == 0 andalso V2 == 0 ->
     1;
-combin([N, Chosen]) ->
-    ?ensure_numbers([N, Chosen]),
-    ?ensure_non_negative(N),
-    ?ensure_non_negative(Chosen),
+combin([V1, V2]) ->
+    [N, Chosen] = ?ints([V1, V2], ?default_rules),
+    ?ensure(N >= 0, ?ERR_NUM),
+    ?ensure(Chosen >= 0, ?ERR_NUM),
     ?ensure(N >= Chosen, ?ERR_NUM),
-    fact(N) div (fact(Chosen) * fact(N - Chosen)).
+    fact1(N) div (fact1(Chosen) * fact1(N - Chosen)).
 
 even([Num]) ->
     ?ensure_number(Num),

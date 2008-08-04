@@ -31,7 +31,7 @@
 date(Arg = [_, _, _]) ->
     [Year, Month, Day] = ?numbers(Arg, [cast_strings,
                                         cast_bools,
-                                        zero_blanks]),
+                                        cast_blanks]),
     #datetime{date = {Year, Month, Day}}.
 
 datedif([V1, V2, V3]) ->
@@ -107,7 +107,7 @@ edate([V1, V2]) ->
     Start = ?date(V1, [cast_strings]),
     Months = ?int(V2, [cast_bools,
                        cast_strings,
-                       zero_blanks]),
+                       cast_blanks]),
     edate1(Start, Months).
 edate1(Start, Months) ->
     #datetime{date = {Startyr, Startmo, Startday}} = Start,
@@ -119,7 +119,7 @@ eomonth([V1, V2]) ->
     Start = ?date(V1, [cast_strings]),
     Months = ?int(V2, [cast_strings,
                        cast_bools,
-                       zero_blanks]),
+                       cast_blanks]),
     %% TODO: More error checks, see Excel.
     eomonth1(Start, Months).
 eomonth1(Start, Months) ->
