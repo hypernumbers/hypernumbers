@@ -4,6 +4,19 @@
 %%% Collect functions are not guaranteed to be stable, i.e. the result list
 %%% may have cast values in different order from the original list.
 
+%%% Things that may be encountered by a collector function:
+%%% number, string, bool, date, blank, error value.
+
+%%% Basic model:
+%%% SOURCE type -> TARGET type
+%%% Must supply a rule for each of the types that may be encountered: cast,
+%%% ignore or ban.
+%%% Two kinds of rules for cast: cast and throw error if not possible (e.g.
+%%% trying coerce "hello" to number), and cast and return a default value
+%%% if not possible (e.g. 0 for previous example).
+
+%%% If an empty list comes out at the end of all pipes, an error is returned.
+
 -module(muin_collect).
 
 -export([flatten_ranges/1,  flatten_arrays/1,
@@ -11,6 +24,8 @@
          collect_strings/2, collect_string/2,
          collect_bools/2,   collect_bool/2,
          collect_dates/2,   collect_date/2]).
+
+-export([is_string/1, is_date/1, is_blank/1]).
 
 -compile(export_all). % For testing / to kill warnings.
 
@@ -23,7 +38,14 @@
 %% @doc Replaces array objects with the values they contain. (Used by
 %% implementations of SUM and PRODUCT for example).
 flatten_arrays(Vs) ->
-    Vs.
+    foldl(fun({array, Rows}, Acc) ->
+                  Allvs = foldl(fun(Row, Acc1) -> Acc1 ++ Row end,
+                                [], Rows),
+                  Acc ++ Allvs;
+             (X, Acc) ->
+                  Acc ++ [X]
+          end,
+          [], Vs).
 
 %% @doc Replaces range objects with the values theycontain. (Used by
 %% implementations of SUM and PRODUCT for example).
@@ -65,7 +87,7 @@ collect_bool(V, Rules) ->
 %% @doc
 collect_dates(Vs, Rules) ->
     generic_collect(Vs, Rules, fun is_date/1, date).
-                            
+
 %% @doc Same as <code>collect_dates/2</code> but only for one value.
 collect_date(V, Rules) ->
     hd(collect_dates([V], Rules)).
@@ -103,7 +125,7 @@ ignore_bools(Xs) ->
 
 ignore_dates(Xs) ->
     ignore(fun is_date/1, Xs).
-                   
+
 ignore_blanks(Xs) ->
     ignore(fun(X) -> X == blank end, Xs).
 
@@ -174,7 +196,7 @@ generic_ban(Xs, Detectorf) ->
         true  -> ?ERR_VAL;
         false -> Xs
     end.
-                           
+
 %%% Type checks ~~~~~
 
 is_string({ustr, Bin}) when is_binary(Bin) ->
@@ -199,7 +221,7 @@ is_blank(_) ->
 -include_lib("eunit/include/eunit.hrl").
 -define(L1, [1, 2, 3, true, false, "11.22", blank, 99.9]).
 -define(L2, [0, 0.0, 1, 999, "true", "TrUe", "FALse", blank, true, false]).
-             
+
 collect_numbers_test_() ->
     [
      ?_assert(collect_numbers(?L1, [ignore_strings, ignore_bools, ignore_blanks]) ==
