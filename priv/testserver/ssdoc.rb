@@ -19,10 +19,10 @@ class Ssdoc
   def initialize(datfile)
     data = eval(IO.readlines(datfile).join)
 
-    cells = []
     @sheets = []
     data.each_with_index { |sheetdata, sheetidx|
-      sheetname = sheetdata[0].gsub(/\s+/, "_") # No  whitespace in URLs eh.
+      sheetname = sheetdata[0]
+      cells = []
       sheetdata.slice(1..-1).map { |rowdata|
         if rowdata.length > 1
           rowdata.map { |celldata|
