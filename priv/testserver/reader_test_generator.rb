@@ -15,7 +15,7 @@
 $KCODE = 'u'
 
 require "erb"
-require "Ssdoc"
+require "ssdoc"
 
 def typeof(cell)
   if cell.formula.length > 1 && cell.formula[0].chr == "="
@@ -54,7 +54,7 @@ ssdoc.sheets.each_with_index do |sheet, idx|
   sheet.cells.each do |cell|
     casename = "sheet#{idx + 1}_#{cell.a1ref}"
     got = gotfor(cell)
-    expval = "{#{type.to_s}, #{got}}"
+    expval = "{#{typeof(cell).to_s}, #{got}}"
     key="{\"#{sheet.name}\", #{cell.row - 1}, #{cell.col - 1}}"
     @testcasedata << [casename, key, expval]
   end

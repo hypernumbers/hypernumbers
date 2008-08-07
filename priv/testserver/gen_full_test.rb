@@ -14,7 +14,7 @@
 $KCODE = 'u'
 
 require "erb"
-require "Ssdoc"
+require "ssdoc"
 
 datafile = ARGV[0]
 ranges = ARGV.slice(1..-1)
