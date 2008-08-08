@@ -9,55 +9,42 @@
 
 -export([create_db/0,create_db/1]).
 
-create_db()->
-    create_db(transient).
-    
-create_db(Type)->
+-define(create(Name,Type,Storage), 
+    {atomic,ok} = mnesia:create_table(Name,
+        [{attributes, record_info(fields, Name)},
+            {type,Type},{Storage, [node()]}])).
+            
 
-    Storage = case Type of
-        persistent -> disc_only_copies;
-        transient  -> ram_copies
-    end,
+create_db()->
+    create_db(ram_copies).
     
+create_db(Storage)->
+    
+    application:stop(mnesia),
     ok = mnesia:delete_schema([node()]),
     ok = mnesia:create_schema([node()]),
-    
     mnesia:start(),
-  
-    {atomic,ok} = mnesia:create_table(hn_item,
-        [{Storage, [node()]},{type,set},
-         {attributes, record_info(fields, hn_item)}]),
-       
-    {atomic,ok} = mnesia:create_table(remote_cell_link,
-        [{Storage, [node()]},{type,bag},
-	 {attributes, record_info(fields, remote_cell_link)}]),
     
-    {atomic,ok} = mnesia:create_table(local_cell_link,
-        [{Storage, [node()]},{type,bag},
-	 {attributes, record_info(fields, local_cell_link)}]),
+    ?create(hn_item,set,Storage),
+    ?create(remote_cell_link,bag,Storage),
+    ?create(local_cell_link,bag,Storage),
+    ?create(hn_user,set,Storage),
+    ?create(dirty_cell,set,Storage),
+    ?create(dirty_hypernumber,set,Storage),
+    ?create(incoming_hn,set,Storage),
+    ?create(outgoing_hn,set,Storage),
     
-    {atomic,ok} = mnesia:create_table(users,
-        [{Storage, [node()]},{type,bag},
-	 {attributes, record_info(fields, users)}]),
-         
-    {atomic,ok} = mnesia:create_table(websheet,
-        [{Storage, [node()]},{type,bag},
-	 {attributes, record_info(fields, websheet)}]),
-         
-    {atomic,ok} = mnesia:create_table(dirty_cell,
-    	[{Storage, [node()]},{type,set},
-    	 {attributes, record_info(fields, dirty_cell)}]),
-         
-    {atomic,ok} = mnesia:create_table(dirty_hypernumber,
-    	[{Storage, [node()]},{type,set},
-         {attributes, record_info(fields, dirty_hypernumber)}]),
-         
-    {atomic,ok} = mnesia:create_table(incoming_hn,
-        [{Storage, [node()]},{type,set},
-         {attributes, record_info(fields, incoming_hn)}]),
-
-    {atomic,ok} = mnesia:create_table(outgoing_hn,
-        [{Storage, [node()]},{type,set},
-         {attributes, record_info(fields, outgoing_hn)}]),
+    Ref = #ref{site = "http://127.0.0.1:9000",
+               path = [],
+               ref  = {page,"/"}},
     
+    users:create("admin","admin"),
+    users:create("user","user"),
+    
+    hn_main:set_attribute(Ref#ref{name="__permissions"},
+                          [{user,anonymous,admin}]),
+    
+    hn_main:set_attribute(Ref#ref{name="__groups"},
+                          [{owner,[{user,"admin"}]}]),
+            
     ok.

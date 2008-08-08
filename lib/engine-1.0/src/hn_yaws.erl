@@ -12,267 +12,261 @@
 -include("spriki.hrl").
 -include("handy_macros.hrl").
 
+-import(simplexml,[to_xml_string/1,to_json_string/1]).
 %%%-----------------------------------------------------------------
 %%% Exported Functions
 %%%-----------------------------------------------------------------
 -export([ out/1 ]).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%
-%%% Yaws handler for all websheet requests
-%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-out(Arg) -> try
-
+out(Arg) ->
+    
     Url      = yaws_api:request_url(Arg),
-    Page     = hn_util:parse_url(Url),
     FileName = Arg#arg.docroot++Url#url.path,
-
-    %% If the request is for an actual file on the server, just serve it
-    %% ie (images, css, javascript etc etc) 
+    
+    %% Serve static files, can move to a different server later
     case filelib:is_file(FileName) and not filelib:is_dir(FileName) of
-    true -> {page,Url#url.path};
-    false ->
-
-        User     = hn_util:get_cookie((Arg#arg.headers)#headers.cookie),
-        Perms    = ok,
-      
-        PostResult = case (Arg#arg.req)#http_request.method == 'POST' of
-        true  -> process_POST(Arg,User,Page);    
-        false -> ok
-        end,
-
-        %% If POST has nothing to return, handle GET
-        case PostResult of
-        ok                  -> process_GET(Arg,{User,Perms},Page);
-        {ok,Content}        -> format_output(Page#page.format,Content);
-        {ok,Content,Cookie} -> [format_output(Page#page.format,Content),Cookie]
-        end
-    end
-
-    %% Globally catch any errors during processing
-    catch
-    _:Err ->
-        error_logger:error_msg("~p~n~p",[Err,erlang:get_stacktrace()]),
-        {status,400}
-    end.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%
-%%% GET handlers, 
-%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Return HTML pages, for "/" , "?admin" and "?import"
-process_GET(_Arg,_User,#page{ref={page,_},vars=[]}) ->
-    {page,"/html/index.html"};
-
-process_GET(_Arg,_User,Page) ->
-    
-    {Format,Data} = case request_type(Page) of
-    
-    attribute ->        
-        %% Switch to filter on the db api later
-        Items = lists:filter(
-            fun(#hn_item{addr=A}) -> 
-                case (A)#ref.name of
-                "__"++_ -> false;
-                _ -> true
-                end
-            end,
-            hn_db:get_item(page_to_ref(Page))),
-
-        List = lists:map(fun hn_util:item_to_xml/1 , Items),
-
-        {Page#page.format,{attr,[],List}};
-        
-    pages ->
-        Items = mnesia:dirty_match_object(#hn_item{_ = '_'}),
-        {Page#page.format,create_pages_tree(Items)};
-        
-    hypernumber ->   
-        Addr = page_to_ref(Page),   
-        Val = fun() ->
-            case hn_db:get_item_val(Addr#ref{name=rawvalue}) of
-            []  -> {blank,[],[]};
-            Tmp -> 
-                hn_util:to_xml(Tmp)
-            end
-        end,
-        
-        DepTree = case hn_db:get_item_val(Addr#ref{name='dependancy-tree'}) of
-            {xml,Tree} -> Tree;
-            []         -> []
-        end,
-            
-        {Page#page.format,{hypernumber,[],[
-            {value,[], Val()},
-            {'dependancy-tree',[], DepTree}
-        ]}};
-        
-    reference -> 
-        case hn_db:get_item(page_to_ref(Page)) of
-            []   -> {{plain}, "blank"};
-            List ->      
-                F = fun(X) -> 
-                            ?COND((X#hn_item.addr)#ref.name == rawvalue,true,false)
-                    end,
-                   
-                Val = case lists:filter(F,List) of
-                          [] -> 0;
-                          [#hn_item{val=Value}] -> Value
-                      end,  
-                    
-            {{plain}, hn_util:text(Val)}
-        end
-    end,
-    
-    format_output(Format,Data).
-
-%% Utility GET functions
-%%--------------------------------------------------------------------
-request_type(Page) ->
-    case lists:member({attr},Page#page.vars) of
-    true  -> attribute;
-    false ->
-        case lists:member({hypernumber},Page#page.vars) of
-        true  -> hypernumber;
+        true  -> 
+            [{page,Url#url.path},{header,{cache_control,"max-age=3600"}}];
         false ->
-            case lists:member({pages},Page#page.vars) of
-            true  -> pages;
-            false -> reference
-            end
-        end
-    end.        
-
-page_to_ref(#page{site=Site, path=Path, ref=Ref,vars=Vars}) ->
-    NewRef = case lists:member({lastrow},Vars) of
-    true  -> {row,get_last_index(Site,Path,row)};
-    false -> 
-        case lists:member({lastcol},Vars) of
-        true  -> {column,get_last_index(Site,Path,column)};
-        false -> Ref
-        end
-    end,
-    #ref{site=Site, path=Path, ref=NewRef}.
-
-%% Format the output depending on the requested format.
-format_output(Format,Data) ->
-    case Format of
-    {xml}   -> {content,"text/xml",simplexml:to_xml_string(Data)};
-    {json}  -> {content,"text/plain",simplexml:to_json_string(Data)};
-    {plain} -> {content,"text/plain",Data};
-    {json,nocallback} -> 
-        {content,"text/plain","hn("++simplexml:to_json_string(Data)++");"}
-    end.
-    
-    
-%% Get the index of the last populated row or column
-get_last_index(Site,Path,RowCol) ->
-    case hn_db:get_item(#ref{site=Site,path=Path,ref={page,"/"}}) of
-    []   -> 0;
-    Else -> 
-        %% Only count cell value attributes
-        CellList = lists:filter( fun(#hn_item{addr=Ref}) -> 
-            case Ref of
-            #ref{name=value, ref = {cell,_}} -> true;
-            _ -> false
-            end end,Else),
-        
-        List = lists:sort( 
-            fun(#hn_item{addr=#ref{ref = {cell,{X1,Y1}}}},
-                #hn_item{addr=#ref{ref = {cell,{X2,Y2}}}}) ->
-                ?COND(RowCol == column,X1 < X2,Y1 < Y2)
-            end,CellList),
             
-        #hn_item{addr=#ref{ref={cell,{X,Y}}}} = lists:last(List),
-        ?COND(RowCol == column,X,Y)
-    end.    
+            {ok,Ret} = case catch(do_request(Arg,Url)) of
+                           {ok,Resp} -> {ok,Resp};
+                           Else      -> 
+                               Stack = erlang:get_stacktrace(),
+                               error_logger:error_msg("~p~n~p",[Else,Stack]),
+                               {ok,[{status,400}]}
+                       end,
 
-%% Takes an unfiltered list of spriki records, extracts the path
-%% they are from and constructs a tree
-create_pages_tree(List) -> 
-       
-    TmpTrees = lists:filter(
-        fun([]) -> false; (_) -> true end,
-        path_list(List,[])),
- 
-    Trees = lists:map(
-        fun(X) -> create_tree(X) end,
-        TmpTrees),
-       
-    {dir,[{path,"/"}],merge_trees(Trees)}.
-
-merge_trees([])         -> [];
-merge_trees([H|T])      -> merge_trees([H],T).
-
-merge_trees(Tree,[])    -> Tree;
-merge_trees(Tree,[[]])  -> Tree;
-merge_trees(Tree,[[]|T])-> merge_trees(Tree,T);
-merge_trees(Tree,[H|T]) ->
-    {dir,[{path,P}],C1} = H,
-    {Match,Rest} = lists:partition(fun(X) ->
-        case X of 
-        {dir,[{path,P}],_} -> true;
-        _ -> false
-        end 
-    end,Tree),
-    case Match of
-    %% No Matches, add entire tree
-    [] -> merge_trees([H|Tree],T);
-    %% Generate a new Tree on current path and 
-    %% Add it to siblings
-    [{dir,[{path,_}],C2}] ->
-        merge_trees([{dir,[{path,P}],merge_trees(C1,C2)}]++Rest,T)
+            Headers = [{header,{cache_control,"no-cache"}}],
+            lists:append(Ret,Headers)              
     end.
 
-create_tree([]) -> [];
-create_tree([H|T]) ->
-    {dir,[{path,H}],[create_tree(T)]}.    
-
-%% Filter records and remove duplicates
-path_list([],PathList) -> PathList;
-path_list([#hn_item{addr = #ref{path=Path}}|T],List) ->
-    case lists:member(Path,List) of
-    true  -> path_list(T,List);
-    false -> path_list(T,[Path|List])
-    end.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%
-%%% POST handlers, 
-%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-get_post_data(_,#arg{req=#http_request{method='GET'}},_Dec) ->
-    [];
-get_post_data(_,_Arg,[{import}]) -> 
-    [import];
-get_post_data({json,nocallback},Arg,Dec) -> 
-    get_post_data({json},Arg,Dec);
-get_post_data({json},Arg,_Dec) ->
-    simplexml:from_json_string(binary_to_list(Arg#arg.clidata));
-get_post_data({xml},Arg,_Dec) ->
-    simplexml:from_xml_string(binary_to_list(Arg#arg.clidata)).
+do_request(Arg,Url) ->  
     
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% This section handles the POST request of the REST API
-%% calls, Read the API spcification for what further
-%% functionality needs to be supported
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Filter the API call (action)
-process_POST(Arg,_User,Page) ->
-    PostData = get_post_data(Page#page.format,Arg,Page#page.vars),
-    A = "action", 
-    case PostData of
-    [import]             -> api_import(Arg,Page);
-    {create,[],Data}     -> api_create(Data,Page);
-    [{A,"login"}|R]      -> api_login(R);
-    [{A,"logout"}]       -> api_logout();
-    [{A,"clear"}|R]      -> api_clear(R,Page);
-    [{A,"insert"}|R]     -> api_insert(R,Page);
-    {delete,[],Data}     -> api_delete(Data,Page);
-    {register,[],Data}   -> api_reg(Data,Page);
-    {unregister,[],Data} -> api_unreg(Data,Page);
-    {notify,[],Data}     -> api_notify(Data,Page)
+    Page   = hn_util:parse_url(Url),
+    Ref    = page_to_ref(Page),
+    Method = (Arg#arg.req)#http_request.method,
+    
+    %% Verify AuthToken, authtoken can be passed via url 
+    %% or cookies, url takes precedence
+    {ok,AuthCode} = get_var_or_cookie(auth,Page,Arg),
+    
+    User = case string:tokens(AuthCode,":") of 
+               [] ->        
+                   anonymous;
+               [UserId,AuthToken] -> 
+                   UserId
+           end,
+        
+    {ok,Token} = get_var_or_cookie(token,Page,Arg),
+    io:format("~p~n",[Token]),
+    {ok,Access} = case get_permissions(User,Ref) of
+                      {ok,{protected_read,Token}}  -> {ok,read};
+                      {ok,{protected_write,Token}} -> {ok,write}; 
+                      {ok,{_Write,_Tok}} -> {ok,require_token};
+                      Else -> Else
+                  end,               
+
+    Return = case req(Arg,Method,Access,Page) of
+                 {ok,{page,Path}} -> 
+                     [{page,Path}];
+                 {ok,{status,Status}} -> 
+                     [{status,Status}];
+                 {ok,{text,Text}} -> 
+                     [{content,"text/plain",Text}];
+                 {ok,Data} -> 
+                     case Page#page.format of
+                         {xml} -> 
+                             [{content,"text/xml",to_xml_string(Data)}];
+                         {json} -> 
+                             [{content,"text/plain",to_json_string(Data)}]
+                     end
+             end,
+    
+    {ok,Return}.
+
+get_var_or_cookie(Name,Page,Arg) ->
+    case lists:keysearch(Name,1,Page#page.vars) of
+        false -> 
+            {ok,yaws_api:find_cookie_val(atom_to_list(Name),Arg)};
+        {value,{auth,Auth}} ->  
+            {ok,Auth}
     end.
+    
+%% call to a page without access redirects to login
+req(_Arg,'GET',no_access,#page{ref={page,"/"}})  -> 
+    {ok,{page,"/html/login.html"}};
+%% GET api call with no_access
+req(_Arg,'GET',no_access,_Page)  -> 
+    {ok,{status,503}};
+
+%% call to a page without access redirects to login
+req(_Arg,'GET',require_token,#page{ref={page,"/"}})  -> 
+    {ok,{page,"/html/token.html"}};
+%% GET api call with no_access
+req(_Arg,'GET',require_token,_Page)  -> 
+    {ok,{status,503}};
+
+%% Index page "/"
+req(_Arg,'GET',_,#page{ref={page,"/"},vars=[]}) -> 
+    {ok,{page,"/html/index.html"}};
+
+%% ?attr
+req(_Arg,'GET',_,Page = #page{vars = [{attr}]}) -> 
+    Items = lists:filter(
+              fun(#hn_item{addr=A}) -> 
+                      case (A)#ref.name of
+                          "__"++_ -> 
+                              false;
+                          _ -> 
+                              true
+                      end
+              end,
+              hn_db:get_item(page_to_ref(Page))),
+    List = lists:map(fun hn_util:item_to_xml/1 , Items),
+    {ok,{attr,[],List}};    
+
+%% ?attr=value
+req(_Arg,'GET',_,Page = #page{vars = [{attr,Val}]}) -> 
+    Name   = list_to_existing_atom(Val),
+    Ref    = (page_to_ref(Page))#ref{name=Name},
+    {ok,V} = hn_db:get_item_inherited(Ref,get_default(Name)),
+    {ok,{attr,[],[V]}};
+
+%% ?pages
+req(_Arg,'GET',_,Page = #page{vars = [{pages}]}) -> 
+    Items = mnesia:dirty_match_object(#hn_item{_ = '_'}),
+    {ok,create_pages_tree(Items)};
+
+%% ?hypernumber
+req(_Arg,'GET',_,Page = #page{vars = [{hypernumber}]}) -> 
+    Addr = page_to_ref(Page),   
+    Val = fun() ->
+                  case hn_db:get_item_val(Addr#ref{name=rawvalue}) of
+                      []  -> {blank,[],[]};
+                      Tmp -> hn_util:to_xml(Tmp)
+                  end
+          end,
+    
+    DepTree = case hn_db:get_item_val(Addr#ref{name='dependancy-tree'}) of
+                  {xml,Tree} -> Tree;
+                  []         -> []
+              end,
+    {ok,{hypernumber,[],[{value,[], Val()},{'dependancy-tree',[], DepTree}]}};
+
+%% /a1 
+req(_Arg,'GET',_,Page = #page{vars = []}) -> 
+    case hn_db:get_item(page_to_ref(Page)) of
+        []   -> {ok,{text,"blank"}};
+    List ->      
+            F = fun(X) ->                        
+                        (X#hn_item.addr)#ref.name == rawvalue
+                end,
+            
+            Val = case lists:filter(F,List) of
+                  [] -> 0;
+                      [#hn_item{val=Value}] -> Value
+                  end,  
+            
+            {ok,{text,hn_util:text(Val)}}
+    end;
+
+req(Arg,'POST', _User, Page) ->
+    PostData = get_post_data(Page#page.format,Arg,Page#page.vars),
+    post(Arg,_User,Page,PostData);
+    
+req(_Arg,_Method,_User,_Page) ->
+    throw(unmatched_get_request).
+
+post(Arg,_User,Page,{login,[],[{email,[],[Email]},{password,[],[Pass]}]}) ->
+    case users:login(Email,Pass) of
+        {error,invalid_user} -> 
+            {ok,{auth,[],[{unauthorised,[],[]}]}};
+        {ok,Record} ->
+            {IP,_Port} = Arg#arg.client_ip_port,
+            Token = users:gen_authtoken(Record,IP),
+            Sent  = Email++":"++hn_util:bin_to_hexstr(Token),
+            {ok,{auth,[],[{token,[],[Sent]}]}}
+    end;
+
+post(Arg,X,_,_) when X == no_access; X == read  ->
+    {ok,{status,503}};
+
+post(_Arg,_User,Page,{create,[],Data}) ->
+    
+    Ref = page_to_ref(Page),    
+    lists:foldl
+      (
+      fun({Attr,[],[Val]},Sum) ->
+              
+              NewAddr = case lists:member({lastrow},Page#page.vars) of
+                            true  -> 
+                                {row,X} = Ref#ref.ref,
+                                NPage = Ref#ref{ref={cell,{Sum,X+1}},name=Attr};
+                            false -> 
+                                Ref#ref{name=Attr}
+                        end,
+              
+              case Val of
+                  [] -> throw(empty_val); 
+                  _  -> hn_main:set_attribute(NewAddr,Val)
+              end,
+              Sum+1
+      end,
+      1,
+      Data
+     ),
+    {ok,{success,[],[]}};
+
+post(_Arg,_User,Page,{delete,[],Data}) ->    
+    lists:map
+      (
+      fun({Attr,[],[]}) ->
+              hn_db:remove_item((page_to_ref(Page))#ref{name=Attr})
+      end,
+      Data
+     ),
+    {ok,{success,[],[]}};
+
+%%% UNREGISTER
+post(_Arg,_User,Page,{unregister,[],[{biccie,[],[Bic]},{url,[],[Url]}]}) -> 
+    hn_db:del_remote_link(#remote_cell_link{ 
+        parent = hn_util:page_to_index(Page),
+        child  = hn_util:page_to_index(hn_util:parse_url(Url)),
+        type   = outgoing }),
+    
+    {ok,{success,[],[]}};
+
+%%% REGISTER
+post(_Arg,_User,Page,
+     {register,[],[{biccie,[],[Bic]},{proxy,[],[Proxy]},{url,[],[Reg]}]}) ->
+    hn_db:register_hn(
+      hn_util:page_to_index(Page),
+      hn_util:page_to_index(hn_util:parse_url(Reg)),
+      Bic, Proxy, Reg),
+    {ok,{success,[],[]}};
+
+%%% NOTIFY
+post(_Arg,User,Page,{notify,[],Data}) ->
+    case lists:keysearch(type,1,Data) of
+        {value,{type,[],["change"]}} -> 
+            api_change(Data,Page)
+    end;
+
+post(_Arg,_User,_Page,Data) ->
+    io:format("~p~n",[Data]),
+    throw(unmatched_post_request).
+
+api_change([{biccie,[],     [Bic]},
+            {cell,[],       [Cell]},
+            {type,[],       ["change"]},
+            {value,[],      [Val]},
+            {version,[],    [Version]}], _Page)->
+    
+    hn_db:update_hn(Cell,Bic,Val,Version),
+    
+    {ok,{success,[],[]}}.
+
 
 %%% API call - IMPORT
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -307,108 +301,163 @@ import([{_Name,Tid}|T],Page)->
     ets:foldl(Fun,[],Tid),
     import(T,Page).
 
-%%% API call - CREATE
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-api_create(Data, Page) ->
 
-    #page{site=Site,path=Path,ref=_Ref,vars=Vars} = Page,
-    Addr = page_to_ref(Page),
+%% Utility functions
+%%--------------------------------------------------------------------
+get_post_data(_,_Arg,[{import}]) -> 
+    [import];
+get_post_data({json,nocallback},Arg,Dec) -> 
+    get_post_data({json},Arg,Dec);
+get_post_data({json},Arg,_Dec) ->
+    simplexml:from_json_string(binary_to_list(Arg#arg.clidata));
+get_post_data({xml},Arg,_Dec) ->
+    simplexml:from_xml_string(binary_to_list(Arg#arg.clidata)).
 
-    lists:foldl
-    (
-        fun({Attr,[],[Val]},Sum) ->
+get_default(public) -> "public";
+get_default(_) -> "". 
+
+page_to_ref(#page{site=Site, path=Path, ref=Ref,vars=Vars}) ->
+    NRef = case lists:member({lastrow},Vars) of
+               true  -> {row,get_last_index(Site,Path,row)};
+               false -> 
+                   case lists:member({lastcol},Vars) of
+                       true  -> {column,get_last_index(Site,Path,column)};
+                       false -> Ref
+                   end
+           end,
+    #ref{site=Site, path=Path, ref=NRef}. 
+
+%% Get the index of the last populated row or column
+get_last_index(Site,Path,RowCol) ->
+    case hn_db:get_item(#ref{site=Site,path=Path,ref={page,"/"}}) of
+        []   -> 0;
+        Else -> 
+            %% Only count cell value attributes
+            CellList = lists:filter( fun(#hn_item{addr=Ref}) -> 
+                                             case Ref of
+                                                 #ref{name=value, ref = {cell,_}} -> true;
+                                                 _ -> false
+                                             end end,Else),
             
-            NewAddr = case lists:member({lastrow},Vars) of
-            true  -> 
-                {row,X} = Addr#ref.ref,
-                #ref{site=Site,path=Path,ref={cell,{Sum,X+1}},name=Attr};
-            false -> Addr#ref{name=Attr}
-            end,
-                        
-            case Val of
-            [] -> throw(empty_val); 
-            _  -> hn_main:set_attribute(NewAddr,Val)
-            end,
-            Sum+1
-        end,
-        1,
-        Data
-    ),
-    {ok,"thanks"}.
+            List = lists:sort( 
+                     fun(#hn_item{addr=#ref{ref = {cell,{X1,Y1}}}},
+                         #hn_item{addr=#ref{ref = {cell,{X2,Y2}}}}) ->
+                             ?COND(RowCol == column,X1 < X2,Y1 < Y2)
+                     end,CellList),
+            
+            #hn_item{addr=#ref{ref={cell,{X,Y}}}} = lists:last(List),
+            ?COND(RowCol == column,X,Y)
+    end.    
 
-%%% API call - CLEAR
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-api_clear(_R,_Page) -> ok.
-
-%%% API call - INSERT
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-api_insert(_R,_Page) -> ok.
-
-%%% API call - DELETE
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-api_delete(Data,Page) ->
+%% Takes an unfiltered list of spriki records, extracts the path
+%% they are from and constructs a tree
+create_pages_tree(List) -> 
     
-    #page{site=Site,path=Path,ref=Ref,vars=_Vars} = Page,
+    TmpTrees = lists:filter(
+                 fun([]) -> false; (_) -> true end,
+                 path_list(List,[])),
     
-    lists:map
-    (
-        fun({Attr,[],[]}) ->
-            hn_db:remove_item(#ref{site=Site,path=Path,ref=Ref,name=Attr})
-        end,
-        Data
-    ),
-    ok.
+    Trees = lists:map(
+              fun(X) -> create_tree(X) end,
+              TmpTrees),
+    
+    {dir,[{path,"/"}],merge_trees(Trees)}.
 
-%%% API call - UNREGISTER
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-api_unreg([{biccie,[],[Bic]},{url,[],[Url]}],Page) -> 
-    hn_db:del_remote_link(#remote_cell_link{ 
-        parent = hn_util:page_to_index(Page),
-        child  = hn_util:page_to_index(hn_util:parse_url(Url)),
-        type   = outgoing }),
+merge_trees([])         -> [];
+merge_trees([H|T])      -> merge_trees([H],T).
 
-    {ok,"thanks"}.
-
-%%% API call - REGISTER
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-api_reg([{biccie,[],[Bic]},{proxy,[],[Proxy]},{url,[],[Reg]}],Page)->  
-    hn_db:register_hn(
-        hn_util:page_to_index(Page),
-        hn_util:page_to_index(hn_util:parse_url(Reg)),
-        Bic, Proxy, Reg).
-
-%%% API call - NOTIFY
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-api_notify(Data,Page)->
-    case lists:keysearch(type,1,Data) of
-    {value,{type,[],["change"]}} -> api_change(Data,Page)
+merge_trees(Tree,[])    -> Tree;
+merge_trees(Tree,[[]])  -> Tree;
+merge_trees(Tree,[[]|T])-> merge_trees(Tree,T);
+merge_trees(Tree,[H|T]) ->
+    {dir,[{path,P}],C1} = H,
+    {Match,Rest} = lists:partition(fun(X) ->
+                                           case X of 
+                                               {dir,[{path,P}],_} -> true;
+                                               _ -> false
+                                           end 
+                                   end,Tree),
+    case Match of
+        %% No Matches, add entire tree
+        [] -> merge_trees([H|Tree],T);
+        %% Generate a new Tree on current path and 
+        %% Add it to siblings
+        [{dir,[{path,_}],C2}] ->
+            merge_trees([{dir,[{path,P}],merge_trees(C1,C2)}]++Rest,T)
     end.
 
-api_change([{biccie,[],     [Bic]},
-            {cell,[],       [Cell]},
-            {type,[],       ["change"]},
-            {value,[],      [Val]},
-            {version,[],    [Version]}], _Page)->
-  
-    hn_db:update_hn(Cell,Bic,Val,Version),
-    
-    {ok,"thanks"}.
+create_tree([]) -> [];
+create_tree([H|T]) ->
+    {dir,[{path,H}],[create_tree(T)]}.    
 
-%%% API call - LOGIN
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-api_login([{"password",Pass},{"user",User}]) ->
-    case users:login(User,Pass) of
-        {error,invalid_user} -> {ok,{"login","invalid_user"}};
-        {ok,Record} ->
-            M = #user{name = User,loggedin = true,state = Record},
-            NewCookie = yaws_api:new_cookie_session(M),
-            {ok,{"login","success"},yaws_api:setcookie("user",NewCookie,"/")}
+%% Filter records and remove duplicates
+path_list([],PathList) -> PathList;
+path_list([#hn_item{addr = #ref{path=Path}}|T],List) ->
+    case lists:member(Path,List) of
+        true  -> path_list(T,List);
+        false -> path_list(T,[Path|List])
     end.
 
-%%% API call - LOGOUT
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-api_logout() ->
-    M = #user{loggedin = false},
-    NewCookie = yaws_api:new_cookie_session(M),
-    {ok,{"logout","success"},yaws_api:setcookie("user",NewCookie,"/")}.
+%% Given a user find the most elevated permission
+%% granted to that user    
+get_permissions(User,Ref=#ref{site=Site}) ->
+    Groups = hn_db:get_item_val(#ref{site=Site,ref={page,"/"},name="__groups"}),
+    {ok,Perms}   = hn_db:get_item_list(Ref#ref{name="__permissions"}),
+    {ok,UGroups} = find_groups(Groups,User),
+    {ok,Access}  = find_perms(User,UGroups,[no_access],Perms),
+    %% Sort permissions in order of precedence then pick
+    %% the highest
+    Sort = fun(X,Y) -> perm_index(X) > perm_index(Y) end,
+    [H|_Rest] = lists:sort(Sort,Access),
+    {ok,H}.
+
+%% Rank permission atoms in order of precedence
+perm_index(no_access)           -> 0;
+perm_index({protected_read,X})  -> 1;
+perm_index({protected_write,X}) -> 2;
+perm_index(read)                -> 3;
+perm_index(write)               -> 4;
+perm_index(admin)               -> 5.
+
+%% Find the permissions pertaining to a user
+find_perms(User,Groups,Perms,[]) ->
+    {ok,Perms};
+find_perms(User,Groups,Perms,[{user,anonymous,Perm}|T]) ->
+    find_perms(User,Groups,[Perm|Perms],T);
+find_perms(User,Groups,Perms,[{user,User,Perm}|T]) ->
+    find_perms(User,Groups,[Perm|Perms],T);
+find_perms(User,Groups,Perms,[{group,Group,Perm}|T]) ->
+    P = case lists:member(Group,Groups) of
+            true ->
+                [Perm|Perms];
+            false ->
+                Perms
+        end,
+    find_perms(User,Groups,P,T);
+find_perms(User,Groups,Perms,[H|T]) ->
+    find_perms(User,Groups,Perms,T).
+
+%% Create a list of groups that a user is in
+%% expanded into nested groups
+find_groups(Groups,User) ->
+    find_groups(Groups,User,Groups,[]).
     
+find_groups(GList,User,[],Groups) ->
+    {ok,Groups};
+find_groups(GList,User,[{Name,List}|T],Groups) ->
+    NGroups = group_list(GList,User,[Name],List,Groups),
+    find_groups(GList,User,T,NGroups).
+
+group_list(GList,User,Name,[],Acc) ->
+    hslists:uniq(lists:flatten(Acc));
+group_list(GList,User,Name,[{user,User}|T],Acc) ->
+    group_list(GList,User,Name,T,[Name|Acc]);
+group_list(GList,User,Name,[{group,Group}|T],Acc) ->
+    case lists:keysearch(Group,1,GList) of
+    false -> 
+        Acc;
+    {value,{Group,List}} ->
+        group_list(GList,User,[Group|Name],List,Acc)
+    end;
+group_list(GList,User,Name,[{user,_A}|T],Acc) ->
+    group_list(GList,User,Name,T,Acc).

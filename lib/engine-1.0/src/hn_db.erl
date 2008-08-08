@@ -20,6 +20,7 @@
 	 get_item/1,
 	 get_item_val/1,  
 	 get_item_inherited/2,
+         get_item_list/1,
 	 remove_item/1,
 	 get_ref_from_name/1,
 	 %% local_cell_link
@@ -53,28 +54,21 @@
 %%--------------------------------------------------------------------
 write_item(Addr,Val) when is_record(Addr,ref) ->
 
-    Fun = fun() ->
-        mnesia:write(#hn_item{addr = Addr, val = Val})
-    end,
+    Item = #hn_item{addr = Addr, val = Val},
+    Fun  = fun() -> mnesia:write(Item) end,
     {atomic, ok} = mnesia:transaction(Fun),
-
-    %% Send a change notification to the remoting server, which 
-    %% notifies web clients     
-    spawn( fun() ->
-        case Addr#ref.name of
-        "__"++_ -> false;
-        _ ->
-            Msg = io_lib:format("change ~s",
-                [simplexml:to_xml_string(
-                    hn_util:item_to_xml(#hn_item{addr = Addr, val = Val})
-                )]),
-                
-            gen_server:call(remoting_reg,{change,
-                Addr#ref.site,Addr#ref.path,Msg},?TIMEOUT)        
-        end
-    end),
     
+    %% Send a change notification to the remoting server, which 
+    %% notifies web clients,
+    spawn(fun() -> notify_remote(Item) end),
     ok.
+
+notify_remote(#hn_item{addr=#ref{name="__"++_}}) ->
+    ok;
+notify_remote(Item=#hn_item{addr=#ref{site=Site,path=Path}}) ->
+    Msg = "change "++simplexml:to_xml_string(hn_util:item_to_xml(Item)), 
+    gen_server:call(remoting_reg,{change,Site,Path,Msg},?TIMEOUT).
+    
     
 %%--------------------------------------------------------------------
 %% Function    : get_item/1
@@ -84,130 +78,150 @@ write_item(Addr,Val) when is_record(Addr,ref) ->
 %%               to a cell, all atributes referring to that cell, if
 %%               ref is a page, all cells / row / columns / ranges
 %%               in that page are returned
-%%--------------------------------------------------------------------  
-match_address(Pattern) ->
-    {atomic, List} = mnesia:transaction(fun() ->
-        mnesia:match_object(hn_item,#hn_item{addr=Pattern,_='_'},read)    
-    end),
-    List.
-  
+%%--------------------------------------------------------------------    
 get_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
     
-    {atomic, List} = mnesia:transaction(fun() ->
-    
-        %% If Name is defined, match it
-        N = ?COND(Name == undef,'_',Name),
-                
-        Attr = case Ref of
-        {cell,{X,Y}} -> #ref{site=Site, path=Path, name=N, ref={cell,{X,Y}}};
-        _ ->            #ref{site=Site, path=Path, name=N, _ = '_'}
-        end,
-        Match = #hn_item{addr = Attr, _ = '_'},
-        
-        mnesia:match_object(hn_item,Match,read)
-        
-    end),
+    F = fun() ->                
 
-    case Ref of
-    {cell,_} -> List;
-    {page,_} -> List;
-    _ -> 
-        %% If a request for row / column or range, need to include all
-        %% items contained within it
-        lists:filter
-        (
-            fun(#hn_item{addr=#ref{ref=ItemRef}}) ->
-                case {Ref, ItemRef} of
-                {X,X}                     -> true; %% Same Ref
-                {{row,Y},{cell,{_,Y}}}    -> true; %% Cell on same row
-                {{column,X},{cell,{X,_}}} -> true; %% Cell on same col
+                %% If Name is defined, match it
+                N = ?COND(Name == undef,'_',Name),
                 
-                {{range,{_,Y1,_,Y2}},{row,Y}}
-                    when Y > Y1 andalso Y < Y2 -> true; 
-                {{range,{X1,_,X2,_}},{column,X}}
-                    when X > X1 andalso X < X2 -> true;
-                    
-                {{range,{X1,Y1,X2,Y2}},{cell,{X,Y}}}
-                    when Y >= Y1 andalso Y =< Y2 andalso
-                            X >= X1 andalso X =< X2 -> true;
-                            
-                _ -> false
-                end
-            end, 
-            List)
+                Attr = case Ref of
+                           {cell,{X,Y}} -> #ref{site=Site, path=Path, name=N, ref={cell,{X,Y}}};
+                           _ ->            #ref{site=Site, path=Path, name=N, _ = '_'}
+                       end,
+                Match = #hn_item{addr = Attr, _ = '_'},
+                
+                mnesia:match_object(hn_item,Match,read)
+        
+        end,
+    {atomic, List} = mnesia:transaction(F),
+
+        case Ref of
+            {cell,_} -> List;
+            {page,_} -> List;
+            _ -> 
+            %% If a request for row / column or range, need to include all
+            %% items contained within it
+            lists:filter
+              (
+              fun(#hn_item{addr=#ref{ref=ItemRef}}) ->
+                      case {Ref, ItemRef} of
+                          {X,X}                     -> true; %% Same Ref
+                          {{row,Y},{cell,{_,Y}}}    -> true; %% Cell on same row
+                          {{column,X},{cell,{X,_}}} -> true; %% Cell on same col
+                          
+                          {{range,{_,Y1,_,Y2}},{row,Y}}
+                          when Y > Y1 andalso Y < Y2 -> true; 
+                          {{range,{X1,_,X2,_}},{column,X}}
+                          when X > X1 andalso X < X2 -> true;
+                          
+                          {{range,{X1,Y1,X2,Y2}},{cell,{X,Y}}}
+                          when Y >= Y1 andalso Y =< Y2 andalso
+                          X >= X1 andalso X =< X2 -> true;
+                          
+                          _ -> false
+                      end
+              end, 
+              List)
     end.
- 
+
+
 %% @doc Get the value of a named attribute, if it doesnt exist for address
 %% check parent (cell -> range -> row -> column -> page -> root -> default)
-get_item_inherited(Addr,Default) ->
+match_ref(Ptn) ->
+    F = fun() ->
+                mnesia:match_object(hn_item,#hn_item{addr=Ptn,_='_'},read)
+        end,
+    {atomic, List} = mnesia:transaction(F),
+    List.
 
-    Return = case Addr#ref.ref of
-    {cell,_}  -> get_cell_inh(Addr);
-    {range,_} -> get_range_inh(Addr);
-    {row,_}   -> get_row_inh(Addr);
-    {col,_}   -> get_col_inh(Addr);
-    {page,_}  -> get_page_inh(Addr)
-    end,
-    
-    case Return of 
-    {ok,Format} -> {ok,Format};
-    nomatch     -> {ok,Default}
+
+get_item_list(Addr = #ref{ref={RefType,_}}) ->
+    get_item_list(RefType,Addr,[]).
+
+get_item_list(RefType,Addr,Acc) ->
+    case traverse(RefType,Addr) of
+        {last,[]} ->
+            {ok,Acc};
+        {last,[#hn_item{val=Val}]} ->
+            {ok,lists:append([Val,Acc])};
+        {Ref,NewAddr,[]} ->
+            get_item_list(Ref,NewAddr,Acc);
+        {Ref,[]} ->
+            get_item_list(Ref,Addr,Acc);
+        {Ref,NewAddr,[#hn_item{val=Val}]} ->
+            get_item_list(Ref,NewAddr,lists:append([Val,Acc]));
+        {Ref,[#hn_item{val=Val}]} ->
+            get_item_list(Ref,Addr,lists:append([Val,Acc]))
     end.
 
-get_page_inh(Addr) ->
-    get_page_inhx(Addr#ref{path=lists:reverse(Addr#ref.path)}).
-    
-get_page_inhx(#ref{site=Site,path=[],name=Name}) ->
-    case match_address(#ref{site=Site,path=[],ref={page,"/"},name=Name}) of
-    [] -> nomatch;
-    [#hn_item{val=Val}] -> {ok,Val}
-    end;
-    
-get_page_inhx(#ref{site=Site,path=[H|T],name=Name}) ->
-    Path = lists:reverse([H|T]),
-    match_stuff(
-        #ref{site=Site,path=T,name=Name},
-        #ref{site=Site,path=Path,ref={page,"/"},name=Name},
-        fun get_page_inh/1).
-
-get_col_inh(Addr) ->
-    case Addr#ref.ref of 
-    {cell,{_,Y}} -> match_stuff(Addr,Addr#ref{ref={col,Y}},fun get_page_inh/1);
-    _            -> get_page_inh(Addr)
+get_item_inherited(Addr = #ref{ref={RefType,_}}, Default) -> 
+    case return_first(RefType,Addr) of 
+        {ok,Format} -> 
+            {ok,Format};
+        nomatch     -> 
+            {ok,Default}
     end.
 
-get_row_inh(Addr) ->
-    case Addr#ref.ref of 
-    {cell,{X,_}} -> match_stuff(Addr,Addr#ref{ref={row,X}},fun get_page_inh/1);
-    _            -> get_page_inh(Addr)
+return_first(RefType,Addr) ->
+    case traverse(RefType,Addr) of 
+        {last,[]} ->
+            nomatch; 
+        {last,[#hn_item{val=Val}]} ->
+            {ok,Val};
+        {Ref,[]} -> 
+            return_first(Ref,Addr);
+        {Ref,NewAddr,[]} ->
+            return_first(Ref,NewAddr);
+        {_Ref,_NewAddr,[#hn_item{val=Val}]} ->
+            {ok,Val};
+        {_Ref,[#hn_item{val=Val}]} -> 
+            {ok,Val}
     end.
 
-get_cell_inh(Addr) ->
-    match_stuff(Addr,Addr,fun get_range_inh/1).
-    
-get_range_inh(Addr) ->
-    case match_address(Addr#ref{ref={range,'_'}}) of
-    [] -> get_row_inh(Addr);
-    List ->
-        case filter_range(List,Addr#ref.ref) of
-        nomatch -> get_row_inh(Addr);
-        Val     -> {ok,Val}
-        end
-    end.
+traverse(cell,Addr = #ref{ref={cell,_}}) ->
+    {range, match_ref(Addr)};
 
-match_stuff(Addr,NewAddr,Fun) ->
-    case match_address(NewAddr) of 
-    [] -> Fun(Addr);
-    [#hn_item{val=Val}] -> {ok,Val}
-    end.
+traverse(range,Addr = #ref{ref={range,_}}) ->
+    {page, match_ref(Addr)};
+traverse(range,Addr = #ref{ref={cell,_}}) ->
+    V = case match_ref(Addr#ref{ref={range,'_'}}) of
+            [] -> [];
+            List ->
+                case filter_range(List,Addr#ref.ref) of
+                    nomatch -> [];
+                    Val -> [Val]
+                end
+        end,
+    {row_col, V};
 
-filter_range([],_Cell)   -> nomatch;  
+traverse(row_col,Addr = #ref{ref={cell,{_X,Y}}}) ->
+    {col, match_ref(Addr#ref{ref={row,Y}})};
+
+traverse(row,Addr = #ref{ref={row,_}}) ->
+    {page, match_ref(Addr)};    
+traverse(row,Addr = #ref{ref={cell,{_X,Y}}}) ->
+    {page, match_ref(Addr#ref{ref={row,Y}})};
+
+traverse(col,Addr = #ref{ref={col,_}}) ->
+    {page, match_ref(Addr)};    
+traverse(col,Addr = #ref{ref={cell,{X,_Y}}}) ->
+    {page, match_ref(Addr#ref{ref={col,X}})};
+
+traverse(page,Addr = #ref{path=[]}) ->
+    {last,match_ref(Addr#ref{ref={page,"/"}})};                              
+traverse(page,Addr) ->
+    NewPath = hslists:init(Addr#ref.path),
+    {page,Addr#ref{path=NewPath},match_ref(Addr#ref{ref={page,"/"}})}.    
+
+filter_range([],_Cell)   -> 
+    nomatch;  
 filter_range([H|T],Cell) ->
     case hn_util:in_range((H#hn_item.addr)#ref.ref,Cell) of
-    true -> H#hn_item.val;
-    _    -> filter_range(T,Cell)
+        true -> H#hn_item.val;
+        _    -> filter_range(T,Cell)
     end.
-        
 %%--------------------------------------------------------------------
 %% Function    : get_item_val/2
 %% 
@@ -217,8 +231,10 @@ filter_range([H|T],Cell) ->
 %%--------------------------------------------------------------------   
 get_item_val(Addr) ->
     case get_item(Addr) of
-    [] -> [];
-    [#hn_item{val=Value}] -> Value
+        [] -> 
+            [];
+        [#hn_item{val=Value}] -> 
+            Value
     end.
     
 get_ref_from_name(Name) ->
@@ -562,35 +578,41 @@ update_hn(From,Bic,Val,_Version)->
 %%               fetch its value, a 'biccie' is created which
 %%               must be quoted in registrations etc
 %%--------------------------------------------------------------------
+do_get_hn(Url,_From,To)->
+
+    case mnesia:read({incoming_hn,To}) of                        
+        [Hn] -> 
+            Hn;
+        []->	
+            case http:request(get,{Url,[]},[],[]) of
+                {ok,{{_V,200,_R},_H,Xml}} ->
+                    
+                    {hypernumber,[],[
+                                     {value,[],              [Val]},
+                                     {'dependancy-tree',[],  Tree}]
+                    } = simplexml:from_xml_string(Xml),
+                    
+                    HNumber = #incoming_hn{
+                      value   = hn_util:xml_to_val(Val),
+                      deptree = Tree,
+                      remote  = To,
+                      biccie  = util2:get_biccie()},
+                    
+                    mnesia:write(HNumber),   
+                    HNumber;
+
+                {ok,{{_V,503,_R},_H,_Body}} ->
+                    {error,permission_denied}
+            end
+    end.
+
+
 get_hn(Url,_From,To)->
-
-    {atomic, List} = mnesia:transaction(fun() ->
-
-        case mnesia:read({incoming_hn,To}) of
-
-        [Hn] -> Hn;
-        
-		[]->	
-            XML = hn_util:req(Url),
-            
-             %% TODO: Handle remote server being down            
-            {hypernumber,[],[
-                {value,[],              [Val]},
-                {'dependancy-tree',[],  Tree}]
-            } = simplexml:from_xml_string(XML),
-            
-            HNumber = #incoming_hn{
-                value   = hn_util:xml_to_val(Val),
-                deptree = Tree,
-                remote  = To,
-                biccie  = util2:get_biccie()},
-                
-            mnesia:write(HNumber),   
-            HNumber
-        end
-    end),
+    F = fun() -> do_get_hn(Url,_From,To) end,
+    {atomic, List} = mnesia:transaction(F),
+    io:format("List ~p~n",[List]),
     List.
-    
+
 %%--------------------------------------------------------------------
 %% Function    : register_hn/3
 %%

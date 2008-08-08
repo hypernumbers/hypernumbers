@@ -70,8 +70,7 @@ $.fn.spreadsheet = function(options)
         fullscreen:false
     };
 
-    $.fn.modes =
-    { 
+    $.fn.modes = { 
         CELL_EDIT:0,        // Currently Editing a cell         
         FORMULA_EDIT:1,     // Editing in the formula bar
         NOT_EDITING:2       // Not Editing
@@ -120,7 +119,7 @@ $.fn.spreadsheet = function(options)
         var formula = $this.find("#formula");
 
         $(cell).empty();
-
+        
         if(typeof opts.cellSelect != "function")
             formula.val(val);
         else
@@ -163,12 +162,12 @@ $.fn.spreadsheet = function(options)
     {
         switch(key)
         {
-            case $.fn.keys.UP     : return [$sel.x,$sel.y-1]; break;
-            case $.fn.keys.RIGHT  : return [$sel.x+1,$sel.y]; break;
-            case $.fn.keys.LEFT   : return [$sel.x-1,$sel.y]; break;
-            case $.fn.keys.DOWN   : 
-            case $.fn.keys.RETURN : return [$sel.x,$sel.y+1];  break;
-            default : return false; break;
+        case $.fn.keys.UP     : return [$sel.x,$sel.y-1]; break;
+        case $.fn.keys.RIGHT  : return [$sel.x+1,$sel.y]; break;
+        case $.fn.keys.LEFT   : return [$sel.x-1,$sel.y]; break;
+        case $.fn.keys.DOWN   : 
+        case $.fn.keys.RETURN : return [$sel.x,$sel.y+1];  break;
+        default : return false; break;
         }
         return false;
     };           
@@ -183,7 +182,7 @@ $.fn.spreadsheet = function(options)
         if($(cell).size() > 0)
         {
             $sel.blurcell();
-    
+            
             if(e.shiftKey)
             {
                 $sel.state = $.fn.states.SELECT;
@@ -224,33 +223,33 @@ $.fn.spreadsheet = function(options)
             initval = $(this).val();
         }
         ).keyup(function (e)
-        {
-            if($sel.state != $.fn.states.INIT)
-            {
-                var coords = offset(e.keyCode,$sel);
-        
-                if(coords != false)
                 {
-                    change($sel.x,$sel.y+1,$(this).val());
-                    key_pressed(root,$sel,coords,e);
-                }
-                else
-                {
-                    var c = cell($sel.tbl,$sel.x,$sel.y);
-            
-                    if(c.size() > 0)
+                    if($sel.state != $.fn.states.INIT)
                     {
-                        c.children("div").text($(this).val());
+                        var coords = offset(e.keyCode,$sel);
+                        
+                        if(coords != false)
+                        {
+                            change($sel.x,$sel.y+1,$(this).val());
+                            key_pressed(root,$sel,coords,e);
+                        }
+                        else
+                        {
+                            var c = cell($sel.tbl,$sel.x,$sel.y);
+                            
+                            if(c.size() > 0)
+                            {
+                                c.children("div").text($(this).val());
+                            }
+                        }
                     }
                 }
-            }
-        }
         ).blur(function (e)
-        {
-            $(this).removeClass("focus");
-            change($sel.x,$sel.y+1,$(this).val());
-            initval = "";
-        });  
+               {
+                   $(this).removeClass("focus");
+                   change($sel.x,$sel.y+1,$(this).val());
+                   initval = "";
+               });  
     };
     
     /**
@@ -288,7 +287,7 @@ $.fn.spreadsheet = function(options)
     {
         if(typeof opts.cssChange == "function")
             opts.cssChange(el,attr,val);
-                
+        
         $(el).css(attr,val);
     };
     
@@ -317,7 +316,7 @@ $.fn.spreadsheet = function(options)
             var h = ((opts.fullscreen) ? $(window).height() : $(root).height()) 
                 - $(".toolbar").height() - $(".formulabar").height() 
                 - fmargin - 110;
-                            
+            
             root.find(".data,.rows").height(h);
             
             $("#formula").width(root.width()-200);
@@ -419,7 +418,12 @@ $.fn.spreadsheet = function(options)
             for(var n = 0; n < cols; n++)
                 row.append("<td><div class='"+($.fn.to_b26(n)+z)
                     + " cell'></div></td>");
-        }        
+        }
+
+        root.find(".cover").click(function(e)
+        {
+            return false;
+        });    
     };
     
     /**

@@ -15,6 +15,12 @@ h2
     font: bold 18px "Lucida Grande","Lucida Sans Unicode","Helvetica Neue", sans-serif;  
 }
 
+h3
+{
+    font: bold 14px "Lucida Grande","Lucida Sans Unicode","Helvetica Neue", sans-serif;  
+}
+
+
 p
 {
     padding: 5px 0px;
@@ -33,12 +39,50 @@ strong
 #header
 {
     background:     #000;
-    border-bottom:  4px solid #888;
 }
 
 #header img 
 {
+    width:          253px;
     margin:         3px 10px;
+    display:        block;
+    float:          left;
+    border:         0px;
+}
+
+#header ul
+{
+    list-style-type:none;
+}
+
+#header ul li 
+{
+    display:    none;
+    color:      white;
+    float:      left;
+    margin:     37px 5px 0px 5px;
+}
+
+#header ul li a
+{
+    text-align: center;
+    cursor:     pointer;
+    display:    block;
+    width:      50px;
+    font:       11px "Lucida Grande","Lucida Sans Unicode","Helvetica Neue", sans-serif; 
+    padding:    3px 13px 3px 13px;
+    background: #666;
+    color:      white;
+}
+
+#header a:hover
+{
+   background: #999;
+}
+
+#header #user
+{
+    font-weight:bold;
 }
 
 #footer
@@ -128,7 +172,7 @@ strong
 
 #menu
 {
-    margin-left:5px;
+    border-top: 1px solid #666;
     height:     24px;
 }
 
@@ -226,4 +270,42 @@ div#menu li li li li:hover ul
     background:     #EEE url(../img/arrow.png) no-repeat 100% 50%;
 }
 
+#loginform 
+{
+    padding:    6px;
+    background:#666;
+    color:#FFF;
+    display:none;
+}
 
+#loginform #pass
+{
+    width:100px;
+}
+
+#loginform #email, #loginform #pass
+{
+    border:1px solid #666;
+}
+
+.notice 
+{
+    background:     url(../img/database_error.png) no-repeat top left;
+    padding-left:   20px;
+    margin-left:    5px;
+}
+
+.dialog
+{
+        display:none;
+}
+
+#hn .cover
+{
+    position:   absolute;
+    background: #EEE;
+    height:     100%;
+    width:      100%;
+    z-index:    999;
+    opacity:    0.5;
+}

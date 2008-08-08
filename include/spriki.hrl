@@ -9,6 +9,8 @@
 -define(HTTPS,      $h,$t,$t,$p,$s).
 -define(SLASH,      47).
 
+-define(SALT,       "salt").
+
 %% Test Macros
 -define(HN_URL1,   "http://127.0.0.1:9000").
 -define(HN_URL2,   "http://127.0.0.1:9001").
@@ -132,29 +134,10 @@
     version     = 0         %% Version for structural updates
 }).
 
--record( users,
+-record( hn_user,
 {
     name        = [],
     password    = [],
-    status      = user,
+    authtoken   = null,
     created     = calendar:local_time()
-}).
-
--record( websheet,
-{
-    page        = #page{},
-    permissions = [],
-    name        = [],
-    version     = 0,
-    change      = [],
-    gui         = "default",
-    public      = default
-}).
-
-%% Cookie Record for logged in users
--record( user,
-{
-    name,
-    loggedin    = false,
-    state       = #users{}
 }).

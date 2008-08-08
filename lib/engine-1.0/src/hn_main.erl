@@ -49,14 +49,16 @@ set_attribute(Ref,Val) -> hn_db:write_item(Ref,Val).
 %%% Description : process the string input to a cell
 %%%-----------------------------------------------------------------
 set_cell(Addr, Val) ->
+    io:format("Val~p~n",[Val]),
     case superparser:process(Val) of
         {formula, Fla} ->
 
             case muin:run_formula(Fla, Addr) of
             {error,Error} -> ok;       
-            {Pcode, Res, Parents, Deptree, Recompile} ->            
-                %% Convert stuff to SimpleXML.
-                F = fun({Type, {S, P, X1, Y1}}) ->
+            {Pcode, Res, Parents, Deptree, Recompile} ->
+                    io:format("Res ~p~n",[Res]),
+                    %% Convert stuff to SimpleXML.
+                    F = fun({Type, {S, P, X1, Y1}}) ->
         			Url = hn_util:index_to_url({index, S, P, X1, Y1}),
         			{url, [{type, Type}], [Url]}
         		end,
@@ -176,24 +178,24 @@ get_cell_info(Site, TmpPath, X, Y) ->
     Value   = hn_db:get_item_val(Ref#ref{name=rawvalue}),
     
     DepTree = case hn_db:get_item_val(Ref#ref{name='dependancy-tree'}) of
-        {xml,Tree} -> Tree;
-        []         -> []
-    end,
-
+                  {xml,Tree} -> Tree;
+                  []         -> []
+              end,
+    
     Val = case Value of
-        []                 -> blank;
-        {datetime, _, [N]} -> muin_date:from_gregorian_seconds(N);
-        Else               -> Else %% Strip other type tags.
-    end,
-       
-    F = fun({url,[{type,Type}],[Url]}) -> 
-        #page{site=S,path=P,ref={cell,{X1,Y1}}} = hn_util:parse_url(Url),
-        P2 = string:tokens(P,"/"),
-        {Type,{S,P2,X1,Y1}}
+              []                 -> blank;
+              {datetime, _, [N]} -> muin_date:from_gregorian_seconds(N);
+              Else               -> Else %% Strip other type tags.
     end,
     
+    F = fun({url,[{type,Type}],[Url]}) -> 
+                #page{site=S,path=P,ref={cell,{X1,Y1}}} = hn_util:parse_url(Url),
+                P2 = string:tokens(P,"/"),
+                {Type,{S,P2,X1,Y1}}
+        end,
+    
     Dep = lists:map(F,DepTree) ++ [{"local",{Site,Path,X,Y}}],
-
+    
     {Val,Dep,[],[{"local",{Site,Path,X,Y}}]}.
        
 %%%-----------------------------------------------------------------
@@ -206,23 +208,24 @@ get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY)->
     NewTPath = lists:filter(fun(X) -> ?COND(X==47,false,true) end,TPath),   
     NewFPath = lists:filter(fun(X) -> ?COND(X==47,false,true) end,FPath),   
 
-    NewTPath = string:tokens(lists:flatten(TPath),"/"),
-    NewFPath = string:tokens(lists:flatten(FPath),"/"),
-    
     To = #index{site=FSite,path=NewFPath,column=FX,row=FY},
     Fr = #index{site=TSite,path=NewTPath,column=TX,row=TY},
 
-    #incoming_hn{value=Val,deptree=T} = hn_db:get_hn(URL,Fr,To),
-
-    F = fun({url,[{type,Type}],[Url]}) ->
-        #page{site=S,path=P,ref={cell,{X,Y}}} = hn_util:parse_url(Url),
-        P2 = string:tokens(P,"/"),
-        {Type,{S,P2,X,Y}}
-    end,    
-    
-    Dep = lists:map(F,T) ++ [{"remote",{FSite,NewFPath,FX,FY}}],
-
-    {Val,Dep,[],[{"remote",{FSite,NewFPath,FX,FY}}]}.
+    case hn_db:get_hn(URL,Fr,To) of
+        {error,permission_denied} ->
+            {{errval,'#AUTH'},[],[],[]};
+        
+        #incoming_hn{value=Val,deptree=T} ->
+            F = fun({url,[{type,Type}],[Url]}) ->
+                        #page{site=S,path=P,ref={cell,{X,Y}}} = hn_util:parse_url(Url),
+                        P2 = string:tokens(P,"/"),
+                        {Type,{S,P2,X,Y}}
+                end,
+            
+            Dep = lists:map(F,T) ++ [{"remote",{FSite,NewFPath,FX,FY}}],
+            
+            {Val,Dep,[],[{"remote",{FSite,NewFPath,FX,FY}}]}
+    end.
     
 %%%-----------------------------------------------------------------
 %%% Function    : recalc/1

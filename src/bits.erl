@@ -8,8 +8,7 @@
 -module(bits).
 
 %% API
--export([clear_db/0,
-	 log/1]).
+-export([clear_db/0, log/1]).
 
 %%==============================================================================
 %% API
@@ -27,10 +26,10 @@ clear_db()->
     application:stop(mnesia),
     application:stop(engine),
     application:stop(remoting),
-    hn_loaddb:create_db(persistent),
+    hn_loaddb:create_db(disc_copies),
     application:start(engine),
     application:start(remoting),
-    {ok, "db cleared down"}.
+    ok.
 
 log(String) ->
     File= case os:type() of

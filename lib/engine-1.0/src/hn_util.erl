@@ -31,7 +31,8 @@
     %% List Utils
     add_uniq/2,         implode/2,          is_alpha/1,
     is_numeric/1,       str_replace/2,      text/1,
-    trim/1,
+    trim/1,             random_string/1,    intersection/2,
+    bin_to_hexstr/1,    hexstr_to_bin/1,
     %% Yaws Utils
     create_conf/1,      upload/3,           get_cookie/1
     ]).
@@ -216,6 +217,18 @@ read(FileName) ->
 %%% List Utils                                                               %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+intersection(ListA,ListB) ->
+    intersection(ListA,ListB,[]).
+
+intersection([],List,Acc) ->
+    Acc;
+intersection([H|T],List,Acc) ->
+    NAcc = case lists:member(H,List) of
+    true  -> [H|Acc];
+    false -> Acc
+    end,
+    intersection(T,List,NAcc).
+
 %%--------------------------------------------------------------------
 %% Function:    add_uniq/2
 %%
@@ -293,6 +306,53 @@ is_numeric(Str) ->
         true -> lists:all(Fun, Str)
     end.
 
+random_string(Len) ->
+    {A1,A2,A3} = now(),
+    random:seed(A1, A2, A3),
+    random_string("",Len).
+    
+random_string(Str,0) ->
+    Str;
+
+random_string(Str,Len) ->
+    case random:uniform(3) of
+	1 -> Asc = 96 + random:uniform(26);
+	2 -> Asc = 47 + random:uniform(9);
+	3 -> Asc = 64 + random:uniform(26)
+    end,
+    random_string([Asc|Str],Len-1).
+
+hex(N) when N < 10 ->
+    $0+N;
+hex(N) when N >= 10, N < 16 ->
+    $a+(N-10).
+
+int(C) when $0 =< C, C =< $9 ->
+    C - $0;
+int(C) when $A =< C, C =< $F ->
+    C - $A + 10;
+int(C) when $a =< C, C =< $f ->
+    C - $a + 10.
+    
+to_hex(N) when N < 256 ->
+    [hex(N div 16), hex(N rem 16)].
+ 
+list_to_hexstr([]) -> 
+    [];
+list_to_hexstr([H|T]) ->
+    to_hex(H) ++ list_to_hexstr(T).
+
+bin_to_hexstr(Bin) ->
+    list_to_hexstr(binary_to_list(Bin)).
+
+hexstr_to_bin(S) ->
+    list_to_binary(hexstr_to_list(S)).
+
+hexstr_to_list([X,Y|T]) ->
+    [int(X)*16 + int(Y) | hexstr_to_list(T)];
+hexstr_to_list([]) ->
+    [].
+    
 %%--------------------------------------------------------------------
 %% Function:    text/1
 %% Description: Returns a string representation of the parameter
@@ -325,18 +385,18 @@ upload(A,Name,Fun) ->
 %% Description: reads the cookie and session data from request header
 %%              returns nice record of state information
 %%--------------------------------------------------------------------
-get_cookie(ClientHeaders) ->
+get_cookie(ClientHeaders) -> ok.
 
-    case yaws_api:find_cookie_val("user",ClientHeaders) of
+%    case yaws_api:find_cookie_val("user",ClientHeaders) of
 
-    [] -> #user{loggedin = false};
+%    [] -> #user{loggedin = false};
 
-    UserCookie ->
-        case yaws_api:cookieval_to_opaque(UserCookie) of
-        {ok, Cookie}       -> Cookie;
-        {error,no_session} -> #user{loggedin = false}
-        end
-    end.
+%    UserCookie ->
+%        case yaws_api:cookieval_to_opaque(UserCookie) of
+%        {ok, Cookie}       -> Cookie;
+%        {error,no_session} -> #user{loggedin = false}
+%        end
+%    end.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% Internal Functions                                                       %%%
@@ -371,7 +431,7 @@ format_vars([]) -> {{xml},[]};
 format_vars(Query) ->
 
     %% list of valid vars
-    Valid = ["links","format","lastrow","nocallback","loggedin","info","attr",
+    Valid = ["links","format","lastrow","nocallback","auth","info","attr",
          "toolbar","last","hypernumber","pages","login","admin","import"],
 
     F = fun({K,V}) ->
