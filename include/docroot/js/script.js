@@ -24,7 +24,10 @@ var handle_attr = function(refxml)
         $("#hn").spreadsheet("setHeight",ref,parseInt(value));
 
     else if(name == "width")   
+    {
+        console.log(parseInt(value));
         $("#hn").spreadsheet("setWidth",ref,parseInt(value));
+    }
 
     else if(name == "name")    
         $("#hn").spreadsheet("addName",ref,value);

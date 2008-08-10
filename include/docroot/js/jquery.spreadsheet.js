@@ -1019,15 +1019,15 @@ $.fn.spreadsheet = function(options)
      */  
     var set_width = function(root,col,width)
     {
-        var column = $.fn.from_b26(col); 
+        var column = $.fn.from_b26(col.toLowerCase()); 
         var td = root.find(".data").find("tr td:nth-child("+column+")");
-            
+
         root.find(".columns tr th:nth-child("+column+")").width(width);
-    
+
         var total = root.find("div.data table").width() + (width - td.width());
         root.find(".data table").width(total);
         root.find(".columns .roottbl , .columns table").width(total);
-        
+
         td.width(width);
         td.find("div").width(width-6);
     };

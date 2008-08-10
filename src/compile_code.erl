@@ -1,6 +1,6 @@
 -module(compile_code).
 
--export([start/0]).
+-export([start/0,start/1]).
 -include("../include/handy_macros.hrl").
 
 -define(init(L),
@@ -28,10 +28,12 @@
          "src/test_util.erl",
 	 "src/timeout_test.erl"]).
 
+start(Clean) -> 
+    compile(Clean).
 start() ->
-    compile().
+    compile(dirty).
 
-compile() ->
+compile(Clean) ->
     [_File, _Ebin | Rest] =
         reverse(string:tokens(code:which(compile_code), "/")),
 
@@ -64,16 +66,16 @@ compile() ->
         end,
         ?EXTRA_ERL_FILES),
     
-    compile_funcs(Dirs++Extra, Inc_list).
+    compile_funcs(Clean,Dirs++Extra, Inc_list).
 
-compile_funcs(List, Inc_list) ->
+compile_funcs(Clean, List, Inc_list) ->
     New_list = [{X, [debug_info, {outdir, Y} | Inc_list]} || {X, Y} <- List],
-    comp_lists(New_list).
+    comp_lists(Clean, New_list).
 
-comp_lists(List) ->
-    comp_lists(List, ok).
+comp_lists(Clean, List) ->
+    comp_lists(Clean, List, ok).
 
-comp_lists([{File, Opt}|T], OldStatus) ->
+comp_lists(Clean, [{File, Opt}|T], OldStatus) ->
     Append = case member(filename:basename(File), ?NO_WARNINGS) of
                  true ->  [return_errors];
                  false -> [return_errors,report_warnings]
@@ -84,25 +86,31 @@ comp_lists([{File, Opt}|T], OldStatus) ->
     [debug_info, {outdir, Dir} | _] = Options,
     filelib:ensure_dir(Dir ++ "/"),
     
-    case uptodate(File, Dir) of
-        false ->
-            NewStatus = compile:file(File, Options),
-            case NewStatus of
-                {ok, FileName} ->
-                    io:fwrite("OK: ~s~n", [File]),
-                    code:delete(FileName),
-                    code:purge(FileName),
-                    code:load_file(FileName),
-                    comp_lists(T, OldStatus);
-                Error ->
-                    io:fwrite("   Compile failure:    ~p~n", [File]),
-                    io:fwrite("   Error is       :    ~p~n~n", [Error]),
-                    comp_lists(T, error)
-            end;
-        true ->
-            comp_lists(T, OldStatus)
+
+    Comp = fun() -> NewStatus = compile:file(File, Options),
+                    case NewStatus of
+                        {ok, FileName} ->
+                            io:fwrite("OK: ~s~n", [File]),
+                            code:delete(FileName),
+                            code:purge(FileName),
+                            code:load_file(FileName),
+                            comp_lists(Clean, T, OldStatus);
+                        Error ->
+                            io:fwrite("   Compile failure:    ~p~n", [File]),
+                            io:fwrite("   Error is       :    ~p~n~n", [Error]),
+                            comp_lists(Clean, T, error)
+                    end
+           end,
+    
+    case {Clean, uptodate(File, Dir)} of
+        {clean,_} ->
+            Comp();
+        {dirty,false} ->
+            Comp();
+        {_,_} ->
+            comp_lists(Clean, T, OldStatus)
     end;
-comp_lists([], Status) ->
+comp_lists(_Clean, [], Status) ->
     io:fwrite("   Termination Status: ~p~n", [Status]),
 	Status.
 

@@ -31,15 +31,16 @@
 %%%               is 'formula',then the value is processed as the 
 %%%               formula of a cell
 %%%-----------------------------------------------------------------
-set_attribute(R,Val) when R#ref.name == formula -> set_cell(R,Val);
+set_attribute(Ref,Val) when Ref#ref.name == formula -> 
+    set_cell(Ref,Val);
 set_attribute(Ref,Val) when Ref#ref.name == format ->
     hn_db:write_item(Ref,Val),
     F = fun(X,[]) ->
-        case hn_db:get_item_val(X#ref{name=rawvalue}) of
-        [] -> ok;
-        Value -> set_cell_rawvalue(X,Value)
-        end
-    end,
+                case hn_db:get_item_val(X#ref{name=rawvalue}) of
+                    [] -> ok;
+                    Value -> set_cell_rawvalue(X,Value)
+                end
+        end,
     apply_range(Ref,F,[]);
 set_attribute(Ref,Val) -> hn_db:write_item(Ref,Val).
 
@@ -49,27 +50,25 @@ set_attribute(Ref,Val) -> hn_db:write_item(Ref,Val).
 %%% Description : process the string input to a cell
 %%%-----------------------------------------------------------------
 set_cell(Addr, Val) ->
-    io:format("Val~p~n",[Val]),
     case superparser:process(Val) of
         {formula, Fla} ->
-
+            %case muin:run_formula(Fla, Addr, Auth) of
             case muin:run_formula(Fla, Addr) of
-            {error,Error} -> ok;       
-            {Pcode, Res, Parents, Deptree, Recompile} ->
-                    io:format("Res ~p~n",[Res]),
+                {error,Error} -> ok;       
+                {Pcode, Res, Parents, Deptree, Recompile} ->
                     %% Convert stuff to SimpleXML.
                     F = fun({Type, {S, P, X1, Y1}}) ->
         			Url = hn_util:index_to_url({index, S, P, X1, Y1}),
         			{url, [{type, Type}], [Url]}
         		end,
 
-                Parxml = map(F, Parents),
-                Deptreexml = map(F, Deptree),
+                    Parxml = map(F, Parents),
+                    Deptreexml = map(F, Deptree),
 
-                ?IF(Pcode =/= nil,     db_put(Addr, "__ast", Pcode)),
-                ?IF(Recompile == true, db_put(Addr, "__recompile", true)),
+                    ?IF(Pcode =/= nil,     db_put(Addr, "__ast", Pcode)),
+                    ?IF(Recompile == true, db_put(Addr, "__recompile", true)),
 
-                write_cell(Addr, Res, "=" ++ Fla, Parxml, Deptreexml)
+                    write_cell(Addr, Res, "=" ++ Fla, Parxml, Deptreexml)
             end;
             
         {Type, Value} ->
@@ -203,7 +202,7 @@ get_cell_info(Site, TmpPath, X, Y) ->
 %%% Types       : 
 %%% Description : 
 %%%-----------------------------------------------------------------
-get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY)->
+get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY) ->
 
     NewTPath = lists:filter(fun(X) -> ?COND(X==47,false,true) end,TPath),   
     NewFPath = lists:filter(fun(X) -> ?COND(X==47,false,true) end,FPath),   

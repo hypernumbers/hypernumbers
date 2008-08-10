@@ -68,8 +68,8 @@ notify_remote(#hn_item{addr=#ref{name="__"++_}}) ->
 notify_remote(Item=#hn_item{addr=#ref{site=Site,path=Path}}) ->
     Msg = "change "++simplexml:to_xml_string(hn_util:item_to_xml(Item)), 
     gen_server:call(remoting_reg,{change,Site,Path,Msg},?TIMEOUT).
-    
-    
+
+
 %%--------------------------------------------------------------------
 %% Function    : get_item/1
 %% 
@@ -82,7 +82,7 @@ notify_remote(Item=#hn_item{addr=#ref{site=Site,path=Path}}) ->
 get_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
     
     F = fun() ->                
-
+                
                 %% If Name is defined, match it
                 N = ?COND(Name == undef,'_',Name),
                 
@@ -96,11 +96,11 @@ get_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
         
         end,
     {atomic, List} = mnesia:transaction(F),
-
-        case Ref of
-            {cell,_} -> List;
-            {page,_} -> List;
-            _ -> 
+    
+    case Ref of
+        {cell,_} -> List;
+        {page,_} -> List;
+        _ -> 
             %% If a request for row / column or range, need to include all
             %% items contained within it
             lists:filter
@@ -197,17 +197,17 @@ traverse(range,Addr = #ref{ref={cell,_}}) ->
     {row_col, V};
 
 traverse(row_col,Addr = #ref{ref={cell,{_X,Y}}}) ->
-    {col, match_ref(Addr#ref{ref={row,Y}})};
+    {column, match_ref(Addr#ref{ref={row,Y}})};
 
 traverse(row,Addr = #ref{ref={row,_}}) ->
     {page, match_ref(Addr)};    
 traverse(row,Addr = #ref{ref={cell,{_X,Y}}}) ->
     {page, match_ref(Addr#ref{ref={row,Y}})};
 
-traverse(col,Addr = #ref{ref={col,_}}) ->
+traverse(column,Addr = #ref{ref={column,_}}) ->
     {page, match_ref(Addr)};    
-traverse(col,Addr = #ref{ref={cell,{X,_Y}}}) ->
-    {page, match_ref(Addr#ref{ref={col,X}})};
+traverse(column,Addr = #ref{ref={cell,{X,_Y}}}) ->
+    {page, match_ref(Addr#ref{ref={column,X}})};
 
 traverse(page,Addr = #ref{path=[]}) ->
     {last,match_ref(Addr#ref{ref={page,"/"}})};                              

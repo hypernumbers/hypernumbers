@@ -54,12 +54,12 @@ do_request(Arg,Url) ->
     User = case string:tokens(AuthCode,":") of 
                [] ->        
                    anonymous;
-               [UserId,AuthToken] -> 
+               [UserId,_AuthToken] -> 
+                   %% Verify Token
                    UserId
            end,
         
     {ok,Token} = get_var_or_cookie(token,Page,Arg),
-    io:format("~p~n",[Token]),
     {ok,Access} = case get_permissions(User,Ref) of
                       {ok,{protected_read,Token}}  -> {ok,read};
                       {ok,{protected_write,Token}} -> {ok,write}; 
@@ -134,7 +134,7 @@ req(_Arg,'GET',_,Page = #page{vars = [{attr,Val}]}) ->
     {ok,{attr,[],[V]}};
 
 %% ?pages
-req(_Arg,'GET',_,Page = #page{vars = [{pages}]}) -> 
+req(_Arg,'GET',_,#page{vars = [{pages}]}) -> 
     Items = mnesia:dirty_match_object(#hn_item{_ = '_'}),
     {ok,create_pages_tree(Items)};
 
@@ -171,14 +171,14 @@ req(_Arg,'GET',_,Page = #page{vars = []}) ->
             {ok,{text,hn_util:text(Val)}}
     end;
 
-req(Arg,'POST', _User, Page) ->
-    PostData = get_post_data(Page#page.format,Arg,Page#page.vars),
+req(Arg,'POST', _User, Page = #page{format=Format,vars=Vars}) ->
+    {ok,PostData} = get_post_data(Format,Arg,Vars),
     post(Arg,_User,Page,PostData);
     
 req(_Arg,_Method,_User,_Page) ->
     throw(unmatched_get_request).
 
-post(Arg,_User,Page,{login,[],[{email,[],[Email]},{password,[],[Pass]}]}) ->
+post(Arg,_User,_Page,{login,[],[{email,[],[Email]},{password,[],[Pass]}]}) ->
     case users:login(Email,Pass) of
         {error,invalid_user} -> 
             {ok,{auth,[],[{unauthorised,[],[]}]}};
@@ -189,12 +189,14 @@ post(Arg,_User,Page,{login,[],[{email,[],[Email]},{password,[],[Pass]}]}) ->
             {ok,{auth,[],[{token,[],[Sent]}]}}
     end;
 
-post(Arg,X,_,_) when X == no_access; X == read  ->
+post(_Arg,X,_,_) when X == no_access; X == read  ->
     {ok,{status,503}};
 
-post(_Arg,_User,Page,{create,[],Data}) ->
+post(Arg,_User,Page,{create,[],Data}) ->
     
     Ref = page_to_ref(Page),    
+    {ok,Auth} = get_var_or_cookie(auth,Page,Arg),
+    
     lists:foldl
       (
       fun({Attr,[],[Val]},Sum) ->
@@ -202,14 +204,14 @@ post(_Arg,_User,Page,{create,[],Data}) ->
               NewAddr = case lists:member({lastrow},Page#page.vars) of
                             true  -> 
                                 {row,X} = Ref#ref.ref,
-                                NPage = Ref#ref{ref={cell,{Sum,X+1}},name=Attr};
+                                Ref#ref{ref={cell,{Sum,X+1}},name=Attr};
                             false -> 
                                 Ref#ref{name=Attr}
                         end,
               
               case Val of
                   [] -> throw(empty_val); 
-                  _  -> hn_main:set_attribute(NewAddr,Val)
+                  _  -> hn_main:set_attribute(NewAddr#ref{auth=Auth},Val)
               end,
               Sum+1
       end,
@@ -229,7 +231,7 @@ post(_Arg,_User,Page,{delete,[],Data}) ->
     {ok,{success,[],[]}};
 
 %%% UNREGISTER
-post(_Arg,_User,Page,{unregister,[],[{biccie,[],[Bic]},{url,[],[Url]}]}) -> 
+post(_Arg,_User,Page,{unregister,[],[{biccie,[],[_Bic]},{url,[],[Url]}]}) -> 
     hn_db:del_remote_link(#remote_cell_link{ 
         parent = hn_util:page_to_index(Page),
         child  = hn_util:page_to_index(hn_util:parse_url(Url)),
@@ -247,14 +249,14 @@ post(_Arg,_User,Page,
     {ok,{success,[],[]}};
 
 %%% NOTIFY
-post(_Arg,User,Page,{notify,[],Data}) ->
+post(_Arg,_User,Page,{notify,[],Data}) ->
     case lists:keysearch(type,1,Data) of
         {value,{type,[],["change"]}} -> 
             api_change(Data,Page)
     end;
 
 post(_Arg,_User,_Page,Data) ->
-    io:format("~p~n",[Data]),
+    error_logger:error_msg("~p~n",[Data]),
     throw(unmatched_post_request).
 
 api_change([{biccie,[],     [Bic]},
@@ -305,13 +307,13 @@ import([{_Name,Tid}|T],Page)->
 %% Utility functions
 %%--------------------------------------------------------------------
 get_post_data(_,_Arg,[{import}]) -> 
-    [import];
+    {ok,[import]};
 get_post_data({json,nocallback},Arg,Dec) -> 
     get_post_data({json},Arg,Dec);
 get_post_data({json},Arg,_Dec) ->
-    simplexml:from_json_string(binary_to_list(Arg#arg.clidata));
+    {ok,simplexml:from_json_string(binary_to_list(Arg#arg.clidata))};
 get_post_data({xml},Arg,_Dec) ->
-    simplexml:from_xml_string(binary_to_list(Arg#arg.clidata)).
+    {ok,simplexml:from_xml_string(binary_to_list(Arg#arg.clidata))}.
 
 get_default(public) -> "public";
 get_default(_) -> "". 
@@ -413,14 +415,14 @@ get_permissions(User,Ref=#ref{site=Site}) ->
 
 %% Rank permission atoms in order of precedence
 perm_index(no_access)           -> 0;
-perm_index({protected_read,X})  -> 1;
-perm_index({protected_write,X}) -> 2;
+perm_index({protected_read,_X})  -> 1;
+perm_index({protected_write,_X}) -> 2;
 perm_index(read)                -> 3;
 perm_index(write)               -> 4;
 perm_index(admin)               -> 5.
 
 %% Find the permissions pertaining to a user
-find_perms(User,Groups,Perms,[]) ->
+find_perms(_User,_Groups,Perms,[]) ->
     {ok,Perms};
 find_perms(User,Groups,Perms,[{user,anonymous,Perm}|T]) ->
     find_perms(User,Groups,[Perm|Perms],T);
@@ -434,7 +436,7 @@ find_perms(User,Groups,Perms,[{group,Group,Perm}|T]) ->
                 Perms
         end,
     find_perms(User,Groups,P,T);
-find_perms(User,Groups,Perms,[H|T]) ->
+find_perms(User,Groups,Perms,[_H|T]) ->
     find_perms(User,Groups,Perms,T).
 
 %% Create a list of groups that a user is in
@@ -442,22 +444,23 @@ find_perms(User,Groups,Perms,[H|T]) ->
 find_groups(Groups,User) ->
     find_groups(Groups,User,Groups,[]).
     
-find_groups(GList,User,[],Groups) ->
+find_groups(_GList,_User,[],Groups) ->
     {ok,Groups};
 find_groups(GList,User,[{Name,List}|T],Groups) ->
     NGroups = group_list(GList,User,[Name],List,Groups),
     find_groups(GList,User,T,NGroups).
 
-group_list(GList,User,Name,[],Acc) ->
+group_list(_GList,_User,_Name,[],Acc) ->
     hslists:uniq(lists:flatten(Acc));
 group_list(GList,User,Name,[{user,User}|T],Acc) ->
     group_list(GList,User,Name,T,[Name|Acc]);
 group_list(GList,User,Name,[{group,Group}|T],Acc) ->
     case lists:keysearch(Group,1,GList) of
-    false -> 
-        Acc;
-    {value,{Group,List}} ->
-        group_list(GList,User,[Group|Name],List,Acc)
+        false -> 
+            Acc;
+        {value,{Group,List}} ->
+            group_list(GList,User,[Group|Name],List,Acc)
+                %++ group_list(GList,User,Name,T,Acc)
     end;
 group_list(GList,User,Name,[{user,_A}|T],Acc) ->
     group_list(GList,User,Name,T,Acc).

@@ -30,7 +30,7 @@
     ref,
     vars,
     format,
-    auth        = undefined
+    auth        = []
 }).
 
 -record(status,
@@ -83,7 +83,8 @@
     site        = [],
     path        = [],
     ref         = null,
-    name        = undef
+    name        = undef,
+    auth        = []
 }).
 
 -record( hn_item,
