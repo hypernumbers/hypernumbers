@@ -17,23 +17,8 @@ $KCODE = 'u'
 require "erb"
 require "ssdoc"
 
-def typeof(cell)
-  if cell.formula.length > 1 && cell.formula[0].chr == "="
-    :formula
-  elsif cell.value.kind_of?(Numeric)
-    :number
-  elsif cell.value.kind_of?(String)
-    :string
-  elsif cell.value.kind_of?(TrueClass) || cell.value.kind_of?(FalseClass)
-    :boolean
-  else
-    puts "ERROR: Unknown type in cell #{cell.a1ref}."
-    Kernel.exit(-1)
-  end
-end
-
 def gotfor(cell)
-  type = typeof(cell)
+  type = cell.type
   if type == :formula
     literal_or_utf8list(cell.formula.to_s)
   elsif type == :string
@@ -54,7 +39,7 @@ ssdoc.sheets.each_with_index do |sheet, idx|
   sheet.cells.each do |cell|
     casename = "sheet#{idx + 1}_#{cell.a1ref}"
     got = gotfor(cell)
-    expval = "{#{typeof(cell).to_s}, #{got}}"
+    expval = "{#{cell.type.to_s}, #{got}}"
     key="{\"#{sheet.name}\", #{cell.row - 1}, #{cell.col - 1}}"
     @testcasedata << [casename, key, expval]
   end
