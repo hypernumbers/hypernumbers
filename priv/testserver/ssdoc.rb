@@ -81,7 +81,7 @@ class Cell
       :number
     elsif @value.kind_of?(String)
       :string
-    elsif @value.kind_of?(TrueClass) || cell.value.kind_of?(FalseClass)
+    elsif @value.kind_of?(TrueClass) || @value.kind_of?(FalseClass)
       :boolean
     else
       throw "Unknown type in cell #{@a1ref}"
