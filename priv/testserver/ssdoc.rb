@@ -41,6 +41,9 @@ class Ssdoc
 end
 
 class Sheet
+  attr_reader :name
+  attr_reader :cells
+
   def initialize(name, cells)
     @name = name
     @cells = cells
@@ -50,12 +53,17 @@ class Sheet
     cells = @cells.select { |cell| cell.row == row && cell.col == col }
     cells[0]
   end
-  
-  attr_reader :name
-  attr_reader :cells
 end
 
 class Cell
+  attr_reader :value
+  attr_reader :formula
+  attr_reader :format
+  attr_reader :text
+  attr_reader :row
+  attr_reader :col
+  attr_reader :a1ref
+
   def initialize(value, formula, format, text, row, col)
     @value = value
     @formula = formula
@@ -66,11 +74,17 @@ class Cell
     @a1ref = itob26(@col) + @row.to_s # make A1-style name
   end
   
-  attr_reader :value
-  attr_reader :formula
-  attr_reader :format
-  attr_reader :text
-  attr_reader :row
-  attr_reader :col
-  attr_reader :a1ref
+  def type
+    if @formula.length > 1 && @formula[0].chr == "="
+      :formula
+    elsif @value.kind_of?(Numeric)
+      :number
+    elsif @value.kind_of?(String)
+      :string
+    elsif @value.kind_of?(TrueClass) || cell.value.kind_of?(FalseClass)
+      :boolean
+    else
+      throw "Unknown type in cell #{@a1ref}"
+    end    
+  end
 end
