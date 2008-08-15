@@ -256,7 +256,7 @@ large1(Nums, K) ->
 
 %% TODO:
 linest(_) ->
-    0.
+    linest1(0, 0).
 linest1(_, _) ->
     0.
 

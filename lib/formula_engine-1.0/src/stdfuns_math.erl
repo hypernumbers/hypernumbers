@@ -454,7 +454,7 @@ roman([V1]) ->
     ?ensure(Num =< 3999, ?ERR_VAL),
     roman1(Num, "", ?DEC_ROMAN_TABLE).
 
-roman1(Num, S, [{Dec, Rom} | Tl]) when Num < Dec ->
+roman1(Num, S, [{Dec, _Rom} | Tl]) when Num < Dec ->
     roman1(Num, S, Tl);
 roman1(Num, S, Tbl = [{Dec, Rom} | _]) ->
     roman1(Num - Dec, S ++ Rom, Tbl);

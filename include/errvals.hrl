@@ -1,6 +1,6 @@
 
 %% Literal error values.
--define(ERRVAL_NULL, {errval, '#N/A'}).
+-define(ERRVAL_NULL, {errval, '#NULL!'}).
 -define(ERRVAL_DIV,  {errval, '#DIV/0!'}).
 -define(ERRVAL_VAL,  {errval, '#VALUE!'}).
 -define(ERRVAL_REF,  {errval, '#REF!'}).
