@@ -78,8 +78,8 @@ run_code(Pcode, #ref{site = Site, path = Path, ref = {cell, {X, Y}}}) ->
 
 try_parse(Fla, {X, Y}) ->
     Trans = translator:do(Fla),
-    {ok, Toks} = muin_lexer:lex(Trans, {X, Y}),
-    {ok, _Ast} = muin_parser:parse(Toks). % Match to enforce the contract.
+    {ok, Toks} = xfl_lexer:lex(Trans, {X, Y}),
+    {ok, _Ast} = xfl_parser:parse(Toks). % Match to enforce the contract.
 
 %% @doc Evaluates an s-expression, pre-processing subexps as needed.
 eval([Func0 | Args0]) when ?isfuncall(Func0) ->
@@ -102,7 +102,7 @@ preproc([':', StartExpr, EndExpr]) ->
     %% Will fail later if funcalls aren't to INDIRECT, so not checking here.
     Eval = fun(Node) when is_list(Node) ->
                    Cellref = hd(plain_eval(tl(Node))),
-                   {ok, [Ref]} = muin_lexer:lex(Cellref, {?mx, ?my}),
+                   {ok, [Ref]} = xfl_lexer:lex(Cellref, {?mx, ?my}),
                    Ref;
               (Node) when is_tuple(Node) ->
                    Node
@@ -111,7 +111,7 @@ preproc([':', StartExpr, EndExpr]) ->
     [':', Eval(StartExpr), Eval(EndExpr)];
 preproc([indirect, Arg]) ->
     Str = plain_eval(Arg),
-    {ok, Toks} = muin_lexer:lex(Str, {?mx, ?my}),
+    {ok, Toks} = xfl_lexer:lex(Str, {?mx, ?my}),
     case Toks of
         [{ref, R, C, P, _}] ->
             put(recompile, true),

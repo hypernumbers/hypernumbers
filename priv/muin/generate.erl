@@ -6,7 +6,7 @@
 -module(generate).
 -export([gen/0]).
 -import(file, [copy/2, delete/1, get_cwd/0, rename/2]).
--define(P(X), io:format("*****" ++ X ++ "~n")).
+-define(P(X), io:format(" *** " ++ X ++ " ***~n")).
 -define(FRONTENDS,
         ["russian"]).%%, "french", "german", "italian", "spanish", "portuguese"]).
 
@@ -18,9 +18,9 @@ gen() ->
     ?P("Compiled Leex"),
 
     %% Generate main lexers & parser.
-    leex:gen(lexer_desc, muin_lexer),
+    leex:gen(xfl_lexer, xfl_lexer),
     ?P("Generated main lexer."),
-    yecc:yecc(parser_desc, muin_parser),
+    yecc:yecc(xfl_parser, xfl_parser),
     ?P("Generated main parser."),
     leex:gen(num_format_lex, num_format_lexer),
     ?P("Generated number format lexer."),
@@ -36,18 +36,16 @@ gen() ->
                   ?FRONTENDS),
 
     %% Move the generated files to the right directory.
-    delete(DestDir ++ "muin_lexer.erl"),
-    delete(DestDir ++ "muin_parser.erl"),
-    delete(DestDir ++ "muin_supd_lexer.erl"),
+    delete(DestDir ++ "xfl_lexer.erl"),
+    delete(DestDir ++ "xfl_parser.erl"),
     delete(DestDir ++ "superlex.erl"),
     %%lists:foreach(fun(X) -> delete(DestDir ++ X ++ "_lexer.erl") end,
     %%              ?FRONTENDS),
         
     delete(DestDir ++ "num_format_lexer.erl"),
     delete(DestDir ++ "num_format_parser.erl"),
-    rename("muin_lexer.erl", DestDir ++ "muin_lexer.erl"),
-    rename("muin_parser.erl", DestDir ++ "muin_parser.erl"),
-    rename("muin_supd_lexer.erl", DestDir ++ "muin_supd_lexer.erl"),
+    rename("xfl_lexer.erl", DestDir ++ "xfl_lexer.erl"),
+    rename("xfl_parser.erl", DestDir ++ "xfl_parser.erl"),
     rename("superlex.erl", DestDir ++ "superlex.erl"),
     lists:foreach(fun(X) -> rename(X ++ "_lexer.erl", DestDir ++ X ++ "_lexer.erl") end,
                   ?FRONTENDS),

@@ -11,7 +11,7 @@ process([$= | Tl]) when Tl =/= [] ->
 process([39 | Tl]) -> %% singly quoted string
     {string, Tl};
 process(Input) ->
-    {ok, Toks} = muin_lexer:lex(upcase(Input), {1, 1}),
+    {ok, Toks} = xfl_lexer:lex(upcase(Input), {1, 1}),
     case Toks of
         [{bool, B}]         -> {bool, B};
         [{float, F}]        -> {float, F};
