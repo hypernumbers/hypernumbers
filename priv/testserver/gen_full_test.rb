@@ -3,13 +3,9 @@
 # Generates a test suite for Muin (from our reader's output).
 # <hasan@hypernumbers.com>
 
-# USAGE: gen_full_test.rb /path/to/data_file [RANGE:ONE, RANGE:TWO etc]
+# USAGE: gen_full_test.rb /path/to/data_file
 
-# If a range is given, test cases will be generated for cells in that
-# range only. If more than one range is given, they are taken to mean
-# ranges on sheets.
-
-# TODO: Sort test cases nicely (row/column or column/row).
+# Will generate test cases for all cells with formulas on all sheets.
 
 $KCODE = 'u'
 
@@ -17,7 +13,6 @@ require "erb"
 require "ssdoc"
 
 datafile = ARGV[0]
-ranges = ARGV.slice(1..-1)
 
 ssdoc = Ssdoc.new(datafile)
 
@@ -50,9 +45,8 @@ end
 # [case name, path, A1-style cell ref, expected value]
 @testcasedata = []
 ssdoc.sheets.each_with_index do |sheet, idx|
-  currange = ranges[idx] == nil ? [] : expand_range(ranges[idx])
   sheet.cells.each do |cell|
-    if currange == [] || currange.include?([cell.col, cell.row])
+    if cell.type == :formula
       casename = "sheet#{idx + 1}_#{cell.a1ref}"
       path = "/#{sheet.name}/"
       expval = preptype(cell.value)
