@@ -44,7 +44,6 @@ get_utf8({[{'uni16-16',String}],_B,_C})->
     io:format("***********************************~n"),
     xmerl_ucs:to_utf8(xmerl_ucs:from_utf16le(binary_to_list(String))).
 
-
 get_bound_sheet(Bin,_Tables)->
     <<SheetBOF:32/little-unsigned-integer,
      Visibility:8/little-unsigned-integer,
@@ -69,7 +68,8 @@ parse_CRS_RK(RKBin)->
     %% There is a bit mask applied but it is against the reassembled
     %% number and not the first digits of the little endian stream!
     <<Rem:6,Type:1,Shift:1,Rest:24>>=RKBin,
-    %%<<Type:1,Shift:1,Rem:6,Rest:24>>=RKBin,
+    %% io:format("in excel_util:parse_CRS_RK RKBin is ~p Rem is ~p Type is ~p "++
+    %%	      "Shift is ~p and Rest is ~p~n",[RKBin,Rem,Type,Shift,Rest]),
     %% Rebuild the number
     Num2 = case Type of
 	       ?CRS_RK_FLOATING_POINT ->
@@ -77,15 +77,20 @@ parse_CRS_RK(RKBin)->
 		   <<Num:64/little-float>>= <<0:32,FPVal/binary>>,
 		   Num;
 	       ?CRS_RK_INTEGER ->
-		   IntVal= shift_left2(RKBin),
-		   <<Num:32/little-unsigned-integer>>= IntVal,
+		   %% io:format("in excel_util:parse_CRS_RK Integer~n"),
+		   <<RKBin2:32/little-signed-integer>>=RKBin,
+		   RKBin3= <<RKBin2:32>>,
+		   %% io:format("in excel_util:parse_CRS_RK~n-RKBin is  ~p~n-"++
+		   %%	     "RKBin3 is ~p~n",[RKBin,RKBin3]),
+		   Num=get_integer(RKBin3),
+		   %% io:format("in excel_util:parse_CRS_RK~n-Num is ~p~n",[Num]),
+		   %% <<Num:64/little-unsigned-integer>>= <<0:32,IntVal/binary>>,
 		   Num
 	   end,
+    %% io:format("in excel_util:parse_CRS_RK Num2 is ~p~n",[Num2]),
     case Shift of
-	?CRS_RK_UNCHANGED         ->
-	    Num2;
-	?CRS_RK_SHIFT_DOWN_BY_100 ->
-	    Num2/100
+	?CRS_RK_UNCHANGED         -> Num2;
+	?CRS_RK_SHIFT_DOWN_BY_100 -> Num2/100
     end.
 
 parse_CRS_Uni16(Bin)->
@@ -152,7 +157,7 @@ parse_CRS_Uni16(Bin,IndexSize)->
 get_len_CRS_Uni16(Len,IndexSize,Bin,Flags)->
     {_LenStr,_Encoding,BinLen,
      {_RICH_TEXT,_LenRichText,_LenRichTextIdx},
-     {_ASIAN,_LenAsian,_LenAsianIdx},_Rest3}=get_bits_CRS_Uni16(Len,IndexSize,Bin,Flags),
+     {_ASIAN,_LenAs,_LenAIdx},_Rest3}=get_bits_CRS_Uni16(Len,IndexSize,Bin,Flags),
     BinLen.
 
 get_bits_CRS_Uni16(Len,IndexSize,Bin,NFlags)->
@@ -308,7 +313,6 @@ read_shared(Tables,{{sheet,Name},{row_index,Row},{col_index,Col}})->
 		      _Other3 -> SecondReturn
 		  end,
     %% io:format("in excel_util:read_shared ThirdReturn is ~p~n",[ThirdReturn]),
-    ThirdReturn,
     %% sometimes Excel will store two or more shared formulae that overlap
     %% or more acurately it stores the same token set with two different ranges
     %% this tends to cause things to wig...
@@ -366,32 +370,45 @@ lookup_string(Tables,SSTIndex)->
 %%%  Internal Functions                                                      %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-shift_left2(Bin)->
-    shift_left2(Bin,[]).
 
-shift_left2(<<End:6,_:2>>,Acc)->
-    list_to_binary(lists:reverse([<<End:6,0:2>>|Acc]));
-shift_left2(<<Rem1:6,_:2,Rem2:6,Shift:2,Rest/binary>>,Acc)->
-    shift_left2(<<Rem2:6,Shift:2,Rest/binary>>,[<<Shift:2,Rem1:6>>|Acc]);
-shift_left2(<<Rem1:6,_:2,Rem2:6,Shift:2>>,Acc)->
-    shift_left2(<<Rem2:6,Shift:2>>,[<<Shift:2,Rem1:6>>|Acc]).
+%% negative number
+get_integer(Bin) ->
+    <<Type:1,Rest:31>>=Bin,
+    case Type of
+	1 -> %% Rest is a 30 bit binary in ones complement
+	    -1*ones_complement(shift_left2(Bin))+1;
+	0 -> shift_left2(Bin)
+    end.
+
+ones_complement(Bin) ->
+    Mask=1073741823, % 30 ones in binary 111111111111111111111111111111
+    %% Return=Int bxor Mask,
+    Bin bxor Mask.
+
+%% ones_complement(<<>>,Acc)                -> list_to_binary(lists:reverse(Acc));
+%% ones_complement(<<1:1,Rest/binary>>,Acc) -> ones_complement(<<Rest/binary>>,[0|Acc]);
+%% ones_complement(<<0:1,Rest/binary>>,Acc) -> ones_complement(<<Rest/binary>>,[1,Acc]).
+
+shift_left2(Bin)->
+    <<Thirty:30,_:2>>=Bin,
+    Bin2= <<0:2,Thirty:30>>,
+    io:format("in excel_util:shift_left2/1~n-Bin is ~p~n-Bin2 is ~p~n",
+	      [Bin,Bin2]),
+    <<Return:32>>=Bin2,
+    Return.
+
+%%shift_left2(<<End:6,_:2>>,Acc)->
+%%    list_to_binary(lists:reverse([<<End:6,0:2>>|Acc]));
+%%shift_left2(<<Rem1:6,_:2,Rem2:6,Shift:2,Rest/binary>>,Acc)->
+%%    shift_left2(<<Rem2:6,Shift:2,Rest/binary>>,[<<Shift:2,Rem1:6>>|Acc]);
+%%shift_left2(<<Rem1:6,_:2,Rem2:6,Shift:2>>,Acc)->
+%%    shift_left2(<<Rem2:6,Shift:2>>,[<<Shift:2,Rem1:6>>|Acc]).
 
 check_flags(NFlags,Flag)->
     case NFlags band Flag of
 	Flag -> {ok, match};
 	_    -> {ok, no_match}
     end.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%                                                                          %%%
-%%% Eunit test functions                                                     %%%
-%%%                                                                          %%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-parse_RK_test_() ->
-    [?_assert(parse_CRS_RK(<<63,240,0,0>>) == 1.0),       % hex 3F F0 00 00
-     ?_assert(parse_CRS_RK(<<239,240,0,1>>) == 0.01),     % hex EE F0 00 01
-     ?_assert(parse_CRS_RK(<<0,75,86,70>>) == 1234321),   % hex 00 4B 56 46
-     ?_assert(parse_CRS_RK(<<00,75,86,71>>) == 12343.21)].% hex 00 4B 56 47
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%

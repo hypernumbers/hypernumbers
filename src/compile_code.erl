@@ -19,7 +19,8 @@
          "/lib/hypernumbers.com-1.0/",
          "/lib/formula_engine-1.0/",
          "/lib/read_excel-1.0/",
-         "/lib/mochi-1.0/"]).
+         "/lib/mochi-1.0/",
+	 "/lib/random_app-1.0/"]).
 
 -define(EXTRA_ERL_FILES,
         ["src/misc_util.erl",
@@ -86,7 +87,6 @@ comp_lists(Clean, [{File, Opt}|T], OldStatus) ->
     %% Ensure output directory exists.
     [debug_info, {outdir, Dir} | _] = Options,
     filelib:ensure_dir(Dir ++ "/"),
-
 
     Comp = fun() -> NewStatus = compile:file(File, Options),
                     case NewStatus of

@@ -7,9 +7,17 @@
 # TODO: Load read function from readexcel.rb & invoke them in here
 #       rather than creating a new process to do it.
 
+ARGVX = ARGV[0]
+
+puts "ARGVX is #{ARGVX}"
+
 path = ARGV[0].gsub('\\', '\\\\\\\\') + '\\\\'
 
+puts "Path is #{path}"
+
 xlsfiles = Dir[path + "*.xls"]
+
+puts "XL files are #{xlsfiles}"
 
 xlsfiles.each do |fn|
   `ruby readexcel.rb #{fn}`

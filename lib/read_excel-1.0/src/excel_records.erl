@@ -498,7 +498,7 @@ parse_rec(?NUMBER2,Bin,Name,CurrentFormula,Tables)->
      ColIndex:16/little-unsigned-integer,
      XFIndex:16/little-unsigned-integer,
      Float:64/little-unsigned-float>>=Bin,
-    %% io:format("in excel_records:parse_rec for NUMBER~n"),
+    %% io:format("in excel_records:parse_rec for NUMBER Float is ~p~n",[Float]),
     excel_util:write(Tables,cell,[{{sheet,Name},{row_index,RowIndex},
                                    {col_index,ColIndex}},
                                   {xf_index,XFIndex},{value,number,Float}]),
@@ -518,7 +518,7 @@ parse_rec(?BOOLERR2,Bin,Name,CurrentFormula,Tables)->
      XFIndex:16/little-unsigned-integer,
      BoolErr:8/little-unsigned-integer,
      Type:8/little-unsigned-integer>>=Bin,
-    %% io:format("in excel_records:parse_rec for BOOLERR~n"),
+     %% io:format("in excel_records:parse_rec for BOOLERR BoolErr is ~p~n",[BoolErr]),
     {ValType,Value} = case Type of
                           0 -> 
                               case BoolErr of
@@ -600,8 +600,9 @@ parse_rec(?RK,Bin,Name,CurrentFormula,Tables)->
      ColIndex:16/little-unsigned-integer,
      XFIndex:16/little-unsigned-integer,
      RKValue:32/little-unsigned-integer>>=Bin,
-    %% io:format("in excel_records:parse_rec for RK~n"),
+    io:format("in excel_records:parse_rec for RK RKValue is ~p~n",[RKValue]),
     RKValue2=excel_util:parse_CRS_RK(<<RKValue:32/little-unsigned-integer>>),
+    io:format("in excel_records:parse_rec for RK RKValue2 is ~p~n",[RKValue2]),
     excel_util:write(Tables,cell,[{{sheet,Name},{row_index,RowIndex},
                                    {col_index,ColIndex}},
                                   {xf_index,XFIndex},{value,number,RKValue2}]),
@@ -794,6 +795,7 @@ write_row([],_RowIndex,_FirstColIndex,_Name,_Tables)->
     {ok,ok};
 write_row([{{xf_index,XFIndex},{value,number,Number}}|T],RowIndex,
           FirstColIndex,Name,Tables)->
+    %% io:format("in excel_records:write_row Number is ~p~n",[Number]),
     excel_util:write(Tables,cell,[{{sheet,Name},{row_index,RowIndex},
                                    {col_index,FirstColIndex}},{xf_index,XFIndex},
                                   {value,number,Number}]),

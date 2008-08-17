@@ -13,8 +13,8 @@
             false ->
                 io:format("EXPECTED:~n    ~p~nGOT:~n    ~p~nCONV:~n    ~p~n~n",
                           [E, G, conv_from_get(G)]),
-                exit("FAIL: Mismatch in ~p in ~p~n", 
-                     [Testcase, "<%= @basename %>_SUITE %>"])
+                exit("FAIL: Mismatch in "++Testcase++
+	             " <%= @basename %>_SUITE"	)
         end).
 
 -define(test(Func, Path, Ref, Expected),

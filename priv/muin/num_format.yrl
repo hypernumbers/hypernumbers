@@ -246,7 +246,7 @@ to_num([{close_ket,String}|T],Acc)-> to_num(T,[{string,String}|Acc]);
 to_num([{colon,String}|T],Acc)    -> to_num(T,[{string,String}|Acc]);
 to_num([{space,String}|T],Acc)    -> to_num(T,[{string,String}|Acc]);
 to_num([{format,Format}|T],Acc)   -> to_num(T,[{format,Format}|Acc]);
-to_num([{quote,"\""}|T],Acc)       -> to_num(T,[{string,"\""}|Acc]);
+to_num([{quote,"\""}|T],Acc)      -> to_num(T,[{string,"\""}|Acc]);
 to_num([{char,"£"}|T],Acc)        -> to_num(T,[{string,"£"}|Acc]);
 to_num([{char,"*"}|T],Acc)        -> to_num(T,Acc); % silently drop "*"'s
 to_num([{char,"."}|T],Acc)        -> to_num(T,[{format,"."}|Acc]); % cnv to format!
@@ -386,7 +386,7 @@ gen_src2(Clauses)->
 	 strip_condition(MadeClause)
   end,
    Src="fun(X) -> "++
- 	      "   Return=try tconv:to_i(X)"++
+ 	      "   Return=try list_to_integer(X)"++
  	      "       catch"++
  	      "         error: _ ->"++
  	      "           try tconv:to_f(X)"++
@@ -499,3 +499,4 @@ promote_subclauses([[{Type,[{colour,Col}|Rest]}]|T],Acc) ->
   promote_subclauses(T,[[{colour,Col}|[{Type,Rest}]]|Acc]);
 promote_subclauses([H|T],Acc) ->
   promote_subclauses(T,[H|Acc]).
+

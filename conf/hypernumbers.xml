@@ -13,6 +13,7 @@
         <reldir>lib/engine-1.0/ebin</reldir>
         <reldir>lib/mochi-1.0/ebin</reldir>
         <reldir>lib/starling/ebin</reldir>
+        <reldir>lib/random_app-1.0/ebin</reldir>
     </includes>
 
     <mnesia>

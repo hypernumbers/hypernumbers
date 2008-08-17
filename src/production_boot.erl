@@ -66,7 +66,7 @@ start_apps(Conf,Toolbar)->
     {Gconf,Sconf} = hn_util:create_conf(Conf),
     application:set_env(yaws, embedded, true),
     application:start(yaws),
-    
+
     yaws_api:setconf(Gconf,Sconf),
 
     %% Get Mnesia Directory
@@ -101,6 +101,7 @@ start_apps(Conf,Toolbar)->
     application:start(read_excel),
     application:start(engine),
     application:start(inets),
+    application:start(random_app),
 
     file:set_cwd("../lib/starling"),
     application:start(starling_app),

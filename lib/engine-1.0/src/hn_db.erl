@@ -53,7 +53,6 @@
 %% Description : Adds an attribute to a reference addressed by Ref
 %%--------------------------------------------------------------------
 write_item(Addr,Val) when is_record(Addr,ref) ->
-
     Item = #hn_item{addr = Addr, val = Val},
     Fun  = fun() -> mnesia:write(Item) end,
     {atomic, ok} = mnesia:transaction(Fun),
@@ -610,7 +609,7 @@ do_get_hn(Url,_From,To)->
 get_hn(Url,_From,To)->
     F = fun() -> do_get_hn(Url,_From,To) end,
     {atomic, List} = mnesia:transaction(F),
-    io:format("List ~p~n",[List]),
+    io:format("in hn_db:get_hn List is ~p~n",[List]),
     List.
 
 %%--------------------------------------------------------------------

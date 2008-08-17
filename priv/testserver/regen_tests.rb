@@ -3,7 +3,7 @@
 # Run as:
 #   ruby regen_tests.rb 1x -- to regenerate all 1x suites (or 2x).
 #   ruby regen_tests.rb 1x a -- to regenerate the a suite only.
-#   ruby regen_tests.rb 2x abc -- to regeneratee suites a, b, and c.
+#   ruby regen_tests.rb 2x abc -- to regenerate suites a, b, and c.
 
 require "fileutils"
 

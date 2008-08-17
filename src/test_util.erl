@@ -4,6 +4,7 @@
          expected/2,
          expected2/2,
          expected3/2,
+         expected4/2,
          readxls/1,
          read_excel_file/1,
          equal_to_digit/3,
@@ -201,7 +202,7 @@ expected(Expected, Got) ->
     Got2 = yaws_api:url_encode(Got),
     case Got2 of
         Expected2 ->
-            io:format("SUCCESS~nExpected : ~p~nGot     : ~p~n",
+            io:format("SUCCESS~nExpected : ~p~nGot      : ~p~n",
                       [Expected2,Got2]),
             {test, ok};
         _Else ->
@@ -221,11 +222,20 @@ expected2(Expected, Got) ->
             exit({fail, expected, Expected, got, Got})
     end.
 
-
 expected3(Expected, Got) ->
     case Got of
         Expected ->
             io:format("SUCCESS~nExpected : ~p~nGot     : ~p~n",
+                      [Expected,Got]),
+            {test, ok};
+        _Else ->
+            exit({"E:", Expected, "G:", Got})
+    end.
+
+expected4(Expected, Got) ->
+    case Got of
+        Expected ->
+            io:format("SUCCESS~nExpected : ~p~nGot      : ~p~n",
                       [Expected,Got]),
             {test, ok};
         _Else ->
@@ -367,6 +377,13 @@ transform_reader_output(O) ->
 
 %% Gets the list of xls table names and their ETS table ids, grabs the cell table
 %% and extracts cell information from it (sheet, row, col, contents).
+
+%% add the following to the cell list:
+%% * format
+%% * style
+%% do something fancy to call out the
+%% * names
+
 extract_cell_info(Tables) ->
     {value,{cell,Tid1}}=lists:keysearch(cell,1,Tables),
     Cells=ets:foldl(fun(X,Acc) -> [X|Acc] end,[],Tid1),

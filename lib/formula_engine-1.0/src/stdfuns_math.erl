@@ -126,10 +126,13 @@
 %%% ----------------- %%%
 
 '+'([blank, Num2]) ->
+    io:format("in stdfuns_math plus (1)~n"),
     '+'([0, Num2]);
 '+'([Num1, blank]) ->
+    io:format("in stdfuns_math plus (2)~n"),
     '+'([Num1, 0]);
 '+'([Num1, Num2]) ->
+    io:format("in stdfuns_math plus (3)~n"),
     ?ensure_numbers([Num1, Num2]),
     Num1 + Num2.
 
@@ -170,6 +173,7 @@ negate([Num]) ->
 sum(Vs) ->
     Flatvs = ?flatten_all(Vs),
     Nums = ?numbers(Flatvs, ?default_rules),
+    io:format("in stdfuns_math:sum Vs is ~p Nums is ~p~n",[Vs,Nums]),
     sum1(Nums).
 sum1(Nums) ->
     lists:sum(Nums).

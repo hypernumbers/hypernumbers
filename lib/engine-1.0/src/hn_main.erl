@@ -53,6 +53,10 @@ set_cell(Addr, Val) ->
     case superparser:process(Val) of
         {formula, Fla} ->
             %case muin:run_formula(Fla, Addr, Auth) of
+	    %% bits:log("Debugging hn_main:set_cell"),
+	    %% bits:log(Fla),
+	    %% bits:log(Addr),
+	    io:format("in hn_main:set_cell Addr is ~p~n and Val is ~p~n",[Addr,Val]),
             case muin:run_formula(Fla, Addr) of
                 {error,Error} -> ok;       
                 {Pcode, Res, Parents, Deptree, Recompile} ->
@@ -67,7 +71,6 @@ set_cell(Addr, Val) ->
 
                     ?IF(Pcode =/= nil,     db_put(Addr, "__ast", Pcode)),
                     ?IF(Recompile == true, db_put(Addr, "__recompile", true)),
-
                     write_cell(Addr, Res, "=" ++ Fla, Parxml, Deptreexml)
             end;
             

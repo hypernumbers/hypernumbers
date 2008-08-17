@@ -80,6 +80,7 @@ rev_chop(Path)->
 invalid()->{1,[],[{"invalid code"}],[]}.
 
 make_num(List)->
+    io:format("in util2:make_num List is ~p~n",[List]),
     case regexp:match(List,"^-?[0-9]*$") of
 	{match,_,_} -> list_to_integer(List);
 	_Other       -> list_to_float(List)
@@ -192,13 +193,13 @@ strip_brackets(A1) when is_list(A1) ->
     A3.
 
 print_as_hex(Text,Binary) -> 
-    io:format("In Binary ~p: ",[Text]),
+    io:format("In util2:print_as_hex Text is ~p: ",[Text]),
 	print_as_hex(Binary).
 
 print_as_hex(<<>>) -> 
-    io:format("~n",[]);
+    io:format("in util2:print_as_hex - not sure what this is for...~n",[]);
 print_as_hex(<<H:8/integer,Rest/binary>>) -> 
-    io:format("~.16B ",[H]),
+    io:format("in util2:print_as_hex~.16B ",[H]),
 	print_as_hex(Rest).
 
 make_paths(List) when is_list(List) ->
