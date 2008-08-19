@@ -17,15 +17,12 @@
 %% Test server callback functions
 %%------------------------------------------------------------------------------
 init_per_suite(Config) ->
-    code:add_path("../../../../../ebin"),
-    production_boot:start(),
     Config.
 
 end_per_suite(_Config) ->
-    production_boot:stop(),
     ok.
 
-init_per_testcase(_TestCase, Config) -> bits:clear_db(),Config.
+init_per_testcase(_TestCase, Config) -> hb_loaddb:create_db(),Config.
 end_per_testcase(_TestCase, _Config) -> ok.
 
 all() -> [

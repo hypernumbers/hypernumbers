@@ -29,9 +29,6 @@
 %%% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 init_per_suite(Config) ->
-    code:add_patha("../../../../../ebin"),
-    production_boot:start(),
-    bits:clear_db(),
     %%test_util:wait(),
     Celldata = readxls("../../excel_files/Win_Excel07_As_97/" ++
                        "<%= @basename + ".xls" %>"),
@@ -64,7 +61,6 @@ init_per_suite(Config) ->
     Config.
 
 end_per_suite(_Config) ->
-    production_boot:stop(),
     ok.
 
 init_per_testcase(_TestCase, Config) ->

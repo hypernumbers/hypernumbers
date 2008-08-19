@@ -14,7 +14,8 @@
     start/1,
     stop/0,
     stop_halt/0,
-    remote_stop/1
+    remote_stop/1,
+    read_conf/0
     ]).
 
 root() ->
@@ -58,49 +59,9 @@ setup_paths(Conf) ->
     ok.
 
 start_apps(Conf,Toolbar)->
-
-    %% Startup external applications
-    application:start(crypto),
-
-    %% Start Yaws in embedded mode
-    {Gconf,Sconf} = hn_util:create_conf(Conf),
-    application:set_env(yaws, embedded, true),
-    application:start(yaws),
-
-    yaws_api:setconf(Gconf,Sconf),
-
-    %% Get Mnesia Directory
-    [{data,[],[{Type,[],Data}]}] = hn_util:xmlsearch([],
-        hn_util:xmlsearch([],Conf,mnesia),data),
-    FullPath = case Type of
-        absdir ->   Data;
-        _ ->        root()++Data
-    end,
-
-    filelib:ensure_dir(FullPath),
-    %% Startup Mnesia
-    application:load(mnesia),
-    application:set_env(mnesia, dir, FullPath),
-    application:start(mnesia),
-
-    %% if clean startup of mnesia, create the db
-    %% TODO : This is the wrong way to handly multiple
-    %% nodes, but as we are removing mnesia, will do for now
-    case mnesia:system_info(tables) of
-        [schema] -> bits:clear_db();
-        _ ->
-            Me = node(),
-            case mnesia:table_info(schema,cookie) of
-            {_,Me} -> ok;
-            _      -> bits:clear_db()
-        end
-    end,
-
     %% Start our applications
-    application:start(remoting),
     application:start(read_excel),
-    application:start(engine),
-    application:start(inets),
+    ok = application:start(engine),
     application:start(random_app),
 
     file:set_cwd("../lib/starling"),
@@ -119,7 +80,6 @@ stop() ->
     application:stop(mnemosyne),
     application:stop(remoting),
     application:stop(read_excel),
-    application:stop(crypto),
     application:stop(inets),
     application:stop(starling_app).
 

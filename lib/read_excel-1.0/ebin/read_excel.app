@@ -5,7 +5,6 @@
 			 read_excel_sup,
 			 read_file_srv,
 			 filefilters,
-			 build_sheet_srv,
 			 excel,
 	                 excel_util]},
 	 {registered,   [ ]},

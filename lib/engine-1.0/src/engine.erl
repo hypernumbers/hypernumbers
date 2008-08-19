@@ -6,8 +6,8 @@
 %%% Created     : 15 Oct 2007 by Gordon Guthrie
 %%%-----------------------------------------------------------------------------
 -module(engine).
-
 -behaviour(application).
+-include("yaws.hrl").
 
 %% Application callbacks
 -export([start/2, stop/1]).
@@ -25,7 +25,34 @@
 %% OTP design principles as a supervision tree, this means starting the
 %% top supervisor of the tree.
 %%------------------------------------------------------------------------------
-start(_Type, _StartArgs) ->
+start(_Type, _Args) ->
+ 
+    %% if clean startup of mnesia, create the db
+    %% TODO : This is the wrong way to handly multiple
+    %% nodes, but as we are removing mnesia, will do for now
+    case mnesia:system_info(tables) of
+        [schema] -> 
+            hn_loaddb:create_db(disc_copies);
+        _ ->
+            Me = node(),
+            case mnesia:table_info(schema,cookie) of
+                {_,Me} -> ok;
+                _      -> hn_loaddb:create_db(disc_copies)
+            end
+    end,
+       xs
+    application:set_env(yaws, embedded, true),
+    application:start(yaws),
+
+    DefaultGC = yaws_config:make_default_gconf(false, "id"),
+    GC = DefaultGC#gconf{logdir="logs/yaws"},    
+    SC = #sconf{port = 9000,
+                appmods=[{"/",hn_yaws}],
+                listen = {127,0,0,1},
+                docroot = "include/docroot"},
+    
+    ok = yaws_api:setconf(GC, [[SC]]),
+    
     case engine_sup:start_link() of
     {ok, Pid} -> {ok, Pid};
     Error ->     Error

@@ -210,8 +210,11 @@ post(Arg,_User,Page,{create,[],Data}) ->
                         end,
               
               case Val of
-                  [] -> throw(empty_val); 
-                  _  -> hn_main:set_attribute(NewAddr#ref{auth=Auth},Val)
+                  [] -> 
+                      throw(empty_val); 
+                  _  -> 
+                      Send = {set,NewAddr#ref{auth=Auth},Val},
+                      gen_server:call(hn_calc,Send)
               end,
               Sum+1
       end,

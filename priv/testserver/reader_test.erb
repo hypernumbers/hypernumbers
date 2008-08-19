@@ -16,8 +16,6 @@
                 end).
 
 init_per_suite(Config) ->
-    code:add_patha("../../../../../ebin"),
-    production_boot:setup_paths(),
     Xlsfile = "../../../../excel_files/Win_Excel07_As_97/<%= @basename + ".xls"%>",
     Data = test_util:read_excel_file(Xlsfile),
     Pid = spawn(test_util, test_state, [Data]),

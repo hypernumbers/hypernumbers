@@ -23,34 +23,35 @@ accept(Listen) ->
     remoting_soc:accept(Listen).
 
 loop(Socket)->
-    receive
-
-    {tcp, Socket,"register"++Rest} ->
-        Page = hn_util:parse_url(hn_util:trim(Rest)),  
-        self() ! gen_server:call(remoting_reg,{register,Page}),
-        loop(Socket);
-
-    {tcp, Socket,"unregister"++_} ->
-        self() ! gen_server:call(remoting_reg,{unregister}),
-        loop(Socket);
-
-    {tcp, Socket,"<policy-file-request/>"++_} ->
-        Root = production_boot:root(),
-        {ok,Msg} = hn_util:read(Root++"include/docroot/crossdomain.xml"),
-        self() ! {msg,Msg++"\0"},
-        loop(Socket);
-
-    {tcp, Socket, _Msg} ->     
-        self() ! {msg,"invalid message"},
-        loop(Socket);
-
-    {msg,Msg} ->
-        gen_tcp:send(Socket, Msg++"\n"),
-        loop(Socket);
-
-    {tcp_closed, _Port} ->
-        gen_server:call(remoting_reg,{unregister}),
-        exit(normal)
-
-    end.
     
+    receive
+        
+        {tcp, Socket,"register"++Rest} ->
+            Page = hn_util:parse_url(hn_util:trim(Rest)),  
+            self() ! gen_server:call(remoting_reg,{register,Page}),
+            loop(Socket);
+        
+        {tcp, Socket,"unregister"++_} ->
+            self() ! gen_server:call(remoting_reg,{unregister}),
+            loop(Socket);
+        
+        {tcp, Socket,"<policy-file-request/>"++_} ->
+            Path = code:priv_dir("engine")++"/crossdomain.xml",
+            {ok,Msg} = hn_util:read(Path),
+            self() ! {msg,Msg++"\0"},
+            loop(Socket);
+        
+        {tcp, Socket, _Msg} ->     
+            self() ! {msg,"invalid message"},
+            loop(Socket);
+        
+        {msg,Msg} ->
+            gen_tcp:send(Socket, Msg++"\n"),
+            loop(Socket);
+        
+        {tcp_closed, _Port} ->
+            gen_server:call(remoting_reg,{unregister}),
+            exit(normal)
+    
+    end.
+

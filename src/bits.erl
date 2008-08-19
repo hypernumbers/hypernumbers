@@ -23,12 +23,7 @@
 %%==============================================================================
 
 clear_db()->
-    application:stop(mnesia),
-    application:stop(engine),
-    application:stop(remoting),
     hn_loaddb:create_db(disc_copies),
-    application:start(engine),
-    application:start(remoting),
     ok.
 
 log(String) ->

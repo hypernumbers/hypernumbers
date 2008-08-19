@@ -41,9 +41,23 @@ start_link() ->
 %%------------------------------------------------------------------------------
 init([]) ->
 
+    Random_srv = {random_srv,{random_srv,start_link,[]},
+		     permanent,2000,worker,[random_srv]},
+
+    Remote_sup = {remoting_sup,{remoting_sup,start_link,[]},
+                permanent,2000,supervisor,[start]},    
+
+    Calc_sup = {hn_calc_sup,{hn_calc_sup,start_link,[]},
+                permanent,2000,supervisor,[start]},
+    
     Dirty_refs_srv = {dirty_cell,{dirty_srv,start_link,[dirty_cell]},
 		      permanent,2000,worker,[start]},
     Dirty_hypn_srv = {dirty_hypn,{dirty_srv,start_link,[dirty_hypernumber]},
 		      permanent,2000,worker,[start]},
 
-    {ok,{{one_for_one,5,60}, [Dirty_refs_srv,Dirty_hypn_srv]}}.
+    {ok,{{one_for_one,5,60}, [
+                              Dirty_refs_srv,
+                              Dirty_hypn_srv,
+                              Calc_sup,
+                              Remote_sup,
+                              Random_srv]}}.

@@ -1112,8 +1112,6 @@
 %% variable, but should NOT alter/remove any existing entries.
 %%------------------------------------------------------------------------------
 init_per_suite(Config) ->
-    code:add_patha("../../../../../ebin"),
-    production_boot:setup_paths(),
     Config.
 
 %%------------------------------------------------------------------------------

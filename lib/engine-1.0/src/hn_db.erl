@@ -1,3 +1,4 @@
+
 %%%-------------------------------------------------------------------
 %%% File        : hn_db.erl
 %%% Author      : Dale Harvey <dale@hypernumbers.com>
@@ -218,7 +219,7 @@ filter_range([],_Cell)   ->
     nomatch;  
 filter_range([H|T],Cell) ->
     case hn_util:in_range((H#hn_item.addr)#ref.ref,Cell) of
-        true -> H#hn_item.val;
+        true -> H;
         _    -> filter_range(T,Cell)
     end.
 %%--------------------------------------------------------------------
@@ -484,7 +485,7 @@ dirty_refs_changed(dirty_cell, Ref) ->
     %% Update local cells
     lists:foreach(
         fun({local_cell_link, _, RefTo}) ->
-            hn_main:recalc(RefTo)
+            hn_calc:recalc(RefTo)
         end,
         Local
     ),
@@ -509,7 +510,7 @@ dirty_refs_changed(dirty_hypernumber, Ref) ->
         lists:foreach(
             fun(To) ->    
                 Cell = To#remote_cell_link.child,
-                hn_main:recalc(Cell)
+                hn_calc:recalc(Cell)
             end,
             Links),       
         mnesia:delete({dirty_hypernumber, Ref})
