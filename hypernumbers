@@ -1,0 +1,19 @@
+#! /bin/bash
+
+DIR=`pwd`
+MODE=""
+
+while getopts dc:m: OPTION
+do
+    case ${OPTION} in 
+        d) MODE="-D -heart";;
+       \?) echo "Usage: "
+       exit 2;;
+    esac
+done
+
+erl $MODE \
+    -sname arrian \
+    -boot engine \
+    -config priv/sasl_dev_conf \
+    -mnesia dir \"$DIR/data\"
