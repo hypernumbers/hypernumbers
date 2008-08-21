@@ -36,7 +36,7 @@ loop(Socket)->
             loop(Socket);
         
         {tcp, Socket,"<policy-file-request/>"++_} ->
-            Path = code:priv_dir("engine")++"/crossdomain.xml",
+            Path = code:priv_dir("hypernumbers")++"/crossdomain.xml",
             {ok,Msg} = hn_util:read(Path),
             self() ! {msg,Msg++"\0"},
             loop(Socket);

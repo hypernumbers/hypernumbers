@@ -1,3 +1,13 @@
 #!/bin/bash
-
-./run_test -dir ../../../../tests/system_test/ ../../../../tests/unit_test/  ../../../../tests/excel_import_2a_test ../../../../tests/excel_import_2b_test ../../../../tests/excel_import_2c_test ../../../../tests/excel_import_2d_test ../../../../tests/excel_import_2e_test
+DIR=`pwd`
+./run_test \
+    -sname arrian \
+    -boot $DIR/../../../../hypernumbers \
+    -mnesia dir \"$DIR/../../../../data\" \
+    -dir ../../../../tests/system_test/ \
+    ../../../../tests/unit_test/ \
+    ../../../../tests/excel_import_2a_test \
+    ../../../../tests/excel_import_2b_test \
+    ../../../../tests/excel_import_2c_test \
+    ../../../../tests/excel_import_2d_test \
+    ../../../../tests/excel_import_2e_test

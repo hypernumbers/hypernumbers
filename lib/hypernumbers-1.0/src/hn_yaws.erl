@@ -19,7 +19,6 @@
 -export([ out/1 ]).
 
 out(Arg) ->
-    
     Url      = yaws_api:request_url(Arg),
     FileName = Arg#arg.docroot++Url#url.path,
     
@@ -213,8 +212,9 @@ post(Arg,_User,Page,{create,[],Data}) ->
                   [] -> 
                       throw(empty_val); 
                   _  -> 
-                      Send = {set,NewAddr#ref{auth=Auth},Val},
-                      gen_server:call(hn_calc,Send)
+                      hn_main:set_attribute(NewAddr#ref{auth=Auth},Val)
+                      %Send = {set,NewAddr#ref{auth=Auth},Val},
+                      %gen_server:call(hn_calc,Send)
               end,
               Sum+1
       end,

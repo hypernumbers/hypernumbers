@@ -5,14 +5,10 @@
 %%%
 %%% Created     : 15 Oct 2007 by Gordon Guthrie
 %%%-----------------------------------------------------------------------------
--module(engine_sup).
-
+-module(hypernumbers_sup).
 -behaviour(supervisor).
 
-%% API
 -export([start_link/0]).
-
-%% Supervisor callbacks
 -export([init/1]).
 
 -define(SERVER, ?MODULE).

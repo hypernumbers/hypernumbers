@@ -1,8 +1,8 @@
-{application, engine,
+{application, hypernumbers,
 	[{description,  "The engine application"},
 	 {vsn,          "1.0"},     
 	 {modules,      []},
 	 {registered,   [ ]},   
 	 {included_applications, []},   
 	 {applications, [kernel, stdlib, crypto, inets, mnesia]},
-	 {mod,		{engine, [ ]}}]}.
+	 {mod,		{hypernumbers_app, [ ]}}]}.

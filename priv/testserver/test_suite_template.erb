@@ -30,7 +30,9 @@
 
 init_per_suite(Config) ->
     %%test_util:wait(),
-    Celldata = readxls("../../excel_files/Win_Excel07_As_97/" ++
+    hn_loaddb:create_db(),
+
+    Celldata = readxls("../../../../excel_files/Win_Excel07_As_97/" ++
                        "<%= @basename + ".xls" %>"),
     {Lits, Flas} = % split data into literals and formulas
         foldl(fun(X, _Acc = {Ls, Fs}) ->

@@ -5,7 +5,7 @@
 %%%
 %%% Created     : 15 Oct 2007 by Gordon Guthrie
 %%%-----------------------------------------------------------------------------
--module(engine).
+-module(hypernumbers_app).
 -behaviour(application).
 -include("yaws.hrl").
 
@@ -30,6 +30,13 @@ start(_Type, _Args) ->
     %% if clean startup of mnesia, create the db
     %% TODO : This is the wrong way to handly multiple
     %% nodes, but as we are removing mnesia, will do for now
+    case mnesia:table_info(schema, storage_type) of
+        ram_copies -> 
+            mnesia:change_table_copy_type(schema, node(), disc_copies);
+        _ -> 
+            ok
+    end,
+
     case mnesia:system_info(tables) of
         [schema] -> 
             hn_loaddb:create_db(disc_copies);
@@ -40,7 +47,7 @@ start(_Type, _Args) ->
                 _      -> hn_loaddb:create_db(disc_copies)
             end
     end,
-       xs
+
     application:set_env(yaws, embedded, true),
     application:start(yaws),
 
@@ -53,9 +60,11 @@ start(_Type, _Args) ->
     
     ok = yaws_api:setconf(GC, [[SC]]),
     
-    case engine_sup:start_link() of
-    {ok, Pid} -> {ok, Pid};
-    Error ->     Error
+    case hypernumbers_sup:start_link() of
+        {ok, Pid} -> 
+            {ok, Pid};
+        Error ->     
+            Error
     end.
 
 %%------------------------------------------------------------------------------

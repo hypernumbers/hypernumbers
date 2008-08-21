@@ -1,4 +1,4 @@
 #! /bin/bash
 erl -noshell \
-    -eval 'systools:make_script("engine",[local,{path,["lib/*/ebin"]}]).' \
+    -eval 'systools:make_script("hypernumbers",[local,{path,["lib/*/ebin"]}]).' \
     -s erlang halt

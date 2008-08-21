@@ -6,14 +6,15 @@ MODE=""
 while getopts dc:m: OPTION
 do
     case ${OPTION} in 
-        d) MODE="-D -heart";;
+        d) MODE="-detached";;
        \?) echo "Usage: "
        exit 2;;
     esac
 done
 
 erl $MODE \
+    -setcookie abc \
     -sname arrian \
-    -boot engine \
+    -boot hypernumbers \
     -config priv/sasl_dev_conf \
     -mnesia dir \"$DIR/data\"

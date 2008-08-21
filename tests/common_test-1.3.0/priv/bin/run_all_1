@@ -2,7 +2,7 @@
 DIR=`pwd`
 ./run_test \
     -sname arrian \
-    -boot $DIR/../../../../engine \
+    -boot $DIR/../../../../hypernumbers \
     -mnesia dir \"$DIR/../../../../data\" \
     -dir ../../../../tests/system_test/ \
     ../../../../tests/unit_test/ \

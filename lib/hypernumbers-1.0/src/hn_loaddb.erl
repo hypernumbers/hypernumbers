@@ -41,10 +41,10 @@ create_db(Storage)->
     users:create("admin","admin"),
     users:create("user","user"),
     
-    gen_server:call(hn_calc,{set,Ref#ref{name="__permissions"},
-                             [{user,anonymous,admin}]}),
+    hn_main:set_attribute(Ref#ref{name="__permissions"},
+                             [{user,anonymous,admin}]),
     
-    gen_server:call(hn_calc,{set,Ref#ref{name="__groups"},
-                             [{owner,[{user,"admin"}]}]}),
+    hn_main:set_attribute(Ref#ref{name="__groups"},
+                             [{owner,[{user,"admin"}]}]),
             
     ok.

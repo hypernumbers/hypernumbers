@@ -15,20 +15,13 @@
          "superlex.erl", "num_format_lexer.erl"]).
 
 -define(DIRS,
-        ["/lib/engine-1.0/",
+        ["/lib/hypernumbers-1.0/",
          "/lib/hypernumbers.com-1.0/",
          "/lib/formula_engine-1.0/",
          "/lib/read_excel-1.0/",
-         "/lib/mochi-1.0/",
-	 "/lib/random_app-1.0/"]).
+         "/lib/mochi-1.0/"]).
 
--define(EXTRA_ERL_FILES,
-        ["src/misc_util.erl",
-         "priv/muin/leex.erl",
-         "src/bits.erl",
-         "src/production_boot.erl",
-         "src/test_util.erl",
-         "src/timeout_test.erl"]).
+-define(EXTRA_ERL_FILES, []).
 
 start(Clean) ->
     compile(Clean).
