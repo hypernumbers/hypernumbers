@@ -15,6 +15,6 @@ done
 erl $MODE \
     -setcookie abc \
     -sname arrian \
-    -boot hypernumbers \
+    -boot ebin/hypernumbers \
     -config priv/sasl_dev_conf \
     -mnesia dir \"$DIR/data\"

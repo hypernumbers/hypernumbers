@@ -29,6 +29,9 @@ start() ->
     compile(dirty).
 
 compile(Clean) ->
+
+    get_rel_file(),
+
     [_File, _Ebin | Rest] =
         reverse(string:tokens(code:which(compile_code), "/")),
 
@@ -119,3 +122,29 @@ uptodate(File, Dir) ->
     Filelastmod = filelib:last_modified(File),
     Beamlastmod = filelib:last_modified(Beam),
     Beamlastmod > Filelastmod.
+
+get_vsn(Module) ->
+    AppFile = code:lib_dir(Module)++"/ebin/"++atom_to_list(Module)++".app",
+    {ok,[{application,_App,Attrs}]} = file:consult(AppFile),
+    {value,{vsn,Vsn}} = lists:keysearch(vsn,1,Attrs),
+    Vsn.
+
+get_rel_file() ->
+
+    F = lists:append(["{release, {\"hypernumbers\",\"1.0\"}, ",
+                      "{erts,\"",erlang:system_info(version),"\"},"
+                      "[{kernel,\"",get_vsn(kernel),"\"},",
+                      "{stdlib,\"",get_vsn(stdlib),"\"},",
+                      "{inets,\"",get_vsn(inets),"\"},",
+                      "{crypto,\"",get_vsn(crypto),"\"},",
+                      "{sasl,\"",get_vsn(sasl),"\"},",
+                      "{mnesia,\"",get_vsn(mnesia),"\"},",
+                      "{yaws, \"1.76\", load},",
+                      "{read_excel,\"1.0\"},",
+                      "{starling_app,\"0.0.1\"},",
+                      "{formula_engine,\"1.0\"},",
+                      "{mochi,\"1.0\"},",
+                      "{hypernumbers,\"1.0\"}]}."]),
+    
+    file:write_file("hypernumbers.rel",F),
+    systools:make_script("hypernumbers",[local,{path,["../lib/*/ebin"]}]).
