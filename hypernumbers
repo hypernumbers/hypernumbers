@@ -2,17 +2,20 @@
 
 DIR=`pwd`
 MODE=""
+RELOAD=""
 
-while getopts dc:m: OPTION
+while getopts dr OPTION
 do
     case ${OPTION} in 
         d) MODE="-detached";;
+        r) RELOAD="-run reloader start";;
        \?) echo "Usage: "
        exit 2;;
     esac
 done
 
 erl $MODE \
+    $RELOAD \
     -setcookie abc \
     -sname arrian \
     -boot ebin/hypernumbers \
