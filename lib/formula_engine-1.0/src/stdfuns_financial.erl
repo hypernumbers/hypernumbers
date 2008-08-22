@@ -14,6 +14,7 @@
          ipmt/1,
          ispmt/1,
          nominal/1,
+         npv/1,
          pv/1
         ]).
 -define(default_rules, [cast_strings, cast_bools, cast_blanks, cast_dates]).
@@ -94,6 +95,17 @@ nominal(Args = [_, _]) ->
 nominal1(Effrate, Npery) ->
     Npery * (math:pow(Effrate + 1, -Npery) - 1).
 
+npv([V1, V2 | Tl]) ->
+    Rate = ?number(V1, ?default_rules),
+    Vals = ?numbers([V2|Tl], ?default_rules), % TODO: cast_string_zero
+    npv1(Rate, Vals).
+npv1(Rate, Vals) ->
+    npv1(Rate, Vals, 1, 0).
+npv1(_Rate, [], _Num, Acc) ->
+    Acc;
+npv1(Rate, [Hd|Tl], Num, Acc) ->
+    npv1(Rate, Tl, Num+1, Acc+Hd/(math:pow((1+Rate),Num))).
+    
 pv(Args = [_, _, _, _, _]) ->
     [Rate, Nper, Pmt, Fv, Type] = ?numbers(Args, ?default_rules),
     pv1(Rate, Nper, Pmt, Fv, Type).
