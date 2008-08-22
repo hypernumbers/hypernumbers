@@ -2,6 +2,7 @@
 
 # Pass any parameter to this script for quick compile (only recompile the main 
 # app), e.g.: ./compile_code quick
+cd `dirname $0`
 
 if [ ! -n "$1" ] 
 then
