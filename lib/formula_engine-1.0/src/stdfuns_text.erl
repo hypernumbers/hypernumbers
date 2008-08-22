@@ -26,39 +26,31 @@
 
 %% Excel 2004 API.
 -export([
-         %% Comparison functions.
-         exact/1,
-         len/1,
-         mid/1,
-
-         %% Conversion functions.
-         clean/1,
          %%dollar/2, TODO: Need formats.
          %%pound/2,  TODO: Need formats.
-         fixed/1,
-         lower/1,
-         proper/1,
+         %%replace/1, TODO:
+         %%search/1, TODO:
          %%t/1, TODO: Needs types.
-         %%text/2, TODO: Needs formats.
          %%trim/1, TODO:
-         upper/1,
          %%value/1, TODO: Need formats.
          %%yen/2, TODO: Need formats.
-
-         %% Locate text.
-         char/1,
-         find/1,
-         left/1,
-         right/1,
-         %%search/1, TODO:
-
          '&'/1,
+         char/1,
+         clean/1,
          concatenate/1,
-         %%replace/1, TODO:
+         exact/1,
+         find/1,
+         fixed/1,
+         left/1,
+         len/1,
+         lower/1,
+         mid/1,
+         proper/1,
          rept/1,
-         substitute/1
-
-         %% Work with full-width text TODO:
+         right/1,
+         substitute/1,
+         text/1,
+         upper/1
         ]).
 
 exact([Str1, Str1]) ->
@@ -150,6 +142,12 @@ rept([Str, Reps]) ->
 substitute([Text, Oldtext, Newtext]) ->
     {ok, Res, _Repcnt} = regexp:gsub(Text, Oldtext, Newtext),
     Res.
+
+text([Str, Format]) ->
+    {erlang, {_Type, Output}} = format:get_src(Format),
+    {ok, {_Color, Fmtdstr}} = format:run_format(Value, Output),
+    Fmtdstr.
+
 
 %%% ----------------- %%%
 %%% Private functions %%%
