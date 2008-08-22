@@ -49,7 +49,7 @@
          %%gammaln/1,
          %%geomean/1,
          %%growth/1,
-         %%harmean/1,
+         harmean/1,
          %%hypgeomdist/1,
          intercept/1,
          kurt/1,
@@ -217,6 +217,18 @@ forecast([_, _, _]) ->
 frequency([_, _]) ->
     0.
 
+harmean(Vs) ->
+    Flatvs = ?flatten_all(Vs),
+    Nums = ?numbers(Flatvs, ?default_rules), % TODO: Ignore strs, bools, blanks.
+    Any0s = any(fun(0) -> true; (_) -> false end,
+                Nums),
+    ?ensure(not(Any0s), ?ERR_NUM),
+    harmean1(Nums, 0, 0).
+harmean1([], Num, Acc) ->
+    Num / Acc;
+harmean1([Hd|Tl], Num, Acc) ->
+    harmean1(Tl, Num+1, (1/H)+Acc).
+                        
 gammadist([V1, V2, V3, V4]) ->
     [X, Alpha, Beta] = ?numbers([V1, V2, V3], ?default_rules),
     Cumul = ?bool(V4, ?default_rules_bools),
