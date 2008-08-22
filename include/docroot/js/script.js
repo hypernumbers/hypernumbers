@@ -18,8 +18,11 @@ var handle_attr = function(refxml)
         $("#hn").spreadsheet("setStyle",ref,name,value);
     
     else if(name == "formula") 
+    {
+        console.log("yup");
         formulae[ref] = value;  
-
+    }
+    
     else if(name == "height")  
         $("#hn").spreadsheet("setHeight",ref,parseInt(value));
 
@@ -188,7 +191,9 @@ var create_spreadsheet = function(user)
         },
         cellSelect : function(x,y,el)
         {
-            var f = formulae[($.fn.to_b26(x+1)+y)];
+            var x = $.fn.to_b26(x+1).toUpperCase();
+            
+            var f = formulae[(x+y)];
             el.val( (typeof f != "undefined") ? f : "");
         },
         colResize : function(col,width)

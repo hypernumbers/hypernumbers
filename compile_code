@@ -24,12 +24,7 @@ then
     echo "OK"
 fi
 
-echo
-echo "======================"
-echo "COMPILING BUILD SCRIPT"
-echo "======================"
 erlc -o ebin src/compile_code.erl
-echo "OK"
 
 echo
 echo "================"
@@ -37,4 +32,3 @@ echo "    BUILDING    "
 echo "================"
 cd ebin
 erl -pa ebin -noshell -s compile_code -s init stop
-echo "OK"
