@@ -75,8 +75,8 @@ comp_lists(Clean, List) ->
 
 comp_lists(Clean, [{File, Opt}|T], OldStatus) ->
     Append = case member(filename:basename(File), ?NO_WARNINGS) of
-                 true ->  [return_errors];
-                 false -> [return_errors,report_warnings]
+                 true ->  [report_errors];
+                 false -> [report_errors,report_warnings]
              end,
     Options = append(Opt,Append),
 
@@ -92,9 +92,7 @@ comp_lists(Clean, [{File, Opt}|T], OldStatus) ->
                             code:purge(FileName),
                             code:load_file(FileName),
                             comp_lists(Clean, T, OldStatus);
-                        Error ->
-                            io:fwrite("   Compile failure:    ~p~n", [File]),
-                            io:fwrite("   Error is       :    ~p~n~n", [Error]),
+                        _Error ->
                             comp_lists(Clean, T, error)
                     end
            end,

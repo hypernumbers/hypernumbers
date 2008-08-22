@@ -19,6 +19,7 @@
 -export([ out/1 ]).
 
 out(Arg) ->
+    
     Url      = yaws_api:request_url(Arg),
     FileName = Arg#arg.docroot++Url#url.path,
     
