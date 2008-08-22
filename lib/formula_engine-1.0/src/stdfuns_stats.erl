@@ -73,7 +73,7 @@
          percentile/1,
          %%percentrank/1,
          permut/1,
-         %%poisson/1,
+         poisson/1,
          %%prob/1,
          quartile/1,
          rank/1,
@@ -348,6 +348,27 @@ permut([V1, V2]) ->
     permut1(trunc(N), trunc(K)).
 permut1(N, K) ->
     stdfuns_math:fact1(N) div stdfuns_math:fact1(N - K).
+
+poisson([V1, V2, V3]) ->
+    X = ?int(V1, ?default_rules),
+    Mean = ?number(V2, ?default_rules),
+    Cumul = ?bool(V3, ?default_rules_bools),
+    ?ensure(X >= 0, ?ERR_NUM),
+    ?ensure(Mean > 0, ?ERR_NUM),
+    poisson1(X, Mean, Cumul).
+poisson1(X, Mean, false) ->
+    noncumpoisson(X, Mean);
+poisson1(X, Mean, true) ->
+    cumpoisson(X, Mean, 0);
+noncumpoisson(X, Mean) ->
+    E = math:exp(1),
+    math:pow(E, -Mean) * math:pow(Mean, X) / stdfuns_math:fact1(X).
+cumpoisson(X, Mean) ->
+    cumpoisson(X, Mean, 0).
+cumpoisson(-1, _Mean, Acc) ->
+    Acc;
+cumpoisson(K, Mean, Acc) ->
+    cumpoisson(K-1, Mean, Acc + noncumpoisson(K, Mean)).
 
 quartile([V1, V2]) ->
     Nums = ?numbers(?flatten_all(V1), ?default_rules),
