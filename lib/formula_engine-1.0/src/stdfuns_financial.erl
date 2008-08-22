@@ -16,6 +16,7 @@
          nominal/1,
          npv/1,
          pv/1,
+         sln/1,
          syd/1
         ]).
 -define(default_rules, [cast_strings, cast_bools, cast_blanks, cast_dates]).
@@ -118,8 +119,14 @@ pv1(Rate, Nper, Pmt, Fv, Type) ->
     T = -(Pmt * (Rate * Type + 1) * Bigass + Fv),
     T / N.
 
-syd(Arg = [_, _, _, _]) ->
-    [Cost, Salv, Life, Per] = ?numbers(Arg, ?default_rules),
+sln(Args = [_, _, _]) ->
+    [Cost, Salv, Life] = ?numbers(Args, ?default_rules),
+    sln1(Cost, Salv, Life).
+sln1(Cost, Salv, Life) ->
+    (Cost-Salv)/Life.
+
+syd(Args = [_, _, _, _]) ->
+    [Cost, Salv, Life, Per] = ?numbers(Args, ?default_rules),
     syd1(Cost, Salv, Life, Per).
 syd1(Cost, Salv, Life, Per) ->
     (Cost-Salv)*(Life-Per+1)*2/(Life*(Life+1)).
