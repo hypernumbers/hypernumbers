@@ -145,7 +145,7 @@ substitute([Text, Oldtext, Newtext]) ->
 
 text([Str, Format]) ->
     {erlang, {_Type, Output}} = format:get_src(Format),
-    {ok, {_Color, Fmtdstr}} = format:run_format(Value, Output),
+    {ok, {_Color, Fmtdstr}} = format:run_format(Str, Output),
     Fmtdstr.
 
 
