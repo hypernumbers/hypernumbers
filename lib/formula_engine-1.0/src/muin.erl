@@ -67,7 +67,6 @@ run_code(Pcode, #ref{site = Site, path = Path, ref = {cell, {X, Y}}}) ->
     case attempt(?MODULE, eval, [Pcode]) of
         {ok, Val} ->
             {RefTree, Errors, References} = get(retvals),
-            io:format("PARENTS :: ~p~n", [RefTree]),
             Val2 = ?COND(Val == blank, 0, Val), % Links to blanks become 0.
             {ok, {Val2, RefTree, Errors, References, get(recompile)}};
         {error, Reason} ->
