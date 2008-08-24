@@ -143,7 +143,6 @@ set_cell_rawvalue(Addr,Value) ->
     {ok,Format} = hn_db:get_item_inherited(Addr#ref{name=format}, "General"),
     {erlang,{_Type,Output}} = format:get_src(Format),
     {ok,{Color,V}}=format:run_format(Value,Output),
-    io:format("~p - ~p - ~p",[Value,Format,V]),
     hn_db:write_item(Addr#ref{name=value},V),
     hn_db:write_item(Addr#ref{name=color},atom_to_list(Color)),
     ok.
