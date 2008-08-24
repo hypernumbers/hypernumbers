@@ -6,6 +6,11 @@ cd `dirname $0`
 
 if [ ! -n "$1" ] 
 then
+    find . -name "*.beam" \
+	! -path "*tests*" \
+	! -path "*yaws*" \
+	! -path "*eunit*" -exec rm {} +
+
     echo "=================="
     echo "COMPILING STARLING"
     echo "=================="
