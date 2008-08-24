@@ -43,7 +43,7 @@
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 index_to_url(#index{site=Site,path=Path,column=X,row=Y}) ->
-    lists:append([Site, "/", string:join([Path], "/"), "/", tconv:to_b26(X), text(Y)]).
+    lists:append([Site, "/", string:join(Path, "/"), "/", tconv:to_b26(X), text(Y)]).
     
 page_to_index(#page{site=Site,path=Path,ref={cell,{X,Y}}}) ->
     #index{site=Site,path=Path,column=X,row=Y}.
@@ -74,7 +74,7 @@ item_to_xml(#hn_item{addr=A,val=V}) ->
     Value = case A#ref.name of
                 value    -> to_xml(V);
                 rawvalue -> to_xml(V);
-                Else     -> to_val(V)
+                _Else     -> to_val(V)
     end,
     
     {ref, [{type,Type}, {ref,Str}], [{A#ref.name, [], Value}]}.
@@ -121,7 +121,6 @@ post(Url,Data,Format) ->
     Body.
 
 parse_url(Url) when is_list(Url) ->
-    io:format("url ~p~n",[Url]),
     parse_url(yaws_api:parse_url(Url));
 
 parse_url(Url) when is_record(Url,url) ->
@@ -223,7 +222,7 @@ read(FileName) ->
 intersection(ListA,ListB) ->
     intersection(ListA,ListB,[]).
 
-intersection([],List,Acc) ->
+intersection([],_List,Acc) ->
     Acc;
 intersection([H|T],List,Acc) ->
     NAcc = case lists:member(H,List) of
@@ -388,7 +387,7 @@ upload(A,Name,Fun) ->
 %% Description: reads the cookie and session data from request header
 %%              returns nice record of state information
 %%--------------------------------------------------------------------
-get_cookie(ClientHeaders) -> ok.
+get_cookie(_ClientHeaders) -> ok.
 
 %    case yaws_api:find_cookie_val("user",ClientHeaders) of
 

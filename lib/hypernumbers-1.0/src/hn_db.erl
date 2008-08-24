@@ -296,10 +296,10 @@ read_links(Index, Relation) ->
     Obj = ?COND(Relation == child,
         {local_cell_link,'_',Index},
         {local_cell_link,Index,'_'}),
-    
-    {atomic, List} = mnesia:transaction(fun() ->
-        mnesia:match_object(Obj)
-    end),
+
+    F = fun() -> mnesia:match_object(Obj) end,
+    {atomic, List} = mnesia:transaction(F),
+
     List.
 
 %%--------------------------------------------------------------------
@@ -469,20 +469,38 @@ read_remote_links(Index, Relation,Type) ->
 %%--------------------------------------------------------------------
 %% This is called when a cell changes, update other cells using
 %% it and outgoing hypernumbers
-dirty_refs_changed(dirty_cell, Ref) ->
+get_par(Index,Path) ->
+    El = {local_cell_link,Index#index{path=Path},'_'},
+    F = fun() -> mnesia:match_object(El) end,
+    {atomic,List} = mnesia:transaction(F),
+    List.
     
-    io:format("ref changed ~p~n",[Ref]),
+dyn_parents(_Index = #index{path=[]},Results, _Acc) ->
+    Results;
+dyn_parents(Index = #index{path=[_H]},Results, Acc) ->
+    Path = ["*"|Acc],
+    lists:append(Results,get_par(Index,Path));
+dyn_parents(Index = #index{path=[H|T]},Results,Acc) ->
+    Path = lists:append(lists:reverse(T),["*"|Acc]),
+    NResults = lists:append(Results,get_par(Index,Path)),
+    dyn_parents(Index#index{path=T},NResults,[H|Acc]).
 
-    {atomic, {ok,Remote,Local}} = mnesia:transaction(fun() ->
+dirty_refs_changed(dirty_cell, Ref) ->
 
-        %% Make a list of hypernumbers listening
-        %% to this cell, (update outside transaction)
-        Links = mnesia:match_object(#remote_cell_link{
-            parent=Ref,type=outgoing,_='_'}),
-        {ok,list_hn(Links,[]),read_links(Ref,parent)}
-    end),
-
-    io:format("local parents  ~p~n",[Local]),
+    %% Make a list of cells listening, hypernumbers, direct
+    %% cell links, and check for any wildcard * on the path
+    F = fun() ->
+		%% Read dynamic links "/page/*/a1"
+		NIndex = Ref#index{path=lists:reverse(Ref#index.path)},
+		Queries = dyn_parents(NIndex,[],[]),
+		%% Direct Links
+		Direct = read_links(Ref,parent),
+		Rem = #remote_cell_link{parent=Ref,
+					type=outgoing,_='_'},
+		Links = mnesia:match_object(Rem),
+		{ok,list_hn(Links,[]),lists:append(Direct,Queries)}
+	end,
+    {atomic, {ok,Remote,Local}} = mnesia:transaction(F),
 
     Val = get_item_val((to_ref(Ref))#ref{name=rawvalue}),
 
@@ -614,7 +632,6 @@ do_get_hn(Url,_From,To)->
 get_hn(Url,_From,To)->
     F = fun() -> do_get_hn(Url,_From,To) end,
     {atomic, List} = mnesia:transaction(F),
-    io:format("in hn_db:get_hn List is ~p~n",[List]),
     List.
 
 %%--------------------------------------------------------------------
