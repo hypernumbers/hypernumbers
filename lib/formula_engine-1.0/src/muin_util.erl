@@ -101,21 +101,20 @@ just_ref(Ssref) ->
 
 
 %% Absolute path to location -> absolute path to another location.
-walk_path(_, [$/ | _] = Dest) ->
-    Dest;
+%% The first argument is a list of path components, the second is a string.
+%% The first comes from the server side of things, and the second comes from
+%% the path field in ref objects.
+walk_path(_, Dest = [$/|_]) ->
+    string:tokens(Dest, "/");
 walk_path(Currloc, Dest) ->
-    Newstk = % New location stack
-        foldl(fun(".",  Stk) -> Stk;
-                 ("..", Stk) -> hslists:init(Stk);
-                 (Word, Stk) -> append(Stk, [Word])
-              end,
-              string:tokens(Currloc, "/"),
-              string:tokens(Dest, "/")),
-
-    ?COND(length(Newstk) == 0,
-          "/", %% too far up
-          "/" ++ string:join(Newstk, "/") ++ "/").
-
+    Newstk = foldl(fun(".",  Stk) -> Stk;
+                      ("..", []) ->  [];
+                      ("..", Stk) -> hslists:init(Stk);
+                      (Word, Stk) -> append(Stk, [Word])
+                   end,
+                   Currloc,
+                   string:tokens(Dest, "/")),
+    Newstk.
 
 expand_cellrange(StartRow, EndRow, StartCol, EndCol) ->    
     %% Make a list of cells that make up this range.
