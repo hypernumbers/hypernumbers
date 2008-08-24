@@ -67,6 +67,7 @@ run_code(Pcode, #ref{site = Site, path = Path, ref = {cell, {X, Y}}}) ->
     case attempt(?MODULE, eval, [Pcode]) of
         {ok, Val} ->
             {RefTree, Errors, References} = get(retvals),
+            io:format("PARENTS :: ~p~n", [RefTree]),
             Val2 = ?COND(Val == blank, 0, Val), % Links to blanks become 0.
             {ok, {Val2, RefTree, Errors, References, get(recompile)}};
         {error, Reason} ->
@@ -142,6 +143,15 @@ preproc(['query', Arg]) ->
             end,
             Pages),
     Node = [make_list | R],
+    %% Stick a special parent in.
+    {ok, Refobj} = xfl_lexer:lex(last(Toks), {?mx, ?my}),
+    [{ref, C2, R2, _, _}] = Refobj,
+    Rowidx = toidx(R2),
+    Colidx = toidx(C2),
+    {Oldparents, Errs, Refs} = get(retvals),
+    Newparent = {"local", {?msite, hslists:init(Toks), Colidx, Rowidx}},
+    put(retvals, {[Newparent | Oldparents], Errs, Refs}),
+
     Node;
 preproc(_) ->
     false.
