@@ -143,9 +143,9 @@ substitute([Text, Oldtext, Newtext]) ->
     {ok, Res, _Repcnt} = regexp:gsub(Text, Oldtext, Newtext),
     Res.
 
-text([Str, Format]) ->
+text([Value, Format]) ->
     {erlang, {_Type, Output}} = format:get_src(Format),
-    {ok, {_Color, Fmtdstr}} = format:run_format(Str, Output),
+    {ok, {_Color, Fmtdstr}} = format:run_format(Value, Output),
     Fmtdstr.
 
 
