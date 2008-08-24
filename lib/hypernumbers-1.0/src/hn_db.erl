@@ -470,7 +470,9 @@ read_remote_links(Index, Relation,Type) ->
 %% This is called when a cell changes, update other cells using
 %% it and outgoing hypernumbers
 dirty_refs_changed(dirty_cell, Ref) ->
-        
+    
+    io:format("ref changed ~p~n",[Ref]),
+
     {atomic, {ok,Remote,Local}} = mnesia:transaction(fun() ->
 
         %% Make a list of hypernumbers listening
@@ -479,6 +481,8 @@ dirty_refs_changed(dirty_cell, Ref) ->
             parent=Ref,type=outgoing,_='_'}),
         {ok,list_hn(Links,[]),read_links(Ref,parent)}
     end),
+
+    io:format("local parents  ~p~n",[Local]),
 
     Val = get_item_val((to_ref(Ref))#ref{name=rawvalue}),
 

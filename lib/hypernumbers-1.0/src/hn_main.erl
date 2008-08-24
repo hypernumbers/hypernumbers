@@ -58,7 +58,7 @@ set_cell(Addr, Val) ->
 	    %% bits:log(Addr),
 	    io:format("in hn_main:set_cell Addr is ~p~n and Val is ~p~n",[Addr,Val]),
             case muin:run_formula(Fla, Addr) of
-                {error,Error} -> ok;       
+                {error,_Error} -> ok;       
                 {Pcode, Res, Parents, Deptree, Recompile} ->
                     %% Convert stuff to SimpleXML.
                     F = fun({Type, {S, P, X1, Y1}}) ->
@@ -74,7 +74,7 @@ set_cell(Addr, Val) ->
                     write_cell(Addr, Res, "=" ++ Fla, Parxml, Deptreexml)
             end;
             
-        {Type, Value} ->
+        {_Type, Value} ->
             write_cell(Addr, Value, hn_util:text(Value), [], [])
     end.
     
@@ -102,7 +102,7 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
            
     Set(Addr#ref{name=parents},{xml,Parents}),
     Set(Addr#ref{name='dependancy-tree'},{xml,DepTree}),
-        
+    
     %% Delete the references
     hn_db:del_links(Index,child),
 
@@ -110,36 +110,38 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
     %% to this cell, if they dont exist within the list of new
     %% parents, delete it (and unregister)
     lists:foreach(
-        fun(X) when is_record(X,remote_cell_link) ->
-            Url  = hn_util:index_to_url(X#remote_cell_link.parent),
-            case lists:member({url,[{type,"remote"}],[Url]},Parents) of
-            false -> hn_db:del_remote_link(X);
-            true  -> ok
-            end;
-        (_) -> ok
-        end,
-        hn_db:read_remote_links(Index,child,incoming)),
+      fun(X) when is_record(X,remote_cell_link) ->
+	      Url  = hn_util:index_to_url(X#remote_cell_link.parent),
+	      case lists:member({url,[{type,"remote"}],[Url]},Parents) of
+		  false -> hn_db:del_remote_link(X);
+		  true  -> ok
+	      end;
+	 (_) -> ok
+      end,
+      hn_db:read_remote_links(Index,child,incoming)),
     
     %% Writes all the parent links 
     lists:map( 
-        fun({url,[{type,Type}],[Url]}) ->
-            #page{site=Site,path=Path,ref={cell,{X,Y}}} = hn_util:parse_url(Url),
-            Parent = {index,Site,string:to_lower(Path),X,Y},
-            case Type of
-            "local"  -> hn_db:write_local_link(Parent,Index);
-            "remote" -> hn_db:write_remote_link(Parent,Index,incoming)
-            end,
-            ok
-        end,
-        Parents),
-
+      fun({url,[{type,Type}],[Url]}) ->
+	      #page{site=Site,path=Path,ref={cell,{X,Y}}} = hn_util:parse_url(Url),
+	      Parent = {index,Site,string:to_lower(Path),X,Y},
+	      case Type of
+		  "local"  -> 
+		      hn_db:write_local_link(Parent,Index);
+		  "remote" -> 
+		      hn_db:write_remote_link(Parent,Index,incoming)
+	      end,
+	      ok
+      end,
+      Parents),
+    
     hn_db:mark_dirty(Index,cell),    
     ok.
     
 set_cell_rawvalue(Addr,Value) ->
     hn_db:write_item(Addr#ref{name=rawvalue},Value),
     {ok,Format} = hn_db:get_item_inherited(Addr#ref{name=format}, "General"),
-    {erlang,{Type,Output}} = format:get_src(Format),
+    {erlang,{_Type,Output}} = format:get_src(Format),
     {ok,{Color,V}}=format:run_format(Value,Output),
     hn_db:write_item(Addr#ref{name=value},V),
     hn_db:write_item(Addr#ref{name=color},atom_to_list(Color)),
@@ -197,7 +199,6 @@ get_cell_info(Site, TmpPath, X, Y) ->
         end,
     
     Dep = lists:map(F,DepTree) ++ [{"local",{Site,Path,X,Y}}],
-    
     {Val,Dep,[],[{"local",{Site,Path,X,Y}}]}.
        
 %%%-----------------------------------------------------------------
@@ -259,9 +260,6 @@ recalc(Index) ->
 %%%-----------------------------------------------------------------
 %%% Helper Functions
 %%%-----------------------------------------------------------------
-get_val([]) -> [];
-get_val([#hn_item{val=Value}]) -> Value.
-
 db_put(_Addr,_Name,[]) -> ok;
 db_put(Addr,Name,Value) ->
     hn_db:write_item(Addr#ref{name=Name},Value).

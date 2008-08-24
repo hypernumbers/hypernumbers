@@ -19,7 +19,7 @@
 -export([ out/1 ]).
 
 out(Arg) ->
-    
+
     Url      = yaws_api:request_url(Arg),
     FileName = Arg#arg.docroot++Url#url.path,
     
@@ -28,7 +28,6 @@ out(Arg) ->
         true  -> 
             [{page,Url#url.path},{header,{cache_control,"max-age=3600"}}];
         false ->
-            
             {ok,Ret} = case catch(do_request(Arg,Url)) of
                            {ok,Resp} -> {ok,Resp};
                            Else      -> 
@@ -37,8 +36,8 @@ out(Arg) ->
                                {ok,[{status,400}]}
                        end,
 
-            Headers = [{header,{cache_control,"no-cache"}}],
-            lists:append(Ret,Headers)              
+            Headers = [{header,{cache_control,"no-cache"}},{status,200}],
+	    lists:append(Ret,Headers)
     end.
 
 do_request(Arg,Url) ->  
@@ -278,34 +277,34 @@ api_change([{biccie,[],     [Bic]},
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% import an excel file, the import and log txt probably needs 
 %% cleaned up
-api_import(Arg,Page) -> 
-    F = fun(X) -> 
-        filefilters:read(excel,X,fun(A) -> import(A,Page) end) 
-    end,
-    case hn_util:upload(Arg,"Filedata",F) of
-    ok ->    {ok,{create,[],["success"]}};
-    error -> {ok,{create,[],["error"]}}
-    end.
+%% api_import(Arg,Page) -> 
+%%     F = fun(X) -> 
+%%         filefilters:read(excel,X,fun(A) -> import(A,Page) end) 
+%%     end,
+%%     case hn_util:upload(Arg,"Filedata",F) of
+%%     ok ->    {ok,{create,[],["success"]}};
+%%     error -> {ok,{create,[],["error"]}}
+%%    end.
 
-import([],_)-> ok;
-import([{_Name,Tid}|T],Page)->
-    Fun = fun(X,_Y) ->
-        case X of
-        {{_,{row_index,Row},{col_index,Col}},[_,Val]} ->
-            Req = lists:flatten([Page#page.site,Page#page.path,
-                util2:make_b26(Col+1),hn_util:text(Row+1)]),
-            V = case Val of
-                {value,number,Num} -> Num;
-                {formula,Form}     -> Form;
-                {string,Str}       -> Str
-            end,
-            hn_util:post(Req,"<create><formula>"++
-                hn_util:text(V)++"</formula></create>","text/xml");
-        _ -> false
-        end
-    end,
-    ets:foldl(Fun,[],Tid),
-    import(T,Page).
+%% import([],_)-> ok;
+%% import([{_Name,Tid}|T],Page)->
+%%     Fun = fun(X,_Y) ->
+%%         case X of
+%%         {{_,{row_index,Row},{col_index,Col}},[_,Val]} ->
+%%             Req = lists:flatten([Page#page.site,Page#page.path,
+%%                 util2:make_b26(Col+1),hn_util:text(Row+1)]),
+%%             V = case Val of
+%%                 {value,number,Num} -> Num;
+%%                 {formula,Form}     -> Form;
+%%                 {string,Str}       -> Str
+%%             end,
+%%             hn_util:post(Req,"<create><formula>"++
+%%                 hn_util:text(V)++"</formula></create>","text/xml");
+%%         _ -> false
+%%         end
+%%     end,
+%%     ets:foldl(Fun,[],Tid),
+%%    import(T,Page).
 
 
 %% Utility functions
@@ -377,13 +376,15 @@ merge_trees(Tree,[[]])  -> Tree;
 merge_trees(Tree,[[]|T])-> merge_trees(Tree,T);
 merge_trees(Tree,[H|T]) ->
     {dir,[{path,P}],C1} = H,
-    {Match,Rest} = lists:partition(fun(X) ->
-                                           case X of 
-                                               {dir,[{path,P}],_} -> true;
-                                               _ -> false
-                                           end 
-                                   end,Tree),
-    case Match of
+    F = fun(X) ->
+		case X of 
+		    {dir,[{path,P}],_} -> true;
+		    _ -> false
+		end 
+	end,
+    {Match,Rest} = lists:partition(F,Tree),
+
+case Match of
         %% No Matches, add entire tree
         [] -> merge_trees([H|Tree],T);
         %% Generate a new Tree on current path and 
@@ -419,8 +420,8 @@ get_permissions(User,Ref=#ref{site=Site}) ->
 
 %% Rank permission atoms in order of precedence
 perm_index(no_access)           -> 0;
-perm_index({protected_read,_X})  -> 1;
-perm_index({protected_write,_X}) -> 2;
+perm_index({protected_read,_X}) -> 1;
+perm_index({protected_write,_X})-> 2;
 perm_index(read)                -> 3;
 perm_index(write)               -> 4;
 perm_index(admin)               -> 5.
@@ -458,7 +459,7 @@ group_list(_GList,_User,_Name,[],Acc) ->
     hslists:uniq(lists:flatten(Acc));
 group_list(GList,User,Name,[{user,User}|T],Acc) ->
     group_list(GList,User,Name,T,[Name|Acc]);
-group_list(GList,User,Name,[{group,Group}|T],Acc) ->
+group_list(GList,User,Name,[{group,Group}|_T],Acc) ->
     case lists:keysearch(Group,1,GList) of
         false -> 
             Acc;

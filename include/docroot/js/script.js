@@ -19,16 +19,14 @@ var handle_attr = function(refxml)
     
     else if(name == "formula") 
     {
-        console.log("yup");
         formulae[ref] = value;  
     }
     
     else if(name == "height")  
         $("#hn").spreadsheet("setHeight",ref,parseInt(value));
 
-    else if(name == "width")   
+    else if(name == "width")
     {
-        console.log(parseInt(value));
         $("#hn").spreadsheet("setWidth",ref,parseInt(value));
     }
 
@@ -78,7 +76,12 @@ $(function()
 
 var init = function()
 {
-    var so = new SWFObject("/swf/JsSocket.swf", "mymovie", "470", "200", "8", "#FFFFFF");            
+    var so = new SWFObject("/swf/JsSocket.swf", 
+			   "mymovie", 
+			   "470", 
+			   "200", 
+			   "8", 
+			   "#FFFFFF");
     so.addParam("allowScriptAccess", "always");
     so.write("flashcontent");
     
@@ -100,65 +103,64 @@ var init = function()
         
         return false;
     }; 
-
     $("#m_import").click(importfun);
     
     var auth = readCookie("auth");
     if(auth != null)
-    {   
-        // TODO : Check auth here
-        var logout = function()
-        {
-            eraseCookie("auth");
-            document.location.reload(true);
-        };
-        var user = auth.split(":");
-        $("#loginmsg").show().find("#user").text(user[0]);
-        $("#logoutbutton").show().children("a").click(logout);
-    }
+	{   
+	    // TODO : Check auth here
+	    var logout = function()
+		{
+		    eraseCookie("auth");
+		    document.location.reload(true);
+		};
+	    var user = auth.split(":");
+	    $("#loginmsg").show().find("#user").text(user[0]);
+	    $("#logoutbutton").show().children("a").click(logout);
+	}
     else
-    {
-        var loginshow = function()
-        {
-            $("#loginform").toggle();
-        };
-        $("#loginbutton").show().children("a").click(loginshow);
-
-        var login = function()
-        {
-            var email = $("#email").val();
-            var pass = $("#pass").val();
-            
-            if(pass!="" && email!="")
-            {
-                var xml = "<login>"
-                    +"<email>"+ $("#email").val() +"</email>"
-                    +"<password>"+ $("#pass").val() +"</password>"
-                    +"</login>";
-              
-                var callback = function(data)
-                {
-                    if($(data).find("unauthorised").length == 1)
-                    {
-                        $("#feedback").text("Invalid Details");
-                    }
-                    else 
-                    {
-                        var token = $(data).find("token").text();
-                        createCookie("auth",token,30);
-                        window.location.reload( true );
-                    }
-                }
-              $.post("/",xml,callback,xml);
-            }
-            else
-            {
-                $("#feedback").text("Enter full details");
-            }
-            return false;
-        };
-        $("#login").submit(login);
-    }
+	{
+	    var loginshow = function()
+	    {
+		$("#loginform").toggle();
+	    };
+	    $("#loginbutton").show().children("a").click(loginshow);
+	    
+	    var login = function()
+	    {
+		var email = $("#email").val();
+		var pass = $("#pass").val();
+		
+		if(pass!="" && email!="")
+		    {
+			var xml = "<login>"
+			    +"<email>"+ $("#email").val() +"</email>"
+			    +"<password>"+ $("#pass").val() +"</password>"
+			    +"</login>";
+			
+			var callback = function(data)
+			    {
+				if($(data).find("unauthorised").length == 1)
+				    {
+					$("#feedback").text("Invalid Details");
+				    }
+				else 
+				    {
+					var token = $(data).find("token").text();
+					createCookie("auth",token,30);
+					window.location.reload( true );
+				    }
+			    }
+			$.post("/",xml,callback,xml);
+		    }
+		else
+		    {
+			$("#feedback").text("Enter full details");
+		    }
+		return false;
+	    };
+	    $("#login").submit(login);
+	}
 };
 
 var create_spreadsheet = function(user)
@@ -239,10 +241,8 @@ var create_spreadsheet = function(user)
             
     $.clipboardReady(function()
     {
-        $("#context").bind("contextmenu", function(e) 
-        { 
-            return false; 
-        });
+	var no_context = function(e) { return false; };
+        $("#context").bind("contextmenu",no_context);
         
         $('#hn .data').bind("contextmenu", function(e)
         {
@@ -311,89 +311,104 @@ var create_spreadsheet = function(user)
 
 load_data = function()
 {
-    $.get(url+"?pages&format=xml", function(data)
-	  {
-              var add = function(root,dir,path)
-	      {
-		  var list = $("<ul />").appendTo(root);
-		    
-		  $(dir).children().each(function()
-			                 {
-			                     var npath = $(this).attr("path");
-				             npath = (npath == "/") ? "" : npath;
-			                     var parent = $("<li><a href=\""+path+npath+"/\">/"+npath+"</a></li>").appendTo(list);
-			                     if($(this).children().size() > 0)
-			    {
-				parent.children("a").addClass("x");
-				add(parent,this,path+npath+"/");
-			    }
-			                 });
-	      }
-		
-	      var show = function(el)
-	      {
-		  var x = $(el);
-		  var list = x.next("ul");
-		  var hide = function()
-		    {
-		        list.hide();
-		        $(this).unbind();
-		        x.one('mouseup',function() 
-		              {
-		                  x.one('click',function() { show(x); });
-		        });
-		    };
-		
-		    list.show();
-		    x.one('mouseup',function() 
-		    {
-		        x.one('click',function() { hide(); });
-		    });
-		}
-		
-		$("#menu > ul li h2").one('click',function()
+    var get_pages = function(data)
+    {	 
+        var add = function(root,dir,path)
+	{
+	    var list = $("<ul />").appendTo(root);
+
+	    var fun = function()
+	    {
+		var npath = $(this).attr("path");
+		npath = (npath == "/") ? "" : npath;
+		var parent = $("<li><a href=\""+path+npath+"/\">/"
+		    + npath+"</a></li>").appendTo(list);
+		if($(this).children().size() > 0)
 		{
-		    show(this);
-		});
-		
-		add($("#browse"),$(data),"");
-	});    
+		    parent.children("a").addClass("x");
+		    add(parent,this,path+npath+"/");
+		}
+	    };
+	    $(dir).children().each(fun);
+
+	}
 	
-	$.get(url+"?attr", function(data) 
-	      {
-		  $(data).find("ref").each(function(y)
-		                           {
-		                               handle_attr(this);
-		                           });
-	      });
+	var show = function(el)
+	{
+	    var x = $(el);
+	    var list = x.next("ul");
+	    var hide = function()
+	    {
+		list.hide();
+		$(this).unbind();
+		x.one('mouseup',function() 
+		      {
+		          x.one('click',function() { show(x); });
+		      });
+	    };
+	    
+	    list.show();
+	    x.one('mouseup',function() 
+		  {
+		      x.one('click',function() { hide(); });
+		  });
+	}
+	
+	$("#menu > ul li h2").one('click',function()
+				  {
+				      show(this);
+				  });
+	
+	add($("#browse"),$(data),"");
+    }
+    
+    var get_attr = function(data) 
+    {
+	var fun = function(y) { handle_attr(this); };
+	$(data).find("ref").each(fun);
+    }    
+       
+    $.ajax({
+	type: "GET",
+	url: url+"?pages",
+	dataType: "xml",
+	success: get_pages
+    });
+ 
+    $.ajax({
+	type: "GET",
+	url: url+"?attr",
+	dataType: "xml",
+	success: get_attr
+    });
 }
 
 function createCookie(name,value,days) 
 {
-	if (days) 
-	{
-		var date = new Date();
-		date.setTime(date.getTime()+(days*24*60*60*1000));
-		var expires = "; expires="+date.toGMTString();
-	}
-	else var expires = "";
-	document.cookie = name+"="+value+expires+"; path=/";
+    if (days) 
+    {
+	var date = new Date();
+	date.setTime(date.getTime()+(days*24*60*60*1000));
+	var expires = "; expires="+date.toGMTString();
+    }
+    else var expires = "";
+    document.cookie = name+"="+value+expires+"; path=/";
 }
 
 function readCookie(name) 
 {
-	var nameEQ = name + "=";
-	var ca = document.cookie.split(';');
-	for(var i=0;i < ca.length;i++) {
-		var c = ca[i];
-		while (c.charAt(0)==' ') c = c.substring(1,c.length);
-		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-	}
-	return null;
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+	var c = ca[i];
+	while (c.charAt(0)==' ') c = c.substring(1,c.length);
+	if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
 }
 
 function eraseCookie(name) 
 {
-	createCookie(name,"",-1);
+    createCookie(name,"",-1);
 }
 
