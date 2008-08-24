@@ -3,7 +3,8 @@ var parents  = new Array();
 var children = new Array();
 var css_attrs = ["font-style","font-weight","text-align","text-decoration","color"];
 
-var url = document.location.href;
+var loc = document.location;
+var url = loc.protocol+loc.host+loc.pathname;
 var auth = false;
 
 var handle_attr = function(refxml)
@@ -173,7 +174,8 @@ var create_spreadsheet = function(user)
         fmargin    : 24,
         cellChange  : function(x,y,val)
         {
-            var fullurl = url+$.fn.to_b26(x+1)+y+"?attr";
+            var fullurl = document.location.pathname
+		+ $.fn.to_b26(x+1)+y+"?attr";
             
             if(val == "")
             {
@@ -188,7 +190,7 @@ var create_spreadsheet = function(user)
         },
         formatChange  : function(range,val)
         {
-            $.post(url+range,
+            $.post(document.location.pathname+range,
                    "<create><format><![CDATA["+val+"]]></format></create>",null,"xml");
         },
         cellSelect : function(x,y,el)
@@ -200,23 +202,24 @@ var create_spreadsheet = function(user)
         },
         colResize : function(col,width)
         {
-            $.post(url+$.fn.to_b26(col)+"?attr",
+            $.post(document.location.pathname+$.fn.to_b26(col)+"?attr",
                    "<create><width>"+width+"</width></create>",null,"xml");
         },
         rowResize : function(row,height)
         {
-            $.post(url+row+"?attr",
+            $.post(document.location.pathname+row+"?attr",
                    "<create><height>"+height+"</height></create>",null,"xml");
         },
         cssChange : function(el,attr,val)
         {
             var ref = $.fn.cell_index(el);
-            $.post(url+$.fn.to_b26((ref[0]+1))+(ref[1]+1)+"?attr",
+            $.post(document.location.pathname
+		   +$.fn.to_b26((ref[0]+1))+(ref[1]+1)+"?attr",
                    "<create><"+attr+">"+val+"</"+attr+"></create>",null,"xml");
         },
         setName : function(range,name)
         {
-            $.post(url+range+"?attr",
+            $.post(document.location.pathname+range+"?attr",
                    "<create><name>"+name+"</name></create>",null,"xml");
         }
     };
@@ -367,17 +370,17 @@ load_data = function()
 	var fun = function(y) { handle_attr(this); };
 	$(data).find("ref").each(fun);
     }    
-       
+    
     $.ajax({
 	type: "GET",
-	url: url+"?pages",
+	url: document.location.pathname+"?pages",
 	dataType: "xml",
 	success: get_pages
     });
  
     $.ajax({
 	type: "GET",
-	url: url+"?attr",
+	url: document.location.pathname+"?attr",
 	dataType: "xml",
 	success: get_attr
     });

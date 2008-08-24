@@ -37,12 +37,15 @@ set_attribute(Ref,Val) when Ref#ref.name == format ->
     hn_db:write_item(Ref,Val),
     F = fun(X,[]) ->
                 case hn_db:get_item_val(X#ref{name=rawvalue}) of
-                    [] -> ok;
-                    Value -> set_cell_rawvalue(X,Value)
+                    [] -> 
+			ok;
+                    Value -> 
+			set_cell_rawvalue(X,Value)
                 end
         end,
     apply_range(Ref,F,[]);
-set_attribute(Ref,Val) -> hn_db:write_item(Ref,Val).
+set_attribute(Ref,Val) -> 
+    hn_db:write_item(Ref,Val).
 
 %%%-----------------------------------------------------------------
 %%% Function    : set_cell/2
@@ -81,18 +84,20 @@ set_cell(Addr, Val) ->
 %%%               references
 %%%-----------------------------------------------------------------    
 write_cell(Addr, Value, Formula, Parents, DepTree) ->
-
+    
     Index = to_index(Addr),
-        
+    
     hn_db:write_item(Addr#ref{name=formula},Formula),
     set_cell_rawvalue(Addr,Value),
         
     %% Delete attribute if empty, else store
     Set = fun(Ref,Val) ->
-        case Val of
-        {xml,[]} -> hn_db:remove_item(Ref);
-        _        -> hn_db:write_item(Ref,Val)
-        end
+		  case Val of
+		      {xml,[]} -> 
+			  hn_db:remove_item(Ref);
+		      _ -> 
+			  hn_db:write_item(Ref,Val)
+		  end
     end,
            
     Set(Addr#ref{name=parents},{xml,Parents}),
@@ -138,6 +143,7 @@ set_cell_rawvalue(Addr,Value) ->
     {ok,Format} = hn_db:get_item_inherited(Addr#ref{name=format}, "General"),
     {erlang,{_Type,Output}} = format:get_src(Format),
     {ok,{Color,V}}=format:run_format(Value,Output),
+    io:format("~p - ~p - ~p",[Value,Format,V]),
     hn_db:write_item(Addr#ref{name=value},V),
     hn_db:write_item(Addr#ref{name=color},atom_to_list(Color)),
     ok.

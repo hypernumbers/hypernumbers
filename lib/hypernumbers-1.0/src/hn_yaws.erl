@@ -107,9 +107,13 @@ req(_Arg,'GET',require_token,_Page)  ->
     {ok,{status,503}};
 
 %% Index page "/"
-req(_Arg,'GET',_,#page{ref={page,"/"},vars=[]}) -> 
-    {ok,{page,"/html/index.html"}};
-
+req(_Arg,'GET',_,Page = #page{ref={page,"/"},vars=[]}) -> 
+    Ref    = (page_to_ref(Page))#ref{name=gui},
+    {ok,V} = hn_db:get_item_inherited(Ref,"index"),
+    {ok,{page,"/html/"++V++".html"}};
+req(_Arg,'GET',_,#page{ref={page,"/"},vars=[{gui,GUI}]}) -> 
+    {ok,{page,"/html/"++GUI++".html"}};
+    
 %% ?attr
 req(_Arg,'GET',_,Page = #page{vars = [{attr}]}) -> 
     Items = lists:filter(
