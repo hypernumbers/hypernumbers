@@ -7,7 +7,8 @@
         ustring:pr(ustring:to_upper(ustring:new(S)))).
 
 process([$= | Tl]) when Tl =/= [] ->
-    {formula, upcase(Tl)};
+    {formula, Tl};
+%%{formula, upcase(Tl)};
 process([39 | Tl]) -> %% singly quoted string
     {string, Tl};
 process(Input) ->
