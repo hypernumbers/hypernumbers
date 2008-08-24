@@ -227,7 +227,7 @@ harmean(Vs) ->
 harmean1([], Num, Acc) ->
     Num / Acc;
 harmean1([Hd|Tl], Num, Acc) ->
-    harmean1(Tl, Num+1, (1/H)+Acc).
+    harmean1(Tl, Num+1, (1/Hd)+Acc).
                         
 gammadist([V1, V2, V3, V4]) ->
     [X, Alpha, Beta] = ?numbers([V1, V2, V3], ?default_rules),
@@ -359,12 +359,12 @@ poisson([V1, V2, V3]) ->
 poisson1(X, Mean, false) ->
     noncumpoisson(X, Mean);
 poisson1(X, Mean, true) ->
-    cumpoisson(X, Mean, 0);
+    cumpoisson(X, Mean, 0).
 noncumpoisson(X, Mean) ->
     E = math:exp(1),
     math:pow(E, -Mean) * math:pow(Mean, X) / stdfuns_math:fact1(X).
-cumpoisson(X, Mean) ->
-    cumpoisson(X, Mean, 0).
+%% cumpoisson(X, Mean) ->
+%%     cumpoisson(X, Mean, 0).
 cumpoisson(-1, _Mean, Acc) ->
     Acc;
 cumpoisson(K, Mean, Acc) ->
