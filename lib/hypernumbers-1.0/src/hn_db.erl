@@ -255,19 +255,26 @@ get_ref_from_name(Name) ->
 %%--------------------------------------------------------------------    
 remove_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
     
-    {atomic, _Okay} = mnesia:transaction(fun() ->
-    
-        %% If Name is defined, match it
-        N = ?COND(Name == undef,'_',Name),
-        Attr  = #ref{site=Site, path=Path,ref=Ref, name=N, _ = '_'},
-        Match = #hn_item{addr = Attr, _ = '_'},
-        
-        lists:map(
-            fun(X) -> mnesia:delete_object(X) end,
-            mnesia:match_object(hn_item,Match,read))
-    end),
+    F = fun() ->	
+		%% If Name is defined, match it
+		N = ?COND(Name == undef,'_',Name),
+		Attr  = #ref{site=Site, path=Path,ref=Ref, name=N, _ = '_'},
+		Match = #hn_item{addr = Attr, _ = '_'},
+		
+		case Ref of
+		    {cell,{X,Y}} ->
+			Cell = #index{site=Site,path=Path,row=X,column=Y},
+			mark_dirty(Cell,cell);
+		    _ -> ok
+		end,
+
+		lists:map(
+		  fun(X) -> mnesia:delete_object(X) end,
+		  mnesia:match_object(hn_item,Match,read))
+	end,
+    {atomic, _Okay} = mnesia:transaction(F),
     ok.
-      
+
 %%-------------------------------------------------------------------
 %% Table : local_cell_link
 %% Def   : record(local_cell_link, {parent = #index{}, child = #index{}}).

@@ -35,8 +35,10 @@ init([Type]) ->
 handle_info({mnesia_table_event,{write,_,Rec,_,_}},State) ->
 
     case State#state.state of
-    passive -> ok;
-    active  -> trigger_recalc(Rec,State#state.type)
+	passive -> 
+	    ok;
+	active -> 
+	    trigger_recalc(Rec,State#state.type)
     end,
         
     {noreply, State};

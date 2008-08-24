@@ -178,7 +178,7 @@ var create_spreadsheet = function(user)
             if(val == "")
             {
                 $.post(fullurl,
-                       "<delete><formula /><value/></delete>",null,"xml");
+                       "<delete><formula/><rawvalue/><value/></delete>",null,"xml");
             }
             else
             {
