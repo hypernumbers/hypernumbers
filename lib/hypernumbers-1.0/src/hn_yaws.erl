@@ -2,7 +2,7 @@
 %%% File        : hn_yaws.erl
 %%% Author      : Dale Harvey <dale@hypernumbers.com>
 %%% Description : this handles incoming http requests
-%%%-----------------------------------------------------------------------------
+%%%----------------------------------------------------------------------------
 -module(hn_yaws).
 
 %%--------------------------------------------------------------------
@@ -354,8 +354,11 @@ get_last_index(Site,Path,RowCol) ->
                              ?COND(RowCol == column,X1 < X2,Y1 < Y2)
                      end,CellList),
             
-            #hn_item{addr=#ref{ref={cell,{X,Y}}}} = lists:last(List),
-            ?COND(RowCol == column,X,Y)
+	    case List of
+		[]    -> 0;
+                _Else ->  #hn_item{addr=#ref{ref={cell,{X,Y}}}} = lists:last(List),
+			  ?COND(RowCol == column,X,Y)
+	    end
     end.    
 
 %% Takes an unfiltered list of spriki records, extracts the path
