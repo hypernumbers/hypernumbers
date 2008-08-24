@@ -164,8 +164,8 @@ correl([_V1, _V2]) ->
 
 count(Vs) ->
     Flatvs = ?flatten_all(Vs),
-    Nums = ?numbers(Flatvs, ?default_rules),
-    length(Nums).
+    %%Nums = ?numbers(Flatvs, ?default_rules),
+    length(Flatvs).
                  
 countblank(Vs) ->
     Flatvs = ?flatten_all(Vs),
