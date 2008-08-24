@@ -1,10 +1,8 @@
-%%% @doc Interface to the formula engine. Also, the interpreter.
+%%% @doc Interface to the formula engine and the interpreter.
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 
 -module(muin).
--export([compile/2,
-         run_formula/2,
-         run_code/2]).
+-export([compile/2, run_formula/2, run_code/2]).
 
 -compile(export_all).
 
@@ -16,7 +14,6 @@
 -import(tconv, [to_b26/1, to_i/1, to_i/2, to_s/1]).
 -import(muin_util, [attempt/3]).
 
-%% These are read-only.
 -define(mx, get(x)).
 -define(my, get(y)).
 -define(mpath, get(path)).
@@ -26,9 +23,12 @@
 -define(isfuncall(X),
         is_atom(X) andalso X =/= true andalso X =/= false).
 
+-define(puts, io:format).
+
 %%% PUBLIC ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-%%% @doc Parses formula, and returns AST as an s-expression.
+%% @spec compile(string(), {integer(), integer()})
+%% @doc Compiles a formula against a cell.
 compile(Fla, {X, Y}) ->
     case attempt(?MODULE, try_parse, [Fla, {X, Y}]) of
         {ok, {ok, Pcode}} ->
@@ -39,7 +39,7 @@ compile(Fla, {X, Y}) ->
     end.
 
 %% @doc Runs formula given as a string.
-run_formula(Fla, Bindings) when is_list(Fla) andalso is_record(Bindings, ref) ->
+run_formula(Fla, Bindings) ->
     {cell, {X, Y}} = Bindings#ref.ref,
     case compile(Fla, {X, Y}) of
         {ok, Ecode} ->
@@ -67,9 +67,8 @@ run_code(Pcode, #ref{site = Site, path = Path, ref = {cell, {X, Y}}}) ->
     case attempt(?MODULE, eval, [Pcode]) of
         {ok, Val} ->
             {RefTree, Errors, References} = get(retvals),
-            %% Cells referencing blank cells become 0.
-            {ok, {?COND(Val == blank, 0, Val),
-                  RefTree, Errors, References, get(recompile)}};
+            Val2 = ?COND(Val == blank, 0, Val), % Links to blanks become 0.
+            {ok, {Val2, RefTree, Errors, References, get(recompile)}};
         {error, Reason} ->
             {error, Reason}
     end.
@@ -82,10 +81,14 @@ try_parse(Fla, {X, Y}) ->
     {ok, _Ast} = xfl_parser:parse(Toks). % Match to enforce the contract.
 
 %% @doc Evaluates an s-expression, pre-processing subexps as needed.
-eval([Func0 | Args0]) when ?isfuncall(Func0) ->
-    [Func | Args] = preproc([Func0 | Args0]), %% transform sexp if needed
-    CallArgs = [eval(X) || X <- Args], %% eval args
-    funcall(Func, CallArgs);
+eval(Node = [Func|Args]) when ?isfuncall(Func) ->
+    case preproc(Node) of
+        false ->
+            CallArgs = [eval(X) || X <- Args],
+            funcall(Func, CallArgs);
+        Newnode ->
+            eval(Newnode)
+    end;
 eval(Value) ->
     Value.
 
@@ -96,15 +99,17 @@ plain_eval([Func | Args]) when ?isfuncall(Func) ->
 plain_eval(Value) ->
     Value.
 
-%% @doc Transforms certain types of s-exps. @end
+%% @doc Transforms certain types of sexps. Returns false if the sexp didn't
+%% need to be transformed. @end
+%% Ranges constructed with INDIRECT. No need for an explicit check, because
+%% if either argument evaluates to something other than a ref, funcall clause
+%% for ':' will fail at the next step.
 preproc([':', StartExpr, EndExpr]) ->
-    %% Arguments to ':' calls are either tuples (literals) or lists (funcalls).
-    %% Will fail later if funcalls aren't to INDIRECT, so not checking here.
-    Eval = fun(Node) when is_list(Node) ->
+    Eval = fun(Node) when is_list(Node) -> % Funcall
                    Cellref = hd(plain_eval(tl(Node))),
                    {ok, [Ref]} = xfl_lexer:lex(Cellref, {?mx, ?my}),
                    Ref;
-              (Node) when is_tuple(Node) ->
+              (Node) when is_tuple(Node) -> % Literal
                    Node
            end,
 
@@ -119,15 +124,35 @@ preproc([indirect, Arg]) ->
         _ ->
             ?ERR_REF
     end;
-preproc(Sexp) ->
-    Sexp.
+preproc(['query', Arg]) ->
+    Toks = string:tokens(Arg, "/"),
+    Idx = find("*", Toks),
+    Under = sublist(Toks, Idx - 1),
+    Pages = get_pages_under(Under),
+    R = map(fun(X) ->
+                    %% omgwtfbbq
+                    Refstr = "/" ++ flatten(hslists:join("/", Under ++ [X] ++ [last(Toks)])),
+                    {ok, Ts} = xfl_lexer:lex(Refstr, {?mx, ?my}),
+                    case Ts of
+                        [{ref, R, C, P, _}] ->
+                            [ref, R, C, P];
+                        _ ->
+                            ?ERR_REF
+                    end
+            end,
+            Pages),
+    Node = [make_list | R],
+    Node;
+preproc(_) ->
+    false.
 
+funcall(make_list, Args) ->
+    Args; % shame, shame...
 %% Refs
 funcall(ref, [Col, Row, Path]) ->
     Rowidx = toidx(Row),
     Colidx = toidx(Col),
     do_cell(Path, Rowidx, Colidx);
-
 %% Cell ranges (A1:A5, R1C2:R2C10 etc).
 %% In a range, the path of second ref **must** be ./
 funcall(':', [{ref, Col1, Row1, Path1, _}, {ref, Col2, Row2, "./", _}]) ->
@@ -201,3 +226,46 @@ get_value_and_link(FetchFun) ->
 toidx(N) when is_number(N) -> N;
 toidx({row, Offset})       -> ?my + Offset;
 toidx({col, Offset})       -> ?mx + Offset.
+
+%% TODO: Move to hslists.
+%% @doc Return position of element X in the list. Returns 0 if the list does
+%% not contain such element.
+find(_, []) ->
+    0;
+find(What, [What|_]) ->
+    1;
+find(What, [_|Tl]) ->
+    find1(What, Tl, 2). % position of current hd in the original list
+find1(What, [What|_], Origpos) ->
+    Origpos;
+find1(What, [_|Tl], Origpos) ->
+    find1(What, Tl, Origpos + 1);
+find1(_, [], _) ->
+    0.
+
+%% @spec get_pages_under(list()) -> list()
+%% @doc Get list of pages under path specified by a list of path components.
+get_pages_under(Pathcomps) ->
+    Match = fun() ->
+                    M = #hn_item{addr = #ref{site = '_',
+                                             path = '_',
+                                             ref  = '_',
+                                             name = '_',
+                                             auth = '_'},
+                                 val = '_'},
+                    mnesia:match_object(hn_item, M, read)
+            end,
+    {atomic, Res} = mnesia:transaction(Match),
+    %% List of expansions for the "*" wildcard.
+    Starexp = foldl(fun(X, Acc) ->
+                       Path = (X#hn_item.addr)#ref.path, % assume single site
+                       Init = sublist(Path, length(Pathcomps)),
+                       if Pathcomps == Init ->
+                               [last(Path) | Acc];
+                          true ->
+                               Acc
+                       end
+                    end,
+                    [],
+                    Res),
+    hslists:uniq(Starexp).
