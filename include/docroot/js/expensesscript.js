@@ -4,11 +4,7 @@ var children = new Array();
 var css_attrs = ["font-style","font-weight","text-align","text-decoration","color"];
 
 var loc = document.location;
-console.log(loc);
-//var url = loc.protocol+loc.host+loc.pathname;
-url="http:127.0.0.1:9000/expenses/claim/1"
-hardwiredpath="/expenses/claim/1/"
-console.log(url);
+var url = loc.pathname;
 
 var auth = false;
 
@@ -43,13 +39,7 @@ var init = function()
 $(function()
 {
     // reuse this script in different places
-    pagename=getPageName();
-    console.log("get the name of the page calling this script");
-    console.log(pagename);
-    if (pagename == "expenses.html")
-    {
-         build_form();
-    }
+    build_form();
     init();
     load_data();
  });
@@ -85,11 +75,8 @@ build_form = function()
                     str += "<formula><![CDATA["+val+"]]></formula>";
                 }
                 str += "</create>";
-                //console.log("checking post string in loadRange **starts**");
-                //console.log(str);
-                //console.log("**ends**");
                 
-                $.post("/expenses/claim/1/?attr&lastrow",str,null,"xml");                
+                $.post(url+"?attr&lastrow",str,null,"xml");                
             });
 }
 
@@ -104,7 +91,7 @@ load_data = function()
      
     $.ajax({
 	type: "GET",
-	url: hardwiredpath+"?attr",
+	url: url+"?attr",
 	dataType: "xml",
 	success: get_attr
     });

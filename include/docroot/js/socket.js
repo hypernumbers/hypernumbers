@@ -22,7 +22,10 @@ function soc_connect()
 {
     $("#footer span").text("connected");
     $("#footer img").attr("src","/img/tick.png");
-    _jssocket.write("register "+document.location.href+"a1:j30");
+    var url = document.location.protocol + "//" + document.location.host
+      + document.location.pathname;
+    console.log(url);
+    _jssocket.write("register "+url+"a1:j30");
 }
 
 function soc_error()

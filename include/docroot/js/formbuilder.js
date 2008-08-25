@@ -15,15 +15,6 @@
             return path;
         }
 
-function getPageName()
-{
-  page=document.location.pathname;
-	  segements=page.split("/");
-          len=segments.length;
-	  pagename=segments[len-1];
-          return pagename;
-	    }
-
         function parseRef(cell)
         {
             return [
