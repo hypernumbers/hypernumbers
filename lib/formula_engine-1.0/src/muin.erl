@@ -58,12 +58,11 @@ run_formula(Fla, Bindings) ->
 
 %% @doc Runs compiled formula.
 run_code(Pcode, #ref{site = Site, path = Path, ref = {cell, {X, Y}}}) ->
-    put(site, Site),
-    put(path, Path),
-    put(x, X),
-    put(y, Y),
-    put(retvals, {[], [], []}),
-    put(recompile, false),
+    %% Populate the process dictionary.
+    map(fun({K,V}) -> put(K, V) end,
+        [{site, Site}, {path, Path}, {x, X}, {y, Y},
+         {retvals, {[], [], []}}, {recompile, false}]),
+
     case attempt(?MODULE, eval, [Pcode]) of
         {ok, Val} ->
             {RefTree, Errors, References} = get(retvals),
