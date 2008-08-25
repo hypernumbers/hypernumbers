@@ -86,8 +86,11 @@ eval(Node = [Func|Args]) when ?isfuncall(Func) ->
         false ->
             CallArgs = [eval(X) || X <- Args],
             funcall(Func, CallArgs);
-        Newnode ->
-            eval(Newnode)
+        {reeval, Newnode} ->
+            eval(Newnode);
+        [Func2|Args2] ->
+            CallArgs = [eval(X) || X <- Args2],
+            funcall(Func2, CallArgs)
     end;
 eval(Value) ->
     Value.
@@ -151,7 +154,7 @@ preproc(['query', Arg]) ->
     Newparent = {"local", {?msite, hslists:init(Toks), Colidx, Rowidx}},
     put(retvals, {[Newparent | Oldparents], Errs, Refs}),
 
-    Node;
+    {reeval, Node};
 preproc(_) ->
     false.
 
