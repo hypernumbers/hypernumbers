@@ -65,8 +65,14 @@
               </ul>
             </li>
           </ul>
-          
           <ul>
+	    <li><h2>Publish</h2>
+	      <ul>
+		<li><a id="create_tpl">Template</a></li>
+	      </ul>
+	    </li>
+          </ul>
+	  <ul>
             <li><h2>Links</h2>
               <ul>
         	<li><a class="x">Incoming</a></li>
@@ -85,8 +91,20 @@
 	      <input type="file" name="Filedata" id="Filedata" value="Upload Spreadsheet" />
 	    </div>
 	  </div>
-	  
-          <div class="dialog" id="formats">
+	  <div class="dialog" id="templates">
+	    <h2>Define New Template</h2>
+	    <div class="clearfix">
+	      <table cellspacing="5">
+		<tr><td>Template Name:</td><td><input type="text" id="tplname" /></td></tr>
+		<tr><td colspan="2"><input type="checkbox" />&nbsp; dynamic template</td></tr>
+		<tr><td>Root Url</td><td><input type="text" class="dynamic" id="tplurl" disabled="true" /></td></tr>
+	      </table>
+	      <div class="functioninput">
+		<input type="button" value="save" class="submit" />
+            </div>
+	    </div>
+	  </div>
+	  <div class="dialog" id="formats">
             <h2>Number Formats</h2>
             <div class="clearfix">
               <ul class="section_list">

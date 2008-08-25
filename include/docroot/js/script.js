@@ -105,63 +105,91 @@ var init = function()
         return false;
     }; 
     $("#m_import").click(importfun);
+
+    var dynfun = function()
+    {
+	if(!$(this).is(":checked"))
+	    $("#templates .dynamic").attr("disabled","true");
+	else
+	    $("#templates .dynamic").removeAttr("disabled");
+    };
+    $("#templates input[type=checkbox]").change(dynfun);
+
+    var tplfun = function()
+    {
+	$("#templates").show();
+	$("#menu ul ul").hide();
+    };
+    $("#create_tpl").click(tplfun);
     
+
+    var savefun = function()
+    {
+	var poststr = "<template><name>"+$("#tplname").val()+"</name>"
+	    + "<url>" + $("#tplurl").val() + "</url></template>";
+	$.post("/",poststr,function(){
+	    document.location.href="/@"+$("#tplname").val()+"/";
+	},"xml");
+    };
+    $("#templates input.submit").click(savefun);
+
+
     var auth = readCookie("auth");
     if(auth != null)
-	{   
-	    // TODO : Check auth here
-	    var logout = function()
-		{
-		    eraseCookie("auth");
-		    document.location.reload(true);
-		};
-	    var user = auth.split(":");
-	    $("#loginmsg").show().find("#user").text(user[0]);
-	    $("#logoutbutton").show().children("a").click(logout);
-	}
-    else
+    {   
+	// TODO : Check auth here
+	var logout = function()
 	{
-	    var loginshow = function()
-	    {
-		$("#loginform").toggle();
-	    };
-	    $("#loginbutton").show().children("a").click(loginshow);
+	    eraseCookie("auth");
+	    document.location.reload(true);
+	};
+	var user = auth.split(":");
+	$("#loginmsg").show().find("#user").text(user[0]);
+	$("#logoutbutton").show().children("a").click(logout);
+    }
+    else
+    {
+	var loginshow = function()
+	{
+	    $("#loginform").toggle();
+	};
+	$("#loginbutton").show().children("a").click(loginshow);
+	
+	var login = function()
+	{
+	    var email = $("#email").val();
+	    var pass = $("#pass").val();
 	    
-	    var login = function()
+	    if(pass!="" && email!="")
 	    {
-		var email = $("#email").val();
-		var pass = $("#pass").val();
+		var xml = "<login>"
+		    +"<email>"+ $("#email").val() +"</email>"
+		    +"<password>"+ $("#pass").val() +"</password>"
+		    +"</login>";
 		
-		if(pass!="" && email!="")
+		var callback = function(data)
+		{
+		    if($(data).find("unauthorised").length == 1)
 		    {
-			var xml = "<login>"
-			    +"<email>"+ $("#email").val() +"</email>"
-			    +"<password>"+ $("#pass").val() +"</password>"
-			    +"</login>";
-			
-			var callback = function(data)
-			    {
-				if($(data).find("unauthorised").length == 1)
-				    {
-					$("#feedback").text("Invalid Details");
-				    }
-				else 
-				    {
-					var token = $(data).find("token").text();
-					createCookie("auth",token,30);
-					window.location.reload( true );
-				    }
-			    }
-			$.post("/",xml,callback,xml);
+			$("#feedback").text("Invalid Details");
 		    }
-		else
+		    else 
 		    {
-			$("#feedback").text("Enter full details");
+			var token = $(data).find("token").text();
+			createCookie("auth",token,30);
+			window.location.reload( true );
 		    }
-		return false;
-	    };
-	    $("#login").submit(login);
-	}
+		}
+		$.post("/",xml,callback,xml);
+	    }
+	    else
+	    {
+		$("#feedback").text("Enter full details");
+	    }
+	    return false;
+	};
+	$("#login").submit(login);
+    }
 };
 
 var create_spreadsheet = function(user)

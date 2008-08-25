@@ -1,6 +1,7 @@
 -module(misc_util).
 -export([stdfuns_export_xml/0,
 	 import_xml_attributes/2,
+	 do_import/2,
 	 profile/2,
 	 testa/0,
 	 cheat/1]).
@@ -23,11 +24,11 @@ cheat(2) -> import_xml_attributes("/cygdeive/c/opt/code/trunk/priv/dale/data.xml
 stdfuns_export_xml() ->
 
     Filter = fun
-        ({Fun,Ident},Ident) -> true;
+        ({_Fun,Ident},Ident) -> true;
         (_,_Ident) -> false
     end,
 
-    Function = fun({Fun,AtomIdent}) ->
+    Function = fun({Fun,_AtomIdent}) ->
         {function,[{label,atom_to_list(Fun)}],[]}
     end,
 
@@ -53,20 +54,26 @@ testb(bar) -> "foo".
 
 import_xml_attributes(File,Url) ->
     {ok,String} = hn_util:read(File),
-    {attr,[],Refs} = simplexml:from_xml_string(String),
+    do_import(Url,simplexml:from_xml_string(String)).
+
+do_import(Url,{attr,[],Refs}) ->
     lists:map
-    (
-        fun(X) ->
-            case X of
-            %% Dont sent value attributes
-            {ref,_,[{value,_,_}]} -> ok;
-            {ref,[_,{ref,Ref}],[{Name,_,Children}]} ->
-                Xml = io_lib:format("<create><~s>~s</~s></create>",
-                    [Name,simplexml:to_xml_string(Children),Name]),
-                hn_util:post(Url++Ref++"?attr",lists:flatten(Xml),"text/xml")
-            end
-        end,Refs
-    ).
+      (
+      fun(X) ->
+	      case X of
+		  %% Dont sent value attributes
+		  {ref,_,[{value,_,_}]} -> ok;
+		  {ref,[_,{ref,Ref}],[{Name,_,[{_Type,[],Children}]}]} ->
+		      Xml = io_lib:format("<create><~s>~s</~s></create>",
+					  [Name,simplexml:to_xml_string(Children),Name]),
+		      hn_util:post(Url++Ref++"?attr",lists:flatten(Xml),"text/xml");
+		  {ref,[_,{ref,Ref}],[{Name,_,Children}]} ->
+		      Xml = io_lib:format("<create><~s>~s</~s></create>",
+					  [Name,simplexml:to_xml_string(Children),Name]),
+		      hn_util:post(Url++Ref++"?attr",lists:flatten(Xml),"text/xml")
+	      end
+      end,Refs
+     ).
     
 profile(N,F) ->
     statistics(runtime),

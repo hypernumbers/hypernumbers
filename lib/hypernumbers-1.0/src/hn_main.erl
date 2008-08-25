@@ -16,7 +16,8 @@
     set_cell/2,
     get_cell_info/4,
     write_cell/5,
-    get_hypernumber/9 
+    get_hypernumber/9,
+    copy_page/2
     ]).
 
 %%%-----------------------------------------------------------------
@@ -56,7 +57,8 @@ set_cell(Addr, Val) ->
     case superparser:process(Val) of
         {formula, Fla} ->
             case muin:run_formula(Fla, Addr) of
-                {error,_Error} -> ok;       
+                {error,_Error} -> 
+		    ok;       
                 {Pcode, Res, Parents, Deptree, Recompile} ->
                     %% Convert stuff to SimpleXML.
                     F = fun({Type, {S, P, X1, Y1}}) ->
@@ -113,8 +115,10 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
       fun(X) when is_record(X,remote_cell_link) ->
 	      Url  = hn_util:index_to_url(X#remote_cell_link.parent),
 	      case lists:member({url,[{type,"remote"}],[Url]},Parents) of
-		  false -> hn_db:del_remote_link(X);
-		  true  -> ok
+		  false -> 
+		      hn_db:del_remote_link(X);
+		  true  -> 
+		      ok
 	      end;
 	 (_) -> ok
       end,
@@ -178,9 +182,7 @@ get_cell_info(Site, TmpPath, X, Y) ->
 
     Path = lists:filter(fun(Z) -> ?COND(Z==47,false,true) end,TmpPath),   
     Ref = #ref{site=string:to_lower(Site),path=Path,ref={cell,{X,Y}}},
-    
     Value   = hn_db:get_item_val(Ref#ref{name=rawvalue}),
-    
     DepTree = case hn_db:get_item_val(Ref#ref{name='dependancy-tree'}) of
                   {xml,Tree} -> Tree;
                   []         -> []
@@ -255,6 +257,11 @@ recalc(Index) ->
     end,
     
     hn_db:mark_dirty(Index, cell),
+    ok.
+
+copy_page(From,To) ->
+    Attr = hn_yaws:get_page_attributes(From),
+    misc_util:do_import(From#ref.site++To,Attr),
     ok.
 
 %%%-----------------------------------------------------------------

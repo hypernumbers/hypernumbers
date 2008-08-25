@@ -16,7 +16,7 @@
 %%%-----------------------------------------------------------------
 %%% Exported Functions
 %%%-----------------------------------------------------------------
--export([ out/1 ]).
+-export([ out/1, get_page_attributes/1 ]).
 
 out(Arg) ->
 
@@ -36,8 +36,9 @@ out(Arg) ->
                                {ok,[{status,400}]}
                        end,
 
-            Headers = [{header,{cache_control,"no-cache"}},{status,200}],
-	    lists:append(Ret,Headers)
+            %%Headers = [{header,{cache_control,"no-cache"}},{status,200}],
+	    %%lists:append(Ret,Headers)
+	    Ret
     end.
 
 do_request(Arg,Url) ->  
@@ -73,6 +74,8 @@ do_request(Arg,Url) ->
                      [{status,Status}];
                  {ok,{text,Text}} -> 
                      [{content,"text/plain",Text}];
+		 {ok,{redirect,Loc}} ->
+		     {redirect,Loc};
                  {ok,Data} -> 
                      case Page#page.format of
                          {xml} -> 
@@ -113,21 +116,28 @@ req(_Arg,'GET',_,Page = #page{ref={page,"/"},vars=[]}) ->
     {ok,{page,"/html/"++V++".html"}};
 req(_Arg,'GET',_,#page{ref={page,"/"},vars=[{gui,GUI}]}) -> 
     {ok,{page,"/html/"++GUI++".html"}};
+
+req(_Arg,'GET',_,Page=#page{ref={page,"/"},vars=[{new}]}) -> 
+    Ref    = page_to_ref(Page),
+    {ok,Tpl} = hn_db:get_item_inherited(Ref#ref{name=template},blank),
+    Items = hn_db:get_item(Ref#ref{path=lists:append(Ref#ref.path,'_')}),
+    F = fun(#hn_item{addr=R}) ->
+		Last = lists:last(R#ref.path),
+		?COND(hn_util:is_numeric(Last),
+		      list_to_integer(Last),0)
+	end,
+    Ind = case Items of
+	      [] -> 1;
+	      _Else -> lists:max(lists:map(F,Items))+1
+	  end,
+    NPage = "/"++string:join(Ref#ref.path,"/")++"/"++integer_to_list(Ind)++"/",
+    hn_main:copy_page(Ref#ref{path=[Tpl]},NPage),
+    {ok,{redirect, Ref#ref.site++NPage}};
     
 %% ?attr
 req(_Arg,'GET',_,Page = #page{vars = [{attr}]}) -> 
-    Items = lists:filter(
-              fun(#hn_item{addr=A}) -> 
-                      case (A)#ref.name of
-                          "__"++_ -> 
-                              false;
-                          _ -> 
-                              true
-                      end
-              end,
-              hn_db:get_item(page_to_ref(Page))),
-    List = lists:map(fun hn_util:item_to_xml/1 , Items),
-    {ok,{attr,[],List}};    
+    Attr = get_page_attributes(page_to_ref(Page)),
+    {ok,Attr};    
 
 %% ?attr=value
 req(_Arg,'GET',_,Page = #page{vars = [{attr,Val}]}) -> 
@@ -262,6 +272,13 @@ post(_Arg,_User,Page,{notify,[],Data}) ->
             api_change(Data,Page)
     end;
 
+post(_Arg,_User,Page,{template,[],[{name,[],[Name]},{url,[],[Url]}]}) ->
+    Tpl = "/@"++Name++"/", 
+    ok = hn_main:copy_page(page_to_ref(Page),Tpl),
+    NPage = hn_util:parse_url(Page#page.site++Url),
+    hn_main:set_attribute((page_to_ref(NPage))#ref{name=template},"@"++Name),
+    {ok,{success,[],[]}};
+
 post(_Arg,_User,_Page,Data) ->
     error_logger:error_msg("~p~n",[Data]),
     throw(unmatched_post_request).
@@ -313,6 +330,20 @@ api_change([{biccie,[],     [Bic]},
 
 %% Utility functions
 %%--------------------------------------------------------------------
+get_page_attributes(Ref) ->
+    Items = lists:filter(
+	      fun(#hn_item{addr=A}) -> 
+                      case (A)#ref.name of
+                          "__"++_ -> 
+                              false;
+                          _ -> 
+                              true
+                      end
+              end,
+	      hn_db:get_item(Ref)),
+    List =  lists:map(fun hn_util:item_to_xml/1,Items),
+    {attr,[],List}.
+
 get_post_data(_,_Arg,[{import}]) -> 
     {ok,[import]};
 get_post_data({json,nocallback},Arg,Dec) -> 
