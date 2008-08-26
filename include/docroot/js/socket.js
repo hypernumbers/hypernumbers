@@ -24,7 +24,6 @@ function soc_connect()
     $("#footer img").attr("src","/img/tick.png");
     var url = document.location.protocol + "//" + document.location.host
       + document.location.pathname;
-    console.log(url);
     _jssocket.write("register "+url+"a1:j30");
 }
 
