@@ -171,7 +171,7 @@ req(_Arg,'GET',_,Page = #page{vars = [{hypernumber}]}) ->
 %% /a1 
 req(_Arg,'GET',_,Page = #page{vars = []}) -> 
     case hn_db:get_item(page_to_ref(Page)) of
-        []   -> {ok,{content,"text/plain","blank"}};
+        []   -> {return,{content,"text/plain","blank"}};
     List ->      
             F = fun(X) ->                        
                         (X#hn_item.addr)#ref.name == rawvalue
@@ -182,7 +182,7 @@ req(_Arg,'GET',_,Page = #page{vars = []}) ->
                       [#hn_item{val=Value}] -> Value
                   end,  
             
-            {ok,{content,"text/plain",hn_util:text(Val)}}
+            {return,{content,"text/plain",hn_util:text(Val)}}
     end;
 
 req(Arg,'POST', _User, Page = #page{format=Format,vars=Vars}) ->

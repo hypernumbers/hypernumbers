@@ -263,7 +263,7 @@ remove_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
 		
 		case Ref of
 		    {cell,{X,Y}} ->
-			Cell = #index{site=Site,path=Path,row=X,column=Y},
+			Cell = #index{site=Site,path=Path,row=Y,column=X},
 			mark_dirty(Cell,cell);
 		    _ -> ok
 		end,

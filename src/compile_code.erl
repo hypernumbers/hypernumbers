@@ -1,6 +1,6 @@
 -module(compile_code).
 
--export([start/0,start/1]).
+-export([start/0]).
 -include("../include/handy_macros.hrl").
 
 -define(init(L),
@@ -23,12 +23,10 @@
 
 -define(EXTRA_ERL_FILES, []).
 
-start(Clean) ->
-    compile(Clean).
 start() ->
-    compile(dirty).
+    compile().
 
-compile(Clean) ->
+compile() ->
 
     get_rel_file(),
 
@@ -57,23 +55,23 @@ compile(Clean) ->
                                    filelib:wildcard(App_rt_dir ++ X ++ "src/*.erl"))
                        end,
                        ?DIRS)),
-
+    
     Extra = lists:map(
               fun(X) ->
                       {App_rt_dir++X,App_rt_dir++"ebin"}
               end,
               ?EXTRA_ERL_FILES),
+    
+    compile_funcs(Dirs++Extra, Inc_list).
 
-    compile_funcs(Clean,Dirs++Extra, Inc_list).
-
-compile_funcs(Clean, List, Inc_list) ->
+compile_funcs(List, Inc_list) ->
     New_list = [{X, [debug_info, {outdir, Y} | Inc_list]} || {X, Y} <- List],
-    comp_lists(Clean, New_list).
+    comp_lists(New_list).
 
-comp_lists(Clean, List) ->
-    comp_lists(Clean, List, ok).
+comp_lists(List) ->
+    comp_lists(List, ok).
 
-comp_lists(Clean, [{File, Opt}|T], OldStatus) ->
+comp_lists([{File, Opt}|T], OldStatus) ->
     Append = case member(filename:basename(File), ?NO_WARNINGS) of
                  true ->  [report_errors];
                  false -> [report_errors,report_warnings]
@@ -91,21 +89,19 @@ comp_lists(Clean, [{File, Opt}|T], OldStatus) ->
                             code:delete(FileName),
                             code:purge(FileName),
                             code:load_file(FileName),
-                            comp_lists(Clean, T, OldStatus);
+                            comp_lists(T, OldStatus);
                         _Error ->
-                            comp_lists(Clean, T, error)
+                            comp_lists(T, error)
                     end
            end,
-
-    case {Clean, uptodate(File, Dir)} of
-        {clean,_} ->
+    
+    case uptodate(File, Dir) of
+	false ->
             Comp();
-        {dirty,false} ->
-            Comp();
-        {_,_} ->
-            comp_lists(Clean, T, OldStatus)
+        _ ->
+            comp_lists(T, OldStatus)
     end;
-comp_lists(_Clean, [], Status) ->
+comp_lists([], Status) ->
     io:fwrite("   Termination Status: ~p~n", [Status]),
     Status.
 
