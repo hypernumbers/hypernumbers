@@ -8,7 +8,7 @@
 -import(file, [copy/2, delete/1, get_cwd/0, rename/2]).
 -define(P(X), io:format(" *** " ++ X ++ " ***~n")).
 -define(FRONTENDS,
-        ["russian"]).%%, "french", "german", "italian", "spanish", "portuguese"]).
+        ["russian", "french", "german", "italian", "spanish", "portuguese"]).
 
 gen() ->
     DestDir = "../../lib/formula_engine-1.0/src/",

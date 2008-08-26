@@ -63,6 +63,8 @@ do_import(Url,{attr,[],Refs}) ->
 	      case X of
 		  %% Dont sent value attributes
 		  {ref,_,[{value,_,_}]} -> ok;
+		  {ref,_,[{'dependancy-tree',_,_}]} -> ok;
+		  {ref,_,[{'parents',_,_}]} -> ok;
 		  {ref,[_,{ref,Ref}],[{Name,_,[{_Type,[],Children}]}]} ->
 		      Xml = io_lib:format("<create><~s>~s</~s></create>",
 					  [Name,simplexml:to_xml_string(Children),Name]),

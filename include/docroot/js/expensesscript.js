@@ -46,7 +46,7 @@ $(function()
 
 build_form = function()
 {
-            loadRange("/data/");
+            loadRange("/forms/expenses/");
             $("input[type='submit']").click(function()
             {
                 post_vars.sort(function(a,b)
