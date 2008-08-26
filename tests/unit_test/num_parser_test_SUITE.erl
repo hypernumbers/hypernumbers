@@ -1137,6 +1137,7 @@ end_per_suite(_Config) ->
 %% Description: Initiation before each test case
 %%------------------------------------------------------------------------------
 init_per_testcase(_TestCase, Config) ->
+    code:add_patha("../../../../../lib/hypernumbers-1.0/ebin/"),
     Config.
 
 %%------------------------------------------------------------------------------

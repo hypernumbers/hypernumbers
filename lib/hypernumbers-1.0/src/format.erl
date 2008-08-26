@@ -45,7 +45,8 @@ run_format(X,Src)->
 
 %%% @doc Run-time interface not an API - this function should *NOT* be programmed against
 %%% @end
-format(X,{date,Format})   -> format_date(calendar:gregorian_seconds_to_datetime(X),Format);
+format(X,{date,Format})   -> format_date(calendar:gregorian_seconds_to_datetime(X),
+					 Format);
 format(X,{number,Format}) -> format_num(X,Format);
 format(X,{text,Format})   -> format(X,Format,[]).
 

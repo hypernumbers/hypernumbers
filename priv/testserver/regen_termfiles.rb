@@ -11,7 +11,7 @@ ARGVX = ARGV[0]
 
 puts "ARGVX is #{ARGVX}"
 
-path = ARGV[0].gsub('\\', '\\\\\\\\') + '\\\\'
+path = ARGV[0].gsub('\\', '\\\\\\\\') + '/'
 
 puts "Path is #{path}"
 

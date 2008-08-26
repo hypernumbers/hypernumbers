@@ -142,6 +142,8 @@ Erlang code.
 
 -include("ascii.hrl").
 
+-export([conv_to_float/1]).
+
 %%tr(Location,Term) -> 
 %%  io:format("in num_format:tr Trace called for location ~p with Term ~p~n",
 %%            [Location,Term]),
@@ -386,21 +388,25 @@ gen_src2(Clauses)->
 	 strip_condition(MadeClause)
   end,
    Src="fun(X) -> "++
- 	      "   Return=try list_to_integer(X)"++
+              " Return = if "++
+              "    not(is_number(X)) ->"++ 
+ 	      "      try list_to_integer(X)"++
  	      "       catch"++
  	      "         error: _ ->"++
  	      "           try tconv:to_f(X)"++
  	      "           catch"++
- 	      "               error: _ ->"++
- 	      "                    {error, value}"++
+ 	      "               error: ErrVal ->"++
+ 	      "                    {error, ErrVal}"++
  	      "           end"++
- 	      "       end,"++
+ 	      "       end;"++
+	      "      true -> X"++
+              "    end,"++
  	      "    case Return of"++
  	      "      {error,_} -> "++
  	                  Clause4++";"++
  	      "      _ ->"++
  	      "          if "++
- 	                     NewClauses++
+ 	                    NewClauses++
  	      "          end"++
  	      "      end"++
  	      "   end.",
@@ -500,3 +506,10 @@ promote_subclauses([[{Type,[{colour,Col}|Rest]}]|T],Acc) ->
 promote_subclauses([H|T],Acc) ->
   promote_subclauses(T,[H|Acc]).
 
+%% tconv:to_f don't work if X is already a float...
+conv_to_float(X) when is_float(X) -> 
+	io:format("in num_format.yrl:conv_to_float X is already float~n"),
+	X;
+conv_to_float(X)                  -> 
+	io:format("in num_format.yrl:conv_to_float X is not float~n"),
+        tconv:to_f(X).		

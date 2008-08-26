@@ -19,7 +19,6 @@
 -export([ out/1, get_page_attributes/1 ]).
 
 out(Arg) ->
-
     Url      = yaws_api:request_url(Arg),
     FileName = Arg#arg.docroot++Url#url.path,
     
