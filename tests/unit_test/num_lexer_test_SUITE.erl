@@ -221,6 +221,8 @@
 %% variable, but should NOT alter/remove any existing entries.
 %%------------------------------------------------------------------------------
 init_per_suite(Config) ->
+    code:add_patha("../../../../../lib/hypernumbers-1.0/ebin/"),
+    code:add_patha("../../../../../lib/formula_engine-1.0/ebin/"),
     Config.
 
 %%------------------------------------------------------------------------------

@@ -62,6 +62,7 @@ format(X,{text,Format})   -> format(X,Format,[]).
 %%                                                                           %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 format_num(X,Format)->
+    %%io:format("in format:format_num X is ~p Format is ~p~n",[X,Format]),
     {NewFormat,InsertList}=make_num_format(Format),
     X2=case is_percentage(Format) of
 	   true  -> X * 100;
@@ -190,19 +191,26 @@ print_num(Output,Format) ->
     Output2=round(Output,get_len(DecFormat)),
     Output3=make_list(Output2),
     Split2=string:tokens(Output3,"."),
+    io:format("in format:print_num Output2 is ~p Output3 is ~p Split2 is ~p~n",
+	      [Output2,Output3,Split2]),    
     {Integers,Decimals} = case Split2 of
 			      [A2,B2] -> {A2,B2};
 			      [A2]    -> {A2,null}
 			  end,
+    io:format("in format:print_num Integers is ~p IntFormat is ~p Decimals is ~p"++
+	      "DecFormat is ~p~n",[Integers,IntFormat,Decimals,DecFormat]),
     get_num_output(Integers,IntFormat,Decimals,DecFormat).
 
 %% this function gets the actual formatted number PRIOR to interpolation
 %% of any additional strings stuff or other components...
 get_num_output(Integers,IntFormat,Decimals,DecFormat)->
+    %%io:format("in format:get_num_output Integers is ~p IntFormat is ~p "++
+    %%	      "Decimals is ~p DecFormat is ~p~n",[Integers,IntFormat,Decimals,DecFormat]),
     {ok,Has_Exp}=has(exponent,DecFormat),
     Return=case Has_Exp of
 	       false -> A=get_num_output1(Integers,IntFormat),
 			B=get_num_output2(Decimals,DecFormat),
+			%%io:format("in format:get_num_format A is ~p B is ~p~n",[A,B]),
 			A++B;
 	       true  -> get_num_exp(Integers,IntFormat,Decimals,DecFormat)
 	   end,
@@ -214,12 +222,14 @@ get_num_output1(Integers,IntFormat)->
 		   true  -> strip_commas(IntFormat);
 		   false -> IntFormat
 	       end,
-    %%Output=format_int(Integers,IntFormat2),
     Output=format_int(Integers,IntFormat2),
     Return=case Has_Commas of
 	       true  -> add_commas(Output);
 	       false -> Output
 	   end,
+    %%io:format("in format:get_num_output1 Integers is ~p IntFormat is ~p "++
+    %%	      "IntFormat2 is ~p Output is ~p Return is ~p~n",
+    %%	      [Integers,IntFormat,IntFormat2,Output,Return]),
     Return.
 
 %% if the decimal format is null display no decimals
@@ -247,17 +257,18 @@ app_fmt(Number,Format,Type) ->
 %% the first line lets the measure be bust
 app_fmt([],[],bust,A)                         -> lists:reverse(A);
 %% the second line truncates the return and doesn't bust the measure
-app_fmt(_Number,[],nobust,A)                  -> lists:reverse(A);
-app_fmt([N|T],[],bust,A)                      -> app_fmt(T,[],bust,[N|A]);
-app_fmt([?ASC_ZERO|T1],[?ASC_ZERO|T2],Type,A) -> app_fmt(T1,T2,Type,[?ASC_ZERO|A]);
-app_fmt([?ASC_ZERO|T1],[?ASC_HASH|T2],Type,A) -> app_fmt(T1,T2,Type,A);
-app_fmt([?ASC_ZERO|T1],[?ASC_Q|T2],Type,A)    -> app_fmt(T1,T2,Type,[?ASC_SPACE|A]);
-app_fmt([N|T1],[?ASC_ZERO|T2],Type,A)         -> app_fmt(T1,T2,Type,[N|A]);
-app_fmt([N|T1],[?ASC_HASH|T2],Type,A)         -> app_fmt(T1,T2,Type,[N|A]);
-app_fmt([N|T1],[?ASC_Q|T2],Type,A)            -> app_fmt(T1,T2,Type,[N|A]);
-app_fmt([],[?ASC_ZERO|T2],Type,A)             -> app_fmt([],T2,Type,[?ASC_ZERO|A]);
-app_fmt([],[?ASC_HASH|T2],Type,A)             -> app_fmt([],T2,Type,A);
-app_fmt([],[?ASC_Q|T2],Type,A)                -> app_fmt([],T2,Type,[?ASC_SPACE|A]).
+app_fmt(_Number,[],nobust,A)                    -> lists:reverse(A);
+app_fmt([N|T],[],bust,A)                        -> app_fmt(T,[],bust,[N|A]);
+app_fmt([?ASC_ZERO|T1],[?ASC_ZERO|T2],Type,A)   -> app_fmt(T1,T2,Type,[?ASC_ZERO|A]);
+app_fmt([?ASC_ZERO|T1],[?ASC_HASH|T2],nobust,A) -> app_fmt(T1,T2,nobust,A);
+app_fmt([?ASC_ZERO|T1],[?ASC_HASH|T2],bust,A)   -> app_fmt(T1,T2,bust,[?ASC_ZERO|A]);
+app_fmt([?ASC_ZERO|T1],[?ASC_Q|T2],Type,A)      -> app_fmt(T1,T2,Type,[?ASC_SPACE|A]);
+app_fmt([N|T1],[?ASC_ZERO|T2],Type,A)           -> app_fmt(T1,T2,Type,[N|A]);
+app_fmt([N|T1],[?ASC_HASH|T2],Type,A)           -> app_fmt(T1,T2,Type,[N|A]);
+app_fmt([N|T1],[?ASC_Q|T2],Type,A)              -> app_fmt(T1,T2,Type,[N|A]);
+app_fmt([],[?ASC_ZERO|T2],Type,A)               -> app_fmt([],T2,Type,[?ASC_ZERO|A]);
+app_fmt([],[?ASC_HASH|T2],Type,A)               -> app_fmt([],T2,Type,A);
+app_fmt([],[?ASC_Q|T2],Type,A)                  -> app_fmt([],T2,Type,[?ASC_SPACE|A]).
 
 %% just rounds off a number to the appropriate number of decimals
 round(X,0)                           -> round(X);
@@ -327,6 +338,7 @@ format_int(Integers,Format)->
     %% we  have to feed in the integer and the format reversed...
     %% then obviously re-reverse the answer...
     %% this side always busts the measure so pass in bust
+    %%io:format("in format:format_int Integers is ~p Format is ~p~n",[Integers,Format]),
     Padded=lists:reverse(app_fmt(lists:reverse(Integers),lists:reverse(Format),bust)),
     bodge(Padded).
 
@@ -372,9 +384,11 @@ has(Type,Format) ->
     end.
 
 make_list(Number) when is_float(Number) -> 
+    io:format("in format:make_list (1) Number is ~p~n",[Number]),
     Float=float_to_list(Number),
     rejig(Float);
 make_list(Number) when is_integer(Number) -> 
+    io:format("in format:make_list (2) Number is ~p~n",[Number]),
     integer_to_list(Number).
 
 rejig(Float)->

@@ -39,8 +39,8 @@ gen() ->
     delete(DestDir ++ "xfl_lexer.erl"),
     delete(DestDir ++ "xfl_parser.erl"),
     delete(DestDir ++ "superlex.erl"),
-    %%lists:foreach(fun(X) -> delete(DestDir ++ X ++ "_lexer.erl") end,
-    %%              ?FRONTENDS),
+    lists:foreach(fun(X) -> delete(DestDir ++ X ++ "_lexer.erl") end,
+                  ?FRONTENDS),
         
     delete(DestDir ++ "num_format_lexer.erl"),
     delete(DestDir ++ "num_format_parser.erl"),
@@ -52,8 +52,8 @@ gen() ->
     rename("num_format_lexer.erl", DestDir ++ "num_format_lexer.erl"),
     rename("num_format_parser.erl", DestDir ++ "num_format_parser.erl"),
 
-    %%lists:foreach(fun(X) -> delete(X ++ "_lexer.erl") end,
-    %%              ?FRONTENDS),
+    lists:foreach(fun(X) -> delete(X ++ "_lexer.erl") end,
+                  ?FRONTENDS),
     
     ?P("OK").
 

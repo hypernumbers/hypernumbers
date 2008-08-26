@@ -1095,7 +1095,7 @@
 -define(FORMAT508,"0.00").
 
 -define(VALUE508,0.142857143).
--define(OUTPUT508,{date,{black,"0.14"}}). 
+-define(OUTPUT508,{number,{black,"0.14"}}). 
 
 %% Failing tests
 -define(FORMAT_F1A,"00.00\"ttt\"00.00").
@@ -1112,6 +1112,8 @@
 %% variable, but should NOT alter/remove any existing entries.
 %%------------------------------------------------------------------------------
 init_per_suite(Config) ->
+    code:add_patha("../../../../../lib/hypernumbers-1.0/ebin/"),
+    code:add_patha("../../../../../lib/formula_engine-1.0/ebin/"),
     Config.
 
 %%------------------------------------------------------------------------------
@@ -1137,7 +1139,6 @@ end_per_suite(_Config) ->
 %% Description: Initiation before each test case
 %%------------------------------------------------------------------------------
 init_per_testcase(_TestCase, Config) ->
-    code:add_patha("../../../../../lib/hypernumbers-1.0/ebin/"),
     Config.
 
 %%------------------------------------------------------------------------------
