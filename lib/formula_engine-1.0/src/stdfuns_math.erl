@@ -173,7 +173,6 @@ negate([Num]) ->
 sum(Vs) ->
     Flatvs = ?flatten_all(Vs),
     Nums = ?numbers(Flatvs, ?default_rules),
-    io:format("in stdfuns_math:sum Vs is ~p Nums is ~p~n",[Vs,Nums]),
     sum1(Nums).
 sum1(Nums) ->
     lists:sum(Nums).
