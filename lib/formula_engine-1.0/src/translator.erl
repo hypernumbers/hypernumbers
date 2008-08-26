@@ -3,8 +3,11 @@
 -export([do/1]).
 
 do(Formula) ->
-    %% Just using the Russian frontend now. In future, the front-end to use can
-    %% be read from app config, or we can run the formula through all available
-    %% frontends.
-    {ok, Tokens, _} = russian_lexer:string(Formula),
-    flatmap(fun({_, YYtext}) -> YYtext end, Tokens).
+    R = foldl(fun(Frontend, NewFormula) ->
+                      {ok, Tokens, _} = Frontend:string(NewFormula),
+                      flatmap(fun({_, YYtext}) -> YYtext end, Tokens)
+              end,
+              [$=|Formula],
+              [russian_lexer, spanish_lexer, portuguese_lexer, german_lexer,
+               french_lexer, italian_lexer]),
+    tl(R). % Don't want the equals sign.
