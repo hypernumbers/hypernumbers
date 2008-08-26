@@ -6,7 +6,7 @@
 %%% To create an instance:
 %%%   hypernumbers:new(#hypernumbers_settings{})
 
--module(hypernumbers, [S]).
+-module(hypernumbers, [Hns]).
 
 -export([set_value/3, get_value/2, settings/0]).
 -compile(export_all).
@@ -32,7 +32,7 @@ get_value(Path, Ref) ->
 
 %% @doc Read the settings for an instance of the module.
 settings() ->
-    S.
+    Hns.
 
 %%% private ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -66,28 +66,30 @@ conv_from_get(X) ->
     end.
 
 make_url([], Ref) ->
-    ("http://" ++ S#hypernumbers_settings.host ++
-     ":" ++ S#hypernumbers_settings.port ++ "/" ++
+    ("http://" ++ Hns#hypernumbers_settings.host ++
+     ":" ++ Hns#hypernumbers_settings.port ++ "/" ++
      string:to_upper(tconv:to_s(Ref)));
 make_url(Path, Ref) ->
-    ("http://" ++ S#hypernumbers_settings.host ++
-     ":" ++ S#hypernumbers_settings.port ++ "/" ++
+    ("http://" ++ Hns#hypernumbers_settings.host ++
+     ":" ++ Hns#hypernumbers_settings.port ++ "/" ++
      string:join(Path, "/") ++ "/" ++ string:to_upper(tconv:to_s(Ref))).
 
-%% TODO: Take a handle_return fun?
 http_post(Url, Data) ->
+    http_post(Url, Data, fun default_handle_return/1).
+http_post(Url, Data, HandleReturnFun) ->
     Return = http:request(post,
                           {Url, [], "text/xml", Data},
                           [{timeout, 5000}],
                           []),
-    handle_return(Return).
-
-handle_return({error, timeout}) ->
-    io:format("TIMEOUT~n");
-handle_return({ok, {{_V, 200, _R}, _H, _Body}}) ->
-    io:format("OK.~n");
-handle_return({ok, {{_V, _Code, _R}, _H, _Body}}) ->
-    io:format("HTTP POST error~n").
+    HandleReturnFun(Return).
+    
+%% TODO: Handle connection refused.
+default_handle_return({ok, {{_V, 200, _R}, _H, _Body}}) ->
+    ok;
+default_handle_return({error, timeout}) ->
+    {error, timeout};
+default_handle_return({ok, {{_V, _Code, _R}, _H, _Body}}) ->
+    {error, post_error}.
 
 http_get(Url) ->
     {ok, {{_V, _Code, _R}, _H, Body}} = http:request(get,
