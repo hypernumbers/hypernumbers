@@ -1,10 +1,11 @@
 %%% @doc Wrapper for the Hypernumbers API.
 %%%
-%%% * Uses XML for now.
-%%% * Only numbers, strings and booleans are supported.
-%%%
-%%% To create an instance:
-%%%   hypernumbers:new(#hypernumbers_settings{})
+%%% <ul>
+%%% <li>Uses the XML API for now.</li>
+%%% <li>Only numbers, strings and booleans are supported.</li>
+%%% </ul>
+%%% <p>To create an instance:<br />
+%%%   <code>hypernumbers:new(#hypernumbers_settings{})</code></p>
 
 -module(hypernumbers, [Hns]).
 
@@ -13,10 +14,12 @@
 
 -include("hypernumbers_settings.hrl").
 
-%% @spec set_value(Path, Ref, Value) where
-%%   Path = list()
-%%   Ref = atom()
-%%   Value = number() | string() | bool()
+%% @type path() = [string()]
+%% @type hn_value()  = string() | bool() | number()
+%% @type cellref() = atom()
+
+%% @spec set_value(path(), cellref(), hn_value()) -> ReturnCode where
+%%   ReturnCode = ok | {error, timeout} | {error, post_error}
 %% @doc Set a value (or formula) for a cell.
 set_value(Path, Ref, Value) ->
     Data = ("<create><formula><![CDATA[" ++
@@ -24,12 +27,13 @@ set_value(Path, Ref, Value) ->
             "]]></formula></create>"),
     http_post(make_url(Path, Ref), Data).
 
-%% @spec get_value(Path, Ref) -> term()
+%% @spec get_value(path(), cellref()) -> hn_value()
 %% @doc Get value (not formula) of a cell.
 get_value(Path, Ref) ->
     Body = http_get(make_url(Path, Ref)),
     conv_from_get(Body).
 
+%% @spec settings() -> #hypernumbers_settings{}
 %% @doc Read the settings for an instance of the module.
 settings() ->
     Hns.
