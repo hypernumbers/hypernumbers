@@ -435,7 +435,7 @@ format_vars(Query) ->
     %% list of valid vars
     Valid = ["links","format","lastrow","nocallback","auth","info","attr",
 	     "toolbar","last","hypernumber","pages","login","admin","import",
-	     "gui","new"],
+	     "gui","new","templates"],
 
     F = fun({K,V}) ->
         case lists:member(K,Valid) of

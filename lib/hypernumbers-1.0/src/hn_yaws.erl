@@ -35,9 +35,6 @@ out(Arg) ->
                                error_logger:error_msg("~p~n~p",[Else,Stack]),
                                {ok,[{status,400}]}
                        end,
-
-            %%Headers = [{header,{cache_control,"no-cache"}},{status,200}],
-	    %%lists:append(Ret,Headers)
 	    Ret
     end.
 
@@ -68,18 +65,14 @@ do_request(Arg,Url) ->
                   end,               
 
     Return = case req(Arg,Method,Access,Page) of
-                 {ok,{page,Path}} -> 
-                     [{page,Path}];
-                 {ok,{status,Status}} -> 
-                     [{status,Status}];
-                 {ok,{text,Text}} -> 
-                     [{content,"text/plain",Text}];
-		 {ok,{redirect,Loc}} ->
-		     {redirect,Loc};
+		 {return,Data} ->
+		     Data;
                  {ok,Data} -> 
                      case Page#page.format of
-                         {xml} -> 
-                             [{content,"text/xml",to_xml_string(Data)}];
+                         {xml} ->
+			     [{header,{cache_control,"no-cache"}},
+			      {status,200},
+			      {content,"text/xml",to_xml_string(Data)}];
                          {json} -> 
                              [{content,"text/plain",to_json_string(Data)}]
                      end
@@ -97,25 +90,25 @@ get_var_or_cookie(Name,Page,Arg) ->
     
 %% call to a page without access redirects to login
 req(_Arg,'GET',no_access,#page{ref={page,"/"}})  -> 
-    {ok,{page,"/html/login.html"}};
+    {return,{page,"/html/login.html"}};
 %% GET api call with no_access
 req(_Arg,'GET',no_access,_Page)  -> 
-    {ok,{status,503}};
+    {return,{status,503}};
 
 %% call to a page without access redirects to login
 req(_Arg,'GET',require_token,#page{ref={page,"/"}})  -> 
-    {ok,{page,"/html/token.html"}};
+    {return,{page,"/html/token.html"}};
 %% GET api call with no_access
 req(_Arg,'GET',require_token,_Page)  -> 
-    {ok,{status,503}};
+    {return,{status,503}};
 
 %% Index page "/"
 req(_Arg,'GET',_,Page = #page{ref={page,"/"},vars=[]}) -> 
     Ref    = (page_to_ref(Page))#ref{name=gui},
     {ok,V} = hn_db:get_item_inherited(Ref,"index"),
-    {ok,{page,"/html/"++V++".html"}};
+    {return,{page,"/html/"++V++".html"}};
 req(_Arg,'GET',_,#page{ref={page,"/"},vars=[{gui,GUI}]}) -> 
-    {ok,{page,"/html/"++GUI++".html"}};
+    {return,{page,"/html/"++GUI++".html"}};
 
 req(_Arg,'GET',_,Page=#page{ref={page,"/"},vars=[{new}]}) -> 
     Ref    = page_to_ref(Page),
@@ -132,8 +125,17 @@ req(_Arg,'GET',_,Page=#page{ref={page,"/"},vars=[{new}]}) ->
 	  end,
     NPage = "/"++string:join(Ref#ref.path,"/")++"/"++integer_to_list(Ind)++"/",
     hn_main:copy_page(Ref#ref{path=[Tpl]},NPage),
-    {ok,{redirect, Ref#ref.site++NPage}};
-    
+    {return,{redirect, Ref#ref.site++NPage}};
+
+req(_Arg,'GET',_,Page=#page{ref={page,"/"},vars=[{templates}]}) ->
+    Ref    = page_to_ref(Page),
+    F = fun(#hn_item{addr=#ref{path=Path},val=Val}) -> 
+		{template,[],[{name,[],[Val]},
+			      {path,[],["/"++string:join(Path,"/")++"/"]}]}
+	end,
+    Items = hn_db:get_item(Ref#ref{path='_',name=template}),
+    {ok,{templates,[],lists:map(F,Items)}};
+
 %% ?attr
 req(_Arg,'GET',_,Page = #page{vars = [{attr}]}) -> 
     Attr = get_page_attributes(page_to_ref(Page)),
@@ -170,7 +172,7 @@ req(_Arg,'GET',_,Page = #page{vars = [{hypernumber}]}) ->
 %% /a1 
 req(_Arg,'GET',_,Page = #page{vars = []}) -> 
     case hn_db:get_item(page_to_ref(Page)) of
-        []   -> {ok,{text,"blank"}};
+        []   -> {ok,{content,"text/plain","blank"}};
     List ->      
             F = fun(X) ->                        
                         (X#hn_item.addr)#ref.name == rawvalue
@@ -181,7 +183,7 @@ req(_Arg,'GET',_,Page = #page{vars = []}) ->
                       [#hn_item{val=Value}] -> Value
                   end,  
             
-            {ok,{text,hn_util:text(Val)}}
+            {ok,{content,"text/plain",hn_util:text(Val)}}
     end;
 
 req(Arg,'POST', _User, Page = #page{format=Format,vars=Vars}) ->
@@ -203,7 +205,7 @@ post(Arg,_User,_Page,{login,[],[{email,[],[Email]},{password,[],[Pass]}]}) ->
     end;
 
 post(_Arg,X,_,_) when X == no_access; X == read  ->
-    {ok,{status,503}};
+    {return,{status,503}};
 
 post(Arg,_User,Page,{create,[],Data}) ->
     

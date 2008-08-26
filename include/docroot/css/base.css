@@ -252,12 +252,16 @@ div#menu li:hover
 div#menu li:hover ul ul,
 div#menu li li:hover ul ul,
 div#menu li li li:hover ul ul,
-div#menu li li li li:hover ul ul
+div#menu li li li li:hover ul ul,
+div#menu li li li li li:hover ul ul,
+div#menu li li li li li li:hover ul ul
 {display:none;}
 
 div#menu li li:hover ul,
 div#menu li li li:hover ul,
-div#menu li li li li:hover ul
+div#menu li li li li:hover ul,
+div#menu li li li li li:hover ul,
+div#menu li li li li li li:hover ul
 {display:block;}
 
 #menu a.x, #menu a.x:visited

@@ -269,7 +269,23 @@ var create_spreadsheet = function(user)
 	        }); 
 	    });
 	});
-            
+           
+    $.get("/?templates", function(data)
+	  {
+	    $(data).find("templates > template").each(function()
+	    {
+		var name = $(this).children("name").text();
+		var path = $(this).children("path").text();
+		var li = $("<li><a class=\"x\">"+name+"<ul>"
+		    + "<li><a href=\""+path+"?new\">Create New</a></li>"
+		    + "<li><a href=\""+name+"/\">Edit Template</a></li>"
+		    + "</ul></a></li>");
+		$("#tpl").append(li);
+	    });
+	});
+           
+
+ 
     $.clipboardReady(function()
     {
 	var no_context = function(e) { return false; };
