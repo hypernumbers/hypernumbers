@@ -43,12 +43,11 @@
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 index_to_url(#index{site=Site,path=Path,column=X,row=Y}) ->
-    NPath = case Path of 
-		[] -> "/";
-		"/" -> "/";
-		_Else -> "/"++string:join(Path)++"/"
-	    end,
-    lists:append([Site, NPath, tconv:to_b26(X), text(Y)]).
+    P = case Path of
+	    [] -> "/";
+	    _  -> "/" ++ string:join(Path, "/") ++ "/"
+	end,
+    lists:append([Site, "/", P, tconv:to_b26(X), text(Y)]).
     
 page_to_index(#page{site=Site,path=Path,ref={cell,{X,Y}}}) ->
     #index{site=Site,path=Path,column=X,row=Y}.
