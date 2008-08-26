@@ -4,6 +4,7 @@
 	 do_import/2,
 	 profile/2,
 	 testa/0,
+	 demo/1,
 	 cheat/1]).
 -include("builtins.hrl").
 -include("spriki.hrl").
@@ -15,6 +16,19 @@
     {stdfuns_stats,     "Statistical"},
     {stdfuns_info,      "Informational"}
     ]).
+
+demo(Site) ->
+    Files = filelib:wildcard(code:priv_dir(hypernumbers)++"/demo_pages/*.xml"),
+    F = fun(X) ->
+		Name = filename:basename(X,".xml"),
+		{ok,Xml} = file:read_file(X),
+		Url = Site ++ string:join(string:tokens(Name,"-"),"/") ++ "/",
+		Data = simplexml:from_xml_string(binary_to_list(Xml)),
+		do_import(Url,Data),
+		ok
+	end,
+    lists:map(F,Files),
+    ok.
 
 cheat(1) -> import_xml_attributes("c:\\opt\\code\\trunk\\priv\\dale\\data.xml","http://127.0.0.1:9000/data/");
 cheat(2) -> import_xml_attributes("/cygdeive/c/opt/code/trunk/priv/dale/data.xml","http://127.0.0.1:9000/data/").
@@ -66,13 +80,15 @@ do_import(Url,{attr,[],Refs}) ->
 		  {ref,_,[{'dependancy-tree',_,_}]} -> ok;
 		  {ref,_,[{'parents',_,_}]} -> ok;
 		  {ref,[_,{ref,Ref}],[{Name,_,[{_Type,[],Children}]}]} ->
+		      io:format("sending ~p~n",[Url++Ref]),
 		      Xml = io_lib:format("<create><~s>~s</~s></create>",
 					  [Name,simplexml:to_xml_string(Children),Name]),
-		      hn_util:post(Url++Ref++"?attr",lists:flatten(Xml),"text/xml");
+		      hn_util:post(Url++string:to_lower(Ref)++"?attr",lists:flatten(Xml),"text/xml");
 		  {ref,[_,{ref,Ref}],[{Name,_,Children}]} ->
+		      io:format("sending ~p~n",[Url++Ref]),
 		      Xml = io_lib:format("<create><~s>~s</~s></create>",
 					  [Name,simplexml:to_xml_string(Children),Name]),
-		      hn_util:post(Url++Ref++"?attr",lists:flatten(Xml),"text/xml")
+		      hn_util:post(Url++string:to_lower(Ref)++"?attr",lists:flatten(Xml),"text/xml")
 	      end
       end,Refs
      ).
