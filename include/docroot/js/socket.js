@@ -48,10 +48,24 @@ function soc_msg(msg)
     $.each(x,function(i)
     {
         var arr = x[i].split(" ");
+	var f = arr.shift();
 
-        if(arr.shift() == "change")
+        if(f == "change")
         {
             handle_attr(arr.join(" "));
-        }        
+        }
+	else if(f == "delete")
+	{
+	    var val = arr.shift();
+	    var ref = arr.shift();
+	    
+	    if(val == "value")
+	    {
+		$("#hn").spreadsheet("setValue",ref,"");
+	    }else if (val == "formula")
+	    {
+		formulae[ref] = "";
+	    }
+	}
     });
 }

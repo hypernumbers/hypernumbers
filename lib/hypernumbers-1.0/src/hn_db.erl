@@ -273,6 +273,9 @@ remove_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
 		  mnesia:match_object(hn_item,Match,read))
 	end,
     {atomic, _Okay} = mnesia:transaction(F),
+
+    Msg = "delete "++atom_to_list(Name)++" "++hn_util:ref_to_str(Ref), 
+    gen_server:call(remoting_reg,{change,Site,Path,Msg},?TIMEOUT),
     ok.
 
 %%-------------------------------------------------------------------
