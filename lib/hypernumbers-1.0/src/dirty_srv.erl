@@ -64,7 +64,9 @@ handle_call(flush, _From, State) ->
     {reply, ok, State}.
 
 handle_cast({setstate,NewState}, State) -> 
-    {noreply, State#state{state=NewState}}.
+    {noreply, State#state{state=NewState}};
+handle_cast(stop,State) ->
+    {stop,database_recreated,State}.
     
 terminate(_Reason, _State) ->           ok.    
 code_change(_OldVsn, State, _Extra) ->  {ok, State}.

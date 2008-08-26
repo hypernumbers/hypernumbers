@@ -273,11 +273,14 @@ post(_Arg,_User,Page,{notify,[],Data}) ->
             api_change(Data,Page)
     end;
 
-post(_Arg,_User,Page,{template,[],[{name,[],[Name]},{url,[],[Url]}]}) ->
+post(_Arg,_User,Page,{template,[],[{name,[],[Name]},
+				   {url,[],[Url]},
+				   {gui,[],[Gui]}]}) ->
     Tpl = "/@"++Name++"/", 
     ok = hn_main:copy_page(page_to_ref(Page),Tpl),
     NPage = hn_util:parse_url(Page#page.site++Url),
     hn_main:set_attribute((page_to_ref(NPage))#ref{name=template},"@"++Name),
+    hn_main:set_attribute((page_to_ref(NPage))#ref{name=gui},Gui),
     {ok,{success,[],[]}};
 
 post(_Arg,_User,_Page,Data) ->

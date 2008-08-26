@@ -47,4 +47,7 @@ create_db(Storage)->
     hn_main:set_attribute(Ref#ref{name="__groups"},
                              [{owner,[{user,"admin"}]}]),
             
+    gen_server:cast(dirty_cell, stop),
+    gen_server:cast(dirty_hypernumber, stop),
+
     ok.

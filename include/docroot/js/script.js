@@ -126,7 +126,8 @@ var init = function()
     var savefun = function()
     {
 	var poststr = "<template><name>"+$("#tplname").val()+"</name>"
-	    + "<url>" + $("#tplurl").val() + "</url></template>";
+	    + "<url>" + $("#tplurl").val() + "</url><gui>"
+	    + $("#tplgui").val() + "</gui></template>";
 	$.post(document.location.pathname,poststr,function(){
 	    document.location.href="/@"+$("#tplname").val()+"/";
 	},"xml");
