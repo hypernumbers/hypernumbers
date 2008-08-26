@@ -38,9 +38,23 @@ map.each do |k, v|
   v.each_byte { |b| bytes << b }
   octal_seq =
     "\\" + bytes.inject([]) { |acc, b| acc << b.to_s(8); acc }.join("\\")
-  @function_defs << "#{k} = (#{octal_seq})\n"
 
-  @function_rules << "{#{k}} : {token, {func, \"#{k.downcase}\"}}.\n"
+  @function_defs << "#{k} = ({ALLOWED_PREFIXES})(#{octal_seq})(\\s*)(\\()\n"
+
+  rule = <<EOS
+{token,
+ begin
+     {ok, Nowhsp, _} = regexp:gsub(YYtext, "\s+", ""),
+     Hd = hd(Nowhsp),
+     case lists:member(Hd, [$+, $-, $*, $/, $=]) of
+         true  -> {func, [Hd|"#{k.upcase}("]};
+         false -> {func, "#{k.upcase}("}
+     end
+ end
+}.
+EOS
+  
+  @function_rules << "{#{k}} : #{rule}"
 end
 
 template = ERB.new(IO.readlines("lexer_template.erb").flatten.join, 0, "%<>")
