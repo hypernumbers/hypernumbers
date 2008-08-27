@@ -69,6 +69,7 @@
 	    <li><h2>Templates</h2>
 	      <ul id="tpl">
 		<li><a id="create_tpl">Publish Template</a></li>
+		<li><a id="set_gui">Set Front Page</a></li>
 	      </ul>
 	    </li>
           </ul>
@@ -105,6 +106,34 @@
             </div>
 	    </div>
 	  </div>
+
+	  <div class="dialog" id="templates">
+	    <h2>Define New Template</h2>
+	    <div class="clearfix">
+	      <table cellspacing="5">
+		<tr><td>Template Name:</td><td><input type="text" id="tplname" /></td></tr>
+		<tr><td colspan="2"><input type="checkbox" />&nbsp; dynamic template</td></tr>
+		<tr><td>Root Url</td><td><input type="text" class="dynamic" id="tplurl" disabled="true" /></td></tr>
+		<tr><td>Use GUI</td><td><input type="text" class="dynamic" id="tplgui" disable="true" /></td></tr>
+	      </table>
+	      <div class="functioninput">
+		<input type="button" value="save" class="submit" />
+            </div>
+	    </div>
+	  </div>	  
+
+	  <div class="dialog" id="guidialog">
+	    <h2>Set new front page</h2>
+	    <div class="clearfix">
+	      <table cellspacing="5">
+		<tr><td>New Name :</td><td><input type="text" id="dogui" /></td></tr>
+	      </table>
+	      <div class="functioninput">
+		<input type="button" value="save" class="submit" />
+            </div>
+	    </div>
+	  </div>
+
 	  <div class="dialog" id="formats">
             <h2>Number Formats</h2>
             <div class="clearfix">

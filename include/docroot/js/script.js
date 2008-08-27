@@ -134,6 +134,23 @@ var init = function()
     };
     $("#templates input.submit").click(savefun);
 
+    var setguifun = function()
+    {
+	$("#guidialog").show();
+	$("#menu ul ul").hide();
+    };
+    $("#set_gui").click(setguifun);
+    
+
+    var setguisavefun = function()
+    {
+	var poststr = "<create><gui>"+$("#dogui").val()+"</gui></create>";
+	$.post(document.location.pathname,poststr,function(){
+	    alert("New GUI Set");
+	},"xml");
+    };
+    $("#guidialog input.submit").click(setguisavefun);
+
 
     var auth = readCookie("auth");
     if(auth != null)
