@@ -14,9 +14,9 @@
             margin: 0px;
             padding:0px;
             font: 11px sans-serif;
-                 }
-	//@import "/css/base.css";
+        }
 
+	#footer { display:none; }
         #flashcontent
         {
                position:absolute;
@@ -39,55 +39,64 @@
 	        border-right:1px solid #999; 
 	    }
 	    
-	    label { display:block; margin:5px; vertical-align:top; }
-	    #details label span { display:block; width:140px; float:left; }
-	    h1 { font: 22px sans-serif; margin-bottom:10px; }
+	select { width:160px; }
+	textarea { width:300px; height:50px; }
+	label { display:block; margin:5px; vertical-align:top; }
+	#details label span { display:block; width:140px; float:left; }
+	h1 { font: 22px sans-serif; margin-bottom:10px; }
         h2 { font: 16px sans-serif; }
+	th { font: bold 13px sans-serif; }
+	table { display:block; width:500px; }
+	table td, table th { padding:5px; }
         hr { border-top:1px solid #EEE; margin-bottom:10px; }
         p { margin:6px 0px 6px 0px; }
         #head { padding: 10px; background:#eee; margin-bottom:10px; }
         #head h1 { display:inline; font-weight:bold;} 
+	.input { width:140px; display:block; float:left;padding:3px 0px 0px 5px; }
 	</style>
-
+	
         <script type="text/javascript" src="/js/jquery.js"></script>
         <script type="text/javascript" src="/js/swfobject.js"></script>
       
         <script type="text/javascript" src="/js/socket.js"></script>	
         <script type="text/javascript" src="/js/expensesscript.js"></script>
         <script type="text/javascript" src="/js/formbuilder.js"></script>
-    <script type="text/javascript">
-        var post_vars = new Array();
-        var path = getPath();
-        var records = new Array();
 
-    </script>
-    
+	<script type="text/javascript">
+          var post_vars = new Array();
+          var path = getPath();
+          var records = new Array();
+	</script>
+	
 </head>
-<body><div id="wrapper">
-
-    <img src="/img/logo.jpg"/>
-    <div id="head"><h1></h1></div>
-
+<body>
+  <div id="wrapper">
+    
+    <img src="/img/logo-white.jpg" style="margin:0px 0px 5px 10px" />
+    <div id="head"></div>
+    <div style="float:right">
+      <a href="?gui=index">View Speadsheet</a> |
+      <a href="?gui=expenses_printable">Printable</a>
+    </div>
+    
     <h1 id="header"></h1>
     
     <div id="desc"></div>
     <br />
     
-    <p><span id="label1"></span>
-    <span id="who"></span></p>
-    <p><span id="category"></span>
-    <span id="type"></span></p>
-    <p><span id="howmuch"></span></p>   
-    <div id="details"></div>
+    <p><span id="label1" class="input"></span><span id="who"></span></p>
+    <p><span id="category" class="input"></span><span id="type"></span></p>
 
+    <div id="details"></div>
+    
     <div id="detailstextarea"></div></p>
-    <br />
-    <input type="submit" value="submit" />
-    <br />
+  <br />
+  <input type="submit" value="submit" />
+  <br />
     <br />
 
    <table>
-     <tr><b><td>Person</td><td>Amount</td><td>Type</td><td>Details</td></b></tr>
+     <tr><th>Person</th><th>Amount</th><th>Type</th><th>Details</th></tr>
      <tr><td id="A6"></td><td id="B6"></td><td id="C6"></td><td id="D6"></td></tr>
      <tr><td id="A7"></td><td id="B7"></td><td id="C7"></td><td id="D7"></td></tr>
      <tr><td id="A8"></td><td id="B8"></td><td id="C8"></td><td id="D8"></td></tr>

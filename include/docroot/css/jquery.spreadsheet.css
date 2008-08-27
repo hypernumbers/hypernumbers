@@ -23,7 +23,7 @@
 
 .spreadsheet #name 
 {
-    font:           11px "Helvetica Neue", sans-serif;
+    font:           11px Verdana, sans-serif;
     border:         0px;
     width:          100px;
     display:        block;
@@ -41,16 +41,16 @@
 
 .spreadsheet #formula
 {
-    font:           12px "Helvetica Neue", sans-serif;
+    font:           13px Verdana, sans-serif;
     border:         0px;
-    padding:        3px;
+    padding:        0px;
 }
 
 .spreadsheet #functionbutton
 {
     border-width:   0px 1px 0px 1px;
     border-style:   outset;
-    font:           11px "Helvetica Neue", sans-serif;
+    font:           11px Verdana, sans-serif;
     height:         20px;
     background:     #eee;
     width:          40px;
