@@ -106,17 +106,37 @@ comp_lists([], Status) ->
     io:fwrite("   Termination Status: ~p~n", [Status]),
     Status.
 
-%% Is the beam older than the erl file?
+%% Is the beam older than the erl file? check the date of 
+%% any included .hrl files
 uptodate(File, Dir) ->
+
     %% Find the beam corresponding to this erl file.
     Beam = Dir ++"/"++ filename:basename(File,".erl") ++ ".beam",
-    %% Get last modified times for beam and erl and compare them.
     
-    
+    case beam_lib:chunks(Beam,[abstract_code]) of
+        {error,_,_} -> %% beam doesnt exist, recompile
+            false;
 
-    Filelastmod = filelib:last_modified(File),
-    Beamlastmod = filelib:last_modified(Beam),
-    Beamlastmod > Filelastmod.
+        {ok,{_,[{abstract_code,{_,AC}}]}} ->
+            F = fun({attribute,_Num,file,{Path,_}}) -> 
+                        case filename:extension(Path) of
+                            ".hrl" -> true;
+                            _Else  -> false
+                        end;
+                   (_Else) -> 
+                        false
+                end,
+            G = fun({attribute,_Num,file,{Path,_}}) -> Path end,
+            H = fun(Path) -> filelib:last_modified(Path) end,
+            
+            Includes = lists:map(G,lists:filter(F,AC)),
+            SrcFiles = [File|Includes],  
+            Latest = lists:max(lists:map(H,SrcFiles)),
+
+            %% if the beam is newer than the last change to any
+            %% of the source files, dont need to compile
+            filelib:last_modified(Beam) > Latest
+        end.
 
 get_vsn(Module) ->
     AppFile = code:lib_dir(Module)++"/ebin/"++atom_to_list(Module)++".app",
@@ -125,7 +145,7 @@ get_vsn(Module) ->
     Vsn.
 
 get_rel_file() ->
-
+    
     F = lists:append(["{release, {\"hypernumbers\",\"1.0\"}, ",
                       "{erts,\"",erlang:system_info(version),"\"},"
                       "[{kernel,\"",get_vsn(kernel),"\"},",

@@ -11,6 +11,7 @@
 
 -define(SALT,       "salt").
 
+
 %% Test Macros
 -define(HN_URL1,   "http://127.0.0.1:9000").
 -define(HN_URL2,   "http://127.0.0.1:9001").
