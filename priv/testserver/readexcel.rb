@@ -7,8 +7,7 @@
 
 require "win32ole"
 
-xlsfile = ARGV[0]
-
+def do_file(xlsfile)
 WIN32OLE.codepage = WIN32OLE::CP_UTF8
 
 xl = WIN32OLE.new("Excel.Application")
@@ -38,4 +37,5 @@ end
 
 File.open(File.basename(xlsfile, ".xls") + ".dat", "w") do |f|
   f << xlsdata.inspect
+end
 end
