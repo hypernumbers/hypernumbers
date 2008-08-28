@@ -224,7 +224,7 @@ parse_rec(?DEFCOLWIDTH,_Bin,_Name,CurrentFormula,Tables)->
                                      {source,excel_records.erl},
                                      {msg,"not being processed"}]),
     {ok,CurrentFormula};
-parse_rec(?XCT,Bin,_Name,CurrentFormula,Tables)->
+parse_rec(?XCT,_Bin,_Name,CurrentFormula,Tables)->
     excel_util:write(Tables,lacunae,[{identifier,"XCT"},
                                      {source,excel_records.erl},
                                      {msg,"not being processed"}]),
@@ -442,7 +442,7 @@ parse_rec(?DSF,_Bin,_Name,CurrentFormula,Tables)->
                                      {source,excel_records.erl},
                                      {msg,"not being processed"}]),
     {ok,CurrentFormula};
-parse_rec(?SUPBOOK,Bin,Name,CurrentFormula,Tables)->
+parse_rec(?SUPBOOK,Bin,_Name,CurrentFormula,Tables)->
     case Bin of
         <<NoSheets:16/little-unsigned-integer,
          ?InternalReferences:16/little-unsigned-integer>> ->
@@ -553,7 +553,7 @@ parse_rec(?ROW2,Bin,_Name,CurrentFormula,Tables)->
      _NotUsed:16/little-unsigned-integer,
      _NotUsed2:16/little-unsigned-integer,
      _Discard1:16/little-unsigned-integer,
-     XFRef:12/little-unsigned-integer,
+     _XFRef:12/little-unsigned-integer,
      _Discard2:4/little-unsigned-integer>>=Bin,
     excel_util:write(Tables,lacunae,[{identifier,"ROW2"},
                                      {source,excel_records.erl},
@@ -665,7 +665,7 @@ parse_rec(?RANGEPROTECTION,_Bin,_Name,CurrentFormula,Tables)->
                                      {source,excel_records.erl},
                                      {msg,"not being processed"}]),
     {ok,CurrentFormula};
-parse_rec(Other,Bin,_Name,CurrentFormula,Tables)->
+parse_rec(Other,_Bin,_Name,CurrentFormula,Tables)->
     excel_util:write(Tables,lacunae,[{identifier,{"undocumented record type",
                                                   Other}},{source,
                                                            excel_records.erl},
@@ -712,7 +712,7 @@ parse_Name(OptionFlag,_KybdShortCut,NameLength,_Size,SheetIndex,
      _FuncGroup2:1/integer,_FuncGroup3:1/integer,_FuncGroup4:1/integer,
      _FuncGroup5:1/integer,_FuncGroup6:1/integer,
      _Binary:1/integer,_A:1/integer,_B:1/integer,_C:1/integer>>=OptionFlag,
-    <<_Options:1/binary,Name:NameLength/binary,Rest/binary>>=Bin,
+    <<_Options:1/binary,Name:NameLength/binary,_Rest/binary>>=Bin,
     %% io:format("Just ignoring the compression options for "++
     %% "Unicode names at the moment - will wig when not using Latin-1~n"),
     Scope = case SheetIndex of
@@ -863,7 +863,7 @@ parse_filename(Bin) -> "../"++binary_to_list(Bin)++"/".
 
 snip_xls(Bin)->
     FileName=binary_to_list(Bin),
-    RegExp=".xls$",
+    RegExp=".xls$", 
     case regexp:gsub(FileName,RegExp,"") of
         {ok, NewString,_} -> NewString;
         {error,_}         -> FileName
@@ -877,12 +877,12 @@ parse_externname(Bin,Tables)->
      Discard:12/little-unsigned-integer,
      Rest/binary>>=Bin,
     case MiniOptions of
-        ?STANDARD   -> <<NameIndex:16/little-unsigned-integer,
+        ?STANDARD   -> <<_NameIndex:16/little-unsigned-integer,
 			_NotUsed:16/little-unsigned-integer,
 			Name/binary>>=Rest,
-		       {[{_,Name2}],Len1,Len2}=excel_util:parse_CRS_Uni16(Name,1),
+		       {[{_,Name2}],Len1,_Len2}=excel_util:parse_CRS_Uni16(Name,1),
 		       NameLen=8*Len1,
-		       <<_Name:NameLen/little-unsigned-integer,Rest2/binary>>=Name,
+		       <<_Name:NameLen/little-unsigned-integer,_Rest2/binary>>=Name,
 		       Name3=binary_to_list(Name2),
 		       case Discard of
                            0 -> excel_util:append(Tables,extra_fns,[{name,Name3}]);

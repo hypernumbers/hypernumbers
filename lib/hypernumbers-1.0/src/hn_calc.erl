@@ -71,7 +71,7 @@ set_cell(Addr, Val) ->
         {formula, Fla} ->
             %case muin:run_formula(Fla, Addr, Auth) of
             case muin:run_formula(Fla, Addr) of
-                {error,Error} -> ok;       
+                {error,_Error} -> ok;       
                 {Pcode, Res, Parents, Deptree, Recompile} ->
                     %% Convert stuff to SimpleXML.
                     F = fun({Type, {S, P, X1, Y1}}) ->
@@ -88,7 +88,7 @@ set_cell(Addr, Val) ->
                     write_cell(Addr, Res, "=" ++ Fla, Parxml, Deptreexml)
             end;
             
-        {Type, Value} ->
+        {_Type, Value} ->
             write_cell(Addr, Value, hn_util:text(Value), [], [])
     end.
     
@@ -153,7 +153,7 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
 set_cell_rawvalue(Addr,Value) ->
     hn_db:write_item(Addr#ref{name=rawvalue},Value),
     {ok,Format} = hn_db:get_item_inherited(Addr#ref{name=format}, "General"),
-    {erlang,{Type,Output}} = format:get_src(Format),
+    {erlang,{_Type,Output}} = format:get_src(Format),
     {ok,{Color,V}}=format:run_format(Value,Output),
     hn_db:write_item(Addr#ref{name=value},V),
     hn_db:write_item(Addr#ref{name=color},atom_to_list(Color)),
@@ -273,9 +273,6 @@ recalc(Index) ->
 %%%-----------------------------------------------------------------
 %%% Helper Functions
 %%%-----------------------------------------------------------------
-get_val([]) -> [];
-get_val([#hn_item{val=Value}]) -> Value.
-
 db_put(_Addr,_Name,[]) -> ok;
 db_put(Addr,Name,Value) ->
     hn_db:write_item(Addr#ref{name=Name},Value).

@@ -119,7 +119,7 @@ parse_bin(Bin,SubStreamName,CurrentFormula,Tables)->
                                                            Name,CurrentFormula,
                                                            Tables),
  	    parse_bin(Rest2,SubStreamName,NewCurrentFormula,Tables);
-	Other ->
+	_Other ->
  	    <<Record:RecordSize/binary,Rest3/binary>>=Rest,
 	    %% Bodge=excel_records:bodge(Record),
 	    %% bits:log("Record is "++integer_to_list(Other)),
@@ -184,7 +184,7 @@ get_workbook_SID(ParsedDirectory)->
     %% both of them
     Response=excel:get_named_SID(ParsedDirectory,?EXCEL_WKBK1),
     case Response of
-	{error,Err} -> {ok,Ret}=excel:get_named_SID(ParsedDirectory,?EXCEL_WKBK2),
+	{error,_Err} -> {ok,Ret}=excel:get_named_SID(ParsedDirectory,?EXCEL_WKBK2),
 		       Ret;
 	{ok,Ret2}   -> Ret2
     end.
@@ -299,7 +299,7 @@ post_process_tables(Tables)->
 type_formats(Tables) ->
     {value,{formats,Tid}}=lists:keysearch(formats,1,Tables),
     Fun = fun(X,_Residuum) ->
-		  {Index,[{type,Type1},Category,{format,Format}]}=X,
+		  {Index,[{type,_Type1},Category,{format,Format}]}=X,
 		  Return=format:get_src(Format),
 		  case Return of
 		      {erlang,{Type2,_Output}} -> 
@@ -357,7 +357,7 @@ convert_dates(Tables)->
     %%Fun looks up the values from the cells table and the format table 
     %% (via XF) if the format is of type 'date' it switches the type 
     %% of the number from 'number' to 'date'
-    Fun=fun(X,Acc) -> 
+    Fun=fun(X,_Acc) -> 
 		{Index,[{xf_index,XF},Body]}=X,
 		XFVal=ets:lookup(Tid2,{index,XF}),
 		[{_,[{format_index,Idx},_,_]}]=XFVal,
@@ -367,7 +367,7 @@ convert_dates(Tables)->
 			  date   -> convert_dates2(Body,Tables);
 			  _      -> Body
 		      end,
-		{Index,Body2},
+		%{Index,Body2},
 		ets:insert(Tid1,[{Index,[{xf_format,XF},Body2]}])
 	end,
     ets:foldl(Fun,[],Tid1).

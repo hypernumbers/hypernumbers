@@ -276,7 +276,7 @@ rev_comp(Index,[{relative_area,{tAreaN,[NewDetails|{type,_Type}],{return,referen
 
 %%	tNameX  
 rev_comp(I,[{name_xref,{tNameX,[{reference_index,Ref},
-				{name_index,Name},Type],Ret}}|T],TokArr,Stack,Tbl) ->
+				{name_index,Name},_Type],_Ret}}|T],TokArr,Stack,Tbl) ->
     rev_comp(I,T,TokArr,[{string,get_ref_name(Ref,Name,Tbl)}|Stack],Tbl);
 
 %%	tRef3d  	
@@ -324,7 +324,7 @@ get_col(Col,TopCol,ColType)->
     end.
 
 %% Looks up an external reference from the Supbook
-get_ref_name(RefIndex,NameIndex,Tables)->
+get_ref_name(_RefIndex,NameIndex,Tables)->
     %% bear in mind, dear chums, that the index we are looking up is a
     %% '1'-based index and not a '0'-based index, it is for this reason
     %% that we are subracting 1 from the NameIndex...

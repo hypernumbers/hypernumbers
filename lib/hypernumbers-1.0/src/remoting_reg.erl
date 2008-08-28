@@ -60,9 +60,9 @@ handle_call({change,Site,Path,Msg},_From,State) ->
 handle_call(_Request,_From,State) ->
     {reply,invalid_message, State}.
 
-handle_cast(Msg, State) ->
+handle_cast(_Msg, State) ->
     {noreply, State}.
     
 handle_info(_Info, State) ->    {noreply, State}.
-terminate(_Reason, State) ->    ok.
+terminate(_Reason, _State) ->    ok.
 code_change(_Old, State, _E) -> {ok, State}.

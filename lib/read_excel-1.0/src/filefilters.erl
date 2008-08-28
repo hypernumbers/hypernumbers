@@ -247,12 +247,12 @@ parse_Directory(Other,_MinStreamSize,Other2)->
 	      "is ~p Other2 is ~p "++
 	      "Oh, shit!~n",[Other,Other2]).
 
-print_structure(FileIn,Directory,{SubLocation,SubStreams})->
+print_structure(_FileIn,_Directory,{SubLocation,_SubStreams})->
     %% This function will bork as soon as it is handed a substream name
     %% that has a Asian or Rich Text Name - but as it is fed by
     %% output that is internal to Excel I think it will still continue
     %% to come in unicode16-8 format (suck'n'see fella)
-    {SubLoc,_SID}=SubLocation,
+    {_SubLoc,_SID}=SubLocation,
     %%    io:format("~nThe structure of the Microsoft Coumpound Document Object ~p "++
     %%              "is:~n",[FileIn]),
     %%    List=[{lists:keysearch('bodge_name',1,X),lists:keysearch(location,1,X)} 

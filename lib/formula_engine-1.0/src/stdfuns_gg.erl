@@ -9,6 +9,7 @@
 	 npv/1,
 	 poisson/3,
 	 rand/0,
+         cumpoisson/2,
 	 roman/1,
 	 roman/2,
 	 sln/3,
@@ -97,7 +98,7 @@ noncumpoisson(X,Lambda) ->
 
 cumpoisson(X,Lambda) -> cumpoisson(X,Lambda,0).
 
-cumpoisson(-1,Lambda,Acc) -> Acc;
+cumpoisson(-1,_Lambda,Acc) -> Acc;
 cumpoisson(K,Lambda,Acc)  -> cumpoisson(K-1,Lambda,
 					Acc+noncumpoisson(K,Lambda)).
 

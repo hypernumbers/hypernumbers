@@ -31,7 +31,7 @@ log(String) ->
 	      {win32,nt} -> "c:\\tmp\\hypernumbers_log.txt";
 	      _          -> "/tmp/hypernumbers_log.txt"
 	  end,
-    Return=filelib:ensure_dir(File),
+    _Return=filelib:ensure_dir(File),
     case file:open(File, [append]) of
 	{ok, Id} ->
 	    io:fwrite(Id, "~s~n", [String]),

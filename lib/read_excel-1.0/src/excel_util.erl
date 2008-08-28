@@ -334,10 +334,10 @@ check_formulae([H|T],Acc) ->
 
 check2(List) -> check2(List, []).
 
-check2([],X)      -> true;
-check2([H|T],[])  -> check2(T,H);
-check2([X|T],X)   -> check2(T,X);
-check2([H|T],Acc) -> false.
+check2([],_X)        -> true;
+check2([H|T],[])     -> check2(T,H);
+check2([X|T],X)      -> check2(T,X);
+check2([_H|_T],_Acc) -> false.
 
 %% read values from the tables
 read(Tables,Name,Key)->
@@ -373,7 +373,7 @@ lookup_string(Tables,SSTIndex)->
 
 %% negative number
 get_integer(Bin) ->
-    <<Type:1,Rest:31>>=Bin,
+    <<Type:1,_Rest:31>>=Bin,
     case Type of
 	1 -> %% Rest is a 30 bit binary in ones complement
 	    -1*ones_complement(shift_left2(Bin))+1;

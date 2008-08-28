@@ -25,7 +25,7 @@ parse_tokens(<<>>,_Name,TokenArray,Residuum)->
     Tokens=lists:reverse(Residuum),
     {Tokens,TokenArray};
 parse_tokens(Bin,Name,TokenArray,Residuum)->
-    <<BaseTokenID:8/little-unsigned-integer,Rest/binary>>=Bin,
+    <<BaseTokenID:8/little-unsigned-integer,_Rest/binary>>=Bin,
     parse_tokens(BaseTokenID,Name,Bin,TokenArray,Residuum).
 
 %% Parsing base tokens
