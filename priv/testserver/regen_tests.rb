@@ -14,7 +14,7 @@ generator = (series == "1" ?
              "reader_test_generator.rb" : "gen_full_test.rb")
 datfiles = Dir[fullpath + "*.dat"]
 
-suites = ARGV[1] || "abcde"
+suites = ARGV[1] || "abcdef"
 
 datfiles.select { |fn| suites.include?(File.basename(fn)[0].chr) }.each do |fn|
   print "-> #{File.basename(fn, ".dat")}... "; $stdout.flush
@@ -27,7 +27,7 @@ mvs = if ARGV[1]
         ARGV[1].each_byte { |b| chars << b.chr }
         chars
       else
-        ["a", "b", "c", "d", "e", "x"]
+        ["a", "b", "c", "d", "e", "f", "x"]
       end
 
 mvs.each do |char|
