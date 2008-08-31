@@ -2,12 +2,13 @@
 DIR=`pwd`
 ./run_test \
     -sname arrian \
-    -boot $DIR/../../../../ebin/hypernumbers \
-    -mnesia dir \"$DIR/../../../../data\" \
+    -boot /opt/code/trunk/ebin/hypernumbers \
+    -mnesia dir \"/opt/code/trunk/data/\" \
     -dir ../../../../tests/system_test/ \
     ../../../../tests/unit_test/ \
     ../../../../tests/excel_import_1a_test \
     ../../../../tests/excel_import_1b_test \
     ../../../../tests/excel_import_1c_test \
     ../../../../tests/excel_import_1d_test \
-    ../../../../tests/excel_import_1e_test
+    ../../../../tests/excel_import_1e_test \
+    ../../../../tests/excel_import_1f_test

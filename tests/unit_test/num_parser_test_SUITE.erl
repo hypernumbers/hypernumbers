@@ -1097,6 +1097,32 @@
 -define(VALUE508,0.142857143).
 -define(OUTPUT508,{number,{black,"0.14"}}). 
 
+%% Test 509a %% These are all valid in Excel and used to 'cover up' workings
+-define(FORMAT509a,";;;").
+
+-define(VALUE509a,0.142857143).
+-define(OUTPUT509a,{number,{black,""}}). 
+
+%% Test 509b
+-define(FORMAT509b,";;").
+
+-define(VALUE509b,0.142857143).
+-define(OUTPUT509b,{number,{black,""}}). 
+
+%% Test 509c
+-define(FORMAT509c,";;\"\";").
+
+-define(VALUE509c,0.142857143).
+-define(OUTPUT509c,{number,{black,""}}). 
+
+%% Test 510
+-define(FORMAT510,"General_)"). %% fix that!
+
+-define(VALUE510,0.142857143).
+-define(OUTPUT510,{number,{black,"this test finds a fuck up may need a big rewrite, "++
+			   "I just bodged the 'general Tokens' clause "++
+			   "in number_format.yrl"}}). 
+
 %% Failing tests
 -define(FORMAT_F1A,"00.00\"ttt\"00.00").
 -define(FORMAT_F2A,"0.0.0").
@@ -1455,6 +1481,10 @@ all() ->
      num_parser_test506d,
      num_parser_test507,
      num_parser_test508,
+     num_parser_test509a,
+     num_parser_test509b,
+     num_parser_test509c,
+     num_parser_test510,
      num_parser_fail1a,
      num_parser_fail2a
     ].
@@ -3214,6 +3244,30 @@ num_parser_test508() ->
 
 num_parser_test508(Config) when is_list(Config) -> 
     executor(?FORMAT508,?VALUE508,?OUTPUT508).
+
+num_parser_test509a() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test509a(Config) when is_list(Config) -> 
+    executor(?FORMAT509a,?VALUE509a,?OUTPUT509a).
+
+num_parser_test509b() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test509b(Config) when is_list(Config) -> 
+    executor(?FORMAT509b,?VALUE509b,?OUTPUT509b).
+
+num_parser_test509c() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test509c(Config) when is_list(Config) -> 
+    executor(?FORMAT509c,?VALUE509c,?OUTPUT509c).
+
+num_parser_test510() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test510(Config) when is_list(Config) -> 
+    executor(?FORMAT510,?VALUE510,?OUTPUT509c).
 
 %% Failing tests
 num_parser_fail1a() -> 
