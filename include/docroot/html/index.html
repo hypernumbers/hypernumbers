@@ -23,6 +23,7 @@
       <script type="text/javascript" src="/js/jquery.clipboard.js"></script>
       <script type="text/javascript" src="/js/swfobject.js"></script>
       
+      <script type="text/javascript" src="/js/jquery.filemenu.js"></script>
       <script type="text/javascript" src="/js/jquery.textbox.js"></script>
       <script type="text/javascript" src="/js/jquery.tableresizer.js"></script>
       <script type="text/javascript" src="/js/jquery.spreadsheet.js"></script>
@@ -56,25 +57,21 @@
           </form>
         </div>
         
-        <div id="menu">
-          <ul>
-            <li><h2>File</h2>
+        <div>
+          <ul id="menu">
+            <li><a>File</a>
               <ul>
-        	<li><a id="browse" class="x">Browse</a></li>
+        	<li id="browse"><a>Browse</a></li>
         	<li><a id="m_import">Import Spreadsheet</a></li>
               </ul>
             </li>
-          </ul>
-          <ul>
-	    <li><h2>Templates</h2>
+	    <li><a>Templates</a>
 	      <ul id="tpl">
 		<li><a id="create_tpl">Publish Template</a></li>
 		<li><a id="set_gui">Set Front Page</a></li>
 	      </ul>
 	    </li>
-          </ul>
-	  <ul>
-            <li><h2>Links</h2>
+            <li><a>Links</a>
               <ul>
         	<li><a class="x">Incoming</a></li>
         	<li><a class="x">Outgoing</a></li>

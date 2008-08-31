@@ -1,10 +1,6 @@
+
 -module(compile_code).
-
 -export([start/0]).
--include("../include/handy_macros.hrl").
-
--define(init(L),
-        reverse(tl(reverse(L)))).
 
 %% Compile wil generate warnings for all files
 %% unless included here
@@ -26,25 +22,20 @@
 -define(EXTRA_ERL_FILES, []).
 
 start() ->
-    compile().
-
-compile() ->
     
     get_rel_file(),
     
     [_File, _Ebin | Rest] =
-        reverse(string:tokens(code:which(compile_code), "/")),
+        lists:reverse(string:tokens(code:which(compile_code), "/")),
 
     Pre = case os:type() of
               {win32,_} -> "";
-              _ ->         "/"
+              _         -> "/"
           end,
-
-    App_rt_dir = Pre++string:join(reverse(Rest),"/")++"/",
+    
+    App_rt_dir = Pre++string:join(lists:reverse(Rest),"/")++"/",
 
     io:fwrite("~nStarting the compilation~n~n", []),
-
-    code:add_pathz(App_rt_dir ++ "/lib/eunit/ebin"),
 
     %% First set up the include file
     Inc_list = [{i, App_rt_dir ++ "/include"},
@@ -53,11 +44,11 @@ compile() ->
                 {i, code:lib_dir(xmerl)++"/include"}],
 
     %% List of {ErlangFile, OutputDirectory} tuples.
-    Dirs = flatten(map(fun(X) ->
-                               map(fun(Y) -> {Y, App_rt_dir ++ X ++ "ebin"} end,
-                                   filelib:wildcard(App_rt_dir ++ X ++ "src/*.erl"))
-                       end,
-                       ?DIRS)),
+    Dirs = lists:flatten(lists:map(fun(X) ->
+                                           lists:map(fun(Y) -> {Y, App_rt_dir ++ X ++ "ebin"} end,
+                                                     filelib:wildcard(App_rt_dir ++ X ++ "src/*.erl"))
+                                   end,
+                                   ?DIRS)),
     
     Extra = lists:map(
               fun(X) ->
@@ -69,17 +60,15 @@ compile() ->
 
 compile_funcs(List, Inc_list) ->
     New_list = [{X, [debug_info, {outdir, Y} | Inc_list]} || {X, Y} <- List],
-    comp_lists(New_list).
-
-comp_lists(List) ->
-    comp_lists(List, ok).
+    comp_lists(New_list,ok).
 
 comp_lists([{File, Opt}|T], OldStatus) ->
-    Append = case member(filename:basename(File), ?NO_WARNINGS) of
-                 true ->  [report_errors];
+
+    Append = case lists:member(filename:basename(File), ?NO_WARNINGS) of
+                 true  -> [report_errors];
                  false -> [report_errors,report_warnings]
              end,
-    Options = append(Opt,Append),
+    Options = lists:append(Opt,Append),
 
     %% Ensure output directory exists.
     [debug_info, {outdir, Dir} | _] = Options,
@@ -99,7 +88,7 @@ comp_lists([{File, Opt}|T], OldStatus) ->
            end,
     
     case uptodate(File, Dir) of
-	false ->  Comp();
+	false -> Comp();
         _     -> comp_lists(T, OldStatus)
     end;
 comp_lists([], Status) ->

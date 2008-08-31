@@ -170,111 +170,6 @@ strong
     padding:    5px;
 }
 
-#menu
-{
-    border-top: 1px solid #666;
-    height:     24px;
-}
-
-#menu a, #menu h2
-{
-    background: #FFF;
-    color:      #000;
-    font:       11px "Lucida Grande","Lucida Sans Unicode","Helvetica Neue", sans-serif; 
-    display:    block;
-    white-space:nowrap;
-    text-decoration:none;
-    margin:     0;
-}
-
-#menu h2
-{
-    margin:     0px 3px;
-    padding:    5px 10px 4px 10px;
-}
-
-#menu a
-{
-    padding:    5px 20px 4px 8px;
-}
-
-#menu a:hover
-{
-    background:     #eee;
-    text-decoration:none;
-}
-
-#menu ul
-{
-    width:      auto;
-    list-style: none;
-    margin:     0;
-    padding:    0;
-    float:      left;
-    z-index:	9999;
-}
-
-#menu ul ul
-{
-    border:     1px solid #CCC;
-}
-
-#menu li
-{
-    position:   relative;
-}
-
-#menu ul ul
-{
-    position:   absolute;
-    z-index:    500;
-    top:        auto;
-    display:    none;
-}
-
-#menu ul ul ul
-{
-    top:        0;
-    left:       100%;
-}
-
-div#menu h2:hover
-{
-    background: #EEE;
-}
-
-div#menu li:hover
-{
-    cursor:     pointer;
-    z-index:    100;
-}
-
-div#menu li:hover ul ul,
-div#menu li li:hover ul ul,
-div#menu li li li:hover ul ul,
-div#menu li li li li:hover ul ul,
-div#menu li li li li li:hover ul ul,
-div#menu li li li li li li:hover ul ul
-{display:none;}
-
-div#menu li li:hover ul,
-div#menu li li li:hover ul,
-div#menu li li li li:hover ul,
-div#menu li li li li li:hover ul,
-div#menu li li li li li li:hover ul
-{display:block;}
-
-#menu a.x, #menu a.x:visited
-{
-    color:          #000;
-    background:     #FFF url(../img/arrow.png) no-repeat 100% 50%;
-}
-
-#menu a.x:hover
-{
-    background:     #EEE url(../img/arrow.png) no-repeat 100% 50%;
-}
-
 #loginform 
 {
     padding:    6px;
@@ -313,4 +208,108 @@ div#menu li li li li li li:hover ul
     width:      100%;
     z-index:    999;
     opacity:    0.5;
+}
+
+#menu 
+{ 
+  font:         13px sans-serif; 
+  height:       22px;
+  background:   #F1EEE9;
+}
+
+#menu li 
+{ 
+  list-style:   none; 
+  float:        left; 
+}    
+
+#menu li li 
+{
+  float:        none; 
+  display:      block; 
+  position:     relative;
+}
+
+#menu ul 
+{ 
+  display:      none; 
+  position:     absolute;  
+  border:       1px solid; 
+  border-color: #DDD #AAA #AAA #DDD;  
+  padding:      3px 0px; 
+  background:   #F1EEE9; 
+}
+
+#menu ul ul 
+{ 
+  left:         100%; 
+  top:          0; 
+} 
+
+#menu a 
+{
+  position:     relative;
+  display:      block; 
+  background:   #F1EEE9;
+  cursor:       pointer; 
+  padding:      4px 10px; 
+  z-index:      100;
+  text-decoration:none;
+  color:        #000;
+}
+
+#menu li ul li .padded 
+{
+  padding-left:  24px;
+}
+
+#menu li ul li a 
+{ 
+  background:   #f8f7f6;       
+  padding:      3px 18px 3px 3px; 
+  z-index:      200;
+}
+
+#menu .hover 
+{ 
+  background:   #ffc47e; 
+}  
+
+#menu li.seperator 
+{ 
+  height:       0px; 
+  border-top:   1px solid #CCC; 
+  margin:       3px 0px;      
+}
+
+#menu div.input
+{
+  position:     relative;
+  padding:      2px;
+  width:        16px;
+  height:       16px;
+  float:        left;
+  z-index:      500;
+}
+
+#menu .icon
+{
+  background-repeat: no-repeat;
+  background-position:3px 3px; 
+}
+
+#menu .arrow
+{
+  display:      none;
+}
+
+#menu ul li .arrow 
+{ 
+  display:block;
+  position:absolute;
+  height:16px;
+  width:16px;
+  background:url(../img/arrow.png);
+  top:3px;
+  right:0px;
 }

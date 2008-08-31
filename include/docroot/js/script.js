@@ -390,41 +390,14 @@ load_data = function()
 		    + npath+"</a></li>").appendTo(list);
 		if($(this).children().size() > 0)
 		{
-		    parent.children("a").addClass("x");
 		    add(parent,this,path+npath+"/");
 		}
 	    };
-	    $(dir).children().each(fun);
-
+	    $(dir).children().each(fun);   
 	}
-	
-	var show = function(el)
-	{
-	    var x = $(el);
-	    var list = x.next("ul");
-	    var hide = function()
-	    {
-		list.hide();
-		$(this).unbind();
-		x.one('mouseup',function() 
-		      {
-		          x.one('click',function() { show(x); });
-		      });
-	    };
-	    
-	    list.show();
-	    x.one('mouseup',function() 
-		  {
-		      x.one('click',function() { hide(); });
-		  });
-	}
-	
-	$("#menu > ul li h2").one('click',function()
-				  {
-				      show(this);
-				  });
 	
 	add($("#browse"),$(data),"");
+        $("#menu").filemenu();
     }
     
     var get_attr = function(data) 
