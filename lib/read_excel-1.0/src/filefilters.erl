@@ -330,7 +330,12 @@ test_DEBUG()->
     %% File="d_gnumeric_address.xls",
     %% File="junk_external_ref.xls",
     %% File="z_junk.xls",
-    File="a_should_be_10_tests.xls",
+    %% File="a_should_be_10_tests.xls",
+    %% File="rich_text_junk.xls",
+    %% File="f_loan_amortization_schedule.xls",
+    %% File="f_12_month_cash_flow_statement.xls",
+    %% File="f_payroll_calculator.xls",
+    File="f_services_invoice_with_tax_calculation.xls",
     FileRoot="C:/opt/code/trunk/tests/"++
      	"excel_files/Win_Excel07_As_97",
     io:format("in filefilters:test_DEBUG FileRoot is ~p and File is ~p~n",

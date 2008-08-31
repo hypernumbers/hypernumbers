@@ -70,8 +70,9 @@ Unary 100 Escaped2.
 
 %% ----- Grammar definition.
 
-Final -> FinalFormat : make_src('$1').
-Final -> general     : get_general().
+Final -> FinalFormat    : make_src('$1').
+Final -> general        : get_general().
+Final -> general Tokens : get_general(). %% Bad boy - dropping terminal tokens for a general format...
 
 Semicolon -> semicolon           : '$1'.
 Semicolon -> Semicolon semicolon : concat('$1','$2').
@@ -95,7 +96,6 @@ Format -> Tokens          : '$1'.
 Format -> fraction        : '$1'.
 
 FullFormat -> Format          : '$1'.
-FullFormat -> Format percent  : concat('$1','$2').
 FullFormat -> Cond FullFormat : concat('$1','$2').
 
 Cond -> condition : make_cond('$1').
@@ -114,6 +114,7 @@ Token -> plus       : '$1'.
 Token -> open_bra   : '$1'.
 Token -> close_ket  : '$1'.
 Token -> quote      : '$1'.
+Token -> percent    : '$1'.
 
 %% And Date Formats
 Token -> year       : '$1'.
@@ -350,7 +351,7 @@ verify_type(A)        -> case lists:merge(A) of
 				[number] -> number;
 				[date]   -> date;
 				[text]   -> text;
-				_        -> verify_list(remove_semicolons(A))
+				_        -> verify_listX(remove_semicolons(A))
   			end.
 
 remove_semicolons(List) -> remove_semicolons(List,[]).
@@ -359,10 +360,16 @@ remove_semicolons([],Acc)              -> lists:reverse(Acc);
 remove_semicolons([[semicolon]|T],Acc) -> remove_semicolons(T,Acc);
 remove_semicolons([H|T],Acc)           -> remove_semicolons(T,[H|Acc]).
 
+verify_listX(A) ->
+	io:format("in num_format.yrl:verify_listX I think some of these clauses are hooky~n"),
+	verify_list(A).
+
 verify_list([[A]]    )            -> A;
+verify_list([[A],[text]])         -> A; % Hooky!
 verify_list([[A],[A]])            -> A;
+verify_list([[A],[A],[text]])     -> A; % Hooky!
 verify_list([[A],[A],[A]])        -> A;
-verify_list([[A],[A],[A],[text]]) -> A.
+verify_list([[A],[A],[A],[text]]) -> A. % This one is OK
 
 gen_src(Clauses,Defaults) -> gen_src(Clauses,Defaults,[]).
 
@@ -512,4 +519,7 @@ conv_to_float(X) when is_float(X) ->
 	X;
 conv_to_float(X)                  -> 
 	io:format("in num_format.yrl:conv_to_float X is not float~n"),
-        tconv:to_f(X).		
+        tconv:to_f(X).
+
+%% dump out what we are seeing
+dump(X,Y)-> io:format("in num_format.yrl:dump X is ~p Y is ~p~n",[X,Y]).

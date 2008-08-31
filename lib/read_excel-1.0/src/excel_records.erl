@@ -31,7 +31,6 @@ parse_rec(?FORMULA,Bin,Name,_CurrentFormula,Tables)->
      _CalcFlag:16/little-unsigned-integer,
      _NotUsed:32/little-unsigned-integer,
      Rest/binary>>=Bin,
-    %% io:format("in excel_records:parse_rec for FORMULA~n"),
     {Tokens,TokenArrays}=parse_FRM_Results(Rest,Name),
     excel_util:write(Tables,cell_tokens,[{{sheet,Name},{row_index,RowIndex},
                                           {col_index,ColIndex}},{xf_index,XFIndex},
@@ -93,7 +92,6 @@ parse_rec(?FOOTER,_Bin,_Name,CurrentFormula,Tables)->
 parse_rec(?EXTERNSHEET,Bin,_Name,CurrentFormula,Tables)->
     <<_NumRefs:16/little-unsigned-integer,
      R2/binary>>=Bin,
-    %% io:format("in excel_records:parse_rec for EXTERNSHEET~n"),
     parse_externsheet(R2,0,Tables),
     {ok,CurrentFormula};
 parse_rec(?NAME,Bin,_Name,CurrentFormula,Tables)->
@@ -108,7 +106,6 @@ parse_rec(?NAME,Bin,_Name,CurrentFormula,Tables)->
      HelpTxtLen:8/little-unsigned-integer,
      StatusTxtLen:8/little-unsigned-integer,
      Rest/binary>>=Bin,
-    io:format("in excel_records:parse_rec for NAME Rest is ~p~n",[Rest]),
     parse_Name(OptionFlag,KybdShortCut,NameLength,Size,SheetIndex,
                MenuTxtLen,DescTxtLen,HelpTxtLen,StatusTxtLen,Rest,Tables),
     {ok,CurrentFormula};
@@ -146,7 +143,6 @@ parse_rec(?DATEMODE,Bin,_Name,CurrentFormula,Tables)->
     {ok,CurrentFormula};
 parse_rec(?EXTERNNAME2,Bin,Name,CurrentFormula,Tables)->
     %% Best described by Section 5.39 of excelfileformatV1-41.pdf
-    io:format("in excel_records:parse_rec for EXTERNNAME2 Name is ~p~n",[Name]),
     parse_externname(Bin,Tables),
     {ok,CurrentFormula};
 parse_rec(?LEFTMARGIN,_Bin,_Name,CurrentFormula,Tables)->
@@ -337,7 +333,6 @@ parse_rec(?MULRK,Bin,Name,CurrentFormula,Tables)->
     <<RowIndex:16/little-unsigned-integer,
      FirstColIndex:16/little-unsigned-integer,
      Rest/binary>>=Bin,
-    %% io:format("in excel_records:parse_rec for MULRK~n"),
     Tokens=parse_XF_RK(Rest),
     write_row(Tokens,RowIndex,FirstColIndex,Name,Tables),
     {ok,CurrentFormula};
@@ -405,7 +400,6 @@ parse_rec(?SST,[H|T],_Name,CurrentFormula,Tables)->
     <<_NoStringsUsed:32/little-unsigned-integer,
      NoActualStrings:32/little-unsigned-integer,
      Rest/binary>>=H,
-    %% io:format("in excel_records:parse_rec for SST~n"),
     parse_SST(0,NoActualStrings,Tables,[Rest|T]),
     {ok,CurrentFormula};
 parse_rec(?LABELSST,Bin,Name,CurrentFormula,Tables)->
@@ -414,7 +408,6 @@ parse_rec(?LABELSST,Bin,Name,CurrentFormula,Tables)->
      XFIndex:16/little-unsigned-integer,
      SSTIndex:32/little-unsigned-integer,
      _Rest/binary>>=Bin,
-    %% io:format("in excel_records:parse_rec for LABELSST~n"),
     %% Now look up the string in the string table
     String=excel_util:lookup_string(Tables,SSTIndex),
     excel_util:write(Tables,cell,[{{sheet,Name},{row_index,RowIndex},
@@ -498,7 +491,6 @@ parse_rec(?NUMBER2,Bin,Name,CurrentFormula,Tables)->
      ColIndex:16/little-unsigned-integer,
      XFIndex:16/little-unsigned-integer,
      Float:64/little-unsigned-float>>=Bin,
-    %% io:format("in excel_records:parse_rec for NUMBER Float is ~p~n",[Float]),
     excel_util:write(Tables,cell,[{{sheet,Name},{row_index,RowIndex},
                                    {col_index,ColIndex}},
                                   {xf_index,XFIndex},{value,number,Float}]),
@@ -518,7 +510,7 @@ parse_rec(?BOOLERR2,Bin,Name,CurrentFormula,Tables)->
      XFIndex:16/little-unsigned-integer,
      BoolErr:8/little-unsigned-integer,
      Type:8/little-unsigned-integer>>=Bin,
-     %% io:format("in excel_records:parse_rec for BOOLERR BoolErr is ~p~n",[BoolErr]),
+
     {ValType,Value} = case Type of
                           0 -> 
                               case BoolErr of
@@ -569,7 +561,6 @@ parse_rec(?ARRAY2,Bin,Name,CurrentFormula,Tables)->
      _Options:2/binary,
      _NotUsed:4/binary,
      RawTokens/binary>>=Bin,
-    %% io:format("in excel_records:parse_rec for ARRAY2~n"),
     Return1=excel_util:read_cell_range_addies(1,'8bit',Range),
     {[{FirstRow,LastRow,FirstCol,LastCol}],_}=Return1,
     Return2=parse_FRM_Results(RawTokens,Name),
@@ -600,9 +591,7 @@ parse_rec(?RK,Bin,Name,CurrentFormula,Tables)->
      ColIndex:16/little-unsigned-integer,
      XFIndex:16/little-unsigned-integer,
      RKValue:32/little-unsigned-integer>>=Bin,
-    io:format("in excel_records:parse_rec for RK RKValue is ~p~n",[RKValue]),
     RKValue2=excel_util:parse_CRS_RK(<<RKValue:32/little-unsigned-integer>>),
-    io:format("in excel_records:parse_rec for RK RKValue2 is ~p~n",[RKValue2]),
     excel_util:write(Tables,cell,[{{sheet,Name},{row_index,RowIndex},
                                    {col_index,ColIndex}},
                                   {xf_index,XFIndex},{value,number,RKValue2}]),
@@ -627,7 +616,6 @@ parse_rec(?SHRFMLA,Bin,Name,CurrentFormula,Tables)->
      _NotUsed:8/little-unsigned-integer,
      _NoRecords:8/little-unsigned-integer,
      Rest/binary>>=Bin,
-    %% io:format("in excel_records:parse_rec for SHRFMLA~n"),
     {[{FR,LR,FC,LC}],_}=excel_util:read_cell_range_addies(1,'8bit',Range),
     {Tokens,TokenArrays}=parse_FRM_Results(Rest,Name),
     excel_util:write(Tables,sh_arr_formula,[{{sheet,Name},{firstrow,FR},
@@ -648,7 +636,6 @@ parse_rec(?BOF4,Bin,_Name,CurrentFormula,_Tables)->
      _BuildYr:16/little-unsigned-integer,
      _FileHist:32/little-unsigned-integer,
      _LowestVsn:32/little-unsigned-integer>>=Bin,
-    %% io:format("in excel_records:parse_rec for BOF~n"),
     {ok,CurrentFormula};
 parse_rec(?SHEETLAYOUT,_Bin,_Name,CurrentFormula,Tables)->
     excel_util:write(Tables,lacunae,[{identifier,"SHEETLAYOUT"},
@@ -713,7 +700,6 @@ parse_Name(OptionFlag,_KybdShortCut,NameLength,_Size,SheetIndex,
      _FuncGroup5:1/integer,_FuncGroup6:1/integer,
      _Binary:1/integer,_A:1/integer,_B:1/integer,_C:1/integer>>=OptionFlag,
     <<_Options:1/binary,Name:NameLength/binary,_Rest/binary>>=Bin,
-    %% io:format("Just ignoring the compression options for "++
     %% "Unicode names at the moment - will wig when not using Latin-1~n"),
     Scope = case SheetIndex of
                 0 -> global;
@@ -748,7 +734,6 @@ parse_XF_RK(<<XFIndex:16/little-unsigned-integer,
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 parse_SST(NoOfStrings,NoOfStrings,_Tables,_)->
-    %% io:format("String table parsed~n");
     ok;
 
 parse_SST(StringNo,NoOfStrings,Tables,[BinHead|BinTail])->
@@ -784,9 +769,9 @@ parse_SST(StringNo,NoOfStrings,Tables,[BinHead|BinTail])->
     end,
     Return=excel_util:parse_CRS_Uni16(ParseBin,2),
     String=excel_util:get_utf8(Return),
-    {[{_Type,BinString}],_StringLen,_RestLen}=Return,    
-    Len=string:len(binary_to_list(BinString)),
-    BinLen=8*(Len+3), % add an offset for the 2 byte index and 1 byte flags
+    {_,StringLen,_RestLen}=Return,    
+    Len=string:len(String),
+     BinLen=8*StringLen,
     <<_String2:BinLen/little-unsigned-integer,Rest/binary>>=NewBinHead,
     excel_util:write(Tables,strings,[{index,StringNo},{string,String}]),
     parse_SST(StringNo+1,NoOfStrings,Tables,[Rest|NewBinTail]).
@@ -795,7 +780,6 @@ write_row([],_RowIndex,_FirstColIndex,_Name,_Tables)->
     {ok,ok};
 write_row([{{xf_index,XFIndex},{value,number,Number}}|T],RowIndex,
           FirstColIndex,Name,Tables)->
-    %% io:format("in excel_records:write_row Number is ~p~n",[Number]),
     excel_util:write(Tables,cell,[{{sheet,Name},{row_index,RowIndex},
                                    {col_index,FirstColIndex}},{xf_index,XFIndex},
                                   {value,number,Number}]),

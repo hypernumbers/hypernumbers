@@ -110,6 +110,7 @@ req(_Arg,'GET',_,#page{ref={page,"/"},vars=[{gui,GUI}]}) ->
     {return,{page,"/html/"++GUI++".html"}};
 
 req(_Arg,'GET',_,Page=#page{ref={page,"/"},vars=[{new}]}) -> 
+    io:format("hn_yaws:req~n"),
     Ref    = page_to_ref(Page),
     {ok,Tpl} = hn_db:get_item_inherited(Ref#ref{name=template},blank),
     Items = hn_db:get_item(Ref#ref{path=lists:append(Ref#ref.path,'_')}),
@@ -127,6 +128,7 @@ req(_Arg,'GET',_,Page=#page{ref={page,"/"},vars=[{new}]}) ->
     {return,{redirect, Ref#ref.site++NPage}};
 
 req(_Arg,'GET',_,Page=#page{ref={page,"/"},vars=[{templates}]}) ->
+    io:format("hn_yaws:req~n"),
     Ref    = page_to_ref(Page),
     F = fun(#hn_item{addr=#ref{path=Path},val=Val}) -> 
 		{template,[],[{name,[],[Val]},
@@ -276,6 +278,7 @@ post(_Arg,_User,Page,{notify,[],Data}) ->
 post(_Arg,_User,Page,{template,[],[{name,[],[Name]},
 				   {url,[],[Url]},
 				   {gui,[],[Gui]}]}) ->
+    io:format("hn_yaws:post~n"),
     Tpl = "/@"++Name++"/", 
     ok = hn_main:copy_page(page_to_ref(Page),Tpl),
     NPage = hn_util:parse_url(Page#page.site++Url),
