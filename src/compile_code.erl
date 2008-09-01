@@ -36,9 +36,11 @@ start() ->
     App_rt_dir = Pre++string:join(lists:reverse(Rest),"/")++"/",
 
     io:fwrite("~nStarting the compilation~n~n", []),
+    code:add_pathz(App_rt_dir ++ "/lib/eunit/ebin"),
 
     %% First set up the include file
     Inc_list = [{i, App_rt_dir ++ "/include"},
+                {i, App_rt_dir ++ "/lib/eunit/include"},
                 {i, App_rt_dir ++ "/lib/read_excel-1.0/include"},
                 {i, App_rt_dir ++ "/lib/yaws-1.76/include"},
                 {i, code:lib_dir(xmerl)++"/include"}],

@@ -313,9 +313,9 @@ $.fn.spreadsheet = function(options)
         {           
             root.children("div.datatable").width($(root).width());
                
-            var h = ((opts.fullscreen) ? $(window).height() : $(root).height()) 
-                - $(".toolbar").height() - $(".formulabar").height() 
-                - fmargin - 110;
+            var h = ((opts.fullscreen) 
+                     ? $(window).height() 
+                     : $(root).height()) - root.offset().top - fmargin;
             
             root.find(".data,.rows").height(h);
             

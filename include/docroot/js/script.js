@@ -217,7 +217,7 @@ var create_spreadsheet = function(user)
     var defaults = {
         fullscreen : true,
         range      : range,
-        fmargin    : 24,
+        fmargin    : 93,
         cellChange  : function(x,y,val)
         {
             var fullurl = document.location.pathname
