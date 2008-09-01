@@ -9,6 +9,17 @@
 	 run_format/2
 	]).
 
+-import(format_util,
+	[clock_12/1,
+	 pad_year/1,
+	 pad_calendar/1,
+	 get_short_day/1,
+	 get_day/1,
+	 get_short_month/1,
+	 get_month/1,
+	 get_last_two/1
+	]).
+
 %% Run-time Interface
 %% The module format is called from within generated code only
 %% It is *NOT* an interface that should be programmed against
@@ -191,14 +202,10 @@ print_num(Output,Format) ->
     Output2=round(Output,get_len(DecFormat)),
     Output3=make_list(Output2),
     Split2=string:tokens(Output3,"."),
-    io:format("in format:print_num Output2 is ~p Output3 is ~p Split2 is ~p~n",
-	      [Output2,Output3,Split2]),    
     {Integers,Decimals} = case Split2 of
 			      [A2,B2] -> {A2,B2};
 			      [A2]    -> {A2,null}
 			  end,
-    io:format("in format:print_num Integers is ~p IntFormat is ~p Decimals is ~p"++
-	      "DecFormat is ~p~n",[Integers,IntFormat,Decimals,DecFormat]),
     get_num_output(Integers,IntFormat,Decimals,DecFormat).
 
 %% this function gets the actual formatted number PRIOR to interpolation
@@ -384,11 +391,11 @@ has(Type,Format) ->
     end.
 
 make_list(Number) when is_float(Number) -> 
-    io:format("in format:make_list (1) Number is ~p~n",[Number]),
+    %% io:format("in format:make_list (1) Number is ~p~n",[Number]),
     Float=float_to_list(Number),
     rejig(Float);
 make_list(Number) when is_integer(Number) -> 
-    io:format("in format:make_list (2) Number is ~p~n",[Number]),
+    %% io:format("in format:make_list (2) Number is ~p~n",[Number]),
     integer_to_list(Number).
 
 rejig(Float)->
@@ -534,67 +541,6 @@ execute(X,{ampm,abbr_lowercase},_) ->
     end;
 execute(_X,{_Other,String},_) ->
     String.
-
-clock_12(Hour) when (Hour > 12) -> Hour-12;
-clock_12(Hour)                   -> Hour.
-
-pad_year(A) ->
-    case length(A) of
-	1 -> "000"++A;
-	2 -> "00"++A;
-	3 -> "0"++A;
-	4 -> A
-    end.
-
-pad_calendar(A) ->
-    case length(A) of 
-	1 -> "0"++A;
-	2 -> A
-    end.
-
-get_short_day(1) -> "Mon";
-get_short_day(2) -> "Tues";
-get_short_day(3) -> "Wed";
-get_short_day(4) -> "Thur";
-get_short_day(5) -> "Fri";
-get_short_day(6) -> "Sat";
-get_short_day(7) -> "Sun".
-
-get_day(1) -> "Monday";
-get_day(2) -> "Tuesday";
-get_day(3) -> "Wednesday";
-get_day(4) -> "Thursday";
-get_day(5) -> "Friday";
-get_day(6) -> "Saturday";
-get_day(7) -> "Sunday".
-
-get_short_month(1) -> "Jan";
-get_short_month(2) -> "Feb";
-get_short_month(3) -> "Mar";
-get_short_month(4) -> "Apr";
-get_short_month(5) -> "May";
-get_short_month(6) -> "Jun";
-get_short_month(7) -> "Jul";
-get_short_month(8) -> "Aug";
-get_short_month(9) -> "Sept";
-get_short_month(10) -> "Oct";
-get_short_month(11) -> "Nov";
-get_short_month(12) -> "Dec".
-
-get_month(1) -> "January";
-get_month(2) -> "February";
-get_month(3) -> "March";
-get_month(4) -> "April";
-get_month(5) -> "May";
-get_month(6) -> "June";
-get_month(7) -> "July";
-get_month(8) -> "August";
-get_month(9) -> "September";
-get_month(10) -> "October";
-get_month(11) -> "November";
-get_month(12) -> "December".
-
-get_last_two(String) -> string:substr(String,length(String)-1,2).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                           %%

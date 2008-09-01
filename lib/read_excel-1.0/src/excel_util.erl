@@ -394,8 +394,6 @@ ones_complement(Bin) ->
 shift_left2(Bin)->
     <<Thirty:30,_:2>>=Bin,
     Bin2= <<0:2,Thirty:30>>,
-    io:format("in excel_util:shift_left2/1~n-Bin is ~p~n-Bin2 is ~p~n",
-	      [Bin,Bin2]),
     <<Return:32>>=Bin2,
     Return.
 

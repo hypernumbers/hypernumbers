@@ -33,6 +33,7 @@ create_db(Storage)->
     ?create(dirty_hypernumber,set,Storage),
     ?create(incoming_hn,set,Storage),
     ?create(outgoing_hn,set,Storage),
+    ?create(template,set,Storage),
     
     Ref = #ref{site = "http://127.0.0.1:9000",
                path = [],

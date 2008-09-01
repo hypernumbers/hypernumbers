@@ -37,7 +37,10 @@
 	 get_hn/3,
 	 %% dirty tables
 	 dirty_refs_changed/2,
-	 mark_dirty/2
+	 mark_dirty/2,
+	 %% templates
+	 write_template/4,
+	 read_template/1
     ]).
 
 %%-------------------------------------------------------------------
@@ -80,7 +83,6 @@ notify_remote(Item=#hn_item{addr=#ref{site=Site,path=Path}}) ->
 %%               in that page are returned
 %%--------------------------------------------------------------------    
 get_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
-    
     F = fun() ->                
                 
                 %% If Name is defined, match it
@@ -91,7 +93,6 @@ get_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
                            _ ->            #ref{site=Site, path=Path, name=N, _ = '_'}
                        end,
                 Match = #hn_item{addr = Attr, _ = '_'},
-                
                 mnesia:match_object(hn_item,Match,read)
         
         end,
@@ -238,10 +239,11 @@ get_item_val(Addr) ->
     end.
     
 get_ref_from_name(Name) ->
-    {atomic, [Item]} = mnesia:transaction(fun() ->  
-        Match = #hn_item{addr=#ref{name=name, _ = '_'}, val = Name},
-        mnesia:match_object(hn_item,Match,read)   
-    end),
+    Fun = fun() ->  
+		  Match = #hn_item{addr=#ref{name=name, _ = '_'}, val = Name},
+		  mnesia:match_object(hn_item,Match,read)   
+	  end,
+    {atomic, [Item]} = mnesia:transaction(Fun),
     Item#hn_item.addr. 
       
 %%--------------------------------------------------------------------
@@ -699,5 +701,29 @@ list_hn([H|T],List) ->
     Cell = H#remote_cell_link.parent,
     [Hn] = mnesia:match_object(#outgoing_hn{index={'_',Cell},_='_'}),    
     list_hn(T,hn_util:add_uniq(List,Hn)).    
-    
 
+
+%%-------------------------------------------------------------------
+%% Table : templates
+%% Def   : 
+%% Desc  : stores the templates
+%%-------------------------------------------------------------------
+    
+write_template(Name,IsDynamic,TemplatePath,Gui) ->
+    CompiledPath=hn_templates:make_path(TemplatePath),
+    Template=#template{name=Name,isDynamic=IsDynamic,
+		       temp_path=CompiledPath,gui=Gui},
+    io:format("in hn_db:write_template Template is ~p~n",[Template]),
+    Fun  = fun() -> 
+		   io:format("Got to 1~n"),
+		   mnesia:write(Template),
+		   io:format("Got to 2~n")
+	   end,
+    {atomic, ok} = mnesia:transaction(Fun). 
+
+read_template(Name) -> 
+    io:format("in hn_db:read_template Name is ~p~n",[Name]),
+    Fun = fun() -> mnesia:read({template,Name}) end,
+    {atomic,[Template]}=mnesia:transaction(Fun),
+    io:format("in hn_db:read_template Name is ~p Template is ~p~n",[Name,Template]),
+    {ok,Template}.

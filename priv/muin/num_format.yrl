@@ -520,6 +520,3 @@ conv_to_float(X) when is_float(X) ->
 conv_to_float(X)                  -> 
 	io:format("in num_format.yrl:conv_to_float X is not float~n"),
         tconv:to_f(X).
-
-%% dump out what we are seeing
-dump(X,Y)-> io:format("in num_format.yrl:dump X is ~p Y is ~p~n",[X,Y]).

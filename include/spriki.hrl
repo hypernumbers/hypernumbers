@@ -11,7 +11,6 @@
 
 -define(SALT,       "salt").
 
-
 %% Test Macros
 -define(HN_URL1,   "http://127.0.0.1:9000").
 -define(HN_URL2,   "http://127.0.0.1:9001").
@@ -142,4 +141,12 @@
     password    = [],
     authtoken   = null,
     created     = calendar:local_time()
+}).
+
+-record( template,
+{
+    name        = [],
+    isDynamic   = false,
+    temp_path   = [],
+    gui         = index
 }).
