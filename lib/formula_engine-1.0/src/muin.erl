@@ -131,6 +131,8 @@ preproc(['query', Arg]) ->
     Idx = find("*", Toks),
     Under = sublist(Toks, Idx - 1),
     Pages = get_pages_under(Under),
+    %% io:format("in muin:preproc~n-Arg is ~p~n-Toks is ~p~n-Idx is ~p~n"++
+    %%	      "-Under is ~p~n-Pages is ~p~n",[Arg,Toks,Idx,Under,Pages]),
     R = map(fun(X) ->
                     %% omgwtfbbq
                     Refstr = "/" ++ flatten(hslists:join("/", Under ++ [X] ++ [last(Toks)])),
@@ -151,9 +153,15 @@ preproc(['query', Arg]) ->
     Colidx = toidx(C2),
     {Oldparents, Errs, Refs} = get(retvals),
     Newparent = {"local", {?msite, hslists:init(Toks), Colidx, Rowidx}},
+    %% io:format("in muin:preproc~n-Node is ~p~n-C2 is ~p~n-R2 is ~p~n"++
+    %%	      "-Rowidx is ~p~n-Colidx is ~p~n-Oldparents are ~p~n"++
+    %%	      "-Errs are ~p~nRefs are ~p~n-NewParent is ~p~n",
+    %%	      [Node,C2,R2,Rowidx,Colidx,Oldparents,Errs,Refs,Newparent]),
     put(retvals, {[Newparent | Oldparents], Errs, Refs}),
 
     {reeval, Node};
+%% preproc(['query',Arg1,Arg2])->
+%%    io:format("in muin:preproc for query/2~n");
 preproc(_) ->
     false.
 
@@ -257,6 +265,7 @@ find1(_, [], _) ->
 %% @spec get_pages_under(list()) -> list()
 %% @doc Get list of pages under path specified by a list of path components.
 get_pages_under(Pathcomps) ->
+    io:format("in muin:get_pages_under Pathcomps are ~p~n",[Pathcomps]),
     Match = fun() ->
                     M = #hn_item{addr = #ref{site = '_',
                                              path = '_',
@@ -269,14 +278,17 @@ get_pages_under(Pathcomps) ->
     {atomic, Res} = mnesia:transaction(Match),
     %% List of expansions for the "*" wildcard.
     Starexp = foldl(fun(X, Acc) ->
-                       Path = (X#hn_item.addr)#ref.path, % assume single site
-                       Init = sublist(Path, length(Pathcomps)),
-                       if Pathcomps == Init ->
-                               [last(Path) | Acc];
-                          true ->
-                               Acc
-                       end
+			    Path = (X#hn_item.addr)#ref.path, % assume 1 site
+			    Init = sublist(Path, length(Pathcomps)),
+			    if (Pathcomps == Init) and (Path =/= Init) ->
+				    %%io:format("in muin:get_pages Path is ~p "++
+				    %% 	      "Init is ~p~n",[Path,Init]),
+				    [last(Path) | Acc];
+			       true ->
+				    Acc
+			    end
                     end,
                     [],
                     Res),
+    io:format("in muin:get_pages_under Starexp is ~p~n",[Starexp]),
     hslists:uniq(Starexp).
