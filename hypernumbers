@@ -1,23 +1,71 @@
 #! /bin/bash
 
-DIR=`pwd`
+NODE=arrian
+HOST=localhost
+RELNAME=hypernumbers
+SASL_CONF_FILE=sasl_dev_conf.config
+COOKIE=abc
+
+ROOT=`pwd`
 MODE=""
-RELOAD=""
+RELOAD="-run reloader start"
 
-while getopts dr OPTION
-do
-    case ${OPTION} in 
-        d) MODE="-detached";;
-        r) RELOAD="-run reloader start";;
-       \?) echo "Usage: "
-       exit 2;;
-    esac
-done
+LOG_DIR=$ROOT/logs
+CONFIG=$ROOT/priv/hypernumbers.conf
+MNESIA_DIR=$ROOT/database/$NODE
+REL_DIR=$ROOT/ebin/$RELNAME
+SASL_DIR=$ROOT/priv/$SASL_CONF_FILE
 
-erl $MODE \
-    $RELOAD \
-    -setcookie abc \
-    -sname arrian \
-    -boot ebin/hypernumbers \
-    -config priv/sasl_dev_conf \
-    -mnesia dir \"$DIR/data\"
+## Create mnesia and log directories
+## and config file if they dont exist
+[ -d $LOG_DIR ]    || mkdir -p $LOG_DIR
+[ -d $LOG_DIR/error ]    || mkdir -p $LOG_DIR/error
+[ -d $MNESIA_DIR ] || mkdir -p $MNESIA_DIR
+[ -f $CONFIG ]     || cp $ROOT/priv/hypernumbers.conf.default $CONFIG
+
+function start
+{
+    erl $MODE \
+        $RELOAD \
+        -setcookie $COOKIE \
+        -sname $NODE@$HOST \
+        -boot $REL_DIR \
+        -config $SASL_DIR \
+        -hn_config $CONFIG \
+        -hn_log $LOG_DIR \
+        -mnesia dir "\"$MNESIA_DIR\""
+}
+
+function test
+{
+    if [ $# -lt 1 ] 
+    then
+        echo "hypernumbers test \"*1a*\"    - to run specific test"
+        echo "hypernumbers test \"*1*\"     - to run specific X series"
+        echo "hypernumbers test \"*[12]*\"  - to run both series"
+        exit
+    fi
+
+    TESTS=$(find $ROOT/tests/ -maxdepth 1 -name $1\
+        | grep -v .svn \
+        | grep -v common_test-1.3.0 \
+        | grep -v test_server-3.2.0 \
+        | grep -v excel_files \
+        | grep -v test_server-3.2.0)
+
+    $ROOT/tests/common_test-1.3.0/priv/bin/run_test \
+        -setcookie $COOKIE \
+        -sname $NODE@$HOST \
+        -boot $REL_DIR \
+        -config $SASL_DIR \
+        -hn_config $CONFIG \
+        -hn_log $LOG_DIR \
+        -logdir $LOG_DIR \
+        -mnesia dir "\"$MNESIA_DIR\"" \
+        -dir $TESTS
+}
+
+case $1 in 
+    start) start;;
+    test)  test $2;;
+esac

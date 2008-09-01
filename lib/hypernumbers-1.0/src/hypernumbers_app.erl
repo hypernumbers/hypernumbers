@@ -43,22 +43,26 @@ start(_Type, _Args) ->
         _ ->
             Me = node(),
             case mnesia:table_info(schema,cookie) of
-                {_,Me} -> ok;
-                _      -> hn_loaddb:create_db(disc_copies)
+                {_,Me} -> 
+                    ok;
+                _      -> 
+                    hn_loaddb:create_db(disc_copies)
             end
     end,
 
-    application:set_env(yaws, embedded, true),
-    application:start(yaws),
+    {ok,[[Log]]}  = init:get_argument(hn_log),
+    {ok,[[Path]]} = init:get_argument(hn_config),
+
+    {ok,Config} = file:consult(Path),
+    {value,{hosts,HostList}} = lists:keysearch(hosts,1,Config),
+    SConfs = lists:map(fun(X) -> create_sconf(X) end,HostList),
 
     DefaultGC = yaws_config:make_default_gconf(false, "id"),
-    GC = DefaultGC#gconf{logdir="logs/yaws"},    
-    SC = #sconf{port = 9000,
-                appmods=[{"/",hn_yaws}],
-                listen = {127,0,0,1},
-                docroot = "include/docroot"},
-    
-    ok = yaws_api:setconf(GC, [[SC]]),
+    GC = DefaultGC#gconf{logdir=Log},    
+
+    application:set_env(yaws, embedded, true),
+    application:start(yaws),    
+    ok = yaws_api:setconf(GC, [SConfs]),
     
     case hypernumbers_sup:start_link() of
         {ok, Pid} -> 
@@ -74,3 +78,10 @@ start(_Type, _Args) ->
 %% should do any necessary cleaning up. The return value is ignored.
 %%------------------------------------------------------------------------------
 stop(_State) -> ok.
+
+create_sconf({IP,Port}) ->
+    #sconf{port = Port,
+           appmods=[{"/",hn_yaws}],
+           listen = IP,
+           docroot = "include/docroot"}.
+    
