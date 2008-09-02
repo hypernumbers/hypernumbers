@@ -1,0 +1,54 @@
+%%%-------------------------------------------------------------------
+%%% File        : record_util.erl
+%%% Author      : Gordon Guthrie gordon@hypernumbers.com
+%%% Description : utilities for manipulating records
+%%%
+%%% Created     :  2 Sep 2008 by Gordon Guthrie 
+%%%-------------------------------------------------------------------
+-module(make_ms_util).
+
+-include("spriki.hrl").
+
+-export([make/0]).
+
+-define(MODULENAME,"ms_util").
+
+make() ->
+    {ok,Tree}=epp:parse_file("spriki.hrl",["./"],[]),
+    Src=make_src(Tree),
+    ok=file:write_file(?MODULENAME++".erl",list_to_binary(Src)).
+
+make_src(Tree) -> make_src(Tree,[]).
+
+make_src([],Acc)                              -> make_src2(Acc,[]);
+make_src([{attribute,_,record,Record}|T],Acc) -> make_src(T,[Record|Acc]);
+make_src([_H|T],Acc)                           -> make_src(T,Acc).
+
+make_src2([],Acc)    -> top_and_tail(Acc);
+make_src2([H|T],Acc) -> make_src2(T,[expand_rec(H)|Acc]).
+
+expand_rec({Name,Def}) -> expand_fields(Name,Def,1,[]).
+
+expand_fields(Name,[],_N,Acc) -> lists:reverse([mk(Name)|Acc]);
+expand_fields(Name,[{record_field,_,{atom,_,F},_}|T],N,Acc) -> 
+    expand_fields(Name,T,N+1,[mk(Name,F,N)|Acc]);
+expand_fields(Name,[_H|T],N,Acc) -> expand_fields(Name,T,N,Acc).
+
+%% mk/1 builds an error line
+mk(Name) -> "get_index("++atom_to_list(Name)++",F) -> exit({error,\"Record: "++
+		atom_to_list(Name)++" has no field called \"++atom_to_list(F)});\n".
+
+mk(Name,Field,N) -> 
+    "get_index("++atom_to_list(Name)++","++
+	atom_to_list(Field)++")-> "++integer_to_list(N)++";\n".
+
+top_and_tail(Acc)->
+    Top="%% This module automatically generated - do not edit\n"++
+	"\n"++
+	"-module("++?MODULENAME++").\n"++
+	"\n"++
+	"-export([get_index/2]).\n"++
+	"\n",
+    Tail="get_index(Record,_Field) -> exit({error,\"Invalid Record Name: \"++Record}).\n",
+    Top++lists:flatten(Acc)++Tail.
+

@@ -7,17 +7,17 @@ cd `dirname $0`
 if [ ! -n "$1" ] 
 then
 
-    echo "=================="
-    echo "COMPILING STARLING"
-    echo "=================="
+    echo "==============================="
+    echo "      COMPILING STARLING      "
+    echo "==============================="
     cd ./lib/starling/
     rake
     cd ../../
     echo "OK"
 
-    echo "============================="
-    echo "GENERATING LEXERS AND PARSERS"
-    echo "============================="
+    echo "==============================="
+    echo " GENERATING LEXERS AND PARSERS "
+    echo "==============================="
     cd ./priv/muin/
     erlc generate.erl
     erl -noshell -s generate gen -s init stop
@@ -25,11 +25,28 @@ then
     echo "OK"
 fi
 
+echo
+echo "==============================="
+echo "       COMPILING COMPILER      "
+echo "==============================="
 erlc -o ebin src/compile_code.erl
 
 echo
-echo "================"
-echo "    BUILDING    "
-echo "================"
+echo "==============================="
+echo "      GENERATING MS_UTIL       "
+echo "==============================="
+erlc -o ebin -I include priv/ms_util/make_ms_util.erl
+# GG 2008_09_02
+# for the life of me I can't get epp:parse_file to take a path
+# so I cd to where spriki.hrl is
+# (shoddy, can't get the staff!)
+cd ./include
+erl -pa ../ebin -noshell -s make_ms_util make -s init stop
+mv ms_util.erl ../lib/hypernumbers-1.0/src
+cd ../
+echo
+echo "==============================="
+echo "            BUILDING           "
+echo "==============================="
 cd ebin
 erl -pa ebin -noshell -s compile_code -s init stop
