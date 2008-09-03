@@ -6,7 +6,7 @@ var _jssocket = null;
 function jssocket_init()
 {
     // This is the id/name of the flash object
-    _jssocket = document.getElementById("mymovie");;
+    _jssocket = document.getElementById("mymovie");
 
     // Set callbacks for flash to call
     _jssocket.setCallBack("connect","soc_connect");
@@ -24,7 +24,7 @@ function soc_connect()
     $("#footer img").attr("src","/img/tick.png");
     var url = document.location.protocol + "//" + document.location.host
       + document.location.pathname;
-    _jssocket.write("register "+url+"a1:j30");
+    _jssocket.write("register "+url+"a1:j50");
 }
 
 function soc_error()

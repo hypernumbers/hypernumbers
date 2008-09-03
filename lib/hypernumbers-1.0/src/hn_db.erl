@@ -271,11 +271,13 @@ remove_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
 		end,
 
 		lists:map(
-		  fun(X) -> mnesia:delete_object(X) end,
+		  fun(X) -> notify_remove(X),mnesia:delete_object(X) end,
 		  mnesia:match_object(hn_item,Match,read))
 	end,
     {atomic, _Okay} = mnesia:transaction(F),
+    ok.
 
+notify_remove(#hn_item{addr=#ref{site=Site,path=Path,ref=Ref,name=Name}}) ->
     Msg = "delete "++atom_to_list(Name)++" "++hn_util:ref_to_str(Ref), 
     gen_server:call(remoting_reg,{change,Site,Path,Msg},?TIMEOUT),
     ok.

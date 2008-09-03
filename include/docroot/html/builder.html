@@ -6,114 +6,32 @@
         
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-    <title>Hypernumbers Expenses System</title>
+    <title>Hypernumbers Form Builder</title>
 
 	<style type="text/css">
-        *
-        {
-            margin: 0px;
-            padding:0px;
-            font: 11px sans-serif;
-        }
-
-        html,body { height:100%; background: #f0f8ff; }
-       
-	    #wrapper
-	    { 
-	        height:100%;
-	        padding:10px;
-	        width:650px; 
-	        margin:0px auto;
-	        background:#FFF;
-	        font: 11px sans-serif; 
-	        border-left:1px solid #999;
-	        border-right:1px solid #999; 
-	}
-	    
-	label { display:block; margin:5px; vertical-align:top; }
-	#details label span { display:block; width:140px; float:left; }
-	h1 { font: 22px sans-serif; margin-bottom:10px; }
-        h2 { font: 16px sans-serif; }
-        hr { display:block; border:0px;background:#eee; height:10px; }
-        p { margin:6px 0px 6px 0px; }
-        #head { padding: 10px; background:#eee; margin-bottom:10px; }
-        #head h1 { display:inline; font-weight:bold;} 
-	th,em { font: bold 13px sans-serif; }
-	table td, table th { padding:5px; }
-	.builder { float:left; background:#ccc; padding:3px 5px 3px 5px;
-	margin:5px;}
-.clearfix:after {
-    content: ".";
-    display: block;
-    height: 0;
-    clear: both;
-    visibility: hidden;
-    }
-
+          @import "/css/builder.css";
 	</style>
 		
         <script type="text/javascript" src="/js/jquery.js"></script>
 	<script type="text/javascript" src="/js/demo.ui.core.js"></script>
-	<script type="text/javascript" src="/js/demo.ui.draggable.js"></script>
-	<script type="text/javascript" src="/js/demo.ui.droppable.js"></script>
+	<script type="text/javascript" src="/js/demo.ui.sortable.js"></script>
+	<script type="text/javascript" src="/js/form_utils.js"></script>
+	<script type="text/javascript" src="/js/builder.js"></script>
 
-	<script type="text/javascript">
-	  $(function()
-	  {
-            $("#claim").click(function()
-	    {
-	      document.location.href="/expenses/?new";
-	    });
-	  
-	  $(".builder").draggable({helper: 'clone'});
-
-	    $("#gui").droppable({
-	      accept: ".builder",
-	      drop: function(ev, ui) {
-	        if($(ui.draggable).text() == "input box")
-	        {
-	          $(this).append($("<input type='text'/>"));
-	        }
-	        else if($(ui.draggable).text() == "select")
-	        {
-	          $(this).append($("<select><option>select</optio></select>"));
-	        }
-	        else if($(ui.draggable).text() == "text")
-	        {
-	          $(this).append($("<span>sample text</span>"));
-	        }
-	     }
-	    });
-
-	  });
-	</script>
-
-	    
 </head>
 <body>
   
-  <div id="wrapper">
-    
-    <img src="/img/logo_white.jpg" style="margin:0px 0px 5px 10px" />
-    <hr /><br />
-    <div style="float:right">
-      <a href="?gui=index">View Speadsheet</a> |
-    </div>
-    <h1>Hypernumbers Form Builder</h1>
-
-    <div style="background:#eee;padding:10px;" class="clearfix">
-      <h2>Console - Drag elements on to form</h2>
-    <div class="builder">input box</div>
-    <div class="builder">select</div>
-    <div class="builder">text</div>
-    </div>
-    <br /><br />
-    <h2>Your Form</h2>
-    <div style="background:#eee;padding:10px;" id="gui">
-      
-    </div>
-
+<div id="control" class="clearfix">
+  <div style="float:left"> 
+    <input type="button" value="Add a Form Item" id="add_item" />
   </div>
+  <div style="float:right"> 
+    <input type="button" value="Save" id="save" />
+  </div>
+</div>
+
+<ul id="form">
+</ul>
   
 </body>
 </html>

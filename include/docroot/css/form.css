@@ -1,0 +1,61 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    font: 12px sans-serif;
+  }
+
+h1
+{
+  margin:5px 0px;
+  font: 18px sans-serif;
+  }
+
+h3
+{
+  font: bold 14px sans-serif;
+  }
+
+body 
+{ 
+  padding:10px;
+  background:#F8F8FF;
+ }
+
+#wrapper 
+{ 
+  background:#FFF;
+  width:600px;
+  margin:0px auto;
+  padding:10px;
+  }
+
+.row
+{ 
+  margin:10px 0px;
+}
+
+p
+{ 
+  margin:10px 0px;
+ }
+
+.cell
+{ 
+  padding:5px 10px;
+ }
+
+#flashcontent
+{
+  position:absolute;
+  visibility:hidden;
+  top:-1000px;
+  }
+
+.clearfix:after, row:after
+{
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+  }

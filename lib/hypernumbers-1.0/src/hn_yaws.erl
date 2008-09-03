@@ -214,6 +214,24 @@ post(Arg,_User,_Page,{login,[],[{email,[],[Email]},{password,[],[Pass]}]}) ->
 post(_Arg,X,_,_) when X == no_access; X == read  ->
     {return,{status,503}};
 
+post(Arg,_User,Page=#page{ref={range,{Y1,X1,Y2,X2}}},{create,[],Data}) ->
+    
+    {ok,Auth} = get_var_or_cookie(auth,Page,Arg),
+    Ref = (page_to_ref(Page))#ref{auth=Auth},
+    
+    F = fun(X,Y,Z) ->
+                case lists:nth(Z,Data) of
+                    {_Name,[],[]} -> ok;
+                    {Name,[],[Val]} ->
+                        NewRef = Ref#ref{ref={cell,{Y,X}},name=Name},
+                        hn_main:set_attribute(NewRef,Val)
+                end
+        end,
+    
+    [[ F(X,Y,((X-X1)*(Y2-Y1+1))+(Y-Y1)+1)
+       || Y <- lists:seq(Y1,Y2)] || X <- lists:seq(X1,X2)],
+    {ok,{success,[],[]}};
+
 post(Arg,_User,Page,{create,[],Data}) ->
     
     Ref = page_to_ref(Page),    
@@ -221,7 +239,7 @@ post(Arg,_User,Page,{create,[],Data}) ->
     
     lists:foldl
       (
-      fun({Attr,[],[Val]},Sum) ->
+      fun({Attr,[],Val},Sum) ->
               
               NewAddr = case lists:member({lastrow},Page#page.vars) of
                             true  -> 
@@ -233,17 +251,21 @@ post(Arg,_User,Page,{create,[],Data}) ->
               
               case Val of
                   [] -> 
-                      throw(empty_val); 
-                  _  -> 
-                      hn_main:set_attribute(NewAddr#ref{auth=Auth},Val)
-                      %Send = {set,NewAddr#ref{auth=Auth},Val},
-                      %gen_server:call(hn_calc,Send)
+                      ok;
+                  [Value]  -> 
+                      hn_main:set_attribute(NewAddr#ref{auth=Auth},Value)
+                                                %Send = {set,NewAddr#ref{auth=Auth},Val},
+                                                %gen_server:call(hn_calc,Send)
               end,
               Sum+1
       end,
       1,
       Data
      ),
+    {ok,{success,[],[]}};
+
+post(_Arg,_User,Page=#page{ref={page,"/"}},{delete,[],[]}) ->
+    hn_db:remove_item((page_to_ref(Page))#ref{ref='_'}),
     {ok,{success,[],[]}};
 
 post(_Arg,_User,Page,{delete,[],Data}) ->    
@@ -283,13 +305,15 @@ post(_Arg,_User,Page,{notify,[],Data}) ->
 
 post(_Arg,_User,Page,{template,[],[{name,[],[Name]},
 				   {url,[],[Url]},
-				   {gui,[],[Gui]}]}) ->
+				   {gui,[],[Gui]},
+                                   {formurl,[],[Form]}]}) ->
     io:format("hn_yaws:post~n"),
     Tpl = "/@"++Name++"/", 
     ok = hn_main:copy_page(page_to_ref(Page),Tpl),
     NPage = hn_util:parse_url(Page#page.site++Url),
     hn_main:set_attribute((page_to_ref(NPage))#ref{name=template},"@"++Name),
-    hn_main:set_attribute((page_to_ref(NPage))#ref{name=gui},Gui),
+    hn_main:set_attribute((page_to_ref(NPage))#ref{name=gui},Gui),    
+    hn_main:set_attribute((page_to_ref(NPage))#ref{name=form},Form),
     {ok,{success,[],[]}};
 
 post(_Arg,_User,_Page,Data) ->

@@ -71,6 +71,11 @@
 		<li><a id="set_gui">Set Front Page</a></li>
 	      </ul>
 	    </li>
+	    <li><a>Forms</a>
+	      <ul>
+		<li><a href="?gui=builder">Build / Edit Form</a></li>
+	      </ul>
+	    </li>
             <li><a>Links</a>
               <ul>
         	<li><a class="x">Incoming</a></li>
@@ -89,20 +94,6 @@
 	      <input type="file" name="Filedata" id="Filedata" value="Upload Spreadsheet" />
 	    </div>
 	  </div>
-	  <div class="dialog" id="templates">
-	    <h2>Define New Template</h2>
-	    <div class="clearfix">
-	      <table cellspacing="5">
-		<tr><td>Template Name:</td><td><input type="text" id="tplname" /></td></tr>
-		<tr><td colspan="2"><input type="checkbox" />&nbsp; dynamic template</td></tr>
-		<tr><td>Root Url</td><td><input type="text" class="dynamic" id="tplurl" disabled="true" /></td></tr>
-		<tr><td>Use GUI</td><td><input type="text" class="dynamic" id="tplgui" disabled="true" /></td></tr>
-	      </table>
-	      <div class="functioninput">
-		<input type="button" value="save" class="submit" />
-            </div>
-	    </div>
-	  </div>
 
 	  <div class="dialog" id="templates">
 	    <h2>Define New Template</h2>
@@ -111,7 +102,8 @@
 		<tr><td>Template Name:</td><td><input type="text" id="tplname" /></td></tr>
 		<tr><td colspan="2"><input type="checkbox" />&nbsp; dynamic template</td></tr>
 		<tr><td>Root Url</td><td><input type="text" class="dynamic" id="tplurl" disabled="true" /></td></tr>
-		<tr><td>Use GUI</td><td><input type="text" class="dynamic" id="tplgui" disable="true" /></td></tr>
+		<tr><td>Use GUI</td><td><input type="text" class="dynamic" id="tplgui" disabled="true" /></td></tr>
+                <tr><td>Form Url</td><td><input type="text" class="dynamic" id="formurl" disabled="true" /></td></tr>
 	      </table>
 	      <div class="functioninput">
 		<input type="button" value="save" class="submit" />
