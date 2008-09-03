@@ -42,7 +42,7 @@ erlc -o ebin -I include priv/ms_util/make_ms_util.erl
 # (shoddy, can't get the staff!)
 cd ./include
 erl -pa ../ebin -noshell -s make_ms_util make -s init stop
-mv ms_util.erl ../lib/hypernumbers-1.0/src
+mv ms_util2.erl ../lib/hypernumbers-1.0/src
 cd ../
 echo
 echo "==============================="

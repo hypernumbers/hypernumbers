@@ -11,7 +11,7 @@
 
 -export([make/0]).
 
--define(MODULENAME,"ms_util").
+-define(MODULENAME,"ms_util2").
 
 make() ->
     {ok,Tree}=epp:parse_file("spriki.hrl",["./"],[]),
@@ -30,10 +30,12 @@ make_src2([H|T],Acc1,Acc2) -> {NewAcc1,NewAcc2}=expand_rec(H),
 
 expand_rec({Name,Def}) -> expand_fields(Name,Def,1,[]).
 
-expand_fields(Name,[],N,Acc) -> {mk2(Name,N),lists:reverse([mk(Name)|Acc])};
+expand_fields(Name,[],N,Acc) -> {mk2(Name,N-1),lists:reverse([mk(Name)|Acc])};
 expand_fields(Name,[{record_field,_,{atom,_,F},_}|T],N,Acc) -> 
     expand_fields(Name,T,N+1,[mk(Name,F,N)|Acc]);
-expand_fields(Name,[_H|T],N,Acc) -> expand_fields(Name,T,N,Acc).
+expand_fields(Name,[{record_field,_,{atom,_,F}}|T],N,Acc) -> 
+    expand_fields(Name,T,N+1,[mk(Name,F,N)|Acc]);
+expand_fields(Name,[H|T],N,Acc) -> expand_fields(Name,T,N+1,Acc).
 
 %% mk2/1 builds the no of fields fns
 mk2(Name,N) -> "no_of_fields("++atom_to_list(Name)++") -> "++
@@ -51,12 +53,15 @@ mk(Name,Field,N) ->
 top_and_tail(Acc1,Acc2)->
     Top="%% This module automatically generated - do not edit\n"++
 	"\n"++
+	"%%% This module provides utilities for use in building\n"++
+	"%%% match specifications from records\n"++
+	"\n"++
 	"-module("++?MODULENAME++").\n"++
 	"\n"++
 	"-export([get_index/2,no_of_fields/1]).\n"++
 	"\n",
     Tail1="no_of_fields(Other) -> exit({error,\"Invalid Record Name: \""++
-	"++Other}).\n",
+	"++Other}).\n\n\n",
     Tail2="get_index(Record,_Field) -> exit({error,\""++
 	"Invalid Record Name: \"++Record}).\n",
     Top++lists:flatten(Acc1)++Tail1++lists:flatten(Acc2)++Tail2.
