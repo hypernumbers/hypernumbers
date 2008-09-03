@@ -52,6 +52,7 @@ index_to_url(#index{site=Site,path=Path,column=X,row=Y}) ->
 page_to_index(#page{site=Site,path=Path,ref={cell,{X,Y}}}) ->
     #index{site=Site,path=Path,column=X,row=Y}.
 
+
 ref_to_str({page,Path})  -> Path;   
 ref_to_str({cell,{X,Y}}) -> tconv:to_b26(X)++text(Y);
 ref_to_str({row,Y})      -> text(Y);

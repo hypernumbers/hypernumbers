@@ -265,7 +265,7 @@ find1(_, [], _) ->
 %% @spec get_pages_under(list()) -> list()
 %% @doc Get list of pages under path specified by a list of path components.
 get_pages_under(Pathcomps) ->
-    io:format("in muin:get_pages_under Pathcomps are ~p~n",[Pathcomps]),
+    %%io:format("in muin:get_pages_under Pathcomps are ~p~n",[Pathcomps]),
     Match = fun() ->
                     M = #hn_item{addr = #ref{site = '_',
                                              path = '_',
@@ -290,5 +290,5 @@ get_pages_under(Pathcomps) ->
                     end,
                     [],
                     Res),
-    io:format("in muin:get_pages_under Starexp is ~p~n",[Starexp]),
+    %%io:format("in muin:get_pages_under Starexp is ~p~n",[Starexp]),
     hslists:uniq(Starexp).

@@ -76,7 +76,7 @@ build_form = function()
                 }
                 str += "</create>";
                 
-                $.post(url+"?attr&lastrow",str,null,"xml");                
+                $.post(url+"?attr&lastrow",str,null,"xml");
             });
 }
 
