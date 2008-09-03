@@ -390,13 +390,10 @@ has(Type,Format) ->
 	_       -> {ok,true}
     end.
 
-make_list(Number) when is_float(Number) -> 
-    %% io:format("in format:make_list (1) Number is ~p~n",[Number]),
-    Float=float_to_list(Number),
-    rejig(Float);
-make_list(Number) when is_integer(Number) -> 
-    %% io:format("in format:make_list (2) Number is ~p~n",[Number]),
-    integer_to_list(Number).
+make_list(Number) when is_list(Number)    -> Number;
+make_list(Number) when is_float(Number)   -> Float=float_to_list(Number),
+					   rejig(Float);
+make_list(Number) when is_integer(Number) ->  integer_to_list(Number).
 
 rejig(Float)->
     [Number,[Sign|Exp]]=string:tokens(Float,"e"),
