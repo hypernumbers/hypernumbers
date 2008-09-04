@@ -83,5 +83,5 @@ create_sconf({IP,Port}) ->
     #sconf{port = Port,
            appmods=[{"/",hn_yaws}],
            listen = IP,
-           docroot = "include/docroot"}.
+           docroot = code:lib_dir(hypernumbers)++"/priv/docroot"}.
     

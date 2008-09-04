@@ -14,7 +14,6 @@
 %% Directories containg source files
 -define(DIRS,
         ["/lib/hypernumbers-1.0/",
-         "/lib/hypernumbers.com-1.0/",
          "/lib/formula_engine-1.0/",
          "/lib/read_excel-1.0/",
          "/lib/mochi-1.0/"]).
@@ -42,6 +41,7 @@ start() ->
     Inc_list = [{i, App_rt_dir ++ "/include"},
                 {i, App_rt_dir ++ "/lib/eunit/include"},
                 {i, App_rt_dir ++ "/lib/read_excel-1.0/include"},
+                {i, App_rt_dir ++ "/lib/hypernumbers-1.0/include"},
                 {i, App_rt_dir ++ "/lib/yaws-1.76/include"},
                 {i, code:lib_dir(xmerl)++"/include"}],
 

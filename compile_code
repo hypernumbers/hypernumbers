@@ -35,15 +35,11 @@ echo
 echo "==============================="
 echo "      GENERATING MS_UTIL       "
 echo "==============================="
-erlc -o ebin -I include priv/ms_util/make_ms_util.erl
-# GG 2008_09_02
-# for the life of me I can't get epp:parse_file to take a path
-# so I cd to where spriki.hrl is
-# (shoddy, can't get the staff!)
-cd ./include
-erl -pa ../ebin -noshell -s make_ms_util make -s init stop
-mv ms_util2.erl ../lib/hypernumbers-1.0/src
-cd ../
+HN_DIR="lib/hypernumbers-1.0"
+erlc -o $HN_DIR/ebin -I $HN_DIR/include priv/ms_util/make_ms_util.erl
+erl -pa $HN_DIR/ebin -noshell -s make_ms_util make -s init stop
+mv ms_util2.erl $HN_DIR/src
+
 echo
 echo "==============================="
 echo "            BUILDING           "

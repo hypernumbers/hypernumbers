@@ -7,14 +7,12 @@
 %%%-------------------------------------------------------------------
 -module(make_ms_util).
 
--include("spriki.hrl").
-
 -export([make/0]).
 
 -define(MODULENAME,"ms_util2").
 
 make() ->
-    {ok,Tree}=epp:parse_file("spriki.hrl",["./"],[]),
+    {ok,Tree}=epp:parse_file("lib/hypernumbers-1.0/include/spriki.hrl",[],[]),
     Src=make_src(Tree),
     ok=file:write_file(?MODULENAME++".erl",list_to_binary(Src)).
 
@@ -35,7 +33,7 @@ expand_fields(Name,[{record_field,_,{atom,_,F},_}|T],N,Acc) ->
     expand_fields(Name,T,N+1,[mk(Name,F,N)|Acc]);
 expand_fields(Name,[{record_field,_,{atom,_,F}}|T],N,Acc) -> 
     expand_fields(Name,T,N+1,[mk(Name,F,N)|Acc]);
-expand_fields(Name,[H|T],N,Acc) -> expand_fields(Name,T,N+1,Acc).
+expand_fields(Name,[_H|T],N,Acc) -> expand_fields(Name,T,N+1,Acc).
 
 %% mk2/1 builds the no of fields fns
 mk2(Name,N) -> "no_of_fields("++atom_to_list(Name)++") -> "++
