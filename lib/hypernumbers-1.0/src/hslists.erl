@@ -38,7 +38,7 @@ intersperse1(Elt, [Hd | Tl], Acc) ->
 intersperse1(_Elt, [], Acc) ->
     Acc.
 
-%% @equiv intersperse/1.
+%% @doc intersperse/1.
 join(Elt, L) ->
     intersperse(Elt, L).
 

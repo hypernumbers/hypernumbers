@@ -36,13 +36,13 @@
 write_def(TemplateName,IsDynamic,RootURL,GUI) ->
     hn_db:write_template(TemplateName,IsDynamic,RootURL,GUI).
 
-%% @spec get_next(TemplateName) -> NewName
+%% @spec get_next(Ref,TemplateName) -> NewName
 %% @doc gets the next valid page name
 get_next(Ref,TemplateName) ->
     io:format("in hn_templates:get_next TemplateName is ~p~n",[TemplateName]),
     {ok,Template}=hn_db:read_template(TemplateName),
     io:format("in hn_templates:get_next got to 0~n"),
-    {template,TemplateName,IsDynamic,TemplatePath,Gui}=Template,
+    {template,TemplateName,_IsDynamic,TemplatePath,_Gui}=Template,
     io:format("in hn_templates:get_next got to 1~n"),
     io:format("in hn_templates:get_next got to 2a~n"),
     Return=new_path(Ref,TemplatePath),
@@ -73,12 +73,12 @@ parse(String) ->
 		[A,B]   -> {A,B};
 		[A,B,C] -> {A,B,C}
 	    end;
-	Other -> String
+	_Other -> String
     end.
 		    
 new_path(Ref,TemplatePath) -> new_path2(Ref,TemplatePath,[]).
 
-new_path2(Ref,[],Acc)                  -> Acc;
+new_path2(_Ref,[],Acc)                 -> Acc;
 new_path2(Ref,[{"auto","incr"}|T],Acc) -> new_path2(Ref,T,Acc++"/"++
 						    get_incr(Ref,Acc)++"/");
 new_path2(Ref,[{"year",F}|T],Acc)      -> new_path2(Ref,T,Acc++"/"++year(F)++"/");
@@ -90,7 +90,7 @@ new_path2(Ref,[{"second",F}|T],Acc)    -> new_path2(Ref,T,Acc++"/"++second(F)++"
 new_path2(Ref,[{"weekday",F}|T],Acc)   -> new_path2(Ref,T,Acc++"/"++weekday(F)++"/");
 new_path2(Ref,[H|T],Acc)               -> new_path2(Ref,T,Acc++"/"++H).
 
-new_path(A,B,C) -> io:format("in hn_templates:new_path/3 not written yet!~n").
+%new_path(_A,_B,_C) -> io:format("in hn_templates:new_path/3 not written yet!~n").
 
 get_incr(Ref,Path) ->
     Path2=string:tokens(Path,"/"),
