@@ -75,13 +75,13 @@ code_change(_OldVsn, State, _Extra) ->  {ok, State}.
 %% Rest of the gen_server callbacks
 %%----------------------------------------------------------------------    
 trigger_recalc(Rec,Type) ->
-
-    Index = ?COND(Type == dirty_cell,
-        Rec#dirty_cell.index,
-        Rec#dirty_hypernumber.index),
-    %spawn(fun() ->
-        hn_db:dirty_refs_changed(Type, Index),
-    %end),
     
-    mnesia:dirty_delete({Type, Index}).
+    Index = ?COND(Type == dirty_cell,
+                  Rec#dirty_cell.index,
+                  Rec#dirty_hypernumber.index),
+
+    mnesia:dirty_delete({Type, Index}),
+    hn_db:dirty_refs_changed(Type, Index),
+    
+    ok.
 

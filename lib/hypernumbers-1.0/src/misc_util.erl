@@ -23,8 +23,15 @@ demo(Site) ->
 		Name = filename:basename(X,".xml"),
 		{ok,Xml} = file:read_file(X),
 		Url = Site ++ string:join(string:tokens(Name,"-"),"/") ++ "/",
-		Data = simplexml:from_xml_string(binary_to_list(Xml)),
-		do_import(Url,Data),
+                
+                try
+                    Data = simplexml:from_xml_string(binary_to_list(Xml)),
+                    io:format("data up in ~p~n",[Data]),
+                    do_import(Url,Data)
+                catch
+                    Error -> 
+                        io:format("screwed up in ~p~n",[Name])
+                end,
 		ok
 	end,
     lists:map(F,Files),
