@@ -79,7 +79,6 @@ trigger_recalc(Rec,Type) ->
     Index = ?COND(Type == dirty_cell,
         Rec#dirty_cell.index,
         Rec#dirty_hypernumber.index),
- 
     %spawn(fun() ->
         hn_db:dirty_refs_changed(Type, Index),
     %end),
