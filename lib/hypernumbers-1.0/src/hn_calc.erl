@@ -137,7 +137,7 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
     %% Writes all the parent links 
     lists:map( 
         fun({url,[{type,Type}],[Url]}) ->
-            #page{site=Site,path=Path,ref={cell,{X,Y}}} = hn_util:parse_url(Url),
+            {ok,#ref{site=Site,path=Path,ref={cell,{X,Y}}}} = hn_util:parse_url(Url),
             Parent = {index,Site,string:to_lower(Path),X,Y},
             case Type of
             "local"  -> hn_db:write_local_link(Parent,Index);
@@ -205,7 +205,7 @@ get_cell_info(Site, TmpPath, X, Y) ->
     end,
     
     F = fun({url,[{type,Type}],[Url]}) -> 
-                #page{site=S,path=P,ref={cell,{X1,Y1}}} = hn_util:parse_url(Url),
+                {ok,#ref{site=S,path=P,ref={cell,{X1,Y1}}}} = hn_util:parse_url(Url),
                 P2 = string:tokens(P,"/"),
                 {Type,{S,P2,X1,Y1}}
         end,
@@ -233,7 +233,7 @@ get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY) ->
         
         #incoming_hn{value=Val,deptree=T} ->
             F = fun({url,[{type,Type}],[Url]}) ->
-                        #page{site=S,path=P,ref={cell,{X,Y}}} = hn_util:parse_url(Url),
+                        {ok,#ref{site=S,path=P,ref={cell,{X,Y}}}} = hn_util:parse_url(Url),
                         P2 = string:tokens(P,"/"),
                         {Type,{S,P2,X,Y}}
                 end,

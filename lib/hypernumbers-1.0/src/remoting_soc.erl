@@ -27,7 +27,7 @@ loop(Socket)->
     receive
         
         {tcp, Socket,"register"++Rest} ->
-            Page = hn_util:parse_url(hn_util:trim(Rest)),  
+            {ok,Page} = hn_util:parse_url(hn_util:trim(Rest)),  
             self() ! gen_server:call(remoting_reg,{register,Page}),
             loop(Socket);
         
@@ -37,8 +37,8 @@ loop(Socket)->
         
         {tcp, Socket,"<policy-file-request/>"++_} ->
             Path = code:priv_dir("hypernumbers")++"/crossdomain.xml",
-            {ok,Msg} = hn_util:read(Path),
-            self() ! {msg,Msg++"\0"},
+            {ok,Bin} = file:read_file(Path),
+            self() ! {msg,binary_to_list(Bin)++"\0"},
             loop(Socket);
         
         {tcp, Socket, _Msg} ->     

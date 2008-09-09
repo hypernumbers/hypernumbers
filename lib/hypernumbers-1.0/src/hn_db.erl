@@ -89,8 +89,10 @@ get_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
                 N = ?COND(Name == undef,'_',Name),
                 
                 Attr = case Ref of
-                           {cell,{X,Y}} -> #ref{site=Site, path=Path, name=N, ref={cell,{X,Y}}};
-                           _ ->            #ref{site=Site, path=Path, name=N, _ = '_'}
+                           {cell,{X,Y}} -> 
+                               #ref{site=Site, path=Path, name=N, ref={cell,{X,Y}}};
+                           _ ->            
+                               #ref{site=Site, path=Path, name=N, _ = '_'}
                        end,
                 Match = #hn_item{addr = Attr, _ = '_'},
                 mnesia:match_object(hn_item,Match,read)

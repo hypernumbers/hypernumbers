@@ -175,7 +175,7 @@ unpack_text(Text)->
 
     lists:map(
         fun(XX)-> 
-            #page{site=S,path=P,ref={cell,{X,Y}}} = hn_util:parse_url(XX),
+            {ok,#ref{site=S,path=P,ref={cell,{X,Y}}}} = hn_util:parse_url(XX),
             {S,P,X,Y} 
         end,List).
 

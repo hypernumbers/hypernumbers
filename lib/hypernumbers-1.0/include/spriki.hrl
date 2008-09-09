@@ -23,15 +23,15 @@
     row
 }).
 
--record( page,
-{
-    site,
-    path,
-    ref,
-    vars,
-    format,
-    auth        = []
-}).
+-record(ref,
+        {
+          site        = [],
+          path        = [],
+          ref         = null,
+          name        = undef,
+          auth        = []
+         }).
+
 
 -record(status,
 {
@@ -76,15 +76,6 @@
     reg_URL     = [],
     biccie      = [],
     format
-}).
-
--record( ref,
-{
-    site        = [],
-    path        = [],
-    ref         = null,
-    name        = undef,
-    auth        = []
 }).
 
 -record( hn_item,

@@ -191,8 +191,8 @@ funcall(':', [{ref, Col1, Row1, Path1, _}, {ref, Col2, Row2, "./", _}]) ->
 
 %% Hypernumber function and its shorthand.
 funcall(hypernumber, [Url]) ->
-    #page{site = RSite, path = RPath,
-          ref = {cell, {RX, RY}}} = hn_util:parse_url(Url),
+    {ok,#ref{site = RSite, path = RPath,
+          ref = {cell, {RX, RY}}}} = hn_util:parse_url(Url),
     F = ?L(hn_main:get_hypernumber(?msite, ?mpath, ?mx, ?my,
                                    Url, RSite, RPath, RX, RY)),
     get_value_and_link(F);

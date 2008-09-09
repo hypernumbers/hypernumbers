@@ -28,7 +28,7 @@ init([]) ->
 %% Register a new Range, From will now receive updates
 %% when a number in Page -> Range changes
 handle_call({register,Page},{Pid,_},State) ->
-    #page{site=Site,path=Path} = Page,
+    #ref{site=Site,path=Path} = Page,
     NewState = lists:append(State,[{Site,Path,Pid}]),
     {reply, {msg,"range registered"},NewState};
 

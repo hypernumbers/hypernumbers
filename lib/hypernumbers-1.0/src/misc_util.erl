@@ -67,8 +67,8 @@ testa() -> testb(foo).
 testb(bar) -> "foo".
 
 import_xml_attributes(File,Url) ->
-    {ok,String} = hn_util:read(File),
-    do_import(Url,simplexml:from_xml_string(String)).
+    {ok,Bin} = file:read(File),
+    do_import(Url,simplexml:from_xml_string(binary_to_list(Bin))).
 
 do_import(Url,{attr,[],Refs}) ->
     lists:map

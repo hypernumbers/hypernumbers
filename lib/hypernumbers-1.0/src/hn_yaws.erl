@@ -1,23 +1,20 @@
-%%%-----------------------------------------------------------------------------
-%%% File        : hn_yaws.erl
-%%% Author      : Dale Harvey <dale@hypernumbers.com>
-%%% Description : this handles incoming http requests
-%%%----------------------------------------------------------------------------
+%% @author Dale Harvey
+%% @copyright 2008 Hypernumbers Ltd
+%% @doc Handle Hypernumbers HTTP requests
+
 -module(hn_yaws).
 
-%%--------------------------------------------------------------------
-%% Include files
-%%--------------------------------------------------------------------
 -include("yaws_api.hrl").
 -include("spriki.hrl").
 -include("handy_macros.hrl").
 
 -import(simplexml,[to_xml_string/1,to_json_string/1]).
-%%%-----------------------------------------------------------------
-%%% Exported Functions
-%%%-----------------------------------------------------------------
 -export([ out/1, get_page_attributes/1 ]).
 
+-record(upload, {fd,filename, last}).
+
+%% @spec out(Arg) -> YawsReturn.
+%% @doc Yaws handler for all incoming HTTP requests
 out(Arg) ->
     Url      = yaws_api:request_url(Arg),
     FileName = Arg#arg.docroot++Url#url.path,
@@ -28,7 +25,8 @@ out(Arg) ->
             [{page,Url#url.path},{header,{cache_control,"max-age=3600"}}];
         false ->
             {ok,Ret} = case catch(do_request(Arg,Url)) of
-                           {ok,Resp} -> {ok,Resp};
+                           {ok,Resp} -> 
+                               {ok,Resp};
                            Else      -> 
                                Stack = erlang:get_stacktrace(),
                                error_logger:error_msg("~p~n~p",[Else,Stack]),
@@ -37,80 +35,70 @@ out(Arg) ->
 	    Ret
     end.
 
+%% @spec do_request(Arg,Url) -> {ok,Responce}
+%% @doc handle incoming requests
 do_request(Arg,Url) ->  
     
-    Page   = hn_util:parse_url(Url),
-    Ref    = page_to_ref(Page),
+    RV = fun({X,undefined}) -> X;
+            (Else) -> Else
+         end,
+
     Method = (Arg#arg.req)#http_request.method,
+    {ok,Ref} = hn_util:parse_url(Url),
+    Vars = lists:map(RV,yaws_api:parse_query(Arg)),
+    {ok,Type} = hn_util:get_req_type(Vars),
+    {ok,PostData} = get_post_data(Arg,Type),
     
     %% Verify AuthToken, authtoken can be passed via url 
     %% or cookies, url takes precedence
-    {ok,AuthCode} = get_var_or_cookie(auth,Page,Arg),
-    
+    {ok,AuthCode} = get_var_or_cookie(auth,Vars,Arg),
+    {ok,Token} = get_var_or_cookie(token,Vars,Arg),
     User = case string:tokens(AuthCode,":") of 
                [] ->        
                    anonymous;
                [UserId,_AuthToken] -> 
-                   %% Verify Token
+                   %% TODO Verify Token
                    UserId
            end,
-        
-    {ok,Token} = get_var_or_cookie(token,Page,Arg),
+    
     {ok,Access} = case get_permissions(User,Ref) of
                       {ok,{protected_read,Token}}  -> {ok,read};
                       {ok,{protected_write,Token}} -> {ok,write}; 
-                      {ok,{_Write,_Tok}} -> {ok,require_token};
-                      Else -> Else
-                  end,               
+                      {ok,{_Write,_Tok}}           -> {ok,require_token};
+                      Else                         -> Else
+                  end,
 
-    Return = case req(Arg,Method,Access,Page) of
+    Return = case req(Method,PostData,Vars,Access,Ref) of
 		 {return,Data} ->
 		     Data;
                  {ok,Data} -> 
-                     case Page#page.format of
-                         {xml} ->
+                     case Type of
+                         xml ->
 			     [{header,{cache_control,"no-cache"}},
 			      {status,200},
 			      {content,"text/xml",to_xml_string(Data)}];
-                         {json} -> 
+                         json -> 
                              [{content,"text/plain",to_json_string(Data)}]
                      end
              end,
     
     {ok,Return}.
 
-get_var_or_cookie(Name,Page,Arg) ->
-    case lists:keysearch(Name,1,Page#page.vars) of
-        false -> 
-            {ok,yaws_api:find_cookie_val(atom_to_list(Name),Arg)};
-        {value,{auth,Auth}} ->  
-            {ok,Auth}
-    end.
-    
-%% call to a page without access redirects to login
-req(_Arg,'GET',no_access,#page{ref={page,"/"}})  -> 
+req('GET',[],_,no_access,#ref{ref={page,"/"}}) -> 
     {return,{page,"/html/login.html"}};
-%% GET api call with no_access
-req(_Arg,'GET',no_access,_Page)  -> 
+req('GET',[],_,no_access,_Ref)  -> 
     {return,{status,503}};
-
-%% call to a page without access redirects to login
-req(_Arg,'GET',require_token,#page{ref={page,"/"}})  -> 
+req('GET',[],_,require_token,#ref{ref={page,"/"}}) -> 
     {return,{page,"/html/token.html"}};
-%% GET api call with no_access
-req(_Arg,'GET',require_token,_Page)  -> 
+req('GET',[],_,require_token,_Page)  -> 
     {return,{status,503}};
-
-%% Index page "/"
-req(_Arg,'GET',_,Page = #page{ref={page,"/"},vars=[]}) -> 
-    Ref    = (page_to_ref(Page))#ref{name=gui},
+req('GET',[],[],_,Ref=#ref{ref={page,"/"}}) -> 
     {ok,V} = hn_db:get_item_inherited(Ref,"index"),
     {return,{page,"/html/"++V++".html"}};
-req(_Arg,'GET',_,#page{ref={page,"/"},vars=[{gui,GUI}]}) -> 
+req('GET',[],[{"gui",GUI}],_,#ref{ref={page,"/"}}) -> 
     {return,{page,"/html/"++GUI++".html"}};
 
-req(_Arg,'GET',_,Page=#page{ref={page,"/"},vars=[{new}]}) -> 
-    Ref    = page_to_ref(Page),
+req('GET',[],["new"],_,Ref=#ref{ref={page,"/"}}) -> 
     {ok,Tpl} = hn_db:get_item_inherited(Ref#ref{name=template},blank),
     Items = hn_db:get_item(Ref#ref{path=lists:append(Ref#ref.path,'_')}),
     F = fun(#hn_item{addr=R}) ->
@@ -126,8 +114,7 @@ req(_Arg,'GET',_,Page=#page{ref={page,"/"},vars=[{new}]}) ->
     hn_main:copy_page(Ref#ref{path=[Tpl]},NPage),
     {return,{redirect, Ref#ref.site++NPage}};
 
-req(_Arg,'GET',_,Page=#page{ref={page,"/"},vars=[{templates}]}) ->
-    Ref    = page_to_ref(Page),
+req('GET',[],["templates"],_,Ref=#ref{ref={page,"/"}}) ->
     F = fun(#hn_item{addr=#ref{path=Path},val=Val}) -> 
 		{template,[],[{name,[],[Val]},
 			      {path,[],["/"++string:join(Path,"/")++"/"]}]}
@@ -135,81 +122,71 @@ req(_Arg,'GET',_,Page=#page{ref={page,"/"},vars=[{templates}]}) ->
     Items = hn_db:get_item(Ref#ref{path='_',name=template}),
     {ok,{templates,[],lists:map(F,Items)}};
 
-%% ?attr
-req(_Arg,'GET',_,Page = #page{vars = [{attr}]}) -> 
-    Attr = get_page_attributes(page_to_ref(Page)),
+req('GET',[],["attr"],_,Ref) -> 
+    Attr = get_page_attributes(Ref),
     {ok,Attr};    
 
-%% ?attr=value
-req(_Arg,'GET',_,Page = #page{vars = [{attr,Val}]}) -> 
-    Name   = list_to_existing_atom(Val),
-    Ref    = (page_to_ref(Page))#ref{name=Name},
-    {ok,V} = hn_db:get_item_inherited(Ref,get_default(Name)),
+req('GET',[],[{"attr",Val}],_,Ref) -> 
+    Name = list_to_existing_atom(Val),
+    NRef  = Ref#ref{name=Name},
+    Def  = get_default(Name),
+    {ok,V} = hn_db:get_item_inherited(NRef,Def),
     {ok,{attr,[],[V]}};
 
 %% ?pages
-req(_Arg,'GET',_,#page{vars = [{pages}]}) -> 
+req('GET',[],["pages"],_,_Ref) -> 
     Items = mnesia:dirty_match_object(#hn_item{_ = '_'}),
     {ok,create_pages_tree(Items)};
 
 %% ?hypernumber
-req(_Arg,'GET',_,Page = #page{vars = [{hypernumber}]}) -> 
-    Addr = page_to_ref(Page),   
+req('GET',[],["hypernumber"],_,Ref) -> 
+
     Val = fun() ->
-                  case hn_db:get_item_val(Addr#ref{name=rawvalue}) of
+                  case hn_db:get_item_val(Ref#ref{name=rawvalue}) of
                       []  -> {blank,[],[]};
                       Tmp -> hn_util:to_xml(Tmp)
                   end
           end,
     
-    DepTree = case hn_db:get_item_val(Addr#ref{name='dependancy-tree'}) of
+    DepTree = case hn_db:get_item_val(Ref#ref{name='dependancy-tree'}) of
                   {xml,Tree} -> Tree;
                   []         -> []
               end,
     {ok,{hypernumber,[],[{value,[], Val()},{'dependancy-tree',[], DepTree}]}};
 
 %% /a1 
-req(_Arg,'GET',_,Page = #page{vars = []}) -> 
-    case hn_db:get_item(page_to_ref(Page)) of
-        []   -> {return,{content,"text/plain","blank"}};
-    List ->      
+req('GET',[],[],_,Ref) -> 
+    case hn_db:get_item(Ref) of
+        []   -> 
+            {return,{content,"text/plain","blank"}};
+        List ->      
             F = fun(X) ->                        
                         (X#hn_item.addr)#ref.name == rawvalue
                 end,
             
             Val = case lists:filter(F,List) of
-                  [] -> 0;
+                      [] -> 0;
                       [#hn_item{val=Value}] -> Value
                   end,  
             
             {return,{content,"text/plain",hn_util:text(Val)}}
     end;
 
-req(Arg,'POST', _User, Page = #page{format=Format,vars=Vars}) ->
-    {ok,PostData} = get_post_data(Format,Arg,Vars),
-    post(Arg,_User,Page,PostData);
-    
-req(_Arg,_Method,_User,_Page) ->
-    throw(unmatched_get_request).
-
-post(Arg,_User,_Page,{login,[],[{email,[],[Email]},{password,[],[Pass]}]}) ->
+req('POST',{login,[],[{email,[],[Email]},{password,[],[Pass]}]},[],_User,_Ref) ->
     case users:login(Email,Pass) of
         {error,invalid_user} -> 
             {ok,{auth,[],[{unauthorised,[],[]}]}};
         {ok,Record} ->
-            {IP,_Port} = Arg#arg.client_ip_port,
+            {IP,_Port} = {{127,0,0,1},80},
             Token = users:gen_authtoken(Record,IP),
             Sent  = Email++":"++hn_util:bin_to_hexstr(Token),
             {ok,{auth,[],[{token,[],[Sent]}]}}
     end;
 
-post(_Arg,X,_,_) when X == no_access; X == read  ->
+req('POST',[],_,X,_) when X == no_access; X == read  ->
     {return,{status,503}};
 
-post(Arg,_User,Page=#page{ref={range,{Y1,X1,Y2,X2}}},{create,[],Data}) ->
-    
-    {ok,Auth} = get_var_or_cookie(auth,Page,Arg),
-    Ref = (page_to_ref(Page))#ref{auth=Auth},
+req('POST',{create,[],Data},_Attr,_User,Ref = #ref{ref={range,{Y1,X1,Y2,X2}}}) ->
     
     F = fun(X,Y,Z) ->
                 case lists:nth(Z,Data) of
@@ -222,32 +199,31 @@ post(Arg,_User,Page=#page{ref={range,{Y1,X1,Y2,X2}}},{create,[],Data}) ->
     
     [[ F(X,Y,((X-X1)*(Y2-Y1+1))+(Y-Y1)+1)
        || Y <- lists:seq(Y1,Y2)] || X <- lists:seq(X1,X2)],
+
     {ok,{success,[],[]}};
 
-post(Arg,_User,Page,{create,[],Data}) ->
-    
-    Ref = page_to_ref(Page),    
-    {ok,Auth} = get_var_or_cookie(auth,Page,Arg),
-    
+
+
+req('POST',{create,[],Data},Vars,_User,Ref = #ref{auth=Auth}) ->
+
+    LastRow = get_last_index(Ref#ref.site,Ref#ref.path,row)+1,
+
     lists:foldl
       (
       fun({Attr,[],Val},Sum) ->
               
-              NewAddr = case lists:member({lastrow},Page#page.vars) of
-                            true  -> 
-                                {row,X} = Ref#ref.ref,
-                                Ref#ref{ref={cell,{Sum,X+1}},name=Attr};
+              NewAddr = case lists:member("lastrow",Vars) of
+                            true  ->
+                                Ref#ref{ref={cell,{Sum,LastRow}},name=Attr};
                             false -> 
                                 Ref#ref{name=Attr}
                         end,
               
               case Val of
                   [] -> 
-                      ok;
+                      throw({empty_ref});
                   [Value]  -> 
                       hn_main:set_attribute(NewAddr#ref{auth=Auth},Value)
-                                                %Send = {set,NewAddr#ref{auth=Auth},Val},
-                                                %gen_server:call(hn_calc,Send)
               end,
               Sum+1
       end,
@@ -256,61 +232,56 @@ post(Arg,_User,Page,{create,[],Data}) ->
      ),
     {ok,{success,[],[]}};
 
-post(_Arg,_User,Page=#page{ref={page,"/"}},{delete,[],[]}) ->
-    hn_db:remove_item((page_to_ref(Page))#ref{ref='_'}),
+req('POST',{delete,[],[]},_Attr,_User,Ref = #ref{ref={page,"/"}}) ->
+    hn_db:remove_item(Ref#ref{ref='_'}),
     {ok,{success,[],[]}};
 
-post(_Arg,_User,Page,{delete,[],Data}) ->    
+req('POST',{delete,[],Data},_Vars,_User,Ref) ->
     lists:map
       (
       fun({Attr,[],[]}) ->
-              hn_db:remove_item((page_to_ref(Page))#ref{name=Attr})
+              hn_db:remove_item(Ref#ref{name=Attr})
       end,
       Data
      ),
     {ok,{success,[],[]}};
 
-%%% UNREGISTER
-post(_Arg,_User,Page,{unregister,[],[{biccie,[],[_Bic]},{url,[],[Url]}]}) -> 
+req('POST',{unregister,[],[{biccie,[],[_Bic]},{url,[],[Url]}]},_Attr,_User,Ref) -> 
     hn_db:del_remote_link(#remote_cell_link{ 
-        parent = hn_util:page_to_index(Page),
-        child  = hn_util:page_to_index(hn_util:parse_url(Url)),
+        parent = hn_util:ref_to_index(Ref),
+        child  = hn_util:ref_to_index(hn_util:parse_url(Url)),
         type   = outgoing }),
     
     {ok,{success,[],[]}};
 
-%%% REGISTER
-post(_Arg,_User,Page,
-     {register,[],[{biccie,[],[Bic]},{proxy,[],[Proxy]},{url,[],[Reg]}]}) ->
+req('POST',{register,[],[{biccie,[],[Bic]},{proxy,[],[Proxy]},{url,[],[Reg]}]},_Attr,_User,Ref) ->
     hn_db:register_hn(
-      hn_util:page_to_index(Page),
-      hn_util:page_to_index(hn_util:parse_url(Reg)),
+      hn_util:ref_to_index(Ref),
+      hn_util:ref_to_index(hn_util:parse_url(Reg)),
       Bic, Proxy, Reg),
     {ok,{success,[],[]}};
 
-%%% NOTIFY
-post(_Arg,_User,Page,{notify,[],Data}) ->
+req('POST',{notify,[],Data},_Attr,_User,Ref) ->
     case lists:keysearch(type,1,Data) of
         {value,{type,[],["change"]}} -> 
-            api_change(Data,Page)
+            api_change(Data,Ref)
     end;
 
-post(_Arg,_User,Page,{template,[],[{name,[],[Name]},
-				   {url,[],[Url]},
-				   {gui,[],[Gui]},
-                                   {formurl,[],[Form]}]}) ->
+req('POST',{template,[],[{name,[],[Name]},
+                         {url,[],[Url]},
+                         {gui,[],[Gui]},
+                         {formurl,[],[Form]}]},_Attr,_User,Ref) ->
     %io:format("hn_yaws:post~n"),
     Tpl = "/@"++Name++"/", 
-    ok = hn_main:copy_page(page_to_ref(Page),Tpl),
-    NPage = hn_util:parse_url(Page#page.site++Url),
-    hn_main:set_attribute((page_to_ref(NPage))#ref{name=template},"@"++Name),
-    hn_main:set_attribute((page_to_ref(NPage))#ref{name=gui},Gui),    
-    hn_main:set_attribute((page_to_ref(NPage))#ref{name=form},Form),
+    ok = hn_main:copy_page(Ref,Tpl),
+    NRef = hn_util:parse_url(Ref#ref.site++Url),
+    hn_main:set_attribute(NRef#ref{name=template},"@"++Name),
+    hn_main:set_attribute(NRef#ref{name=gui},Gui),    
+    hn_main:set_attribute(NRef#ref{name=form},Form),
     {ok,{success,[],[]}};
 
-post(_Arg,_User,_Page,Data) ->
-    error_logger:error_msg("~p~n",[Data]),
-    throw(unmatched_post_request).
+req(Method,Data,Vars,User,Page) ->
+    throw({unmatched_request,Method,Data,Vars,User,Page}).
 
 api_change([{biccie,[],     [Bic]},
             {cell,[],       [Cell]},
@@ -373,28 +344,15 @@ get_page_attributes(Ref) ->
     List =  lists:map(fun hn_util:item_to_xml/1,Items),
     {attr,[],List}.
 
-get_post_data(_,_Arg,[{import}]) -> 
-    {ok,[import]};
-get_post_data({json,nocallback},Arg,Dec) -> 
-    get_post_data({json},Arg,Dec);
-get_post_data({json},Arg,_Dec) ->
+get_post_data(Arg,_) when (Arg#arg.req)#http_request.method == 'GET' ->
+    {ok,[]};
+get_post_data(Arg,json) ->
     {ok,simplexml:from_json_string(binary_to_list(Arg#arg.clidata))};
-get_post_data({xml},Arg,_Dec) ->
+get_post_data(Arg,xml) ->
     {ok,simplexml:from_xml_string(binary_to_list(Arg#arg.clidata))}.
 
 get_default(public) -> "public";
 get_default(_) -> "". 
-
-page_to_ref(#page{site=Site, path=Path, ref=Ref,vars=Vars}) ->
-    NRef = case lists:member({lastrow},Vars) of
-               true  -> {row,get_last_index(Site,Path,row)};
-               false -> 
-                   case lists:member({lastcol},Vars) of
-                       true  -> {column,get_last_index(Site,Path,column)};
-                       false -> Ref
-                   end
-           end,
-    #ref{site=Site, path=Path, ref=NRef}. 
 
 %% Get the index of the last populated row or column
 get_last_index(Site,Path,RowCol) ->
@@ -445,15 +403,18 @@ merge_trees(Tree,[H|T]) ->
     {dir,[{path,P}],C1} = H,
     F = fun(X) ->
 		case X of 
-		    {dir,[{path,P}],_} -> true;
-		    _ -> false
+		    {dir,[{path,P}],_} -> 
+                        true;
+		    _ -> 
+                        false
 		end 
 	end,
     {Match,Rest} = lists:partition(F,Tree),
 
-case Match of
+    case Match of
         %% No Matches, add entire tree
-        [] -> merge_trees([H|Tree],T);
+        [] -> 
+            merge_trees([H|Tree],T);
         %% Generate a new Tree on current path and 
         %% Add it to siblings
         [{dir,[{path,_}],C2}] ->
@@ -536,3 +497,71 @@ group_list(GList,User,Name,[{group,Group}|_T],Acc) ->
     end;
 group_list(GList,User,Name,[{user,_A}|T],Acc) ->
     group_list(GList,User,Name,T,Acc).
+
+get_var_or_cookie(Name,Vars,Arg) ->
+    case lists:keysearch(Name,1,Vars) of
+        false -> 
+            {ok,yaws_api:find_cookie_val(atom_to_list(Name),Arg)};
+        {value,{auth,Auth}} ->  
+            {ok,Auth}
+    end.
+
+
+upload(A,Name,Fun) when A#arg.state == undefined -> 
+    multipart(A, #upload{},Name,Fun);
+upload(A,Name,Fun) -> 
+    multipart(A, A#arg.state,Name,Fun).
+
+multipart(A,State,Name,Fun) ->
+    Parse = yaws_api:parse_multipart_post(A),
+    case Parse of
+        {cont, Cont, Res} ->
+            case addFileChunk(A, Res, State, Name,Fun) of
+                {done, Result} ->   Result;
+                {cont, NewState} -> {get_more, Cont, NewState}
+            end;
+        {result, Res} ->
+            case addFileChunk(A, Res, State#upload{last=true},Name,Fun) of
+                {done, Result}  -> Result;
+                {cont, _}       -> error
+ 	        end
+    end.
+
+addFileChunk(A, [{part_body, Data}|Res], State,Name,Fun) ->
+    addFileChunk(A, [{body, Data}|Res], State,Name,Fun);
+addFileChunk(_A, [], S,_Name,Fun) when S#upload.last==true,
+S#upload.filename /= undefined, S#upload.fd /= undefined ->
+    file:close(S#upload.fd),
+    Fun(["/tmp/",S#upload.filename]),
+    {done, ok};
+addFileChunk(_A, [], S,_Name,_Fun) when S#upload.last==true ->
+    {done, ok};
+addFileChunk(_A, [], State,_Name,_Fun) -> {cont, State};
+addFileChunk(A, [{head, {Name, Opts}}|Res], State,Name,Fun) ->
+    case lists:keysearch(filename, 1, Opts) of
+    {value, {_, Fname0}} ->
+        Fname = yaws_api:sanitize_file_name(basename(Fname0)),
+        case file:open(["/tmp/", Fname] ,[write]) of
+        {ok, Fd} ->
+            S2 = State#upload{filename = Fname,fd = Fd},
+            addFileChunk(A, Res, S2,Name,Fun);
+        _ -> {done, ok}
+        end;
+    false -> {done, ok}
+    end;
+addFileChunk(A, [{body, Data}|Res], State,Name,Fun)
+  when State#upload.filename /= undefined ->
+    case file:write(State#upload.fd, Data) of
+    ok -> addFileChunk(A, Res, State, Name,Fun);
+    _  -> {done, ok}
+    end;
+addFileChunk(A, [_N|Res], State,Name,Fun) -> 
+    addFileChunk(A, Res, State,Name,Fun).
+
+basename(FilePath) ->
+    case string:rchr(FilePath, $\\) of
+    0 ->%% probably not a DOS name
+        filename:basename(FilePath);
+    N ->%% probably a DOS name, remove everything after last \
+        basename(string:substr(FilePath, N+1))
+    end.
