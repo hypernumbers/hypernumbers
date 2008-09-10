@@ -23,15 +23,8 @@ demo(Site) ->
 		Name = filename:basename(X,".xml"),
 		{ok,Xml} = file:read_file(X),
 		Url = Site ++ string:join(string:tokens(Name,"-"),"/") ++ "/",
-                
-                try
-                    Data = simplexml:from_xml_string(binary_to_list(Xml)),
-                    io:format("data up in ~p~n",[Data]),
-                    do_import(Url,Data)
-                catch
-                    Error -> 
-                        io:format("screwed up in ~p~n",[Name])
-                end,
+                Data = simplexml:from_xml_string(binary_to_list(Xml)),
+                do_import(Url,Data),
 		ok
 	end,
     lists:map(F,Files),
@@ -87,14 +80,18 @@ do_import(Url,{attr,[],Refs}) ->
 		  {ref,_,[{'dependancy-tree',_,_}]} -> ok;
 		  {ref,_,[{'parents',_,_}]} -> ok;
 		  {ref,[_,{ref,Ref}],[{Name,_,[{_Type,[],Children}]}]} ->
-		      %%io:format("sending ~p~n",[Url++Ref]),
-		      Xml = io_lib:format("<create><~s>~s</~s></create>",
+		      Xml = io_lib:format("<create><~s><![CDATA[~s]]></~s></create>",
 					  [Name,simplexml:to_xml_string(Children),Name]),
 		      hn_util:post(Url++string:to_lower(Ref)++"?attr",lists:flatten(Xml),"text/xml");
 		  {ref,[_,{ref,Ref}],[{Name,_,Children}]} ->
-		      %%io:format("sending ~p~n",[Url++Ref]),
-		      Xml = io_lib:format("<create><~s>~s</~s></create>",
-					  [Name,simplexml:to_xml_string(Children),Name]),
+                      V = case io_lib:deep_char_list(Children) of
+                              true -> 
+                                  lists:flatten(Children);
+                              false ->
+                                  simplexml:to_xml_string(Children)
+                          end,
+		      Xml = io_lib:format("<create><~s><![CDATA[~s]]></~s></create>",
+					  [Name,V,Name]),
 		      hn_util:post(Url++string:to_lower(Ref)++"?attr",lists:flatten(Xml),"text/xml")
 	      end
       end,Refs
