@@ -42,7 +42,6 @@ do_request(Arg,Url) ->
     RV = fun({X,undefined}) -> X;
             (Else) -> Else
          end,
-
     Method = (Arg#arg.req)#http_request.method,
     {ok,Ref} = hn_util:parse_url(Url),
     Vars = lists:map(RV,yaws_api:parse_query(Arg)),
@@ -67,7 +66,6 @@ do_request(Arg,Url) ->
                       {ok,{_Write,_Tok}}           -> {ok,require_token};
                       Else                         -> Else
                   end,
-
     Return = case req(Method,PostData,Vars,Access,Ref) of
 		 {return,Data} ->
 		     Data;
@@ -84,7 +82,7 @@ do_request(Arg,Url) ->
     
     {ok,Return}.
 
-req('GET',[],_,no_access,#ref{ref={page,"/"}}) -> 
+req('GET',[],_,no_access,#ref{ref={page,"/"}}) ->
     {return,{page,"/html/login.html"}};
 req('GET',[],_,no_access,_Ref)  -> 
     {return,{status,503}};
@@ -140,7 +138,6 @@ req('GET',[],["pages"],_,_Ref) ->
 
 %% ?hypernumber
 req('GET',[],["hypernumber"],_,Ref) -> 
-
     Val = fun() ->
                   case hn_db:get_item_val(Ref#ref{name=rawvalue}) of
                       []  -> {blank,[],[]};
@@ -187,7 +184,6 @@ req('POST',[],_,X,_) when X == no_access; X == read  ->
     {return,{status,503}};
 
 req('POST',{create,[],Data},_Attr,_User,Ref = #ref{ref={range,{Y1,X1,Y2,X2}}}) ->
-    
     F = fun(X,Y,Z) ->
                 case lists:nth(Z,Data) of
                     {_Name,[],[]} -> ok;
@@ -202,23 +198,17 @@ req('POST',{create,[],Data},_Attr,_User,Ref = #ref{ref={range,{Y1,X1,Y2,X2}}}) -
 
     {ok,{success,[],[]}};
 
-
-
 req('POST',{create,[],Data},Vars,_User,Ref = #ref{auth=Auth}) ->
-
     LastRow = get_last_index(Ref#ref.site,Ref#ref.path,row)+1,
-
     lists:foldl
       (
       fun({Attr,[],Val},Sum) ->
-              
               NewAddr = case lists:member("lastrow",Vars) of
                             true  ->
                                 Ref#ref{ref={cell,{Sum,LastRow}},name=Attr};
                             false -> 
                                 Ref#ref{name=Attr}
                         end,
-              
               case Val of
                   [] -> 
                       throw({empty_ref});
@@ -271,10 +261,9 @@ req('POST',{template,[],[{name,[],[Name]},
                          {url,[],[Url]},
                          {gui,[],[Gui]},
                          {formurl,[],[Form]}]},_Attr,_User,Ref) ->
-    %io:format("hn_yaws:post~n"),
     Tpl = "/@"++Name++"/", 
     ok = hn_main:copy_page(Ref,Tpl),
-    NRef = hn_util:parse_url(Ref#ref.site++Url),
+    {ok,NRef} = hn_util:parse_url(Ref#ref.site++Url),
     hn_main:set_attribute(NRef#ref{name=template},"@"++Name),
     hn_main:set_attribute(NRef#ref{name=gui},Gui),    
     hn_main:set_attribute(NRef#ref{name=form},Form),
@@ -282,6 +271,7 @@ req('POST',{template,[],[{name,[],[Name]},
 
 req(Method,Data,Vars,User,Page) ->
     throw({unmatched_request,Method,Data,Vars,User,Page}).
+
 
 api_change([{biccie,[],     [Bic]},
             {cell,[],       [Cell]},
