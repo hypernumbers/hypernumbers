@@ -44,12 +44,11 @@
     Bools = ?bools(Flatvs, [cast_strings, cast_numbers, cast_blanks, cast_dates]),
     all(fun(X) -> X =/= false end, Bools).
 
-'not'([Val]) ->
-    ?ensure_no_errvals([Val]),
-    not(Val).
+'not'([V]) ->
+    not(?bool(V, [cast_strings, cast_numbers, cast_blanks, cast_dates])).
 
-'or'([Vals]) ->
-    Flatvals = flatten(Vals),
-    ?ensure_no_errvals(Flatvals),
+'or'(Vs) ->
+    Flatvs = ?flatten_all(Vs),
+    Bools = ?bools(Flatvs, [cast_strings, cast_numbers, cast_blanks, cast_dates]),
     any(fun(X) -> X == true end,
-        Flatvals).
+        Bools).
