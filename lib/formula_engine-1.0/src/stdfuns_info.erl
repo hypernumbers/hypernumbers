@@ -119,10 +119,11 @@ isblank([blank]) ->
     true;
 isblank(Vs) ->
     Flatvs = ?flatten_all(Vs),
-    all(fun muin_util:is_blank/1, Flatvs).
+    all(fun muin_collect:is_blank/1, Flatvs).
 
 isnonblank(Vs) ->
-    not(isblank(Vs)).
+    Flatvs = ?flatten_all(Vs),
+    all(fun(X) -> not(muin_collect:is_blank(X)) end, Flatvs).
 
 info(["site"]) ->
     get(site);
