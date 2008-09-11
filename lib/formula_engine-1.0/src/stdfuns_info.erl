@@ -6,7 +6,7 @@
 -module(stdfuns_info).
 -export([error_type/1, iserr/1, iserror/1, iseven/1, islogical/1, isna/1,
          isnontext/1, isnumber/1, isodd/1, istext/1, n/1, na/0, type/1,
-         isblank/1]).
+         isblank/1, isnonblank/1]).
 
 -include("handy_macros.hrl").
 -include("typechecks.hrl").
@@ -120,3 +120,6 @@ isblank([blank]) ->
 isblank(Vs) ->
     Flatvs = ?flatten_all(Vs),
     all(fun muin_util:is_blank/1, Flatvs).
+
+isnonblank(Vs) ->
+    not(isblank(Vs)).
