@@ -50,7 +50,14 @@ flatten_arrays(Vs) ->
 %% @doc Replaces range objects with the values theycontain. (Used by
 %% implementations of SUM and PRODUCT for example).
 flatten_ranges(Vs) ->
-    flatten(Vs).
+    foldl(fun({range, Rows}, Acc) ->
+                  Allvs = foldl(fun(Row, Acc1) -> Acc1 ++ Row end,
+                                [], Rows),
+                  Acc ++ Allvs;
+             (X, Acc) ->
+                  Acc ++ [X]
+          end,
+          [], Vs).
 
 %% Rules:
 %% ignore_strings | cast_strings | cast_strings_zero | ban_strings
