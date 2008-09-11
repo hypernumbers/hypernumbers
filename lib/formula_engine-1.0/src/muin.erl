@@ -175,12 +175,19 @@ funcall(ref, [Col, Row, Path]) ->
 %% Cell ranges (A1:A5, R1C2:R2C10 etc).
 %% In a range, the path of second ref **must** be ./
 funcall(':', [{ref, Col1, Row1, Path1, _}, {ref, Col2, Row2, "./", _}]) ->
-    
     [Rowidx1, Colidx1, Rowidx2, Colidx2] = map(?Lx(toidx(X)),
                                                [Row1, Col1, Row2, Col2]),
     Cells = muin_util:expand_cellrange(Rowidx1, Rowidx2, Colidx1, Colidx2),
-    map(fun({C, R}) -> do_cell(Path1, R, C) end,
-        Cells);
+    Revrows = foldl(fun(X, Acc) -> % Curr row, result rows
+                            Row = map(fun({C, R}) -> do_cell(Path1, R, C) end,
+                                      filter(fun({_, R}) -> R == X end,
+                                             Cells)), % Pick the right ones from Cells.
+                            [Row|Acc]
+                    end,
+                    [],
+                    seq(1, Rowidx2 - Rowidx1 + 1)), % This is how many rows we got.
+    {range, reverse(Revrows)};
+
 
 %% TODO: Column & row ranges.
 
