@@ -253,7 +253,6 @@ get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY) ->
 recalc(Index) ->
     #index{site=Site, path=Path, column=X, row=Y} = Index,
     Addr = #ref{site=Site, path=Path, ref={cell, {X, Y}}},
-    io:format("in hn_calc:recalc Path is ~p X is ~p Y is ~p~n",[Path,X,Y]),
 
     %% Muin flags cells to force full recompile if parents may change.
     case hn_db:get_item_val(Addr#ref{name="__recompile"}) of

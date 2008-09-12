@@ -7,21 +7,29 @@ SASL_CONF_FILE=sasl_dev_conf.config
 COOKIE=abc
 
 ROOT=`pwd`
+# check if we are running under cywgin
+ISCYGWIN=`uname -a | cut -f 1 -d " "`
+if [ $ISCYGWIN = "CYGWIN_NT-6.0" ]
+    then
+        ROOT2="c:/"`echo $ROOT | cut -d "/" -f 4-`
+   else
+        ROOT2=$ROOT
+fi
 MODE=""
 RELOAD="-run reloader start"
 
-LOG_DIR=$ROOT/logs
-CONFIG=$ROOT/priv/hypernumbers.conf
-MNESIA_DIR=$ROOT/database/$NODE
-REL_DIR=$ROOT/ebin/$RELNAME
-SASL_DIR=$ROOT/priv/$SASL_CONF_FILE
+LOG_DIR=$ROOT2/logs
+CONFIG=$ROOT2/priv/hypernumbers.conf
+MNESIA_DIR=$ROOT2/database/$NODE
+REL_DIR=$ROOT2/ebin/$RELNAME
+SASL_DIR=$ROOT2/priv/$SASL_CONF_FILE
 
 ## Create mnesia and log directories
 ## and config file if they dont exist
-[ -d $LOG_DIR ]    || mkdir -p $LOG_DIR
-[ -d $LOG_DIR/error ]    || mkdir -p $LOG_DIR/error
-[ -d $MNESIA_DIR ] || mkdir -p $MNESIA_DIR
-[ -f $CONFIG ]     || cp $ROOT/priv/hypernumbers.conf.default $CONFIG
+[ -d $LOG_DIR ]        || mkdir -p $LOG_DIR
+[ -d $LOG_DIR/error ]  || mkdir -p $LOG_DIR/error
+[ -d $MNESIA_DIR ]     || mkdir -p $MNESIA_DIR
+[ -f $CONFIG ]         || cp $ROOT/priv/hypernumbers.conf.default $CONFIG
 
 function start
 {
@@ -45,14 +53,14 @@ function test
         exit
     fi
 
-    TESTS=$(find $ROOT/tests/ -maxdepth 1 -name "*$1*" \
+    TESTS=$(find $ROOT2/tests/ -maxdepth 1 -name "*$1*" \
         | grep -v .svn \
         | grep -v common_test-1.3.0 \
         | grep -v test_server-3.2.0 \
         | grep -v excel_files \
         | grep -v test_server-3.2.0)
 
-    $ROOT/tests/common_test-1.3.0/priv/bin/run_test \
+    $ROOT2/tests/common_test-1.3.0/priv/bin/run_test \
         -setcookie $COOKIE \
         -sname $NODE@$HOST \
         -boot $REL_DIR \

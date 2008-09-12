@@ -50,9 +50,10 @@ start(_Type, _Args) ->
             end
     end,
 
+
     {ok,[[Log]]}  = init:get_argument(hn_log),
     {ok,[[Path]]} = init:get_argument(hn_config),
-
+	
     {ok,Config} = file:consult(Path),
     {value,{hosts,HostList}} = lists:keysearch(hosts,1,Config),
     SConfs = lists:map(fun(X) -> create_sconf(X) end,HostList),
@@ -63,7 +64,7 @@ start(_Type, _Args) ->
     application:set_env(yaws, embedded, true),
     application:start(yaws),    
     ok = yaws_api:setconf(GC, [SConfs]),
-    
+
     case hypernumbers_sup:start_link() of
         {ok, Pid} -> 
             {ok, Pid};

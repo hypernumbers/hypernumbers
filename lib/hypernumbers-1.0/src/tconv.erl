@@ -8,7 +8,8 @@
          to_l/1,
          to_f/1,
          to_s/1,
-         to_num/1]).
+         to_num/1,
+	 b26_to_i/1]).
 
 %% String -> integer.
 to_i(Str) when is_list(Str) ->
@@ -70,11 +71,13 @@ to_b26(N, Res) when N >= 26 ->
 to_b26(N, Res) when N < 26 ->
     [(N + 65) | Res].
 
+%% @doc Convert an string to a decimal integer
+%% @spec b26_to_i(string()) -> integer()
 
-%%% ----------------- %%%
-%%% Private functions %%%
-%%% ----------------- %%%
+b26_to_i(List) when is_list(List) ->
+    b26_to_i(string:to_lower(lists:reverse(List)),0,0).
 
+%% private functions
 b26_to_i([], _Power, Value) ->
     Value;
 

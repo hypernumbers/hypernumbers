@@ -90,7 +90,7 @@ req('GET',[],_,require_token,#ref{ref={page,"/"}}) ->
     {return,{page,"/html/token.html"}};
 req('GET',[],_,require_token,_Page)  -> 
     {return,{status,503}};
-req('GET',[],[],_,Ref=#ref{ref={page,"/"}}) -> 
+req('GET',[],[],_,Ref=#ref{ref={page,"/"}}) ->
     {ok,V} = hn_db:get_item_inherited(Ref,"index"),
     {return,{page,"/html/"++V++".html"}};
 req('GET',[],[{"gui",GUI}],_,#ref{ref={page,"/"}}) -> 
@@ -98,7 +98,9 @@ req('GET',[],[{"gui",GUI}],_,#ref{ref={page,"/"}}) ->
 
 req('GET',[],["new"],_,Ref=#ref{ref={page,"/"}}) -> 
     {ok,Tpl} = hn_db:get_item_inherited(Ref#ref{name=template},blank),
+    io:format("in hn_yaws:req Tpl is ~p~n",[Tpl]),
     Items = hn_db:get_item(Ref#ref{path=lists:append(Ref#ref.path,'_')}),
+    io:format("in hn_yaws:req Items is ~p~n",[Items]),
     F = fun(#hn_item{addr=R}) ->
 		Last = lists:last(R#ref.path),
 		?COND(hn_util:is_numeric(Last),
@@ -109,6 +111,7 @@ req('GET',[],["new"],_,Ref=#ref{ref={page,"/"}}) ->
 	      _Else -> lists:max(lists:map(F,Items))+1
 	  end,
     NPage = "/"++string:join(Ref#ref.path,"/")++"/"++integer_to_list(Ind)++"/",
+    io:format("in hn_yaws:req Ind is ~p NPage is ~p~n",[Ind,NPage]),
     hn_main:copy_page(Ref#ref{path=[Tpl]},NPage),
     {return,{redirect, Ref#ref.site++NPage}};
 
