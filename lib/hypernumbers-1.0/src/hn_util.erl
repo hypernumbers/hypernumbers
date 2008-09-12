@@ -54,14 +54,14 @@ ref_to_str({range,{X1,Y1,X2,Y2}}) ->
     tconv:to_b26(X1)++text(Y1)++":"++tconv:to_b26(X2)++text(Y2).
 
 
-xml_to_val({bool,[],[true]})  -> true;
-xml_to_val({bool,[],[false]}) -> false;
+xml_to_val({bool,[],[true]})      -> true;
+xml_to_val({bool,[],[false]})     -> false;
 xml_to_val({errval,[],[Ref]})     -> Ref;
-xml_to_val({float,[],[Ref]})     -> list_to_float(Ref);
-xml_to_val({int,[],[Ref]})       -> list_to_integer(Ref);
-xml_to_val({string,[],[Ref]})    -> Ref;
+xml_to_val({float,[],[Ref]})      -> list_to_float(Ref);
+xml_to_val({int,[],[Ref]})        -> list_to_integer(Ref);
+xml_to_val({string,[],[Ref]})     -> Ref;
 xml_to_val({datetime, [], [Ref]}) -> Ref;
-xml_to_val(Else)                 -> Else.
+xml_to_val(Else)                  -> Else.
 
 %% Turn a hn_item record into its xml <ref> display
 item_to_xml(#hn_item{addr=A,val=V}) ->
@@ -72,7 +72,7 @@ item_to_xml(#hn_item{addr=A,val=V}) ->
     Value = case A#ref.name of
                 value    -> to_xml(V);
                 rawvalue -> to_xml(V);
-                _Else     -> to_val(V)
+                _Else    -> to_val(V)
     end,
     
     {ref, [{type,Type}, {ref,Str}], [{A#ref.name, [], Value}]}.
@@ -87,6 +87,8 @@ to_val(Else) ->
     false -> throw({unmatched_type,Else})
     end.
 
+to_xml({datetime,{Y,M,D},{H,Min,S}}) -> 
+    [{data,[],[lists:concat([Y,"-",M,"-",D," ",H,":",Min,":",S])]}];
 to_xml(true)  -> [{bool,[],["true"]}];
 to_xml(false) -> [{bool,[],["false"]}];    
 to_xml(Val) when is_integer(Val) -> [{int,[],[integer_to_list(Val)]}];

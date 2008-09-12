@@ -37,13 +37,13 @@ cheat(1) -> import_xml_attributes("c:\\opt\\code\\trunk\\priv\\dale\\data.xml","
 cheat(2) -> import_xml_attributes("/cygdeive/c/opt/code/trunk/priv/dale/data.xml","http://127.0.0.1:9000/data/");
 cheat(3) ->
     bits:clear_db(),
-    demo("http://127.0.0.1:9000/","/opt/code/trunk/lib/hypernumbers-1.0/priv/demo_pages/");
+    demo("http://127.0.0.1:9000/",code:priv_dir(hypernumbers)++"/demo_pages/");
 cheat(4) ->
     bits:clear_db(),
-    demo("http://127.0.0.1:9000/","/opt/code/trunk/lib/hypernumbers-1.0/priv/demo_pages/invoices/").
-cheat(4) ->
+    demo("http://127.0.0.1:9000/",code:priv_dir(hypernumbers)++"/demo_pages/invoices/");
+cheat(5) ->
     bits:clear_db(),
-    demo("http://127.0.0.1:9000/","/opt/code/trunk/lib/hypernumbers-1.0/priv/demo_pages/axa/").
+    demo("http://127.0.0.1:9000/",code:priv_dir(hypernumbers)++"/demo_pages/axa/").
 
 %% Read std_funs and produce a workable 
 %% xml document for the functions list
