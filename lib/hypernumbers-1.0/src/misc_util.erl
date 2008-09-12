@@ -5,6 +5,7 @@
 	 profile/2,
 	 testa/0,
 	 demo/1,
+	 demo/2,
 	 cheat/1]).
 -include("builtins.hrl").
 -include("spriki.hrl").
@@ -17,8 +18,10 @@
     {stdfuns_info,      "Informational"}
     ]).
 
-demo(Site) ->
-    Files = filelib:wildcard(code:priv_dir(hypernumbers)++"/demo_pages/*.xml"),
+demo(Site) -> demo(Site,code:priv_dir(hypernumbers)++"/demo_pages/").
+
+demo(Site,Dir) ->
+    Files = filelib:wildcard(Dir++"*.xml"),
     F = fun(X) ->
 		Name = filename:basename(X,".xml"),
 		{ok,Xml} = file:read_file(X),
@@ -31,7 +34,16 @@ demo(Site) ->
     ok.
 
 cheat(1) -> import_xml_attributes("c:\\opt\\code\\trunk\\priv\\dale\\data.xml","http://127.0.0.1:9000/data/");
-cheat(2) -> import_xml_attributes("/cygdeive/c/opt/code/trunk/priv/dale/data.xml","http://127.0.0.1:9000/data/").
+cheat(2) -> import_xml_attributes("/cygdeive/c/opt/code/trunk/priv/dale/data.xml","http://127.0.0.1:9000/data/");
+cheat(3) ->
+    bits:clear_db(),
+    demo("http://127.0.0.1:9000/","/opt/code/trunk/lib/hypernumbers-1.0/priv/demo_pages/");
+cheat(4) ->
+    bits:clear_db(),
+    demo("http://127.0.0.1:9000/","/opt/code/trunk/lib/hypernumbers-1.0/priv/demo_pages/invoices/").
+cheat(4) ->
+    bits:clear_db(),
+    demo("http://127.0.0.1:9000/","/opt/code/trunk/lib/hypernumbers-1.0/priv/demo_pages/axa/").
 
 %% Read std_funs and produce a workable 
 %% xml document for the functions list
@@ -67,7 +79,7 @@ testa() -> testb(foo).
 testb(bar) -> "foo".
 
 import_xml_attributes(File,Url) ->
-    {ok,Bin} = file:read(File),
+    {ok,Bin} = file:read_file(File),
     do_import(Url,simplexml:from_xml_string(binary_to_list(Bin))).
 
 do_import(Url,{attr,[],Refs}) ->
