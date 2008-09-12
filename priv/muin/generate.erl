@@ -26,6 +26,10 @@ gen() ->
     ?P("Generated number format lexer."),
     yecc:yecc(num_format, num_format_parser),
     ?P("Generated number format parser."),
+    leex:gen(cond_lex, cond_lexer),
+    ?P("Generated conditional lexer."),
+    yecc:yecc(cond_parser, cond_parser),
+    ?P("Generated conditinoal parser."),
 
     %% Generate super lexer.
     leex:gen(superlex, superlex),
@@ -51,6 +55,9 @@ gen() ->
                   ?FRONTENDS),
     rename("num_format_lexer.erl", DestDir ++ "num_format_lexer.erl"),
     rename("num_format_parser.erl", DestDir ++ "num_format_parser.erl"),
+
+    rename("cond_lexer.erl", DestDir ++ "cond_lexer.erl"),
+    rename("cond_parser.erl", DestDir ++ "cond_parser.erl"),
 
     lists:foreach(fun(X) -> delete(X ++ "_lexer.erl") end,
                   ?FRONTENDS),
