@@ -1,7 +1,9 @@
 -module(userdef).
 
 %% exports for the AXA demo
--export([get_address/2,get_sex/1,split/2]).
+-export([get_address/2,
+	 get_sex/1,
+	 split/2]).
 
 -export([make_url/2,
 	 get_list/1,
@@ -11,11 +13,18 @@
 	 add_days/2]).
 
 %% AXA demo functions
+%%match(Page,Cond,Return) ->
+%%    io:format("in userdef:match Page is ~p Cond is ~p Return is ~p~n",
+%%	      [Page,Cond,Return]),
+    
+
+
+%% splits a postcode
 split(X,1) when is_list(X) -> [H|_T]=string:tokens(X," "),
 			      H;
 split(X,2) when is_list(X) -> [_One,Two]=string:tokens(X," "),
 			      Two.
-      
+%% Fake name/sex lookup
 get_sex(blank)     -> "";
 get_sex("Andrew")  -> "Male";
 get_sex("Bob")     -> "Male";
@@ -27,6 +36,7 @@ get_sex("Cheri")   -> "Female";
 get_sex("Dottie")  -> "Female";
 get_sex(_Other)    -> "Unknown".
     
+%% Fake postcode lookup
 get_address(blank,_)            -> "";
 get_address("AA1 1XX","address1") -> "Acacia Avenue";
 get_address("AA1 2XX","address1") -> "Betty Bypass";
