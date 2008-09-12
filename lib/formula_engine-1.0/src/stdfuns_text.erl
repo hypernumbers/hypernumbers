@@ -130,7 +130,8 @@ right([Str, Len]) ->
 '&'(Strs) ->
     concatenate(Strs).
 
-concatenate(Strs) ->
+concatenate(Vs) ->
+    Strs = muin_collect:collect_strings(Vs, [cast_numbers, cast_bools, cast_dates, cast_blanks]),
     foldl(fun(X, Acc) ->
                   Acc ++ X
           end,

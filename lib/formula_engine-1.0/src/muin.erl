@@ -77,7 +77,8 @@ run_code(Pcode, #ref{site = Site, path = Path, ref = {cell, {X, Y}}}) ->
 try_parse(Fla, {X, Y}) ->
     Trans = translator:do(Fla),
     {ok, Toks} = xfl_lexer:lex(Trans, {X, Y}),
-    {ok, _Ast} = xfl_parser:parse(Toks). % Match to enforce the contract.
+    {ok, Ast} = xfl_parser:parse(Toks), % Match to enforce the contract.
+    {ok, Ast}.
 
 %% @doc Evaluates an s-expression, pre-processing subexps as needed.
 eval(Node = [Func|Args]) when ?isfuncall(Func) ->
@@ -123,7 +124,7 @@ preproc([indirect, Arg]) ->
         [{ref, R, C, P, _}] ->
             put(recompile, true),
             [ref, R, C, P];
-        _ ->
+        Other ->
             ?ERR_REF
     end;
 preproc(['query', Arg]) ->
@@ -152,10 +153,51 @@ preproc(['query', Arg]) ->
     {Oldparents, Errs, Refs} = get(retvals),
     Newparent = {"local", {?msite, hslists:init(Toks), Colidx, Rowidx}},
     put(retvals, {[Newparent | Oldparents], Errs, Refs}),
-
     {reeval, Node};
+%% preproc(['query2',Page,Return,Match,Cond])->
+%%    io:format("in muin:preproc for query2 Page is ~p Return is ~p "++
+%%	      "Match is ~p Cond is ~p~n",[Page,Return,Match,Cond]),
+%%    Toks=string:tokens(Page,"/"),
+%%    io:format("in muin:preproc for query2 Toks are ~p~n",[Toks]),    
+%%    Ref=ms_util:make_ms(ref,[{path,Toks},{rawvalue,'$1'}]),
+%%    io:format("in muin:make_match_spec got to 2~n"),
+%%    Head=ms_util:make_ms(hn_item,[{addr,Ref}]),
+%%    Cond=[],
+%%    Body=['$1'],
+%%    io:format("in muin:preproc for query2 Head is ~p Cond is ~p "++
+%%	      "Body is ~p~n",[Head,Cond,Body]),    
+%%    Spec=make_match_spec([{Head,Cond,Body}]),
+%%    io:format("in muin:preproc for query2 Spec are ~p~n",[Spec]),    
+%%    unique(Spec);
 preproc(_) ->
     false.
+
+%%unique(Spec) ->
+%%       Match = fun() ->
+%%		     mnesia:select(hn_item,Spec)
+%%            end,
+%%    {atomic, Res} = mnesia:transaction(Match),
+%%    List=hslists:uniq(Res),
+%%    io:format("in muin:unique~n-Res is ~p~n-List is ~p~n",[Res,List]),
+%%    List.
+
+%%make_match_spec(Match)->
+%%    io:format("in muin:make_match_spec got to 1~n"),
+%%    Ref=ms_util:make_ms(ref,[{path,Match},{rawvalue,'$1'}]),
+%%    io:format("in muin:make_match_spec got to 2~n"),
+%%    Head=ms_util:make_ms(hn_item,[{addr,Ref}]),
+%%    Cond=[],
+%%    Body=['$1'],
+%%    [{Head,Cond,Body}].
+
+%%%% not sure if this match spec needs an improper list!
+%%make_match(Toks) -> make_match(Toks,1,[]).
+
+%%make_match([],_N,Acc)     -> lists:reverse(Acc);
+%%make_match(["*"|T],N,Acc) -> J=integer_to_list(N),
+%%			     NewDollar=list_to_atom(lists:append(["\$",J])),
+%%			     make_match(T,N+1,[NewDollar|Acc]);
+%%make_match([H|T],N,Acc)   -> make_match(T,N,[H|Acc]).
 
 funcall(make_list, Args) ->
     Args; % shame, shame...
@@ -212,7 +254,9 @@ funcall(Fname, Args) ->
 
 %% Try the userdef module first, then Ruby, Gnumeric, R, whatever.
 userdef_call(Fname, Args) ->
-    case (catch userdef:Fname(Args)) of
+    %% changed to apply because use the construction userdef:Fname failed
+    %% to work after hot code load (Gordon Guthrie 2008_09_08)
+    case (catch apply(userdef,Fname,Args)) of
         {'EXIT', {undef, _}} -> ?ERR_NAME;
         Val                  -> Val
     end.

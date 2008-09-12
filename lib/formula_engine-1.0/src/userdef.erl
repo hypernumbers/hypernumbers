@@ -1,9 +1,12 @@
 -module(userdef).
 
+-include("spriki.hrl").
+
 %% exports for the AXA demo
 -export([get_address/2,
 	 get_sex/1,
-	 split/2]).
+	 split/2,
+	 match/5]).
 
 -export([make_url/2,
 	 get_list/1,
@@ -13,17 +16,34 @@
 	 add_days/2]).
 
 %% AXA demo functions
-%%match(Page,Cond,Return) ->
-%%    io:format("in userdef:match Page is ~p Cond is ~p Return is ~p~n",
-%%	      [Page,Cond,Return]),
-    
-
+match(_Site,_Path,_MatchCol,blank,_ReturnCol) -> "";
+match(Site,Path,MatchCol,Val,ReturnCol) ->
+    Ref = #ref{site=Site,path=string:tokens(Path,"/"),
+	       ref={column,tconv:b26_to_i(MatchCol)},name=rawvalue},
+    List=hn_db:get_item(Ref),
+    case match_val(List,Val) of
+	{ok,Row} ->
+	    Ref2=#ref{site=Site,path=string:tokens(Path,"/"),
+		      ref={cell,{tconv:b26_to_i(ReturnCol),Row}},
+		      name=rawvalue},
+	    Got=hn_db:get_item(Ref2),
+	    [#hn_item{val=Value}]=Got,
+		    Value;
+	{error, not_found} -> ""
+    end.
+		    
+match_val([#hn_item{addr=Ref,val=Val}|_T],Val) ->
+    #ref{ref={cell,{_,Row}}} = Ref,
+    {ok,Row};
+match_val([H|T],Val) ->  match_val(T,Val);
+match_val([],Val)    -> {error, not_found}.
 
 %% splits a postcode
 split(X,1) when is_list(X) -> [H|_T]=string:tokens(X," "),
 			      H;
 split(X,2) when is_list(X) -> [_One,Two]=string:tokens(X," "),
 			      Two.
+
 %% Fake name/sex lookup
 get_sex(blank)     -> "";
 get_sex("Andrew")  -> "Male";

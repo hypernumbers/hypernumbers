@@ -129,6 +129,7 @@ expand_cellrange(StartRow, EndRow, StartCol, EndCol) ->
 
 %% Catch errors from error-throwing functions.
 attempt(Mod, F, Args) ->
+    %%io:format("in muin_util:attempt Mod is ~p F is ~p Args are ~p~n",[Mod,F,Args]),
     try apply(Mod, F, Args) of
         Val -> {ok, Val}
     catch
