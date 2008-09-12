@@ -94,6 +94,7 @@ do_import(Url,{attr,[],Refs}) ->
 		  {ref,[_,{ref,Ref}],[{Name,_,[{_Type,[],Children}]}]} ->
 		      Xml = io_lib:format("<create><~s><![CDATA[~s]]></~s></create>",
 					  [Name,simplexml:to_xml_string(Children),Name]),
+                      
 		      hn_util:post(Url++string:to_lower(Ref)++"?attr",lists:flatten(Xml),"text/xml");
 		  {ref,[_,{ref,Ref}],[{Name,_,Children}]} ->
                       V = case io_lib:deep_char_list(Children) of
