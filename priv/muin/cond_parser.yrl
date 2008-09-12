@@ -31,5 +31,7 @@ Expr -> integer condition float   : make_row_cond('$1', '$2', '$3').
 Erlang code.
 
 %% Erlang code follows here
-make_row_cond({integer,Row},{condition,Cond},{_,Val}) -> {row,Row,Cond,tconv:to_num(Val)}.
-make_col_cond({string,Col},{condition,Cond},{_,Val})  -> {col,Col,Cond,tconv:to_num(Val)}.
+make_row_cond({integer,Row},{condition,Cond},{_,Val}) -> 
+	{row,tconv:to_num(Row),Cond,tconv:to_num(Val)}.
+make_col_cond({string,Col},{condition,Cond},{_,Val})  -> 
+	{col,Col,Cond,tconv:to_num(Val)}.
