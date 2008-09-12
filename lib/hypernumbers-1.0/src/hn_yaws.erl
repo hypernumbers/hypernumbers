@@ -261,6 +261,7 @@ req('POST',{template,[],[{name,[],[Name]},
                          {url,[],[Url]},
                          {gui,[],[Gui]},
                          {formurl,[],[Form]}]},_Attr,_User,Ref) ->
+    io:format("~p~n",[Ref]),
     Tpl = "/@"++Name++"/", 
     ok = hn_main:copy_page(Ref,Tpl),
     {ok,NRef} = hn_util:parse_url(Ref#ref.site++Url),

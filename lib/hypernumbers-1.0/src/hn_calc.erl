@@ -264,7 +264,7 @@ recalc(Index) ->
             Val = case muin:run_code(Pcode, Addr) of
                       {ok, {V, _, _, _, _}} ->                V;
                       {error, Reason} when is_atom(Reason) -> Reason;
-                      {error, Reason}                      -> io:format("in hn_calc:recalc bodged up"++
+                      {error,_Reason}                      -> io:format("in hn_calc:recalc bodged up"++
 									"error handling~n"),
 							      muin_error_typing_error_in_hn_calc_recalc
                   end,
