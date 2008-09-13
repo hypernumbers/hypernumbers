@@ -32,7 +32,7 @@ RCREF = ((R|r)({INT}|{OFFSET_RC})(C|c)({INT}|{OFFSET_RC}))
 %% "/" or "./" or "../" or the same but with "!"s instead.
 START_OF_SSREF = ((\/|\!)|(\.\.(\/|\!))+|\.(\/|\!))
 %% ATOMs or "."s or ".." separated with "/"s or "!"s.
-MAYBE_PATH = (((({ATOM})|({INT})|(\.)|(\.\.))(\/|\!))*)
+MAYBE_PATH = (((({ATOM})|({INT})|({A1REF})|({INT}{ATOM})|(\.)|(\.\.))(\/|\!))*)
 
 SSA1REF  = {START_OF_SSREF}{MAYBE_PATH}{A1REF}
 SSRCREF  = {START_OF_SSREF}{MAYBE_PATH}{RCREF}
