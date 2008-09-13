@@ -7,8 +7,7 @@
         ustring:pr(ustring:to_upper(ustring:new(S)))).
 
 process([$= | Tl]) when Tl =/= [] ->
-    {formula, Tl};
-%%{formula, upcase(Tl)};
+    {formula, upcase(Tl)};
 process([39 | Tl]) -> %% singly quoted string
     {string, Tl};
 process(Input) ->
@@ -25,7 +24,7 @@ process(Input) ->
 
 %% Converts formula to upper-case, leaving only string literals as-is.
 upcase(Str) ->
-    {ok, Tokens, _} = superlex:lex(Str),
+    {ok, Tokens, _} = superlex:string(Str),
     %% List of numbers (codepoints) interspersed with {string, _} tuples.
     Str2 = 
         tl(lists:foldl(fun({stuff, X}, Acc) ->
@@ -35,7 +34,8 @@ upcase(Str) ->
                        end,
                        [junk],
                        Tokens)),
-    upcase1(Str2, [], []).
+    R = upcase1(Str2, [], []),
+    R.
 
 upcase1([Hd | Tl], Intermbuf, Res) when is_number(Hd) ->
     upcase1(Tl, Intermbuf ++ [Hd], Res);

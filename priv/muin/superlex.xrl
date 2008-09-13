@@ -1,27 +1,34 @@
-%%% Part of the super parser, which lives under lib/formula-engine/
-%%% <hasan@hypernumbers.com>
+%% Mostly a copy-paste job from xfl_lexer. See that for comments on lexeme definitions.
+%% <hasan@hypernumbers.com>
 
 Definitions.
 
-INTEGER = ([0-9]+)
-FLOAT_DECIMAL = ([0-9]+\.[0-9]*)
-FLOAT_SCIENTIFIC = ([0-9]+\.[0-9]+((E|e))(\+|\-)?[0-9]+)
-BOOLEAN = {TRUE}|{FALSE}
-ERROR = \#NULL\!|\#DIV\/0\!|\#VALUE\!|\#REF\!|\#NAME\?|\#NUM\!|\#N\/A\!
+INT = ([0-9]+)
+ATOM = ([a-zA-Z][a-zA-Z0-9_\.]*)
+NAME = \@{ATOM}
+
+START_OF_SSREF = ((\/|\!)|(\.\.(\/|\!))+|\.(\/|\!))
+MAYBE_PATH = (((({ATOM})|({INT})|(\.)|(\.\.))(\/|\!))*)
+
+A1REF = ((\$)?([a-zA-Z]+)(\$)?([0-9]+))
+OFFSET_RC = (\[(\+|\-)?({INT})\])
+RCREF = ((R|r)({INT}|{OFFSET_RC})(C|c)({INT}|{OFFSET_RC}))
+
+SSA1REF  = {START_OF_SSREF}{MAYBE_PATH}{A1REF}
+SSRCREF  = {START_OF_SSREF}{MAYBE_PATH}{RCREF}
+SSNAMEREF = {START_OF_SSREF}{MAYBE_PATH}{NAME}
+
 STRING = (\"[^"\n]*\")
-%" % Syntax highlighting fix.
-WHITESPACE = ([\000-\s]*)
+%"%
+WHITESPACE = ([\s\t]+)
 
 Rules.
 
-{STRING} : {token, {string, YYtext}}.
-{WHITESPACE} : .
+%% string tag means "leave as-is". TODO: rename.
+{SSA1REF} : {token, {string, xfl_lexer:debang(YYtext)}}.
+{SSRCREF} : {token, {string, xfl_lexer:debang(YYtext)}}.
+{SSNAMEREF} : {token, {string, xfl_lexer:debang(YYtext)}}.
+{STRING}     : {token, {string, YYtext}}.
+{WHITESPACE} : skip_token.
 \n : {end_token, {'$end'}}.
 .  : {token, {stuff, YYtext}}.
-
-Erlang code.
-
--export([lex/1]).
-
-lex(Str) ->
-    string(Str).

@@ -101,7 +101,7 @@ Rules.
 
 Erlang code.
 
--export([lex/2]).
+-export([lex/2, debang/1]).
 -include("handy_macros.hrl").
 
 %% These are read-only.
