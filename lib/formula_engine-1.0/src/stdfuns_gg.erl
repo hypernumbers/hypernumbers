@@ -2,20 +2,8 @@
 %%% @doc Date functions.
 
 -module(stdfuns_gg).
--export([
-	 harmean/1,
-	 %% hyperlink/2,
-	 mirr/1,
-	 npv/1,
-	 poisson/3,
-	 rand/0,
-         cumpoisson/2,
-	 roman/1,
-	 roman/2,
-	 sln/3,
-	 syd/4,
-	 text/2
-        ]).
+-export([harmean/1, mirr/1, npv/1, poisson/3, rand/0, cumpoisson/2, roman/1,
+         sln/3, syd/4, text/2]).
 
 -include("typechecks.hrl").
 -include("handy_macros.hrl").
@@ -104,14 +92,13 @@ cumpoisson(K,Lambda,Acc)  -> cumpoisson(K-1,Lambda,
 
 rand() -> gen_server:call(random_srv,{random,float}).
 
-roman(X) when is_integer(X), X >= 0, X < 4000 -> roman(X,0).
-
-roman(X,true)  when is_integer(X), X >= 0, X < 4000 -> roman(X,classic);
-roman(X,false) when is_integer(X), X >= 0, X < 4000 -> roman(X,concise3);
-roman(X,Type)  when is_integer(X), X >= 0, X < 4000 -> 
+roman([X])        -> roman([X, 0]);
+roman([X, true])  -> roman([X, ?CLASSIC]);
+roman([X, false]) -> roman([X, ?CONCISE3]);
+roman([X, Type])  ->
     %% we need to build the roman numbers right to left so we have to
     %% reverse the string representation of the number
-    get_roman(make_list(integer_to_list(X)),Type).
+    get_roman(make_list(integer_to_list(X)), Type).
 
 %% first deal with the single digit number
 get_roman(["0"],_) -> "";

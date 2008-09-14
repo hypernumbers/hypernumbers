@@ -86,7 +86,6 @@
 {trunc, stdfuns_math},
 {pi, stdfuns_math},
 {sqrtpi, stdfuns_math},
-{roman, stdfuns_math},
 {seriessum, stdfuns_math},
 {subtotal, stdfuns_math},
 {sumif, stdfuns_math},
@@ -176,5 +175,6 @@
 {timevalue, stdfuns_date},
 {isblank, stdfuns_info},
 {isnonblank, stdfuns_info},
-{info, stdfuns_info}
+{info, stdfuns_info},
+{roman, stdfuns_gg}                  
 ]).
