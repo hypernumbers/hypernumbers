@@ -186,10 +186,15 @@ req('POST',{login,[],[{email,[],[Email]},{password,[],[Pass]}]},[],_User,_Ref) -
 req('POST',[],_,X,_) when X == no_access; X == read  ->
     {return,{status,503}};
 
+req('POST',{create,[],[{Name,[],[Value]}]},_Attr,_User,Ref) ->
+    hn_main:set_attribute(Ref#ref{name=Name},Value),
+    {ok,{success,[],[]}};
+
 req('POST',{create,[],Data},_Attr,_User,Ref = #ref{ref={range,{Y1,X1,Y2,X2}}}) ->
     F = fun(X,Y,Z) ->
                 case lists:nth(Z,Data) of
-                    {_Name,[],[]} -> ok;
+                    {_Name,[],[]} -> 
+                        ok;
                     {Name,[],[Val]} ->
                         NewRef = Ref#ref{ref={cell,{Y,X}},name=Name},
                         hn_main:set_attribute(NewRef,Val)

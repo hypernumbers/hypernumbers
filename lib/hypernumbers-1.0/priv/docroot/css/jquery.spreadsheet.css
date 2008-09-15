@@ -72,14 +72,14 @@
 .spreadsheet .dragtop    { border-top:   1px dashed #000 !important; }
 .spreadsheet .dragbottom { border-bottom:1px dashed #000 !important; }
 
-.spreadsheet .current div
+.spreadsheet .current 
 {
-    opacity:        1 !important;
+    opacity:         1 !important;
 }
 
 .spreadsheet .selected 
 {
-    opacity:        .5;
+    opacity:         .5;
     background:      #d2e9ff;
 }
 
@@ -131,6 +131,7 @@
     height:         18px;
     position:       absolute;
     overflow-x:     hidden;
+    opacity:        1 !important;
 }
 
 .spreadsheet .data table div.cell
