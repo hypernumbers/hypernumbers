@@ -145,6 +145,7 @@ preproc(['query', Arg]) ->
                     end
             end,
             Pages),
+    io:format("in muin:preproc (query) R is ~p~n",[R]),
     Node = [make_list | R],
     %% Stick a special parent in.
     {ok, Refobj} = xfl_lexer:lex(last(Toks), {?mx, ?my}),
@@ -201,7 +202,7 @@ preproc(_) ->
 %%make_match([H|T],N,Acc)   -> make_match(T,N,[H|Acc]).
 
 funcall(make_list, Args) ->
-    Args; % shame, shame...
+    {range, [Args]}; % shame, shame...
 %% Refs
 funcall(ref, [Col, Row, Path]) ->
     Rowidx = toidx(Row),
