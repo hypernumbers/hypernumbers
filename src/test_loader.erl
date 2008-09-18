@@ -14,15 +14,16 @@
 -import(test_util, [conv_for_post/1, conv_from_get/1, cmp/2, hnpost/3, hnget/2, readxls/1]).
 
 test() ->
-    Files=[d_gnumeric_address.xls],
-%%	   d_gnumeric_date_and_time.xls,
-%%	   d_gnumeric_db.xls,
-%%	   d_gnumeric_engineering.xls,
-%%	   d_gnumeric_financial.xls,
-%%	   d_gnumeric_information.xls,
-%%	   d_gnumeric_logical.xls,
-%%	   d_gnumeric_lookup.xls,
-%%	   d_gnumeric_maths.xls,
+    toolbar:start(),
+    Files=["z_junk"],
+    %% Files=["d_gnumeric_address"],
+    %% Files=["d_gnumeric_date_and_time"],
+    %% Files=["d_gnumeric_db"],
+    %% Files=["d_gnumeric_engineering"],
+    %% Files=["d_gnumeric_financial"],
+    %% Files=["d_gnumeric_logical"],
+    %% Files=["d_gnumeric_lookup"],
+    %% Files=["d_gnumeric_maths"],
 %%	   d_gnumeric_stats.xls,
 %%	   d_gnumeric_text.xls,
 %%	   e_operator.xls,
@@ -47,14 +48,14 @@ test() ->
 
 run_loader(File)->
     hn_loaddb:create_db(),
-    Celldata = readxls("../tests/excel_files/Win_Excel07_As_97/" ++File),
+    Celldata = readxls("../tests/excel_files/Win_Excel07_As_97/" ++File++".xls"),
     {Lits, Flas} = % split data into literals and formulas
 	foldl(fun(X, _Acc = {Ls, Fs}) ->
 		      {{{sheet, Sheetn}, {row_index, Row}, {col_index, Col}}, Val} = X,
 		      io:format("in foldl File is ~p Sheet is ~p Row is ~p Col is ~p~n",[File,Sheetn,Row,Col]),
 		      {ok, Sheet, _} = regexp:gsub(Sheetn, "\\s+", "_"), % No whitespace in URLs eh.
 		      Postdata = conv_for_post(Val),
-		      Path = "/" ++ "d_gnumeric_address" ++ "/" ++ Sheet ++ "/",
+		      Path = "/" ++ File ++ "/" ++ Sheet ++ "/",
 		      Ref = tconv:to_b26(Col + 1) ++ tconv:to_s(Row + 1),
 		      Datatpl = {Path, Ref, Postdata},
 		      case Postdata of
