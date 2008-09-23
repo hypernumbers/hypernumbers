@@ -95,10 +95,14 @@ rand() -> gen_server:call(random_srv,{random,float}).
 roman([X])        -> roman([X, 0]);
 roman([X, true])  -> roman([X, ?CLASSIC]);
 roman([X, false]) -> roman([X, ?CONCISE3]);
-roman([X, Type])  ->
+roman([X, Type])  when is_integer(X) ->
     %% we need to build the roman numbers right to left so we have to
     %% reverse the string representation of the number
-    get_roman(make_list(integer_to_list(X)), Type).
+    get_roman(make_list(integer_to_list(X)), Type);
+roman([X, Type])  when is_float(X) ->
+    %% we need to build the roman numbers right to left so we have to
+    %% reverse the string representation of the number
+    get_roman(make_list(integer_to_list(round(X))), Type).
 
 %% first deal with the single digit number
 get_roman(["0"],_) -> "";
@@ -249,8 +253,7 @@ get_roman(["9","9",First],?CONCISE1) -> "LMXL" ++get_roman(First,?CONCISE1);
 get_roman(["9","9",First],Type)      -> "XM"   ++get_roman(First,Type);
 
 %% Now do all the other 3 digit numbers
-get_roman([Third,Second,First],Type) -> io:format("in stdfuns_gg:roman/2 got to 1~n"),
-					get_roman3([Third])
+get_roman([Third,Second,First],Type) -> get_roman3([Third])
 					    ++get_roman([Second,First|[]],Type);
 get_roman([Fourth|Rest],Type)        -> get_roman4([Fourth])++get_roman(Rest,Type).
 
