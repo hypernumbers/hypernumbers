@@ -45,6 +45,11 @@ var SpreadSheet = function(root)
         
     };
 
+    this.resize = function()
+    {
+        
+    };
+
     this.add_sheet = function(name)
     {
         var sheet = new Sheet(name);
