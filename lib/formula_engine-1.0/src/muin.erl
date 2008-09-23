@@ -43,15 +43,7 @@ run_formula(Fla, Bindings) ->
     {cell, {X, Y}} = Bindings#ref.ref,
     case compile(Fla, {X, Y}) of
         {ok, Ecode} ->
-            case muin:run_code(Ecode, Bindings) of
-                {ok, {Val, Deptree, _, Parents, Recompile}} ->
-                    {Ecode, Val, Deptree, Parents, Recompile};
-                %% FIXME: This is an ugly fix, and it's wrong.
-                {error, {errval, Errval}} ->
-                    {Ecode, {errval, Errval}, [], [], false};
-                {error, Reason} ->
-                    {error, Reason}
-            end;
+            muin:run_code(Ecode, Bindings);
         {error, error_in_formula} ->
             {error, error_in_formula}
     end.
@@ -65,9 +57,11 @@ run_code(Pcode, #ref{site = Site, path = Path, ref = {cell, {X, Y}}}) ->
 
     case attempt(?MODULE, eval, [Pcode]) of
         {ok, Val} ->
-            {RefTree, Errors, References} = get(retvals),
+            {RefTree, _Errors, References} = get(retvals),
             Val2 = ?COND(Val == blank, 0, Val), % Links to blanks become 0.
-            {ok, {Val2, RefTree, Errors, References, get(recompile)}};
+            {ok, {Pcode, Val2, RefTree, References, get(recompile)}};
+        {error, {errval, Errval}} -> % this is how errvals are returned
+            {ok, {Pcode, {errval, Errval}, [], [], false}};
         {error, Reason} ->
             {error, Reason}
     end.
@@ -145,7 +139,7 @@ preproc(['query', Arg]) ->
                     end
             end,
             Pages),
-    io:format("in muin:preproc (query) R is ~p~n",[R]),
+    %%io:format("in muin:preproc (query) R is ~p~n",[R]),
     Node = [make_list | R],
     %% Stick a special parent in.
     {ok, Refobj} = xfl_lexer:lex(last(Toks), {?mx, ?my}),
@@ -158,25 +152,25 @@ preproc(['query', Arg]) ->
     {reeval, Node};
 %% preproc(['query2',Page,Return,Match,Cond])->
 %%    io:format("in muin:preproc for query2 Page is ~p Return is ~p "++
-%%	      "Match is ~p Cond is ~p~n",[Page,Return,Match,Cond]),
+%%        "Match is ~p Cond is ~p~n",[Page,Return,Match,Cond]),
 %%    Toks=string:tokens(Page,"/"),
-%%    io:format("in muin:preproc for query2 Toks are ~p~n",[Toks]),    
+%%    io:format("in muin:preproc for query2 Toks are ~p~n",[Toks]),
 %%    Ref=ms_util:make_ms(ref,[{path,Toks},{rawvalue,'$1'}]),
 %%    io:format("in muin:make_match_spec got to 2~n"),
 %%    Head=ms_util:make_ms(hn_item,[{addr,Ref}]),
 %%    Cond=[],
 %%    Body=['$1'],
 %%    io:format("in muin:preproc for query2 Head is ~p Cond is ~p "++
-%%	      "Body is ~p~n",[Head,Cond,Body]),    
+%%        "Body is ~p~n",[Head,Cond,Body]),
 %%    Spec=make_match_spec([{Head,Cond,Body}]),
-%%    io:format("in muin:preproc for query2 Spec are ~p~n",[Spec]),    
+%%    io:format("in muin:preproc for query2 Spec are ~p~n",[Spec]),
 %%    unique(Spec);
 preproc(_) ->
     false.
 
 %%unique(Spec) ->
 %%       Match = fun() ->
-%%		     mnesia:select(hn_item,Spec)
+%%           mnesia:select(hn_item,Spec)
 %%            end,
 %%    {atomic, Res} = mnesia:transaction(Match),
 %%    List=hslists:uniq(Res),
@@ -197,8 +191,8 @@ preproc(_) ->
 
 %%make_match([],_N,Acc)     -> lists:reverse(Acc);
 %%make_match(["*"|T],N,Acc) -> J=integer_to_list(N),
-%%			     NewDollar=list_to_atom(lists:append(["\$",J])),
-%%			     make_match(T,N+1,[NewDollar|Acc]);
+%%               NewDollar=list_to_atom(lists:append(["\$",J])),
+%%               make_match(T,N+1,[NewDollar|Acc]);
 %%make_match([H|T],N,Acc)   -> make_match(T,N,[H|Acc]).
 
 funcall(make_list, Args) ->
@@ -236,7 +230,7 @@ funcall(':', [{ref, Col1, Row1, Path1, _}, {ref, Col2, Row2, "./", _}]) ->
 %% Hypernumber function and its shorthand.
 funcall(hypernumber, [Url]) ->
     {ok,#ref{site = RSite, path = RPath,
-          ref = {cell, {RX, RY}}}} = hn_util:parse_url(Url),
+             ref = {cell, {RX, RY}}}} = hn_util:parse_url(Url),
     F = ?L(hn_main:get_hypernumber(?msite, ?mpath, ?mx, ?my,
                                    Url, RSite, RPath, RX, RY)),
     get_value_and_link(F);
@@ -323,13 +317,13 @@ get_pages_under(Pathcomps) ->
     {atomic, Res} = mnesia:transaction(Match),
     %% List of expansions for the "*" wildcard.
     Starexp = foldl(fun(X, Acc) ->
-			    Path = (X#hn_item.addr)#ref.path, % assume 1 site
-			    Init = sublist(Path, length(Pathcomps)),
-			    if (Pathcomps == Init) and (Path =/= Init) ->
-				    [last(Path) | Acc];
-			       true ->
-				    Acc
-			    end
+                            Path = (X#hn_item.addr)#ref.path, % assume 1 site
+                            Init = sublist(Path, length(Pathcomps)),
+                            if (Pathcomps == Init) and (Path =/= Init) ->
+                                    [last(Path) | Acc];
+                               true ->
+                                    Acc
+                            end
                     end,
                     [],
                     Res),
