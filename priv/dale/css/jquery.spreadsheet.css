@@ -1,0 +1,298 @@
+/**
+ * jQuery.SpreadSheet
+ * Copyright (c) 2008 HyperNumbers.com
+ * All rights reserved.
+ * @projectDescription A Spreadsheet GUI 
+ * @author Dale Harvey
+ * @version 0.1
+ */
+
+/******************************************************************************
+	GLOBAL STYLES
+******************************************************************************/
+body 
+{ 
+  overflow:         hidden;
+}
+
+.spreadsheet * 
+{
+    padding:        0px;
+    margin:         0px;
+}
+
+.spreadsheet
+{
+    overflow:hidden;
+}
+
+.spreadsheet #name 
+{
+    display:        block;
+    font:           11px "Helvetica Neue", sans-serif;
+    border:         0px;
+    width:          80px;
+    vertical-align: middle;
+    float:          left;
+    height:         20px;
+    text-align:     center;
+}
+
+.spreadsheet .formulabar
+{
+    height:         20px;
+    overflow:       hidden;
+}
+
+.spreadsheet #formula
+{
+    font:           12px "Helvetica Neue", sans-serif;
+    border:         0px;
+    padding:        3px;
+}
+
+.spreadsheet #functions
+{
+    border-width:   0px 1px 0px 1px;
+    border-style:   outset;
+    font:           11px "Helvetica Neue", sans-serif;
+    height:         20px;
+    background:     #eee;
+    width:          40px;
+}
+
+.spreadsheet #drag
+{
+    display:        none;
+    position:       fixed;
+    cursor:         pointer;
+    width:          6px;
+    height:         6px !important;
+    background:     blue;
+    z-index:        9999;
+}
+
+.spreadsheet .dragleft   { border-left:  1px dashed #000 !important; }
+.spreadsheet .dragright  { border-right: 1px dashed #000 !important; }
+.spreadsheet .dragtop    { border-top:   1px dashed #000 !important; }
+.spreadsheet .dragbottom { border-bottom:1px dashed #000 !important; }
+
+.spreadsheet .current div
+{
+    opacity:        1 !important;
+}
+
+.spreadsheet .selected 
+{
+    opacity:        .5;
+    background:      #d2e9ff;
+}
+
+.spreadsheet th.highlight,.spreadsheet td.highlight
+{
+    background:     #666 !important;
+}
+
+.spreadsheet .rowsanddata
+{
+    overflow:     none;
+}
+
+.spreadsheet .corner
+{
+    position:       absolute;;
+    border-bottom:  1px solid #aaa;
+    border-right:   1px solid #aaa;
+    background:     #ddd;
+    width:          24px;
+    height:         20px;
+}
+
+/******************************************************************************
+	    CELLS
+******************************************************************************/
+.spreadsheet .data
+{
+  height:500px;
+  width:500px;
+    overflow:     scroll;
+}
+
+.spreadsheet .data table
+{
+    border-collapse:collapse;
+}
+
+.spreadsheet .data table td
+{
+    background:     #fefefe;
+    border-bottom:  1px solid #ddd;
+    border-right:   1px solid #ddd;
+    vertical-align: top;
+}
+
+.spreadsheet .data table div textarea
+{
+    border:         1px solid blue;
+    display:        block;
+    height:         18px;
+    position:       absolute;
+    overflow-x:     hidden;
+}
+
+.spreadsheet .data table div.cell
+{
+    border:         1px solid transparent;
+    height:         20px;
+    overflow:       hidden;
+    cursor:         default;
+}
+
+/******************************************************************************
+	    ROWS
+******************************************************************************/
+.spreadsheet .rows
+{ 
+    width:          25px;
+  height:100%;
+    float:          left;
+    overflow:       hidden;
+    position:       relative;
+  background:blue;
+}
+
+.spreadsheet .rows table
+{
+    position:       relative;
+    border-collapse:collapse;
+}
+
+.spreadsheet .rows td 
+{
+    display:        block;
+    height:         19px;
+    width:          22px; 
+    padding-top:    3px;
+    padding-right:  3px;
+    vertical-align: top;
+    border-right:   1px solid #aaa;
+    border-bottom:  1px solid #aaa;
+    background:     #ddd;
+    text-align:     right;
+}
+
+/******************************************************************************
+	    COLUMNS
+******************************************************************************/
+.spreadsheet .columns
+{
+    margin-left:    25px;
+    height:         20px;
+    overflow:       hidden;
+    position:       relative;
+  background:red;
+}
+
+.spreadsheet .columns table
+{
+    position:       relative;
+    border-collapse:collapse;
+}
+
+.spreadsheet .columns th
+{
+    padding:        3px 0px; 
+    border-bottom:  1px solid #aaa;
+    border-right:   1px solid #aaa;
+    height:         14px;
+    text-align:     center;
+    background:     #ddd;    
+}
+
+/******************************************************************************
+		TOOLBAR
+******************************************************************************/
+.spreadsheet .toolbar 
+{
+    background:     #eee;
+    height:         26px;
+    border-bottom:  1px solid #999;
+    border-top:     1px solid #ddd;
+}
+
+.spreadsheet .toolbar a 
+{
+    background-position:center center;
+    background-repeat:  no-repeat;
+    float:          left;
+    cursor:         pointer;
+    border:         1px solid transparent;
+    padding:        2px;
+    margin:         2px;
+    display:        block;
+    height:         16px;
+    width:          16px;
+}
+
+.spreadsheet .toolbar a:hover
+{
+    border:         1px solid #BBB;
+    background-color:#fff;
+}
+
+.spreadsheet .toolbar a.separator
+{
+    cursor:         default;
+    margin:         3px;
+    padding:        0px;
+    height:         18px;
+    width:          0px !important;
+    border-left:    1px solid #999;
+    border-right:   1px solid #FFF;
+}
+
+.spreadsheet .toolbar .left {
+    background-image:  url('../img/text_align_left.png'); }
+.spreadsheet .toolbar .center {
+    background-image:  url('../img/text_align_center.png'); }
+.spreadsheet .toolbar .right {
+    background-image:  url('../img/text_align_right.png'); }
+.spreadsheet .toolbar .justify {
+    background-image:  url('../img/text_align_justify.png'); }
+.spreadsheet .toolbar .bold {
+    background-image:  url('../img/text_bold.png'); }
+.spreadsheet .toolbar .italic {
+    background-image:  url('../img/text_italic.png'); }
+.spreadsheet .toolbar .underl {
+    background-image:  url('../img/text_underline.png'); }
+.spreadsheet .toolbar .strike {
+    background-image:  url('../img/text_strikethrough.png'); }
+
+/******************************************************************************
+		HACKS
+******************************************************************************/
+.clearfix:after
+{
+    content:        "."; 
+    display:        block; 
+    height:         0; 
+    clear:          both; 
+    visibility:     hidden;
+}
+
+.clearfix
+{
+    display:        inline-block;
+}
+
+/* Hides from IE-mac \*/
+* html .clearfix
+{
+    height:         1%;
+}
+
+.clearfix
+{
+    display:        block;
+}
+/* End hide from IE-mac */

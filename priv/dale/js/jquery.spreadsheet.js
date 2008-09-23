@@ -6,180 +6,204 @@
  * http://code.google.com/p/jqueryspreadsheet/
  *
  **/
+const BASE_HTML = '<div class="clearfix toolbar"></div>\
+  <div class="clearfix formulabar">\
+   <input type="text" id="name" />\
+   <input type="button" id="functions" value="f(x)" />\
+   <input type="text" id="formula"/>\
+  </div>\
+  <div class="sheetwrapper">\
+   <div class="corner"></div>\
+   <div class="columns"></div>\
+   <div class="rowsanddata">\
+    <div class="rows">\
+     <br />\
+     <table cellpadding="0" cellspacing="0"></table>\
+    </div>\
+    <div class="data">\
+     <div style="height:2000px;width:2000px"> </div>\
+     <table cellpadding="0" cellspacing="0"></table>\
+    </div>\
+   </div>\
+  </div>'; 
+
+
+var SpreadSheet = function(root)
+{
+    this.construct = function(root)
+    {
+        this.root = document.getElementById(root);
+        this.root.className = "spreadsheet";
+        this.root.innerHTML = BASE_HTML;
+        this.sheets = new Array();
+
+        this.init();
+    }
+    
+    this.init = function()
+    {
+        
+    };
+
+    this.add_sheet = function(name)
+    {
+        var sheet = new Sheet(name);
+        this.sheets.push(sheet);
+    };
+    this.construct(root);
+}
+
+var Sheet = function(name)
+{
+    this.construct = function(name)
+    {
+        this.init();
+    }
+
+    this.init = function()
+    {
+    }
+
+    this.construct(name);
+};
+
 
 (function($) {
     
-    // Consts for key presses
-    $.key = { 
-        ENTER: 13,
-        UP:    38, 
-        DOWN:  40, 
-        LEFT:  37, 
-        RIGHT: 39 
+$.fn.spreadsheet = function(options) 
+{    
+    // Builder for the toolbar, an <a> is sbuilt for each element
+    // the callback is called on click and is given info
+    // on the current selection                    
+    $.fn.toolbar = [
+        {css:"left",    click:function(e,s){ s.range.each(function() { set_css(this,"text-align","left"); }); }},
+        {css:"center",  click:function(e,s){ s.range.each(function() { set_css(this,"text-align","center"); }); }},
+        {css:"right",   click:function(e,s){ s.range.each(function() { set_css(this,"text-align","right"); }); }},
+        {css:"justify", click:function(e,s){ s.range.each(function() { set_css(this,"text-align","justify"); }); }},
+        {css:"separator"},         
+        {css:"bold",    click:function(e,s){ s.range.each(function() { toggle_css(this,"font-weight","normal","bold"); }); }},
+        {css:"italic",  click:function(e,s){ s.range.each(function() { toggle_css(this,"font-style","normal","italic"); }); }},
+        {css:"underl",  click:function(e,s){ s.range.each(function() { toggle_css(this,"text-decoration","none","underline"); }); }},
+        {css:"strike",  click:function(e,s){ s.range.each(function() { toggle_css(this,"text-decoration","none","line-through"); }); }},
+        {css:"separator"}
+    ]; 
+        
+    $.fn.spreadsheet.defaults = 
+    {
+        range: "a1:z50",   // Default Range that is loaded
+        fmargin: 0,         // Footer Margin
+        cellSelect:null,    // Callback on a cell being selected
+        cellChange:null,    // Callback for a cell Changing
+        rowResize:null,
+        colResize:null,
+        cssChange:null,
+        addName:null,
+        nameSet:null,
+        fullscreen:false
     };
 
-    $.fn.spreadsheet = function(options) 
-    {    
-        // Builder for the toolbar, an <a> is built for each element
-        // the callback is called on click and is given info
-        // on the current selection                    
-        $.fn.toolbar = [
-            {css:"left",    click:function(e,s){ s.range.each(
-                function() { set_css(this,"text-align","left"); }); }},
-            {css:"center",  click:function(e,s){ s.range.each(
-                function() { set_css(this,"text-align","center"); }); }},
-            {css:"right",   click:function(e,s){ s.range.each(
-                function() { set_css(this,"text-align","right"); }); }},
-            {css:"justify", click:function(e,s){ s.range.each(
-                function() { set_css(this,"text-align","justify"); }); }},
-        {css:"separator"},         
-            {css:"bold",    click:function(e,s){ s.range.each(
-                function() { toggle_css(this,"font-weight","normal","bold"); }); }},
-            {css:"italic",  click:function(e,s){ s.range.each(
-                function() { toggle_css(this,"font-style","normal","italic"); }); }},
-            {css:"underl",  click:function(e,s){ s.range.each(
-                function() { toggle_css(this,"text-decoration","none","underline"); }); }},
-            {css:"strike",  click:function(e,s){ s.range.each(
-                function() { toggle_css(this,"text-decoration","none","line-through"); }); }},
-            {css:"separator"},
-            {css:"format",  click:function(e,s){ 
-                var f = $("#formats"); 
-                f.toggle(); 
-                select_frame(f,(f.find(".section_list li:first a").text()).toLowerCase()); 
-            }},
-        ]; 
-        
-        $.fn.spreadsheet.defaults = {
-            range: "a1:z200",    // Default Range that is loaded
-            fmargin: 0,         // Footer Margin
-            cellSelect:null,    // Callback on a cell being selected
-            cellChange:null,    // Callback for a cell Changing
-            formatChange:null,
-            rowResize:null,
-            colResize:null,
-            cssChange:null,
-            addName:null,
-            nameSet:null,
-            fullscreen:false
-        };
-        
-        $.fn.modes = { 
-            CELL_EDIT:0,        // Currently Editing a cell         
-            FORMULA_EDIT:1,     // Editing in the formula bar
-            NOT_EDITING:2       // Not Editing
-        };
-        
-        $.fn.states =           // Keep track of states during selection
-        { 
-            INIT:0,             // Page Just Loaded
-            VIEW:1,             // Editing cell
-            SELECT:2,           // Dragging over a range
-            DRAG:3              // Formula Drag
-        };
-        
-        // Consts for range types
-        $.fn.addr = {
-            ROW:0,
-            COLUMN:1,
-            CELL:2,
-            RANGE:3            
-        };
-        
-        // default options used on initialisation
-        // and arguments used on later calls
-        var opts = $.extend({}, $.fn.spreadsheet.defaults, options);
-        var args = arguments;
-        
-        /**
+    $.fn.modes =
+    { 
+        CELL_EDIT:0,        // Currently Editing a cell         
+        FORMULA_EDIT:1,     // Editing in the formula bar
+        NOT_EDITING:2       // Not Editing
+    };
+    
+    $.fn.states =           // Keep track of states during selection
+    { 
+        INIT:0,             // Page Just Loaded
+        VIEW:1,             // Editing cell
+        SELECT:2,           // Dragging over a range
+        DRAG:3              // Formula Drag
+    };
+      
+    // Consts for key presses
+    $.fn.keys = 
+    { 
+        RETURN: 13,
+        UP:     38, 
+        DOWN:   40, 
+        LEFT:   37, 
+        RIGHT:  39 
+    };
+
+    // Consts for range types
+    $.fn.addr = 
+    {
+        ROW:0,
+        COLUMN:1,
+        CELL:2,
+        RANGE:3            
+    };
+
+    // default options used on initialisation
+    // and arguments used on later calls
+    var opts = $.extend({}, $.fn.spreadsheet.defaults, options);
+    var args = arguments;
+
+    /**
      * Replaces a cell with an input element to enter cell values, 
      * called on cell focus, removes input on blur
      */    
-        var on_end_selection = function($this,$sel,fullselect)
-        {
-            //console.log(edit_mode);
-            // get rid of click bound event in case of 
-            // double click
-            $(document).unbind("keydown.ss");                
-            
-            var dom_formula = $this.find("#formula");        
-            var dom_cell    = cell_div($sel.tbl,$sel.x,$sel.y);
-            
-            var cell_val    = $(dom_cell).text();
-            
-            !is_fun(opts.cellSelect)
-                ? dom_formula.val(cell_val)
-                : opts.cellSelect($sel.x,$sel.y+1,dom_formula);
-            
-            var formula_val = dom_formula.val();
-            
-            var move = function(e,sel)
-            {
-                var coords = offset(e.keyCode,sel.x,sel.y);
-                if(coords != false)
-                {
-                    key_pressed($this,sel,coords,e);
-                    return true;
-                }            
-            };
-            
-            var keyup = function(e,test) 
-            {
-                dom_formula.val($(this).val());
-                
-                if(!fullselect)
-                {
-                    move(e,$sel);
-                    return false;
-                }
-            };
-            
-            var keydown = function(e)
-            {
-                return (e.keyCode != $.key.ENTER);
-            };      
-            
-            var blur = function()
-            {
-                var newval = $(this).val();
-                dom_cell.removeClass("current");
-                $(this).parent().empty().text(newval);
-                
-                if(cell_val != newval && is_fun(opts.cellChange)
-                   && edit_mode != $.fn.modes.FORMULA_EDIT)
-                    opts.cellChange($sel.x,$sel.y+1,newval); 
-            };
-            
-            var init = function(e)
-            {
-                console.log(edit_mode);
-                if(e != null)
-                {
-                    var inv_chars = new Array(13,17,37,38,39,40);
-                    
-                    if($.inArray(e.keyCode,inv_chars) != -1)
-                    {
-                        move(e,$sel)
-                        return true;
-                    }
-                    $(document).unbind("keydown.ss");
-                }
-                
-                dom_cell.empty();
-                dom_cell.addClass("current");
-                
-                var v = fullselect ? formula_val : "";
-                
-                $("<textarea />").val(v).keyup(keyup).keydown(keydown).blur(blur)
-                .appendTo(dom_cell).width(dom_cell.width()).height(dom_cell.height()).focus();
-            };
-            
-            if(fullselect)
-                init(null);
+    var select_cell = function($this,$sel)
+    {
+        var cell    = cell_div($sel.tbl,$sel.x,$sel.y);
+        var val     = $(cell).text();
+        var formula = $this.find("#formula");
+
+        $(cell).empty();
+
+        if(typeof opts.cellSelect != "function")
+            formula.val(val);
+        else
+            opts.cellSelect($sel.x,$sel.y+1,formula);
+    
+        $(document.createElement("textarea")).val(val).keyup(function (e) 
+        {              
+            var coords = offset(e.keyCode,$sel);
+    
+            if(coords != false)
+                key_pressed($this,$sel,coords,e);
             else
-                $(document).bind("keydown.ss",init);
+                formula.val($(this).val());
+    
+        }).keydown(function(e)
+        {
+            if(e.keyCode == $.fn.keys.RETURN)
+                return false;
+                    
+            return true;
+
+        }).blur(function()
+        {
+            var newval = $(this).val();
+            $(this).parent().empty().text(newval);
             
-            edit_mode = $.fn.modes.CELL_EDIT;
-        };
+            if(val != newval && typeof opts.cellChange == "function" && edit_mode != $.fn.modes.FORMULA_EDIT)
+                opts.cellChange($sel.x,$sel.y+1,newval); 
+
+        }).appendTo(cell).width(cell.width()).height(cell.height()).focus();
+
+        edit_mode = $.fn.modes.CELL_EDIT;
+    };
+
+    /**
+     * Replaces a cell with an input element to enter cell values, 
+     * called on cell focus, removes input on blur
+     */     
+    var offset = function(key,$sel) 
+    {
+        switch(key)
+        {
+            case $.fn.keys.UP     : return [$sel.x,$sel.y-1]; break;
+            case $.fn.keys.RIGHT  : return [$sel.x+1,$sel.y]; break;
+            case $.fn.keys.LEFT   : return [$sel.x-1,$sel.y]; break;
+            case $.fn.keys.DOWN   : 
+            case $.fn.keys.RETURN : return [$sel.x,$sel.y+1];  break;
+            default : return false; break;
+        }
+        return false;
+    };           
   
     /**
      * Called when user presses arrow / navigation keys
@@ -191,7 +215,7 @@
         if($(cell).size() > 0)
         {
             $sel.blurcell();
-            
+    
             if(e.shiftKey)
             {
                 $sel.state = $.fn.states.SELECT;
@@ -204,7 +228,7 @@
                 $sel.start($.fn.addr.CELL,cell[0]);
             }
     
-            on_end_selection($this,$sel,false);
+            select_cell($this,$sel);
             $sel.state = $.fn.states.VIEW;
             set_name($this,$sel);
         }
@@ -232,33 +256,33 @@
             initval = $(this).val();
         }
         ).keyup(function (e)
+        {
+            if($sel.state != $.fn.states.INIT)
+            {
+                var coords = offset(e.keyCode,$sel);
+        
+                if(coords != false)
                 {
-                    if($sel.state != $.fn.states.INIT)
+                    change($sel.x,$sel.y+1,$(this).val());
+                    key_pressed(root,$sel,coords,e);
+                }
+                else
+                {
+                    var c = cell($sel.tbl,$sel.x,$sel.y);
+            
+                    if(c.size() > 0)
                     {
-                        var coords = offset(e.keyCode,$sel.x,$sel.y);
-                        
-                        if(coords != false)
-                        {
-                            change($sel.x,$sel.y+1,$(this).val());
-                            key_pressed(root,$sel,coords,e);
-                        }
-                        else
-                        {
-                            var c = cell($sel.tbl,$sel.x,$sel.y);
-                            
-                            if(c.size() > 0)
-                            {
-                                c.children("div").text($(this).val());
-                            }
-                        }
+                        c.children("div").text($(this).val());
                     }
                 }
+            }
+        }
         ).blur(function (e)
-               {
-                   $(this).removeClass("focus");
-                   change($sel.x,$sel.y+1,$(this).val());
-                   initval = "";
-               });  
+        {
+            $(this).removeClass("focus");
+            change($sel.x,$sel.y+1,$(this).val());
+            initval = "";
+        });  
     };
     
     /**
@@ -266,7 +290,7 @@
      */  
     var write_button_menu = function(root,$sel,toolbar)
     {
-        var wrap = root.find("div.toolbar");
+        var wrap = root.find(".toolbar");
     
         $(toolbar).each(function(i)
         {
@@ -296,7 +320,7 @@
     {
         if(typeof opts.cssChange == "function")
             opts.cssChange(el,attr,val);
-        
+                
         $(el).css(attr,val);
     };
     
@@ -308,27 +332,24 @@
     {
         var width = 100;
         
-        root.find("div.columns table, div.data table").width(cols * width);
-        root.find("div.columns table th, div.data table td").width(width);
-        root.find("div.data table td div").width(width-6);
+        root.find(".columns table, .data table").width(cols * width);
+        root.find(".columns table th, .data table td").width(width);
 
         root.find(".data").scroll(function (e) 
         {
-            root.find("div.columns table").css("left","-"+e.target.scrollLeft+"px"); 
-            root.find("div.rows table").css("top","-"+e.target.scrollTop+"px");
+            root.find(".columns table").css("left","-"+e.target.scrollLeft+"px"); 
+            root.find(".rows table").css("top","-"+e.target.scrollTop+"px");
         });
     
         $(window).resize(function()
         {           
             root.children("div.datatable").width($(root).width());
                
-            var h = ((opts.fullscreen) 
-                     ? $(window).height() 
-                     : $(root).height()) - root.offset().top - fmargin;
-            
+            var h = ((opts.fullscreen) ? $(window).height() : $(root).height()) 
+                - $(".toolbar").height() - $(".formulabar").height() 
+                - fmargin - 22;
+                            
             root.find(".data,.rows").height(h);
-            
-            $("#formula").width(root.width()-200);
         });
         
         $(window).resize();
@@ -353,7 +374,7 @@
             }
         };
 
-        $("div.rows table, div.columns table").tableresizer(tblopts);
+        $(".rows table,.columns table").tableresizer(tblopts);
     };
     
     /**
@@ -375,11 +396,11 @@
      */  
     var create_table = function(root,rows,cols)
     {
-         var html = '\
+        var html = '\
             <div class="clearfix toolbar" />\
             <div class="clearfix formulabar">\
                 <input type="text" id="name" />\
-                <input type="button" id="functionbutton" value="f(x)" />\
+                <input type="button" id="functions" value="f(x)" />\
                 <input type="text" id="formula"/>\
             </div>\
             <div class="datatable">\
@@ -395,31 +416,13 @@
                         <table cellpadding="0" cellspacing="0"></table>\
                     </div>\
                 </div>\
-            </div>\
-            <div class="dialog" id="functions">\
-                <h2>Functions</h2>\
-                <div class="clearfix">\
-                    <ul class="section_list" />\
-                    <div class="content_list" />\
-                </div>\
-                <div class="functioninput">\
-                    <input type="text" id="curfunction">\
-                    <input type="button" id="insertfunction" value="insert formula" />\
-                </div>\
-            </div>\
-            <div class="dialog" id="builder">\
-              <h2>Form Builder</h2>\
-              <div class="clearfix" id="form" />\
-            </div>\
-        ';
+            </div>';
 
-        root.append(html);
+        root.append($(html));
         
         var colstable = root.find("div.columns table tr");            
         for(var n = 1; n < cols+1; n++) 
-        {
             colstable.append("<th>"+ $.fn.to_b26(n)+"</th>");
-        }
         
         var rowstable = root.find("div.rows table");
         for(var z = 1; z < rows+1; z++)
@@ -434,93 +437,7 @@
                 row.append("<td><div class='"+($.fn.to_b26(n)+z)
                     + " cell'></div></td>");
         }
-
-        root.find(".cover").click(function(e)
-        {
-            return false;
-        });    
-    };
-    
-    /**
-     * Creates the basic table layout
-     */  
-    var setup_rowcol_selection = function(root,sel,maxcol,maxrow)
-    {
-        var is_th = function(e)
-        {
-            return e.target.nodeName == "TH";
-        }
-    
-        var columns = root.find("div.columns table tr");
-        columns.bind('mousedown',function(e)
-        {
-            if(is_th(e) && $(this).css("cursor") !=  "col-resize")
-            {
-                if(sel.state != $.fn.states.INIT)
-                    sel.blurcell();
-            
-                sel.hide_selection();
-                var index = $.fn.from_b26($(e.target).text()) - 1;
-                sel.setbounds(index,0,index,0,index,maxcol); 
-                sel.set_selection();
-                sel.show_selection();
-                
-                columns.mouseover(function(e)
-                {
-                    if(is_th(e))
-                    {
-                        sel.hide_selection();
-                        var newindex = $.fn.from_b26($(e.target).text())-1;
-                        var start = index < newindex ? index : newindex;
-                        var end =   index > newindex ? index : newindex;
-                        sel.setbounds(index,0,start,0,end,maxcol); 
-                        sel.set_selection();
-                        sel.show_selection();
-                    }
-                });
-                
-                $("body").one('mouseup',function(e)
-                {
-                    columns.unbind('mouseover');
-                });
-            }
-        });
-        
-        var rows = root.find("div.rows table tr");
-        rows.bind('mousedown',function(e)
-        {
-            if($(this).css("cursor") !=  "row-resize")
-            {
-                if(sel.state != $.fn.states.INIT)
-                    sel.blurcell();
-            
-                sel.hide_selection();
-                var index = parseInt($(e.target).text())-1;
-                
-                sel.setbounds(0,index,0,index,maxrow,index); 
-                sel.set_selection();
-                sel.show_selection();
-                
-                rows.mouseover(function(e)
-                {
-                    sel.hide_selection();
-                    var newindex = parseInt($(e.target).text())-1;
-                    var start = index < newindex ? index : newindex;
-                    var end =   index > newindex ? index : newindex;
-                    sel.setbounds(0,index,0,start,maxrow,end); 
-                    sel.set_selection();
-                    sel.show_selection();
-                });
-                
-                $("body").one('mouseup',function(e)
-                {
-                    rows.unbind('mouseover');
-                });
-            }
-            
-            return false;
-        });
-    };
+    }
     
     /**
      * returns true if the mouse button clicked was a left button
@@ -582,12 +499,13 @@
         {
             var cell = "div:not(#drag)";
         
-            var mousedown = function(e) 
+            this.tbl.bind('mousedown',function(e) 
             {
-                var formula = $("#formula");
-                if(formula.hasClass("focus"))
-                    formula.blur();
-                
+                if($("#formula").hasClass("focus"))
+                {
+                    $("#formula").blur();
+                }
+
                 if( leftclick(e.button) && !e.shiftKey && $(e.target).is(cell))
                 {
                     $this.start($.fn.addr.CELL,e.target);
@@ -595,10 +513,10 @@
                     e.preventDefault();
                     return false;
                 }
+                
                 return true;
-            };
-
-            var mouseover = function(e) 
+        
+            }).bind('mouseover',function(e) 
             { 
                 if($(e.target).is(cell))
                 {
@@ -607,39 +525,28 @@
                     return false;
                 }
                 return true;
-            };
-
-            var mouseup = function(e) 
+        
+            }).bind('mouseup',function(e) 
             { 
                 if( leftclick(e.button) && $(e.target).is(cell))
                 {
                     document.onselectstart=new Function ("return true");
-                    
                     if(e.shiftKey)
                     {
-                        $this.state = $.fn.states.SELECT;
-                        $this.hover(e.target);
-                        $this.end(e.target);
-                        set_name(root,$this);
-                    }
-                    else if($this.state == $.fn.states.SELECT 
+                         $this.state = $.fn.states.SELECT;
+                            $this.hover(e.target);
+                            $this.end(e.target);
+                            set_name(root,$this);
+                        }
+                        else if($this.state == $.fn.states.SELECT 
                             || $this.state == $.fn.states.DRAG)
-                    {
-                        $this.end(e.target,false);
-                        set_name(root,$this);
+                        {
+                            $this.end(e.target);
+                            set_name(root,$this);
+                        }
                     }
-                }
-                return true;
-            }
-
-            var dblclick = function(e)
-            {
-                $this.end(e.target,true);
-                set_name(root,$this);
-            };
-            
-            this.tbl.bind('mousedown',mousedown).bind('mouseover',mouseover)
-            .bind('mouseup',mouseup).bind('dblclick',dblclick);
+                    return true;
+            });
                     
             this.root.find("div.data").scroll(function (e) 
             {
@@ -666,19 +573,6 @@
            
             this.hover(cell);
         };
-        
-        /**
-         * Set actively selected cell
-         */        
-        this.setbounds = function(x,y,startx,starty,endx,endy)
-        {
-            this.x = x;
-            this.y = y;
-            this.startx = startx;
-            this.starty = starty;
-            this.endx = endx;
-            this.endy = endy;   
-        };        
     
         /**
          * Set actively selected cell
@@ -687,7 +581,8 @@
         {
             var index = $.fn.cell_index(cell);
             this.x = index[0];
-            this.y = index[1];                
+            this.y = index[1];            
+    
         };
     
         /**
@@ -701,12 +596,12 @@
         /**
         * Moused up
         */
-        this.end = function(cell,fullselect)
+        this.end = function(cell)
         {
             if(this.state != $.fn.states.DRAG)
             {
                 this.set(cell);
-                on_end_selection(root,this,fullselect);
+                select_cell(root,this);
             }
         
             this.state = $.fn.states.VIEW;
@@ -740,8 +635,18 @@
                 if(refs != null)
                 {
                     this.hide_selection();  
-                    this.setbounds(i[0],i[1],refs[0],refs[1],refs[2],refs[3]);
-                    this.set_selection();
+
+                    this.x = i[0];
+                    this.y = i[1];
+                    this.startx = refs[0];
+                    this.starty = refs[1];
+                    this.endx = refs[2];
+                    this.endy = refs[3];
+
+                    var c =  root.children("div.data");
+                    this.range = this.tbl.find("tr:lt("+(this.endy+1)+"):gt("+(this.starty-1) + ")").find("td:lt("+(this.endx+1)+"):gt("+(this.startx-1)+")").children("div");
+                    this.rows_highlight = root.find("div.rows:first table").find("tr td:lt("+(this.endy+1)+"):gt("+(this.starty-1)+")");
+                    this.cols_highlight = root.find("div.columns:first table").find("tr th:lt("+(this.endx+1)+"):gt("+(this.startx-1)+")");
                     this.show_selection();
                 }
             }
@@ -792,14 +697,6 @@
             }
             return false;
         };
-        
-        this.set_selection = function()
-        {
-            var c =  root.children("div.data");
-            this.range = this.tbl.find("tr:lt("+(this.endy+1)+"):gt("+(this.starty-1) + ")").find("td:lt("+(this.endx+1)+"):gt("+(this.startx-1)+")").children("div");
-            this.rows_highlight = root.find("div.rows:first table").find("tr td:lt("+(this.endy+1)+"):gt("+(this.starty-1)+")");
-            this.cols_highlight = root.find("div.columns:first table").find("tr th:lt("+(this.endx+1)+"):gt("+(this.startx-1)+")");            
-        };
     
         /**
          * Adds the background to selected items, positions the drag handle
@@ -815,7 +712,9 @@
             {
                 var c = cell(this.tbl,this.endx,this.endy);
                 var off = c.offset();
-//                cell(this.tbl,this.x,this.y).addClass("current");
+
+                cell(this.tbl,this.x,this.y).addClass("current");
+  
                 // Hide of displayed above the table
                 if(off.top+c.height() < this.tbl.parent().parent().offset().top)
                 {
@@ -870,16 +769,6 @@
             this.drag.top.removeClass("dragtop");
             this.drag.bottom.removeClass("dragbottom");
         };
- 
-        this.current_range = function()
-        {                       
-            if(typeof this.startx != "undefined")
-            {    
-                return $.fn.to_b26(this.startx+1) + "" + (this.starty+1)
-                    + ":"+$.fn.to_b26(this.endx+1)+""+(this.endy+1);
-            }
-            return false;            
-        };
     
         // I do this to make sure all the functions
         // are defined before they can be called
@@ -899,161 +788,31 @@
    /**
     * Set the height of a row
     */  
-    var set_height = function(root,row,height)
-    {
-        var ind  = root.find(".rows table tr:nth-child("+row+") td");
-        var td = root.find(".data tr:nth-child("+row+") td");
-       
-        td.height(height+1);
-        ind.height(height);
-   
-        td.find("div,textarea").height(height+1);
-    };
-
-    var select_frame = function(dialog,category)
-    {   
-        dialog.find(".content_list > *").hide();
-        dialog.find(".section_list li").removeClass("selected_cat");
-        dialog.find(".section_list li."+category).addClass("selected_cat");
-        dialog.find(".content_list ."+category).show();
-    };
-
-   /**
-    */      
-   var init_dialogs = function(root,sel)
+   var set_height = function(root,row,height)
    {
-        root.find("#functionbutton").click(function()
-        {
-            var f   = $("#functions");
-            var cat = (f.find(".section_list li:first a").text()).toLowerCase();
-            f.toggle();
-            select_frame(f,cat);
-        });
-        
-        var format_win = $("#formats");
-        
-        format_win.find(".submit").click(function()
-        {
-            var val = format_win.find("input.format").val();
-            var range = sel.current_range();
-            
-            if(range && typeof opts.formatChange == "function" && val != "") 
-                 opts.formatChange(range,val);    
-        });
-        
-        format_win.find("select").change(function(item)
-        {
-            format_win.find("input.format").val($(this).val());
-        });
-        
-        root.find("#insertfunction").click(function()
-        {
-            var txt = root.find("#curfunction").val();
-            
-            if(txt != "")
-            {
-                var formula = root.find("#formula");
-                var newval = (formula.val() == "") 
-                    ? txt : formula.val() + txt.substring(1);
-                formula.val(newval);
-            }
-        });
-        
-        $("#formatcell").click(function()
-        {
-            format_win.toggle(); 
-            select_frame(format_win,(format_win.find(".section_list li:first a").text()).toLowerCase());
-        });
-
-        var dialogs = $(".dialog");
-
-        dialogs.css("top",(root.offset().top+50)+"px");
-        dialogs.css("left",(root.offset().left+50)+"px");
-        
-        dialogs.each(function()
-        {
-            var d = $(this);
-            
-            $("<div class='close' />").appendTo(d).click(function()
-            {
-                d.toggle();
-            });
-            
-            d.find(".section_list a").click(function()
-            {
-                select_frame(d,$(this).text().toLowerCase());                
-            });
-            
-            var cat = (d.find(".section_list li:first a").text()).toLowerCase();
-            select_frame(d,cat);
-            
-            d.draggable(
-            {
-                handle:"h2",
-                containment:'document',
-                cursor : "move",
-                start  : function(event, ui) {
-                     $(this).css('cursor','move');
-                },
-                stop  : function(event, ui) {
-                     $(this).css('cursor','default');
-                }
-            });
-        });
+       var ind  = root.find(".rows table tr:nth-child("+row+") td");
+       var td = root.find(".data tr:nth-child("+row+") td");
+       
+       td.height(height+1);
+       ind.height(height);
+   
+       td.find("div,textarea").height(height+1);
    };
-
-    /**
-     */  
-    var add_function_to_menu = function(root,category,func,funtext)
-    {
-        var dialog = root.find("#functions");
-        
-        var c = category.toLowerCase();
-        var cat = dialog.find(".section_list li."+c);
-        var list = null;
-        
-        if(cat.size() == 0)
-        {
-            cat = $("<li class='"+c+"'><a>"
-                +category+"</a></li>").appendTo(dialog.find(".section_list"));
-                
-            cat.find("a").click(function()
-            {
-                select_frame(dialog,c);                
-            });
-            
-            list = $("<ul class='"+c+"' />").appendTo(
-                dialog.find(".content_list"));
-        }
-        else
-        {
-            list = dialog.find(".content_list:first > ul."+c);
-        }
-        
-        var link = $("<li><a>"+func+"</a></li>").appendTo(list);
-        
-        link.click(function()
-        {
-            dialog.find("#curfunction").val(funtext);   
-        });
-    };
     
     /**
      * Set the width of a column
      */  
     var set_width = function(root,col,width)
     {
-        var column = $.fn.from_b26(col.toLowerCase()); 
-        var td = root.find(".data").find("tr td:nth-child("+column+")");
-
+        var column = $.fn.from_b26(col); 
+        var td = root.find(".data").find("tr td:nth-child("+column+"):first");
+            
         root.find(".columns tr th:nth-child("+column+")").width(width);
-
+    
         var total = root.find("div.data table").width() + (width - td.width());
         root.find(".data table").width(total);
         root.find(".columns .roottbl , .columns table").width(total);
-
         td.width(width);
-        td.find("div").width(width-6);
     };
     
     var cell = function(root,x,y)
@@ -1071,7 +830,8 @@
      */   
     return this.each(function() 
     {
-        var data = $.data(this,"spreadsheet");
+       /*
+            var data = $.data(this,"spreadsheet");
         
         if(typeof data == "undefined")
         {
@@ -1091,13 +851,10 @@
             create_table($this,range[1],range[0]);
                 
             var $sel = new Selection($this);
-
-            setup_rowcol_selection($this,$sel,range[1]-1,range[0]-1);
                 
             write_formula_bar($this,$sel);
             write_button_menu($this,$sel,$.fn.toolbar);
             set_display_values($this,range[0],opts.fmargin);
-            init_dialogs($this,$sel);
                          
             $("#name").textbox(
             {                
@@ -1128,7 +885,16 @@
                 }
             });
             
-            $(window).resize();            
+            
+            // bit ugly, safari renders 
+            // too fast and misplaces stuff 
+            // everywhere
+            var fun = function()
+            {
+                $(window).resize();
+            };
+            
+            window.setTimeout(fun,300);
                             
             $.data(this,"spreadsheet",{names:names});
         }
@@ -1147,38 +913,16 @@
         {
             var ref = $.fn.parse_cell(args[1]);
             var tbl = $(this).find(".data table");
-            if(typeof args[2] == "string")
-            {
-                cell_div(tbl,ref[0]-1,ref[1]-1).text(args[2]);
-            }
-            else
-            {
-                switch(args[2][0])
-                {
-                    case "matrix" :
-                        break;
-                    case "integer" : 
-                    case "float" :
-                    case "string" :
-                    case "boolean" :
-                        cell_div(tbl,ref[0]-1,ref[1]-1).text(args[2][1][0]);
-                        break;
-                }
-            }
+			cell_div(tbl,ref[0]-1,ref[1]-1).text(args[2]);
         }
+        
         else if(args[0] == "setStyle")
         {
             var ref = $.fn.parse_cell(args[1]);
             var tbl = $(this).find(".data table");
-            
-            var cell = cell_div(tbl,ref[0]-1,ref[1]-1);
-			cell.css(args[2],args[3]);
+			cell_div(tbl,ref[0]-1,ref[1]-1).css(args[2],args[3]);
         }
-        
-        else if(args[0] == "addFunction")
-        {
-            add_function_to_menu($(this),args[1],args[2],args[3]);
-        }
+*/
     });
 };
     
@@ -1223,28 +967,5 @@ $.fn.from_b26 = function(cell)
 {
     return cell.charCodeAt(0)-96;
 };
-
-    var is_fun = function(x)
-    {
-        return (typeof x == "function");
-    };
-
-    
-    /**
-     * Replaces a cell with an input element to enter cell values, 
-     * called on cell focus, removes input on blur
-     */     
-    var offset = function(key,x,y) 
-    {
-        switch(key)
-        {
-        case $.key.UP     : return [x,y-1]; break;
-        case $.key.RIGHT  : return [x+1,y]; break;
-        case $.key.LEFT   : return [x-1,y]; break;
-        case $.key.DOWN   : 
-        case $.key.RETURN : return [x,y+1];  break;
-        default : return false; break;
-        }
-    };           
 
 })(jQuery);
