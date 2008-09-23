@@ -72,7 +72,7 @@ set_cell(Addr, Val) ->
             %case muin:run_formula(Fla, Addr, Auth) of
             case muin:run_formula(Fla, Addr) of
                 {error,_Error} -> ok;       
-                {Pcode, Res, Parents, Deptree, Recompile} ->
+                {ok, {Pcode, Res, Parents, Deptree, Recompile}} ->
                     %% Convert stuff to SimpleXML.
                     F = fun({Type, {S, P, X1, Y1}}) ->
         			Url = hn_util:index_to_url({index, S, P, X1, Y1}),
@@ -259,7 +259,7 @@ recalc(Index) ->
         _ ->
             Pcode = hn_db:get_item_val(Addr#ref{name="__ast"}),
             Val = case muin:run_code(Pcode, Addr) of
-                      {ok, {V, _, _, _, _}} ->                V;
+                      {ok, {_, V, _, _, _}} ->                V;
                       {error, Reason} when is_atom(Reason) -> Reason
 %%                    {error,_Reason}  -> io:format("in hn_calc:recalc bodged up"++
 %%					"error handling~n"),

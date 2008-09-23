@@ -58,8 +58,8 @@ set_cell(Addr, Val) ->
         {formula, Fla} ->
             case muin:run_formula(Fla, Addr) of
                 {error,_Error} -> 
-		    ok;       
-                {Pcode, Res, Parents, Deptree, Recompile} ->
+                    ok;       
+                {ok, {Pcode, Res, Parents, Deptree, Recompile}} ->
                     
                     %% Convert stuff to SimpleXML.
                     F = fun({Type, {S, P, X1, Y1}}) ->
@@ -253,7 +253,7 @@ recalc(Index) ->
         _ ->
             Pcode = hn_db:get_item_val(Addr#ref{name="__ast"}),
             Val = case muin:run_code(Pcode, Addr) of
-                      {ok, {V, _, _, _, _}} ->                V;
+                      {ok, {_, V, _, _, _}} ->                V;
                       {error, Reason} when is_atom(Reason) -> Reason
                   end,
             set_cell_rawvalue(Addr,Val)
