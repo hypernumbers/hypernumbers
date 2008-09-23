@@ -27,15 +27,14 @@
 -include("muin_records.hrl").
 
 -define(else, true). % silly hack for ifs
+-define(cast_all, [cast_strings, cast_bools, cast_blanks, cast_numbers]). %% FIXME: This is NOT the right thing to do.
 
 date(Arg = [_, _, _]) ->
-    [Year, Month, Day] = ?numbers(Arg, [cast_strings,
-                                        cast_bools,
-                                        cast_blanks]),
+    [Year, Month, Day] = ?numbers(Arg, ?cast_all),
     #datetime{date = {Year, Month, Day}}.
 
 datedif([V1, V2, V3]) ->
-    [Start, End] = ?dates([V1, V2], [cast_strings]),
+    [Start, End] = ?dates([V1, V2], ?cast_all),
     ?ensure(muin_date:gt(End, Start), ?ERR_NUM),
     ?estring(V3),
     Unit = string:to_upper(?utf8l(V3)),
@@ -89,7 +88,7 @@ datedif1(Start, End, "YD") ->
           seq(muin_date:month(Start), muin_date:month(End))).
 
 datevalue([V1]) ->
-    ?date(V1, [cast_strings]).
+    ?date(V1, ?cast_all).
 
 day([Dt]) ->
     ?edate(Dt),
@@ -104,10 +103,8 @@ year([Dt]) ->
     muin_date:year(Dt).
 
 edate([V1, V2]) ->
-    Start = ?date(V1, [cast_strings]),
-    Months = ?int(V2, [cast_bools,
-                       cast_strings,
-                       cast_blanks]),
+    Start = ?date(V1, ?cast_all),
+    Months = ?int(V2, ?cast_all),
     edate1(Start, Months).
 edate1(Start, Months) ->
     #datetime{date = {Startyr, Startmo, Startday}} = Start,
@@ -116,10 +113,8 @@ edate1(Start, Months) ->
     Start#datetime{date = {Startyr + Yrdelta, Startmo + Modelta, Startday}}.
 
 eomonth([V1, V2]) ->
-    Start = ?date(V1, [cast_strings]),
-    Months = ?int(V2, [cast_strings,
-                       cast_bools,
-                       cast_blanks]),
+    Start = ?date(V1, ?cast_all),
+    Months = ?int(V2, ?cast_all),
     %% TODO: More error checks, see Excel.
     eomonth1(Start, Months).
 eomonth1(Start, Months) ->
@@ -133,10 +128,10 @@ eomonth1(Start, Months) ->
 networkdays([V1, V2]) ->
     networkdays([V1, V2, []]);
 networkdays([V1, V2, V3]) ->
-    [Start, End] = ?dates([V1, V2], [cast_strings]),
+    [Start, End] = ?dates([V1, V2], ?cast_all),
     Holidays = case V3 of
                    [] -> [];
-                   _  -> ?dates(V3, [cast_strings])
+                   _  -> ?dates(V3, ?cast_all)
                end,
     networkdays1(Start, End, Holidays).
 networkdays1(Start, End, Holidays) ->
@@ -164,8 +159,8 @@ today([]) ->
 weekday([V1]) ->
     weekday([V1, 1]);
 weekday([V1, V2]) ->
-    Dt = ?date(V1, [cast_strings]),
-    Rettype = ?int(V2, [cast_strings, cast_bools]),
+    Dt = ?date(V1, ?cast_all),
+    Rettype = ?int(V2, ?cast_all),
     ?ensure(Rettype == 1 orelse Rettype == 2 orelse Rettype == 3,
             ?ERR_NUM),
     weekday1(Dt, Rettype).
@@ -182,8 +177,8 @@ weekday1(Dt, 3) ->
 weeknum([V1]) ->
     weeknum([V1, 1]);
 weeknum([V1, V2]) ->
-    Dt = ?date(V1, [cast_strings]),
-    Rettype = ?int(V2, [cast_strings, cast_bools]),
+    Dt = ?date(V1, ?cast_all),
+    Rettype = ?int(V2, ?cast_all),
     ?ensure(Rettype == 1 orelse Rettype == 2,
             ?ERR_NUM),
     weeknum1(Dt, Rettype).
@@ -199,15 +194,15 @@ weeknum1(Dt, Rettype) ->
                    #datetime{date = {muin_date:year(Dt), 12, 31}}).
 
 hour([V1]) ->
-    Dt = ?date(V1, [cast_strings]),
+    Dt = ?date(V1, ?cast_all),
     muin_date:hour(Dt).
 
 minute([V1]) ->
-    Dt = ?date(V1, [cast_strings]),
+    Dt = ?date(V1, ?cast_all),
     muin_date:minute(Dt).
 
 second([V1]) ->
-    Dt = ?date(V1, [cast_strings]),
+    Dt = ?date(V1, ?cast_all),
     muin_date:second(Dt).
 
 now([]) ->
@@ -215,7 +210,7 @@ now([]) ->
     #datetime{date = Date, time = Time}.
 
 timevalue([V1]) ->
-    ?date(V1, [cast_strings]).
+    ?date(V1, ?cast_all).
 
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
