@@ -62,12 +62,16 @@ gt0(N) ->
 
 %% Checks a list of values for errvals, the first one found is returned.
 die_on_errval(Vs) ->
-    map(fun(X) ->
-                ?COND(stdfuns_info:iserror(X),
-                      muin_util:error(X),
-                      X)
-        end,
-        Vs).
+    foreach(fun(?ERRVAL_NULL) -> ?ERR_NULL;
+               (?ERRVAL_DIV)  -> ?ERR_DIV;
+               (?ERRVAL_VAL)  -> ?ERR_VAL;
+               (?ERRVAL_REF)  -> ?ERR_REF;
+               (?ERRVAL_NAME) -> ?ERR_NAME;
+               (?ERRVAL_NUM)  -> ?ERR_NUM;
+               (?ERRVAL_NA)   -> ?ERR_NA;
+               (_)            -> nothing
+            end,
+            Vs).
 
 %% Lazy test.
 ensure(true, _Action) ->

@@ -212,7 +212,6 @@ now([]) ->
 timevalue([V1]) ->
     ?date(V1, ?cast_all).
 
-
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -include_lib("eunit/include/eunit.hrl").

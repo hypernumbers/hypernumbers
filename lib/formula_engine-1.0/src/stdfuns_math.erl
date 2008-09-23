@@ -126,22 +126,15 @@
 %%% ----------------- %%%
 
 '+'([blank, Num2]) ->
-    io:format("in stdfuns_math plus (1)~n"),
     '+'([0, Num2]);
 '+'([Num1, blank]) ->
-    io:format("in stdfuns_math plus (2)~n"),
     '+'([Num1, 0]);
 '+'([Num1, Num2]) ->
-    io:format("in stdfuns_math plus (3)~n"),
     ?ensure_numbers([Num1, Num2]),
     Num1 + Num2.
 
-'-'([blank, Num2]) ->
-    '-'([0, Num2]);
-'-'([Num1, blank]) ->
-    '-'([Num1, 0]);
-'-'([Num1, Num2]) ->
-    ?ensure_numbers([Num1, Num2]),
+'-'([V1, V2]) ->
+    [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
     Num1 - Num2.
 
 '*'([blank, Num2]) ->
