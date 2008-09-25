@@ -12,7 +12,6 @@
          '>'/1,
          '<='/1,
          '>='/1,
-         'if'/1,
          'and'/1,
          %%iferror/1,
          'not'/1,
@@ -35,9 +34,6 @@
 
 '>='([A, B]) ->
     A >= B.
-
-'if'([Test, TrueVal, FalseVal]) ->
-    ?COND(Test, TrueVal, FalseVal).
 
 'and'(Vs) ->
     Flatvs = ?flatten_all(Vs),

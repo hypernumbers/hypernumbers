@@ -78,8 +78,13 @@ try_parse(Fla, {X, Y}) ->
 eval(Node = [Func|Args]) when ?isfuncall(Func) ->
     case preproc(Node) of
         false ->
-            CallArgs = [eval(X) || X <- Args],
-            funcall(Func, CallArgs);
+            case member(Func, ['if']) of
+                true -> % lazy
+                    funcall(Func, Args);
+                false -> % eager
+                    CallArgs = [eval(X) || X <- Args],
+                    funcall(Func, CallArgs)
+                end;
         {reeval, Newnode} ->
             eval(Newnode);
         [Func2|Args2] ->
@@ -195,6 +200,12 @@ preproc(_) ->
 %%               make_match(T,N+1,[NewDollar|Acc]);
 %%make_match([H|T],N,Acc)   -> make_match(T,N,[H|Acc]).
 
+funcall('if', [Test, TrueExpr, FalseExpr]) ->
+    V = plain_eval(Test),
+    Bool = ?bool(V, [cast_strings, cast_numbers, cast_blanks, cast_dates]),
+    if Bool  -> plain_eval(TrueExpr);
+       ?else -> plain_eval(FalseExpr)
+    end;
 funcall(make_list, Args) ->
     {range, [Args]}; % shame, shame...
 %% Refs
@@ -260,11 +271,10 @@ userdef_call(Fname, Args) ->
 
 %% Returns value in the cell + get_value_and_link() is called behind the
 %% scenes.
-do_cell(RelPath, Rowidx, Colidx) ->
+do_cell(RelPath, Rowidx, Colidx) ->    
     Path = muin_util:walk_path(?mpath, RelPath),
-    ?IF(Colidx == ?mx andalso Rowidx == ?my andalso Path == ?mpath,
-        throw({error, self_reference})),
-
+    IsCircRef = (Colidx == ?mx andalso Rowidx == ?my andalso Path == ?mpath),
+    ?IF(IsCircRef, ?ERR_CIRCREF),
     FetchFun = ?L(hn_main:get_cell_info(?msite, Path, Colidx, Rowidx)),
     get_value_and_link(FetchFun).
 
