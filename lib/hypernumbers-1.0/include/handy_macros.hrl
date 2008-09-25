@@ -65,3 +65,6 @@
 %% Shorthand for ustring:pr(Ustr).
 -define(pr(Ustr),
         ustring:pr(Ustr)).
+
+%% Silly hack for ifs.
+-define(else, true).

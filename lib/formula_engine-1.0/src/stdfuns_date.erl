@@ -26,7 +26,6 @@
 -include("handy_macros.hrl").
 -include("muin_records.hrl").
 
--define(else, true). % silly hack for ifs
 -define(cast_all, [cast_strings, cast_bools, cast_blanks, cast_numbers]). %% FIXME: This is NOT the right thing to do.
 
 date(Arg = [_, _, _]) ->

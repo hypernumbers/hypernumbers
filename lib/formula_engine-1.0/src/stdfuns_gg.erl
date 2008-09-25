@@ -9,7 +9,6 @@
 -include("handy_macros.hrl").
 -include("muin_records.hrl").
 
--define(else, true). % silly hack for ifs
 -define(CLASSIC,0).
 -define(CONCISE1,1).
 -define(CONCISE2,2).
