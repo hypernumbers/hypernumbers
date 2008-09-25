@@ -7,6 +7,7 @@
 -define(ERRVAL_NAME, {errval, '#NAME?'}).
 -define(ERRVAL_NUM,  {errval, '#NUM!'}).
 -define(ERRVAL_NA,   {errval, '#N/A'}).
+-define(ERRVAL_CIRCREF, {errval, '#CIRCREF!'}).
 
 %% -define(ERRVAL_NULL, {errval, null}).
 %% -define(ERRVAL_DIV,  {errval, div0}).
@@ -24,3 +25,4 @@
 -define(ERR_NAME, throw(?ERRVAL_NAME)).
 -define(ERR_NUM,  throw(?ERRVAL_NUM)).
 -define(ERR_NA,   throw(?ERRVAL_NA)).
+-define(ERR_CIRCREF, throw(?ERRVAL_CIRCREF)).

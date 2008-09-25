@@ -62,14 +62,15 @@ gt0(N) ->
 
 %% Checks a list of values for errvals, the first one found is returned.
 die_on_errval(Vs) ->
-    foreach(fun(?ERRVAL_NULL) -> ?ERR_NULL;
-               (?ERRVAL_DIV)  -> ?ERR_DIV;
-               (?ERRVAL_VAL)  -> ?ERR_VAL;
-               (?ERRVAL_REF)  -> ?ERR_REF;
-               (?ERRVAL_NAME) -> ?ERR_NAME;
-               (?ERRVAL_NUM)  -> ?ERR_NUM;
-               (?ERRVAL_NA)   -> ?ERR_NA;
-               (_)            -> nothing
+    foreach(fun(?ERRVAL_NULL)    -> ?ERR_NULL;
+               (?ERRVAL_DIV)     -> ?ERR_DIV;
+               (?ERRVAL_VAL)     -> ?ERR_VAL;
+               (?ERRVAL_REF)     -> ?ERR_REF;
+               (?ERRVAL_NAME)    -> ?ERR_NAME;
+               (?ERRVAL_NUM)     -> ?ERR_NUM;
+               (?ERRVAL_NA)      -> ?ERR_NA;
+               (?ERRVAL_CIRCREF) -> ?ERR_CIRCREF;
+               (_)               -> nothing
             end,
             Vs).
 
