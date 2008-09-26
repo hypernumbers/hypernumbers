@@ -12,41 +12,44 @@
 -include("spriki.hrl").
 -include("handy_macros.hrl").
 
+-define(mn_tr,mnesia:transaction).
+
 %%%-----------------------------------------------------------------
 %%% Exported Functions
 %%%-----------------------------------------------------------------
 -export([
-	 %% hn_item
-	 write_item/2,  
-	 get_item/1,
-	 get_item_val/1,  
-	 get_item_inherited/2,
+         % hn_item
+         write_item/2,
+         get_item/1,
+         get_item_val/1,
+         get_item_inherited/2,
          get_item_list/1,
-	 remove_item/1,
-	 get_ref_from_name/1,
-	 %% local_cell_link
-	 read_links/2,   
-	 del_links/2,
-	 write_local_link/2,
-	 read_remote_links/3, 
-	 write_remote_link/3,
-	 del_remote_link/1,
-	 %% hypernumbers
-	 register_hn/5, 
-	 update_hn/4,
-	 get_hn/3,
-	 %% dirty tables
-	 dirty_refs_changed/2,
-	 mark_dirty/2,
-	 %% templates
-	 write_template/4,
-	 read_template/1
-    ]).
+         remove_item/1,
+         get_ref_from_name/1,
+         % local_cell_link
+         read_links/2,
+         del_links/2,
+         write_local_link/2,
+         read_remote_links/3,
+         write_remote_link/3,
+         del_remote_link/1,
+         % hypernumbers
+         register_hn/5,
+         update_hn/4,
+         get_hn/3,
+         % dirty tables
+         dirty_refs_changed/2,
+         mark_dirty/2,
+         % templates
+         write_template/4,
+         read_template/1,
+         get_templates/0
+        ]).
 
 %%-------------------------------------------------------------------
 %% Table : hn_item
 %% Def   : record( hn_item, { addr = #attr_addr{}, val = [] }).
-%% Desc  : Stores items of information against an address, which 
+%% Desc  : Stores items of information against an address, which
 %%         can be a row / cell / column /range or page.
 %%         The value should be an int / string or the simplexml
 %%         format
@@ -59,53 +62,53 @@
 write_item(Addr,Val) when is_record(Addr,ref) ->
     Item = #hn_item{addr = Addr, val = Val},
     Fun  = fun() -> mnesia:write(Item) end,
-    {atomic, ok} = mnesia:transaction(Fun),
-    
-    %% Send a change notification to the remoting server, which 
-    %% notifies web clients,
+    {atomic, ok} = ?mn_tr(Fun),
+
+%% Send a change notification to the remoting server, which
+%% notifies web clients,
     spawn(fun() -> notify_remote(Item) end),
     ok.
 
 notify_remote(#hn_item{addr=#ref{name="__"++_}}) ->
     ok;
 notify_remote(Item=#hn_item{addr=#ref{site=Site,path=Path}}) ->
-    Msg = "change "++simplexml:to_xml_string(hn_util:item_to_xml(Item)), 
+    Msg = "change "++simplexml:to_xml_string(hn_util:item_to_xml(Item)),
     gen_server:call(remoting_reg,{change,Site,Path,Msg},?TIMEOUT).
 
 
 %%--------------------------------------------------------------------
 %% Function    : get_item/1
-%% 
+%%
 %% Description : Returns the list of attributes that are contained
 %%               within the range specified by Ref, ie if Ref refers
 %%               to a cell, all atributes referring to that cell, if
 %%               ref is a page, all cells / row / columns / ranges
 %%               in that page are returned
-%%--------------------------------------------------------------------    
+%%--------------------------------------------------------------------
 get_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
-    F = fun() ->                
-                
-                %% If Name is defined, match it
+    F = fun() ->
+
+%% If Name is defined, match it
                 N = ?COND(Name == undef,'_',Name),
-                
+
                 Attr = case Ref of
-                           {cell,{X,Y}} -> 
+                           {cell,{X,Y}} ->
                                #ref{site=Site, path=Path, name=N, ref={cell,{X,Y}}};
-                           _ ->            
+                           _ ->
                                #ref{site=Site, path=Path, name=N, _ = '_'}
                        end,
                 Match = #hn_item{addr = Attr, _ = '_'},
                 mnesia:match_object(hn_item,Match,read)
-        
+
         end,
-    {atomic, List} = mnesia:transaction(F),
-    
+    {atomic, List} = ?mn_tr(F),
+
     case Ref of
         {cell,_} -> List;
         {page,_} -> List;
-        _ -> 
-            %% If a request for row / column or range, need to include all
-            %% items contained within it
+        _ ->
+%% If a request for row / column or range, need to include all
+%% items contained within it
             lists:filter
               (
               fun(#hn_item{addr=#ref{ref=ItemRef}}) ->
@@ -113,19 +116,19 @@ get_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
                           {X,X}                     -> true; %% Same Ref
                           {{row,Y},{cell,{_,Y}}}    -> true; %% Cell on same row
                           {{column,X},{cell,{X,_}}} -> true; %% Cell on same col
-                          
+
                           {{range,{_,Y1,_,Y2}},{row,Y}}
-                          when Y > Y1 andalso Y < Y2 -> true; 
+                          when Y > Y1 andalso Y < Y2 -> true;
                           {{range,{X1,_,X2,_}},{column,X}}
                           when X > X1 andalso X < X2 -> true;
-                          
+
                           {{range,{X1,Y1,X2,Y2}},{cell,{X,Y}}}
                           when Y >= Y1 andalso Y =< Y2 andalso
                           X >= X1 andalso X =< X2 -> true;
-                          
+
                           _ -> false
                       end
-              end, 
+              end,
               List)
     end.
 
@@ -136,7 +139,7 @@ match_ref(Ptn) ->
     F = fun() ->
                 mnesia:match_object(hn_item,#hn_item{addr=Ptn,_='_'},read)
         end,
-    {atomic, List} = mnesia:transaction(F),
+    {atomic, List} = ?mn_tr(F),
     List.
 
 
@@ -159,27 +162,27 @@ get_item_list(RefType,Addr,Acc) ->
             get_item_list(Ref,Addr,lists:append([Val,Acc]))
     end.
 
-get_item_inherited(Addr = #ref{ref={RefType,_}}, Default) -> 
-    case return_first(RefType,Addr) of 
-        {ok,Format} -> 
+get_item_inherited(Addr = #ref{ref={RefType,_}}, Default) ->
+    case return_first(RefType,Addr) of
+        {ok,Format} ->
             {ok,Format};
-        nomatch     -> 
+        nomatch     ->
             {ok,Default}
     end.
 
 return_first(RefType,Addr) ->
-    case traverse(RefType,Addr) of 
+    case traverse(RefType,Addr) of
         {last,[]} ->
-            nomatch; 
+            nomatch;
         {last,[#hn_item{val=Val}]} ->
             {ok,Val};
-        {Ref,[]} -> 
+        {Ref,[]} ->
             return_first(Ref,Addr);
         {Ref,NewAddr,[]} ->
             return_first(Ref,NewAddr);
         {_Ref,_NewAddr,[#hn_item{val=Val}]} ->
             {ok,Val};
-        {_Ref,[#hn_item{val=Val}]} -> 
+        {_Ref,[#hn_item{val=Val}]} ->
             {ok,Val}
     end.
 
@@ -203,23 +206,23 @@ traverse(row_col,Addr = #ref{ref={cell,{_X,Y}}}) ->
     {column, match_ref(Addr#ref{ref={row,Y}})};
 
 traverse(row,Addr = #ref{ref={row,_}}) ->
-    {page, match_ref(Addr)};    
+    {page, match_ref(Addr)};
 traverse(row,Addr = #ref{ref={cell,{_X,Y}}}) ->
     {page, match_ref(Addr#ref{ref={row,Y}})};
 
 traverse(column,Addr = #ref{ref={column,_}}) ->
-    {page, match_ref(Addr)};    
+    {page, match_ref(Addr)};
 traverse(column,Addr = #ref{ref={cell,{X,_Y}}}) ->
     {page, match_ref(Addr#ref{ref={column,X}})};
 
 traverse(page,Addr = #ref{path=[]}) ->
-    {last,match_ref(Addr#ref{ref={page,"/"}})};                              
+    {last,match_ref(Addr#ref{ref={page,"/"}})};
 traverse(page,Addr) ->
     NewPath = hslists:init(Addr#ref.path),
-    {page,Addr#ref{path=NewPath},match_ref(Addr#ref{ref={page,"/"}})}.    
+    {page,Addr#ref{path=NewPath},match_ref(Addr#ref{ref={page,"/"}})}.
 
-filter_range([],_Cell)   -> 
-    nomatch;  
+filter_range([],_Cell)   ->
+    nomatch;
 filter_range([H|T],Cell) ->
     case hn_util:in_range((H#hn_item.addr)#ref.ref,Cell) of
         true -> H;
@@ -227,60 +230,60 @@ filter_range([H|T],Cell) ->
     end.
 %%--------------------------------------------------------------------
 %% Function    : get_item_val/2
-%% 
-%% Description : Use this to get the value of an item when only 
-%%               one item will be returned (there can only be 
+%%
+%% Description : Use this to get the value of an item when only
+%%               one item will be returned (there can only be
 %%               one value per name specified)
-%%--------------------------------------------------------------------   
+%%--------------------------------------------------------------------
 get_item_val(Addr) ->
     case get_item(Addr) of
-        [] -> 
+        [] ->
             [];
-        [#hn_item{val=Value}] -> 
+        [#hn_item{val=Value}] ->
             Value
     end.
-    
+
 get_ref_from_name(Name) ->
-    Fun = fun() ->  
-		  Match = #hn_item{addr=#ref{name=name, _ = '_'}, val = Name},
-		  mnesia:match_object(hn_item,Match,read)   
-	  end,
-    {atomic, [Item]} = mnesia:transaction(Fun),
-    Item#hn_item.addr. 
-      
+    Fun = fun() ->
+                  Match = #hn_item{addr=#ref{name=name, _ = '_'}, val = Name},
+                  mnesia:match_object(hn_item,Match,read)
+          end,
+    {atomic, [Item]} = ?mn_tr(Fun),
+    Item#hn_item.addr.
+
 %%--------------------------------------------------------------------
 %% Function    : get_item/1
-%% 
+%%
 %% Description : Returns the list of attributes that are contained
 %%               within the range specified by Ref, ie if Ref refers
 %%               to a cell, all atributes referring to that cell, if
 %%               ref is a page, all cells / row / columns / ranges
 %%               in that page are returned
-%%--------------------------------------------------------------------    
+%%--------------------------------------------------------------------
 remove_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
-    
-    F = fun() ->	
-		%% If Name is defined, match it
-		N = ?COND(Name == undef,'_',Name),
-		Attr  = #ref{site=Site, path=Path,ref=Ref, name=N, _ = '_'},
-		Match = #hn_item{addr = Attr, _ = '_'},
-		
-		case Ref of
-		    {cell,{X,Y}} ->
-			Cell = #index{site=Site,path=Path,row=Y,column=X},
-			mark_dirty(Cell,cell);
-		    _ -> ok
-		end,
 
-		lists:map(
-		  fun(X) -> notify_remove(X),mnesia:delete_object(X) end,
-		  mnesia:match_object(hn_item,Match,read))
-	end,
-    {atomic, _Okay} = mnesia:transaction(F),
+    F = fun() ->
+%% If Name is defined, match it
+                N = ?COND(Name == undef,'_',Name),
+                Attr  = #ref{site=Site, path=Path,ref=Ref, name=N, _ = '_'},
+                Match = #hn_item{addr = Attr, _ = '_'},
+
+                case Ref of
+                    {cell,{X,Y}} ->
+                        Cell = #index{site=Site,path=Path,row=Y,column=X},
+                        mark_dirty(Cell,cell);
+                    _ -> ok
+                end,
+
+                lists:map(
+                  fun(X) -> notify_remove(X),mnesia:delete_object(X) end,
+                  mnesia:match_object(hn_item,Match,read))
+        end,
+    {atomic, _Okay} = ?mn_tr(F),
     ok.
 
 notify_remove(#hn_item{addr=#ref{site=Site,path=Path,ref=Ref,name=Name}}) ->
-    Msg = "delete "++atom_to_list(Name)++" "++hn_util:ref_to_str(Ref), 
+    Msg = "delete "++atom_to_list(Name)++" "++hn_util:ref_to_str(Ref),
     gen_server:call(remoting_reg,{change,Site,Path,Msg},?TIMEOUT),
     ok.
 
@@ -293,115 +296,117 @@ notify_remove(#hn_item{addr=#ref{site=Site,path=Path,ref=Ref,name=Name}}) ->
 %%--------------------------------------------------------------------
 %% Function    : write_local_link/2
 %%
-%% Description : 
+%% Description :
 %%--------------------------------------------------------------------
 write_local_link(Parent,Child) ->
 
-    {atomic , ok} = mnesia:transaction(fun()-> 
-        mnesia:write(#local_cell_link{ parent=Parent, child=Child })
-    end),  
-	ok.	
+    {atomic,ok}=?mn_tr(fun()->
+                               mnesia:write(#local_cell_link{parent=Parent,
+                                                             child=Child})
+                       end),
+	ok.
 
 %%--------------------------------------------------------------------
 %% Function    : read_links/2
 %%
-%% Description : 
+%% Description :
 %%--------------------------------------------------------------------
 read_links(Index, Relation) ->
-    
+
     Obj = ?COND(Relation == child,
-        {local_cell_link,'_',Index},
-        {local_cell_link,Index,'_'}),
+                {local_cell_link,'_',Index},
+                {local_cell_link,Index,'_'}),
 
     F = fun() -> mnesia:match_object(Obj) end,
-    {atomic, List} = mnesia:transaction(F),
+    {atomic, List} = ?mn_tr(F),
 
     List.
 
 %%--------------------------------------------------------------------
 %% Function    : del_links/1
-%% 
+%%
 %% Description : Delete links between a cell
 %%--------------------------------------------------------------------
 del_links(Index, Relation) ->
 
     Obj = ?COND(Relation == child,
-        {local_cell_link,'_',Index},
-        {local_cell_link,Index,'_'}),
-    
-    {atomic, ok} = mnesia:transaction(fun() ->
-        mnesia:dirty_delete_object(Obj)
-    end),
+                {local_cell_link,'_',Index},
+                {local_cell_link,Index,'_'}),
+
+    {atomic, ok} = ?mn_tr(fun() ->
+                                  mnesia:dirty_delete_object(Obj)
+                          end),
     ok.
-    
+
 %%--------------------------------------------------------------------
 %% Function    : del_remote_link/1
-%% 
-%% Description : Delete a link between a local and remote cell, 
+%%
+%% Description : Delete a link between a local and remote cell,
 %%      send an unregister message so the child doesnt recieve
 %%      any more updates to changes, and delete incomning record
 %%--------------------------------------------------------------------
 del_remote_link(Obj) when Obj#remote_cell_link.type == outgoing ->
-    {atomic, ok} = mnesia:transaction(fun() ->
-        Me = Obj#remote_cell_link.parent,
-        mnesia:dirty_delete_object(Obj),
-        case mnesia:match_object(#remote_cell_link{parent=Me,
-            type=outgoing,_='_'}) of
-        [] -> 
-            [Hn] = mnesia:match_object(#outgoing_hn{index={'_',Me},_='_'}),
-            mnesia:delete_object(Hn);
-        _  -> ok
-        end
-    end),
+    {atomic,ok}=?mn_tr(fun() ->
+                               Me = Obj#remote_cell_link.parent,
+                               mnesia:dirty_delete_object(Obj),
+                               case mnesia:match_object(#remote_cell_link{parent=Me,
+                                                                          type=outgoing,_='_'}) of
+                                   [] ->
+                                       [Hn] = mnesia:match_object(#outgoing_hn{index={'_',Me},_='_'}),
+                                       mnesia:delete_object(Hn);
+                                   _  -> ok
+                               end
+                       end),
     ok;
 
 del_remote_link(Obj) when Obj#remote_cell_link.type == incoming ->
+    
+    {atomic, Hn} = ?mn_tr(fun() ->
+                                  
+                                  Remote = Obj#remote_cell_link.parent,
+                                  
+%% Remove the relevant child attribute
+                                  ParentRef = #ref{
+                                    site=Remote#index.site,
+                                    path=Remote#index.path,
+                                    ref= {cell,{Remote#index.column,
+                                                Remote#index.row}},
+                                    name = children},
 
-    {atomic, Hn} = mnesia:transaction(fun() ->
-    
-        Remote = Obj#remote_cell_link.parent,    
-    
-        %% Remove the relevant child attribute
-        ParentRef = #ref{
-            site=Remote#index.site,
-            path=Remote#index.path,
-            ref= {cell,{Remote#index.column,Remote#index.row}},
-            name = children},
-            
-        ChildUrl = hn_util:index_to_url(Obj#remote_cell_link.child),
-            
-        Children = lists:filter( 
-            fun(X) ->
-                ?COND(X == {url,[{type,"remote"}],[ChildUrl]} , false, true)
-            end,
-            get_item_val(ParentRef)),
-                    
-        case Children of 
-        [] -> hn_db:remove_item(ParentRef);
-        _  -> hn_db:write_item(ParentRef,Children)
-        end,
-    
-        mnesia:dirty_delete_object(Obj),
-        [Hn] = mnesia:match_object(#incoming_hn{remote=Remote,_='_'}),
+                                  ChildUrl = hn_util:index_to_url(Obj#remote_cell_link.child),
 
-        case mnesia:match_object(#remote_cell_link{parent=Remote,
-            type=incoming,_='_'}) of
-        [] -> mnesia:delete_object(Hn);
-        _  -> ok
-        end,
-        Hn
-    end),
-    
+                                  Children = lists:filter(
+                                               fun(X) ->
+                                                       ?COND(X == {url,[{type,"remote"}],[ChildUrl]} , false, true)
+                                               end,
+                                               get_item_val(ParentRef)),
+
+                                  case Children of
+                                      [] -> hn_db:remove_item(ParentRef);
+                                      _  -> hn_db:write_item(ParentRef,Children)
+                                  end,
+
+                                  mnesia:dirty_delete_object(Obj),
+                                  [Hn] = mnesia:match_object(#incoming_hn{remote=Remote,_='_'}),
+
+                                  case mnesia:match_object(#remote_cell_link{parent=Remote,
+                                                                             type=incoming,_='_'}) of
+                                      [] -> mnesia:delete_object(Hn);
+                                      _  -> ok
+                                  end,
+                                  Hn
+                          end),
+
     Url   = hn_util:index_to_url(Obj#remote_cell_link.parent),
     Child = hn_util:index_to_url(Obj#remote_cell_link.child),
     Actions = simplexml:to_xml_string(
-        {unregister,[],[
-            {biccie,[],[Hn#incoming_hn.biccie]},
-            {url,   [],[Child]}
-        ]}),
+                {unregister,[],[
+                                {biccie,[],[Hn#incoming_hn.biccie]},
+                                {url,   [],[Child]}
+                               ]}),
 
     hn_util:post(Url++"?hypernumber",Actions,"text/xml"),
-    
+
     ok.
 
 
@@ -414,69 +419,69 @@ del_remote_link(Obj) when Obj#remote_cell_link.type == incoming ->
 %%--------------------------------------------------------------------
 write_remote_link(Parent,Child,Type) ->
 
-    {atomic , {ok,Link}} = mnesia:transaction(fun()-> 
-    
-         ParentRef = #ref{
-            site=Parent#index.site,
-            path=Parent#index.path,
-            ref= {cell,{Parent#index.column,Parent#index.row}},
-            name = children},
-            
-        Children = [{url,[{type,"remote"}],[hn_util:index_to_url(Child)]}
-            | get_item_val(ParentRef)],
-            
-        hn_db:write_item(ParentRef,{xml,Children}),   
-    
-        Link = #remote_cell_link{parent=Parent,child=Child,type=Type},
-        case mnesia:match_object(Link) of
-        [] ->
-            mnesia:write(Link),
-            [Hn] = mnesia:read({incoming_hn,Parent}),
-            {ok,{register,Hn}};
-        _->
-            {ok,link_exists}
-        end
-    end),
-    
-    case Link of
-    {register,Hn} ->
+    {atomic , {ok,Link}} = ?mn_tr(fun()->
 
-        Url   = hn_util:index_to_url(Child),
-        Proxy = Child#index.site ++ Child#index.path,
-        Actions = simplexml:to_xml_string(
-        {register,[],[
-            {biccie,[],[Hn#incoming_hn.biccie]},
-            {proxy, [],[Proxy]},
-            {url,   [],[Url]}
-        ]}),
-        
-        PUrl = hn_util:index_to_url(Parent),
-        hn_util:post(PUrl++"?hypernumber",Actions,"text/xml"),
-        ok;
-        
-    _-> ok
+                                          ParentRef = #ref{
+                                            site=Parent#index.site,
+                                            path=Parent#index.path,
+                                            ref= {cell,{Parent#index.column,Parent#index.row}},
+                                            name = children},
+
+                                          Children = [{url,[{type,"remote"}],[hn_util:index_to_url(Child)]}
+                                                      | get_item_val(ParentRef)],
+
+                                          hn_db:write_item(ParentRef,{xml,Children}),
+
+                                          Link = #remote_cell_link{parent=Parent,child=Child,type=Type},
+                                          case mnesia:match_object(Link) of
+                                              [] ->
+                                                  mnesia:write(Link),
+                                                  [Hn] = mnesia:read({incoming_hn,Parent}),
+                                                  {ok,{register,Hn}};
+                                              _->
+                                                  {ok,link_exists}
+                                          end
+                                  end),
+
+    case Link of
+        {register,Hn} ->
+
+            Url   = hn_util:index_to_url(Child),
+            Proxy = Child#index.site ++ Child#index.path,
+            Actions = simplexml:to_xml_string(
+                        {register,[],[
+                                      {biccie,[],[Hn#incoming_hn.biccie]},
+                                      {proxy, [],[Proxy]},
+                                      {url,   [],[Url]}
+                                     ]}),
+
+            PUrl = hn_util:index_to_url(Parent),
+            hn_util:post(PUrl++"?hypernumber",Actions,"text/xml"),
+            ok;
+
+        _-> ok
     end.
 
 %%--------------------------------------------------------------------
 %% Function    : read_links/2
 %%
-%% Description : 
+%% Description :
 %%--------------------------------------------------------------------
 read_remote_links(Index, Relation,Type) ->
-    
+
     Obj = ?COND(Relation == child,
-        {remote_cell_link,'_',Index,Type},
-        {remote_cell_link,Index,'_',Type}),
-    
-    {atomic, List} = mnesia:transaction(fun() ->
-        mnesia:match_object(Obj)
-    end),
-    List.		
-	
+                {remote_cell_link,'_',Index,Type},
+                {remote_cell_link,Index,'_',Type}),
+
+    {atomic, List} = ?mn_tr(fun() ->
+                                    mnesia:match_object(Obj)
+                            end),
+    List.
+
 %%-------------------------------------------------------------------
 %% Table : dirty_cell , dirty_hypernumbers
-%% Def   : 
-%% Desc  : 
+%% Def   :
+%% Desc  :
 %%-------------------------------------------------------------------
 %%--------------------------------------------------------------------
 %% Function    : dirty_refs_changed/2
@@ -488,9 +493,9 @@ read_remote_links(Index, Relation,Type) ->
 get_par(Index,Path) ->
     El = {local_cell_link,Index#index{path=Path},'_'},
     F = fun() -> mnesia:match_object(El) end,
-    {atomic,List} = mnesia:transaction(F),
+    {atomic,List} = ?mn_tr(F),
     List.
-    
+
 dyn_parents(_Index = #index{path=[]},Results, _Acc) ->
     Results;
 dyn_parents(Index = #index{path=[_H]},Results, Acc) ->
@@ -503,63 +508,63 @@ dyn_parents(Index = #index{path=[H|T]},Results,Acc) ->
 
 dirty_refs_changed(dirty_cell, Ref) ->
 
-    %% Make a list of cells listening, hypernumbers, direct
-    %% cell links, and check for any wildcard * on the path
+%% Make a list of cells listening, hypernumbers, direct
+%% cell links, and check for any wildcard * on the path
     F = fun() ->
-		%% Read dynamic links "/page/*/a1"
-		NIndex = Ref#index{path=lists:reverse(Ref#index.path)},
-		Queries = dyn_parents(NIndex,[],[]),
-		%% Direct Links
-		Direct = read_links(Ref,parent),
-		Rem = #remote_cell_link{parent=Ref,
-					type=outgoing,_='_'},
-		Links = mnesia:match_object(Rem),
-		{ok,list_hn(Links,[]),lists:append(Direct,Queries)}
-	end,
-    {atomic, {ok,Remote,Local}} = mnesia:transaction(F),
+%% Read dynamic links "/page/*/a1"
+                NIndex = Ref#index{path=lists:reverse(Ref#index.path)},
+                Queries = dyn_parents(NIndex,[],[]),
+%% Direct Links
+                Direct = read_links(Ref,parent),
+                Rem = #remote_cell_link{parent=Ref,
+                                        type=outgoing,_='_'},
+                Links = mnesia:match_object(Rem),
+                {ok,list_hn(Links,[]),lists:append(Direct,Queries)}
+        end,
+    {atomic, {ok,Remote,Local}} = ?mn_tr(F),
 
     Val = get_item_val((to_ref(Ref))#ref{name=rawvalue}),
 
-    %% Update local cells
+%% Update local cells
     lists:foreach(
-        fun({local_cell_link, _, RefTo}) ->
-            hn_calc:recalc(RefTo)
-        end,
-        Local
-    ),
-    
+      fun({local_cell_link, _, RefTo}) ->
+              hn_calc:recalc(RefTo)
+      end,
+      Local
+     ),
+
     %Update Remote Hypernumbers
     lists:foreach(
-        fun(Cell) ->
-            notify_remote_change(Cell,Val)
-        end,
-        Remote),
-             
+      fun(Cell) ->
+              notify_remote_change(Cell,Val)
+      end,
+      Remote),
+
     ok;
 
 %% This is called when a remote hypernumber changes
 dirty_refs_changed(dirty_hypernumber, Ref) ->
 
-    {atomic, ok} = mnesia:transaction(fun() ->
+    {atomic, ok} = ?mn_tr(fun() ->
 
-        Links = mnesia:match_object(#remote_cell_link{
+                                  Links = mnesia:match_object(#remote_cell_link{
             parent=Ref,type=incoming,_='_'}),
 
         lists:foreach(
-            fun(To) ->    
+            fun(To) ->
                 Cell = To#remote_cell_link.child,
                 hn_calc:recalc(Cell)
             end,
-            Links),       
+            Links),
         mnesia:delete({dirty_hypernumber, Ref})
     end),
-    ok.   
+    ok.
 
 %%--------------------------------------------------------------------
 %% Function    : mark_dirty/2
 %%
-%% Description : Sets a cell or hypernumber to be 'dirty', this 
-%%               means cells that use its value needs to be 
+%% Description : Sets a cell or hypernumber to be 'dirty', this
+%%               means cells that use its value needs to be
 %%               recalculated (this triggers the recalc)
 %%--------------------------------------------------------------------
 mark_dirty(Index,Type) ->
@@ -569,17 +574,17 @@ mark_dirty(Index,Type) ->
     hypernumber ->  #dirty_hypernumber{index=Index}
     end,
 
-    {atomic, _Okay} = mnesia:transaction(fun() ->
+    {atomic, _Okay} = ?mn_tr(fun() ->
         mnesia:write(Obj)
     end),
     ok.
 
 %%-------------------------------------------------------------------
 %% Table : incoming_hn , outgoing_hn
-%% Def   : 
+%% Def   :
 %% Desc  : These tables store hypernumbers, incoming stores the
 %%         value of a remote number, the value is changed on notify
-%%         and cells use the value from here. outgoing stores a 
+%%         and cells use the value from here. outgoing stores a
 %%         list of cells that need to be notified when cells on
 %%         this server change
 %%-------------------------------------------------------------------
@@ -587,12 +592,12 @@ mark_dirty(Index,Type) ->
 %% Function    : update_hn/5
 %%
 %% Description : updates the value of a hypernumber and then triggers
-%%               the recalc, this is ran when an external site 
+%%               the recalc, this is ran when an external site
 %%               notifies us their number changed
 %%--------------------------------------------------------------------
 update_hn(From,Bic,Val,_Version)->
 
-    {atomic, ok} = mnesia:transaction(fun() ->
+    {atomic, ok} = ?mn_tr(fun() ->
 
         Index = hn_util:page_to_index(hn_util:parse_url(From)),
         Rec   = #incoming_hn{ remote = Index, biccie = Bic, _='_'},
@@ -602,41 +607,41 @@ update_hn(From,Bic,Val,_Version)->
         mark_dirty(Index,hypernumber),
 
         ok
-        
+
     end),
-    
+
     ok.
 
 %%--------------------------------------------------------------------
 %% Function    : get_hn/3
 %%
 %% Description : This reads the hypernumber table and returns the
-%%               current value of a hypernumber. if it doesnt 
-%%               exist, make a http call to the site to 
+%%               current value of a hypernumber. if it doesnt
+%%               exist, make a http call to the site to
 %%               fetch its value, a 'biccie' is created which
 %%               must be quoted in registrations etc
 %%--------------------------------------------------------------------
 do_get_hn(Url,_From,To)->
 
-    case mnesia:read({incoming_hn,To}) of                        
-        [Hn] -> 
+    case mnesia:read({incoming_hn,To}) of
+        [Hn] ->
             Hn;
-        []->	
+        []->
             case http:request(get,{Url,[]},[],[]) of
                 {ok,{{_V,200,_R},_H,Xml}} ->
-                    
+
                     {hypernumber,[],[
                                      {value,[],              [Val]},
                                      {'dependancy-tree',[],  Tree}]
                     } = simplexml:from_xml_string(Xml),
-                    
+
                     HNumber = #incoming_hn{
                       value   = hn_util:xml_to_val(Val),
                       deptree = Tree,
                       remote  = To,
                       biccie  = util2:get_biccie()},
-                    
-                    mnesia:write(HNumber),   
+
+                    mnesia:write(HNumber),
                     HNumber;
 
                 {ok,{{_V,503,_R},_H,_Body}} ->
@@ -647,7 +652,7 @@ do_get_hn(Url,_From,To)->
 
 get_hn(Url,_From,To)->
     F = fun() -> do_get_hn(Url,_From,To) end,
-    {atomic, List} = mnesia:transaction(F),
+    {atomic, List} = ?mn_tr(F),
     List.
 
 %%--------------------------------------------------------------------
@@ -656,32 +661,34 @@ get_hn(Url,_From,To)->
 %% Description : Register to recieve updates to from a hypernumber
 %%               on a remote server when its value changes
 %%--------------------------------------------------------------------
-register_hn(To,From,Bic,Proxy,Url) -> 
+register_hn(To,From,Bic,Proxy,Url) ->
 
-    {atomic , _Ok} = mnesia:transaction(fun()-> 
+    {atomic , _Ok} = ?mn_tr(fun()->
 
         mnesia:write(#remote_cell_link{
             parent=To,
             child=From,
             type=outgoing }),
-    
+
         mnesia:write(#outgoing_hn{
             index  = {Proxy,To},
             biccie = Bic,
             url    = Url}),
         ok
-    end),  
+    end),
 	ok.
-	
+
 %%--------------------------------------------------------------------
 %% Internal Functions
 %%--------------------------------------------------------------------
 notify_remote_change(Hn,Value) ->
-    
+
     {Server,Cell} = Hn#outgoing_hn.index,
     Version = hn_util:text(Hn#outgoing_hn.version + 1),
-    error_logger:error_msg("in hn_db:notify_remote_change *WARNING* notify remote change not using "++
-	      "version number ~p - ie it aint working - yet :(",[Version]),
+    error_logger:error_msg("in hn_db:notify_remote_change *WARNING* "++
+                           "notify remote change not using "++
+                           "version number ~p - ie it aint working - yet :(",
+                           [Version]),
 
     Actions = simplexml:to_xml_string(
         {notify,[],[
@@ -691,43 +698,45 @@ notify_remote_change(Hn,Value) ->
             {value,       [],hn_util:to_xml(Value)},
             {version,     [],["1"]}
         ]}),
- 
+
     hn_util:post(Server,Actions,"text/xml"),
     ok.
-    
+
 to_ref(#index{site=Site,path=Path,column=X,row=Y}) ->
     #ref{site=Site,path=Path,ref={cell,{X,Y}}}.
-    
-%% Given a list of remote cells, return a list of 
+
+%% Given a list of remote cells, return a list of
 %% related outgoing_hn's
-list_hn([],List) -> List;    
+list_hn([],List) -> List;
 list_hn([H|T],List) ->
     Cell = H#remote_cell_link.parent,
-    [Hn] = mnesia:match_object(#outgoing_hn{index={'_',Cell},_='_'}),    
-    list_hn(T,hn_util:add_uniq(List,Hn)).    
+    [Hn] = mnesia:match_object(#outgoing_hn{index={'_',Cell},_='_'}),
+    list_hn(T,hn_util:add_uniq(List,Hn)).
 
 
 %%-------------------------------------------------------------------
 %% Table : templates
-%% Def   : 
+%% Def   :
 %% Desc  : stores the templates
 %%-------------------------------------------------------------------
-    
-write_template(Name,IsDynamic,TemplatePath,Gui) ->
-    CompiledPath=hn_templates:make_path(TemplatePath),
-    Template=#template{name=Name,isDynamic=IsDynamic,
-		       temp_path=CompiledPath,gui=Gui},
-    io:format("in hn_db:write_template Template is ~p~n",[Template]),
-    Fun  = fun() -> 
-		   io:format("Got to 1~n"),
-		   mnesia:write(Template),
-		   io:format("Got to 2~n")
-	   end,
-    {atomic, ok} = mnesia:transaction(Fun). 
 
-read_template(Name) -> 
-    io:format("in hn_db:read_template Name is ~p~n",[Name]),
+write_template(Name,TemplatePath,Gui,Form) ->
+    CompiledPath=hn_templates:make_path(TemplatePath),
+    Template=#template{name=Name,temp_path=CompiledPath,
+                       gui=Gui,form=Form},
+    Fun  = fun() ->
+		   mnesia:write(Template)
+	   end,
+    {atomic, ok} = ?mn_tr(Fun),
+    {ok,ok}.
+
+read_template(Name) ->
     Fun = fun() -> mnesia:read({template,Name}) end,
-    {atomic,[Template]}=mnesia:transaction(Fun),
-    io:format("in hn_db:read_template Name is ~p Template is ~p~n",[Name,Template]),
+    {atomic,[Template]}=?mn_tr(Fun),
     {ok,Template}.
+
+get_templates() ->
+    Match=ms_util:make_ms(template,[]),
+    Fun = fun() -> mnesia:match_object(Match) end,
+    {atomic,Templates}=?mn_tr(Fun),
+    {ok,Templates}.
