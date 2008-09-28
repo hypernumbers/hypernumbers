@@ -28,8 +28,12 @@ gen() ->
     ?P("Generated number format parser."),
     leex:gen(cond_lex, cond_lexer),
     ?P("Generated conditional lexer."),
-    yecc:yecc(cond_parser, cond_parser),
-    ?P("Generated conditinoal parser."),
+    yecc:yecc(cond, cond_parser),
+    ?P("Generated conditional parser."),
+    leex:gen(url_query_lex, url_query_lexer),
+    ?P("Generated url query lexer."),
+    yecc:yecc(url_query, url_query_parser),
+    ?P("Generated url query parser."),
 
     %% Generate super lexer.
     leex:gen(superlex, superlex),
@@ -48,16 +52,19 @@ gen() ->
         
     delete(DestDir ++ "num_format_lexer.erl"),
     delete(DestDir ++ "num_format_parser.erl"),
-    rename("xfl_lexer.erl", DestDir ++ "xfl_lexer.erl"),
+    rename("xfl_lexer.erl",  DestDir ++ "xfl_lexer.erl"),
     rename("xfl_parser.erl", DestDir ++ "xfl_parser.erl"),
-    rename("superlex.erl", DestDir ++ "superlex.erl"),
+    rename("superlex.erl",   DestDir ++ "superlex.erl"),
     lists:foreach(fun(X) -> rename(X ++ "_lexer.erl", DestDir ++ X ++ "_lexer.erl") end,
                   ?FRONTENDS),
-    rename("num_format_lexer.erl", DestDir ++ "num_format_lexer.erl"),
+    rename("num_format_lexer.erl",  DestDir ++ "num_format_lexer.erl"),
     rename("num_format_parser.erl", DestDir ++ "num_format_parser.erl"),
 
-    rename("cond_lexer.erl", DestDir ++ "cond_lexer.erl"),
+    rename("cond_lexer.erl",  DestDir ++ "cond_lexer.erl"),
     rename("cond_parser.erl", DestDir ++ "cond_parser.erl"),
+
+    rename("url_query_lexer.erl",  DestDir ++ "url_query_lexer.erl"),
+    rename("url_query_parser.erl", DestDir ++ "url_query_parser.erl"),
 
     lists:foreach(fun(X) -> delete(X ++ "_lexer.erl") end,
                   ?FRONTENDS),
