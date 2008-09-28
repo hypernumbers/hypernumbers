@@ -3,7 +3,7 @@
 -define(TIMEOUT,    1000).
 -define(HTML_ROOT,  "/html/").
 
--define(PORTNO,     1935). 
+-define(PORTNO,     1935).
 
 -define(HTTP,       $h,$t,$t,$p).
 -define(HTTPS,      $h,$t,$t,$p,$s).
@@ -16,12 +16,12 @@
 -define(HN_URL2,   "http://127.0.0.1:9001").
 
 -record( index,
-{
-    site,
-    path,
-    column,
-    row
-}).
+         {
+           site,
+           path,
+           column,
+           row
+          }).
 
 -record(ref,
         {
@@ -34,12 +34,12 @@
 
 
 -record(status,
-{
-    formula     = [],
-    reftree     = [],
-    errors      = [],
-    refs        = []
-}).
+        {
+          formula     = [],
+          reftree     = [],
+          errors      = [],
+          refs        = []
+         }).
 
 %% the details_from record is used by the site that has an outstanding request
 %% for a hypernumber and is used to authenticate a notification message:
@@ -52,11 +52,11 @@
 %% the 'version' field is used to check that the page structures versions
 %% are aligned and that one site is in synch with another
 -record( details_from,
-{
-    proxy_URL   = [],
-    biccie      = [],
-    version
-}).
+         {
+           proxy_URL   = [],
+           biccie      = [],
+           version
+          }).
 
 %% the details_to record is used by a site that has to notify another one
 %% of a change in a hypernumber. These details are passed to authenticate
@@ -71,73 +71,73 @@
 %%
 %% The record will be formatted according to the value of 'format'
 -record(details_to,
-{
-    proxy_URL   = [],
-    reg_URL     = [],
-    biccie      = [],
-    format
-}).
+        {
+          proxy_URL   = [],
+          reg_URL     = [],
+          biccie      = [],
+          format
+         }).
 
 -record( hn_item,
-{
-    addr        = #ref{},
-    val         = []
-}).
+         {
+           addr        = #ref{},
+           val         = []
+          }).
 
 -record( dirty_cell,
-{
-    index       = #index{},
-    timestamp   = now()
-}).
+         {
+           index       = #index{},
+           timestamp   = now()
+          }).
 
 -record( dirty_hypernumber,
-{
-    index       = #index{},
-    timestamp   = now()
- }).
+         {
+           index       = #index{},
+           timestamp   = now()
+          }).
 
 -record( local_cell_link,   %% Link 2 cells on the same sheet together
-{
-    parent      = #index{}, 
-    child       = #index{}
-}).
+         {
+           parent      = #index{},
+           child       = #index{}
+          }).
 
 -record( remote_cell_link,  %% Link a hypernumber with a cell,
-{                           %% is used to link both incoming and outgoing
-    parent      = #index{}, %% hypernumbers
-    child       = #index{},
-    type        = null      %% incoming or outgoing
-}).
+         {                           %% is used to link both incoming and outgoing
+           parent      = #index{}, %% hypernumbers
+           child       = #index{},
+           type        = null      %% incoming or outgoing
+          }).
 
 -record( outgoing_hn,
-{
-    index       = {[],#index{}},
-    biccie      = [],       %% A shared token
-    url         = [],
-    version     = 0         %% Version for structural updates
-}).
+         {
+           index       = {[],#index{}},
+           biccie      = [],       %% A shared token
+           url         = [],
+           version     = 0         %% Version for structural updates
+          }).
 
 -record( incoming_hn,
-{
-    remote     = #index{},  %% The address of the number
-    value,                  
-    deptree     = [],       %% Cells use in this numbers calculation
-    biccie      = [],       %% A shared token
-    version     = 0         %% Version for structural updates
-}).
+         {
+           remote     = #index{},  %% The address of the number
+           value,
+           deptree     = [],       %% Cells use in this numbers calculation
+           biccie      = [],       %% A shared token
+           version     = 0         %% Version for structural updates
+          }).
 
 -record( hn_user,
-{
-    name        = [],
-    password    = [],
-    authtoken   = null,
-    created     = calendar:local_time()
-}).
+         {
+           name        = [],
+           password    = [],
+           authtoken   = null,
+           created     = calendar:local_time()
+          }).
 
 -record( template,
-{
-    name        = [],
-    isDynamic   = false,
-    temp_path   = [],
-    gui         = index
-}).
+         {
+           name        = [],
+           temp_path   = [],
+           gui         = index,
+           form        = null
+          }).
