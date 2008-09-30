@@ -4,9 +4,10 @@
 
 %% exports for the AXA demo
 -export([get_address/2,
-         get_sex/1,
-         split/2,
-         match/5]).
+	 get_sex/1,
+	 split/2,
+	 match/5,
+	 sum3d/1]).
 
 -export([make_url/2,
          get_list/1,
@@ -16,6 +17,13 @@
          add_days/2]).
 
 -export([sendsms/2]).
+
+sum3d(X) when is_list(X) ->
+    io:format("in userdef_sum3d X is ~p~n",[X]),
+    sum3d(X,[]).
+
+sum3d([],Acc)    -> Acc;
+sum3d([H|T],Acc) -> sum3d(T,H+Acc).
 
 %% Number must include country code, e.g. "+447776251669"
 %% =SENDSMS("+447776251669", "sent from the gui")

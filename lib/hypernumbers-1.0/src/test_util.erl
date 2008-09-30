@@ -298,12 +298,14 @@ hnpost(Path, Ref, Postdata) ->
     handle_return(Return, Ref).
 
 handle_return({error, timeout}, _Ref) ->
-    bits:log("TIMEOUT!");
-    %%io:format("<b style=\"color:red;font-size:21px\">TIMEOUT</b>~n");
+    %%io:format("TIMEOUT~n"),
+    bits:log("in test_util:handle_return OTIMEOUT!");
 handle_return({ok, {{_V, 200, _R}, _H, _Body}}, _Ref) ->
-    ok;%%io:format("OK.~n");
+    %%io:format("in test_util:handle_return OK~n"),
+    ok;
 handle_return({ok, {{_V, Code, _R}, _H, Body}}, Ref) ->
-    io:format("HTTP POST error (~s), code:~n~pbody:~n~p~n", [Ref, Code, Body]).
+    io:format("in test_util:handle_return HTTP POST error (~s)~n-code:~p~n-body:~p~n",
+	      [Ref, Code, Body]).
 
 cmp(G, E) ->
     Val = conv_from_get(G),

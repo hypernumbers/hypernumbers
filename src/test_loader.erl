@@ -15,7 +15,7 @@
 
 test() ->
     toolbar:start(),
-    Files=["z_junk"],
+    %% Files=["z_junk_2"],
     %% Files=["d_gnumeric_address"],
     %% Files=["d_gnumeric_date_and_time"],
     %% Files=["d_gnumeric_db"],
@@ -26,7 +26,7 @@ test() ->
     %% Files=["d_gnumeric_maths"],
 %%	   d_gnumeric_stats.xls,
 %%	   d_gnumeric_text.xls,
-%%	   e_operator.xls,
+    Files = ["e_operator"],
 %%	   e_trig.xls,
 %%	   f_12_month_cash_flow_statement.xls,
 %%	   f_billing_statement.xls,
@@ -47,17 +47,21 @@ test() ->
     lists:foreach(Fun,Files).
 
 run_loader(File)->
+    bits:clear_db(),
     hn_loaddb:create_db(),
     Celldata = readxls("../tests/excel_files/Win_Excel07_As_97/" ++File++".xls"),
     {Lits, Flas} = % split data into literals and formulas
 	foldl(fun(X, _Acc = {Ls, Fs}) ->
 		      {{{sheet, Sheetn}, {row_index, Row}, {col_index, Col}}, Val} = X,
-		      io:format("in foldl File is ~p Sheet is ~p Row is ~p Col is ~p~n",[File,Sheetn,Row,Col]),
+		      io:format("in foldl File is ~p Sheet is ~p Row is ~p "++
+				"Col is ~p~n",[File,Sheetn,Row,Col]),
 		      {ok, Sheet, _} = regexp:gsub(Sheetn, "\\s+", "_"), % No whitespace in URLs eh.
 		      Postdata = conv_for_post(Val),
 		      Path = "/" ++ File ++ "/" ++ Sheet ++ "/",
 		      Ref = tconv:to_b26(Col + 1) ++ tconv:to_s(Row + 1),
 		      Datatpl = {Path, Ref, Postdata},
+		      io:format("in foldl Val is ~p~n-Postdata is ~p~n",
+			       [Val,Postdata]),
 		      case Postdata of
 			  [$= | _ ] -> % formula
 			      {Ls, Fs ++ [Datatpl]};

@@ -24,6 +24,9 @@
                 takewhile/2,
                 zip/2]).
 
+%% solves some of your problems with match spec atoms of the form '$1' etc, etc
+-define(MS(X),list_to_atom("$"++integer_to_list(X))). %" fix highlighting),%
+
 %% Ternary if.
 -define(COND(Test, TrueVal, FalseVal),
         case (Test) of true -> TrueVal; false -> FalseVal end).

@@ -17,6 +17,8 @@
          'not'/1,
          'or'/1]).
 
+-define(default_rules_bools, [cast_numbers, cast_strings, cast_blanks, cast_dates]).
+
 '='([V1, V2]) ->
     V1 == V2.
 

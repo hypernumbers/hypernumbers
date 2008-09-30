@@ -57,7 +57,7 @@ set_cell(Addr, Val) ->
     case superparser:process(Val) of
         {formula, Fla} ->
             case muin:run_formula(Fla, Addr) of
-                {error,_Error} -> 
+                {error,Error} -> 
                     ok;       
                 {ok, {Pcode, Res, Parents, Deptree, Recompile}} ->
                     

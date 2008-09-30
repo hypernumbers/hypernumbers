@@ -4,6 +4,9 @@
 -module(muin).
 -export([compile/2, run_formula/2, run_code/2]).
 
+%% this is just cos we are bodging it in templates
+-export([get_pages_under/1]).
+
 -compile(export_all).
 
 -include("spriki.hrl").
@@ -50,7 +53,7 @@ run_formula(Fla, Bindings) ->
 
 %% @doc Runs compiled formula.
 run_code(Pcode, #ref{site = Site, path = Path, ref = {cell, {X, Y}}}) ->
-    %% Populate the process dictionary.
+%% Populate the process dictionary.
     map(fun({K,V}) -> put(K, V) end,
         [{site, Site}, {path, Path}, {x, X}, {y, Y},
          {retvals, {[], [], []}}, {recompile, false}]),
@@ -84,9 +87,14 @@ eval(Node = [Func|Args]) when ?isfuncall(Func) ->
                 false -> % eager
                     CallArgs = [eval(X) || X <- Args],
                     funcall(Func, CallArgs)
-                end;
+            end;
         {reeval, Newnode} ->
             eval(Newnode);
+        {get_urls,Urls} ->
+            Site=get(site),
+            Fun=fun([_A,_B,_C,D]) -> "{"++Site++D++"}" end,
+            List=lists:map(Fun,Urls),
+            lists:flatten(hslists:intersperse(",",List));
         [Func2|Args2] ->
             CallArgs = [eval(X) || X <- Args2],
             funcall(Func2, CallArgs)
@@ -133,8 +141,9 @@ preproc(['query', Arg]) ->
     Under = sublist(Toks, Idx - 1),
     Pages = get_pages_under(Under),
     R = map(fun(X) ->
-                    %% omgwtfbbq
-                    Refstr = "/" ++ flatten(hslists:join("/", Under ++ [X] ++ [last(Toks)])),
+                    % omgwtfbbq
+                    Refstr = "/" ++ flatten(hslists:join("/", Under
+                                                         ++ [X] ++ [last(Toks)])),
                     {ok, Ts} = xfl_lexer:lex(Refstr, {?mx, ?my}),
                     case Ts of
                         [{ref, R, C, P, _}] ->
@@ -144,9 +153,8 @@ preproc(['query', Arg]) ->
                     end
             end,
             Pages),
-    %%io:format("in muin:preproc (query) R is ~p~n",[R]),
     Node = [make_list | R],
-    %% Stick a special parent in.
+    % Stick a special parent in.
     {ok, Refobj} = xfl_lexer:lex(last(Toks), {?mx, ?my}),
     [{ref, C2, R2, _, _}] = Refobj,
     Rowidx = toidx(R2),
@@ -155,50 +163,237 @@ preproc(['query', Arg]) ->
     Newparent = {"local", {?msite, hslists:init(Toks), Colidx, Rowidx}},
     put(retvals, {[Newparent | Oldparents], Errs, Refs}),
     {reeval, Node};
-%% preproc(['query2',Page,Return,Match,Cond])->
-%%    io:format("in muin:preproc for query2 Page is ~p Return is ~p "++
-%%        "Match is ~p Cond is ~p~n",[Page,Return,Match,Cond]),
-%%    Toks=string:tokens(Page,"/"),
-%%    io:format("in muin:preproc for query2 Toks are ~p~n",[Toks]),
-%%    Ref=ms_util:make_ms(ref,[{path,Toks},{rawvalue,'$1'}]),
-%%    io:format("in muin:make_match_spec got to 2~n"),
-%%    Head=ms_util:make_ms(hn_item,[{addr,Ref}]),
-%%    Cond=[],
-%%    Body=['$1'],
-%%    io:format("in muin:preproc for query2 Head is ~p Cond is ~p "++
-%%        "Body is ~p~n",[Head,Cond,Body]),
-%%    Spec=make_match_spec([{Head,Cond,Body}]),
-%%    io:format("in muin:preproc for query2 Spec are ~p~n",[Spec]),
-%%    unique(Spec);
+preproc(['query2',Page,Return,Cond])->
+    Toks=string:tokens(Page,"/"),
+    Idx = find("*", Toks),
+    Under = sublist(Toks, Idx - 1),
+
+    % This is a bodged query that will only run with a single [*] token in the URL
+    % The under clause is the clause that gets all subpages of the URL up to the star
+
+    UnderClause=make_bits(lists:reverse(Under),'$1'),
+    
+    % The head clause matches all subpages of the UnderClause
+    Ref=ms_util:make_ms(ref,[{path,UnderClause},{name,rawvalue},{ref,{cell,{'$2','$3'}}}]),
+    Head=ms_util:make_ms(hn_item,[{addr,Ref},{val,'$4'}]),
+    
+    % The Return value should be of the form 'AB12' (ie a cell designation)
+    {ok,RetToks,_}             =cond_lexer:string(Return),
+    {ok,{cell,{RetCol,RetRow}}}=cond_parser:parse(RetToks),
+    % The Conditional value is of the form 'AB12>1234' ie a cell followed by
+    % a conditional and a value
+
+    {ok,CondToks,_}=cond_lexer:string(Cond),
+    {ok,Cond2}     =cond_parser:parse(CondToks),
+    {{cell,{CondCol,CondRow}},CondOp,CondVal}=Cond2,
+    
+    % The guard condition means that the query will return the cell
+    % values from both the Return and Conditional and we will then apply the
+    % condition to the list...
+    CondGuard={'and',{'==','$2',CondCol},{'==','$3',CondRow}},
+    RetGuard ={'and',{'==','$2',RetCol}, {'==','$3',RetRow}},
+    Guard    =[{'orelse',CondGuard,RetGuard}],
+    Body     =['$$'],
+    Spec=[{Head,Guard,Body}],
+    List=unique(Spec),
+
+    % Now we have the list we can apply the appropriate condition to it
+    % First, though, we tidy up the rather nasty output of the match spec
+    % to make it more readable
+    Fun=fun([A,B,C,D]) -> {{{page,A},{cell,{B,C}}},{value,D}} end,
+    List2=lists:map(Fun,List),
+
+    % Now we step over all the cells in the condition clause and return the pages for
+    % which the condition is true
+    Fun2=fun({{A,B},{value,C}}) ->
+                 case B of
+                     {cell,{CondCol,CondRow}} ->
+                         X = istrue(C,CondOp,CondVal),
+                         if
+                             X     -> A;
+                             true  -> []
+                         end;
+                     _Other -> []
+                 end
+         end,
+    List3=lists:map(Fun2,List2),
+
+
+    % Now get the actual ref objects of the Return cell for all pages for which
+    % the condition is true
+    Fun3=fun(A,Acc) -> X=lists:keysearch({A,{cell,{RetCol,RetRow}}},1,List2),
+                       case X of
+                           false -> Acc;
+                           _     -> {page,Tail}=A,
+                                    Refstr=hslists:join("/",Under++Tail++
+                                                        [tconv:to_b26(RetCol)++
+                                                         integer_to_list(RetRow)]),
+                                    Refstr2="/"++flatten(Refstr),
+                                    {ok,Ts}=xfl_lexer:lex(Refstr2,{?mx,?my}),
+                                    Ret=case Ts of
+                                            [{ref, R, C, P, _}] ->
+                                                [ref, R, C, P];
+                                            _ ->
+                                                ?ERR_REF
+                                        end,
+                                    [Ret|Acc]
+                       end
+         end,
+
+    % List4 contains the refobjects for all the return cells for which the condition
+    % term on the same page matches
+    % ie if the query is:
+    %   QUERY2("/some/page/*/","B3","B6>0")
+    % it returns
+    % /some/page/B3 if /some/page/B6 > 0 
+    List4=lists:foldl(Fun3,[],List3),
+
+    % Now set up the parents and stuff
+    % There are two parents here:
+    % * one for the cell that is being returned
+    % * one for the cell that is being tested in the conditional
+    Cell1=tconv:to_b26(RetCol) ++integer_to_list(RetRow),
+    Cell2=tconv:to_b26(CondCol)++integer_to_list(CondRow),
+    Fun4=fun(Cell) -> 
+                 {ok, Refobj} = xfl_lexer:lex(Cell, {?mx, ?my}),
+                 [{ref, C, R, _, _}] = Refobj,
+                 Rowidx = toidx(R),
+                 Colidx = toidx(C),
+                 {"local", {?msite, Toks, Colidx, Rowidx}}
+         end,
+    Newparents=lists:map(Fun4,[Cell1,Cell2]),
+    {Oldparents, Errs, Refs} = get(retvals),
+    Parents=lists:merge([Newparents, Oldparents]),
+    put(retvals, {Parents, Errs, Refs}),
+    {reeval,[make_list|List4]};
+preproc(['query3',Page,Cond])->
+    Toks=string:tokens(Page,"/"),
+    Idx = find("*", Toks),
+    Under = sublist(Toks, Idx - 1),
+
+    % This is a bodged query that will only run with a single [*] token in the URL
+    % The under clause is the clause that gets all subpages of the URL up to the star
+
+    UnderClause=make_bits(lists:reverse(Under),'$1'),
+    
+    % The head clause matches all subpages of the UnderClause
+    Ref=ms_util:make_ms(ref,[{path,UnderClause},{name,rawvalue},{ref,{cell,{'$2','$3'}}}]),
+    Head=ms_util:make_ms(hn_item,[{addr,Ref},{val,'$4'}]),
+    
+    % The Conditional value is of the form 'AB12>1234' ie a cell followed by
+    % a conditional and a value
+    {ok,CondToks,_}=cond_lexer:string(Cond),
+    {ok,Cond2}     =cond_parser:parse(CondToks),
+    {{cell,{CondCol,CondRow}},CondOp,CondVal}=Cond2,
+    
+    % The guard condition means that the query will return the cell
+    % values from both the Return and Conditional and we will then apply the
+    % condition to the list...
+    Guard=[{'==','$2',CondCol},{'==','$3',CondRow}],
+    Body =['$$'],
+    Spec=[{Head,Guard,Body}],
+    List=unique(Spec),
+    
+    % Now we have the list we can apply the appropriate condition to it
+    % First, though, we tidy up the rather nasty output of the match spec
+    % to make it more readable
+    Fun=fun([A,B,C,D]) -> {{{page,A},{cell,{B,C}}},{value,D}} end,
+    List2=lists:map(Fun,List),
+
+    % Now we step over all the cells in the condition clause and return the pages for
+    % which the condition is true
+    Fun2=fun({{A,B},{value,C}}) ->
+                 case B of
+                     {cell,{CondCol,CondRow}} ->
+                         X = istrue(C,CondOp,CondVal),
+                         if
+                             X     -> A;
+                             true  -> []
+                         end;
+                     _Other -> []
+                 end
+         end,
+    List3=lists:map(Fun2,List2),
+
+    % Now get the actual ref objects of the Return cell for all pages for which
+    % the condition is true
+    Fun3=fun(A,Acc) -> case A of
+                           [] -> Acc;
+                           _     -> {page,Tail}=A,
+                                    Refstr=hslists:join("/",Under++Tail++
+                                                        [tconv:to_b26(CondCol)++
+                                                         integer_to_list(CondRow)]),
+                                    Refstr2="/"++flatten(Refstr),
+                                    {ok,Ts}=xfl_lexer:lex(Refstr2,{?mx,?my}),
+                                    Ret=case Ts of
+                                            [{ref, R, C, P, _}] ->
+                                                [ref, R, C, P];
+                                            _ ->
+                                                ?ERR_REF
+                                        end,
+                                    [Ret|Acc]
+                       end
+         end,
+    % List4 contains the refobjects for all the return cells for which the condition
+    % term on the same page matches
+    % ie if the query is:
+    %   QUERY3("/some/page/*/","B6>0")
+    % it returns
+    % http://mysite.com:1234/some/page/ if /some/page/B6 > 0 
+    List4=lists:foldl(Fun3,[],List3),
+    % Now set up the parents and stuff
+    Cell=tconv:to_b26(CondCol)++integer_to_list(CondRow),
+    {ok, Refobj} = xfl_lexer:lex(Cell, {?mx, ?my}),
+    [{ref, C, R, _, _}] = Refobj,
+    Rowidx = toidx(R),
+    Colidx = toidx(C),
+    Newparent={"local", {?msite, Toks, Colidx, Rowidx}},
+    {Oldparents, Errs, Refs} = get(retvals),
+    Parents=lists:merge([[Newparent], Oldparents]),
+    put(retvals, {Parents, Errs, Refs}),
+    {get_urls,List4};
 preproc(_) ->
     false.
 
-%%unique(Spec) ->
-%%       Match = fun() ->
-%%           mnesia:select(hn_item,Spec)
-%%            end,
-%%    {atomic, Res} = mnesia:transaction(Match),
-%%    List=hslists:uniq(Res),
-%%    io:format("in muin:unique~n-Res is ~p~n-List is ~p~n",[Res,List]),
-%%    List.
+istrue(V1, ">",  V2) when is_integer(V1), is_integer(V2) -> V1 >  V2;
+istrue(V1, "<",  V2) when is_integer(V1), is_integer(V2) -> V1 <  V2;
+istrue(V1, ">=", V2) when is_integer(V1), is_integer(V2) -> V1 >= V2;
+istrue(V1, "=<", V2) when is_integer(V1), is_integer(V2) -> V1 =< V2;
+istrue(V1, ">",  V2) when is_float(V1),   is_float(V2)   -> V1 >  V2;
+istrue(V1, "<",  V2) when is_float(V1),   is_float(V2)   -> V1 <  V2;
+istrue(V1, ">=", V2) when is_float(V1),   is_float(V2)   -> V1 >= V2;
+istrue(V1, "=<", V2) when is_float(V1),   is_float(V2)   -> V1 =< V2;
+istrue(_V1,">", _V2) -> false;
+istrue(_V1,"<", _V2) -> false;
+istrue(_V1,">=",_V2) -> false;
+istrue(_V1,"=<",_V2) -> false;
+istrue(V1, "=", V2) when is_atom(V1) -> atom_to_list(V1) == V2;
+istrue(V1, "<>",V2) when is_atom(V1) -> atom_to_list(V1) /= V2;
+istrue(V1, "=", V2) -> V1 == V2;
+istrue(V1, "<>",V2) -> V1 /= V2.
 
-%%make_match_spec(Match)->
-%%    io:format("in muin:make_match_spec got to 1~n"),
-%%    Ref=ms_util:make_ms(ref,[{path,Match},{rawvalue,'$1'}]),
-%%    io:format("in muin:make_match_spec got to 2~n"),
-%%    Head=ms_util:make_ms(hn_item,[{addr,Ref}]),
-%%    Cond=[],
-%%    Body=['$1'],
-%%    [{Head,Cond,Body}].
+%% makes an improper list as required by match specification
+make_bits(List) -> make_bits(List, []).
 
-%%%% not sure if this match spec needs an improper list!
-%%make_match(Toks) -> make_match(Toks,1,[]).
+make_bits([],Acc)    -> Acc;
+make_bits([H|T],Acc) -> make_bits(T,[H|Acc]).
 
-%%make_match([],_N,Acc)     -> lists:reverse(Acc);
-%%make_match(["*"|T],N,Acc) -> J=integer_to_list(N),
-%%               NewDollar=list_to_atom(lists:append(["\$",J])),
-%%               make_match(T,N+1,[NewDollar|Acc]);
-%%make_match([H|T],N,Acc)   -> make_match(T,N,[H|Acc]).
+unique(Spec) ->
+    Match = fun() ->
+                    mnesia:select(hn_item,Spec)
+            end,
+    Return=mnesia:transaction(Match),
+    % io:format("in muin:unique Return is ~p~n",[Return]),
+    {atomic,Res}=Return,
+    hslists:uniq(Res).
+
+make_match_spec(Match)->
+    Ref=ms_util:make_ms(ref,[{path,Match},{rawvalue,'$1'}]),
+    io:format("in muin:make_match_spec got to 2~n"),
+    Head=ms_util:make_ms(hn_item,[{addr,Ref}]),
+    Cond=[],
+    Body=['$1'],
+    [{Head,Cond,Body}].
 
 funcall('if', [Test, TrueExpr, FalseExpr]) ->
     V = plain_eval(Test),
@@ -262,8 +457,8 @@ funcall(Fname, Args) ->
 
 %% Try the userdef module first, then Ruby, Gnumeric, R, whatever.
 userdef_call(Fname, Args) ->
-    %% changed to apply because use the construction userdef:Fname failed
-    %% to work after hot code load (Gordon Guthrie 2008_09_08)
+%% changed to apply because using the construction userdef:Fname failed
+%% to work after hot code load (Gordon Guthrie 2008_09_08)
     case (catch apply(userdef,Fname,Args)) of
         {'EXIT', {undef, _}} -> ?ERR_NAME;
         Val                  -> Val
@@ -271,7 +466,7 @@ userdef_call(Fname, Args) ->
 
 %% Returns value in the cell + get_value_and_link() is called behind the
 %% scenes.
-do_cell(RelPath, Rowidx, Colidx) ->    
+do_cell(RelPath, Rowidx, Colidx) ->
     Path = muin_util:walk_path(?mpath, RelPath),
     IsCircRef = (Colidx == ?mx andalso Rowidx == ?my andalso Path == ?mpath),
     ?IF(IsCircRef, ?ERR_CIRCREF),
@@ -325,7 +520,7 @@ get_pages_under(Pathcomps) ->
                     mnesia:match_object(hn_item, M, read)
             end,
     {atomic, Res} = mnesia:transaction(Match),
-    %% List of expansions for the "*" wildcard.
+%% List of expansions for the "*" wildcard.
     Starexp = foldl(fun(X, Acc) ->
                             Path = (X#hn_item.addr)#ref.path, % assume 1 site
                             Init = sublist(Path, length(Pathcomps)),

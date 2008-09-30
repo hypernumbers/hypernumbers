@@ -167,8 +167,10 @@ sum(Vs) ->
     Flatvs = ?flatten_all(Vs),
     Nums = ?numbers(Flatvs, ?default_rules),
     sum1(Nums).
+
 sum1(Nums) ->
-    lists:sum(Nums).
+    Return=lists:sum(Nums),
+    Return.
 
 product(Vals) ->
     Flatvals = flatten(Vals),
