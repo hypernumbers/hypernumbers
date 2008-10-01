@@ -10,9 +10,10 @@
 /******************************************************************************
 	GLOBAL STYLES
 ******************************************************************************/
-body 
+html,body 
 { 
   overflow:         hidden;
+  height:	    100%;
 }
 
 .spreadsheet * 
@@ -190,18 +191,13 @@ body
     height:         20px;
     overflow:       hidden;
     position:       relative;
-  background:red;
+    width:	    4000px;
 }
 
-.spreadsheet .columns table
-{
-    position:       relative;
-    border-collapse:collapse;
-}
-
-.spreadsheet .columns th
+.spreadsheet .columns div
 {
     padding:        3px 0px; 
+    float:	    left;
     border-bottom:  1px solid #aaa;
     border-right:   1px solid #aaa;
     height:         14px;
