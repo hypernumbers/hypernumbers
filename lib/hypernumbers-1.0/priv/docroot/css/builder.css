@@ -20,8 +20,16 @@ h3
   background:#EEE;
   }
 
+#form_dialog
+{ 
+  width:370px;
+ }
+
 #form
 {
+  width:370px;
+  height:300px;
+  overflow:scroll;
   padding:10px;
   }
 
@@ -29,7 +37,7 @@ h3
 .form-item 
 {
   list-style-type:none;
-  min-width:500px;
+  width:350px;
   padding:5px;
   position:relative;
   background:#FFF;

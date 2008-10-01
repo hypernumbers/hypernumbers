@@ -13,11 +13,15 @@
 	@import "/css/base.css";
 	@import "/css/jquery.spreadsheet.css";
         @import "/css/jquery.textbox.css";
+        @import "/css/builder.css";
       </style>
       
       <script type="text/javascript" src="/js/jquery.js"></script>
-      <script type="text/javascript" src="/js/ui.base.js"></script>
+      <script type="text/javascript" src="/js/ui.core.js"></script>
       <script type="text/javascript" src="/js/ui.draggable.js"></script>
+      <script type="text/javascript" src="/js/ui.sortable.js"></script>
+      <script type="text/javascript" src="/js/form_utils.js"></script>
+      <script type="text/javascript" src="/js/builder.js"></script>
       
       <script type="text/javascript" src="/js/ajaxfileupload.js"></script>
       <script type="text/javascript" src="/js/jquery.clipboard.js"></script>
@@ -73,7 +77,7 @@
 	    </li>
 	    <li><a>Forms</a>
 	      <ul>
-		<li><a href="?gui=builder">Build / Edit Form</a></li>
+		<li><a id="form_menu">Build / Edit Form</a></li>
 	      </ul>
 	    </li>
             <li><a>Links</a>
@@ -87,6 +91,7 @@
         
 	<div id="hn">
           <div class="cover"></div>
+
 	  <div class="dialog" id="import">
 	    <h2>Import File</h2>
 	    <div style="padding:8px;">
@@ -95,6 +100,42 @@
 	    </div>
 	  </div>
 
+	  <div class="dialog" id="form_dialog" style="width:400px">
+	    <h2>Forms</h2>
+            <div class="clearfix">
+	      <div style="float:left; width:180px;padding:10px;height:150px;">
+                <h3>Edit</h3><br />
+                <select size="5" style="width:170px;">
+                </select><br /><br />
+                <input value="edit" type="submit" />
+	      </div>
+              <div style="background:#EEE;width:180px;float:right;padding:10px;height:150px;">
+                <h3>Create</h3><br />
+                <p>Set the name of your form</p>
+                <input type="text" id="create_form_input" /><br />
+                <input type="button" value="create" id="create_form" />
+              </div>
+	    </div>
+          </div>
+
+          <div class="dialog" id="builder">
+	    <h2>Form Builder</h2>
+            <div id="control" class="clearfix">
+              <div style="float:left"> 
+                <input type="button" value="Add a Form Item" id="add_item" />
+              </div>
+              <div style="float:right"> 
+                <select id="action">
+                  <option>Append</option>
+                  <option>Edit</option>
+                </select>
+                <input type="button" value="Save" id="save" />
+              </div>
+            </div>
+            <ul id="form">
+            </ul>
+          </div>
+          
 	  <div class="dialog" id="templates">
 	    <h2>Define New Template</h2>
 	    <div class="clearfix">
