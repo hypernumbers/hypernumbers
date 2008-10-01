@@ -91,7 +91,7 @@ req('GET',[],_,require_token,#ref{ref={page,"/"}}) ->
 req('GET',[],_,require_token,_Page)  ->
     {return,{status,503}};
 req('GET',[],[],_,Ref=#ref{ref={page,"/"}}) ->
-    {ok,V} = hn_db:get_item_inherited(Ref,"index"),
+    {ok,V} = hn_db:get_item_inherited(Ref#ref{name=gui},"index"),
     {return,{page,"/html/"++V++".html"}};
 req('GET',[],[{"gui",GUI}],_,#ref{ref={page,"/"}}) ->
     {return,{page,"/html/"++GUI++".html"}};
@@ -120,7 +120,7 @@ req('GET',[],[{"new",Template}],_,Ref=#ref{site=Site,ref={page,"/"}}) ->
     hn_main:copy_page(Ref#ref{path=[Tpl]},NPage),
     {return,{redirect, Ref#ref.site++NPage}};
 
-req('GET',[],["templates"],_,Ref=#ref{ref={page,"/"}}) ->
+req('GET',[],["templates"],_,_Ref=#ref{ref={page,"/"}}) ->
     hn_templates:get_templates();
 
 req('GET',[],["attr"],_,Ref) ->
@@ -272,7 +272,7 @@ req('POST',{template,[],[{name,[],[Name]},
     Tpl = "/@"++Name++"/",
     ok = hn_main:copy_page(Ref,Tpl),
     {ok,NRef} = hn_util:parse_url(Ref#ref.site++Tpl),
-    #ref{path=Path}=NRef,
+    %#ref{path=Path}=NRef,
     {ok,ok}=hn_templates:write_def(Name,Url,Gui,Form),
     ok=hn_main:set_attribute(NRef#ref{name=template},"@"++Name),
     ok=hn_main:set_attribute(NRef#ref{name=gui},Gui),
