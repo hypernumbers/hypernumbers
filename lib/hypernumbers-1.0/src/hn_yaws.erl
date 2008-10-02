@@ -56,7 +56,7 @@ do_request(Arg,Url) ->
                [] ->
                    anonymous;
                [UserId,_AuthToken] ->
-%% TODO Verify Token
+                   %% TODO Verify Token
                    UserId
            end,
 
@@ -126,7 +126,7 @@ req('GET',[],["pages"],_,_Ref) ->
 req('GET',[],["hypernumber"],_,Ref) ->
     Val = fun() ->
                   case hn_db:get_item_val(Ref#ref{name=rawvalue}) of
-                      []  -> {blank,[],[]};
+                      []  -> [{blank,[],[]}];
                       Tmp -> hn_util:to_xml(Tmp)
                   end
           end,
