@@ -7,57 +7,34 @@
 %%%-----------------------------------------------------------------------------
 -module(hypernumbers_app).
 -behaviour(application).
+
 -include("yaws.hrl").
+-include("spriki.hrl").
 
-%% Application callbacks
--export([start/2, stop/1]).
 
-%%==============================================================================
-%% Application callbacks
-%%==============================================================================
-%%------------------------------------------------------------------------------
-%% Function: start(Type, StartArgs) -> {ok, Pid} |
-%%                                     {ok, Pid, State} |
-%%                                     {error, Reason}
-%% Description: This function is called whenever an application
-%% is started using application:start/1,2, and should start the processes
-%% of the application. If the application is structured according to the
-%% OTP design principles as a supervision tree, this means starting the
-%% top supervisor of the tree.
-%%------------------------------------------------------------------------------
+-export([start/2, stop/1, reset/0 ]).
+
 start(_Type, _Args) ->
- 
-    %% if clean startup of mnesia, create the db
-    %% TODO : This is the wrong way to handly multiple
-    %% nodes, but as we are removing mnesia, will do for now
+
+    {ok,[[Log]]}  = init:get_argument(hn_log),
+    {ok,Hosts}    = get_hosts_conf(),
+
     case mnesia:table_info(schema, storage_type) of
         ram_copies -> 
             mnesia:change_table_copy_type(schema, node(), disc_copies);
         _ -> 
             ok
     end,
-
-    case mnesia:system_info(tables) of
-        [schema] -> 
-            hn_loaddb:create_db(disc_copies);
-        _ ->
-            Me = node(),
-            case mnesia:table_info(schema,cookie) of
-                {_,Me} -> 
-                    ok;
-                _      -> 
-                    hn_loaddb:create_db(disc_copies)
-            end
+    
+    case is_clean_startup() of
+	true ->
+	    hn_loaddb:create_db(disc_copies),
+	    set_def_permissions(Hosts);
+	false ->
+	    ok
     end,
 
-
-    {ok,[[Log]]}  = init:get_argument(hn_log),
-    {ok,[[Path]]} = init:get_argument(hn_config),
-	
-    {ok,Config} = file:consult(Path),
-    {value,{hosts,HostList}} = lists:keysearch(hosts,1,Config),
-    SConfs = lists:map(fun(X) -> create_sconf(X) end,HostList),
-
+    SConfs = lists:map(fun(X) -> create_sconf(X) end,Hosts),    
     DefaultGC = yaws_config:make_default_gconf(false, "id"),
     GC = DefaultGC#gconf{logdir=Log},    
 
@@ -72,6 +49,10 @@ start(_Type, _Args) ->
             Error
     end.
 
+reset() ->
+    {ok,Hosts} = get_hosts_conf(),
+    set_def_permissions(Hosts).
+
 %%------------------------------------------------------------------------------
 %% Function: stop(State) -> void()
 %% Description: This function is called whenever an application
@@ -80,9 +61,55 @@ start(_Type, _Args) ->
 %%------------------------------------------------------------------------------
 stop(_State) -> ok.
 
-create_sconf({IP,Port}) ->
+create_sconf({IP,Port,_Domains}) ->
     #sconf{port = Port,
            appmods=[{"/",hn_yaws}],
            listen = IP,
            docroot = code:lib_dir(hypernumbers)++"/priv/docroot"}.
     
+is_clean_startup() ->
+    case mnesia:system_info(tables) of
+	[schema] -> true;
+	_ ->
+	    Me = node(),
+	    case mnesia:table_info(schema,cookie) of
+		{_,Me} -> false;
+		_      -> true
+	    end
+    end.
+
+get_hosts_conf() ->
+    {ok,[[Path]]} = init:get_argument(hn_config),	
+    {ok,Config} = file:consult(Path), 
+    {value,{hosts,HostList}} = lists:keysearch(hosts,1,Config),
+    {ok,HostList}.
+
+set_def_permissions([]) -> 
+    ok;
+set_def_permissions([{{I1,I2,I3,I4},Port,Domains}|T])->
+    
+    Url = lists:concat(["http://",I1,".",I2,".",I3,".",I4,":",Port]),
+
+    F = fun(X) ->
+		lists:concat(["http://"++X++":"++integer_to_list(Port)])
+	end,
+							     
+    NDomains = [Url|lists:map(F,Domains)],
+
+    set_perms(NDomains),
+    set_def_permissions(T).
+
+set_perms([]) -> ok;
+set_perms([Domains|T]) ->
+    
+    Ref = #ref{site = Domains,
+               path = [],
+               ref  = {page,"/"}},
+    
+    hn_main:set_attribute(Ref#ref{name="__permissions"},
+			  [{user,anonymous,admin}]),
+    
+    hn_main:set_attribute(Ref#ref{name="__groups"},
+			  [{owner,[{user,"admin"}]}]),
+    
+    set_perms(T).

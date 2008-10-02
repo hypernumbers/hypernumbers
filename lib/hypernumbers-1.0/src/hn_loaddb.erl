@@ -34,28 +34,12 @@ create_db(Storage)->
     ?create(incoming_hn,set,Storage),
     ?create(outgoing_hn,set,Storage),
     ?create(template,set,Storage),
-    
-    Ref1 = #ref{site = "http://127.0.0.1:9000",
-               path = [],
-               ref  = {page,"/"}},
-
-    Ref2 = #ref{site = "http://claims.hypernumbers.dev:9000",
-               path = [],
-               ref  = {page,"/"}},
-    Ref3 = #ref{site = "http://accounts.hypernumbers.dev:9000",
-               path = [],
-               ref  = {page,"/"}},
 
     users:create("admin","admin"),
     users:create("user","user"),
-    Fun = fun(Ref) ->
-                  hn_main:set_attribute(Ref#ref{name="__permissions"},
-                                        [{user,anonymous,admin}]),
-                  
-                  hn_main:set_attribute(Ref#ref{name="__groups"},
-                                        [{owner,[{user,"admin"}]}])
-          end,
-    lists:map(Fun,[Ref1,Ref2,Ref3]),
+
+    hypernumbers_app:reset(),
+
     gen_server:cast(dirty_cell, stop),
     gen_server:cast(dirty_hypernumber, stop),
     
