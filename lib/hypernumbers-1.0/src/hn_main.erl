@@ -87,7 +87,9 @@ set_cell(Addr, Val) ->
 %%%               references
 %%%-----------------------------------------------------------------    
 write_cell(Addr, Value, Formula, Parents, DepTree) ->
-    
+    io:format("in hn_main:write_cell Addr is ~p Value is ~p Formula is ~p"++
+              "Parents are ~p DepTree is ~p~n",
+              [Addr,Value,Formula,Parents,DepTree]),
     Index = to_index(Addr),
     
     hn_db:write_item(Addr#ref{name=formula},Formula),

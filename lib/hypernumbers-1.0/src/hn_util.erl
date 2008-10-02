@@ -13,21 +13,33 @@
 -include("muin_records.hrl").
 
 -export([
-    %% HyperNumbers Utils
-    index_to_url/1,     ref_to_str/1,
-    xml_to_val/1,
-    item_to_xml/1,
-    in_range/2,
-    to_xml/1,
-    %% HTTP Utils
-    req/1,              post/2,             post/3,
-    parse_url/1,
-    %% List Utils
-    add_uniq/2,         is_alpha/1,
-    is_numeric/1,       text/1,
-    trim/1,             random_string/1,    intersection/2,
-    bin_to_hexstr/1,    hexstr_to_bin/1,
-    get_req_type/1
+         % HyperNumbers Utils
+         index_to_url/1,
+         ref_to_str/1,
+         xml_to_val/1,
+         item_to_xml/1,
+         in_range/2,
+         to_xml/1,
+         ref_to_index/1,
+         
+         % HTTP Utils
+         req/1,
+         post/2,
+         post/3,
+         parse_url/1,
+         
+         % List Utils
+         add_uniq/2,
+         is_alpha/1,
+         is_numeric/1,
+         text/1,
+         trim/1,
+         random_string/1,
+         intersection/2,
+         bin_to_hexstr/1,
+         hexstr_to_bin/1,
+         get_req_type/1,
+         list_to_path/1
     ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -36,15 +48,13 @@
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 index_to_url(#index{site=Site,path=Path,column=X,row=Y}) ->
-    P = case Path of
-	    [] -> "/";
-	    _  -> "/" ++ string:join(Path, "/") ++ "/"
-	end,
-    lists:append([Site, P, tconv:to_b26(X), text(Y)]).
-    
+    lists:append([Site, list_to_path(Path), tconv:to_b26(X), text(Y)]).
+
+list_to_path([])   -> "/";
+list_to_path(Path) -> "/" ++ string:join(Path, "/") ++ "/".
+
 ref_to_index(#ref{site=Site,path=Path,ref={cell,{X,Y}}}) ->
     #index{site=Site,path=Path,column=X,row=Y}.
-
 
 ref_to_str({page,Path})  -> Path;   
 ref_to_str({cell,{X,Y}}) -> tconv:to_b26(X)++text(Y);
@@ -87,17 +97,18 @@ to_val(Else) ->
     false -> throw({unmatched_type,Else})
     end.
 
-to_xml({datetime,{Y,M,D},{H,Min,S}}) -> 
+to_xml(true)                     -> [{bool,[],   ["true"]}];
+to_xml(false)                    -> [{bool,[],   ["false"]}];    
+to_xml(Val) when is_integer(Val) -> [{int,[],    [integer_to_list(Val)]}];
+to_xml(Val) when is_float(Val)   -> [{float,[],  [float_to_list(Val)]}];
+to_xml({errval, Errval})         -> [{errval,[], [atom_to_list(Errval)]}];
+%%to_xml({string,[]})              -> [{string,[], ["fuck me!"]}];
+to_xml({datetime,{Y,M,D},{H,Min,S}}) ->
     [{data,[],[lists:concat([Y,"-",M,"-",D," ",H,":",Min,":",S])]}];
-to_xml(true)  -> [{bool,[],["true"]}];
-to_xml(false) -> [{bool,[],["false"]}];    
-to_xml(Val) when is_integer(Val) -> [{int,[],[integer_to_list(Val)]}];
-to_xml(Val) when is_float(Val)   -> [{float,[],[float_to_list(Val)]}];
-to_xml({errval, Errval})         -> [{errval, [], [atom_to_list(Errval)]}];
 to_xml(Else) ->
     case io_lib:char_list(Else) of
-    true  -> [{string,[],[Else]}];
-    false -> throw({unmatched_type,Else})
+        true  -> [{string,[],[Else]}];
+        false -> throw({unmatched_type,Else})
     end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

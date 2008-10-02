@@ -47,7 +47,10 @@ cheat(5) ->
     demo("http://127.0.0.1:9000/",code:priv_dir(hypernumbers)++"/demo_pages/axa/");
 cheat(6) ->
     bits:clear_db(),
-    demo("http://127.0.0.1:9000/",code:priv_dir(hypernumbers)++"/demo_pages/expenses II/").
+    demo("http://127.0.0.1:9000/",code:priv_dir(hypernumbers)++"/demo_pages/expenses II/");
+cheat(7) ->
+    bits:clear_db(),
+    demo("http://claims.hypernumbers.dev:9000/",code:priv_dir(hypernumbers)++"/demo_pages/expenses II/").
 
 %% Read std_funs and produce a workable
 %% xml document for the functions list

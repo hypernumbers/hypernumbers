@@ -72,6 +72,7 @@ write_item(Addr,Val) when is_record(Addr,ref) ->
 notify_remote(#hn_item{addr=#ref{name="__"++_}}) ->
     ok;
 notify_remote(Item=#hn_item{addr=#ref{site=Site,path=Path}}) ->
+    io:format("in hn_db:notify_remote Item is ~p~n",[Item]),
     Msg = "change "++simplexml:to_xml_string(hn_util:item_to_xml(Item)),
     gen_server:call(remoting_reg,{change,Site,Path,Msg},?TIMEOUT).
 
@@ -597,19 +598,22 @@ mark_dirty(Index,Type) ->
 %%--------------------------------------------------------------------
 update_hn(From,Bic,Val,_Version)->
 
-    {atomic, ok} = ?mn_tr(fun() ->
-
-        Index = hn_util:page_to_index(hn_util:parse_url(From)),
-        Rec   = #incoming_hn{ remote = Index, biccie = Bic, _='_'},
-        [Obj] = mnesia:match_object(Rec),
-
-        mnesia:write(Obj#incoming_hn{value=hn_util:xml_to_val(Val)}),
-        mark_dirty(Index,hypernumber),
-
-        ok
-
-    end),
-
+    
+    {atomic, ok} = ?mn_tr(
+                      fun() ->
+                              
+                              {ok,ParsedFrom}=hn_util:parse_url(From),
+                                  Index = hn_util:ref_to_index(ParsedFrom),
+                              Rec   = #incoming_hn{ remote = Index, biccie = Bic, _='_'},
+                              [Obj] = mnesia:match_object(Rec),
+                              
+                              mnesia:write(Obj#incoming_hn{value=hn_util:xml_to_val(Val)}),
+                              mark_dirty(Index,hypernumber),
+                              
+                              ok
+                      
+                      end),
+    
     ok.
 
 %%--------------------------------------------------------------------

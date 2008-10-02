@@ -60,7 +60,7 @@ get_templates() ->
     {ok,Templates}=hn_db:get_templates(),
     Fun=fun(X) ->
                 #template{name=Name,temp_path=Path,gui=Gui,form=Form}=X,
-                {template,[{name,[],[Name]},{path,[],[util2:repath(Path)]},
+                {template,[{name,[],[Name]},{path,[],[repath(Path)]},
                            {gui,[],[Gui]},{form,[],[Form]}]}
         end,
     XML=lists:map(Fun,Templates),
@@ -69,6 +69,16 @@ get_templates() ->
 %%
 %% Internal Functions
 %%
+
+repath(Path) -> repath(Path,[]).
+
+repath([],[])           -> "/";
+repath([],Acc)          -> lists:concat([lists:reverse(Acc)|["/"]]);
+repath([{A,B,C}|T],Acc) -> repath(T,["{"++A++","++B++","++C++"}","/"|Acc]);
+repath([{A,B}|T],Acc)   -> repath(T,["{"++A++","++B++"}","/"|Acc]);
+repath([{A}|T],Acc)     -> repath(T,["{"++A++"}","/"|Acc]);
+repath([H|T],Acc)       -> repath(T,[H,"/"|Acc]).
+
 parse(String) ->
     [H|_Discard]=String,
     T=last(String),

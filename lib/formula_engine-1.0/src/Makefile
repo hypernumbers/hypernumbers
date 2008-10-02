@@ -7,3 +7,9 @@ compile:
 
 run:
 	java -cp $(CLASSPATH) ZhopaSms +447776251669 "sent from makefile"
+
+windows:
+	javac -cp `cygpath -wp $(CLASSPATH)` ZhopaSms.java
+
+windows_run:
+	java -cp `cygpath -wp $(CLASSPATH)` ZhopaSms +447776251669 "sent from makefile for windows"

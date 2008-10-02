@@ -29,6 +29,26 @@
 
         <servers>
             <group port="9000">           
+                <server name="claims.hypernumbers.dev">
+                    <listen>127.0.0.1</listen>
+                    <docroot><reldir>include/docroot</reldir></docroot>
+                    <appmods>
+                        <mod path="/" module="hn_yaws" />
+                    </appmods>
+                </server>
+            </group>
+
+            <group port="9000">           
+                <server name="accounts.hypernumbers.dev">
+                    <listen>127.0.0.1</listen>
+                    <docroot><reldir>include/docroot</reldir></docroot>
+                    <appmods>
+                        <mod path="/" module="hn_yaws" />
+                    </appmods>
+                </server>
+            </group>
+
+            <group port="9000">           
                 <server name="127.0.0.1">
                     <listen>127.0.0.1</listen>
                     <docroot><reldir>include/docroot</reldir></docroot>

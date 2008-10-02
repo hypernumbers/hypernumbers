@@ -35,20 +35,28 @@ create_db(Storage)->
     ?create(outgoing_hn,set,Storage),
     ?create(template,set,Storage),
     
-    Ref = #ref{site = "http://127.0.0.1:9000",
+    Ref1 = #ref{site = "http://127.0.0.1:9000",
                path = [],
                ref  = {page,"/"}},
-    
+
+    Ref2 = #ref{site = "http://claims.hypernumbers.dev:9000",
+               path = [],
+               ref  = {page,"/"}},
+    Ref3 = #ref{site = "http://accounts.hypernumbers.dev:9000",
+               path = [],
+               ref  = {page,"/"}},
+
     users:create("admin","admin"),
     users:create("user","user"),
-    
-    hn_main:set_attribute(Ref#ref{name="__permissions"},
-                             [{user,anonymous,admin}]),
-    
-    hn_main:set_attribute(Ref#ref{name="__groups"},
-                             [{owner,[{user,"admin"}]}]),
-            
+    Fun = fun(Ref) ->
+                  hn_main:set_attribute(Ref#ref{name="__permissions"},
+                                        [{user,anonymous,admin}]),
+                  
+                  hn_main:set_attribute(Ref#ref{name="__groups"},
+                                        [{owner,[{user,"admin"}]}])
+          end,
+    lists:map(Fun,[Ref1,Ref2,Ref3]),
     gen_server:cast(dirty_cell, stop),
     gen_server:cast(dirty_hypernumber, stop),
-
+    
     ok.

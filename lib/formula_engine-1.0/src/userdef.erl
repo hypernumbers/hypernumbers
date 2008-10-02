@@ -18,6 +18,14 @@
 
 -export([sendsms/2]).
 
+-export([get_username/0]).
+
+get_username() -> Return=get(user),
+                  case Return of
+                      undefined -> "undefined";
+                      _         -> Return
+                  end.
+
 sum3d(X) when is_list(X) ->
     io:format("in userdef_sum3d X is ~p~n",[X]),
     sum3d(X,[]).

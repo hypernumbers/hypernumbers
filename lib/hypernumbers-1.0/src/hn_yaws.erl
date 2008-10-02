@@ -96,23 +96,6 @@ req('GET',[],[],_,Ref=#ref{ref={page,"/"}}) ->
 req('GET',[],[{"gui",GUI}],_,#ref{ref={page,"/"}}) ->
     {return,{page,"/html/"++GUI++".html"}};
 
-%%req('GET',[],[{"new",Template}],_,Ref=#ref{ref={page,"/"}}) ->
-%%    {ok,Tpl} = hn_db:get_item_inherited(Ref#ref{name=template},blank),
-%%    Items = hn_db:get_item(Ref#ref{path=lists:append(Ref#ref.path,'_')}),
-%%    F = fun(#hn_item{addr=R}) ->
-%%                Last = lists:last(R#ref.path),
-%%                ?COND(hn_util:is_numeric(Last),
-%%                      list_to_integer(Last),0)
-%%        end,
-%%    Ind = case Items of
-%%              [] -> 1;
-%%              _Else -> lists:max(lists:map(F,Items))+1
-%%          end,
-%%    NPage = "/"++string:join(Ref#ref.path,"/")++"/"++integer_to_list(Ind)++"/",
-
-%%    hn_main:copy_page(Ref#ref{path=[Tpl]},NPage),
-%%    {return,{redirect, Ref#ref.site++NPage}};
-
 req('GET',[],[{"new",Template}],_,Ref=#ref{site=Site,ref={page,"/"}}) ->
     NPage=hn_templates:get_next(#ref{site=Site},Template,"BlankUsername"),
     Tpl="@"++Template,
@@ -253,9 +236,10 @@ req('POST',{unregister,[],[{biccie,[],[_Bic]},{url,[],[Url]}]},_Attr,_User,Ref) 
     {ok,{success,[],[]}};
 
 req('POST',{register,[],[{biccie,[],[Bic]},{proxy,[],[Proxy]},{url,[],[Reg]}]},_Attr,_User,Ref) ->
+    {ok,RegRef}=hn_util:parse_url(Reg),
     hn_db:register_hn(
       hn_util:ref_to_index(Ref),
-      hn_util:ref_to_index(hn_util:parse_url(Reg)),
+      hn_util:ref_to_index(RegRef),
       Bic, Proxy, Reg),
     {ok,{success,[],[]}};
 

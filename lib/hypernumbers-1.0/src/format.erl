@@ -279,7 +279,7 @@ app_fmt([],[?ASC_Q|T2],Type,A)                  -> app_fmt([],T2,Type,[?ASC_SPAC
 
 %% just rounds off a number to the appropriate number of decimals
 round(X,N) when is_list(X) ->
-    io:format("in format:round fix this fucking bug!~n"),
+    io:format("in format:round fix this bug!~n"),
     X;
 round(X,0)                           -> round(X);
 round(X,N) when N > 0, is_integer(N) ->
