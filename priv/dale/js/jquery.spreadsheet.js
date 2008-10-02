@@ -73,7 +73,10 @@ var SpreadSheet = function(root)
 
 	var scroll = function(e)
 	{
-	    console.log(e.target.scrollLeft + ":" + $("#scroller").width());
+            console.log(e);
+            var total_width = $("#scroller").width();
+            var viewable_width = $(".data").width();
+	    console.log(e.target.scrollRight+":"+total_width+":"+viewable_width);
 	    t.sheets[0].x_offset = Math.floor(
 		e.target.scrollLeft / 80)+1;
 	    t.sheets[0].update_col_index();
@@ -119,7 +122,6 @@ var Sheet = function(parent,name)
 	scroller = this.parent.root.find("div#scroller");
 	scroller.width(this.max_cols * DEF_CELL_WIDTH + this.max_cols);
 	scroller.height(this.max_rows * DEF_CELL_HEIGHT);
-	console.log(scroller.width());
     };
 
     this.create_col_index = function()
@@ -131,12 +133,14 @@ var Sheet = function(parent,name)
 	while(total_width < this.parent.width) 
 	{
 	    var col = count + this.x_offset;
+	    var width = DEF_CELL_WIDTH;
+            var cell = $("<div>"+to_b26(col)+"</div>").width(width);
 
-	    if(col > this.max_cols)
-		return;
+//	    if(col > this.max_cols)
+//		cell.prependTo(cols_par);
+//            else
+                cell.appendTo(cols_par);
 
-	    var width = DEF_CELL_WIDTH;;
-	    $("<div>"+to_b26(col)+"</div>").width(width).appendTo(cols_par);
 	    total_width += width;
 	    count++;
 	}
