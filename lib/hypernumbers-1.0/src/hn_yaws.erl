@@ -273,7 +273,10 @@ api_change([{biccie,[],     [Bic]},
             {value,[],      [Val]},
             {version,[],    [Version]}], _Page)->
 
-    hn_db:update_hn(Cell,Bic,Val,Version),
+    {_,_,[Val2]}=Val,
+    io:format("in hn_yaws:api_change Cell is ~p Bic is ~p Val is ~p "++
+              "Version is ~p Val2 is ~p~n",[Cell,Bic,Val,Version,Val2]),
+    hn_db:update_hn(Cell,Bic,Val2,Version),
 
     {ok,{success,[],[]}}.
 

@@ -66,14 +66,16 @@ write_item(Addr,Val) when is_record(Addr,ref) ->
 
 %% Send a change notification to the remoting server, which
 %% notifies web clients,
+    %% io:format("in hn_db:write_item Val is ~p Addr is ~p,Item is ~p~n",[Val,Addr,Item]),
+    %% io:format("in hn_db:write_item Stacktrace is ~p~n",[erlang:get_stacktrace()]),
     spawn(fun() -> notify_remote(Item) end),
     ok.
 
 notify_remote(#hn_item{addr=#ref{name="__"++_}}) ->
     ok;
 notify_remote(Item=#hn_item{addr=#ref{site=Site,path=Path}}) ->
-    io:format("in hn_db:notify_remote Item is ~p~n",[Item]),
-    Msg = "change "++simplexml:to_xml_string(hn_util:item_to_xml(Item)),
+    MsgXml=hn_util:item_to_xml(Item),
+    Msg = "change "++simplexml:to_xml_string(MsgXml),
     gen_server:call(remoting_reg,{change,Site,Path,Msg},?TIMEOUT).
 
 
@@ -529,7 +531,7 @@ dirty_refs_changed(dirty_cell, Ref) ->
 %% Update local cells
     lists:foreach(
       fun({local_cell_link, _, RefTo}) ->
-              hn_calc:recalc(RefTo)
+              hn_main:recalc(RefTo)
       end,
       Local
      ),
@@ -554,7 +556,7 @@ dirty_refs_changed(dirty_hypernumber, Ref) ->
         lists:foreach(
             fun(To) ->
                 Cell = To#remote_cell_link.child,
-                hn_calc:recalc(Cell)
+                hn_main:recalc(Cell)
             end,
             Links),
         mnesia:delete({dirty_hypernumber, Ref})
@@ -634,6 +636,7 @@ do_get_hn(Url,_From,To)->
             case http:request(get,{Url,[]},[],[]) of
                 {ok,{{_V,200,_R},_H,Xml}} ->
 
+                    io:format("in hn_db:do_get_hn Xml is ~p~n",[Xml]),
                     {hypernumber,[],[
                                      {value,[],              [Val]},
                                      {'dependancy-tree',[],  Tree}]

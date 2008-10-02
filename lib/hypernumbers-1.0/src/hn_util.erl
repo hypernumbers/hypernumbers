@@ -102,7 +102,9 @@ to_xml(false)                    -> [{bool,[],   ["false"]}];
 to_xml(Val) when is_integer(Val) -> [{int,[],    [integer_to_list(Val)]}];
 to_xml(Val) when is_float(Val)   -> [{float,[],  [float_to_list(Val)]}];
 to_xml({errval, Errval})         -> [{errval,[], [atom_to_list(Errval)]}];
-%%to_xml({string,[]})              -> [{string,[], ["fuck me!"]}];
+to_xml({blank,[],[]})            ->
+    io:format("in hn_util:to_xml bodging blank returns from hypernumbers!~n"),
+    [{string,[], [""]}];
 to_xml({datetime,{Y,M,D},{H,Min,S}}) ->
     [{data,[],[lists:concat([Y,"-",M,"-",D," ",H,":",Min,":",S])]}];
 to_xml(Else) ->

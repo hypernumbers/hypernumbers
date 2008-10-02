@@ -96,7 +96,7 @@ eval(Node = [Func|Args]) when ?isfuncall(Func) ->
             List=lists:map(Fun,Urls),
             lists:flatten(hslists:intersperse(",",List));
         [Func2|Args2] ->
-            CallArgs = [eval(X) || X <- Args2],
+             CallArgs = [eval(X) || X <- Args2],
             funcall(Func2, CallArgs)
     end;
 eval(Value) ->
@@ -383,13 +383,11 @@ unique(Spec) ->
                     mnesia:select(hn_item,Spec)
             end,
     Return=mnesia:transaction(Match),
-    % io:format("in muin:unique Return is ~p~n",[Return]),
     {atomic,Res}=Return,
     hslists:uniq(Res).
 
 make_match_spec(Match)->
     Ref=ms_util:make_ms(ref,[{path,Match},{rawvalue,'$1'}]),
-    io:format("in muin:make_match_spec got to 2~n"),
     Head=ms_util:make_ms(hn_item,[{addr,Ref}]),
     Cond=[],
     Body=['$1'],
@@ -477,6 +475,7 @@ do_cell(RelPath, Rowidx, Colidx) ->
 %% saves the dependencies (linking it to current cell), and returns
 %% the value to the caller (to continue the evaluation of the formula).
 get_value_and_link(FetchFun) ->
+
     {Value, RefTree, Errs, Refs} = FetchFun(),
 
     ?IF(member({?msite, ?mpath, ?mx, ?my}, RefTree),

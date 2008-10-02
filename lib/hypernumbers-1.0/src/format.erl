@@ -24,7 +24,7 @@
 %% The module format is called from within generated code only
 %% It is *NOT* an interface that should be programmed against
 -export([
-	 format/2
+         format/2
         ]).
 
 -include("ascii.hrl").
@@ -333,13 +333,15 @@ make_number(Integers,Decimals) -> list_to_float(Integers++"."++Decimals).
 
 %% truncates a decimal value to a fixed length
 trunc(Decimals,Len) ->
+    io:format("in format:trunc there is a bug with numbers like 3.3!~n"),
     Divisor=math:pow(10,Len),
-    Trunc=round(list_to_integer(Decimals)/Divisor),
+    RegExp="(e\\+000)",
+    {ok,Decimals2,_}=regexp:sub(Decimals,RegExp,""),
+    Trunc=round(list_to_integer(Decimals2)/Divisor),
     %% we now strip off any trailing zeros
     %% because if the format is something like "00.0?" that trailing zero is
     %% to be replaced by a space...
-    Trunc2=string:strip(integer_to_list(Trunc),right,?ASC_ZERO),
-    Trunc2.
+    string:strip(integer_to_list(Trunc),right,?ASC_ZERO).
 
 %% formats integers that are passed in as strings
 format_int([?ASC_MINUS|Integers],Format)->

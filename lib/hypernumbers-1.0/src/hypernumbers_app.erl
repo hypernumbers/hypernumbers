@@ -35,6 +35,7 @@ start(_Type, _Args) ->
     end,
 
     SConfs = lists:map(fun(X) -> create_sconf(X) end,Hosts),    
+
     DefaultGC = yaws_config:make_default_gconf(false, "id"),
     GC = DefaultGC#gconf{logdir=Log},    
 
@@ -45,7 +46,7 @@ start(_Type, _Args) ->
     case hypernumbers_sup:start_link() of
         {ok, Pid} -> 
             {ok, Pid};
-        Error ->     
+        Error ->
             Error
     end.
 
