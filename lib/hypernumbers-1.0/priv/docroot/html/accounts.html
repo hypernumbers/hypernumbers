@@ -42,20 +42,30 @@
     </script>
 </head>
 <body>
+
+  <div style="background:#000;padding:5px;">
+    <h1 style="width:600px; margin:10px auto;color:#FFf;">Vixo Expenses System</h1>
+  </div>
+
   <div id="wrapper">
 
-    
-    <a href="?gui=index" style="float:right">View Spreadsheet</a>
-    <a href="/expenses/claim/%7Bauto,incr%7D/?new=expenses">Make New Claim</a>
+    Vixo > <a href="/">Home</a>
+    <hr style="margin:10px 0px;" />
 
+    <div style="float:right; width:200px; margin:10px; padding:10px;background:#F0F0F0;border:1px outset #666;">
+      <h1 style="margin-bottom:15px;">Control Panel</h1>
+      <a href="/expenses/claim/%7Bauto,incr%7D/?new=expenses">Make New Claim</a><br /><br />
+      <a href="?gui=index">View Spreadsheet</a><br /><br />
+      <select id="to_approve" style="width:150px;">
+        <option>Approve Expenses</option>
+      </select>
+    </div>
 
     <div class="formbuilder" name="accounts" id="form"></div>
-    <select id="to_approve">
-      <option>Select Expenses to be approved</option>
-    </select>
     <div id="flashcontent">
       This text is replaced by the Flash movie.
     </div>
   </div>
+  <div style="width:600px; margin:5px auto">powered by <a href="http://hypernumbers.com">hypernumbers</a></div>
 </body>
 </html>

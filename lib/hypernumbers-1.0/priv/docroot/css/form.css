@@ -6,7 +6,6 @@
 
 h1
 {
-  margin:5px 0px;
   font: 18px sans-serif;
   }
 
@@ -15,9 +14,10 @@ h3
   font: bold 14px sans-serif;
   }
 
+hr {  background-color: #EEE; color:#EEE;  }
+
 body 
 { 
-  padding:10px;
   background:#F8F8FF;
  }
 

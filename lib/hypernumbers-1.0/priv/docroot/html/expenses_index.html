@@ -16,16 +16,21 @@
             font: 11px sans-serif;
         }
 
-        body { padding-top:20px; }
+        body { padding-top:20px; background-color:#9ad2ff; }
+        button { display:block; width:180px; margin:0px auto; font:bold 12px sans-serif;
+        margin-bottom:10px;}
 
         h1 { font: 21px sans-serif; }
-        li { margin-left:20px; }
+        h2 { font: 16px sans-serif; }
+        em { font: bold 16px sans-serif; }
+        li { margin:20px 0px 10px 20px; }
         #wrapper { width:770px; margin:0px auto; }
         #header { text-align:right; padding-right:15px; }
-        .panel { width:220px; float:left; margin:10px;
-        background:#EEE; height:200px; padding:5px;}
+        .panel { width:210px; float:left; margin:10px;
+        background:#FFF; height:200px; padding:10px;
+        -moz-border-radius:10px;}
 
-        input { width:100px; }
+        input.text { width:150px; }
 
 .clearfix:after {
     content: ".";
@@ -37,23 +42,15 @@
 
 	</style>
 	
-    <script type="text/javascript" src="/js/jquery.js"></script>
-    
-	<script type="text/javascript">
-	  $(function()
-	  {
-      
-	  });
-	</script>
-    
-	
+        <script type="text/javascript" src="/js/jquery.js"></script>
+        
 </head>
 <body>
   
   <div id="wrapper">
 
     <div id="header">
-      <h1>Vixo</h1>
+      <h1>Vixo Expenses</h1>
       <h2>Online Office Tools</h2>
     </div>
 
@@ -61,29 +58,28 @@
       
       <div id="left" class="panel">
         <ul>
-          <li>Free</li>
-          <li>Easy to Customise</li>
-          <li>Access anywhere</li>
-          <li>Integrate with your current systems</li>
+          <li><em>Free</em></li>
+          <li><em>Easy to Customise</em></li>
+          <li><em>Access anywhere</em></li>
+          <li><em>Integrate with your current systems</em></li>
       </div>
       
       <div id="middle" class="panel">
-        <p>Sign up to start your expenses application for free</p>
         <br /><br />
+        <p>Sign up to start using your expenses application for free, right now.</p>
+        <br />
         <table>
-          <tr><td>Name :</td><td><input type="text" /></td></tr>
-          <tr><td>Email :</td><td><input type="text" /></td></tr>
-          <tr><td>&nbsp; </td><td><input type="button" value="Enter expenses system" /></td></tr>
+          <tr><td>Name :</td><td><input type="text" class="text" /></td></tr>
+          <tr><td>Email :</td><td><input type="text" class="text" /></td></tr>
+          <tr><td>&nbsp; </td><td><input type="button" value="Enter expenses system" onclick="document.location.href='/';" /></td></tr>
         </table>
       </div>
       
       <div id="right" class="panel">
 
-        <p>Look at our other applications.</p>
-        <ul>
-          <li>Accounts System</li>
-          <li>Expenses System</li>
-        </ul>
+        <h2>Take a look at our other applications.</h2><br />
+        <button>Accounts System</button>
+        <button>Expenses System</button>
         <p><a href="http://vixo.com">Vixo</a></p>
 
       </div>
