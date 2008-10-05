@@ -9,16 +9,20 @@
 -include("spriki.hrl").
 -include("regexp.hrl").
 -include("handy_macros.hrl").
+-include("errvals.hrl").
+-include("muin_records.hrl").
 
 -export([
-    recalc/1,
-    set_attribute/2, 
-    set_cell/2,
-    get_cell_info/4,
-    write_cell/5,
-    get_hypernumber/9,
-    copy_page/2
-    ]).
+         recalc/1,
+         set_attribute/2, 
+         set_cell/2,
+         get_cell_info/4,
+         write_cell/5,
+         get_hypernumber/9,
+         copy_page/2,
+         formula_to_range/2,
+         constants_to_range/2
+        ]).
 
 %%%-----------------------------------------------------------------
 %%% Exported Functions
@@ -54,31 +58,70 @@ set_attribute(Ref,Val) ->
 %%% Description : process the string input to a cell
 %%%-----------------------------------------------------------------
 set_cell(Addr, Val) ->
+    case hn_db:get_item_val(Addr#ref{name = "__shared"}) of
+        true -> throw({error, cant_change_part_of_array});
+        _    -> value_to_cell(Addr, Val)
+    end.
+
+value_to_cell(Addr, Val) ->
     case superparser:process(Val) of
         {formula, Fla} ->
-            case muin:run_formula(Fla, Addr) of
-                {error,Error} -> 
+            Rti = ref_to_rti(Addr, false),
+            case muin:run_formula(Fla, Rti) of
+                {error, _Error} -> 
                     ok;       
                 {ok, {Pcode, Res, Parents, Deptree, Recompile}} ->
-                    
-                    %% Convert stuff to SimpleXML.
-                    F = fun({Type, {S, P, X1, Y1}}) ->
-        			Url = hn_util:index_to_url({index, S, P, X1, Y1}),
-        			{url, [{type, Type}], [Url]}
-        		end,
-
-                    Parxml = map(F, Parents),
-                    Deptreexml = map(F, Deptree),
+                    Parxml = map(fun muin_link_to_simplexml/1, Parents),
+                    Deptreexml = map(fun muin_link_to_simplexml/1, Deptree),
 
                     ?IF(Pcode =/= nil,     db_put(Addr, "__ast", Pcode)),
                     ?IF(Recompile == true, db_put(Addr, "__recompile", true)),
                     write_cell(Addr, Res, "=" ++ Fla, Parxml, Deptreexml)
-            end;
-            
+            end;            
         {_Type, Value} ->
             write_cell(Addr, Value, hn_util:text(Value), [], [])
     end.
-    
+
+%% @doc Process a formula in array mode.
+formula_to_range(Formula, Ref = #ref{ref = {range, {TlCol, TlRow, BrCol, BrRow}}}) ->
+    Rti = ref_to_rti(Ref, true),
+    {formula, FormulaProcd} = superparser:process(Formula),
+    {ok, {Pcode, Res, Parents, DepTree, Recompile}} = muin:run_formula(FormulaProcd, Rti),
+
+    SetCell = fun({Col, Row}) ->
+                      OffsetCol = Col - TlCol + 1,
+                      OffsetRow = Row - TlRow + 1,
+                      Value = case area_util:get_at(OffsetCol, OffsetRow, Res) of
+                                  {ok, V}    -> V;
+                                  {error, _} -> ?ERRVAL_NA
+                              end,
+                      ParentsXml = map(fun muin_link_to_simplexml/1, Parents),
+                      DepTreeXml = map(fun muin_link_to_simplexml/1, DepTree),
+                      Addr = Ref#ref{ref = {cell, {Col, Row}}},
+                      db_put(Addr, "__ast", Pcode),
+                      db_put(Addr, "__recompile", Recompile),
+                      db_put(Addr, "__shared", true),
+                      db_put(Addr, "__area", {TlCol, TlRow, BrCol, BrRow}),
+                      write_cell(Addr, Value, Formula, ParentsXml, DepTreeXml) % Formula already has a leading =
+              end,
+
+    Coords = muin_util:expand_cellrange(TlRow, BrRow, TlCol, BrCol),
+    foreach(SetCell, Coords).
+
+%% @doc Apply list of constants posted to a range.
+constants_to_range(Data, Ref = #ref{ref = {range,{Y1, X1, Y2, X2}}}) ->
+    F = fun(X,Y,Z) ->
+                case lists:nth(Z,Data) of
+                    {_Name,[],[]} ->
+                        ok;
+                    {Name,[],[Val]} ->
+                        NewRef = Ref#ref{ref={cell,{Y,X}},name=Name},
+                        hn_main:set_attribute(NewRef,Val)
+                end
+        end,
+
+    [[F(X,Y,((X-X1)*(Y2-Y1+1))+(Y-Y1)+1) || Y <- lists:seq(Y1,Y2)] || X <- lists:seq(X1,X2)].
+
 %%%-----------------------------------------------------------------
 %%% Function    : write_cell()
 %%% Types       : 
@@ -180,7 +223,7 @@ apply_range(Addr,Fun,Args) ->
 %%%-----------------------------------------------------------------
 get_cell_info(Site, TmpPath, X, Y) ->
 
-    Path = lists:filter(fun(Z) -> ?COND(Z==47,false,true) end,TmpPath),   
+    Path = lists:filter(fun(Z) -> not(Z == $/) end, TmpPath),   
     Ref = #ref{site=string:to_lower(Site),path=Path,ref={cell,{X,Y}}},
     Value   = hn_db:get_item_val(Ref#ref{name=rawvalue}),
 
@@ -211,8 +254,8 @@ get_cell_info(Site, TmpPath, X, Y) ->
 %%%-----------------------------------------------------------------
 get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY) ->
 
-    NewTPath = lists:filter(fun(X) -> ?COND(X==47,false,true) end,TPath),   
-    NewFPath = lists:filter(fun(X) -> ?COND(X==47,false,true) end,FPath),   
+    NewTPath = lists:filter(fun(X) -> not(X == $/) end, TPath),   
+    NewFPath = lists:filter(fun(X) -> not(X == $/) end, FPath),   
 
     To = #index{site=FSite,path=NewFPath,column=FX,row=FY},
     Fr = #index{site=TSite,path=NewTPath,column=TX,row=TY},
@@ -242,17 +285,34 @@ get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY) ->
 %%%               recalculate its value
 %%%-----------------------------------------------------------------
 recalc(Index) ->
-    #index{site=Site, path=Path, column=X, row=Y} = Index,
-    Addr = #ref{site=Site, path=Path, ref={cell, {X, Y}}},
+    Addr = index_to_ref(Index),
 
-    %% Muin flags cells to force full recompile if parents may change.
-    case hn_db:get_item_val(Addr#ref{name="__recompile"}) of
+    case hn_db:get_item_val(Addr#ref{name = "__shared"}) of
         true ->
-            set_cell(Addr,hn_db:get_item_val(Addr#ref{name=formula}));
+            recalc_array(Index);
         _ ->
-            Pcode = hn_db:get_item_val(Addr#ref{name="__ast"}),
-            Val = case muin:run_code(Pcode, Addr) of
-                      {ok, {_, V, _, _, _}} ->                V;
+            recalc_cell(Index)
+    end.
+
+recalc_array(Index) ->
+    Addr = index_to_ref(Index),
+    {TlCol, TlRow, BrCol, BrRow} = hn_db:get_item_val(Addr#ref{name = "__area"}),
+    Formula = hn_db:get_item_val(Addr#ref{name = formula}),
+    Target = Addr#ref{ref = {range, {TlCol, TlRow, BrCol, BrRow}}},
+    formula_to_range(Formula, Target),
+    ok.
+
+recalc_cell(Index) ->
+    Addr = index_to_ref(Index),
+
+    case hn_db:get_item_val(Addr#ref{name = "__recompile"}) of
+        true ->
+            set_cell(Addr, hn_db:get_item_val(Addr#ref{name = formula}));
+        _ ->
+            Pcode = hn_db:get_item_val(Addr#ref{name = "__ast"}),
+            Rti = ref_to_rti(Addr, false),
+            Val = case muin:run_code(Pcode, Rti) of
+                      {ok, {_, V, _, _, _}}                -> V;
                       {error, Reason} when is_atom(Reason) -> Reason
                   end,
             set_cell_rawvalue(Addr,Val)
@@ -275,3 +335,18 @@ db_put(Addr,Name,Value) ->
     
 to_index(#ref{site=Site,path=Path,ref={cell,{X,Y}}}) ->
     #index{site=Site,path=Path,column=X,row=Y}.
+
+%% @doc #index{} -> #ref{}
+index_to_ref(_I = #index{site = Site, path = Path, column = Col, row = Row}) ->
+    #ref{site = Site, path = Path, ref = {cell, {Col, Row}}}.
+
+%% @doc Make a #muin_rti record out of a ref record & a flag that specifies whether to run formula in an array context.
+ref_to_rti(#ref{site = Site, path = Path, ref = {cell, {Col, Row}}}, ArrayContext) when is_boolean(ArrayContext) ->
+    #muin_rti{site = Site, path = Path, col = Col, row = Row, array_context = ArrayContext};
+ref_to_rti(#ref{site = Site, path = Path, ref = {range, {Col, Row, _, _}}}, ArrayContext) when is_boolean(ArrayContext) ->
+    #muin_rti{site = Site, path = Path, col = Col, row = Row, array_context = ArrayContext}.
+
+%% @doc Convert Parents & DependencyTree tuples as returned by Muin into SimpleXML.
+muin_link_to_simplexml({Type, {S, P, X1, Y1}}) ->
+    Url = hn_util:index_to_url({index, S, P, X1, Y1}),
+    {url, [{type, Type}], [Url]}.
