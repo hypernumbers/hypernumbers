@@ -112,10 +112,14 @@ ArrayRows -> ArrayRow ';' ArrayRows : [{row, '$1'}] ++ '$3'.
 ArrayRow -> ArrayLiteral : ['$1'].
 ArrayRow -> ArrayLiteral ',' ArrayRow : ['$1'] ++ '$3'.
 
-ArrayLiteral -> int   : lit('$1').
-ArrayLiteral -> float : lit('$1').
-ArrayLiteral -> bool  : lit('$1').
-ArrayLiteral -> str   : lit('$1').    
+ArrayLiteral -> int       : lit('$1').
+ArrayLiteral -> float     : lit('$1').
+ArrayLiteral -> '-' int   : lit('$2', fun(X) -> -X end).
+ArrayLiteral -> '-' float : lit('$2', fun(X) -> -X end).
+ArrayLiteral -> '+' int   : lit('$2').
+ArrayLiteral -> '+' float : lit('$2').
+ArrayLiteral -> bool      : lit('$1').
+ArrayLiteral -> str       : lit('$1').    
 
 Erlang code.
 
@@ -135,6 +139,8 @@ lit({error, Errval}) ->
     {errval, Errval};
 lit({_Type, Data}) ->
     Data.
+lit({_Type, Data}, Fun) ->
+    Fun(Data).
 
 %% Make an op function call for the AST from lexer tokens.
 op(Arg1, {Op}, Arg2) ->
