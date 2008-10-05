@@ -82,7 +82,7 @@ try_parse(Fla, {X, Y}) ->
 eval(Node = [Func|Args]) when ?isfuncall(Func) ->
     case preproc(Node) of
         false ->
-            case member(Func, ['if']) of
+            case member(Func, ['if', choose]) of
                 true -> % lazy
                     funcall(Func, Args);
                 false -> % eager
@@ -400,8 +400,18 @@ funcall('if', [Test, TrueExpr, FalseExpr]) ->
     if Bool  -> plain_eval(TrueExpr);
        ?else -> plain_eval(FalseExpr)
     end;
+
+funcall(choose, [A|Vs]) when ?is_area(A) ->
+    Flatvs = muin_collect:flatten_arrays([A]),
+    map(fun(X) -> funcall(choose, [X|Vs]) end, Flatvs);
+funcall(choose, [V|Vs]) ->
+    Idx = ?number(V, [cast_strings, cast_bools, ban_dates, ban_blanks]),
+    ?ensure(Idx > 0 andalso Idx =< length(Vs), ?ERR_VAL),
+    eval(nth(Idx, Vs));
+
 funcall(make_list, Args) ->
     {range, [Args]}; % shame, shame...
+
 %% Refs
 funcall(ref, [Col, Row, Path]) ->
     Rowidx = toidx(Row),
