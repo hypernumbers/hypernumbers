@@ -9,9 +9,12 @@
 
 -include("errvals.hrl").
 
+-define(is_area(A),
+        is_tuple(A) andalso (element(1, A) == array orelse element(1, A) == range)).
+
 -define(numbers(Xs, Rules),
-        lists:map(fun(X) -> ?number(X, Rules) end, Xs)).
-        %%muin_collect:collect_numbers(Xs, Rules)).
+        %%lists:map(fun(X) -> ?number(X, Rules) end, Xs)).
+        muin_collect:collect_numbers(Xs, Rules)).
 
 -define(number(X, Rules),
         muin_collect:collect_number(case X of
