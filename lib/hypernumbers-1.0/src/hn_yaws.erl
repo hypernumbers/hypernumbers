@@ -169,25 +169,18 @@ req('POST',{login,[],[{email,[],[Email]},{password,[],[Pass]}]},[],_User,_Ref) -
 req('POST',[],_,X,_) when X == no_access; X == read  ->
     {return,{status,503}};
 
-req('POST',{create,[],[{Name,[],[Value]}]},_Attr,_User,Ref) ->
+req('POST', {create, [], [{Name, [], [Value]}]}, _Attr, _User, Ref = #ref{ref = {cell, _, _}}) ->
     hn_main:set_attribute(Ref#ref{name=Name},Value),
     {ok,{success,[],[]}};
 
-req('POST',{create,[],Data},_Attr,_User,Ref = #ref{ref={range,{Y1,X1,Y2,X2}}}) ->
-    F = fun(X,Y,Z) ->
-                case lists:nth(Z,Data) of
-                    {_Name,[],[]} ->
-                        ok;
-                    {Name,[],[Val]} ->
-                        NewRef = Ref#ref{ref={cell,{Y,X}},name=Name},
-                        hn_main:set_attribute(NewRef,Val)
-                end
-        end,
-
-    [[ F(X,Y,((X-X1)*(Y2-Y1+1))+(Y-Y1)+1)
-       || Y <- lists:seq(Y1,Y2)] || X <- lists:seq(X1,X2)],
-
-    {ok,{success,[],[]}};
+req('POST', {create, [], Data}, _Attr, _User, Ref = #ref{ref = {range, _}}) ->
+    case hd(Data) of
+        {formula, [], [Formula]} ->
+            hn_main:formula_to_range(Formula, Ref);
+        _ ->
+            hn_main:constants_to_range(Data, Ref)
+    end,
+    {ok, {success, [], []}};
 
 req('POST',{create,[],Data},Vars,_User,Ref = #ref{auth=Auth}) ->
     LastRow = get_last_index(Ref#ref.site,Ref#ref.path,row)+1,
