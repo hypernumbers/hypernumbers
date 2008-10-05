@@ -13,6 +13,7 @@
 -include("builtins.hrl").
 -include("handy_macros.hrl").
 -include("typechecks.hrl").
+-include("muin_records.hrl").
 
 -import(tconv, [to_b26/1, to_i/1, to_i/2, to_s/1]).
 -import(muin_util, [attempt/3]).
@@ -21,6 +22,7 @@
 -define(my, get(y)).
 -define(mpath, get(path)).
 -define(msite, get(site)).
+-define(array_context, get(array_context)).
 
 %% Guard for eval() and plain_eval().
 -define(isfuncall(X),
@@ -42,29 +44,28 @@ compile(Fla, {X, Y}) ->
     end.
 
 %% @doc Runs formula given as a string.
-run_formula(Fla, Bindings) ->
-    {cell, {X, Y}} = Bindings#ref.ref,
-    case compile(Fla, {X, Y}) of
-        {ok, Ecode} ->
-            muin:run_code(Ecode, Bindings);
-        {error, error_in_formula} ->
-            {error, error_in_formula}
+run_formula(Fla, Rti = #muin_rti{col = Col, row = Row}) ->
+    case compile(Fla, {Col, Row}) of
+        {ok, Ecode}               -> muin:run_code(Ecode, Rti);
+        {error, error_in_formula} -> {error, error_in_formula}
     end.
 
 %% @doc Runs compiled formula.
-run_code(Pcode, #ref{site = Site, path = Path, ref = {cell, {X, Y}}}) ->
-%% Populate the process dictionary.
+run_code(Pcode, #muin_rti{site = Site, path = Path, col = Col, row = Row, array_context = AryCtx}) ->
+    %% Populate the process dictionary.
     map(fun({K,V}) -> put(K, V) end,
-        [{site, Site}, {path, Path}, {x, X}, {y, Y},
+        [{site, Site}, {path, Path}, {x, Col}, {y, Row}, {array_context, AryCtx},
          {retvals, {[], [], []}}, {recompile, false}]),
+    
+    Fcode = ?COND(?array_context, loopify(Pcode), Pcode),
 
-    case attempt(?MODULE, eval, [Pcode]) of
+    case attempt(?MODULE, eval, [Fcode]) of
         {ok, Val} ->
             {RefTree, _Errors, References} = get(retvals),
             Val2 = ?COND(Val == blank, 0, Val), % Links to blanks become 0.
-            {ok, {Pcode, Val2, RefTree, References, get(recompile)}};
+            {ok, {Fcode, Val2, RefTree, References, get(recompile)}};
         {error, {errval, Errval}} -> % this is how errvals are returned
-            {ok, {Pcode, {errval, Errval}, [], [], false}};
+            {ok, {Fcode, {errval, Errval}, [], [], false}};
         {error, Reason} ->
             {error, Reason}
     end.
@@ -435,12 +436,41 @@ funcall(':', [{ref, Col1, Row1, Path1, _}, {ref, Col2, Row2, "./", _}]) ->
 funcall(hypernumber, [Url]) ->
     {ok,#ref{site = RSite, path = RPath,
              ref = {cell, {RX, RY}}}} = hn_util:parse_url(Url),
-    F = ?L(hn_main:get_hypernumber(?msite, ?mpath, ?mx, ?my,
-                                   Url, RSite, RPath, RX, RY)),
+    F = fun() -> hn_main:get_hypernumber(?msite, ?mpath, ?mx, ?my, Url, RSite, RPath, RX, RY) end,
     get_value_and_link(F);
 
 funcall(hn, [Url]) ->
     funcall(hypernumber, [Url]);
+
+funcall(loop, [A, Fn]) when ?is_area(A) ->
+    area_util:apply_each(fun(L) when is_list(L) -> % paired up
+                                 funcall(Fn, L);
+                            (X) -> % single value from array
+                                 case Fn of
+                                     {Lst} when is_list(Lst) -> % fn spec is reversed
+                                         [Func|Revargs] = Lst,
+                                         funcall(Func, [X|reverse(Revargs)]);
+                                     _ -> % spec is atom (should probably be done on length)
+                                         funcall(Fn, [X])
+                                 end
+                         end,
+                         A);
+
+funcall(pair_up, [A, B]) when ?is_area(A) andalso ?is_area(B) ->
+    area_util:apply_each_with_pos(fun({X, {C, R}}) ->
+                                          case area_util:get_at(C, R, B) of
+                                              {ok, V}    -> [X, V];
+                                              {error, _} -> ?ERRVAL_NA
+                                          end
+                                  end,
+                                  A);
+funcall(pair_up, [A, V]) when ?is_area(A) andalso not(?is_area(V)) ->
+    Ev = eval(V),
+    ?COND(?is_area(Ev),
+          funcall(pair_up, [A, Ev]),
+          area_util:apply_each(fun(X) -> [X, Ev] end, A));
+funcall(pair_up, [V, A]) when ?is_area(A) andalso not(?is_area(V)) ->
+    funcall(pair_up, [A, V]);
 
 %% Function call, built-in or user-defined.
 funcall(Fname, Args) ->
@@ -452,6 +482,41 @@ funcall(Fname, Args) ->
     end.
 
 %%% Utility functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+%% TODO: Beef up.
+fntype(Fn) ->
+    ?COND(member(Fn, [transpose, mmult, munit, frequency]), matrix,
+          ?COND(member(Fn, [sum, count]),                   varag,
+                                                            other)).
+
+is_binop(X) ->
+    member(X, ['>', '<', '=', '>=', '<=', '<>', '+', '*', '-', '/', '^']).
+
+loopify(Node = [loop|_]) -> Node;
+loopify(Node = [Fn|_]) when ?isfuncall(Fn) ->
+    case fntype(Fn) of
+        matrix -> Node;
+        vararg -> Node;
+        _      -> loop_transform(Node)
+    end;
+loopify(Literal) -> Literal.
+
+loop_transform([Fn|Args]) when ?isfuncall(Fn) ->
+    ArgsProcd = map(fun(X) -> loopify(X) end, Args),
+    case is_binop(Fn) of
+        true -> % operator -- no reversing.
+            [A1|A2] = ArgsProcd,
+            [loop] ++ [[pair_up] ++ [A1|A2]] ++ [Fn];
+        false ->
+            case length(ArgsProcd) of
+                1 -> % ABS, SQRT &c
+                    [loop] ++ ArgsProcd ++ [Fn];
+                _ -> % IF, CONCATENATE &c (NOT binops)
+                    [Area|Rst] = ArgsProcd,
+                    [loop] ++ [Area] ++ [{[Fn|reverse(Rst)]}] % to wrap Area or not may depend on if it's node or literal?
+                                                              % wrap in {} to prevent from being eval'd -- need a proper '
+            end
+    end.
 
 %% Try the userdef module first, then Ruby, Gnumeric, R, whatever.
 userdef_call(Fname, Args) ->
