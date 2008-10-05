@@ -17,6 +17,8 @@
 
 %%% If an empty list comes out at the end of all pipes, an error is returned.
 
+%%% FIXME: Collectors for areas are very inefficient.
+
 -module(muin_collect).
 
 -export([flatten_ranges/1,  flatten_arrays/1,
@@ -30,8 +32,8 @@
 -compile(export_all). % For testing / to kill warnings.
 
 -include("handy_macros.hrl").
--include("errvals.hrl").
 -include("muin_records.hrl").
+-include("typechecks.hrl").
 
 -import(muin_util, [cast/2]).
 
@@ -64,6 +66,8 @@ flatten_ranges(Vs) ->
 %% ignore_bools | cast_bools | ban_bools
 %% ignore_dates | cast_dates | ban_dates
 %% ignore_blanks | cast_blanks | ban_blanks
+collect_numbers(A, Rules) when ?is_area(A) ->
+    area_util:apply_each(fun(X) -> collect_number(X, Rules) end, A);
 collect_numbers(Vs, Rules) ->
     generic_collect(Vs, Rules, fun erlang:is_number/1, num).
 
@@ -76,6 +80,8 @@ collect_number(V, Rules) ->
 %% cast_bools | ignore_bools | ban_bools
 %% cast_dates | ignore_dates | ban_dates
 %% cast_blanks | ignore_blanks | ban_blanks
+collect_strings(A, Rules) when ?is_area(A) ->
+    area_util:apply_each(fun(X) -> collect_string(X, Rules) end, A);
 collect_strings(Vs, Rules) ->
     generic_collect(Vs, Rules, fun is_string/1, str).
 
@@ -84,6 +90,8 @@ collect_string(V, Rules) ->
     hd(collect_strings([V], Rules)).
 
 %% @doc
+collect_bools(A, Rules) when ?is_area(A) ->
+    area_util:apply_each(fun(X) -> collect_bool(X, Rules) end, A);
 collect_bools(Vs, Rules) ->
     generic_collect(Vs, Rules, fun erlang:is_boolean/1, bool).
 
@@ -92,6 +100,8 @@ collect_bool(V, Rules) ->
     hd(collect_bools([V], Rules)).
 
 %% @doc
+collect_dates(A, Rules) when ?is_area(A) ->
+    area_util:apply_each(fun(X) -> collect_date(X, Rules) end, A);
 collect_dates(Vs, Rules) ->
     generic_collect(Vs, Rules, fun is_date/1, date).
 
