@@ -213,9 +213,24 @@ forecast([_, _, _]) ->
 %%     {matrix, [B1, B0]} = linest1(Kys, Kxs),
 %%     B1 * X + B0.
 
-%% TODO:
-frequency([_, _]) ->
-    0.
+%% FIXME: Bins should NOT be sorted (see Excel).
+%% FIXME: Current algorithm is O(n^2).
+frequency([A, B]) when ?is_area(A) andalso ?is_area(B) ->
+    {_, DataRows} = ?numbers(A, [cast_strings, cast_bools, ban_dates, cast_blanks]),
+    {_, BinsRows} = ?numbers(B, [cast_strings, cast_bools, ban_dates, cast_blanks]),
+    Data = sort(flatten(DataRows)),
+    Bins = [hd(Data)-1] ++ sort(flatten(BinsRows)) ++ [last(Data)+1],
+
+    Boundaries = hslists:init(zip(Bins, hslists:drop(Bins, 1) ++ [0])),
+    R = reverse(foldl(fun({X, Y}, Acc) ->
+                              Count = length(filter(fun(Z) -> Z > X andalso Z =< Y end, Data)),
+                              [Count|Acc]
+                      end,
+                      [],
+                      Boundaries)),
+    stdfuns_math:transpose([{array, [R]}]);
+frequency(_) ->
+    ?ERR_VAL.
 
 harmean(Vs) ->
     Flatvs = ?flatten_all(Vs),
