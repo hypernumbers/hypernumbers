@@ -53,7 +53,9 @@
          mod/1,
 
          %% Arrays and matrices
+         transpose/1,
          mdeterm/1,
+         munit/1,
          minverse/1,
          mmult/1,
          multinomial/1,
@@ -242,12 +244,37 @@ mod([V1, V2]) ->
 
 %%% Arrays and matrices ~~~~~
 
-mdeterm([L]) ->
-    ?IF(not(is_list(L)), ?ERR_VAL),
-    ?ensure_numbers(flatten(L)),
-    Mx = matrix:new(L),
-    ?IF(not(matrix:is_square(Mx)), ?ERR_VAL),
-    matrix:det(Mx).
+transpose([A]) when ?is_area(A) ->
+    {_, Rows} = A,
+    {array, hslists:transpose(Rows)}.
+
+mdeterm([A]) when ?is_area(A) ->
+    W = area_util:width(A),
+    H = area_util:height(A),
+    ?ensure(W == H, ?ERR_VAL),
+    {_, Rows} = ?numbers(A, [ban_strings, ban_blanks, cast_bools, ban_dates]),
+    mdeterm1(Rows, W);
+mdeterm([V]) ->
+    mdeterm([{array, [[V]]}]).
+mdeterm1(Rows, 1) ->
+    [[Num]] = Rows,
+    Num;
+mdeterm1(Rows, 2) ->
+    [[A, B], [C, D]] = Rows,
+    A*D - B*C;
+mdeterm1(Rows, 3) ->
+    [[A, B, C], [D, E, F], [G, H, I]] = Rows,
+    A*E*I - A*F*H - B*D*I + B*F*G + C*D*H - C*E*G;
+mdeterm1(_Rows, _W) ->
+    ?ERR_NUM.
+
+munit([V]) ->
+    N = ?number(V, [cast_strings, cast_bools, ban_dates, ban_blanks]),
+    Empty = area_util:make_array(N, N),
+    area_util:apply_each_with_pos(fun({_, {C, C}}) -> 1;
+                                     ({_, _})      -> 0
+                                  end,
+                                  Empty).
 
 minverse([L]) ->
     ?IF(not(is_list(L)), ?ERR_VAL),
