@@ -7,6 +7,7 @@
 -export([error_type/1, iserr/1, iserror/1, iseven/1, islogical/1, isna/1,
          isnontext/1, isnumber/1, isodd/1, istext/1, n/1, na/0, type/1,
          isblank/1, isnonblank/1, info/1]).
+-export([rows/1, columns/1]).
 
 -include("handy_macros.hrl").
 -include("typechecks.hrl").
@@ -132,3 +133,11 @@ info(["path"]) ->
         "//" -> "/";
         V    -> V
     end.
+
+rows([A]) when ?is_area(A) -> area_util:height(A);
+rows([_])                  -> 1;
+rows(_)                    -> ?ERR_VAL.
+
+columns([A]) when ?is_area(A) -> area_util:width(A);
+columns([_])                  -> 1;
+columns(_)                    -> ?ERR_VAL.

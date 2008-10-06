@@ -140,6 +140,8 @@
                   {n, stdfuns_info},
                   {na, stdfuns_info},
                   {type, stdfuns_info},
+                  {rows, stdfuns_info},
+                  {columns, stdfuns_info},
                   {'=', stdfuns_logical},
                   {'<>', stdfuns_logical},
                   {'<', stdfuns_logical},
