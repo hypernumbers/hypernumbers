@@ -168,7 +168,7 @@ preproc(['query2',Page,Return,Cond])->
     Toks=string:tokens(Page,"/"),
     Idx = find("*", Toks),
     Under = sublist(Toks, Idx - 1),
-
+    
     % This is a bodged query that will only run with a single [*] token in the URL
     % The under clause is the clause that gets all subpages of the URL up to the star
 
@@ -496,7 +496,7 @@ funcall(Fname, Args) ->
 %% TODO: Beef up.
 fntype(Fn) ->
     ?COND(member(Fn, [transpose, mmult, munit, frequency]), matrix,
-          ?COND(member(Fn, [sum, count]),                   varag,
+          ?COND(member(Fn, [sum, count]),                   vararg,
                                                             other)).
 
 is_binop(X) ->
