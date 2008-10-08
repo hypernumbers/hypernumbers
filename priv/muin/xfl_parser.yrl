@@ -131,8 +131,8 @@ func_name({atom, NameAsStr}) ->
 func_name({ref, _, _, _, Refstr}) ->
     list_to_atom(string:to_lower(Refstr)). % For ATAN2 etc.
     
-lit({name, Data}) ->
-    [name, Data];
+lit({name, Data, Path}) ->
+    [name, Data, Path];
 lit({ref, R, C, P, _}) ->
     [ref, R, C, P];
 lit({error, Errval}) ->
