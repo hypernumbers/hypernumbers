@@ -427,10 +427,13 @@ funcall(':', [{ref, Col1, Row1, Path1, _}, {ref, Col2, Row2, "./", _}]) ->
 
 %% TODO: Column & row ranges.
 
-%% TODO: Names.
-%% funcall(name, [Name, Path]) ->
-%%     Addr = hn_db:get_ref_from_name(Name),
-%%     Addr;
+funcall(name, [Name, Path]) ->
+    Refs = hn_db:get_ref_from_name(Name),
+    NeedPath = muin_util:walk_path(?mpath, Path),
+    [Ref] = filter(fun(#ref{path = P}) -> NeedPath == P end, Refs),
+    #ref{site = Site, path = Path2, ref = {cell, {Col, Row}}} = Ref,
+    FetchFun = ?L(hn_main:get_cell_info(Site, Path2, Col, Row)),
+    get_value_and_link(FetchFun);
 
 %% Hypernumber function and its shorthand.
 funcall(hypernumber, [Url]) ->
