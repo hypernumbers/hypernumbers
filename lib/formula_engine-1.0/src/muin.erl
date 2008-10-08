@@ -48,17 +48,10 @@ run_code(Pcode, #muin_rti{site = Site, path = Path, col = Col, row = Row, array_
          {retvals, {[], [], []}}, {recompile, false}]),
     
     Fcode = ?COND(?array_context, loopify(Pcode), Pcode),
-
-    case attempt(?MODULE, eval, [Fcode]) of
-        {ok, Val} ->
-            {RefTree, _Errors, References} = get(retvals),
-            Val2 = ?COND(Val == blank, 0, Val), % Links to blanks become 0.
-            {ok, {Fcode, Val2, RefTree, References, get(recompile)}};
-        {error, {errval, Errval}} -> % this is how errvals are returned
-            {ok, {Fcode, {errval, Errval}, [], [], false}};
-        {error, Reason} ->
-            {error, Reason}
-    end.
+    Ev = eval(Fcode),
+    {RefTree, _Errors, References} = get(retvals),
+    Ev2 = ?COND(Ev == blank, 0, Ev),
+    {ok, {Fcode, Ev2, RefTree, References, get(recompile)}}.
 
 %%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -84,8 +77,8 @@ eval(Node = [Func|Args]) when ?isfuncall(Func) ->
     case preproc(Node) of
         false ->
             case member(Func, ['if', choose]) of
-                true  -> funcall(Func, Args);
-                false -> funcall(Func, [eval(X) || X <- Args])
+                true  -> call(Func, Args);
+                false -> call(Func, [eval(X) || X <- Args])
             end;
         {reeval, Newnode} ->
             eval(Newnode);
@@ -95,11 +88,17 @@ eval(Node = [Func|Args]) when ?isfuncall(Func) ->
             List=lists:map(Fun,Urls),
             lists:flatten(hslists:intersperse(",",List));
         [Func2|Args2] ->
-             CallArgs = [eval(X) || X <- Args2],
-            funcall(Func2, CallArgs)
+            CallArgs = [eval(X) || X <- Args2],
+            call(Func2, CallArgs)
     end;
 eval(Value) ->
     Value.
+
+call(Func, Args) ->
+    case attempt(?MODULE, funcall, [Func, Args]) of
+        {error, Errv = {errval, _}} -> Errv;
+        {ok, V}                     -> V
+    end.
 
 %% @doc Same as eval() but doesn't preprocess.
 plain_eval([Func | Args]) when ?isfuncall(Func) ->
