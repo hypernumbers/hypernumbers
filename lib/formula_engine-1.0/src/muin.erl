@@ -397,8 +397,8 @@ make_match_spec(Match)->
 funcall('if', [Test, TrueExpr, FalseExpr]) ->
     V = plain_eval(Test),
     Bool = ?bool(V, [cast_strings, cast_numbers, cast_blanks, cast_dates]),
-    if Bool  -> plain_eval(TrueExpr);
-       ?else -> plain_eval(FalseExpr)
+    if Bool  -> eval(TrueExpr);
+       ?else -> eval(FalseExpr)
     end;
 
 funcall(choose, [A|Vs]) when ?is_area(A) ->
