@@ -50,5 +50,7 @@ get_at(Col, Row, _Rows, _W, _H) when Col < 1 orelse Row < 1 ->
 get_at(Col, Row, Rows, _W, _H) ->
     {ok, nth(Col, nth(Row, Rows))}.
 
+make_array(Rows) when is_list(Rows) ->
+    {array, Rows}. %% Check that all rows are of equal length?
 make_array(W, H) ->
     {array, lists:duplicate(H, lists:duplicate(W, 0))}.

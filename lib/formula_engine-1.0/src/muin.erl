@@ -154,7 +154,7 @@ preproc(['query', Arg]) ->
                     end
             end,
             Pages),
-    Node = [make_list | R],
+    Node = ?COND(R == [], 0, [make_list|R]),
     % Stick a special parent in.
     {ok, Refobj} = xfl_lexer:lex(last(Toks), {?mx, ?my}),
     [{ref, C2, R2, _, _}] = Refobj,
@@ -410,7 +410,7 @@ funcall(choose, [V|Vs]) ->
     eval(nth(Idx, Vs));
 
 funcall(make_list, Args) ->
-    {range, [Args]}; % shame, shame...
+    area_util:make_array([Args]); % horizontal array
 
 %% Refs
 funcall(ref, [Col, Row, Path]) ->
