@@ -123,47 +123,29 @@
 %% A lot of math functions simply cast everything.
 -define(default_rules, [cast_strings, cast_bools, cast_blanks, cast_dates]).
 
-%%% ----------------- %%%
-%%% Basic arithmetics %%%
-%%% ----------------- %%%
+%%% Operators ~~~~~
 
-'+'([blank, Num2]) ->
-    '+'([0, Num2]);
-'+'([Num1, blank]) ->
-    '+'([Num1, 0]);
-'+'([Num1, Num2]) ->
-    ?ensure_numbers([Num1, Num2]),
-    Num1 + Num2.
+'+'([V1, V2]) ->
+    [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
+    Num1+Num2.
 
 '-'([V1, V2]) ->
     [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
     Num1 - Num2.
 
-'*'([blank, Num2]) ->
-    '*'([0, Num2]);
-'*'([Num1, blank]) ->
-    '*'([Num1, 0]);
-'*'([Num1, Num2]) ->
-    ?ensure_numbers([Num1, Num2]),
-    Num1 * Num2.
+'*'([V1, V2]) ->
+    [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
+    Num1*Num2.
 
-'/'([blank, Num2]) ->
-    '/'([0, Num2]);
-'/'([_, blank]) ->
-    ?ERR_DIV;
-'/'([Num, Divisor]) ->
-    ?ensure_numbers([Num, Divisor]),
-    ?ensure_nonzero(Divisor),
-    Num / Divisor.
+'/'([V1, V2]) ->
+    [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
+    ?ensure(Num2 =/= 0, ?ERR_DIV),
+    Num1/Num2.
 
-negate([Num]) ->
-    ?ensure_number(Num),
-    -(Num).
+negate([V]) ->
+    -(?number(V, ?default_rules)).
 
-
-%%% ---------- %%%
-%%% Arithmetic %%%
-%%% ---------- %%%
+%%% Arithmetic ~~~~~
 
 sum(Vs) ->
     Flatvs = ?flatten_all(Vs),
