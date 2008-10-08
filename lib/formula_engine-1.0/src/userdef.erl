@@ -20,14 +20,14 @@
 
 -export([get_username/0]).
 
-get_username() -> Return=get(user),
+get_username() -> Return=get(username),
                   case Return of
                       undefined -> "undefined";
+                      anonymous -> "John Smith";
                       _         -> Return
                   end.
 
 sum3d(X) when is_list(X) ->
-    io:format("in userdef_sum3d X is ~p~n",[X]),
     sum3d(X,[]).
 
 sum3d([],Acc)    -> Acc;
@@ -36,8 +36,13 @@ sum3d([H|T],Acc) -> sum3d(T,H+Acc).
 %% Number must include country code, e.g. "+447776251669"
 %% =SENDSMS("+447776251669", "sent from the gui")
 sendsms(Number, Text) ->
+    io:format("in userdef:sendsms sending ~p to ~p~n",[Text,Number]),
+    Msg = Number ++ " " ++ "\"" ++ Text ++ "\"",
+    Cmd = case os:type() of
+              {win32, nt} -> "send_win.bat " ++ Msg;
+              _           -> "sh send.sh "   ++ Msg
+          end,
     file:set_cwd("lib/formula_engine-1.0/src"),
-    Cmd = "sh send.sh " ++ Number ++ " " ++ "\"" ++ Text ++ "\"",
     %%io:format("~p :: ~s~n", [file:get_cwd(), Cmd]),
     os:cmd(Cmd),
     file:set_cwd("../../.."),
