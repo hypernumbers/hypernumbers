@@ -1,22 +1,40 @@
 %%% @doc List functions? MOAR!!
 %%% @author Hasan Veldstra <hasan@12monkeys.co.uk> [http://12monkeys.co.uk]
-%%% Distributed under the same license as Erlang.
-
-%%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-%%% NB: The main repo for hslists lives at:
-%%%     http://www.github.com/hassy/hslists/tree/master/
-%%% This file has to be copied here manually (no externals for Git).
-%%% Last updated on: Apr 29, 2008
-%%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+%%% @license Distributed under the same license as Erlang.
 
 -module(hslists).
 -import(lists, [all/2, append/1, duplicate/2, flatten/1, foldl/3, foreach/2,
                 map/2, nth/2, nthtail/2, reverse/1, seq/2, sum/1, zip/2,
                 zipwith/3]).
 
--export([init/1, mid/1, random/1, intersperse/2, join/2, intercalate/2,
-         transpose/1, product/1, average/1, loop/2, shuffle/1, uniq/1,
-         enumerate/1, drop/2]).
+-export([detect/2, detect/3, find/2, init/1, mid/1, random/1, intersperse/2,
+         join/2, intercalate/2, transpose/1, product/1, average/1, loop/2,
+         shuffle/1, uniq/1, enumerate/1, drop/2, cartesian_product/2,
+         map_with_pos/2]).
+
+%% @doc Returns the first element for which the fun returns true. Returns not_
+%% detected if there isn't such an element.
+detect(Detector, L) ->
+    detect(Detector, fun() -> not_found end, L).
+detect(Detector, IfNone, [Hd|Tl]) ->
+    case Detector(Hd) of
+        true -> {ok, Hd};
+        _    -> detect(Detector, IfNone, Tl)
+    end;
+detect(_Detector, IfNone, []) ->
+    IfNone().            
+
+%% @doc Returns index of the first element in the list that's equal to some value.
+find(_, []) ->
+    0;
+find(What, [What|_]) ->
+    1;
+find(What, [_|Tl]) ->
+    find1(What, Tl, 2). % position of current hd in the original list
+find1(What, [What|_], Origpos) ->
+    Origpos;
+find1(What, [_|Tl], Origpos) ->
+    find1(What, Tl, Origpos + 1).
 
 %% @doc Returns all the elements of a list except the last one.
 init(L) ->
@@ -33,12 +51,12 @@ intersperse(_Elt, []) ->
 intersperse(Elt, L) ->
     tl(intersperse1(Elt, L, [])).
 
-intersperse1(Elt, [Hd | Tl], Acc) ->
+intersperse1(Elt, [Hd|Tl], Acc) ->
     intersperse1(Elt, Tl, Acc ++ [Elt, Hd]);
 intersperse1(_Elt, [], Acc) ->
     Acc.
 
-%% @doc intersperse/1.
+%% @equiv intersperse/1
 join(Elt, L) ->
     intersperse(Elt, L).
 
@@ -69,6 +87,7 @@ product([Hd | Tl]) ->
     foldl(fun(X, Acc) -> X * Acc end,
           Hd, Tl).
 
+%% @doc Computes the average value of a list of numbers.
 average(L) ->
     sum(L) / length(L).
 
@@ -113,9 +132,17 @@ uniq([]) ->
 enumerate(L) ->
     zip(L, seq(1, length(L))).
 
+%% @doc Like lists:map but the fun is given {Element, Position} tuple rather than just Elements in succession.
+map_with_pos(Fun, L) ->
+    map(Fun, enumerate(L)).
+
 %% @doc Return list with first N elements dropped. If N is negative, then
 %% elements are dropped from the end of the list.
 drop(L, N) when N > 0 ->
     nthtail(N, L);
 drop(L, N) when N < 0 ->
     reverse(nthtail(N * -1, reverse(L))).
+
+%% @doc Return Cartesian product of two lists.
+cartesian_product(L1, L2) ->
+    [{X, Y} || X <- L1, Y <- L2].
