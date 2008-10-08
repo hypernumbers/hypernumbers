@@ -251,8 +251,8 @@ get_ref_from_name(Name) ->
                   Match = #hn_item{addr=#ref{name=name, _ = '_'}, val = Name},
                   mnesia:match_object(hn_item,Match,read)
           end,
-    {atomic, [Item]} = ?mn_tr(Fun),
-    Item#hn_item.addr.
+    {atomic, Items} = ?mn_tr(Fun),
+    [X#hn_item.addr || X <- Items].
 
 %%--------------------------------------------------------------------
 %% Function    : get_item/1
