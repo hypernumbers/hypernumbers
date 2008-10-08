@@ -135,7 +135,7 @@ preproc([indirect, Arg]) ->
     end;
 preproc(['query', Arg]) ->
     Toks = string:tokens(Arg, "/"),
-    Idx = find("*", Toks),
+    Idx = hslists:find("*", Toks),
     Under = sublist(Toks, Idx - 1),
     Pages = get_pages_under(Under),
     R = map(fun(X) ->
@@ -163,7 +163,7 @@ preproc(['query', Arg]) ->
     {reeval, Node};
 preproc(['query2',Page,Return,Cond])->
     Toks=string:tokens(Page,"/"),
-    Idx = find("*", Toks),
+    Idx = hslists:find("*", Toks),
     Under = sublist(Toks, Idx - 1),
     
     % This is a bodged query that will only run with a single [*] token in the URL
@@ -266,7 +266,7 @@ preproc(['query2',Page,Return,Cond])->
     {reeval,[make_list|List4]};
 preproc(['query3',Page,Cond])->
     Toks=string:tokens(Page,"/"),
-    Idx = find("*", Toks),
+    Idx = hslists:find("*", Toks),
     Under = sublist(Toks, Idx - 1),
 
     % This is a bodged query that will only run with a single [*] token in the URL
@@ -557,22 +557,6 @@ get_value_and_link(FetchFun) ->
 toidx(N) when is_number(N) -> N;
 toidx({row, Offset})       -> ?my + Offset;
 toidx({col, Offset})       -> ?mx + Offset.
-
-%% TODO: Move to hslists.
-%% @doc Return position of element X in the list. Returns 0 if the list does
-%% not contain such element.
-find(_, []) ->
-    0;
-find(What, [What|_]) ->
-    1;
-find(What, [_|Tl]) ->
-    find1(What, Tl, 2). % position of current hd in the original list
-find1(What, [What|_], Origpos) ->
-    Origpos;
-find1(What, [_|Tl], Origpos) ->
-    find1(What, Tl, Origpos + 1);
-find1(_, [], _) ->
-    0.
 
 %% @spec get_pages_under(list()) -> list()
 %% @doc Get list of pages under path specified by a list of path components.
