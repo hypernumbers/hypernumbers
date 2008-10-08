@@ -13,7 +13,8 @@
          '<='/1,
          '>='/1,
          'and'/1,
-         %%iferror/1,
+         'if'/1,
+         iferror/1,
          'not'/1,
          'or'/1]).
 
@@ -50,3 +51,11 @@
     Bools = ?bools(Flatvs, [cast_strings, cast_numbers, cast_blanks, cast_dates]),
     any(fun(X) -> X == true end,
         Bools).
+
+'if'([Test, TrueExpr, FalseExpr]) ->
+    V = muin:eval(Test),
+    B = ?bool(V, [cast_strings, cast_numbers, cast_blanks, ban_dates]),
+    ?COND(B, muin:eval(TrueExpr), muin:eval(FalseExpr)).
+
+iferror([Test, TrueExpr, FalseExpr]) ->
+    'if'([stdfuns_info:iserror([muin:eval(Test)]), TrueExpr, FalseExpr]).
