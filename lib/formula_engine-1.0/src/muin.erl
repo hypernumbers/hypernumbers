@@ -2,7 +2,8 @@
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 
 -module(muin).
--export([compile/2, run_formula/2, run_code/2]).
+-export([run_formula/2, run_code/2]).
+-export([eval/1]).
 
 %% this is just cos we are bodging it in templates
 -export([get_pages_under/1]).
@@ -31,17 +32,6 @@
 -define(puts, io:format).
 
 %%% PUBLIC ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-%% @spec compile(string(), {integer(), integer()})
-%% @doc Compiles a formula against a cell.
-compile(Fla, {X, Y}) ->
-    case attempt(?MODULE, try_parse, [Fla, {X, Y}]) of
-        {ok, {ok, Pcode}} ->
-            {ok, Pcode};
-        {error, Reason} ->
-            error_logger:error_msg("muin:compile ~p~n", [Reason]),
-            {error, error_in_formula}
-    end.
 
 %% @doc Runs formula given as a string.
 run_formula(Fla, Rti = #muin_rti{col = Col, row = Row}) ->
@@ -72,22 +62,30 @@ run_code(Pcode, #muin_rti{site = Site, path = Path, col = Col, row = Row, array_
 
 %%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-try_parse(Fla, {X, Y}) ->
-    Trans = translator:do(Fla),
-    {ok, Toks} = xfl_lexer:lex(Trans, {X, Y}),
-    {ok, Ast} = xfl_parser:parse(Toks), % Match to enforce the contract.
-    {ok, Ast}.
+%% @spec compile(string(), {integer(), integer()})
+%% @doc Compiles a formula against a cell.
+compile(Fla, {Col, Row}) ->
+    case parse(Fla, {Col, Row}) of
+        {ok, Pcode}           -> {ok, Pcode};
+        {error, syntax_error} -> {error, error_in_formula}
+    end.
 
-%% @doc Evaluates an s-expression, pre-processing subexps as needed.
+%% Formula -> sexp, relative to coord.
+parse(Fla, {Col, Row}) ->
+    Trans = translator:do(Fla),
+    {ok, Toks} = xfl_lexer:lex(Trans, {Col, Row}),
+    case catch(xfl_parser:parse(Toks)) of
+        {ok, Ast} -> {ok, Ast};
+        _         -> {error, syntax_error}
+    end.
+
+%% Evaluate a form in the current rti context.
 eval(Node = [Func|Args]) when ?isfuncall(Func) ->
     case preproc(Node) of
         false ->
             case member(Func, ['if', choose]) of
-                true -> % lazy
-                    funcall(Func, Args);
-                false -> % eager
-                    CallArgs = [eval(X) || X <- Args],
-                    funcall(Func, CallArgs)
+                true  -> funcall(Func, Args);
+                false -> funcall(Func, [eval(X) || X <- Args])
             end;
         {reeval, Newnode} ->
             eval(Newnode);
@@ -393,13 +391,6 @@ make_match_spec(Match)->
     Cond=[],
     Body=['$1'],
     [{Head,Cond,Body}].
-
-funcall('if', [Test, TrueExpr, FalseExpr]) ->
-    V = plain_eval(Test),
-    Bool = ?bool(V, [cast_strings, cast_numbers, cast_blanks, cast_dates]),
-    if Bool  -> eval(TrueExpr);
-       ?else -> eval(FalseExpr)
-    end;
 
 funcall(choose, [A|Vs]) when ?is_area(A) ->
     Flatvs = muin_collect:flatten_arrays([A]),
