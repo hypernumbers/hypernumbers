@@ -147,9 +147,11 @@ op(Arg1, {Op}, Arg2) ->
     [Op, Arg1, Arg2].
 
 special_div(Ref1 = {ref, _, _, _, _}, Ref2 = {ref, _, _, "/", _}) ->
-    op(Ref1, {'/'}, Ref2);
+    op(hslists:init(tuple_to_list(Ref1)),
+       {'/'},
+       hslists:init(tuple_to_list(Ref2)));
 special_div(E, Ref = {ref, _, _, "/", _}) ->
-    op(E, {'/'}, Ref).
+    op(E, {'/'}, hslists:init(tuple_to_list(Ref))).
 
 %% Make a straight-up function call for the AST from a token and a
 %% list of args.
