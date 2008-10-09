@@ -27,9 +27,11 @@
 -define(msite, get(site)).
 -define(array_context, get(array_context)).
 
-%% Guard for eval() and plain_eval().
--define(is_fn(X),
+
+-define(is_fn(X),      % Is atom a function name?
         is_atom(X) andalso X =/= true andalso X =/= false).
+-define(is_funcall(X), % Is list a function call?
+        ?is_list(X) andalso ?is_fn(hd(X))).
 
 -define(puts, io:format).
 
