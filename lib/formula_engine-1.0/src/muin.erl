@@ -1,6 +1,8 @@
 %%% @doc Interface to the formula engine and the interpreter.
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 
+%% TODO: Need a generic apply(Node, Fun)
+
 -module(muin).
 -export([run_formula/2, run_code/2]).
 -export([eval/1]).
@@ -26,7 +28,7 @@
 -define(array_context, get(array_context)).
 
 %% Guard for eval() and plain_eval().
--define(isfuncall(X),
+-define(is_fn(X),
         is_atom(X) andalso X =/= true andalso X =/= false).
 
 -define(puts, io:format).
@@ -73,7 +75,7 @@ parse(Fla, {Col, Row}) ->
     end.
 
 %% Evaluate a form in the current rti context.
-eval(Node = [Func|Args]) when ?isfuncall(Func) ->
+eval(Node = [Func|Args]) when ?is_fn(Func) ->
     case preproc(Node) of
         false ->
             case member(Func, ['if', choose]) of
@@ -101,17 +103,15 @@ call(Func, Args) ->
     end.
 
 %% @doc Same as eval() but doesn't preprocess.
-plain_eval([Func | Args]) when ?isfuncall(Func) ->
+plain_eval([Func | Args]) when ?is_fn(Func) ->
     CallArgs = [plain_eval(X) || X <- Args],
     funcall(Func, CallArgs);
 plain_eval(Value) ->
     Value.
 
-%% FIXME: ?isfuncall is a misleading name because it takes an atom. ?is_fn is better.
-%% TODO: Need a generic apply(Node, Fun)
-let_transform(NameNode=[name, N, P], [name, N, P], Repl)     -> Repl;
-let_transform(NameNode, [Fn|Args], Repl) when ?isfuncall(Fn) -> [Fn|[let_transform(NameNode, X, Repl) || X <- Args]];
-let_transform(_NameNode, Literal, _Repl)                     -> Literal.
+let_transform([name, N, P], [name, N, P], Repl)          -> Repl;
+let_transform(NameNode, [Fn|Args], Repl) when ?is_fn(Fn) -> [Fn|[let_transform(NameNode, X, Repl) || X <- Args]];
+let_transform(_NameNode, Literal, _Repl)                 -> Literal.
 
 %% @doc Transforms certain types of sexps. Returns false if the sexp didn't
 %% need to be transformed.
@@ -505,7 +505,7 @@ is_binop(X) ->
     member(X, ['>', '<', '=', '>=', '<=', '<>', '+', '*', '-', '/', '^']).
 
 loopify(Node = [loop|_]) -> Node;
-loopify(Node = [Fn|_]) when ?isfuncall(Fn) ->
+loopify(Node = [Fn|_]) when ?is_fn(Fn) ->
     case fntype(Fn) of
         matrix -> Node;
         vararg -> Node;
@@ -513,7 +513,7 @@ loopify(Node = [Fn|_]) when ?isfuncall(Fn) ->
     end;
 loopify(Literal) -> Literal.
 
-loop_transform([Fn|Args]) when ?isfuncall(Fn) ->
+loop_transform([Fn|Args]) when ?is_fn(Fn) ->
     ArgsProcd = map(fun(X) -> loopify(X) end, Args),
     case is_binop(Fn) of
         true -> % operator -- no reversing.
