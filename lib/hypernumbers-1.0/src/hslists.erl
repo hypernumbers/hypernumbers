@@ -10,10 +10,10 @@
 -export([detect/2, detect/3, find/2, init/1, mid/1, random/1, intersperse/2,
          join/2, intercalate/2, transpose/1, product/1, average/1, loop/2,
          shuffle/1, uniq/1, enumerate/1, drop/2, cartesian_product/2,
-         map_with_pos/2]).
+         map_with_pos/2, deepmap/2]).
 
-%% @doc Returns the first element for which the fun returns true. Returns not_
-%% detected if there isn't such an element.
+%% @doc Returns the first element for which the fun returns true. Returns 
+%% not_detected if there isn't such an element.
 detect(Detector, L) ->
     detect(Detector, fun() -> not_found end, L).
 detect(Detector, IfNone, [Hd|Tl]) ->
@@ -71,10 +71,8 @@ intercalate(L, Layers) ->
 %% All sublists must be of the same length.
 transpose(L) ->
     Len = length(hd(L)),
-    foreach(fun(X) -> Len = length(X) end,
-            L),
+    foreach(fun(X) -> Len = length(X) end, L),
     transpose1(L, duplicate(Len, [])).
-
 transpose1([Row | Restrows], Acc) ->
     Newacc = zipwith(fun(X, Y) -> Y ++ [X] end,
                      Row, Acc),
@@ -84,8 +82,7 @@ transpose1([], Acc) ->
 
 %% @doc Computes the product of a list of numbers.
 product([Hd | Tl]) ->
-    foldl(fun(X, Acc) -> X * Acc end,
-          Hd, Tl).
+    foldl(fun(X, Acc) -> X * Acc end, Hd, Tl).
 
 %% @doc Computes the average value of a list of numbers.
 average(L) ->
@@ -146,3 +143,12 @@ drop(L, N) when N < 0 ->
 %% @doc Return Cartesian product of two lists.
 cartesian_product(L1, L2) ->
     [{X, Y} || X <- L1, Y <- L2].
+
+%% @doc map over a deep list maintaining its structure. @end
+%% Nicked from Yaws by Claes Wikström <klacke@hyber.org>
+deepmap(Fun, [H|T]) when list(H) ->
+    [deepmap(Fun, H) | deepmap(Fun, T)];
+deepmap(Fun, [H|T]) ->
+    [Fun(H) | deepmap(Fun,T)];
+deepmap(_Fun, []) ->
+    [].
