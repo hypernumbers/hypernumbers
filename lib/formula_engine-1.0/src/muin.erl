@@ -107,8 +107,17 @@ plain_eval([Func | Args]) when ?isfuncall(Func) ->
 plain_eval(Value) ->
     Value.
 
+%% FIXME: ?isfuncall is a misleading name because it takes an atom. ?is_fn is better.
+%% TODO: Need a generic apply(Node, Fun)
+let_transform(NameNode=[name, N, P], [name, N, P], Repl)     -> Repl;
+let_transform(NameNode, [Fn|Args], Repl) when ?isfuncall(Fn) -> [Fn|[let_transform(NameNode, X, Repl) || X <- Args]];
+let_transform(_NameNode, Literal, _Repl)                     -> Literal.
+
 %% @doc Transforms certain types of sexps. Returns false if the sexp didn't
-%% need to be transformed. @end
+%% need to be transformed.
+preproc(['let', NameNode, ValueNode, BodyNode]) ->
+    Value = eval(ValueNode),
+    {reeval, let_transform(NameNode, BodyNode, Value)};
 %% Ranges constructed with INDIRECT. No need for an explicit check, because
 %% if either argument evaluates to something other than a ref, funcall clause
 %% for ':' will fail at the next step.
