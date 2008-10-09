@@ -151,7 +151,7 @@ preproc(['query', Arg]) ->
                     end
             end,
             Pages),
-    Node = ?COND(R == [], 0, [make_list|R]),
+    Node = [make_list|R],
     % Stick a special parent in.
     {ok, Refobj} = xfl_lexer:lex(last(Toks), {?mx, ?my}),
     [{ref, C2, R2, _, _}] = Refobj,
