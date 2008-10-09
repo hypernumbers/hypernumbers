@@ -98,23 +98,16 @@ n(_) ->
 na() ->
     {error, na}.
 
-%% TODO / COMPATIBILITY NOTE:
-%% TYPE(A1) when A1 is blank => 1.
-%% TYPE(INDIRECT("A1")) regardless of what's in A1 => 0
-%% TYPE({1}) => 64
-%% TYPE(A1:B10) regardless of what's in A1:B10 => 16
-type([Num]) when is_number(Num) ->
-    1;
-type([Ustr]) when is_binary(Ustr) ->
-    2;
-type([Bool]) when is_boolean(Bool) ->
-    4;
-type([{errval, _X}]) ->
-    16;
-type([List]) when is_list(List) ->
-    64;
-type(_) ->
-    0.
+%% ~~~~~ INCOMPATIBILITY NOTE:
+%% TYPE(A1:B10) in Excel = 16, in Hypernumbers it's 64.
+%% TYPE(INDIRECT("A1")) in Excel = 0 regardless of contents of A1. In Hypernumbers it's same as TYPE(A1)
+type([A]) when ?is_area(A)   -> 64;
+type([N]) when is_number(N)  -> 1;
+type([S]) when is_list(S)    -> 2;
+type([B]) when is_boolean(B) -> 4;
+type([{errval, _X}])         -> 16;
+type([blank])                -> 1;
+type(_)                      -> 0.
 
 isblank([blank]) ->
     true;
@@ -138,6 +131,16 @@ rows([A]) when ?is_area(A) -> area_util:height(A);
 rows([_])                  -> 1;
 rows(_)                    -> ?ERR_VAL.
 
-columns([A]) when ?is_area(A) -> area_util:width(A);
-columns([_])                  -> 1;
+columns([A]) when ?is_area(A) ->
+    area_util:width(A);
+columns([V])                  ->
+    _N = ?number(V, [ban_strings, ban_dates, ban_bools, cast_blanks]),
+    1;
+columns([A, V]) when ?is_area(A) ->
+    B = ?bool(V, [cast_numbers, ban_strings, ban_dates, cast_blanks]), % strict?
+    ?COND(B, area_util:width(A), columns([A]));
+columns([V1, V2]) ->
+    _N = ?number(V1, [ban_strings, ban_dates, ban_bools, cast_blanks]),
+    B = ?bool(V2, [cast_numbers, ban_strings, ban_dates, cast_blanks]),
+    ?COND(B, ?ERR_VAL, 1);
 columns(_)                    -> ?ERR_VAL.
