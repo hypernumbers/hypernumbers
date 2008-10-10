@@ -16,6 +16,7 @@
 %% @spec out(Arg) -> YawsReturn.
 %% @doc Yaws handler for all incoming HTTP requests
 out(Arg) ->
+
     Url      = yaws_api:request_url(Arg),
     FileName = Arg#arg.docroot++Url#url.path,
     
@@ -144,9 +145,10 @@ req('GET',[],[],_,Ref) ->
         []   ->
             {return,{content,"text/plain","blank"}};
         List ->
-            F = fun(X#hn_item{addr=#ref{name=rawvalue}}) -> true;
-                   (_) -> false
+            F = fun(X) -> 
+                        (X#hn_item.addr)#ref.name == rawvalue
                 end,
+            
             
             Val = case lists:filter(F,List) of
                       [] -> 0;
