@@ -18,8 +18,8 @@
 out(Arg) ->
     Url      = yaws_api:request_url(Arg),
     FileName = Arg#arg.docroot++Url#url.path,
-
-%% Serve static files, can move to a different server later
+    
+    %% Serve static files, can move to a different server later
     case filelib:is_file(FileName) and not filelib:is_dir(FileName) of
         true  ->
             [{page,Url#url.path},{header,{cache_control,"max-age=3600"}}];
@@ -48,8 +48,8 @@ do_request(Arg,Url) ->
     {ok,Type} = hn_util:get_req_type(Vars),
     {ok,PostData} = get_post_data(Arg,Type),
 
-%% Verify AuthToken, authtoken can be passed via url
-%% or cookies, url takes precedence
+    %% Verify AuthToken, authtoken can be passed via url
+    %% or cookies, url takes precedence
     {ok,AuthCode} = get_var_or_cookie(auth,Vars,Arg),
     {ok,Token} = get_var_or_cookie(token,Vars,Arg),
     User = case string:tokens(AuthCode,":") of
@@ -66,6 +66,7 @@ do_request(Arg,Url) ->
                       {ok,{_Write,_Tok}}           -> {ok,require_token};
                       Else                         -> Else
                   end,
+
     Return = case req(Method,PostData,Vars,Access,Ref) of
                  {return,Data} ->
                      Data;
@@ -143,10 +144,10 @@ req('GET',[],[],_,Ref) ->
         []   ->
             {return,{content,"text/plain","blank"}};
         List ->
-            F = fun(X) ->
-                        (X#hn_item.addr)#ref.name == rawvalue
+            F = fun(X#hn_item{addr=#ref{name=rawvalue}}) -> true;
+                   (_) -> false
                 end,
-
+            
             Val = case lists:filter(F,List) of
                       [] -> 0;
                       [#hn_item{val=Value}] -> Value
