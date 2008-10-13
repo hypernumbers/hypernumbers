@@ -63,11 +63,9 @@ write_item(Addr,Val) when is_record(Addr,ref) ->
     Item = #hn_item{addr = Addr, val = Val},
     Fun  = fun() -> mnesia:write(Item) end,
     {atomic, ok} = ?mn_tr(Fun),
-
-%% Send a change notification to the remoting server, which
-%% notifies web clients,
-    %% io:format("in hn_db:write_item Val is ~p Addr is ~p,Item is ~p~n",[Val,Addr,Item]),
-    %% io:format("in hn_db:write_item Stacktrace is ~p~n",[erlang:get_stacktrace()]),
+    
+    %% Send a change notification to the remoting server, which
+    %% notifies web clients,
     spawn(fun() -> notify_remote(Item) end),
     ok.
 
@@ -77,7 +75,6 @@ notify_remote(Item=#hn_item{addr=#ref{site=Site,path=Path}}) ->
     MsgXml=hn_util:item_to_xml(Item),
     Msg = "change "++simplexml:to_xml_string(MsgXml),
     gen_server:call(remoting_reg,{change,Site,Path,Msg},?TIMEOUT).
-
 
 %%--------------------------------------------------------------------
 %% Function    : get_item/1
@@ -90,10 +87,10 @@ notify_remote(Item=#hn_item{addr=#ref{site=Site,path=Path}}) ->
 %%--------------------------------------------------------------------
 get_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
     F = fun() ->
-
-%% If Name is defined, match it
+                
+                %% If Name is defined, match it
                 N = ?COND(Name == undef,'_',Name),
-
+                
                 Attr = case Ref of
                            {cell,{X,Y}} ->
                                #ref{site=Site, path=Path, name=N, ref={cell,{X,Y}}};
@@ -102,16 +99,16 @@ get_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
                        end,
                 Match = #hn_item{addr = Attr, _ = '_'},
                 mnesia:match_object(hn_item,Match,read)
-
+        
         end,
     {atomic, List} = ?mn_tr(F),
-
+    
     case Ref of
         {cell,_} -> List;
         {page,_} -> List;
         _ ->
-%% If a request for row / column or range, need to include all
-%% items contained within it
+            %% If a request for row / column or range, need to include all
+            %% items contained within it
             lists:filter
               (
               fun(#hn_item{addr=#ref{ref=ItemRef}}) ->
@@ -119,16 +116,16 @@ get_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
                           {X,X}                     -> true; %% Same Ref
                           {{row,Y},{cell,{_,Y}}}    -> true; %% Cell on same row
                           {{column,X},{cell,{X,_}}} -> true; %% Cell on same col
-
+                          
                           {{range,{_,Y1,_,Y2}},{row,Y}}
                           when Y > Y1 andalso Y < Y2 -> true;
                           {{range,{X1,_,X2,_}},{column,X}}
                           when X > X1 andalso X < X2 -> true;
-
+                          
                           {{range,{X1,Y1,X2,Y2}},{cell,{X,Y}}}
                           when Y >= Y1 andalso Y =< Y2 andalso
                           X >= X1 andalso X =< X2 -> true;
-
+                          
                           _ -> false
                       end
               end,
@@ -511,13 +508,13 @@ dyn_parents(Index = #index{path=[H|T]},Results,Acc) ->
 
 dirty_refs_changed(dirty_cell, Ref) ->
 
-%% Make a list of cells listening, hypernumbers, direct
-%% cell links, and check for any wildcard * on the path
+    %% Make a list of cells listening, hypernumbers, direct
+    %% cell links, and check for any wildcard * on the path
     F = fun() ->
-%% Read dynamic links "/page/*/a1"
+                %% Read dynamic links "/page/*/a1"
                 NIndex = Ref#index{path=lists:reverse(Ref#index.path)},
                 Queries = dyn_parents(NIndex,[],[]),
-%% Direct Links
+                %% Direct Links
                 Direct = read_links(Ref,parent),
                 Rem = #remote_cell_link{parent=Ref,
                                         type=outgoing,_='_'},
@@ -525,10 +522,10 @@ dirty_refs_changed(dirty_cell, Ref) ->
                 {ok,list_hn(Links,[]),lists:append(Direct,Queries)}
         end,
     {atomic, {ok,Remote,Local}} = ?mn_tr(F),
-
+    
     Val = get_item_val((to_ref(Ref))#ref{name=rawvalue}),
 
-%% Update local cells
+    %% Update local cells
     lists:foreach(
       fun({local_cell_link, _, RefTo}) ->
               hn_main:recalc(RefTo)

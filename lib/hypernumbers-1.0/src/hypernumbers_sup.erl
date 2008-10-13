@@ -49,7 +49,7 @@ init([]) ->
     Dirty_hypn_srv = {dirty_hypn,{dirty_srv,start_link,[dirty_hypernumber]},
                       permanent,2000,worker,[start]},
 
-    {ok,{{one_for_one,2000,60}, [Dirty_refs_srv,
+    {ok,{{one_for_one,1,60}, [Dirty_refs_srv,
                                  Dirty_hypn_srv,
                                  Remote_sup,
                                  Random_srv]}}.

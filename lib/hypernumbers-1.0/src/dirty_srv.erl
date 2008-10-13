@@ -35,14 +35,12 @@ init([Type]) ->
 handle_info({mnesia_table_event,{write,_,Rec,_,_}},State) ->
 
     case State#state.state of
-	passive -> 
-	    ok;
-	active -> 
-	    trigger_recalc(Rec,State#state.type)
+        passive -> ok;
+        active  -> trigger_recalc(Rec,State#state.type)
     end,
-        
-    {noreply, State};
     
+    {noreply, State};
+
 handle_info(_Info,State) ->
     {noreply, State}.
 
@@ -56,17 +54,21 @@ handle_call(flush, _From, State) ->
     end),
 
     lists:foreach(
-        fun(X) ->
-            trigger_recalc(X,State#state.type)
-        end,
-        List),
-        
+      fun(X) ->
+              trigger_recalc(X,State#state.type)
+      end,
+      List),
+    
     {reply, ok, State}.
 
 handle_cast({setstate,NewState}, State) -> 
     {noreply, State#state{state=NewState}};
+handle_cast(resubscribe, State) -> 
+    mnesia:subscribe({table,State#state.type,detailed}),
+    {noreply,State};
 handle_cast(stop,State) ->
-    {stop,database_recreated,State}.
+    mnesia:unsubscribe({table,State#state.type,detailed}),
+    {noreply, State}.
     
 terminate(_Reason, _State) ->           ok.    
 code_change(_OldVsn, State, _Extra) ->  {ok, State}.
@@ -79,9 +81,9 @@ trigger_recalc(Rec,Type) ->
     Index = ?COND(Type == dirty_cell,
                   Rec#dirty_cell.index,
                   Rec#dirty_hypernumber.index),
-
-    mnesia:dirty_delete({Type, Index}),
-    hn_db:dirty_refs_changed(Type, Index),
     
+    ok = mnesia:dirty_delete({Type, Index}),
+    ok = hn_db:dirty_refs_changed(Type, Index),    
+
     ok.
 

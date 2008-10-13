@@ -20,6 +20,9 @@ create_db()->
     
 create_db(Storage)->
     
+    gen_server:cast(dirty_cell, stop),
+    gen_server:cast(dirty_hypernumber, stop),
+
     application:stop(mnesia),
     ok = mnesia:delete_schema([node()]),
     ok = mnesia:create_schema([node()]),
@@ -40,7 +43,7 @@ create_db(Storage)->
 
     hypernumbers_app:reset(),
 
-    gen_server:cast(dirty_cell, stop),
-    gen_server:cast(dirty_hypernumber, stop),
+    gen_server:cast(dirty_cell, resubscribe),
+    gen_server:cast(dirty_hypernumber, resubscribe),
     
     ok.

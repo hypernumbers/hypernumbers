@@ -107,11 +107,17 @@ to_xml({blank,[],[]})            ->
     [{string,[], [""]}];
 to_xml({datetime,{Y,M,D},{H,Min,S}}) ->
     [{data,[],[lists:concat([Y,"-",M,"-",D," ",H,":",Min,":",S])]}];
+to_xml({X,Values}) when X == range; X == array ->
+    F = fun(X) ->
+                {row,[],lists:map(fun to_xml/1,X)}
+        end,
+    [{X,[],lists:map(F,Values)}];
 to_xml(Else) ->
     case io_lib:char_list(Else) of
         true  -> [{string,[],[Else]}];
         false -> throw({unmatched_type,Else})
     end.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
