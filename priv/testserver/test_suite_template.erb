@@ -55,11 +55,13 @@ init_per_suite(Config) ->
                      hnpost(Path, Ref, Postdata)
              end,
 
+    error_logger:info_msg("Start Import: <%=@basename %>~n", []),
     gen_server:cast(dirty_cell,  {setstate, passive}),
     foreach(Dopost, Lits),
     foreach(Dopost, Flas),
     gen_server:cast(dirty_cell, {setstate, active}),
     gen_server:call(dirty_cell, flush, infinity),
+    error_logger:info_msg("End Import: <%=@basename %>~n", []),
     Config.
 
 end_per_suite(_Config) ->
