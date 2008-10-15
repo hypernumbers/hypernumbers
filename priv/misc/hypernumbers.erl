@@ -14,13 +14,20 @@
 
 -include("hypernumbers_settings.hrl").
 
+%%% TODO:
+%%% * Post to range.
+%%% * Support all possible types.
+
 %% @type path() = [string()]
 %% @type hn_value()  = string() | bool() | number()
-%% @type cellref() = atom()
+%% @type cellref() = atom() | coord()
+%% @type coord() = {Column :: integer(), Row :: integer()}
 
 %% @spec set_value(path(), cellref(), hn_value()) -> ReturnCode where
 %%   ReturnCode = ok | {error, timeout} | {error, post_error}
 %% @doc Set a value (or formula) for a cell.
+set_value(Path, Coord = {_Col, _Row}, Value) ->
+    set_value(Path, coord_to_ref(Coord), Value);
 set_value(Path, Ref, Value) ->
     Data = ("<create><formula><![CDATA[" ++
             prep_for_post(Value) ++
@@ -29,6 +36,8 @@ set_value(Path, Ref, Value) ->
 
 %% @spec get_value(path(), cellref()) -> hn_value()
 %% @doc Get value (not formula) of a cell.
+get_value(Path, Coord = {_Col, _Row}) ->
+    get_value(Path, coord_to_ref(Coord));
 get_value(Path, Ref) ->
     Body = http_get(make_url(Path, Ref)),
     conv_from_get(Body).
@@ -100,3 +109,6 @@ http_get(Url) ->
                                                      {Url, []},
                                                      [], []),
     Body.
+
+coord_to_ref({Col, Row}) when is_integer(Col) andalso is_integer(Row) ->
+    list_to_atom(tconv:to_b26(Col) ++ tconv:to_s(Row)).
