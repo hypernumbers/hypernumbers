@@ -177,6 +177,7 @@
                   {second, stdfuns_date},
                   {now, stdfuns_date},
                   {timevalue, stdfuns_date},
+                  {date, stdfuns_date},
                   {isblank, stdfuns_info},
                   {isnonblank, stdfuns_info},
                   {info, stdfuns_info},
