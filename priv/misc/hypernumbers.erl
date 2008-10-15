@@ -33,6 +33,10 @@ set_value(Path, Ref, Value) ->
             prep_for_post(Value) ++
             "]]></formula></create>"),
     http_post(make_url(Path, Ref), Data).
+set_value(Path, TlCoord = {_, _}, BrCoord = {_, _}, Value) ->
+    set_value(Path,
+              tconv:to_s(coord_to_ref(TlCoord)) ++ ":" ++ tconv:to_s(coord_to_ref(BrCoord)),
+              Value).
 
 %% @spec get_value(path(), cellref()) -> hn_value()
 %% @doc Get value (not formula) of a cell.
