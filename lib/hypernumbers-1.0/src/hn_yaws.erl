@@ -175,8 +175,8 @@ req('POST', {create, [], [{Name, [], [Value]}]}, _Attr, _User, Ref = #ref{ref = 
     {ok,{success,[],[]}};
 
 req('POST', {create, [], Data}, _Attr, _User, Ref = #ref{ref = {range, _}}) ->
-    case hd(Data) of
-        {formula, [], [Formula]} ->
+    case Data of
+        [{formula, [], [Formula]}] ->
             hn_main:formula_to_range(Formula, Ref);
         _ ->
             hn_main:constants_to_range(Data, Ref)
