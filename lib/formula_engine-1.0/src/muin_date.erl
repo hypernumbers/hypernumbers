@@ -1,4 +1,3 @@
-%%%----------------------------------------------------------------------------
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 %%% @doc Datetime support functions.
 %%% 
@@ -40,10 +39,11 @@
 
 -module(muin_date).
 
--export([excel_mac_to_gregorian/1, excel_win_to_gregorian/1,
-         from_gregorian_seconds/1]).
+-export([excel_mac_to_gregorian/1, excel_win_to_gregorian/1]).
+-export([from_gregorian_seconds/1]).
 -export([year/1, month/1, day/1, hour/1, minute/1, second/1]).
 -export([gt/2, dtdiff/2, next_day/1, walk/4]).
+-export([from_rfc1123_string/1, to_rfc1123_string/1]).
 
 -include("muin_records.hrl").
 
@@ -151,6 +151,16 @@ walk(Fun, Acc, Start, End) ->
 from_gregorian_seconds(N) when is_integer(N) ->
     {Date, Time} = calendar:gregorian_seconds_to_datetime(N),
     #datetime{date = Date, time = Time}.
+
+from_rfc1123_string(S) when is_list(S) ->
+    case muin_util:attempt(httpd_util, convert_request_date, [S]) of
+        {error, _}     -> bad_date;
+        {ok, bad_date} -> bad_date;
+        {ok, {D, T}}   -> #datetime{date = D, time = T}
+    end.
+
+to_rfc1123_string(#datetime{date = D, time = T}) ->
+    httpd_util:rfc1123_date({D, T}).
 
 %%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

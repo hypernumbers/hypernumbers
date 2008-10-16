@@ -19,7 +19,11 @@ process(Input) ->
         [{'-'}, {float, F}] -> {float, -F};
         [{'-'}, {int, I}]   -> {int, -I};
         [{errval, E}]       -> {errval, {errval, E}}; % type tag gets discarded by caller which is ok for the rest of them, but not here
-        _Else               -> {string, Input} %% TODO: What can go wrong here?
+        _Other              ->
+            case muin_date:from_rfc1123_string(Input) of
+                bad_date -> {string, Input};
+                Dt       -> {datetime, Dt} % as with errval
+            end
     end.
 
 %% Converts formula to upper-case, leaving only string literals as-is.

@@ -105,8 +105,8 @@ to_xml({errval, Errval})         -> [{errval,[], [atom_to_list(Errval)]}];
 to_xml({blank,[],[]})            ->
     io:format("in hn_util:to_xml bodging blank returns from hypernumbers!~n"),
     [{string,[], [""]}];
-to_xml({datetime,{Y,M,D},{H,Min,S}}) ->
-    [{data,[],[lists:concat([Y,"-",M,"-",D," ",H,":",Min,":",S])]}];
+to_xml(Dt) when is_record(Dt, datetime) ->
+    [{string, [], [muin_date:to_rfc1123_string(Dt)]}];
 to_xml({X,Values}) when X == range; X == array ->
     F = fun(X) ->
                 {row,[],lists:map(fun to_xml/1,X)}
@@ -323,6 +323,7 @@ text(X) when is_float(X)   -> float_to_list(X);
 text(X) when is_list(X)    -> lists:flatten(X);
 text({errval, Errval})     -> atom_to_list(Errval);
 text(X) when is_boolean(X) -> atom_to_list(X);
+text(Dt) when is_record(Dt, datetime) -> muin_date:to_rfc1123_string(Dt);
 text(_X) -> "". %% quick fix for the "plain" api
 
 
