@@ -70,9 +70,10 @@ conv_from_get(X) ->
                 N when is_number(N) -> % number
                     N;
                 {error, nan} -> % string
-                    case httpd_util:convert_request_date(X) of
-                        bad_date           -> X; % just a string
-                        T when is_tuple(T) -> T
+                    case attempt(httpd_util, convert_request_date, [X]) of
+                        {error, _}               -> X; % just a string
+                        {ok, bad_date}           -> X; % just a string
+                        {ok, T} when is_tuple(T) -> T
                     end
             end
     end.
@@ -111,3 +112,13 @@ http_get(Url) ->
 
 coord_to_ref({Col, Row}) when is_integer(Col) andalso is_integer(Row) ->
     list_to_atom(tconv:to_b26(Col) ++ tconv:to_s(Row)).
+
+%% Catch errors from error-throwing functions.
+attempt(Mod, F, Args) ->
+    try apply(Mod, F, Args) of
+        Val -> {ok, Val}
+    catch
+        throw:X -> {error, X};
+        exit:X  -> {error, X};
+        error:X -> {error, X}
+    end.
