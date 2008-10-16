@@ -2,7 +2,6 @@
 %%%
 %%% <ul>
 %%% <li>Uses the XML API for now.</li>
-%%% <li>Only numbers, strings and booleans are supported.</li>
 %%% </ul>
 %%% <p>To create an instance:<br />
 %%%   <code>hypernumbers:new(#hypernumbers_settings{})</code></p>
@@ -13,10 +12,6 @@
 -compile(export_all).
 
 -include("hypernumbers_settings.hrl").
-
-%%% TODO:
-%%% * Post to range.
-%%% * Support all possible types.
 
 %% @type path() = [string()]
 %% @type hn_value()  = string() | bool() | number()
@@ -53,16 +48,13 @@ settings() ->
 
 %%% private ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-prep_for_post(true) ->
-    "true";
-prep_for_post(false) ->
-    "false";
-prep_for_post(N) when is_integer(N) ->
-    integer_to_list(N);
-prep_for_post(F) when is_float(F) ->
-    float_to_list(F);
-prep_for_post(Str) when is_list(Str) ->
-    lists:flatten(Str).
+prep_for_post(true)                        -> "true";
+prep_for_post(false)                       -> "false";
+prep_for_post(N) when is_integer(N)        -> integer_to_list(N);
+prep_for_post(F) when is_float(F)          -> float_to_list(F);
+prep_for_post(A) when is_atom(A)           -> atom_to_list(A);
+prep_for_post(Str) when is_list(Str)       -> lists:flatten(Str);
+prep_for_post(T = {{_, _, _}, {_, _, _}})  -> httpd_util:rfc1123_date(T).
 
 conv_from_get("true")  -> true;
 conv_from_get("false") -> false;
@@ -78,7 +70,10 @@ conv_from_get(X) ->
                 N when is_number(N) -> % number
                     N;
                 {error, nan} -> % string
-                    X
+                    case httpd_util:convert_request_date(X) of
+                        bad_date           -> X; % just a string
+                        T when is_tuple(T) -> T
+                    end
             end
     end.
 
