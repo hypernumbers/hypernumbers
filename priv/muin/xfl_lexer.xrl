@@ -58,7 +58,7 @@ Rules.
 {BOOL}     : {token, {bool, YYtext == "TRUE"}}.
 {STR}      : {token, {str, hslists:mid(YYtext)}}.
 
-{ERROR} : {token, {error, list_to_atom(YYtext)}}.
+{ERROR} : {token, {errval, list_to_atom(YYtext)}}.
 {ATOM}  : {token, {atom, rmdots(string:to_lower(YYtext))}}.
 {NAME}  : {token, {name, rmdots(tl(string:to_lower(YYtext)))}}.
 

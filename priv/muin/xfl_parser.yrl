@@ -15,7 +15,7 @@ atom name
 '&' '%' ':'
 int float bool str
 ref
-error
+errval
 '(' ')' ',' '{' '}' ';'
 .
 
@@ -90,7 +90,7 @@ E -> bool  : lit('$1').
 E -> str   : lit('$1').
 E -> ref   : lit('$1').
 E -> name  : lit('$1').
-E -> error : lit('$1').
+E -> errval : lit('$1').
 E -> Array : '$1'.
 
 %% Funcalls.
@@ -135,7 +135,7 @@ lit({name, Data, Path}) ->
     [name, Data, Path];
 lit({ref, R, C, P, _}) ->
     [ref, R, C, P];
-lit({error, Errval}) ->
+lit({errval, Errval}) ->
     {errval, Errval};
 lit({_Type, Data}) ->
     Data.
