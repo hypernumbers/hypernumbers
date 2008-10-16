@@ -147,11 +147,13 @@ op(Arg1, {Op}, Arg2) ->
     [Op, Arg1, Arg2].
 
 special_div(Ref1 = {ref, _, _, _, _}, Ref2 = {ref, _, _, "/", _}) ->
+    Ref22 = setelement(4, Ref2, "."), % the cell is on current page, NOT root.
     op(hslists:init(tuple_to_list(Ref1)),
        {'/'},
-       hslists:init(tuple_to_list(Ref2)));
+       hslists:init(tuple_to_list(Ref22)));
 special_div(E, Ref = {ref, _, _, "/", _}) ->
-    op(E, {'/'}, hslists:init(tuple_to_list(Ref))).
+    Ref2 = setelement(4, Ref, "."), 
+    op(E, {'/'}, hslists:init(tuple_to_list(Ref2))).
 
 %% Make a straight-up function call for the AST from a token and a
 %% list of args.
