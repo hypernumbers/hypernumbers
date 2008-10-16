@@ -12,7 +12,6 @@ process([39 | Tl]) -> %% singly quoted string
     {string, Tl};
 process(Input) ->
     {ok, Toks} = xfl_lexer:lex(upcase(Input), {1, 1}),
-    io:format("superlex:process ::~n Input = ~p~nToks=~p~n", [Input, Toks]),
     case Toks of
         [{bool, B}]         -> {bool, B};
         [{float, F}]        -> {float, F};
