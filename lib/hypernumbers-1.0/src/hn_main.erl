@@ -6,6 +6,7 @@
 
 -module(hn_main).
 
+-include("hypernumbers.hrl").
 -include("spriki.hrl").
 -include("regexp.hrl").
 -include("handy_macros.hrl").
@@ -24,39 +25,25 @@
          constants_to_range/2
         ]).
 
-%%%-----------------------------------------------------------------
-%%% Exported Functions
-%%%-----------------------------------------------------------------
-%%%-----------------------------------------------------------------
-%%% Function    : set_attribute/2
-%%% Types       : 
-%%% Description : Set an attribute on a reference, the reference
-%%%               can be a row / column / page / cell, and the 
-%%%               attribute is a name / value pairs, if the name
-%%%               is 'formula',then the value is processed as the 
-%%%               formula of a cell
-%%%-----------------------------------------------------------------
-set_attribute(Ref,Val) when Ref#ref.name == formula -> 
+%% @spec set_attribute(Ref, Val) -> ok.
+%% @doc set an attribute on a reference, if the attribute name
+%%      is formula / format, then processed
+set_attribute(Ref = #ref{name=formula},Val) -> 
     set_cell(Ref,Val);
-set_attribute(Ref,Val) when Ref#ref.name == format ->
+set_attribute(Ref = #ref{name=format}, Val) ->
     hn_db:write_item(Ref,Val),
     F = fun(X,[]) ->
                 case hn_db:get_item_val(X#ref{name=rawvalue}) of
-                    [] -> 
-			ok;
-                    Value -> 
-			set_cell_rawvalue(X,Value)
+                    []    -> ok;
+                    Value -> set_cell_rawvalue(X,Value)
                 end
         end,
     apply_range(Ref,F,[]);
 set_attribute(Ref,Val) ->
     hn_db:write_item(Ref,Val).
 
-%%%-----------------------------------------------------------------
-%%% Function    : set_cell/2
-%%% Types       : 
-%%% Description : process the string input to a cell
-%%%-----------------------------------------------------------------
+%% @spec set_cell(Addr, Val) -> ok.
+%% @doc process_formula
 set_cell(Addr, Val) ->
     case hn_db:get_item_val(Addr#ref{name = "__shared"}) of
         true -> throw({error, cant_change_part_of_array});
@@ -70,10 +57,10 @@ value_to_cell(Addr, Val) ->
             case muin:run_formula(Fla, Rti) of
                 {error, _Error} -> 
                     ok;       
-                {ok, {Pcode, Res, Parents, Deptree, Recompile}} ->
+                {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
                     Parxml = map(fun muin_link_to_simplexml/1, Parents),
                     Deptreexml = map(fun muin_link_to_simplexml/1, Deptree),
-
+                    
                     ?IF(Pcode =/= nil,     db_put(Addr, "__ast", Pcode)),
                     ?IF(Recompile == true, db_put(Addr, "__recompile", true)),
                     write_cell(Addr, Res, "=" ++ Fla, Parxml, Deptreexml)
@@ -87,7 +74,6 @@ formula_to_range(Formula, Ref = #ref{ref = {range, {TlCol, TlRow, BrCol, BrRow}}
     Rti = ref_to_rti(Ref, true),
     {formula, FormulaProcd} = superparser:process(Formula),
     {ok, {Pcode, Res, Parents, DepTree, Recompile}} = muin:run_formula(FormulaProcd, Rti),
-
     SetCell = fun({Col, Row}) ->
                       OffsetCol = Col - TlCol + 1,
                       OffsetRow = Row - TlRow + 1,
@@ -102,9 +88,9 @@ formula_to_range(Formula, Ref = #ref{ref = {range, {TlCol, TlRow, BrCol, BrRow}}
                       db_put(Addr, "__recompile", Recompile),
                       db_put(Addr, "__shared", true),
                       db_put(Addr, "__area", {TlCol, TlRow, BrCol, BrRow}),
-                      write_cell(Addr, Value, Formula, ParentsXml, DepTreeXml) % Formula already has a leading =
+                      write_cell(Addr, Value, Formula, ParentsXml, DepTreeXml)
               end,
-
+    
     Coords = muin_util:expand_cellrange(TlRow, BrRow, TlCol, BrCol),
     foreach(SetCell, Coords).
 
@@ -130,61 +116,56 @@ constants_to_range(Data, Ref = #ref{ref = {range,{Y1, X1, Y2, X2}}}) ->
 %%%               references
 %%%-----------------------------------------------------------------    
 write_cell(Addr, Value, Formula, Parents, DepTree) ->
+    
     Index = to_index(Addr),
     
     hn_db:write_item(Addr#ref{name=formula},Formula),
     set_cell_rawvalue(Addr,Value),
-        
+    
     %% Delete attribute if empty, else store
-    Set = fun(Ref,Val) ->
-		  case Val of
-		      {xml,[]} -> 
-			  hn_db:remove_item(Ref);
-		      _ -> 
-			  hn_db:write_item(Ref,Val)
-		  end
-    end,
-           
+    Set = fun(Ref,{xml,[]}) -> hn_db:remove_item(Ref);
+             (Ref,Val)      -> hn_db:write_item(Ref,Val)
+          end,
+
     Set(Addr#ref{name=parents},{xml,Parents}),
     Set(Addr#ref{name='dependancy-tree'},{xml,DepTree}),
-    
     %% Delete the references
+    
     hn_db:del_links(Index,child),
-
     %% probably to be cleaned up, go through the remote parents
     %% to this cell, if they dont exist within the list of new
     %% parents, delete it (and unregister)
     lists:foreach(
       fun(X) when is_record(X,remote_cell_link) ->
-	      Url  = hn_util:index_to_url(X#remote_cell_link.parent),
-	      case lists:member({url,[{type,"remote"}],[Url]},Parents) of
-		  false -> 
-		      hn_db:del_remote_link(X);
-		  true  -> 
-		      ok
-	      end;
-	 (_) -> ok
+              Url  = hn_util:index_to_url(X#remote_cell_link.parent),
+              case lists:member({url,[{type,"remote"}],[Url]},Parents) of
+                  false -> 
+                      hn_db:del_remote_link(X);
+                  true  -> 
+                      ok
+              end;
+         (_) -> ok
       end,
       hn_db:read_remote_links(Index,child,incoming)),
     
     %% Writes all the parent links 
     lists:map( 
       fun({url,[{type,Type}],[Url]}) ->
-	      {ok,#ref{site=Site,path=Path,ref={cell,{X,Y}}}} = hn_util:parse_url(Url),
-	      Parent = {index,Site,string:to_lower(Path),X,Y},
-	      case Type of
-		  "local"  -> 
-		      hn_db:write_local_link(Parent,Index);
-		  "remote" -> 
-		      hn_db:write_remote_link(Parent,Index,incoming)
-	      end,
-	      ok
+              {ok,#ref{site=Site,path=Path,ref={cell,{X,Y}}}} = hn_util:parse_url(Url),
+              Parent = {index,Site,string:to_lower(Path),X,Y},
+              case Type of
+                  "local"  -> 
+                      hn_db:write_local_link(Parent,Index);
+                  "remote" -> 
+                      hn_db:write_remote_link(Parent,Index,incoming)
+              end,
+              ok
       end,
       Parents),
     
     hn_db:mark_dirty(Index,cell),    
     ok.
-    
+
 set_cell_rawvalue(Addr,Value) ->
     hn_db:write_item(Addr#ref{name=rawvalue},Value),
     {ok,Format} = hn_db:get_item_inherited(Addr#ref{name=format}, "General"),
@@ -203,17 +184,17 @@ set_cell_rawvalue(Addr,Value) ->
 %%%-----------------------------------------------------------------
 apply_range(Addr,Fun,Args) ->
     case Addr#ref.ref of
-    {range,{X1,Y1,X2,Y2}} ->
-        lists:foreach( fun(X) -> 
-            lists:foreach( fun(Y) ->
-                apply(Fun,[Addr#ref{ref={cell,{X,Y}}},Args])
-            end,lists:seq(Y1,Y2))
-        end,lists:seq(X1,X2));
-    {cell,{_X,_Y}} ->
-        apply(Fun,[Addr,Args])
-    %% TODO : Add row / col / page?
+        {range,{X1,Y1,X2,Y2}} ->
+            lists:foreach( fun(X) -> 
+                                   lists:foreach( fun(Y) ->
+                                                          apply(Fun,[Addr#ref{ref={cell,{X,Y}}},Args])
+                                                  end,lists:seq(Y1,Y2))
+                           end,lists:seq(X1,X2));
+        {cell,{_X,_Y}} ->
+            apply(Fun,[Addr,Args])
+            %% TODO : Add row / col / page?
     end.
-    
+
 %%%-----------------------------------------------------------------
 %%% Function    : get_cell_info/2
 %%% Types       : 
@@ -222,11 +203,11 @@ apply_range(Addr,Fun,Args) ->
 %%%               parents/ dependancy tree, and value
 %%%-----------------------------------------------------------------
 get_cell_info(Site, TmpPath, X, Y) ->
-
+    
     Path = lists:filter(fun(Z) -> not(Z == $/) end, TmpPath),   
     Ref = #ref{site=string:to_lower(Site),path=Path,ref={cell,{X,Y}}},
     Value   = hn_db:get_item_val(Ref#ref{name=rawvalue}),
-
+    
     DepTree = case hn_db:get_item_val(Ref#ref{name='dependancy-tree'}) of
                   {xml,Tree} -> Tree;
                   []         -> []
@@ -236,7 +217,7 @@ get_cell_info(Site, TmpPath, X, Y) ->
               []                 -> blank;
               {datetime, _, [N]} -> muin_date:from_gregorian_seconds(N);
               Else               -> Else %% Strip other type tags.
-    end,
+          end,
     
     F = fun({url,[{type,Type}],[Url]}) -> 
                 {ok,#ref{site=S,path=P,ref={cell,{X1,Y1}}}} = hn_util:parse_url(Url),
@@ -253,13 +234,13 @@ get_cell_info(Site, TmpPath, X, Y) ->
 %%% Description : 
 %%%-----------------------------------------------------------------
 get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY) ->
-
+    
     NewTPath = lists:filter(fun(X) -> not(X == $/) end, TPath),   
     NewFPath = lists:filter(fun(X) -> not(X == $/) end, FPath),   
-
+    
     To = #index{site=FSite,path=NewFPath,column=FX,row=FY},
     Fr = #index{site=TSite,path=NewTPath,column=TX,row=TY},
-
+    
     case hn_db:get_hn(URL,Fr,To) of
         
         {error,permission_denied} ->
@@ -267,16 +248,15 @@ get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY) ->
         
         #incoming_hn{value=Val,deptree=T} ->
             F = fun({url,[{type,Type}],[Url]}) ->
+                        
                         {ok,#ref{site=S,path=P,ref={cell,{X,Y}}}} = hn_util:parse_url(Url),
-                        P2 = string:tokens(P,"/"),
-                        {Type,{S,P2,X,Y}}
+                        {Type,{S,P,X,Y}}
                 end,
             
-            Dep = lists:map(F,T) ++ [{"remote",{FSite,NewFPath,FX,FY}}],
-            
+            Dep = lists:map(F,T) ++ [{"remote",{FSite,NewFPath,FX,FY}}],            
             {Val,Dep,[],[{"remote",{FSite,NewFPath,FX,FY}}]}
     end.
-    
+
 %%%-----------------------------------------------------------------
 %%% Function    : recalc/1
 %%% Types       : 
@@ -286,12 +266,9 @@ get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY) ->
 %%%-----------------------------------------------------------------
 recalc(Index) ->
     Addr = index_to_ref(Index),
-
     case hn_db:get_item_val(Addr#ref{name = "__shared"}) of
-        true ->
-            recalc_array(Index);
-        _ ->
-            recalc_cell(Index)
+        true -> recalc_array(Index);
+        _    -> recalc_cell(Index)
     end.
 
 recalc_array(Index) ->
@@ -304,7 +281,6 @@ recalc_array(Index) ->
 
 recalc_cell(Index) ->
     Addr = index_to_ref(Index),
-
     case hn_db:get_item_val(Addr#ref{name = "__recompile"}) of
         true ->
             set_cell(Addr, hn_db:get_item_val(Addr#ref{name = formula}));
@@ -332,7 +308,7 @@ copy_page(From,To) ->
 db_put(_Addr,_Name,[]) -> ok;
 db_put(Addr,Name,Value) ->
     hn_db:write_item(Addr#ref{name=Name},Value).
-    
+
 to_index(#ref{site=Site,path=Path,ref={cell,{X,Y}}}) ->
     #index{site=Site,path=Path,column=X,row=Y}.
 

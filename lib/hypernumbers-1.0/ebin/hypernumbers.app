@@ -1,7 +1,7 @@
 {application, hypernumbers,
 	[{description,  "The engine application"},
 	 {vsn,          "1.0"},     
-	 {modules,      []},
+	 {modules,      [hn_yaws]},
 	 {registered,   [ ]},   
 	 {included_applications, []},   
 	 {applications, [kernel, stdlib, crypto, inets, mnesia]},

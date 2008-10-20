@@ -83,7 +83,9 @@ trigger_recalc(Rec,Type) ->
                   Rec#dirty_hypernumber.index),
     
     ok = mnesia:dirty_delete({Type, Index}),
-    ok = hn_db:dirty_refs_changed(Type, Index),    
-
+    ok = case Type of
+             dirty_cell        -> hn_db:cell_changed(Index);
+             dirty_hypernumber -> hn_db:hn_changed(Index)
+         end,
     ok.
 

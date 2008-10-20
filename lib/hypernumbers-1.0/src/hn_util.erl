@@ -152,25 +152,24 @@ parse_url(Url) when is_record(Url,url) ->
     Site = lists:concat([Url#url.scheme,"://",Url#url.host,":",Port]),
 
     {Ref,Path} = case lists:last(Url#url.path) of
-		     $/ -> 
-			 {"/",string:tokens(Url#url.path,"/")};
-		     _  ->
-			 TP = lists:flatten(Url#url.path),
-			 Tokens = string:tokens(TP,"/"),
-			 [TmpRef|T] = lists:reverse(Tokens),
-			 {TmpRef,lists:reverse(T)}
-		 end,
-
-    RefType = parse_reference(Ref),
-
-    RefVal = case RefType of
-		 page ->   "/";
-		 cell ->   util2:strip_ref(Ref);
-		 range ->  util2:parse_range(Ref);
-		 column -> element(1,util2:strip_ref(Ref++"1"));
-		 row ->    element(2,util2:strip_ref("a"++Ref))
-	     end,
-
+                     $/ -> 
+                         {"/",string:tokens(Url#url.path,"/")};
+                     _  ->
+                         TP = lists:flatten(Url#url.path),
+                         Tokens = string:tokens(TP,"/"),
+                         [TmpRef|T] = lists:reverse(Tokens),
+                         {TmpRef,lists:reverse(T)}
+                 end,
+    
+    RefType = parse_reference(Ref),    
+    RefVal  = case RefType of
+                  page ->   "/";
+                  cell ->   util2:strip_ref(Ref);
+                  range ->  util2:parse_range(Ref);
+                  column -> element(1,util2:strip_ref(Ref++"1"));
+                  row ->    element(2,util2:strip_ref("a"++Ref))
+              end,
+    
     {ok,#ref{site=Site,
              path=Path,
              ref={RefType,RefVal}}}.

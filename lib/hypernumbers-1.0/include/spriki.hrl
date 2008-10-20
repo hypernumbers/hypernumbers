@@ -59,7 +59,7 @@
           }).
 
 %% the details_to record is used by a site that has to notify another one
-%% of a change in a hypernumber. These details are passed to authenticate
+% of a change in a hypernumber. These details are passed to authenticate
 %% that request. They are posted to:
 %% - the proxy URL (as specified by the registering site)
 %%
