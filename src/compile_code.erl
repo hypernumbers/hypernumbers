@@ -154,5 +154,4 @@ get_rel_file() ->
                       "{hypernumbers,\"1.0\"}]}."]),
     
     file:write_file("hypernumbers.rel",F),
-    systools:make_tar("hypernumbers",[{erts,"/usr/local/lib/erlang"},{path,["../lib/*/ebin"]}]),
     systools:make_script("hypernumbers",[local,{path,["../lib/*/ebin"]}]).
