@@ -6,7 +6,8 @@
          profile/2,
          demo/1,
          demo/2,
-         cheat/1]).
+         cheat/1,
+         cheat/2]).
 
 -include("builtins.hrl").
 -include("spriki.hrl").
@@ -22,7 +23,9 @@
 demo(Site) -> demo(Site,code:priv_dir(hypernumbers)++"/demo_pages/").
 
 demo(Site,Dir) ->
+    io:format("in misc_util:demo Site is ~p Dir is ~p~n",[Site,Dir]),
     Files = filelib:wildcard(Dir++"*.xml"),
+    io:format("in misc_util:demo Site is ~p Files is ~p~n",[Site,Files]),
     F = fun(X) ->
                 Name = filename:basename(X,".xml"),
                 {ok,Xml} = file:read_file(X),
@@ -34,23 +37,14 @@ demo(Site,Dir) ->
     lists:map(F,Files),
     ok.
 
-cheat(1) -> import_xml_attributes("c:\\opt\\code\\trunk\\priv\\dale\\data.xml","http://127.0.0.1:9000/data/");
-cheat(2) -> import_xml_attributes("/cygdeive/c/opt/code/trunk/priv/dale/data.xml","http://127.0.0.1:9000/data/");
-cheat(3) ->
+cheat(Example) ->
     bits:clear_db(),
-    demo("http://127.0.0.1:9000/",code:priv_dir(hypernumbers)++"/demo_pages/");
-cheat(4) ->
+    demo("http://127.0.0.1:9000/",code:priv_dir(hypernumbers)++"/demo_pages/"++
+         Example++"/").
+
+cheat(Site,Example) ->
     bits:clear_db(),
-    demo("http://127.0.0.1:9000/",code:priv_dir(hypernumbers)++"/demo_pages/invoices/");
-cheat(5) ->
-    bits:clear_db(),
-    demo("http://127.0.0.1:9000/",code:priv_dir(hypernumbers)++"/demo_pages/axa/");
-cheat(6) ->
-    bits:clear_db(),
-    demo("http://127.0.0.1:9000/",code:priv_dir(hypernumbers)++"/demo_pages/expenses II/");
-cheat(7) ->
-    bits:clear_db(),
-    demo("http://expenses.vixo.dev:9000/",code:priv_dir(hypernumbers)++"/demo_pages/expenses II/").
+    demo(Site,code:priv_dir(hypernumbers)++"/demo_pages/"++Example++"/").
 
 %% Read std_funs and produce a workable
 %% xml document for the functions list
@@ -58,7 +52,7 @@ stdfuns_export_xml() ->
 
     Filter = fun
                  ({_Fun,Ident},Ident) -> true;
-        (_,_Ident) -> false
+        88  (_,_Ident) -> false
                      end,
 
 Function = fun({Fun,_AtomIdent}) ->
