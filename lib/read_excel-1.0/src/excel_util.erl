@@ -17,7 +17,7 @@
          read_cell_range_add_list/2,
          read_cell_range_addies/3,
          write/3,
-	 append/3,
+         append/3,
          read/3,
          read_shared/2,
          get_length/2,
@@ -52,10 +52,10 @@ get_bound_sheet(Bin,_Tables)->
      SheetType:8/little-unsigned-integer,
      Name/binary>>=Bin,
     SheetName=excel_util:parse_CRS_Uni16(Name),
-    %% The Sheetnames are the names of all the worksheets in the workbook
-    %% The order in which the Sheetnames appear in this function is determined
-    %% by the zero-ordered Sheetindex. In other words the names appear here
-    %% in the order of the sheets left to right in the tab bar of Excel
+%% The Sheetnames are the names of all the worksheets in the workbook
+%% The order in which the Sheetnames appear in this function is determined
+%% by the zero-ordered Sheetindex. In other words the names appear here
+%% in the order of the sheets left to right in the tab bar of Excel
     {SheetBOF,Visibility,SheetType,Name,SheetName}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -66,55 +66,55 @@ get_bound_sheet(Bin,_Tables)->
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 parse_CRS_RK(RKBin)->
-    %% Section 2.5.5 of excelfileformats.pdf V1.40
-    %% There is a bit mask applied but it is against the reassembled
-    %% number and not the first digits of the little endian stream!
+%% Section 2.5.5 of excelfileformats.pdf V1.40
+%% There is a bit mask applied but it is against the reassembled
+%% number and not the first digits of the little endian stream!
     <<Rem:6,Type:1,Shift:1,Rest:24>>=RKBin,
-    %% io:format("in excel_util:parse_CRS_RK RKBin is ~p Rem is ~p Type is ~p "++
-    %%	      "Shift is ~p and Rest is ~p~n",[RKBin,Rem,Type,Shift,Rest]),
-    %% Rebuild the number
+%% io:format("in excel_util:parse_CRS_RK RKBin is ~p Rem is ~p Type is ~p "++
+%%        "Shift is ~p and Rest is ~p~n",[RKBin,Rem,Type,Shift,Rest]),
+%% Rebuild the number
     Num2 = case Type of
-	       ?CRS_RK_FLOATING_POINT ->
-		   FPVal= <<Rem:6,0:2,Rest:24>>,
-		   <<Num:64/little-float>>= <<0:32,FPVal/binary>>,
-		   Num;
-	       ?CRS_RK_INTEGER ->
-		   %% io:format("in excel_util:parse_CRS_RK Integer~n"),
-		   <<RKBin2:32/little-signed-integer>>=RKBin,
-		   RKBin3= <<RKBin2:32>>,
-		   %% io:format("in excel_util:parse_CRS_RK~n-RKBin is  ~p~n-"++
-		   %%	     "RKBin3 is ~p~n",[RKBin,RKBin3]),
-		   Num=get_integer(RKBin3),
-		   %% io:format("in excel_util:parse_CRS_RK~n-Num is ~p~n",[Num]),
-		   %% <<Num:64/little-unsigned-integer>>= <<0:32,IntVal/binary>>,
-		   Num
-	   end,
-    %% io:format("in excel_util:parse_CRS_RK Num2 is ~p~n",[Num2]),
+               ?CRS_RK_FLOATING_POINT ->
+                   FPVal= <<Rem:6,0:2,Rest:24>>,
+                   <<Num:64/little-float>>= <<0:32,FPVal/binary>>,
+                   Num;
+               ?CRS_RK_INTEGER ->
+%% io:format("in excel_util:parse_CRS_RK Integer~n"),
+                   <<RKBin2:32/little-signed-integer>>=RKBin,
+                   RKBin3= <<RKBin2:32>>,
+%% io:format("in excel_util:parse_CRS_RK~n-RKBin is  ~p~n-"++
+%%       "RKBin3 is ~p~n",[RKBin,RKBin3]),
+                   Num=get_integer(RKBin3),
+%% io:format("in excel_util:parse_CRS_RK~n-Num is ~p~n",[Num]),
+%% <<Num:64/little-unsigned-integer>>= <<0:32,IntVal/binary>>,
+                   Num
+           end,
+%% io:format("in excel_util:parse_CRS_RK Num2 is ~p~n",[Num2]),
     case Shift of
-	?CRS_RK_UNCHANGED         -> Num2;
-	?CRS_RK_SHIFT_DOWN_BY_100 -> Num2/100
+        ?CRS_RK_UNCHANGED         -> Num2;
+        ?CRS_RK_SHIFT_DOWN_BY_100 -> Num2/100
     end.
 
 parse_CRS_Uni16(Bin)->
-    %% Section 2.5.3 of excelfileformats.pdf V1.40
-    %% The plan is simple - proceed as if the initial index is a single byte
-    %% long - but once you have enough info check if the string length is valid
-    %% if it isn't then start again with the presumption that it is a 2 indexer
+%% Section 2.5.3 of excelfileformats.pdf V1.40
+%% The plan is simple - proceed as if the initial index is a single byte
+%% long - but once you have enough info check if the string length is valid
+%% if it isn't then start again with the presumption that it is a 2 indexer
     try
-	parse_CRS_Uni16_intermediate(Bin)
+        parse_CRS_Uni16_intermediate(Bin)
     catch
-	exit:_Reason ->
-	    %% Try again with an index of 2
-	    parse_CRS_Uni16(Bin,2);
-	  error:_Message ->
-	    %% Try again with an index of 2
-	    io:format("in parse_CRS_Uni16 "++
-		      "trying an index length of 2~n"),
-	    parse_CRS_Uni16(Bin,2);
-	  throw:Term ->
-	    io:format("in parse_CRS_Uni16 "++
-		      "Thrown with Term ~p~n",[Term]),
-	    exit(Term)
+        exit:_Reason ->
+%% Try again with an index of 2
+            parse_CRS_Uni16(Bin,2);
+          error:_Message ->
+%% Try again with an index of 2
+            io:format("in parse_CRS_Uni16 "++
+                      "trying an index length of 2~n"),
+            parse_CRS_Uni16(Bin,2);
+          throw:Term ->
+            io:format("in parse_CRS_Uni16 "++
+                      "Thrown with Term ~p~n",[Term]),
+            exit(Term)
     end.
 
 %% the purpose of the intermediate function is for when you don't know
@@ -124,8 +124,8 @@ parse_CRS_Uni16(Bin)->
 parse_CRS_Uni16_intermediate(Bin)->
     {Return,BinLen1,BinLen2}=parse_CRS_Uni16(Bin,1),
     case BinLen1 of
-	BinLen2  -> {Return,BinLen1,BinLen2};
-	_Other   -> exit("Wrong Index Length")
+        BinLen2  -> {Return,BinLen1,BinLen2};
+        _Other   -> exit("Wrong Index Length")
     end.
 
 parse_CRS_Uni16(Bin,IndexSize)->
@@ -137,14 +137,14 @@ parse_CRS_Uni16(Bin,IndexSize)->
      {RICH_TEXT,LenRichText,_LenRichTextIdx},
      {ASIAN,LenAsian,_LenAsianIdx},Rest3}=get_bits_CRS_Uni16(Len,IndexSize,Rest,NFlags),
     BinLen2=erlang:size(Bin),
-    %% Now we need to parse the rest of the binary
+%% Now we need to parse the rest of the binary
     <<String:LenStr/binary,Rest4/binary>>=Rest3,
     List1=[{Encoding,String}],
     case RICH_TEXT of
-        match    -> 
+        match    ->
             <<RichText:LenRichText/binary,Rest5/binary>>=Rest4,
             List2=[{richtext,RichText}|List1];
-        no_match -> 
+        no_match ->
             Rest5=Rest4,
             List2=List1
     end,
@@ -184,7 +184,7 @@ get_bits_CRS_Uni16(Len,IndexSize,Bin,NFlags)->
             LenAsian=0,
             LenAsianIdx=0
     end,
-    %% We now have info to calculate the length of the binary
+%% We now have info to calculate the length of the binary
     {LenStr,Encoding} = case UNCOMP of
                             match    -> {Len*2,'uni16-16'};
                             no_match -> {Len,  'uni16-8'}
@@ -196,15 +196,15 @@ get_bits_CRS_Uni16(Len,IndexSize,Bin,NFlags)->
 %% Read a Cell Range Address List
 %% defined in Section 2.5.15 of excelfileformatV1-40.pdf
 %%
-%% Size can be either '8bit' or '16bit' depending on how the column index 
+%% Size can be either '8bit' or '16bit' depending on how the column index
 %% is stored
 %%
 read_cell_range_add_list(Bin,Size)->
-    %%io:format("in excel_util:read_cell_range_add_list Bin is ~p~n",[Bin]),
+%%io:format("in excel_util:read_cell_range_add_list Bin is ~p~n",[Bin]),
     <<NoAddies:16/little-signed-integer,
      Rest/binary>>=Bin,
-    %%io:format("in excel_rev_comp:read_cell_range_add_list NoAddies is ~p~n",
-    %%      [NoAddies]),
+%%io:format("in excel_rev_comp:read_cell_range_add_list NoAddies is ~p~n",
+%%      [NoAddies]),
     read_cell_range_addies(NoAddies,Size,Rest).
 
 %% This function pulls a set of cell_range_addies out of the list of them.
@@ -259,15 +259,15 @@ write(Tables,Name,[H|T])->
 %% read shared formula from the shared/array formula table
 %% this is a bit messy
 %%
-%% Normally the tExp token will contain the top left hand marker of the 
+%% Normally the tExp token will contain the top left hand marker of the
 %% appropriate record but this is not always the case
 %%
 %% See Section 3.10.1 of excelfileformatV1-41.pdf
 %%
-%% There can be an overlap of shared formulae and array formulae as well 
+%% There can be an overlap of shared formulae and array formulae as well
 %% - in which case the array supercedes the shared (I think)
 %%
-%% So first read for an array - if that returns blank then 
+%% So first read for an array - if that returns blank then
 %% search for an exact shared match
 %% if that turns up blank then onto a range interception
 %% on a shared (ie don't check the top left but that the passed in row/col
@@ -275,7 +275,7 @@ write(Tables,Name,[H|T])->
 read_shared(Tables,{{sheet,Name},{row_index,Row},{col_index,Col}})->
     TableName=sh_arr_formula,
     {value,{_,Tid}}=lists:keysearch(TableName,1,Tables),
-    %% this fun reads an array formula
+%% this fun reads an array formula
     ArrayFn=fun(X,Acc)->
                     case X of
                         {{{sheet,Name},{row_index,Row},
@@ -283,7 +283,7 @@ read_shared(Tables,{{sheet,Name},{row_index,Row},{col_index,Col}})->
                         _Other                    -> Acc
                     end
             end,
-    %% this fun reads an shared formula which matches at the top left
+%% this fun reads an shared formula which matches at the top left
     ExShrdFn = fun(X,Acc)->
                        case X of
                            {{{sheet,Name},{firstrow,Row},
@@ -292,46 +292,46 @@ read_shared(Tables,{{sheet,Name},{row_index,Row},{col_index,Col}})->
                            _Other                      -> Acc
                        end
                end,
-    %% this fun reads a shared formula which intersects with the range
+%% this fun reads a shared formula which intersects with the range
     IntShrdFn=fun(X,Acc)->
-                       case X of
-                           {{{sheet,Name},{firstrow,FirstRow},
-                             {firstcol,FirstCol},{lastrow,LastRow},
-                             {lastcol,LastCol}},_Rest} 
-                           when Row >= FirstRow, Row =< LastRow,
-                           Col >= FirstCol, Col =< LastCol       -> [X|Acc];
-                           _Other                                -> Acc
-                       end
-               end,
+                      case X of
+                          {{{sheet,Name},{firstrow,FirstRow},
+                            {firstcol,FirstCol},{lastrow,LastRow},
+                            {lastcol,LastCol}},_Rest}
+                          when Row >= FirstRow, Row =< LastRow,
+                          Col >= FirstCol, Col =< LastCol       -> [X|Acc];
+                          _Other                                -> Acc
+                      end
+              end,
     FirstReturn = ets:foldl(ArrayFn,[],Tid),
-    %% io:format("in excel_util:read_shared FirstReturn is ~p~n",[FirstReturn]),
+%% io:format("in excel_util:read_shared FirstReturn is ~p~n",[FirstReturn]),
     SecondReturn = case FirstReturn of
                        []      -> ets:foldl(ExShrdFn,[],Tid);
                        _Other2 -> FirstReturn
                    end,
-    %% io:format("in excel_util:read_shared SecondReturn is ~p~n",[SecondReturn]),
+%% io:format("in excel_util:read_shared SecondReturn is ~p~n",[SecondReturn]),
     ThirdReturn = case SecondReturn of
-		      []      -> ets:foldl(IntShrdFn,[],Tid);
-		      _Other3 -> SecondReturn
-		  end,
-    %% io:format("in excel_util:read_shared ThirdReturn is ~p~n",[ThirdReturn]),
-    %% sometimes Excel will store two or more shared formulae that overlap
-    %% or more acurately it stores the same token set with two different ranges
-    %% this tends to cause things to wig...
-    %% so we need to check that when there is more than one formula returned
-    %% the tokens are the same
+                      []      -> ets:foldl(IntShrdFn,[],Tid);
+                      _Other3 -> SecondReturn
+                  end,
+%% io:format("in excel_util:read_shared ThirdReturn is ~p~n",[ThirdReturn]),
+%% sometimes Excel will store two or more shared formulae that overlap
+%% or more acurately it stores the same token set with two different ranges
+%% this tends to cause things to wig...
+%% so we need to check that when there is more than one formula returned
+%% the tokens are the same
     FourthReturn=check_formulae(ThirdReturn),
-    %% io:format("in excel_util:read_shared FourthReturn is ~p~n",[FourthReturn]),
+%% io:format("in excel_util:read_shared FourthReturn is ~p~n",[FourthReturn]),
     FourthReturn.
 
 check_formulae([H|T]) -> case check_formulae([H|T],[]) of
-			     true  -> [H|[]];
-			     false -> exit("overlapping incompatible shared formulae")
-			 end.
+                             true  -> [H|[]];
+                             false -> exit("overlapping incompatible shared formulae")
+                         end.
 
 check_formulae([],Acc)    -> check2(Acc);
 check_formulae([H|T],Acc) ->
-    {{{sheet,Name},{firstrow,_A},{firstcol,_B},{lastrow,_C},{lastcol,_T}},Tokens} = H, 
+    {{{sheet,Name},{firstrow,_A},{firstcol,_B},{lastrow,_C},{lastcol,_T}},Tokens} = H,
     check_formulae(T,[{Name,Tokens}|Acc]).
 
 check2(List) -> check2(List, []).
@@ -344,7 +344,7 @@ check2([_H|_T],_Acc) -> false.
 %% read values from the tables
 read(Tables,Name,Key)->
     {value,{_TableName,Tid}}=lists:keysearch(Name,1,Tables),
-    %% filefilters:dump([{Name,Tid}]),
+%% filefilters:dump([{Name,Tid}]),
     ets:lookup(Tid,{index,Key}).
 
 %% append a sheet name to the sheetname table with a zero-based
@@ -377,14 +377,14 @@ lookup_string(Tables,SSTIndex)->
 get_integer(Bin) ->
     <<Type:1,_Rest:31>>=Bin,
     case Type of
-	1 -> %% Rest is a 30 bit binary in ones complement
-	    -1*ones_complement(shift_left2(Bin))+1;
-	0 -> shift_left2(Bin)
+        1 -> %% Rest is a 30 bit binary in ones complement
+            -1*ones_complement(shift_left2(Bin))+1;
+        0 -> shift_left2(Bin)
     end.
 
 ones_complement(Bin) ->
     Mask=1073741823, % 30 ones in binary 111111111111111111111111111111
-    %% Return=Int bxor Mask,
+%% Return=Int bxor Mask,
     Bin bxor Mask.
 
 %% ones_complement(<<>>,Acc)                -> list_to_binary(lists:reverse(Acc));
@@ -406,8 +406,8 @@ shift_left2(Bin)->
 
 check_flags(NFlags,Flag)->
     case NFlags band Flag of
-	Flag -> {ok, match};
-	_    -> {ok, no_match}
+        Flag -> {ok, match};
+        _    -> {ok, no_match}
     end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -426,7 +426,7 @@ bodge_DEBUG(Bin)->
 
 bodge(<<>>,0,Acc)->
     lists:reverse(Acc);
-bodge(<<Char:8/little-unsigned-integer,Rest/binary>>,Len,Acc) 
+bodge(<<Char:8/little-unsigned-integer,Rest/binary>>,Len,Acc)
   when Char < 32; Char > 126 ->
     bodge(Rest,Len-1,[32|Acc]);
 bodge(<<Char:8/little-signed-integer,Rest/binary>>,Len,Acc)->

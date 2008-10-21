@@ -567,7 +567,8 @@ parse_rec(?ARRAY2,Bin,Name,CurrentFormula,Tables)->
     {Tokens,TokenArrays}=Return2,
     excel_util:write(Tables,sh_arr_formula,[{{sheet,Name},{firstrow,FirstRow},
                                              {firstcol,FirstCol},
-                                             {lastrow,LastRow},{lastcol,LastCol}},{type,array},
+                                             {lastrow,LastRow},{lastcol,LastCol}},
+                                            {type,array},
                                             {tokens,Tokens},
                                             {tokenarrays,TokenArrays}]),
     {ok,CurrentFormula};

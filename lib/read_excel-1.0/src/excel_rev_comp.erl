@@ -6,7 +6,7 @@
 %%%               formula back into the original form that the user
 %%%               entered into the cell
 %%%
-%%% Created     : 11th Jan 2008 by Gordon Guthriet
+%%% Created     : 11th Jan 2008 by Gordon Guthrie
 %%%-------------------------------------------------------------------
 -module(excel_rev_comp).
 
@@ -35,23 +35,23 @@ reverse_compile(Index,Tokens,TokenArray,Tables)->
 rev_comp(_Index,[],_TokenArray,Stack,_Tables) ->
     "="++to_str(lists:reverse(Stack));
 
-%%	tExp    
+%%  tExp
 %% tExp is a placeholder for a shared or array formula so first we
-%% read the array/shared formula  then we push the shared formula onto
+%% read the array/shared formula then we push the shared formula onto
 %% the Stack in place of the tExp one and carry on
 rev_comp(I,[{expr_formula_range,{tExp,[Sheet,Row,Col], {return,none}}}|T], TokArr,Stack,Tbl) ->
     [{_Id2,[_Type,{tokens,Tokens},{tokenarrays,_TkArr}]}] =
         excel_util:read_shared(Tbl,{Sheet,Row,Col}),
-    rev_comp(I,lists:append(Tokens,T),TokArr,Stack,Tbl);    
+    rev_comp(I,lists:append(Tokens,T),TokArr,Stack,Tbl);
 
-%%	tTbl
+%%  tTbl
 %% tAdd tSub tMul tDiv tPower tConcat tLT tLE tEQ tGE tGT tNE tIsect
 %% Pop two of the stack and the build an operator set backwards
 %% ie second first and first second...
 rev_comp(I,[{Op,_Token}|T],TokArr,Stack,Tbl) when
 Op =:= addition ;    Op =:= subtraction;
 Op =:= divide ;      Op =:= power;
-Op =:= less_than;    Op =:= less_than_or_equal; 
+Op =:= less_than;    Op =:= less_than_or_equal;
 Op =:= equals;       Op =:= greater_than_or_equal;
 Op =:= greater_than; Op =:= not_equal;
 Op =:= multiply;     Op =:= concatenate ->
@@ -66,89 +66,93 @@ Op =:= multiply;     Op =:= concatenate ->
 rev_comp(I,[{intersect,_Token}|T],TokArr,[First,Second|Rest],Tbl) ->
     rev_comp(I,T,TokArr,[{string,to_str(Second)++" "++to_str(First)}|Rest],Tbl);
 
-%%	tList   
-rev_comp(I,[{list,{tList,[{op_type,binary}],{return,reference}}}|T],TokArr,[First,Second|Rest],Tbl) ->
+%%  tList
+rev_comp(I,[{list,{tList,[{op_type,binary}],{return,reference}}}|T],TokArr,
+         [First,Second|Rest],Tbl) ->
     rev_comp(I,T,TokArr,[{Second,comma,First}|Rest],Tbl);
 
-%%	tRange  
+%%  tRange
 
-%%	tUplus
-rev_comp(Index,[{plus,{tPlus,[{op_type,unary}],{return,_Value}}}|T],TokenArray,[First|Rest],Tables) ->
+%%  tUplus
+rev_comp(Index,[{plus,{tPlus,[{op_type,unary}],{return,_Value}}}|T],TokenArray,
+         [First|Rest],Tables) ->
     rev_comp(Index,T,TokenArray,[{string,"+"++to_str(First)}|Rest],Tables);
 
-%%	tUminus 
-rev_comp(I,[{minus,{tUminus,[{op_type,unary}],{return,_Value}}}|T],TokArr,[First|Rest],Tbl) ->
+%%  tUminus
+rev_comp(I,[{minus,{tUminus,[{op_type,unary}],{return,_Value}}}|T],TokArr,
+         [First|Rest],Tbl) ->
     rev_comp(I,T,TokArr,[{string,"-"++to_str(First)}|Rest],Tbl);
 
-%%	tPercent
-rev_comp(I,[{percent,{tPercent,[{op_type,unary}],{return,_Value}}}|T],TokArr,[First|Rest],Tbl) ->
+%%  tPercent
+rev_comp(I,[{percent,{tPercent,[{op_type,unary}],{return,_Value}}}|T],TokArr,
+         [First|Rest],Tbl) ->
     rev_comp(I,T,TokArr,[{string,to_str(First)++"%"}|Rest],Tbl);
 
-%%	tParen  
+%%  tParen
 rev_comp(I,[{parentheses,{tParen,[],{return,none}}}|T],TokArr,Stack,Tbl) ->
     {Spaces1,[First |Rest]} = popSpaces(Stack),
     rev_comp(I,T,TokArr,[{open,First,close,Spaces1}|Rest],Tbl);
 
-%%	tMissArg
+%%  tMissArg
 rev_comp(I,[{missing_argument,{tMissArg,[],{return,value}}}|T],TokArr,Stack,Tbl) ->
     rev_comp(I,T,TokArr,[{string,""}|Stack],Tbl);
 
-%%	tStr    
+%%  tStr
 rev_comp(I,[{string,{tStr,[{value,Binary}],{return,value}}}|T],TokArr,Stack,Tbl) ->
     rev_comp(I,T,TokArr,[{string,binary_to_list(Binary)}|Stack],Tbl);
 
-%%	tNlr    
+%%  tNlr
 
-%%	tAttr   
+%%  tAttr
 rev_comp(I,[{attributes,Attributes}|T],TokArr,Stack,Tbl)  ->
     NewStack = case Attributes of
-		   {tAttrVolatile,volatile_attribute,[],_Ret}      -> Stack; 
-		   {tAttrIf,if_attribute,_Jump,_Ret}               -> Stack; 
-		   {tAttrChoose,choose_attribute,_Jump,_Ret}       -> Stack; 
-		   {tAttrSkip,skip_attribute,[{skip,_Skip}],_Ret}  -> Stack;
-		   {tAttrAssign,assign_attribute,[],_Ret}          -> Stack;
-		   %% this is an attribute of SUM with 1 arg...
-		   %% 4 is the index to the func SUM
-		   {tAttrSum,sum_attribute,[],_Ret} ->
-		       [FunArgs|Rest] = Stack,
-		       [{func,4,lists:flatten([FunArgs])}|Rest];
-		   %% Preserve Spaces
-		   {tAttrSpace,special_character,[{char,_Type}, {no_of_chars,Chars}],_Ret} -> 
-		       [{space, flatten(duplicate(Chars, " "))} | Stack]
-	       end,
+                   {tAttrVolatile,volatile_attribute,[],_Ret}      -> Stack;
+                   {tAttrIf,if_attribute,_Jump,_Ret}               -> Stack;
+                   {tAttrChoose,choose_attribute,_Jump,_Ret}       -> Stack;
+                   {tAttrSkip,skip_attribute,[{skip,_Skip}],_Ret}  -> Stack;
+                   {tAttrAssign,assign_attribute,[],_Ret}          -> Stack;
+                   % this is an attribute of SUM with 1 arg...
+                   % 4 is the index to the func SUM
+                   {tAttrSum,sum_attribute,[],_Ret} ->
+                       [FunArgs|Rest] = Stack,
+                       [{func,4,lists:flatten([FunArgs])}|Rest];
+                   % Preserve Spaces
+                   {tAttrSpace,special_character,[{char,_Type}, {no_of_chars,Chars}],_Ret} ->
+                       [{space, flatten(duplicate(Chars, " "))} | Stack]
+               end,
 
     rev_comp(I,T,TokArr,NewStack,Tbl);
 
-%%	tSheet  
+%%  tSheet
 
-%%	tEndSheet
+%%  tEndSheet
 
-%%	tErr
+%%  tErr
 rev_comp(Index,[{error,{tErr,[{value,Value}],{return,_Return}}}|T],TokenArray,Stack,Tables)  ->
     Error = case Value of
-		?NullError    -> "#NULL!";
-		?DivZeroError -> "#DIV/0!";
-		?ValueError   -> "#VALUE!";
-		?RefError     -> "#REF!";
-		?NameError    -> "#NAME?";
-		?NumError     -> "#NUM!";
-		?NAError      -> "#N/A"
-	    end,
+                ?NullError    -> "#NULL!";
+                ?DivZeroError -> "#DIV/0!";
+                ?ValueError   -> "#VALUE!";
+                ?RefError     -> "#REF!";
+                ?NameError    -> "#NAME?";
+                ?NumError     -> "#NUM!";
+                ?NAError      -> "#N/A"
+            end,
     rev_comp(Index,T,TokenArray,[{string,Error}|Stack],Tables);
 
-%%	tBool   
+%%  tBool
 rev_comp(Index,[{boolean,{tBool,[{value,Value}],{return,value}}}|T],TokenArray,Stack,Tables) ->
     Bool = case Value of
-	       1 -> "TRUE";
-	       0 -> "FALSE"
-	   end,
+               1 -> "TRUE";
+               0 -> "FALSE"
+           end,
     rev_comp(Index,T,TokenArray,[{string,Bool}|Stack],Tables);
 
-%%	tInt    
+%%  tInt
 rev_comp(Index,[{integer,{tInt,[{value,Val}],{return,value}}}|T],TokenArray,Stack,Tables)  ->
     rev_comp(Index,T,TokenArray,[{integer,Val}|Stack],Tables);
 
-%%	tNum    
+%%  tNum
 rev_comp(Index,[{number,{tNum,[{value,Val}],{return,value}}}|T],TokenArray,Stack,Tables)  ->
     rev_comp(Index,T,TokenArray,[{float,Val}|Stack],Tables);
 
@@ -156,100 +160,100 @@ rev_comp(Index,[{number,{tNum,[{value,Val}],{return,value}}}|T],TokenArray,Stack
 %%% Classified Tokens
 %%%
 
-%%	tArray
+%%  tArray
 rev_comp(Index,[{array_type,{tArray,[{type,_Type}],{return,_Reference}}}|T],TokenArray,Stack,Tables)  ->
     {{NoCols,NoRows,Array},ArrayTail}=read_const_val_array(TokenArray),
     ArrayString=array_to_str(Array,NoCols,NoRows),
     rev_comp(Index,T,ArrayTail,[{string,ArrayString}|Stack],Tables);
 
-%%	tFunc   
+%%  tFunc
 rev_comp(Index,[{functional_index,{Function,[{value,FuncVar},{type,_Type}],
-				   {return,_Return}}}|T],TokenArray,Stack,Tables)
-  when Function =:= tFunc ; Function =:= tFuncVar ; 
-       Function =:= tFuncVarV ;Function =:= tFuncVarR ; 
+                                   {return,_Return}}}|T],TokenArray,Stack,Tables)
+  when Function =:= tFunc ; Function =:= tFuncVar ;
+       Function =:= tFuncVarV ;Function =:= tFuncVarR ;
        Function =:= tFuncVarA ->
-    %% lists:reverse has to be overused because Stack is build backwards
-    %% (new items append to tail opposed to head
+%% lists:reverse has to be overused because Stack is build backwards
+%% (new items append to tail opposed to head
     {Rest,FunArgs} = popVars(macro_no_of_args(FuncVar),Stack,[]),
     rev_comp(Index,T,TokenArray,[{func,FuncVar,lists:reverse(FunArgs)}|Rest],Tables);
 
-%%	tFuncVar
+%%  tFuncVar
 rev_comp(Index,[{var_func_idx,{Fun,[{value,FuncVar},
-				    {number_of_args,NumArgs},{user_prompt,_Prompt},
-				    {type,_Type}],
-			       {return,_ReturnType}}}|T],TokenArray,Stack,Tables) when 
-  Fun =:= tFuncVar; Fun =:= tFuncVarV; Fun =:= tFuncVarR; Fun =:= tFuncVarA ->
+                                    {number_of_args,NumArgs},{user_prompt,_Prompt},
+                                    {type,_Type}],
+                               {return,_ReturnType}}}|T],TokenArray,Stack,Tables) when
+Fun =:= tFuncVar; Fun =:= tFuncVarV; Fun =:= tFuncVarR; Fun =:= tFuncVarA ->
     {Rest,FunArgs} = popVars(NumArgs,Stack,[]),
     rev_comp(Index,T,TokenArray,[{func,FuncVar,lists:reverse(FunArgs)}|Rest],Tables);
 
-%%	tName   
+%%  tName
 rev_comp(Index,[{name_index,{tName,[{value,Value},{type,_Type}],
-			     {return,reference}}}|T],TokenArray,Stack,Tables) ->
+                             {return,reference}}}|T],TokenArray,Stack,Tables) ->
     [{_Index1,[_Id2,_Type2,{name,Name}]}] = excel_util:read(Tables,names,Value),
     rev_comp(Index,T,TokenArray,[{string,Name}|Stack],Tables);
 
-%%	tRef
+%%  tRef
 rev_comp(I,[{abs_ref,{tRef,[{value,{Row,Col,RType,CType}}|{type,_Type}],
-		      {return,reference}}}|T],TokArr,Stack,Tbl) ->
+                      {return,reference}}}|T],TokArr,Stack,Tbl) ->
     rev_comp(I,T,TokArr,[{string,make_cell({Row,Col,RType,CType})}|Stack],Tbl);
 
-%%	tArea   
+%%  tArea
 rev_comp(I,[{absolute_area,{tArea,[[{start_cell,Start}|{end_cell,End}]|_R1],
-			    _R2}}|T],TokArr,Stack,Tbl) ->
+                            _R2}}|T],TokArr,Stack,Tbl) ->
     rev_comp(I,T,TokArr,[{string,make_range(Start,End)}|Stack],Tbl);
 
-%%	tMemArea
+%%  tMemArea
 rev_comp(Index,[{memory_area,{tMemArea,[{value,_MemArea},{type,_Type}],
-			      {return,reference}}}|T],TokenArray,Stack,Tables) ->
-    %% See discussion in Section 3.1.6 of excelfileformat.v1.40.pdf
-    %%
-    %% for tMemArea there is an appended set of tokens in the TokenArray
-    %% which must be read in and then *DISCARDED*
-    %%
-    %% for instance if the tMemArea is "A1:A2 A2:A3" then the TokenArray
-    %% will contain the *RESULT* of the intersection, ie "A2"
-    %%
-    %% So to calculate Excel would discard the value that would be
-    %% in the tMemArea token - 19 in this instance - but use "A2"
-    %% whereas reverse compiling is only interested in the full
-    %% range "A1:A2 A2:A3" and discards the TokenArray "A2"
-    %% ie the first return variable in the next line
+                              {return,reference}}}|T],TokenArray,Stack,Tables) ->
+%% See discussion in Section 3.1.6 of excelfileformat.v1.40.pdf
+%%
+%% for tMemArea there is an appended set of tokens in the TokenArray
+%% which must be read in and then *DISCARDED*
+%%
+%% for instance if the tMemArea is "A1:A2 A2:A3" then the TokenArray
+%% will contain the *RESULT* of the intersection, ie "A2"
+%%
+%% So to calculate Excel would discard the value that would be
+%% in the tMemArea token - 19 in this instance - but use "A2"
+%% whereas reverse compiling is only interested in the full
+%% range "A1:A2 A2:A3" and discards the TokenArray "A2"
+%% ie the first return variable in the next line
     {_Array,ArrayTail}=excel_util:read_cell_range_add_list(TokenArray,'16bit'),
-    %% Given that this token holds a look up to the results of parsing
-    %% the subsequent array we can just chuck it away.
+%% Given that this token holds a look up to the results of parsing
+%% the subsequent array we can just chuck it away.
     rev_comp(Index,T,ArrayTail,Stack,Tables);
 
-%%	tMemErr - this token does nothing for reverse compile - skip...
+%%  tMemErr - this token does nothing for reverse compile - skip...
 rev_comp(I,[{memory_err,{tMemErr,_ValType,_Ret}}|T],TokArr,Stack,Tbl) ->
     rev_comp(I,T,TokArr,Stack,Tbl);
-%%	tMemNoMem
+%%  tMemNoMem
 
-%%	tMemFunc - this token does nothing for reverse compile - skip...
+%%  tMemFunc - this token does nothing for reverse compile - skip...
 rev_comp(I,[{memory_function,{tMemFunc,_ValType,_Ret}}|T],TokArr,Stack,Tbl) ->
     rev_comp(I,T,TokArr,Stack,Tbl);
 
-%%	tRefErr 
+%%  tRefErr
 rev_comp(I,[{reference_error,{tRefErr,_Type,_Ret}}|T],TokArr,Stack,Tbl)  ->
     rev_comp(I,T,TokArr,[{string,"#REF!"}|Stack],Tbl);
 
-%%	tAreaErr
+%%  tAreaErr
 rev_comp(I,[{area_error,{tAreaErr,_Type,_Ret}}|T],TokArr,Stack,Tbl) ->
     rev_comp(I,T,TokArr,[{string,"#REF!"}|Stack],Tbl);
 
-%%	tRefN   
-%% these addresses may or may not be relative and must be added to 
-%% the top point Excel has a row limit of 65535 (2^16) rows and a column 
-%% limit of 256 (2^8) columns so the relative addresses must 
+%%  tRefN
+%% these addresses may or may not be relative and must be added to
+%% the top point Excel has a row limit of 65535 (2^16) rows and a column
+%% limit of 256 (2^8) columns so the relative addresses must
 %% 'overflow' those  bounds
 rev_comp(I,[{relative_reference,{tRefN,[{value,{Row,Col,RowType,ColType}},_Type],_Ret}}|T],TokArr,Stack,Tbl) ->
     {_Sheet,{row_index,TopRow},{col_index,TopCol}} = I,
     NewRow=get_row(Row,TopRow,RowType),
     NewCol=get_col(Col,TopCol,ColType),
     NewCell=make_cell({NewRow,NewCol,RowType,ColType}),
-    %% by definition it is a relative address so just 'make it so'
+%% by definition it is a relative address so just 'make it so'
     rev_comp(I,T,TokArr,[{string,NewCell}|Stack],Tbl);
 
-%%	tAreaN  
+%%  tAreaN
 %% these addresses are relative and must be added to the top point
 %% Excel has a row limit of 65535 (2^16) rows and a column limit of
 %% 256 (2^8) columns so the relative addresses must 'overflow' those
@@ -266,36 +270,38 @@ rev_comp(Index,[{relative_area,{tAreaN,[NewDetails|{type,_Type}],{return,referen
     EndCell=make_cell({NewEndRow,NewEndCol,EndRowType,EndColType}),
     NewRange=StartCell++":"++EndCell,
     rev_comp(Index,T,TokenArray,
-	     [{string,NewRange}|Stack],Tables);
+             [{string,NewRange}|Stack],Tables);
 
-%%	tMemAreaN
+%%  tMemAreaN
 
-%%	tMemNoMemN	
+%%  tMemNoMemN
 
-%%	tFuncCE 
+%%  tFuncCE
 
-%%	tNameX  
+%%  tNameX
 rev_comp(I,[{name_xref,{tNameX,[{reference_index,Ref},
-				{name_index,Name},_Type],_Ret}}|T],TokArr,Stack,Tbl) ->
+                                {name_index,Name},_Type],_Ret}}|T],TokArr,Stack,Tbl) ->
     rev_comp(I,T,TokArr,[{string,get_ref_name(Ref,Name,Tbl)}|Stack],Tbl);
 
-%%	tRef3d  	
+%%  tRef3d
 rev_comp(I,[{three_dee_reference,{tRef3d,[{reference_index,RefIdx},
-					  Ref,_Type],_Ret}}|T],TokArr,Stack,Tbl) ->
+                                          Ref,_Type],_Ret}}|T],TokArr,Stack,Tbl) ->
     Sheet = get_sheet_ref(RefIdx,Tbl),
-    rev_comp(I,T,TokArr,[{string,Sheet++"!"++make_cell(Ref)}|Stack],Tbl);
+    Sheet2=esc(Sheet),
+    rev_comp(I,T,TokArr,[{string,Sheet2++"!"++make_cell(Ref)}|Stack],Tbl);
 
-%%	tArea3d 
+%%  tArea3d
 rev_comp(I,[{three_dee_area,{tArea3d,[{reference_index,RefIdx},
-				      Reference,_Type],_Ret}}|T],TokArr,Stack,Tbl) ->
+                                      Reference,_Type],_Ret}}|T],TokArr,Stack,Tbl) ->
     Sheet = get_sheet_ref(RefIdx,Tbl),
+    Sheet2=esc(Sheet),
     [{start_cell,Ref1}|{end_cell,Ref2}] = Reference,
     Range=make_range(Ref1,Ref2),
-    rev_comp(I,T,TokArr,[{string,Sheet++"!"++Range}|Stack],Tbl);
+    rev_comp(I,T,TokArr,[{string,Sheet2++"!"++Range}|Stack],Tbl);
 
-%%	tRefErr3d
+%%  tRefErr3d
 
-%%	tAreaErr3d
+%%  tAreaErr3d
 
 %%%%%%%%%%%%%%%%%%%%%%
 
@@ -325,9 +331,9 @@ get_col(Col,TopCol,ColType)->
 
 %% Looks up an external reference from the Supbook
 get_ref_name(_RefIndex,NameIndex,Tables)->
-    %% bear in mind, dear chums, that the index we are looking up is a
-    %% '1'-based index and not a '0'-based index, it is for this reason
-    %% that we are subracting 1 from the NameIndex...
+    % bear in mind, dear chums, that the index we are looking up is a
+    % '1'-based index and not a '0'-based index, it is for this reason
+    % that we are subracting 1 from the NameIndex...
     [{_,[{name,Name}]}]=excel_util:read(Tables,extra_fns,NameIndex-1),
     Name.
 
@@ -335,11 +341,11 @@ get_ref_name(_RefIndex,NameIndex,Tables)->
 get_sheet_ref(Index,Tables)->
     Record1=excel_util:read(Tables,externsheets,Index),
     case Record1 of
-        [{_,[{subrec,_SR},{firstsheet,?FF_Ref},{lastsheet,_}]}] -> 
+        [{_,[{subrec,_SR},{firstsheet,?FF_Ref},{lastsheet,_}]}] ->
             "#REF";
-        [{_,[{subrec,SR},{firstsheet,FS},{lastsheet,FS}]}]-> 
+        [{_,[{subrec,SR},{firstsheet,FS},{lastsheet,FS}]}]->
             get_ref(SR,FS,Tables);
-        [{_,[{subrec,SR},{firstsheet,FS},{lastsheet,LS}]}] -> 
+        [{_,[{subrec,SR},{firstsheet,FS},{lastsheet,LS}]}] ->
             get_range(SR,FS,LS,Tables)
     end.
 
@@ -350,8 +356,8 @@ get_ref(SubRec,FirstSheet,Tables)->
                {this_file,expanded} -> [];
                {name,Name}          -> Name
            end,
-    %% lists:nth is '1' based but the index is 'zero' based!
-    Sheet=lists:nth(FirstSheet+1,SheetList), 
+    % lists:nth is '1' based but the index is 'zero' based!
+    Sheet=lists:nth(FirstSheet+1,SheetList),
     lists:concat([Prefix,Sheet]).
 
 get_range(SubRec,FirstSheet,LastSheet,Tables)->
@@ -361,9 +367,9 @@ get_range(SubRec,FirstSheet,LastSheet,Tables)->
                {this_file,expanded} -> [];
                {name,Name}          -> Name
            end,
-    %% lists:nth is '1' based but the index is 'zero' based!
+    % lists:nth is '1' based but the index is 'zero' based!
     Sheet1=lists:nth(FirstSheet+1,SheetList),
-    Sheet2=lists:nth(LastSheet+1, SheetList), 
+    Sheet2=lists:nth(LastSheet+1, SheetList),
     lists:concat([Prefix,Sheet1,":",Sheet2]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -400,16 +406,16 @@ read_token_array(N,<<?NumberArrayEl:8/little-unsigned-integer,
     read_token_array(N-1,Rest,[{float,Float}|Residuum]);
 read_token_array(N,<<?StringArrayEl:8/little-unsigned-integer,
                     Rest/binary>>,Residuum)->
-    %% The index is always 16 bits in this instance - see note in Section 2.5.7
-    %% of excelfileformatV1-40.pdf
-    %% so we jump to the index length of 2 (2 time 8 bits)...
+%% The index is always 16 bits in this instance - see note in Section 2.5.7
+%% of excelfileformatV1-40.pdf
+%% so we jump to the index length of 2 (2 time 8 bits)...
     <<Len:8/little-unsigned-integer,
      NFlags:8/little-unsigned-integer,
      R3/binary>>=Rest,
     BinLen=excel_util:get_len_CRS_Uni16(Len,2,R3,NFlags),
-    %% The 2nd byte which contains the encoding flags needs to be included...
-    %% if the String is Rich Text or Asian this next bit might blow up
-    %% (who knows!)
+%% The 2nd byte which contains the encoding flags needs to be included...
+%% if the String is Rich Text or Asian this next bit might blow up
+%% (who knows!)
     <<StrBin:BinLen/binary,R4/binary>>=Rest,
     String2=excel_util:get_utf8(excel_util:parse_CRS_Uni16(StrBin,2)),
     read_token_array(N-1,R4,[{string,"\""++String2++"\""}|Residuum]);
@@ -449,16 +455,16 @@ read_token_array(N,<<?ErrorArrayEl:8/little-unsigned-integer,
 %%        if
 %%            is_integer(X) -> [Token,integer_to_list(X)|Acc];
 %%            %% float like "2.000" to come back as "2"
-%%            is_float(X)   -> [Token,to_str({float,X})|Acc]; 
+%%            is_float(X)   -> [Token,to_str({float,X})|Acc];
 %%            true          -> [Token,X|Acc]
 %%        end
 %%    end,
 %%    [_TrailingToken|RealList]=lists:foldl(F, [], List),
 %%    lists:flatten(lists:reverse(RealList)).
 
-%%% set of functions used by reverse_compile to generate the actual 
+%%% set of functions used by reverse_compile to generate the actual
 %%% Formula Strings that are in the cells
-to_str(addition)               -> "+";           
+to_str(addition)               -> "+";
 to_str(subtraction)            -> "-";
 to_str(multiply)               -> "*";to_str(divide)                 -> "/";
 to_str(power)                  -> "^";
@@ -474,53 +480,53 @@ to_str(comma)                  -> ",";
 
 to_str({func,Var,Args})    ->
 
-    R = fun(Item) -> 
-		case Item of
-		    {space,Val} -> Val;
-		    Other       -> 
-			Tmp = to_str(Other),
-			Tmp ++ ","
-		end
-	end,
+    R = fun(Item) ->
+                case Item of
+                    {space,Val} -> Val;
+                    Other       ->
+                        Tmp = to_str(Other),
+                        Tmp ++ ","
+                end
+        end,
 
-    %% Above function will always append an extra comma, strip it
-    %% without stripping any spaces after it
+%% Above function will always append an extra comma, strip it
+%% without stripping any spaces after it
     F = fun(X,Self) ->
-		case X of
-		    [$,|Rest] -> lists:reverse(Rest);
-		    [32|Rest] -> Self(Rest,Self)++" ";
-		    Else      -> lists:reverse(Else)
-		end
-	end,
-    %% If the Value of Var is 255 then this is a non-excel function
-    %% and the 'first arg' is the name that the user actually typed in
+                case X of
+                    [$,|Rest] -> lists:reverse(Rest);
+                    [32|Rest] -> Self(Rest,Self)++" ";
+                    Else      -> lists:reverse(Else)
+                end
+        end,
+%% If the Value of Var is 255 then this is a non-excel function
+%% and the 'first arg' is the name that the user actually typed in
     case Var of
-	255 -> 
-	    [{string,FuncName}|Args2]=Args,
-	    case Args2 of
-		[] -> FuncName++"()";
-		_  -> 
-		    TmpArgs = lists:flatten(lists:map(R,Args2)), 
-		    FuncName++"("++string:strip(TmpArgs,right, $,)++")"
-	    end;
-	_Other -> 
-	    case Args of
-		[] -> macro_to_string(Var)++"()";
-		_  ->
-		    TmpArgs = lists:flatten(lists:map(R,Args)),
-		    macro_to_string(Var)++"("++F(lists:reverse(TmpArgs),F)++")"
-	    end
+        255 ->
+            [{string,FuncName}|Args2]=Args,
+            case Args2 of
+                [] -> FuncName++"()";
+                _  ->
+                    TmpArgs = lists:flatten(lists:map(R,Args2)),
+                    FuncName++"("++string:strip(TmpArgs,right, $,)++")"
+            end;
+        _Other ->
+            case Args of
+                [] -> macro_to_string(Var)++"()";
+                _  ->
+                    TmpArgs = lists:flatten(lists:map(R,Args)),
+                    macro_to_string(Var)++"("++F(lists:reverse(TmpArgs),F)++")"
+            end
     end;
 
 to_str([])  -> "";
 to_str({H}) -> to_str(H);
 to_str({space,S}) -> S;
-to_str(List) when is_list(List) -> 
+to_str(List) when is_list(List) ->
     case io_lib:deep_char_list(List) of
-	true -> lists:flatten(List);
-	false ->       
-	    [H|T] = List, 
-	    to_str(H)++to_str(T)
+        true -> lists:flatten(List);
+        false ->
+            [H|T] = List,
+            to_str(H)++to_str(T)
     end;
 
 to_str({open,O,close}) -> "(" ++ to_str(O) ++ ")";
@@ -536,20 +542,20 @@ to_str({float,Val}) ->
                String2
     end;
 
-to_str({abs_ref,Y,X,rel_row,rel_col}) -> 
+to_str({abs_ref,Y,X,rel_row,rel_col}) ->
     util2:make_b26(X)++integer_to_list(Y);
-to_str({abs_ref,Y,X,abs_row,rel_col}) -> 
+to_str({abs_ref,Y,X,abs_row,rel_col}) ->
     util2:make_b26(X)++"$"++integer_to_list(Y);
-to_str({abs_ref,Y,X,rel_row,abs_col}) -> 
-    "$"++util2:make_b26(X)++integer_to_list(Y);
-to_str({abs_ref,Y,X,abs_row,abs_col}) -> 
-    "$"++util2:make_b26(X)++"$"++integer_to_list(Y);
+to_str({abs_ref,Y,X,rel_row,abs_col}) ->
+                                              "$"++util2:make_b26(X)++integer_to_list(Y);
+to_str({abs_ref,Y,X,abs_row,abs_col}) ->
+                                              "$"++util2:make_b26(X)++"$"++integer_to_list(Y);
 
-to_str({L,S1,O,S2,R}) -> 
-    to_str(L)++to_str(S1)++to_str(O)++to_str(S2)++to_str(R).
+                                                  to_str({L,S1,O,S2,R}) ->
+                                              to_str(L)++to_str(S1)++to_str(O)++to_str(S2)++to_str(R).
 
 %% builds up 2D arrays - 1st dimension is given by "," and second by ";"
-array_to_str(Array,NoCols,_NoRows) -> 
+array_to_str(Array,NoCols,_NoRows) ->
     array_to_str(Array,NoCols,1,["{"]).
 
 array_to_str([],_NoCols,_N,[_Comma|Tail]) -> % cut off the additional ","
@@ -569,14 +575,14 @@ popSpaces([{space,Val}|T]) -> {{space,Val},T};
 popSpaces(List) -> {[],List}.
 
 %% Used in tFunc, will grab the last I items from the list that
-%% arent {space,Spaces} or {return} 
+%% arent {space,Spaces} or {return}
 popVars(0,Stack,Args)           -> {Stack,lists:reverse(Args)};
 popVars(I,[{space,Val}|T],Args) -> popVars(I,T,[{space,Val}|Args]);
-popVars(I,[{return}|T],Args)    -> popVars(I,T,[{return}|Args]);  
+popVars(I,[{return}|T],Args)    -> popVars(I,T,[{return}|Args]);
 popVars(I,[Else|T],Args)        -> popVars(I-1,T,[Else|Args]).
 
 %%push([],Val)    -> [lists:append([],Val)];
-%%push(List,Val)  -> 
+%%push(List,Val)  ->
 %%    lists:reverse(lists:flatten([Val,lists:reverse(List)])).
 
 %%pop([H|[]]) -> {H,[]};
@@ -599,9 +605,9 @@ make_cell({Row,Col,rel_row,rel_col}) ->
 make_cell({Row,Col,abs_row,rel_col}) ->
     string:to_upper(util2:make_b26(Col+1)++"$"++integer_to_list(Row+1));
 make_cell({Row,Col,rel_row,abs_col}) ->
-    string:to_upper("$"++util2:make_b26(Col+1)++integer_to_list(Row+1));
+                           string:to_upper("$"++util2:make_b26(Col+1)++integer_to_list(Row+1));
 make_cell({Row,Col,abs_row,abs_col}) ->
-    string:to_upper("$"++util2:make_b26(Col+1)++"$"++integer_to_list(Row+1)).
+                                                  string:to_upper("$"++util2:make_b26(Col+1)++"$"++integer_to_list(Row+1)).
 
 %% this function looks up the Func ID and converts it to a name
 %%
@@ -768,7 +774,7 @@ macro_to_string(197) -> "TRUNC";
 macro_to_string(198) -> "ISLOGICAL";
 macro_to_string(199) -> "DCOUNTA";
 %%  200=DELETE.BAR,UNREGISTER,,USDOLLAR,FINDB,SEARCHB,REPLACEB,LEFTB,RIGHTB
-%%  the lookup file appears to contain 'not enought' records to make 
+%%  the lookup file appears to contain 'not enought' records to make
 %%  this work (ie 9 not 10)
 macro_to_string(204) -> "USDOLLAR";
 macro_to_string(205) -> "FINDB";
@@ -1100,8 +1106,17 @@ macro_no_of_args(353) -> 2;
 %% bodge for now
 %%
 %% GG 2007_01_18
-macro_no_of_args(358) -> 
+macro_no_of_args(358) ->
     io:format("in excel_rev_comp:macro_no_of_args for GETPIVOTDATA "++
               "this is a cludge!~n"),
     2;
 macro_no_of_args(360) -> 1.
+
+%% This function wraps a string in "'"s if the string contains a space
+esc(String) ->
+    case string:words(String) of
+        1 -> String;
+        _ -> "'"++String++"'"
+    end.
+             
+    

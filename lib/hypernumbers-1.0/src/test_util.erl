@@ -127,9 +127,10 @@ excel_equal(String1,String2) when is_list(String1), is_list(String2) ->
     end.
 
 eq(X,Y) ->
-    case X of
-	Y -> true;
-	_ -> false
+    io:format("in test_util:eq X is ~p Y is ~p~n",[X,Y]),
+    if
+        X == Y -> true;
+        true   -> false
     end.
 
 excel_equal2({date,F1},{number,Number})->
@@ -168,9 +169,9 @@ excel_equal2({error,Error1},{error,Error2}) ->
     eq(Error1,Error2);
 excel_equal2({string,String1},{string,String2}) ->
     eq(String1,String2);
-excel_equal2({number,_Num},{string,_Str})->
-    io:format("in test_util:excel_equal2 trying to compare a number to a string?~n"),
-    false.
+excel_equal2({number,Num},{string,Str})->
+    io:format("in test_util:excel_equal2 trying to compare a number to a string? Number is ~p String is ~p~n",[Num,Str]),
+    eq(Num,tconv:to_num(Str)).
 
 make_date_string({Days,Time}) ->
      make_day_string(Days)++" "++make_time_string(Time).
