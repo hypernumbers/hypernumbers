@@ -52,9 +52,9 @@ stdfuns_export_xml() ->
 
     Filter = fun
                  ({_Fun,Ident},Ident) -> true;
-        88  (_,_Ident) -> false
-                     end,
-
+                 (_,_Ident) -> false
+             end,
+    
 Function = fun({Fun,_AtomIdent}) ->
                    {function,[{label,atom_to_list(Fun)}],[]}
            end,
