@@ -30,6 +30,7 @@ write_item(Addr,Val) when is_record(Addr,ref) ->
 %% @doc  Returns the list of attributes that are contained within 
 %%       the range specified by Ref
 get_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
+
     F = fun() ->
                 NName = ?COND(Name == undef,'_',Name),
                 NAddr = ?COND(element(1,Ref)== cell, Ref, _='_'),
@@ -38,15 +39,14 @@ get_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
                 mnesia:match_object(hn_item,Match,read)
         end,
     {atomic, List} = ?mn_tr(F),
-    
     case Ref of
         {cell,_} -> List;
         {page,_} -> List;
         _ ->
-            F = fun(#hn_item{addr=#ref{ref=Item}}) -> 
-                        filter_cell(Ref,Item) 
-                end,
-            lists:filter(F,List)
+            Fun = fun(#hn_item{addr=#ref{ref=Item}}) -> 
+                          filter_cell(Ref,Item) 
+                  end,
+            lists:filter(Fun,List)
     end.
 
 %% @spec get_item_val(Ref) -> Value

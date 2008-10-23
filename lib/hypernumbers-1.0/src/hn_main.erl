@@ -106,7 +106,9 @@ constants_to_range(Data, Ref = #ref{ref = {range,{Y1, X1, Y2, X2}}}) ->
                 end
         end,
 
-    [[F(X,Y,((X-X1)*(Y2-Y1+1))+(Y-Y1)+1) || Y <- lists:seq(Y1,Y2)] || X <- lists:seq(X1,X2)].
+    [[F(X,Y,((X-X1)*(Y2-Y1+1))+(Y-Y1)+1) 
+      || Y <- lists:seq(Y1,Y2)] 
+      || X <- lists:seq(X1,X2)].
 
 %%%-----------------------------------------------------------------
 %%% Function    : write_cell()

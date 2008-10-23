@@ -7,11 +7,12 @@
 -include("yaws_api.hrl").
 -include("spriki.hrl").
 -include("handy_macros.hrl").
+-include("hypernumbers.hrl").
 
 -import(simplexml,[to_xml_string/1,to_json_string/1]).
 -export([ out/1, get_page_attributes/1 ]).
 
--record(upload, {fd,filename, last}).
+%% -record(upload, {fd,filename, last}).
 
 %% @spec out(Arg) -> YawsReturn.
 %% @doc Yaws handler for all incoming HTTP requests
@@ -137,7 +138,6 @@ req('GET',[],["hypernumber"],_,Ref) ->
               end,
     {ok,{hypernumber,[],[{value,[], Val()},{'dependancy-tree',[], DepTree}]}};
 
-%% /a1
 req('GET',[],[],_,Ref) ->
     case hn_db:get_item(Ref) of
         []   ->
@@ -312,17 +312,14 @@ api_change([{biccie,[],     [Bic]},
 %% Utility functions
 %%--------------------------------------------------------------------
 get_page_attributes(Ref) ->
-    Items = lists:filter(
-	      fun(#hn_item{addr=A}) ->
-                      case (A)#ref.name of
-                          "__"++_ ->
-                              false;
-                          _ ->
-                              true
-                      end
-              end,
-              hn_db:get_item(Ref)),
-    List =  lists:map(fun hn_util:item_to_xml/1,Items),
+    F = fun(#hn_item{addr=A}) ->
+                case (A)#ref.name of
+                    "__"++_ -> false;
+                    _       -> true
+                end
+        end,
+    Items = lists:filter(F,hn_db:get_item(Ref)),
+    List = lists:map(fun hn_util:item_to_xml/1,Items),
     {attr,[],List}.
 
 get_post_data(Arg,_) when (Arg#arg.req)#http_request.method == 'GET' ->
@@ -487,62 +484,61 @@ get_var_or_cookie(Name,Vars,Arg) ->
             {ok,Auth}
     end.
 
+%% upload(A,Name,Fun) when A#arg.state == undefined ->
+%%     multipart(A, #upload{},Name,Fun);
+%% upload(A,Name,Fun) ->
+%%     multipart(A, A#arg.state,Name,Fun).
 
-upload(A,Name,Fun) when A#arg.state == undefined ->
-    multipart(A, #upload{},Name,Fun);
-upload(A,Name,Fun) ->
-    multipart(A, A#arg.state,Name,Fun).
+%% multipart(A,State,Name,Fun) ->
+%%     Parse = yaws_api:parse_multipart_post(A),
+%%     case Parse of
+%%         {cont, Cont, Res} ->
+%%             case addFileChunk(A, Res, State, Name,Fun) of
+%%                 {done, Result} ->   Result;
+%%                 {cont, NewState} -> {get_more, Cont, NewState}
+%%             end;
+%%         {result, Res} ->
+%%             case addFileChunk(A, Res, State#upload{last=true},Name,Fun) of
+%%                 {done, Result}  -> Result;
+%%                 {cont, _}       -> error
+%%  	        end
+%%     end.
 
-multipart(A,State,Name,Fun) ->
-    Parse = yaws_api:parse_multipart_post(A),
-    case Parse of
-        {cont, Cont, Res} ->
-            case addFileChunk(A, Res, State, Name,Fun) of
-                {done, Result} ->   Result;
-                {cont, NewState} -> {get_more, Cont, NewState}
-            end;
-        {result, Res} ->
-            case addFileChunk(A, Res, State#upload{last=true},Name,Fun) of
-                {done, Result}  -> Result;
-                {cont, _}       -> error
- 	        end
-    end.
+%% addFileChunk(A, [{part_body, Data}|Res], State,Name,Fun) ->
+%%     addFileChunk(A, [{body, Data}|Res], State,Name,Fun);
+%% addFileChunk(_A, [], S,_Name,Fun) when S#upload.last==true,
+%% S#upload.filename /= undefined, S#upload.fd /= undefined ->
+%%     file:close(S#upload.fd),
+%%     Fun(["/tmp/",S#upload.filename]),
+%%     {done, ok};
+%% addFileChunk(_A, [], S,_Name,_Fun) when S#upload.last==true ->
+%%     {done, ok};
+%% addFileChunk(_A, [], State,_Name,_Fun) -> {cont, State};
+%% addFileChunk(A, [{head, {Name, Opts}}|Res], State,Name,Fun) ->
+%%     case lists:keysearch(filename, 1, Opts) of
+%%     {value, {_, Fname0}} ->
+%%         Fname = yaws_api:sanitize_file_name(basename(Fname0)),
+%%         case file:open(["/tmp/", Fname] ,[write]) of
+%%         {ok, Fd} ->
+%%             S2 = State#upload{filename = Fname,fd = Fd},
+%%             addFileChunk(A, Res, S2,Name,Fun);
+%%         _ -> {done, ok}
+%%         end;
+%%     false -> {done, ok}
+%%     end;
+%% addFileChunk(A, [{body, Data}|Res], State,Name,Fun)
+%%   when State#upload.filename /= undefined ->
+%%     case file:write(State#upload.fd, Data) of
+%%     ok -> addFileChunk(A, Res, State, Name,Fun);
+%%     _  -> {done, ok}
+%%     end;
+%% addFileChunk(A, [_N|Res], State,Name,Fun) ->
+%%     addFileChunk(A, Res, State,Name,Fun).
 
-addFileChunk(A, [{part_body, Data}|Res], State,Name,Fun) ->
-    addFileChunk(A, [{body, Data}|Res], State,Name,Fun);
-addFileChunk(_A, [], S,_Name,Fun) when S#upload.last==true,
-S#upload.filename /= undefined, S#upload.fd /= undefined ->
-    file:close(S#upload.fd),
-    Fun(["/tmp/",S#upload.filename]),
-    {done, ok};
-addFileChunk(_A, [], S,_Name,_Fun) when S#upload.last==true ->
-    {done, ok};
-addFileChunk(_A, [], State,_Name,_Fun) -> {cont, State};
-addFileChunk(A, [{head, {Name, Opts}}|Res], State,Name,Fun) ->
-    case lists:keysearch(filename, 1, Opts) of
-    {value, {_, Fname0}} ->
-        Fname = yaws_api:sanitize_file_name(basename(Fname0)),
-        case file:open(["/tmp/", Fname] ,[write]) of
-        {ok, Fd} ->
-            S2 = State#upload{filename = Fname,fd = Fd},
-            addFileChunk(A, Res, S2,Name,Fun);
-        _ -> {done, ok}
-        end;
-    false -> {done, ok}
-    end;
-addFileChunk(A, [{body, Data}|Res], State,Name,Fun)
-  when State#upload.filename /= undefined ->
-    case file:write(State#upload.fd, Data) of
-    ok -> addFileChunk(A, Res, State, Name,Fun);
-    _  -> {done, ok}
-    end;
-addFileChunk(A, [_N|Res], State,Name,Fun) ->
-    addFileChunk(A, Res, State,Name,Fun).
-
-basename(FilePath) ->
-    case string:rchr(FilePath, $\\) of
-    0 ->%% probably not a DOS name
-        filename:basename(FilePath);
-    N ->%% probably a DOS name, remove everything after last \
-        basename(string:substr(FilePath, N+1))
-    end.
+%% basename(FilePath) ->
+%%     case string:rchr(FilePath, $\\) of
+%%     0 ->%% probably not a DOS name
+%%         filename:basename(FilePath);
+%%     N ->%% probably a DOS name, remove everything after last \
+%%         basename(string:substr(FilePath, N+1))
+%%     end.
