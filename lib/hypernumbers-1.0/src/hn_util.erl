@@ -108,8 +108,8 @@ to_xml({blank,[],[]})            ->
 to_xml(Dt) when is_record(Dt, datetime) ->
     [{string, [], [muin_date:to_rfc1123_string(Dt)]}];
 to_xml({X,Values}) when X == range; X == array ->
-    F = fun(X) ->
-                {row,[],lists:map(fun to_xml/1,X)}
+    F = fun(Z) ->
+                {row,[],lists:map(fun to_xml/1,Z)}
         end,
     [{X,[],lists:map(F,Values)}];
 to_xml(Else) ->
@@ -193,7 +193,7 @@ parse_vars(Query) ->
             end,
     
     Pairs = lists:map(Split,string:tokens(Query,"&")),
-        
+    
     {ok,Pairs}.
 
 
@@ -209,9 +209,9 @@ intersection([],_List,Acc) ->
     Acc;
 intersection([H|T],List,Acc) ->
     NAcc = case lists:member(H,List) of
-    true  -> [H|Acc];
-    false -> Acc
-    end,
+               true  -> [H|Acc];
+               false -> Acc
+           end,
     intersection(T,List,NAcc).
 
 %%--------------------------------------------------------------------
@@ -222,9 +222,9 @@ intersection([H|T],List,Acc) ->
 add_uniq(List,Item) -> 
 
     [Item] ++ lists:filter(
-        fun(X) -> ?COND(X == Item,false,true) end,
-        List).
-    
+                fun(X) -> ?COND(X == Item,false,true) end,
+                List).
+
 %%--------------------------------------------------------------------
 %% Function:    trim/2
 %%--------------------------------------------------------------------
@@ -239,14 +239,14 @@ strip_ws(String) -> String.
 %%--------------------------------------------------------------------
 is_alpha(Str) ->
     Fun = fun(XX) ->         
-        if XX < 97  -> false;  
-           XX > 122 -> false;
-           true     -> true      
-        end                  
-    end,
+                  if XX < 97  -> false;  
+                     XX > 122 -> false;
+                     true     -> true      
+                  end                  
+          end,
     case is_list(Str) of
         false -> false;
-        true -> lists:all(Fun, Str)
+        true  -> lists:all(Fun, Str)
     end.
 
 %%--------------------------------------------------------------------

@@ -3,6 +3,8 @@
 -module(<%= @basename %>_SUITE).
 -compile(export_all).
 -include("ct.hrl").
+-include_lib("hypernumbers/include/hypernumbers.hrl").
+-include_lib("hypernumbers/include/spriki.hrl").
 -import(lists, [foldl/3, foreach/2, map/2]).
 -import(test_util, [conv_for_post/1, conv_from_get/1, cmp/2, hnpost/3, hnget/2, readxls/1]).
 
@@ -37,7 +39,7 @@ init_per_suite(Config) ->
     {Lits, Flas} = % split data into literals and formulas
         foldl(fun(X, _Acc = {Ls, Fs}) ->
                       {{{sheet, Sheetn}, {row_index, Row}, {col_index, Col}}, Val} = X,
-                      {ok, Sheet, _} = regexp:gsub(Sheetn, "\\s+", "_"), % No whitespace in URLs eh.
+                      {ok, Sheet, _} = regexp:gsub(Sheetn, "\\s+", "_"),
                       Postdata = conv_for_post(Val),
                       Path = "/" ++ "<%= @basename %>" ++ "/" ++ Sheet ++ "/",
                       Ref = tconv:to_b26(Col + 1) ++ tconv:to_s(Row + 1),
@@ -52,16 +54,19 @@ init_per_suite(Config) ->
               {[], []}, Celldata),
     
     Dopost = fun({Path, Ref, Postdata}) ->
-                     hnpost(Path, Ref, Postdata)
+                     Url = string:to_lower("http://127.0.0.1:9000"++Path++Ref),
+                     {ok,NRef} = hn_util:parse_url(Url),
+                     hn_main:set_attribute(NRef#ref{name=formula},Postdata)
              end,
 
-    error_logger:info_msg("Start Import: <%=@basename %>~n", []),
+    ?INFO("Start Posting: <%=@basename %>~n", []),
     gen_server:cast(dirty_cell,  {setstate, passive}),
     foreach(Dopost, Lits),
     foreach(Dopost, Flas),
+    ?INFO("Start Recalculating: <%=@basename %>~n", []),
     gen_server:cast(dirty_cell, {setstate, active}),
     gen_server:call(dirty_cell, flush, infinity),
-    error_logger:info_msg("End Import: <%=@basename %>~n", []),
+    ?INFO("End Import: <%=@basename %>~n", []),
     Config.
 
 end_per_suite(_Config) ->
