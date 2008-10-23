@@ -10,6 +10,9 @@
 
 -export([run/0]).
 
+-include_lib("hypernumbers/include/spriki.hrl").
+-include_lib("hypernumbers/include/hypernumbers.hrl").
+
 -import(lists, [foldl/3, foreach/2, map/2]).
 -import(test_util, [conv_for_post/1, conv_from_get/1, cmp/2, hnpost/3, hnget/2, readxls/1]).
 
@@ -72,10 +75,14 @@ run_loader(File)->
 	      {[], []}, Celldata),
 
     Dopost = fun({Path, Ref, Postdata}) ->
-                     error_logger:info_msg("Posting ~p ~p ~p ~n",[Path,Ref,Postdata]),
-                     Res = hnpost(Path, Ref, Postdata),
-                     error_logger:info_msg("Returned ~p ~n",[Res])
-                     
+                     Url = string:to_lower("http://127.0.0.1:9000"++Path++Ref),
+                     {ok,NRef} = hn_util:parse_url(Url),
+                     try 
+                         hn_main:set_attribute(NRef#ref{name=formula},Postdata)
+                     catch
+                         error:Error ->
+                             ?INFO("~p",[Error])
+                     end
 	     end,
 
     gen_server:cast(dirty_cell,  {setstate, passive}),

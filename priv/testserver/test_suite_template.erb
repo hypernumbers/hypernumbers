@@ -56,7 +56,12 @@ init_per_suite(Config) ->
     Dopost = fun({Path, Ref, Postdata}) ->
                      Url = string:to_lower("http://127.0.0.1:9000"++Path++Ref),
                      {ok,NRef} = hn_util:parse_url(Url),
-                     hn_main:set_attribute(NRef#ref{name=formula},Postdata)
+                     try 
+                         hn_main:set_attribute(NRef#ref{name=formula},Postdata)
+                     catch
+                         error:Error ->
+                             ?INFO("~p",[Error])
+                     end
              end,
 
     ?INFO("Start Posting: <%=@basename %>~n", []),
