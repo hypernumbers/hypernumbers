@@ -20,14 +20,65 @@
          hnget/2,
          float_cmp/3,
          stripfileref/1,
-         transform_reader_output/1
+         transform_reader_output/1,
+         import_xls/1
 	]).
 
 -include("excel_errors.hrl").
+-include("hypernumbers.hrl").
+-include("spriki.hrl").
 
--define(FILEDIR, "../../../../excel_files/").
+-define(FILEDIR, "/../../tests/excel_files/").
 -define(EXCEL_IMPORT_FLOAT_PRECISION, 9).
 -define(DEFAULT,1000000).
+
+import_xls(Name) ->
+    bits:clear_db(),
+
+    P = code:lib_dir(hypernumbers),
+    [_Hn,_Lib,_DD,_Ebin|Rest] = lists:reverse(string:tokens(P,"/")),
+    File = "/"++string:join(lists:reverse(Rest),"/") 
+        ++ "/tests/excel_files/Win_Excel07_As_97/"
+        ++ Name ++ ".xls",
+  
+    Celldata = readxls(File),
+    {Lits, Flas} = % split data into literals and formulas
+        lists:foldl(fun(X, _Acc = {Ls, Fs}) ->
+                      {{{sheet, Sheetn}, {row_index, Row}, {col_index, Col}}, Val} = X,
+                      {ok, Sheet, _} = regexp:gsub(Sheetn, "\\s+", "_"),
+                      Postdata = conv_for_post(Val),
+                      Path = "/" ++ Name ++ "/" ++ Sheet ++ "/",
+                      Ref = tconv:to_b26(Col + 1) ++ tconv:to_s(Row + 1),
+                      Datatpl = {Path, Ref, Postdata},
+                      case Postdata of
+                          [$= | _ ] -> % formula
+                              {Ls, Fs ++ [Datatpl]};
+                          _ ->
+                              {Ls ++ [Datatpl], Fs}
+                      end
+              end,
+              {[], []}, Celldata),
+    
+    Dopost = fun({Path, Ref, Postdata}) ->
+                     Url = string:to_lower("http://127.0.0.1:9000"++Path++Ref),
+                     {ok,NRef} = hn_util:parse_url(Url),
+                     try 
+                         hn_main:set_attribute(NRef#ref{name=formula},Postdata)
+                     catch
+                         error:Error ->
+                             ?INFO("~p",[Error])
+                     end
+             end,
+
+    ?INFO("Start Posting: ~p", [Name]),
+    gen_server:cast(dirty_cell,  {setstate, passive}),
+    lists:foreach(Dopost, Lits),
+    lists:foreach(Dopost, Flas),
+    ?INFO("Start Recalculating: ~p", [Name]),
+    gen_server:cast(dirty_cell, {setstate, active}),
+    gen_server:call(dirty_cell, flush, infinity),
+    ?INFO("End Import: ~p", [Name]),
+    ok.
 
 
 %% Nasty function to convert 

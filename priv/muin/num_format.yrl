@@ -361,7 +361,7 @@ remove_semicolons([[semicolon]|T],Acc) -> remove_semicolons(T,Acc);
 remove_semicolons([H|T],Acc)           -> remove_semicolons(T,[H|Acc]).
 
 verify_listX(A) ->
-	io:format("in num_format.yrl:verify_listX I think some of these clauses are hooky~n"),
+	%%TODO io:format("in num_format.yrl:verify_listX I think some of these clauses are hooky~n"),
 	verify_list(A).
 
 verify_list([[A]]    )            -> A;

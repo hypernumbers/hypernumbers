@@ -279,7 +279,7 @@ app_fmt([],[?ASC_Q|T2],Type,A)                  -> app_fmt([],T2,Type,[?ASC_SPAC
 
 %% just rounds off a number to the appropriate number of decimals
 round(X,N) when is_list(X) ->
-    io:format("in format:round fix this bug!~n"),
+    %% TODO : io:format("in format:round fix this bug!~n"),
     X;
 round(X,0)                           -> round(X);
 round(X,N) when N > 0, is_integer(N) ->
@@ -333,7 +333,7 @@ make_number(Integers,Decimals) -> list_to_float(Integers++"."++Decimals).
 
 %% truncates a decimal value to a fixed length
 trunc(Decimals,Len) ->
-    io:format("in format:trunc there is a bug with numbers like 3.3!~n"),
+    %% TODO io:format("in format:trunc there is a bug with numbers like 3.3!~n"),
     Divisor=math:pow(10,Len),
     RegExp="(e\\+000)",
     {ok,Decimals2,_}=regexp:sub(Decimals,RegExp,""),

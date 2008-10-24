@@ -30,12 +30,12 @@ run() ->
     %%	   d_gnumeric_stats.xls,
     %%	   d_gnumeric_text.xls,
     %% Files = ["e_operator"],
-     Files = ["c_basic_functions_a_b"],
+    %Files = ["c_basic_functions_a_b"],
     %%	   e_trig.xls,
     %%	   f_12_month_cash_flow_statement.xls,
-    %%	   f_billing_statement.xls,
-    %%	   f_check_register.xls,
-    %%	   f_employee_shift_schedule.xls,
+    %%	   Files = ["f_billing_statement"],
+    %%	   Files = ["f_check_register.xls"],
+    	   Files = ["f_employee_shift_schedule"],
     %%	   f_employee_timecard.xls,
     %%	   f_loan_amortization_schedule.xls,
     %%	   f_loan_calculator.xls,
@@ -46,7 +46,7 @@ run() ->
     %%	   f_timeline.xls,
     %%	   f_weekly_time_sheet_with_breaks.xls],
     Fun = fun(X) -> run_loader(X),
-		    io:format("File ~p loaded~n~n",[X])
+		    ?INFO("File ~p loaded~n~n",[X])
 	  end,
     lists:foreach(Fun,Files).
 
