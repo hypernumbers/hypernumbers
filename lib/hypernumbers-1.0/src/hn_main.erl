@@ -20,7 +20,7 @@
          get_cell_info/4,
          write_cell/5,
          get_hypernumber/9,
-         copy_page/2,
+         copy_pages_below/2,
          formula_to_range/2,
          constants_to_range/2
         ]).
@@ -299,10 +299,18 @@ recalc_cell(Index) ->
     hn_db:mark_dirty(Index, cell),
     ok.
 
-copy_page(From,To) ->
-    Attr = hn_yaws:get_page_attributes(From),
-    misc_util:do_import(From#ref.site++To,Attr),
-    ok.
+copy_pages_below(From,To) ->
+    #ref{path=RootPath}=From,
+    Under=get_pages_under(RootPath),
+    FromPages=[From#ref{path=lists:append([RootPath,X])} || X <- Under],
+    ToPages=[To++string:join(X,"/")++"/" || X <- Under],
+    copy_pages(FromPages,ToPages).
+
+copy_pages([],[]) -> ok;
+copy_pages([H1|T1],[H2|T2]) ->
+    Attr = hn_yaws:get_page_attributes(H1),
+    misc_util:do_import(H1#ref.site++H2,Attr),
+    copy_pages(T1,T2).
 
 %%%-----------------------------------------------------------------
 %%% Helper Functions
@@ -328,3 +336,16 @@ ref_to_rti(#ref{site = Site, path = Path, ref = {range, {Col, Row, _, _}}}, Arra
 muin_link_to_simplexml({Type, {S, P, X1, Y1}}) ->
     Url = hn_util:index_to_url({index, S, P, X1, Y1}),
     {url, [{type, Type}], [Url]}.
+
+%% There is a reason we use this instead of get_pages_under in muin
+%% that one has a bug in it and will be rewritten anyway when we do queries properly
+get_pages_under(Under) ->
+    UnderClause=muin:make_bits(lists:reverse(Under),'$1'),
+    % The head clause matches all subpages of the UnderClause
+    Ref=ms_util:make_ms(ref,[{path,UnderClause},{name,rawvalue},
+                             {ref,{cell,{'$2','$3'}}}]),
+    Head=ms_util:make_ms(hn_item,[{addr,Ref},{val,'$4'}]),
+    Guard = "",
+    Body  = ['$1'],
+    Spec=[{Head,Guard,Body}],
+    List=muin:unique(Spec).

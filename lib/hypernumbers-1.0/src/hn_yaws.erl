@@ -60,6 +60,9 @@ do_request(Arg,Url) ->
                    UserId
            end,
 
+    %% Dodgy expenses system stuff
+    put(username,User),
+    
     {ok,Access} = case get_permissions(User,Ref) of
                       {ok,{protected_read,Token}}  -> {ok,read};
                       {ok,{protected_write,Token}} -> {ok,write};
@@ -101,7 +104,7 @@ req('GET',[],[{"new",Template}],_,Ref=#ref{site=Site,ref={page,"/"}}) ->
     NPage=hn_templates:get_next(#ref{site=Site},Template,"BlankUsername"),
     Tpl="@"++Template,
     io:format("in hn_yaws:req add the gui to the beast~n"),
-    hn_main:copy_page(Ref#ref{path=[Tpl]},NPage),
+    hn_main:copy_pages_below(Ref#ref{path=[Tpl]},NPage),
     {return,{redirect, Ref#ref.site++NPage}};
 
 req('GET',[],["templates"],_,_Ref=#ref{ref={page,"/"}}) ->
@@ -139,6 +142,7 @@ req('GET',[],["hypernumber"],_,Ref) ->
     {ok,{hypernumber,[],[{value,[], Val()},{'dependancy-tree',[], DepTree}]}};
 
 req('GET',[],[],_,Ref) ->
+
     case hn_db:get_item(Ref) of
         []   ->
             {return,{content,"text/plain","blank"}};
@@ -178,6 +182,8 @@ req('POST', {create, [], Data}, _Attr, _User, Ref = #ref{ref = {range, _}}) ->
     case Data of
         [{formula, [], [Formula]}] ->
             hn_main:formula_to_range(Formula, Ref);
+        {format, [], [Format]} ->
+            hn_main:format_to_range(Format, Ref);
         _ ->
             hn_main:constants_to_range(Data, Ref)
     end,
@@ -248,7 +254,7 @@ req('POST',{template,[],[{name,[],[Name]},
                          {gui,[],[Gui]},
                          {formurl,[],[Form]}]},_Attr,_User,Ref) ->
     Tpl = "/@"++Name++"/",
-    ok = hn_main:copy_page(Ref,Tpl),
+    ok = hn_main:copy_pages_below(Ref,Tpl),
     {ok,NRef} = hn_util:parse_url(Ref#ref.site++Tpl),
     %#ref{path=Path}=NRef,
     {ok,ok}=hn_templates:write_def(Name,Url,Gui,Form),
@@ -268,8 +274,6 @@ api_change([{biccie,[],     [Bic]},
             {version,[],    [Version]}], _Page)->
 
     {_,_,[Val2]}=Val,
-    io:format("in hn_yaws:api_change Cell is ~p Bic is ~p Val is ~p "++
-              "Version is ~p Val2 is ~p~n",[Cell,Bic,Val,Version,Val2]),
     hn_db:update_hn(Cell,Bic,Val2,Version),
 
     {ok,{success,[],[]}}.
