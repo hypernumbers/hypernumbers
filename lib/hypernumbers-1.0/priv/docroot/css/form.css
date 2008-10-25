@@ -6,12 +6,14 @@
 
 h1
 {
-  font: 18px sans-serif;
+  font: bold 24px sans-serif;
+  color: #F5C71F;
   }
 
 h3
 {
   font: bold 14px sans-serif;
+  color: #F5C71F;
   }
 
 hr {  background-color: #EEE; color:#EEE;  }
