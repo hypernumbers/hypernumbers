@@ -316,25 +316,25 @@ delete_ets_DEBUG(Tables)  -> delete_ets(Tables).
 dump_DEBUG(Tables)        -> dump(Tables).
 
 test_DEBUG()->
-%% File="minitest.xls",
-%% File="e_gnumeric_operators_add.xls",
-%% File="b_array_formulae.xls",
-%% File="c_basic_functions_tests_a_e.xls",
-%% File="b_abs_and_rel_addressing.xls",
-%% File="d_gnumeric_date_and_time.xls",
-%% File="b_ping.xls",
-%% File="b_basic_unicode_strings.xls",
-%% File="b_three_dee_ref.xls",
-%% File="b_floats.xls",
-%% File="b_simple_arrays_and_ranges.xls",
-%% File="d_gnumeric_address.xls",
-%% File="junk_external_ref.xls",
-%% File="z_junk.xls",
-%% File="a_should_be_10_tests.xls",
-%% File="rich_text_junk.xls",
-%% File="f_loan_amortization_schedule.xls",
-%% File="f_12_month_cash_flow_statement.xls",
-%% File="f_payroll_calculator.xls",
+    % File="minitest.xls",
+    % File="e_gnumeric_operators_add.xls",
+    % File="b_array_formulae.xls",
+    % File="c_basic_functions_tests_a_e.xls",
+    % File="b_abs_and_rel_addressing.xls",
+    % File="d_gnumeric_date_and_time.xls",
+    % File="b_ping.xls",
+    % File="b_basic_unicode_strings.xls",
+    % File="b_three_dee_ref.xls",
+    % File="b_floats.xls",
+    % File="b_simple_arrays_and_ranges.xls",
+    % File="d_gnumeric_address.xls",
+    % File="junk_external_ref.xls",
+    % File="z_junk.xls",
+    % File="a_should_be_10_tests.xls",
+    % File="rich_text_junk.xls",
+    % File="f_loan_amortization_schedule.xls",
+    % File="f_12_month_cash_flow_statement.xls",
+    % File="f_payroll_calculator.xls",
     File="f_services_invoice_with_tax_calculation.xls",
     FileRoot="C:/opt/code/trunk/tests/"++
         "excel_files/Win_Excel07_As_97",
@@ -351,6 +351,9 @@ dump([{lacunae,_}|T])->
     io:format("~nSkipping out lacunae in dump~n"),
     dump(T);
 dump([{formats,_}|T])->
+    io:format("~nSkipping out formats in dump~n"),
+    dump(T);
+dump([{xf,_}|T])->
     io:format("~nSkipping out formats in dump~n"),
     dump(T);
 %% dump([{Table,Tid}|T])->
