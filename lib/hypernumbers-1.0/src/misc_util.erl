@@ -7,7 +7,8 @@
          demo/1,
          demo/2,
          cheat/1,
-         cheat/2]).
+         cheat/2,
+         cheat/0]).
 
 -include("builtins.hrl").
 -include("spriki.hrl").
@@ -37,6 +38,28 @@ demo(Site,Dir) ->
     lists:map(F,Files),
     ok.
 
+cheat() ->
+    Site="http://il_ballo.dev:9000",
+    RootPath=["stock","item"], 
+    cheat(Site++"/","il_ballo").
+%% N=10,
+%% load_page_defaults(Site,RootPath,"deliveries",N),
+%% load_page_defaults(Site,RootPath,"sales",N).
+
+%% load_page_defaults(_,_,_,0) -> ok;
+%% load_page_defaults(Site,RootPath,SubPage,N) ->
+%%    Path=lists:reverse([SubPage,integer_to_list(N)|lists:reverse(RootPath)]),
+%%    Ref1=#ref{site=Site,path=Path,ref={page,"/"},name=form,auth=[]},
+%%    Val1="/forms/"++SubPage++"/",
+%%    Ref2=#ref{site=Site,path=Path,ref={page,"/"},name=gui,auth=[]},
+%%    Val2="il_ballo2",
+%%    Ref3=#ref{site=Site,path=Path,ref={page,"/"},name=template,auth=[]},
+%%    Val3="@"++SubPage,
+%%    hn_db:write_item(Ref1,Val1),
+%%    hn_db:write_item(Ref2,Val2),
+%%    hn_db:write_item(Ref3,Val3),
+%%    load_page_defaults(Site,RootPath,SubPage,N-1).
+
 cheat(Example) ->
     bits:clear_db(),
     demo("http://127.0.0.1:9000/",code:priv_dir(hypernumbers)++"/demo_pages/"++
@@ -52,9 +75,9 @@ stdfuns_export_xml() ->
 
     Filter = fun
                  ({_Fun,Ident},Ident) -> true;
-                 (_,_Ident) -> false
-             end,
-    
+        (_,_Ident) -> false
+                     end,
+
 Function = fun({Fun,_AtomIdent}) ->
                    {function,[{label,atom_to_list(Fun)}],[]}
            end,
