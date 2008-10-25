@@ -1071,7 +1071,7 @@
 -define(OUTPUT505,{number,{black,"_1234.50"}}). 
 
 %% Test 506
--define(FORMAT506,"[Red](\"$\"#,##0\\)").
+-define(FORMAT506,"[Red](\"$\"#,##0\\)"). %" fix syntax hightlighting
 
 -define(VALUE506a,1234.5).
 -define(OUTPUT506a,{number,{red,"($1,235)"}}). 
@@ -1122,6 +1122,42 @@
 -define(OUTPUT510,{number,{black,"this test finds a fuck up may need a big rewrite, "++
 			   "I just bodged the 'general Tokens' clause "++
 			   "in number_format.yrl"}}). 
+
+-define(FORMAT511,";0.00;\"bbb\"").
+
+-define(VALUE511,333).
+-define(OUTPUT511,{number,{black,""}}). % is this right?
+
+-define(FORMAT512a,"_(\"$\"*#,##0_);_(\"$\"*(#,##0);_($\"*\"-\"_);_(@_)"). %" fix syntax highlighting
+
+-define(VALUE512a,333).
+-define(OUTPUT512a,{number,{black,"\"$\"#############,333"}}). %" fix syntax highlighting
+                            
+-define(FORMAT512b,"_(\"$\"*#,##0_)"). %" fix syntax highlighting
+                            
+-define(VALUE512b,333).
+-define(OUTPUT512b,{number,{black,"\"$\"#############,333"}}). %" fix syntax highlighting                            
+                            
+-define(FORMAT512c,"_(\"$\"*(#,##0)"). %" fix syntax highlighting
+
+-define(VALUE512c,333).
+-define(OUTPUT512c,{number,{black,"\"$\"(((((((((((((,333"}}).
+
+-define(FORMAT512d,"_($\"*\"-\"_)"). %" fix syntax highlighting
+
+-define(VALUE512d,333).
+-define(OUTPUT512d,{number,{black,"\"$\"\\\\\\\\\\\\\\,333"}}). %" fix syntax highlighting
+                            
+-define(FORMAT512e,"_(@_)").
+
+-define(VALUE512e,333).
+-define(OUTPUT512e,{number,{black,"333"}}).
+
+-define(FORMAT513,"0").
+
+-define(VALUE513,"33300000000e+000").
+-define(OUTPUT513,{number,{black,"33300000000"}}).
+
 
 %% Failing tests
 -define(FORMAT_F1A,"00.00\"ttt\"00.00").
@@ -1485,6 +1521,13 @@ all() ->
      num_parser_test509b,
      num_parser_test509c,
      num_parser_test510,
+     num_parser_test511,
+     num_parser_test512a,     
+     num_parser_test512b,     
+     num_parser_test512c,     
+     num_parser_test512d,     
+     num_parser_test512e,
+     num_parser_test513,
      num_parser_fail1a,
      num_parser_fail2a
     ].
@@ -1542,8 +1585,8 @@ num_parser_test1f() ->
 num_parser_test1f(Config) when is_list(Config) -> 
     executor(?FORMAT1,?VALUE1f,?OUTPUT1f).
 
-num_parser_test1g() ->- 
-			  [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+num_parser_test1g() ->
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test1g(Config) when is_list(Config) -> 
     executor(?FORMAT1,?VALUE1g,?OUTPUT1g).
@@ -3267,7 +3310,50 @@ num_parser_test510() ->
     [{userdata,[{doc,"Describe the main purpose of test case"}]}].
 
 num_parser_test510(Config) when is_list(Config) -> 
-    executor(?FORMAT510,?VALUE510,?OUTPUT509c).
+    executor(?FORMAT510,?VALUE510,?OUTPUT510).
+
+num_parser_test511() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test511(Config) when is_list(Config) -> 
+    executor(?FORMAT511,?VALUE511,?OUTPUT511).
+
+num_parser_test512a() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test512a(Config) when is_list(Config) -> 
+    executor(?FORMAT512a,?VALUE512a,?OUTPUT512a).
+
+num_parser_test512b() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test512b(Config) when is_list(Config) -> 
+    executor(?FORMAT512b,?VALUE512b,?OUTPUT512b).
+
+num_parser_test512c() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test512c(Config) when is_list(Config) -> 
+    executor(?FORMAT512c,?VALUE512c,?OUTPUT512c).
+
+num_parser_test512d() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test512d(Config) when is_list(Config) -> 
+    executor(?FORMAT512d,?VALUE512d,?OUTPUT512d).
+
+num_parser_test512e() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test512e(Config) when is_list(Config) -> 
+    executor(?FORMAT512e,?VALUE512e,?OUTPUT512e).
+
+num_parser_test513() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test513(Config) when is_list(Config) -> 
+    executor(?FORMAT513,?VALUE513,?OUTPUT513).
+
 
 %% Failing tests
 num_parser_fail1a() -> 
