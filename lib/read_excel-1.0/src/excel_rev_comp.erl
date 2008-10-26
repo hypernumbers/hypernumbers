@@ -29,7 +29,6 @@
 %% The formulae are stored in reverse Polish Notation within excel
 %% The reverse compiler recreates the original formula by running the RPN
 reverse_compile(Index,Tokens,TokenArray,Tables)->
-    io:format("in excel_rev_comp:reverse_compile Tokens are ~p~n",[Tokens]),
     rev_comp(Index,Tokens,TokenArray,[],Tables).
 
 %% When the tokens are exhausted the Stack is just flattened to a string
@@ -76,19 +75,12 @@ rev_comp(I,[{list,{tList,[{op_type,binary}],{return,reference}}}|T],TokArr,
 
 %% tUplus
 %% Special double case to handle unary plus with spaces after them
-rev_comp(Index,[{plus,{tUplus,[{op_type,unary}],{return,_Value}}}|T],TokenArray,
-         [{space,Spaces},First|Rest],Tables) ->
-    rev_comp(Index,T,TokenArray,[{unaryspace,"+"++Spaces++to_str(First)}|Rest],Tables);
-rev_comp(Index,[{plus,{tUplus,[{op_type,unary}],{return,_Value}}}|T],TokenArray,
-         [First|Rest],Tables) ->
-    rev_comp(Index,T,TokenArray,[{string,"+"++to_str(First)}|Rest],Tables);
+rev_comp(I,[{plus,{tUplus,[{op_type,unary}],{return,_Value}}}|T],TokArr,
+         [First|Rest],Tbl) ->
+    rev_comp(I,T,TokArr,[{string,"+"++to_str(First)}|Rest],Tbl);
 
 %% tUminus
 %% Special double case to handle unary minus with spaces after them!
-rev_comp(I,[{minus,{tUminus,[{op_type,unary}],{return,_Value}}}|T],TokArr,
-         [{space,Spaces},First|Rest],Tbl) ->
-    io:format("in excel_rev_comp:rev_comp 1~n"),
-    rev_comp(I,T,TokArr,[{unaryspace,"-"++Spaces++to_str(First)}|Rest],Tbl);
 rev_comp(I,[{minus,{tUminus,[{op_type,unary}],{return,_Value}}}|T],TokArr,
          [First|Rest],Tbl) ->
     rev_comp(I,T,TokArr,[{string,"-"++to_str(First)}|Rest],Tbl);
@@ -127,9 +119,12 @@ rev_comp(I,[{attributes,Attributes}|T],TokArr,Stack,Tbl)  ->
                        [FunArgs|Rest] = Stack,
                        [{func,4,lists:flatten([FunArgs])}|Rest];
                    % Preserve Spaces
+                   % {tAttrSpace,special_character,[{char,_Type},
+                   %                              {no_of_chars,Chars}],_Ret} ->
+                   %   [{space, flatten(duplicate(Chars, " "))} | Stack]
+                   % Kill spaces
                    {tAttrSpace,special_character,[{char,_Type},
-                                                  {no_of_chars,Chars}],_Ret} ->
-                       [{space, flatten(duplicate(Chars, " "))} | Stack]
+                                                  {no_of_chars,Chars}],_Ret} -> Stack
                end,
 
     rev_comp(I,T,TokArr,NewStack,Tbl);
@@ -185,7 +180,8 @@ rev_comp(Index,[{functional_index,{Function,[{value,FuncVar},{type,_Type}],
        Function =:= tFuncVarA ->
     % lists:reverse has to be overused because Stack is build backwards
     % (new items append to tail opposed to head
-    {Rest,FunArgs} = popVars(macro_no_of_args(FuncVar),Stack,[]),
+    NumArgs=macro_no_of_args(FuncVar),
+    {Rest,FunArgs} = popVars(NumArgs,Stack,[]),
     rev_comp(Index,T,TokenArray,[{func,FuncVar,lists:reverse(FunArgs)}|Rest],Tables);
 
 %% tFuncVar
@@ -490,7 +486,6 @@ to_str(greater_than)          -> ">";
 to_str(not_equal)             -> "<>";
 to_str(intersect)             -> " ";
 to_str(comma)                 -> ",";
-to_str({unaryspace,Space})    -> Space;
 
 to_str({func,Var,Args})       ->
 
@@ -588,24 +583,33 @@ popSpaces([{space,Val}|T]) -> {{space,Val},T};
 popSpaces(List)            -> {[],List}.
 
 %% Used in tFunc, will grab the last I items from the list that
-%% aren't {space,Spaces}, {unaryspace,Space}, {unary,Op} or {return}
-popVars(0,Stack,Args) ->
-    io:format("in excel_rev_comp:popVars Stack is ~p Args are ~p~n",[Stack,Args]),
-    {Stack,lists:reverse(Args)};
+%% aren't {space,Spaces}, {unary,Op} or {return}
+%% 
+%% WARNING - the terminating clause is placed third from the top
+%%           because we are greedy on no-arg values (ie spaces, 
+%%           returns and unaries) which we want to keep sooking
+%%           into the function until they all run out...
+%%           
+%%           which is why the three clauses before the terminator don't
+%%           decrement the counter I :)
 popVars(I,[{space,Val}|T],Args) ->
-    io:format("in excel_rev_comp:popVars 2 I is ~p Val is ~p~n",[I,Val]),
+    % io:format("in excel_rev_comp:popVars (space) I is ~p Val is ~p~n-Args is ~p~n",
+    %          [I,Val,Args]),
     popVars(I,T,[{space,Val}|Args]);
-%% popVars(I,[{unary,Op},First|T],Args) ->
-%%    io:format("in excel_rev_comp:popVars 3 I is ~p Op is ~p~n",[I,Op]),
-%%    popVars(I,T,[{string,Op++to_str(First)}|Args]);                               
-popVars(I,[{unaryspace,Val},First|T],Args) ->
-    io:format("in excel_rev_comp:popVars 4 I is ~p Val is ~p T is ~p~n",[I,Val,T]),
-    popVars(I-1,T,[{string,Val++to_str(First)}|Args]);                               
+popVars(I,[{unary,Op}|T],Args) ->
+    % io:format("in excel_rev_comp:popVars (unary) I is ~p Op is ~p~n-Args is ~p~n",
+    %          [I,Op,Args]),
+    popVars(I,T,[{unary,Op}|Args]);
 popVars(I,[{return}|T],Args) ->
-    io:format("in excel_rev_comp:popVars 5 I is ~p~n",[I]),
+    % io:format("in excel_rev_comp:popVars (return) I is ~p~n-Args is ~p~n",[I,Args]),
     popVars(I,T,[{return}|Args]);
+%% THIS IS THE TERMINATOR
+popVars(0,Stack,Args) ->
+    % io:format("in excel_rev_comp:popVars (finish) Stack is ~p~n-Args are ~p~n",[Stack,Args]),
+    {Stack,lists:reverse(Args)};
 popVars(I,[Else|T],Args) ->
-    io:format("in excel_rev_comp:popVars 6 I is ~p Else is ~p~n",[I,Else]),
+    % io:format("in excel_rev_comp:popVars (var) I is ~p Else is ~p~n-T is ~p~n"++
+    %          "Args is ~p~n",[I,Else,T,Args]),
     popVars(I-1,T,[Else|Args]).
 
 %%push([],Val)    -> [lists:append([],Val)];
