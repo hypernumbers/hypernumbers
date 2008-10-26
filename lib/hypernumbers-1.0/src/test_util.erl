@@ -34,7 +34,7 @@
 
 import_xls(Name) ->
 
-    hypernumbers_app:reset(),
+    hypernumbers_app:clean_start(),
 
     P = code:lib_dir(hypernumbers),
     [_Hn,_Lib,_DD,_Ebin|Rest] = lists:reverse(string:tokens(P,"/")),
@@ -63,12 +63,7 @@ import_xls(Name) ->
     Dopost = fun({Path, Ref, Postdata}) ->
                      Url = string:to_lower("http://127.0.0.1:9000"++Path++Ref),
                      {ok,NRef} = hn_util:parse_url(Url),
-                     try 
-                         hn_main:set_attribute(NRef#ref{name=formula},Postdata)
-                     catch
-                         error:Error ->
-                             ?INFO("~p",[Error])
-                     end
+                     hn_main:set_attribute(NRef#ref{name=formula},Postdata)
              end,
 
     ?INFO("Start Posting: ~p", [Name]),

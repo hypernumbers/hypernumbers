@@ -290,12 +290,11 @@ recalc_cell(Index) ->
             Pcode = hn_db:get_item_val(Addr#ref{name = "__ast"}),
             Rti = ref_to_rti(Addr, false),
             Val = case muin:run_code(Pcode, Rti) of
-                      {ok, {_, V, _, _, _}}                -> V;
-                      {error, Reason} when is_atom(Reason) -> Reason
+                      {ok, {_, V, _, _, _}}  -> V;
+                      {error, Reason}        -> Reason
                   end,
             set_cell_rawvalue(Addr,Val)
     end,
-    
     hn_db:mark_dirty(Index, cell),
     ok.
 
