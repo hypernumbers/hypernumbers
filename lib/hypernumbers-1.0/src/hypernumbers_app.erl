@@ -9,6 +9,7 @@
 -behaviour(application).
 
 -include("yaws.hrl").
+-include("hypernumbers.hrl").
 -include("spriki.hrl").
 
 
@@ -43,6 +44,9 @@ start(_Type, _Args) ->
     application:start(yaws),    
     ok = yaws_api:setconf(GC, [SConfs]),
 
+    gen_server:cast(dirty_cell,        subscribe),
+    gen_server:cast(dirty_hypernumber, subscribe),
+
     case hypernumbers_sup:start_link() of
         {ok, Pid} -> 
             {ok, Pid};
@@ -51,15 +55,23 @@ start(_Type, _Args) ->
     end.
 
 reset() ->
-    {ok,Hosts} = get_hosts_conf(),
-    set_def_permissions(Hosts).
 
-%%------------------------------------------------------------------------------
-%% Function: stop(State) -> void()
-%% Description: This function is called whenever an application
-%% has stopped. It is intended to be the opposite of Module:start/2 and
-%% should do any necessary cleaning up. The return value is ignored.
-%%------------------------------------------------------------------------------
+    %% Probably not a nice way to do this, 
+    %% Before everything is restarted the msg queues
+    %% for these needs to be emptied
+    exit(whereis(dirty_cell), exit),
+    exit(whereis(dirty_hypernumber), exit),
+
+    hn_loaddb:create_db(),
+    
+    {ok,Hosts} = get_hosts_conf(),
+    set_def_permissions(Hosts),
+    
+    gen_server:cast(dirty_cell,        subscribe),
+    gen_server:cast(dirty_hypernumber, subscribe),
+
+    ok.    
+
 stop(_State) -> ok.
 
 create_sconf({IP,Port,_Domains}) ->

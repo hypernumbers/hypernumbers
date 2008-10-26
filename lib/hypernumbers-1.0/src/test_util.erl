@@ -33,7 +33,8 @@
 -define(DEFAULT,1000000).
 
 import_xls(Name) ->
-    bits:clear_db(),
+
+    hypernumbers_app:reset(),
 
     P = code:lib_dir(hypernumbers),
     [_Hn,_Lib,_DD,_Ebin|Rest] = lists:reverse(string:tokens(P,"/")),

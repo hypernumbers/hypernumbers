@@ -44,5 +44,5 @@ test(_Config) ->
 
 all() ->
     [
-      test
+      <%= @testcasedata.map { |rec| rec[0] }.join(",\n        ") %>
     ].

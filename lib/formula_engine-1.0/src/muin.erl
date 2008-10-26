@@ -17,6 +17,7 @@
 -include("handy_macros.hrl").
 -include("typechecks.hrl").
 -include("muin_records.hrl").
+-include("hypernumbers.hrl").
 
 -import(tconv, [to_b26/1, to_i/1, to_i/2, to_s/1]).
 -import(muin_util, [attempt/3]).
@@ -40,22 +41,46 @@
 %% @doc Runs formula given as a string.
 run_formula(Fla, Rti = #muin_rti{col = Col, row = Row}) ->
     case compile(Fla, {Col, Row}) of
-        {ok, Ecode}               -> muin:run_code(Ecode, Rti);
-        {error, error_in_formula} -> {error, error_in_formula}
+        {ok, Ecode} -> 
+            muin:run_code(Ecode, Rti);
+        {error, error_in_formula} -> 
+            {error, error_in_formula}
     end.
 
 %% @doc Runs compiled formula.
-run_code(Pcode, #muin_rti{site = Site, path = Path, col = Col, row = Row, array_context = AryCtx}) ->
-    %% Populate the process dictionary.
-    map(fun({K,V}) -> put(K, V) end,
-        [{site, Site}, {path, Path}, {x, Col}, {y, Row}, {array_context, AryCtx},
-         {retvals, {[], [], []}}, {recompile, false}]),
+run_code(Pcode, #muin_rti{site=Site, path=Path, 
+                          col=Col,   row=Row, 
+                          array_context=AryCtx}) ->
+
+    Caller = self(),
+    F = fun() ->
+                try
+                    %% Populate the process dictionary.
+                    map(fun({K,V}) -> put(K, V) end,
+                        [{site, Site}, {path, Path}, {x, Col}, {y, Row}, 
+                         {array_context, AryCtx},
+                         {retvals, {[], [], []}}, {recompile, false}]),
+                    Fcode = ?COND(?array_context, loopify(Pcode), Pcode),
+                    Ev = eval(Fcode),
+                    {RefTree, _Errors, References} = get(retvals),
+                    Ev2 = ?COND(Ev == blank, 0, Ev),
+                    Caller ! {muin,{ok, {Fcode, Ev2, RefTree, 
+                                         References, get(recompile)}}}
+                catch
+                    Err ->
+                        Caller ! {muin,{error, error_in_formula}}
+                end
+        end,
     
-    Fcode = ?COND(?array_context, loopify(Pcode), Pcode),
-    Ev = eval(Fcode),
-    {RefTree, _Errors, References} = get(retvals),
-    Ev2 = ?COND(Ev == blank, 0, Ev),
-    {ok, {Fcode, Ev2, RefTree, References, get(recompile)}}.
+    Pid = spawn(F),
+    receive 
+        {muin, Value} ->
+            Value
+    after 2000 ->
+            exit(Pid,timeout),
+            ?INFO("Timeout in muin:run ~p",[Pcode]),
+             {error, error_in_formula}
+    end. 
 
 %%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
