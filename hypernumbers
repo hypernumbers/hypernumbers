@@ -6,14 +6,14 @@ RELNAME=hypernumbers
 SASL_CONF_FILE=sasl_dev_conf.config
 COOKIE=abc
 
-ROOT=`dirname $0`
 # check if we are running under cywgin
 ISCYGWIN=`uname -a | cut -f 1 -d " "`
 if [ $ISCYGWIN = "CYGWIN_NT-6.0" ]
     then
+        ROOT=`pwd`
         ROOT2="c:/"`echo $ROOT | cut -d "/" -f 4-`
    else
-        ROOT2=$ROOT
+        ROOT2=`dirname $0`
 fi
 MODE=""
 RELOAD="-run reloader start"
