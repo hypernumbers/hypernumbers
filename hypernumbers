@@ -11,7 +11,6 @@ COOKIE=abc
 # readlink might need installed 
 # if it breaks, can replace with 
 # (/home/dale/hypernumbers) temporarily
-ROOT=$(dirname `readlink -f "$0"`)
 # check if we are running under cywgin
 ISCYGWIN=`uname -a | cut -f 1 -d " "`
 if [ $ISCYGWIN = "CYGWIN_NT-6.0" ]
@@ -19,8 +18,9 @@ if [ $ISCYGWIN = "CYGWIN_NT-6.0" ]
         ROOT=`pwd`
         ROOT2="c:/"`echo $ROOT | cut -d "/" -f 4-`
    else
-        ROOT2=`dirname $0`
+        ROOT2=$(dirname `readlink -f "$0"`)
 fi
+
 cd $ROOT2
 MODE=""
 RELOAD="-run reloader start"
