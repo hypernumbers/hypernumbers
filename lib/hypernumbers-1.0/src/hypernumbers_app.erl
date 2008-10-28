@@ -12,13 +12,19 @@
 %% @spec start(Type,Args) -> {ok,Pid} | Error
 %% @doc  Application callback
 start(_Type, _Args) ->
-    
+
+    % TODO this test is buggy - the schema is always on disc 
+    %      but invididual tables can be:
+    %      * ram_copies
+    %      * disc_copies
+    %      * disc_only_copies
     case mnesia:table_info(schema, storage_type) of
         ram_copies -> 
             mnesia:change_table_copy_type(schema, node(), disc_copies);
         _ -> 
             ok
     end,
+             [mnesia:table_info(schema, storage_type)]),
    
     case is_fresh_startup() of
         true  -> clean_start();
@@ -64,7 +70,6 @@ start_dirty_subscribe() ->
 %% @doc  delete/create existing database and set up
 %%       initial permissions
 clean_start() ->
-
     %% Probably not a nice way to do this, 
     %% Before everything is restarted the msg queues
     %% for these needs to be emptied
@@ -74,7 +79,7 @@ clean_start() ->
     lists:map(fun(X) -> Kill(whereis(X)) end,
               [dirty_cell,dirty_hypernumbers]),
 
-    hn_loaddb:create_db(),
+    hn_loaddb:create_db(disc_copies),
     {ok,Hosts} = get_hosts_conf(),
     set_def_perms(Hosts),
     ok = start_dirty_subscribe(),
