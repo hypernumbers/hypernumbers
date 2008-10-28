@@ -24,7 +24,6 @@ start(_Type, _Args) ->
         _ -> 
             ok
     end,
-             [mnesia:table_info(schema, storage_type)]),
    
     case is_fresh_startup() of
         true  -> clean_start();
