@@ -6,6 +6,12 @@ RELNAME=hypernumbers
 SASL_CONF_FILE=sasl_dev_conf.config
 COOKIE=abc
 
+# If anything is broken, probably here
+# this is the full path to the hypernumbers root dir, 
+# readlink might need installed 
+# if it breaks, can replace with 
+# (/home/dale/hypernumbers) temporarily
+ROOT=$(dirname `readlink -f "$0"`)
 # check if we are running under cywgin
 ISCYGWIN=`uname -a | cut -f 1 -d " "`
 if [ $ISCYGWIN = "CYGWIN_NT-6.0" ]
@@ -15,6 +21,7 @@ if [ $ISCYGWIN = "CYGWIN_NT-6.0" ]
    else
         ROOT2=`dirname $0`
 fi
+cd $ROOT2
 MODE=""
 RELOAD="-run reloader start"
 

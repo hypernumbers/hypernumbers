@@ -12,19 +12,19 @@
 %% @spec start(Type,Args) -> {ok,Pid} | Error
 %% @doc  Application callback
 start(_Type, _Args) ->
-
-    % TODO this test is buggy - the schema is always on disc 
-    %      but invididual tables can be:
-    %      * ram_copies
-    %      * disc_copies
-    %      * disc_only_copies
+    
+    %% TODO this test is buggy - the schema is always on disc 
+    %%      but invididual tables can be:
+    %%      * ram_copies
+    %%      * disc_copies
+    %%      * disc_only_copies
     case mnesia:table_info(schema, storage_type) of
         ram_copies -> 
             mnesia:change_table_copy_type(schema, node(), disc_copies);
         _ -> 
             ok
     end,
-   
+    
     case is_fresh_startup() of
         true  -> clean_start();
         false -> ok

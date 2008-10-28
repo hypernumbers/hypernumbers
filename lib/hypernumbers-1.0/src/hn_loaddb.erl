@@ -1,11 +1,7 @@
-%%%-----------------------------------------------------------------------------
-%%% File        : hn_loaddb.erl
-%%% Author      : Dale Harvey <dale@hypernumbers.com>
-%%% Description : Sets up database
-%%%-----------------------------------------------------------------------------
 -module(hn_loaddb).
 
 -include("spriki.hrl").
+-include("hypernumbers.hrl").
 
 -export([create_db/0,create_db/1]).
 
@@ -14,7 +10,6 @@
         [{attributes, record_info(fields, Name)},
             {type,Type},{Storage, [node()]}])).
             
-
 create_db()->
     create_db(ram_copies).
     
