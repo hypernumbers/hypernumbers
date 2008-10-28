@@ -15,21 +15,21 @@ COOKIE=abc
 ISCYGWIN=`uname -a | cut -f 1 -d " "`
 if [ $ISCYGWIN = "CYGWIN_NT-6.0" ]
     then
-        ROOT=`pwd`
-        ROOT2="c:/"`echo $ROOT | cut -d "/" -f 4-`
+        TMP=`pwd`
+        ROOT="c:/"`echo $TMP | cut -d "/" -f 4-`
    else
-        ROOT2=$(dirname `readlink -f "$0"`)
+        ROOT=$(dirname `readlink -f "$0"`)
 fi
 
-cd $ROOT2
+cd $ROOT
 MODE=""
 RELOAD="-run reloader start"
 
-LOG_DIR=$ROOT2/logs
-CONFIG=$ROOT2/priv/hypernumbers.conf
-MNESIA_DIR=$ROOT2/database/$NODE
-REL_DIR=$ROOT2/ebin/$RELNAME
-SASL_DIR=$ROOT2/priv/$SASL_CONF_FILE
+LOG_DIR=$ROOT/logs
+CONFIG=$ROOT/priv/hypernumbers.conf
+MNESIA_DIR=$ROOT/database/$NODE
+REL_DIR=$ROOT/ebin/$RELNAME
+SASL_DIR=$ROOT/priv/$SASL_CONF_FILE
 
 ## Create mnesia and log directories
 ## and config file if they dont exist
@@ -40,7 +40,6 @@ SASL_DIR=$ROOT2/priv/$SASL_CONF_FILE
 
 function build
 {
-    cd $ROOT2
     if [ $# -lt 1 ] 
     then
         echo "==============================="
@@ -98,14 +97,14 @@ function test
         exit
     fi
 
-    TESTS=$(find $ROOT2/tests/ -maxdepth 1 -name "*$1*" \
+    TESTS=$(find $ROOT/tests/ -maxdepth 1 -name "*$1*" \
         | grep -v .svn \
         | grep -v common_test-1.3.0 \
         | grep -v test_server-3.2.0 \
         | grep -v excel_files \
         | grep -v test_server-3.2.0)
 
-    $ROOT2/tests/common_test-1.3.0/priv/bin/run_test \
+    $ROOT/tests/common_test-1.3.0/priv/bin/run_test \
         -noshell \
         -setcookie $COOKIE \
         -sname $NODE@$HOST \
