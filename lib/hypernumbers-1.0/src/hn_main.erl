@@ -1,9 +1,3 @@
-%%%-----------------------------------------------------------------------------
-%%% File        : hn_main.erl
-%%% Author      : Dale Harvey <dale@hypernumbers.com>
-%%% Description : Handles main hypernumbers logic
-%%%-----------------------------------------------------------------------------
-
 -module(hn_main).
 
 -include("hypernumbers.hrl").
@@ -56,6 +50,7 @@ value_to_cell(Addr, Val) ->
             Rti = ref_to_rti(Addr, false),
             case muin:run_formula(Fla, Rti) of
                 {error, _Error} -> 
+                    %% TODO, notify clients
                     ok;       
                 {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
                     Parxml = map(fun muin_link_to_simplexml/1, Parents),
@@ -108,7 +103,7 @@ constants_to_range(Data, Ref = #ref{ref = {range,{Y1, X1, Y2, X2}}}) ->
 
     [[F(X,Y,((X-X1)*(Y2-Y1+1))+(Y-Y1)+1) 
       || Y <- lists:seq(Y1,Y2)] 
-      || X <- lists:seq(X1,X2)].
+     || X <- lists:seq(X1,X2)].
 
 %%%-----------------------------------------------------------------
 %%% Function    : write_cell()
@@ -289,13 +284,15 @@ recalc_cell(Index) ->
         _ ->
             Pcode = hn_db:get_item_val(Addr#ref{name = "__ast"}),
             Rti = ref_to_rti(Addr, false),
-            Val = case muin:run_code(Pcode, Rti) of
-                      {ok, {_, V, _, _, _}}  -> V;
-                      {error, Reason}        -> Reason
-                  end,
-            set_cell_rawvalue(Addr,Val)
+            case muin:run_code(Pcode, Rti) of
+                {ok, {_, Val, _, _, _}}  -> 
+                    set_cell_rawvalue(Addr,Val),
+                    hn_db:mark_dirty(Index, cell);
+                {error, _Reason} ->
+                    ?INFO("Error running ~p",[Pcode]),
+                    ok
+            end
     end,
-    hn_db:mark_dirty(Index, cell),
     ok.
 
 copy_pages_below(From,To) ->

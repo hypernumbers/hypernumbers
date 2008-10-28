@@ -29,7 +29,7 @@ out(Arg) ->
                                {ok,Resp};
                            Else      ->
                                Stack = erlang:get_stacktrace(),
-                               error_logger:error_msg("~p~n~p",[Else,Stack]),
+                               ?ERROR("~p~n~p",[Else,Stack]),
                                {ok,[{status,400}]}
                        end,
             Ret
@@ -38,20 +38,21 @@ out(Arg) ->
 %% @spec do_request(Arg,Url) -> {ok,Responce}
 %% @doc handle incoming requests
 do_request(Arg,Url) ->
-
+    
     RV = fun({X,undefined}) -> X;
-            (Else) -> Else
+            (Else)          -> Else
          end,
+
     Method = (Arg#arg.req)#http_request.method,
     {ok,Ref} = hn_util:parse_url(Url),
     Vars = lists:map(RV,yaws_api:parse_query(Arg)),
     {ok,Type} = hn_util:get_req_type(Vars),
     {ok,PostData} = get_post_data(Arg,Type),
-
+    
     %% Verify AuthToken, authtoken can be passed via url
     %% or cookies, url takes precedence
     {ok,AuthCode} = get_var_or_cookie(auth,Vars,Arg),
-    {ok,Token} = get_var_or_cookie(token,Vars,Arg),
+    {ok,Token}    = get_var_or_cookie(token,Vars,Arg),
     User = case string:tokens(AuthCode,":") of
                [] ->
                    anonymous;
@@ -59,11 +60,11 @@ do_request(Arg,Url) ->
                    %% TODO Verify Token
                    UserId
            end,
-
+    
     %% Dodgy expenses system stuff
     put(username,User),
     
-    {ok,Access} = case get_permissions(User,Ref) of
+    {ok,Access} = case hn_users:get_permissions(User,Ref) of
                       {ok,{protected_read,Token}}  -> {ok,read};
                       {ok,{protected_write,Token}} -> {ok,write};
                       {ok,{_Write,_Tok}}           -> {ok,require_token};
@@ -83,7 +84,7 @@ do_request(Arg,Url) ->
                              [{content,"text/plain",to_json_string(Data)}]
                      end
              end,
-
+    
     {ok,Return}.
 
 req('GET',[],_,no_access,#ref{ref={page,"/"}}) ->
@@ -134,23 +135,23 @@ req('GET',[],["hypernumber"],_,Ref) ->
                       Tmp -> hn_util:to_xml(Tmp)
                   end
           end,
-
+    
     DepTree = case hn_db:get_item_val(Ref#ref{name='dependancy-tree'}) of
                   {xml,Tree} -> Tree;
                   []         -> []
               end,
-    {ok,{hypernumber,[],[{value,[], Val()},{'dependancy-tree',[], DepTree}]}};
+    {ok,{hypernumber,[],[{value,[], Val()},
+                         {'dependancy-tree',[], DepTree}]}};
 
 req('GET',[],[],_,Ref) ->
-
+    
     case hn_db:get_item(Ref) of
         []   ->
             {return,{content,"text/plain","blank"}};
         List ->
-            F = fun(X) -> 
-                        (X#hn_item.addr)#ref.name == rawvalue
+            F = fun(#hn_item{addr=A}) -> 
+                        A#ref.name == rawvalue
                 end,
-            
             
             Val = case lists:filter(F,List) of
                       [] -> 0;
@@ -161,12 +162,12 @@ req('GET',[],[],_,Ref) ->
     end;
 
 req('POST',{login,[],[{email,[],[Email]},{password,[],[Pass]}]},[],_User,_Ref) ->
-    case users:login(Email,Pass) of
+    case hn_users:login(Email,Pass) of
         {error,invalid_user} ->
             {ok,{auth,[],[{unauthorised,[],[]}]}};
         {ok,Record} ->
             {IP,_Port} = {{127,0,0,1},80},
-            Token = users:gen_authtoken(Record,IP),
+            Token = hn_users:gen_authtoken(Record,IP),
             Sent  = Email++":"++hn_util:bin_to_hexstr(Token),
             {ok,{auth,[],[{token,[],[Sent]}]}}
     end;
@@ -256,7 +257,6 @@ req('POST',{template,[],[{name,[],[Name]},
     Tpl = "/@"++Name++"/",
     ok = hn_main:copy_pages_below(Ref,Tpl),
     {ok,NRef} = hn_util:parse_url(Ref#ref.site++Tpl),
-    %#ref{path=Path}=NRef,
     {ok,ok}=hn_templates:write_def(Name,Url,Gui,Form),
     ok=hn_main:set_attribute(NRef#ref{name=template},"@"++Name),
     ok=hn_main:set_attribute(NRef#ref{name=gui},Gui),
@@ -341,23 +341,27 @@ get_last_index(Site,Path,RowCol) ->
     case hn_db:get_item(#ref{site=Site,path=Path,ref={page,"/"}}) of
         []   -> 0;
         Else ->
+            
             %% Only count cell value attributes
-            CellList = lists:filter( fun(#hn_item{addr=Ref}) ->
-                                             case Ref of
-                                                 #ref{name=value, ref = {cell,_}} -> true;
-                                                 _ -> false
-                                             end end,Else),
-
+            F = fun(#hn_item{addr=Ref}) ->
+                        case Ref of
+                            #ref{name=value, ref = {cell,_}} -> true;
+                            _ -> false
+                        end 
+                end,
+            CellList = lists:filter(F,Else),
+            
             List = lists:sort(
                      fun(#hn_item{addr=#ref{ref = {cell,{X1,Y1}}}},
                          #hn_item{addr=#ref{ref = {cell,{X2,Y2}}}}) ->
                              ?COND(RowCol == column,X1 < X2,Y1 < Y2)
                      end,CellList),
-
-	    case List of
-		[]    -> 0;
-                _Else ->  #hn_item{addr=#ref{ref={cell,{X,Y}}}} = lists:last(List),
-			  ?COND(RowCol == column,X,Y)
+            
+            case List of
+                []    -> 0;
+                _Else ->  
+                    #hn_item{addr=#ref{ref={cell,{X,Y}}}} = lists:last(List),
+                    ?COND(RowCol == column,X,Y)
 	    end
     end.
 
@@ -368,11 +372,11 @@ create_pages_tree(List) ->
     TmpTrees = lists:filter(
                  fun([]) -> false; (_) -> true end,
                  path_list(List,[])),
-
+    
     Trees = lists:map(
               fun(X) -> create_tree(X) end,
               TmpTrees),
-
+    
     {dir,[{path,"/"}],merge_trees(Trees)}.
 
 merge_trees([])         -> [];
@@ -414,71 +418,6 @@ path_list([#hn_item{addr = #ref{path=Path}}|T],List) ->
         true  -> path_list(T,List);
         false -> path_list(T,[Path|List])
     end.
-
-%% Given a user find the most elevated permission
-%% granted to that user
-get_permissions(User,Ref=#ref{site=Site}) ->
-    Groups = hn_db:get_item_val(#ref{site=Site,ref={page,"/"},name="__groups"}),
-    {ok,Perms}   = hn_db:get_item_list(Ref#ref{name="__permissions"}),
-    {ok,UGroups} = find_groups(Groups,User),
-    {ok,Access}  = find_perms(User,UGroups,[no_access],Perms),
-    %% Sort permissions in order of precedence then pick
-    %% the highest
-    Sort = fun(X,Y) -> perm_index(X) > perm_index(Y) end,
-    [H|_Rest] = lists:sort(Sort,Access),
-    {ok,H}.
-
-%% Rank permission atoms in order of precedence
-perm_index(no_access)           -> 0;
-perm_index({protected_read,_X}) -> 1;
-perm_index({protected_write,_X})-> 2;
-perm_index(read)                -> 3;
-perm_index(write)               -> 4;
-perm_index(admin)               -> 5.
-
-%% Find the permissions pertaining to a user
-find_perms(_User,_Groups,Perms,[]) ->
-    {ok,Perms};
-find_perms(User,Groups,Perms,[{user,anonymous,Perm}|T]) ->
-    find_perms(User,Groups,[Perm|Perms],T);
-find_perms(User,Groups,Perms,[{user,User,Perm}|T]) ->
-    find_perms(User,Groups,[Perm|Perms],T);
-find_perms(User,Groups,Perms,[{group,Group,Perm}|T]) ->
-    P = case lists:member(Group,Groups) of
-            true ->
-                [Perm|Perms];
-            false ->
-                Perms
-        end,
-    find_perms(User,Groups,P,T);
-find_perms(User,Groups,Perms,[_H|T]) ->
-    find_perms(User,Groups,Perms,T).
-
-%% Create a list of groups that a user is in
-%% expanded into nested groups
-find_groups(Groups,User) ->
-    find_groups(Groups,User,Groups,[]).
-
-find_groups(_GList,_User,[],Groups) ->
-    {ok,Groups};
-find_groups(GList,User,[{Name,List}|T],Groups) ->
-    NGroups = group_list(GList,User,[Name],List,Groups),
-    find_groups(GList,User,T,NGroups).
-
-group_list(_GList,_User,_Name,[],Acc) ->
-    hslists:uniq(lists:flatten(Acc));
-group_list(GList,User,Name,[{user,User}|T],Acc) ->
-    group_list(GList,User,Name,T,[Name|Acc]);
-group_list(GList,User,Name,[{group,Group}|_T],Acc) ->
-    case lists:keysearch(Group,1,GList) of
-        false ->
-            Acc;
-        {value,{Group,List}} ->
-            group_list(GList,User,[Group|Name],List,Acc)
-                %++ group_list(GList,User,Name,T,Acc)
-    end;
-group_list(GList,User,Name,[{user,_A}|T],Acc) ->
-    group_list(GList,User,Name,T,Acc).
 
 get_var_or_cookie(Name,Vars,Arg) ->
     case lists:keysearch(Name,1,Vars) of

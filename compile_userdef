@@ -1,1 +1,0 @@
-erlc -o lib/engine-1.0/ebin lib/engine-1.0/src/userdef.erl

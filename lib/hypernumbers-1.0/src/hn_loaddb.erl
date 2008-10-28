@@ -35,7 +35,7 @@ create_db(Storage)->
     ?create(outgoing_hn,set,Storage),
     ?create(template,set,Storage),
 
-    users:create("admin","admin"),
-    users:create("user","user"),
+    hn_users:create("admin","admin"),
+    hn_users:create("user","user"),
     
     ok.

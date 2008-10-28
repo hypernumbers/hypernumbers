@@ -77,11 +77,12 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
         {muin, Value} ->
             Value;
         {'DOWN',_,_,_,_} ->
-            {error, error_in_formula}
+            ?INFO("Crash in muin:run ~p",[Pcode]),
+            {error, wtf}
     after 2000 ->
             exit(Pid,muin_timeout),
             ?INFO("Timeout in muin:run ~p",[Pcode]),
-            {error, error_in_formula}
+            {error, wtf}
     end. 
 
 %%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -1,30 +1,18 @@
-%%%%-----------------------------------------------------------------------------
-%%% File        : bits.erl
-%%% Author      : Gordon Guthrie <gordonguthrie@localhost>
-%%% Description : helpful bits and bobs
-%%%
-%%% Created     : 16 Oct 2007 by Gordon Guthrie <gordonguthrie@localhost>
-%%%-----------------------------------------------------------------------------
+
 -module(bits).
+-export([ run_formula/1, log/1]).
 
-%% API
--export([clear_db/0, log/1]).
+run_formula(S) ->
 
-%%==============================================================================
-%% API
-%%==============================================================================
-%%------------------------------------------------------------------------------
-%% Function:
-%% Description:
-%%------------------------------------------------------------------------------
+    P = fun(Str) ->
+                Cell = {10,10},
+                {ok,Tok} = xfl_lexer:lex(Str,Cell),
+                xfl_parser:parse(Tok)
+        end,
 
-%%==============================================================================
-%% Internal functions
-%%==============================================================================
-
-clear_db()->
-    hn_loaddb:create_db(disc_copies),
-    ok.
+    {ok,Ast} = P(S),
+    muin:run_code(Ast,{muin_rti,"http://127.0.0.1:9000",[],10,10,false}).
+                
 
 log(String) ->
     File= case os:type() of
