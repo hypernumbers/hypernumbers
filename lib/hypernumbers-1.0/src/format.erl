@@ -272,7 +272,8 @@ app_fmt([],[?ASC_HASH|T2],Type,A)               -> app_fmt([],T2,Type,A);
 app_fmt([],[?ASC_Q|T2],Type,A)                  -> app_fmt([],T2,Type,[?ASC_SPACE|A]).
 
 %% just rounds off a number to the appropriate number of decimals
-round(X,_N) when is_list(X)          -> exit("fix this bug!");
+round(X,N) when is_list(X)          -> X2=tconv:to_i(X),
+                                       round(X2,N);
 round(X,0)                           -> round(X);
 round(X,N) when N > 0, is_integer(N) ->
     X2=tconv:to_l(X),
