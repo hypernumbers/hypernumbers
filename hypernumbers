@@ -6,7 +6,7 @@ RELNAME=hypernumbers
 SASL_CONF_FILE=sasl_dev_conf.config
 COOKIE=abc
 
-ROOT=`pwd`
+ROOT=`dirname $0`
 # check if we are running under cywgin
 ISCYGWIN=`uname -a | cut -f 1 -d " "`
 if [ $ISCYGWIN = "CYGWIN_NT-6.0" ]
@@ -33,7 +33,7 @@ SASL_DIR=$ROOT2/priv/$SASL_CONF_FILE
 
 function build
 {
-    cd `dirname $0`
+    cd $ROOT2
     if [ $# -lt 1 ] 
     then
         echo "==============================="

@@ -43,6 +43,39 @@ start(_Type, _Args) ->
 stop(_State) -> 
     ok.
 
+%% @spec is_fresh_start() -> true | false
+%% @doc  does database already exist + 
+%%       is readable on disk
+is_fresh_startup() ->
+    case mnesia:system_info(tables) of
+        [schema] -> true;
+        _ ->
+            Me = node(),
+            case mnesia:table_info(schema,cookie) of
+                {_,Me} -> false;
+                _      -> true
+            end
+    end.
+
+%% @spec clean_start() -> ok
+%% @doc  delete/create existing database and set up
+%%       initial permissions
+clean_start() ->
+    %% Probably not a nice way to do this, 
+    %% Before everything is restarted the msg queues
+    %% for these needs to be emptied
+    Kill = fun(undefined) -> ok;
+              (Pid)       -> exit(Pid,clean_start)
+           end,
+    lists:map(fun(X) -> Kill(whereis(X)) end,
+              [dirty_cell,dirty_hypernumbers]),
+
+    hn_loaddb:create_db(disc_copies),
+    {ok,Hosts} = get_hosts_conf(),
+    set_def_perms(Hosts),
+    ok = start_dirty_subscribe(),
+    ok.
+
 %% @spec start_yaws() -> ok
 %% @doc  Start yaws in embedded mode
 start_yaws() ->
@@ -64,39 +97,6 @@ start_dirty_subscribe() ->
     gen_server:cast(dirty_cell,        subscribe),
     gen_server:cast(dirty_hypernumber, subscribe),
     ok.
-
-%% @spec clean_start() -> ok
-%% @doc  delete/create existing database and set up
-%%       initial permissions
-clean_start() ->
-    %% Probably not a nice way to do this, 
-    %% Before everything is restarted the msg queues
-    %% for these needs to be emptied
-    Kill = fun(undefined) -> ok;
-              (Pid)       -> exit(Pid,clean_start)
-           end,
-    lists:map(fun(X) -> Kill(whereis(X)) end,
-              [dirty_cell,dirty_hypernumbers]),
-
-    hn_loaddb:create_db(disc_copies),
-    {ok,Hosts} = get_hosts_conf(),
-    set_def_perms(Hosts),
-    ok = start_dirty_subscribe(),
-    ok.
-    
-%% @spec is_fresh_start() -> true | false
-%% @doc  does database already exist + 
-%%       is readable on disk
-is_fresh_startup() ->
-    case mnesia:system_info(tables) of
-        [schema] -> true;
-        _ ->
-            Me = node(),
-            case mnesia:table_info(schema,cookie) of
-                {_,Me} -> false;
-                _      -> true
-            end
-    end.
 
 %% @spec start_link() -> Return
 %% @doc  Supervisor call back
