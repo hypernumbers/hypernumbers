@@ -10,6 +10,13 @@ h1
   color: #F5C71F;
   }
 
+h2
+{
+  font: bold 18px sans-serif;
+  color: #000;
+  text-align: center;
+  }
+
 h3
 {
   font: bold 14px sans-serif;
@@ -23,13 +30,27 @@ body
   background:#F8F8FF;
  }
 
+#grey
+{ 
+  color: #EEEEEE;
+}
+
+#warning
+{ 
+  font: bold 28px sans-serif;
+  color: #FFF;
+  background-color: #F00;
+  text-align: center;
+  width: 650px;
+ }
+
 #wrapper 
 { 
   background:#FFF;
-  width:600px;
+  width:650px;
   margin:0px auto;
   padding:10px;
-  }
+}
 
 .row
 { 
@@ -39,19 +60,19 @@ body
 p
 { 
   margin:10px 0px;
- }
+}
 
 .cell
 { 
   padding:5px 10px;
- }
+}
 
 #flashcontent
 {
   position:absolute;
   visibility:hidden;
   top:-1000px;
-  }
+}
 
 .clearfix:after, row:after
 {
@@ -60,4 +81,4 @@ p
   height: 0;
   clear: both;
   visibility: hidden;
-  }
+}

@@ -32,7 +32,7 @@
               var list = $(data).find("value > string").text();
               $.each(list.split(","),add_menu_item);
             };
-            $.get("/b10?attr",load_supplier_menu);
+            $.get("/menus/b7?attr",load_supplier_menu);
             $("#suppliers").change(function()
             {
               document.location.href=$(this).val();
@@ -48,8 +48,24 @@
               var list = $(data).find("value > string").text();
               $.each(list.split(","),add_menu_item);
             };
-            $.get("/b11?attr",load_stock_menu);
+            $.get("/menus/b6?attr",load_stock_menu);
             $("#stock").change(function()
+            {
+              document.location.href=$(this).val();
+            });
+            var load_approve_expenses_menu = function(data)
+            {
+              var add_menu_item = function(i)
+              {
+                var url = this.replace("{","").replace("}","");
+                var option = $("<option></option>").val(url+"?gui=approve").text(url);
+                $("#to_approve").append(option);
+              };
+              var list = $(data).find("value > string").text();
+              $.each(list.split(","),add_menu_item);
+            };
+            $.get("/menus/b4?attr",load_approve_expenses_menu);
+            $("#to_approve").change(function()
             {
               document.location.href=$(this).val();
             });
@@ -59,35 +75,141 @@
 </head>
 <body>
 
-  <div style="background:#000;padding:5px;">
-    <h1 style="width:600px; margin:10px auto;color:#F5C71F;">Il Ballo Integrated Shop System</h1>
-  </div>
-
   <div id="wrapper">
+
+  <div style="background:#000;padding:5px;">
+    <h1 style="width:700px; margin:10px auto;color:#F5C71F;">Il Ballo Integrated Small Business System</h1>
+  </div>
 
     Il Ballo > <a href="/">Home</a>
     <hr style="margin:10px 0px;" />
+<div style="float:center; width:600px; margin:10px; padding:10px;background:#F0F0F0;border:1px outset #666;">
+        <table width=600px>
+            <tr>
+              <td> 
+              </td>
+              <td>
+                <h2>View</h2>
+              </td>
+              <td>
+                <h2>Do</h2>
+              </td>
+              <td>
+                <h2>Create</h2>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <h3>Expenses</h3>
+              </td>
+              <td>
+                  <a href="/data/expenses/types/?gui=index">View expenses types</a>
+              </td>
+              <td>
+                <select id="to_approve" style="width:150px;">
+                  <option>Approve Expenses</option>
+                </select>
+              </td>
+              <td>
+                <a href="/expenses/claim/%7Bauto,incr%7D/?new=expenses">Make New Expenses Claim</a>
+              </td>
+            </tr>
+            <tr>
+              <td> &nbsp;
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+            </tr>
+            <tr>
+              <td><h3>Stock Control</h3>
+              </td>
+              <td>
+               <select id="suppliers" style="width:150px;">
+                  <option>View Suppliers</option>
+                </select>
+              </td>
+              <td>
+              </td>
+              <td>
+                  <a href="/expenses/claim/%7Bauto,incr%7D/?new=supplier">Create A New Supplier</a>
+              </td>
+            </tr>
+            <tr>
+              <td>
+              </td>
+              <td>
+                <select id="stock" style="width:150px;">
+                  <option>View Stock</option>
+                </select>
+              </td>
+              <td><div id=grey>Reorder</div>
+              </td>
+              <td>
+                <a href="/expenses/claim/%7Bauto,incr%7D/?new=stock">Create A New Stock Item</a></td>
+              </td>
+            </tr>
+            <tr>
+              <td> &nbsp;
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+            </tr>
+            <tr>
+              <td><h3>Wages</h3>
+              </td>
+              <td>Put view employees in here!
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+            </tr>
+            <tr>
+              <td> &nbsp;
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+            </tr>
+            <tr>
+              <td><h3>Accounts</h3>
+              </td>
+              <td>
+                <a href="/accounts/?gui=index">View Accounts</a></td>
+              </td>
+              <td>
+              </td>
+              <td>
+              </td>
+            </tr>
+          </table>
+          <br />
+            <br />
+              <a href="?gui=index">View Spreadsheet</a><br /><br />
+        </div>
 
-    <div style="float:right; width:200px; margin:10px; padding:10px;background:#F0F0F0;border:1px outset #666;">
-      <h1 style="margin-bottom:15px;">Control Panel</h1>
-      <a href="/expenses/claim/%7Bauto,incr%7D/?new=stock">Create A New Stock Item</a><br /><br />
-      <a href="/expenses/claim/%7Bauto,incr%7D/?new=supplier">Create A New Supplier</a><br /><br />
-      <a href="/accounts/?gui=index">View Accounts</a><br /><br />
-      <a href="?gui=index">View Spreadsheet</a><br /><br />
-      <select id="suppliers" style="width:150px;">
-        <option>View Suppliers</option>
-      </select>
-      <br /><br />
-      <select id="stock" style="width:150px;">
-        <option>View Stock</option>
-      </select>
-    </div>
-
-    <div class="formbuilder" name="accounts" id="form"></div>
     <div id="flashcontent">
       This text is replaced by the Flash movie.
     </div>
   </div>
   <div style="width:600px; margin:5px auto">powered by <a href="http://hypernumbers.com">hypernumbers</a></div>
+
+    <div id="wrapper">
+    <br /><br />
+      <div id="warning">Prototype</div>
+      <br /><br />
+    </div>
+
 </body>
 </html>
