@@ -8,10 +8,12 @@
 
 -define(mn_tr,mnesia:transaction).
 %% record_info isnt available at runtime
--define(create(Name,Type,Storage), 
-        {atomic,ok} = mnesia:create_table(Name,
-            [{attributes, record_info(fields, Name)},
-             {type,Type},{Storage, [node()]}])).
+-define(create(Name,Type,Storage),
+        fun() ->
+                Attr = [{attributes, record_info(fields, Name)},
+                        {type,Type},{Storage, [node()]}],
+                {atomic,ok} = mnesia:create_table(Name, Attr)
+        end()).
 
 -export([create/0, write_item/2, get_item/1, get_item_val/1, 
          get_item_inherited/2, get_item_list/1, remove_item/1,
