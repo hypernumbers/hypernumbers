@@ -9,9 +9,9 @@
 -define(mn_tr,mnesia:transaction).
 %% record_info isnt available at runtime
 -define(create(Name,Type,Storage), 
-        Attr = [{attributes, record_info(fields, Name)},
-                {type,Type},{Storage, [node()]}],
-        {atomic,ok} = mnesia:create_table(Name,Attr)).
+        {atomic,ok} = mnesia:create_table(Name,
+            [{attributes, record_info(fields, Name)},
+             {type,Type},{Storage, [node()]}])).
 
 -export([create/0, write_item/2, get_item/1, get_item_val/1, 
          get_item_inherited/2, get_item_list/1, remove_item/1,
@@ -591,7 +591,7 @@ filter_range([H|T],Cell) ->
         _    -> filter_range(T,Cell)
     end.
 
-%% @spec notive_remove(Item) -> ok
+%% @spec notify_remove(Item) -> ok
 %% @doc  Sends message to notification server to tell 
 %%       clients of changed value
 notify_remove(#hn_item{addr=#ref{site=Site,path=Path,ref=Ref,name=Name}}) ->
