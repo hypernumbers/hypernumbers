@@ -43,29 +43,29 @@ import_xls(Name) ->
         ++ Name ++ ".xls",
   
     Celldata = readxls(File),
-    {Lits, Flas} = % split data into literals and formulas
-        lists:foldl(fun(X, _Acc = {Ls, Fs}) ->
-                      {{{sheet, Sheetn}, {row_index, Row}, {col_index, Col}}, Val} = X,
-                      {ok, Sheet, _} = regexp:gsub(Sheetn, "\\s+", "_"),
-                      Postdata = conv_for_post(Val),
-                      Path = "/" ++ Name ++ "/" ++ Sheet ++ "/",
-                      Ref = tconv:to_b26(Col + 1) ++ tconv:to_s(Row + 1),
-                      Datatpl = {Path, Ref, Postdata},
-                      case Postdata of
-                          [$= | _ ] -> % formula
-                              {Ls, Fs ++ [Datatpl]};
-                          _ ->
-                              {Ls ++ [Datatpl], Fs}
-                      end
-              end,
-              {[], []}, Celldata),
+    F = fun(X, _Acc = {Ls, Fs}) ->
+                {{{sheet, Sheetn}, {row_index, Row}, 
+                  {col_index, Col}}, Val} = X,
+                {ok, Sheet, _} = regexp:gsub(Sheetn, "\\s+", "_"),
+                Postdata = conv_for_post(Val),
+                Path = "/" ++ Name ++ "/" ++ Sheet ++ "/",
+                Ref = tconv:to_b26(Col + 1) ++ tconv:to_s(Row + 1),
+                Datatpl = {Path, Ref, Postdata},
+                case Postdata of
+                    [$= | _ ] -> % formula
+                        {Ls, Fs ++ [Datatpl]};
+                    _ ->
+                        {Ls ++ [Datatpl], Fs}
+                end
+        end,
+    {Lits, Flas} = lists:foldl(F,{[], []}, Celldata),
     
     Dopost = fun({Path, Ref, Postdata}) ->
                      Url = string:to_lower("http://127.0.0.1:9000"++Path++Ref),
                      {ok,NRef} = hn_util:parse_url(Url),
                      hn_main:set_attribute(NRef#ref{name=formula},Postdata)
              end,
-
+    
     ?INFO("Start Posting: ~p", [Name]),
     gen_server:cast(dirty_cell,  {setstate, passive}),
     lists:foreach(Dopost, Lits),
@@ -108,29 +108,30 @@ test_state(State)->
   test_state(State).
   
 read_from_excel_data(State,{Sheet,Row,Col})->
-  Key={{sheet,Sheet},{row_index,Row},{col_index,Col}},
-  Return=lists:keysearch(Key, 1, State),
-  {value, Result2}=Return,
-  El=element(2, Result2),
-  io:format("in test_util:read_from_excel_data El is ~p~n",[El]),
-  case El of
-      {value,number,Number}       -> {number,Number};
-      {string,String}             -> {string,String};
-      {formula,Formula}           -> {formula,Formula};
-      {value,boolean,Boolean}     -> {boolean,Boolean};
-      {value,error,Error}         -> {error, Error};
-      {value,date,{datetime,D,T}} -> {date,{D,T}};
-      Other                       -> io:format("(in test_util:read_from_excel_date "++
-					       " fix generatetest.rb - Other is ~p~n",
-					       [Other])
-end.
+    Key={{sheet,Sheet},{row_index,Row},{col_index,Col}},
+    Return=lists:keysearch(Key, 1, State),
+    {value, Result2}=Return,
+    El=element(2, Result2),
+    io:format("in test_util:read_from_excel_data El is ~p~n",[El]),
+    case El of
+        {value,number,Number}       -> {number,Number};
+        {string,String}             -> {string,String};
+        {formula,Formula}           -> {formula,Formula};
+        {value,boolean,Boolean}     -> {boolean,Boolean};
+        {value,error,Error}         -> {error, Error};
+        {value,date,{datetime,D,T}} -> {date,{D,T}};
+        Other                       -> 
+            io:format("(in test_util:read_from_excel_date "++
+                      " fix generatetest.rb - Other is ~p~n",
+                      [Other])
+    end.
 
 equal_to_digit(F1,F2,DigitIdx) ->
-  %% force any rogue integers to floats  
-  F1a=float(F1),
-  F2a=float(F2),
-  [As0,Bs0]=io_lib:fwrite("~.*f~.*f",[DigitIdx+1,F1a-erlang:trunc(F1a), 
-                                       DigitIdx+1,F2a-erlang:trunc(F2a)]),
+    %% force any rogue integers to floats  
+    F1a=float(F1),
+    F2a=float(F2),
+    [As0,Bs0]=io_lib:fwrite("~.*f~.*f",[DigitIdx+1,F1a-erlang:trunc(F1a), 
+                                        DigitIdx+1,F2a-erlang:trunc(F2a)]),
     As=string:substr(As0,1,DigitIdx+2), 
     Bs=string:substr(Bs0,1,DigitIdx+2),
     As==Bs.

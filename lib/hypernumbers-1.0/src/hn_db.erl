@@ -1,6 +1,5 @@
 %% @author Dale Harvey <dale@hypernumbers.com>
 %% @copyright Hypernumbers Ltd.
-
 -module(hn_db).
 
 -include("spriki.hrl").
@@ -8,14 +7,42 @@
 -include("hypernumbers.hrl").
 
 -define(mn_tr,mnesia:transaction).
+%% record_info isnt available at runtime
+-define(create(Name,Type,Storage), 
+        Attr = [{attributes, record_info(fields, Name)},
+                {type,Type},{Storage, [node()]}],
+        {atomic,ok} = mnesia:create_table(Name,Attr)).
 
--export([write_item/2, get_item/1, get_item_val/1, 
+-export([create/0, write_item/2, get_item/1, get_item_val/1, 
          get_item_inherited/2, get_item_list/1, remove_item/1,
          read_links/2, del_links/2, write_local_link/2,
          read_remote_links/3, write_remote_link/3,del_remote_link/1,
          register_hn/5, update_hn/4, get_hn/3, cell_changed/1,
          mark_dirty/2, write_template/4, read_template/1,
          get_templates/0, get_ref_from_name/1, hn_changed/1]).
+          
+%% @spec create() -> ok
+%% @doc  Creates the database for hypernumbers
+create()->
+    %% Seems sensible to keep this restricted
+    %% to disc_copies for now
+    Storage = disc_copies,
+    application:stop(mnesia),
+    ok = mnesia:delete_schema([node()]),
+    ok = mnesia:create_schema([node()]),
+    mnesia:start(),
+    ?create(hn_item,           set,Storage),
+    ?create(remote_cell_link,  bag,Storage),
+    ?create(local_cell_link,   bag,Storage),
+    ?create(hn_user,           set,Storage),
+    ?create(dirty_cell,        set,Storage),
+    ?create(dirty_hypernumber, set,Storage),
+    ?create(incoming_hn,       set,Storage),
+    ?create(outgoing_hn,       set,Storage),
+    ?create(template,          set,Storage),
+    hn_users:create("admin","admin"),
+    hn_users:create("user","user"),
+    ok.
 
 %% @spec write_item(Addr,Val) -> ok
 %% @doc  Adds an attribute to a reference addressed by Ref
@@ -72,10 +99,8 @@ get_ref_from_name(Name) ->
 %%       stored at Ref, if not found return default
 get_item_inherited(Addr = #ref{ref={RefType,_}}, Default) ->
     case return_first(RefType,Addr) of
-        {ok,Format} ->
-            {ok,Format};
-        nomatch     ->
-            {ok,Default}
+        {ok,Format} -> {ok,Format};
+        nomatch     -> {ok,Default}
     end.
 
 %% @spec get_item_list(Ref) -> List
@@ -142,7 +167,8 @@ del_remote_link(Obj=#remote_cell_link{type=outgoing}) ->
                 
                 case mnesia:match_object(Outgoing) of
                     [] ->
-                        [Hn] = mnesia:match_object(#outgoing_hn{index={'_',Me},_='_'}),
+                        Out  = #outgoing_hn{index={'_',Me},_='_'},
+                        [Hn] = mnesia:match_object(Out),
                         mnesia:delete_object(Hn);
                     _  -> 
                         ok
@@ -154,7 +180,7 @@ del_remote_link(Obj=#remote_cell_link{type=outgoing}) ->
 del_remote_link(Obj = #remote_cell_link{type=incoming}) ->
 
     ChildUrl = hn_util:index_to_url(Obj#remote_cell_link.child),
-
+    
     F = fun() ->
                 Remote = Obj#remote_cell_link.parent,
                 %% Remove the relevant child attribute
@@ -166,7 +192,8 @@ del_remote_link(Obj = #remote_cell_link{type=incoming}) ->
                               Remote#index.row}}},
                 
                 Fun = fun(X) ->
-                              ?COND(X == {url,[{type,"remote"}],[ChildUrl]} , false, true)
+                              ?COND(X == {url,[{type,"remote"}],[ChildUrl]}, 
+                                    false, true)
                       end,
                 
                 Children = lists:filter(Fun,get_item_val(ParentRef)),                

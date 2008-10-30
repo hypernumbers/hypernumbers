@@ -70,7 +70,7 @@ clean_start() ->
     lists:map(fun(X) -> Kill(whereis(X)) end,
               [dirty_cell,dirty_hypernumbers]),
 
-    hn_loaddb:create_db(disc_copies),
+    ok = hn_db:create(),
     {ok,Hosts} = get_hosts_conf(),
     set_def_perms(Hosts),
     ok = start_dirty_subscribe(),
