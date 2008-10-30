@@ -8,10 +8,10 @@ Definitions.
 
 %%% Basic types.
 INT = ([0-9]+)
-FLOATDEC = ([0-9]+\.[0-9]+)
+FLOATDEC = ([0-9]+\.[0-9]*)
 FLOATSCI = ([0-9]+\.[0-9]+((E|e))(\+|\-)?[0-9]+)
 BOOL = TRUE|FALSE
-STR    = (\"[^"\n]*\")
+STR = (\"[^"]*\")
 %%" % Syntax highlighting fix.
 
 %% Column names, function names.
