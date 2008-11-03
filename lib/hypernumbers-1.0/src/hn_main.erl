@@ -289,7 +289,7 @@ recalc_cell(Index) ->
                     set_cell_rawvalue(Addr,Val),
                     hn_db:mark_dirty(Index, cell);
                 {error, _Reason} ->
-                    ?INFO("Error running ~p",[Pcode]),
+%                    ?INFO("Error running ~p",[Pcode]),
                     ok
             end
     end,

@@ -52,38 +52,17 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
                           col=Col,   row=Row, 
                           array_context=AryCtx}) ->
 
-    Me = self(),
-
-    F = fun() ->
-                %% Populate the process dictionary.
-                map(fun({K,V}) -> put(K, V) end,
-                    [{site, Site}, {path, Path}, {x, Col}, {y, Row}, 
-                     {array_context, AryCtx},
-                     {retvals, {[], [], []}}, {recompile, false}]),
-                Fcode = ?COND(?array_context, loopify(Pcode), Pcode),
-                Ev = eval(Fcode),
-                {RefTree, _Errors, References} = get(retvals),
-                Ev2 = ?COND(Ev == blank, 0, Ev),
-                Me ! {muin,{ok, {Fcode, Ev2, RefTree, 
-                                 References, get(recompile)}}}
-        end,
-    
-    %% Urm a tad nasty, spawn a new process for the calculation
-    %% have to monitor exits and timeout if it takes too long.
-    %% quick fix, will be setup properly with asynchronous calls
-    %% later
-    {Pid,_Fun} = spawn_monitor(F),
-    receive 
-        {muin, Value} ->
-            Value;
-        {'DOWN',_,_,_,_} ->
-            ?INFO("Crash in muin:run ~p",[Pcode]),
-            {error, wtf}
-    after 2000 ->
-            exit(Pid,muin_timeout),
-            ?INFO("Timeout in muin:run ~p",[Pcode]),
-            {error, wtf}
-    end. 
+    %% Populate the process dictionary.
+    map(fun({K,V}) -> put(K, V) end,
+        [{site, Site}, {path, Path}, {x, Col}, {y, Row}, 
+         {array_context, AryCtx},
+         {retvals, {[], [], []}}, {recompile, false}]),
+    Fcode = ?COND(?array_context, loopify(Pcode), Pcode),
+    Ev = eval(Fcode),
+    {RefTree, _Errors, References} = get(retvals),
+    Ev2 = ?COND(Ev == blank, 0, Ev),
+    {ok, {Fcode, Ev2, RefTree, 
+          References, get(recompile)}}.
 
 %%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
