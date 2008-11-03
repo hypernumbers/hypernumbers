@@ -296,7 +296,7 @@ rev_comp(I,[{three_dee_reference,{tRef3d,[{reference_index,RefIdx},
                                           Ref,_Type],_Ret}}|T],TokArr,Stack,Tbl) ->
     Sheet = get_sheet_ref(RefIdx,Tbl),
     Sheet2=esc(Sheet),
-    rev_comp(I,T,TokArr,[{string,Sheet2++"!"++make_cell(Ref)}|Stack],Tbl);
+    rev_comp(I,T,TokArr,[{string,"../"++Sheet2++"!"++make_cell(Ref)}|Stack],Tbl);
 
 %% tArea3d
 rev_comp(I,[{three_dee_area,{tArea3d,[{reference_index,RefIdx},
@@ -1146,8 +1146,8 @@ macro_no_of_args(360) -> 1.
 %% This function wraps a string in "'"s if the string contains a space
 esc(String) ->
     case string:words(String) of
-        1 -> String;
-        _ -> "'"++String++"'"
+        1 -> string:to_lower(String);
+        _ -> "'"++string:to_lower(String)++"'"
     end.
 
 
