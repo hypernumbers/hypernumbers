@@ -10,6 +10,7 @@
 -behaviour(gen_server).
 
 -include("spriki.hrl").
+-include("hypernumbers.hrl").
 
 -export([start_link/0]).
 
@@ -23,8 +24,14 @@ start_link() ->
 
 init([]) ->
 
+    {ok,[[Path]]} = init:get_argument(hn_config),	
+    {ok,Config} = file:consult(Path), 
+    {value,{remoting_port,Port}} = lists:keysearch(remoting_port,1,Config),
+   
+    ?INFO("~p",[Port]),
+
     Opts = [list, {reuseaddr, true},{packet, 0}],
-    case gen_tcp:listen(?PORTNO,Opts) of
+    case gen_tcp:listen(Port,Opts) of
 
     {ok, Socket} ->
         spawn_link(fun() -> remoting_soc:accept(Socket) end),
