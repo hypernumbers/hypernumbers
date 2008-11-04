@@ -1,3 +1,5 @@
+%% @author Dale Harvey <dale@hypernumbers.com>
+%% @copyright Hypernumbers Ltd.
 -module(hn_main).
 
 -include("hypernumbers.hrl").
@@ -7,17 +9,10 @@
 -include("errvals.hrl").
 -include("muin_records.hrl").
 
--export([
-         recalc/1,
-         set_attribute/2, 
-         set_cell/2,
-         get_cell_info/4,
-         write_cell/5,
-         get_hypernumber/9,
-         copy_pages_below/2,
-         formula_to_range/2,
-         constants_to_range/2
-        ]).
+-export([recalc/1, set_attribute/2, set_cell/2,
+         get_cell_info/4, write_cell/5,
+         get_hypernumber/9, copy_pages_below/2,
+         formula_to_range/2, constants_to_range/2 ]).
 
 %% @spec set_attribute(Ref, Val) -> ok.
 %% @doc set an attribute on a reference, if the attribute name
@@ -33,6 +28,7 @@ set_attribute(Ref = #ref{name=format}, Val) ->
                 end
         end,
     apply_range(Ref,F,[]);
+
 set_attribute(Ref,Val) ->
     hn_db:write_item(Ref,Val).
 
@@ -100,10 +96,10 @@ constants_to_range(Data, Ref = #ref{ref = {range,{Y1, X1, Y2, X2}}}) ->
                         hn_main:set_attribute(NewRef,Val)
                 end
         end,
-
+    
     [[F(X,Y,((X-X1)*(Y2-Y1+1))+(Y-Y1)+1) 
       || Y <- lists:seq(Y1,Y2)] 
-     || X <- lists:seq(X1,X2)].
+      || X <- lists:seq(X1,X2)].
 
 %%%-----------------------------------------------------------------
 %%% Function    : write_cell()
@@ -171,7 +167,7 @@ set_cell_rawvalue(Addr,Value) ->
     hn_db:write_item(Addr#ref{name=value},V),
     hn_db:write_item(Addr#ref{name=color},atom_to_list(Color)),
     ok.
- 
+
 %%%-----------------------------------------------------------------
 %%% Function    : apply_range/2
 %%% Types       : 
