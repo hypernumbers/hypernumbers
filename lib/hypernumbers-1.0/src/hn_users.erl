@@ -34,7 +34,7 @@ login(Name,Pass) ->
     
     case mnesia:transaction(F) of
         {atomic,[]}     -> {error,invalid_user};
-        {atomic,[User]} -> {ok,User}
+        {atomic,[NUser]} -> {ok,NUser}
     end.
 
 gen_authtoken(User,IP) ->
