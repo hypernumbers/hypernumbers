@@ -20,7 +20,7 @@
          read_links/2, del_links/2, write_local_link/2,
          read_remote_links/3, write_remote_link/3,del_remote_link/1,
          register_hn/5, update_hn/4, get_hn/3, cell_changed/1,
-         mark_dirty/2, write_template/4, read_template/1,
+         mark_dirty/2, write_template/4, read_template/1, 
          get_templates/0, get_ref_from_name/1, hn_changed/1]).
           
 %% @spec create() -> ok

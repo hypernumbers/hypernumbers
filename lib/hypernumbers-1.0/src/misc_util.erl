@@ -108,8 +108,9 @@ do_import(Url,{attr,[],Refs}) ->
       (
       fun(X) ->
               case X of
-%% Dont sent value attributes
+                  %% Dont sent value attributes
                   {ref,_,[{value,_,_}]} -> ok;
+                  {ref,_,[{dynamic,_,_}]} -> ok;
                   {ref,_,[{'dependancy-tree',_,_}]} -> ok;
                   {ref,_,[{'parents',_,_}]} -> ok;
                   {ref,[_,{ref,Ref}],[{Name,_,[{_Type,[],Children}]}]} ->

@@ -9,6 +9,7 @@
 
 -export([write_def/4,
          get_next/3,
+         get_next2/3,
          make_path/1,
          get_templates/0]).
 
@@ -27,6 +28,7 @@
 
 -include("spriki.hrl").
 -include("handy_macros.hrl").
+-include("hypernumbers.hrl").
 
 %%
 %% External API
@@ -44,6 +46,11 @@ get_next(Ref,TemplateName,UserName) ->
     {template,TemplateName,TemplatePath,_Gui,_Form}=Template,
     Return=new_path(Ref,TemplatePath,UserName),
     Return.
+
+%% @spec get_next(Ref,Path) -> NewName
+%% @doc gets the next valid page name
+get_next2(Ref,Path,User) ->
+    new_path(Ref,Path,User).
 
 %% @spec make_path(List) -> NewList
 %% @doc compiles a path down to a form that can be processed
@@ -137,11 +144,18 @@ get_incr(Ref,Path) ->
                               {ref,{page,"/"}}]),
     Items = hn_db:get_item(Ref2),
     F = fun(#hn_item{addr=R}) ->
-                Len=length(Path2),
-                Last = lists:nth(Len+1,R#ref.path),
-                ?COND(hn_util:is_numeric(Last),
-                      list_to_integer(Last),0)
+                %% Items seemed to include root pages that 
+                %% dont have enough path elements to pull Offset out of
+                Offset = length(Path2)+1,
+                case Offset > length(R#ref.path) of
+                    true  -> 0;
+                    false ->
+                        Last = lists:nth(Offset,R#ref.path),
+                        ?COND(hn_util:is_numeric(Last),
+                              list_to_integer(Last),0)
+                end
         end,
+
     Ind = case Items of
               [] -> 1;
               _Else -> lists:max(lists:map(F,Items))+1

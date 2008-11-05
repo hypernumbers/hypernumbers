@@ -1,0 +1,103 @@
+#menu 
+{ 
+  font:         13px sans-serif; 
+  height:       22px;
+  background:   #F1EEE9;
+}
+
+#menu li 
+{ 
+  list-style:   none; 
+  float:        left; 
+}    
+
+#menu li li 
+{
+  float:        none; 
+  display:      block; 
+  position:     relative;
+}
+
+#menu ul 
+{ 
+  display:      none; 
+  position:     absolute;  
+  border:       1px solid; 
+  border-color: #DDD #AAA #AAA #DDD;  
+  padding:      3px 0px; 
+  background:   #F1EEE9; 
+}
+
+#menu ul ul 
+{ 
+  left:         100%; 
+  top:          0; 
+} 
+
+#menu a 
+{
+  position:     relative;
+  display:      block; 
+  background:   #F1EEE9;
+  cursor:       pointer; 
+  padding:      4px 10px; 
+  z-index:      100;
+  text-decoration:none;
+  color:        #000;
+}
+
+#menu li ul li .padded 
+{
+  padding-left:  24px;
+}
+
+#menu li ul li a 
+{ 
+  background:   #f8f7f6;       
+  padding:      3px 18px 3px 3px; 
+  z-index:      200;
+}
+
+#menu .hover 
+{ 
+  background:   #ffc47e; 
+}  
+
+#menu li.seperator 
+{ 
+  height:       0px; 
+  border-top:   1px solid #CCC; 
+  margin:       3px 0px;      
+}
+
+#menu div.input
+{
+  position:     relative;
+  padding:      2px;
+  width:        16px;
+  height:       16px;
+  float:        left;
+  z-index:      500;
+}
+
+#menu .icon
+{
+  background-repeat: no-repeat;
+  background-position:3px 3px; 
+}
+
+#menu .arrow
+{
+  display:      none;
+}
+
+#menu ul li .arrow 
+{ 
+  display:block;
+  position:absolute;
+  height:16px;
+  width:16px;
+  background:url(../img/arrow.png);
+  top:3px;
+  right:0px;
+}
