@@ -82,6 +82,11 @@ strong
 
 button#instance { display:none; }
 
+.expand_btn { display:block; width:10px; height:10px; background:blue; float:left; margin:2px 5px; }
+
+.expand   ul { display:block; }
+.collapse ul { display:none;  }
+
 .clearfix:after {
     content: ".";
     display: block;
