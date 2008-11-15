@@ -6,7 +6,7 @@
 %%% In CHIDIST(X, DegreesOfFreedom) in Excel DegreesOfFreedom is capped at
 %%% 10^10. We're doing that too (for now anyway).
 %%%
-%%% 
+%%%
 
 -module(stdfuns_stats).
 
@@ -105,30 +105,31 @@
 
 avedev(Vs) ->
     Flatvs = ?flatten_all(Vs),
-    Nums = ?numbers(Flatvs, ?default_rules),
+    Nums = Nums = ?numbers(Flatvs, [cast_strings, cast_bools, ignore_blanks, ban_dates]),
     ?ensure_nonzero(length(Nums)),
     avedev1(Nums).
 avedev1(Nums) ->
     Avg = average1(Nums),
-    Deviation = foldl(fun(X, Acc) ->
-                              Acc + erlang:abs(Avg - X)
-                      end,
-                      0, Nums),
-    Deviation / length(Nums).
+    Deviation = foldl(fun(X, Acc) -> Acc + erlang:abs(Avg - X) end,
+                      Deviation / length(Nums).
 
 average(Vs) ->
     Flatvs = ?flatten_all(Vs),
-    Nums = ?numbers(Flatvs, ?default_rules),
-    ?ensure_nonzero(length(Nums)),
-    average1(Nums).
-average1(Nums) ->
-    lists:sum(Nums) / length(Nums).
+    ?ensure(Flatvs =/= [], ?ERR_DIV),
+    %% A bit of a special case here for backward compatibility with Excel which
+    %% returns #DIV/0! when none of the arguments to AVERAGE can be cast (e.g.
+    %% a range of empty cells). Our default is to return #VALUE! in such case.
+    case muin_util:attempt(?DEFER(?numbers(Flatvs, [ignore_strings, cast_bools, ignore_blanks, ban_dates]))) of
+        {ok, Nums} -> average1(Nums);
+        {error, _} -> ?ERR_DIV
+    end,
+    stdfuns_math:'/'([lists:sum(Nums), length(Nums)]).
 
 %% TODO: errvals -> 0s in args.
 averagea(Vs) ->
     Flatvs = ?flatten_all(Vs),
+    ?ensure(Flatvs =/= [], ?ERR_DIV),
     Nums = ?numbers(Flatvs, ?default_rules),
-    ?ensure_nonzero(length(Nums)),
     average1(Nums).
 
 binomdist([V1, V2, V3, V4]) ->
@@ -136,9 +137,10 @@ binomdist([V1, V2, V3, V4]) ->
     Succprob = ?number(V3, ?default_rules),
     Cumul = ?bool(V4, ?default_rules_bools),
     ?ensure(Succn =< Trials, ?ERR_NUM),
-    ?ensure_non_negatives([Succn, Succprob]),
+    ?ensure(Succn >= 0, ?ERR_NUM),
+    ?ensure(Succprob >= 0, ?ERR_NUM),
     ?ensure(Succprob =< 1, ?ERR_NUM),
-    binomdist1(Succn, Trials, Succprob * 100, Cumul).
+    binomdist1(Succn, Trials, trunc(Succprob * 100), Cumul).
 binomdist1(Ns, Nt, Ps, false) ->
     stdfuns_math:combin([Ps, Nt]) * math:pow(Ps, Ns) * math:pow((1 - Ps),
                                                                 (Nt - Ns));
@@ -166,7 +168,7 @@ count(Vs) ->
     Flatvs = ?flatten_all(Vs),
     %%Nums = ?numbers(Flatvs, ?default_rules),
     length(Flatvs).
-                 
+
 countblank(Vs) ->
     Flatvs = ?flatten_all(Vs),
     length([X || X <- Flatvs, muin_collect:is_blank(X)]).
@@ -182,7 +184,7 @@ critbinom([V1, V2, V3]) ->
     ?ensure(Prob >= 0 andalso Prob =< 1, ?ERR_NUM),
     ?ensure(Alpha >= 0 andalso Alpha =< 1, ?ERR_NUM),
     critbinom1(Trials, Prob, Alpha, 0).
-critbinom1(Trials, Prob, Alpha, X) ->    
+critbinom1(Trials, Prob, Alpha, X) ->
     Val = binomdist1(X, Trials, Prob, true),
     ?COND(Val >= Alpha,
           X,
@@ -243,7 +245,7 @@ harmean1([], Num, Acc) ->
     Num / Acc;
 harmean1([Hd|Tl], Num, Acc) ->
     harmean1(Tl, Num+1, (1/Hd)+Acc).
-                        
+
 gammadist([V1, V2, V3, V4]) ->
     [X, Alpha, Beta] = ?numbers([V1, V2, V3], ?default_rules),
     Cumul = ?bool(V4, ?default_rules_bools),
@@ -291,7 +293,7 @@ max([V1]) ->
     Flatvs = ?flatten_all(V1),
     Nums = ?numbers(Flatvs, ?default_rules),
     ?COND(length(Nums) == 0, 0, lists:max(Nums)).
-    
+
 maxa([V1]) ->
     Flatvs = ?flatten_all(V1),
     Nums = ?numbers(Flatvs,
@@ -323,7 +325,7 @@ mode1(Nums) ->
     ?COND(Count == 1,
           ?ERR_NA, % no duplicates
           Num).
-                
+
 mode1([H|T], Maptbl) ->
     case keysearch(H, 1, Maptbl) of
         {value, {H, Cnt}} -> % update count
@@ -456,7 +458,7 @@ steyx1(Ys, Xs) ->
     math:pow(pearson1(Ys, Xs), 2).
 
 %% TODO:
-trend([_Kys0, _Kxs0, _Nxs0, _Const]) -> 
+trend([_Kys0, _Kxs0, _Nxs0, _Const]) ->
     0.
 
 trimmean([V1, V2]) ->
@@ -480,13 +482,13 @@ vara([V1]) ->
     var1(Nums).
 
 varp([V1]) ->
-    Nums = ?numbers(?flatten_all(V1), ?default_rules),    
+    Nums = ?numbers(?flatten_all(V1), ?default_rules),
     varp1(Nums).
 varp1(Nums) ->
     math:pow(stdevp1(Nums), 2).
 
 varpa([V1]) ->
-    Nums = ?numbers(?flatten_all(V1), ?default_rules),    
+    Nums = ?numbers(?flatten_all(V1), ?default_rules),
     varp1(Nums).
 
 weibull([V1, V2, V3, V4]) ->
@@ -500,7 +502,7 @@ weibull1(X, Alpha, Beta, true) ->
     1 - math:exp(-1 * math:pow(X, Alpha) / Beta);
 weibull1(X, Alpha, Beta, false) ->
     (Alpha / Beta) * math:pow(X, Alpha - 1) * math:exp(-1 * math:pow(X, Alpha) / Beta).
-    
+
 
 %%% Private functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
