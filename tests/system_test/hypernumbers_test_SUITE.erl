@@ -1,82 +1,46 @@
-%%%-----------------------------------------------------------------------------
-%%% File    : API_test_SUITE.erl
-%%% Author  : Gordon Guthrie <gordonguthrie@localhost>
-%%% Description :
-%%%
-%%% Created : 20 Oct 2007 by Gordon Guthrie <gordonguthrie@localhost>
-%%%-----------------------------------------------------------------------------
 -module(hypernumbers_test_SUITE).
-
 -compile(export_all).
 
+-include_lib("hypernumbers/include/hypernumbers.hrl").
+-include_lib("hypernumbers/include/spriki.hrl").
 -include("ct.hrl").
--include("../../include/spriki.hrl").
 
--define(str(Str,List),lists:flatten(io_lib:format(Str,List))).
--define(POST,"<create><formula>~s</formula></create>").
--define(URL,"~s/~s?attr").
-
-%% Test server callback functions
-%%------------------------------------------------------------------------------
 init_per_suite(Config) ->
     Config.
 
 end_per_suite(_Config) ->
     ok.
 
-init_per_testcase(_TestCase, Config) -> hn_loaddb:create_db(),Config.
+init_per_testcase(_TestCase, Config) -> Config.
 end_per_testcase(_TestCase, _Config) -> ok.
 
 all() ->
-    [test_post1,test_post2,test_post3,test_post4,test_post5,
-     test_update1,test_update2,test_update3,
-     test_update4,test_update5,test_update6,
-     test_blank1].
+    [test_all].
 
-%% Test cases starts here.
-%%------------------------------------------------------------------------------
--define(testpost(Name, Ref, Value, Answer),
-    Name(_Config) ->
-        HNum = ?str("=hypernumber(\"~s/~s?hypernumber\")",[?HN_URL1,Ref]),
-        hn_util:post(?str(?URL,[?HN_URL1,Ref]),?str(?POST,[Value]),"text/xml"),
-        hn_util:post(?str(?URL,[?HN_URL2,Ref]),?str(?POST,[HNum]),"text/xml"),
-        timer:sleep(500),
-        Xml = simplexml:from_xml_string(hn_util:req(?str(?URL,[?HN_URL2,Ref]))),
-        Answer = simplexml:search(Xml,value)
-    ).
-    
--define(testupdate(Name, Ref, Value, NewValue, Answer),
-    Name(_Config) ->
-        HNum = ?str("=hypernumber(\"~s/~s?hypernumber\")",[?HN_URL1,Ref]),
-        hn_util:post(?str(?URL,[?HN_URL1,Ref]),?str(?POST,[Value]),"text/xml"),
-        hn_util:post(?str(?URL,[?HN_URL2,Ref]),?str(?POST,[HNum]),"text/xml"),
-        hn_util:post(?str(?URL,[?HN_URL1,Ref]),?str(?POST,[NewValue]),"text/xml"),
-        timer:sleep(500),
-        Xml = simplexml:from_xml_string(hn_util:req(?str(?URL,[?HN_URL2,Ref]))),
-        Answer = simplexml:search(Xml,value)
-    ).
-    
--define(testblank(Name, Ref, Answer),
-    Name(_Config) ->
-        HNum = ?str("=hypernumber(\"~s/~s?hypernumber\")",[?HN_URL1,Ref]),
-        hn_util:post(?str(?URL,[?HN_URL2,Ref]),?str(?POST,[HNum]),"text/xml"),
-        timer:sleep(500),
-        Xml = simplexml:from_xml_string(hn_util:req(?str(?URL,[?HN_URL2,Ref]))),
-        Answer = simplexml:search(Xml,value)
-    ).
-    
+test_page(Site,Path) ->
+    ?INFO("Testing ~p ~p",[Site,Path]),
+    Ref = #ref{site=Site,path=Path,ref={column,1}},
+    {attr,[],Refs} = hn_yaws:get_page_attributes(Ref),
+    F = fun({ref,Ref,[{value,[],[{string,[],[Val]}]}]}) ->
+                case Val of
+                    "Success" -> ok;
+                    _Else     -> throw({failed_test,Ref})
+                end;
+           (_) -> ok
+        end,
+    lists:map(F,Refs),
+    ok.
 
-?testpost(test_post1,"a1","99",[{value,[],[{integer,[],["99"]}]}]).
-?testpost(test_post2,"a1","2.0",[{value,[],[{float,[],["2.00"]}]}]).
-?testpost(test_post3,"a1","abc",[{value,[],[{string,[],["abc"]}]}]).
-?testpost(test_post4,"a1","=AVERAGE(2,4)",[{value,[],[{float,[],["3.0"]}]}]).
-?testpost(test_post5,"a1","={1,2,3}",[{value,[],[{matrix,[],[{row,[],[{integer,[],["1"]},{integer,[],["2"]},{integer,[],["3"]}]}]}]}]).
-
-?testupdate(test_update1,"a1","99","66",[{value,[],[{integer,[],["66"]}]}]).
-?testupdate(test_update2,"a1","99","abc",[{value,[],[{string,[],["abc"]}]}]).
-?testupdate(test_update3,"a1","99","2.0",[{value,[],[{float,[],["2.0"]}]}]).
-?testupdate(test_update4,"a1","abc","66",[{value,[],[{integer,[],["66"]}]}]).
-?testupdate(test_update5,"a1","2.0","abc",[{value,[],[{string,[],["abc"]}]}]).
-?testupdate(test_update6,"a1","66","=AVERAGE(2,4)",[{value,[],[{float,[],["99"]}]}]).
-
-?testblank(test_blank1,"a1",[{value,[],[{integer,[],["0"]}]}]).
+test_all(_Config) ->
+    Path = string:tokens(code:lib_dir(hypernumbers),"/"),
+    [_Lib,_Dot,_Ext,_Ebin|Rest] = lists:reverse(Path),
+    Xml = "/"++string:join(lists:reverse(Rest),"/")++"/tests/xml_files/*.xml",
+    Files = filelib:wildcard(Xml),
+    F = fun(X) ->
+                ?INFO("Importing ~p",[X]),
+                {ok,Domain}= hn_import:hn_xml(X),
+                NPage = hn_main:get_pages_under([]),
+                lists:map(fun(Y) -> test_page(Domain,Y) end,NPage)
+        end,
+    lists:map(F,Files),
+    ok.
