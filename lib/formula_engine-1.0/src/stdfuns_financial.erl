@@ -7,19 +7,11 @@
 -include("typechecks.hrl").
 -import(muin_util, [conv/2, cast/2]).
 
--export([
-         db/1,
-         effect/1,
-         fv/1,
-         ipmt/1,
-         ispmt/1,
-         nominal/1,
-         npv/1,
-         pv/1,
-         sln/1,
-         syd/1
-        ]).
+-export([db/1, effect/1, fv/1, ipmt/1, ispmt/1, nominal/1, npv/1, pv/1,
+         sln/1, syd/1, pmt/1, rate/1, nper/1]).
+-compile(export_all).
 -define(default_rules, [cast_strings, cast_bools, cast_blanks, cast_dates]).
+
 
 db([V1, V2, V3, V4]) ->
     db([V1, V2, V3, V4, 12]);
@@ -52,21 +44,6 @@ effect(Args = [_, _]) ->
     effect1(Nomrate, trunc(Npery)).
 effect1(Nomrate, Npery) ->
     math:pow(1 + (Nomrate / Npery), Npery) - 1.
-
-fv([V1, V2, V3, V4]) ->
-    fv([V1, V2, V3, V4, 0]);
-fv(Args = [_, _, _, _, _]) ->
-    [Rate, Nper, Pmt, Pv, Type] = ?numbers(Args, ?default_rules),
-    ?ensure(Type == 0 orelse Type == 1, ?ERR_NUM),
-    fv1(Rate, Nper, Pmt, Pv, Type).
-fv1(_Rate, 0, _Pmt, Pv, 0) ->
-    Pv;
-fv1(Rate, Nper, Pmt, Pv, 0) ->
-    fv1(Rate, Nper - 1, Pmt, (Pv * Rate) + Pmt, 0);
-fv1(_Rate, 0, _Pmt, Pv, 1) ->
-    Pv;
-fv1(Rate, Nper, Pmt, Pv, 1) ->
-    fv1(Rate, Nper - 1, Pmt, (Pv + Pmt) * Rate, 1).
 
 ipmt([V1, V2, V3, V4]) ->
     ipmt([V1, V2, V3, V4, 0, 0]);
@@ -107,17 +84,6 @@ npv1(_Rate, [], _Num, Acc) ->
     Acc;
 npv1(Rate, [Hd|Tl], Num, Acc) ->
     npv1(Rate, Tl, Num+1, Acc+Hd/(math:pow((1+Rate),Num))).
-    
-pv(Args = [_, _, _, _, _]) ->
-    [Rate, Nper, Pmt, Fv, Type] = ?numbers(Args, ?default_rules),
-    pv1(Rate, Nper, Pmt, Fv, Type).
-pv1(0, Nper, Pmt, Fv, _Type) ->
-    -(Pmt * Nper + Fv);
-pv1(Rate, Nper, Pmt, Fv, Type) ->
-    N = math:pow(Rate + 1, Nper),
-    Bigass = (N - 1) / Rate,
-    T = -(Pmt * (Rate * Type + 1) * Bigass + Fv),
-    T / N.
 
 sln(Args = [_, _, _]) ->
     [Cost, Salv, Life] = ?numbers(Args, ?default_rules),
@@ -130,3 +96,60 @@ syd(Args = [_, _, _, _]) ->
     syd1(Cost, Salv, Life, Per).
 syd1(Cost, Salv, Life, Per) ->
     (Cost-Salv)*(Life-Per+1)*2/(Life*(Life+1)).
+
+pv(Args = [_, _, _, _, _]) ->
+    [Rate, Nper, Pmt, Fv, Partype] = ?numbers(Args, ?default_rules),
+    Pv0 = 0,
+    Pv1 = 1000,
+    X0 = xn(Pmt, Rate, Nper, Fv, Pv0, Partype),
+    X1 = xn(Pmt, Rate, Nper, Fv, Pv1, Partype),
+    secant(Pv1, Pv0, X1, X0, fun(N) -> xn(Pmt, Rate, Nper, Fv, N, Partype) end).
+
+fv(Args = [_, _, _, _, _]) ->
+    [Rate, Nper, Pmt, Pv, Partype] = ?numbers(Args, ?default_rules),
+    Fv0 = 0,
+    Fv1 = 1000,
+    X0 = xn(Pmt, Rate, Nper, Pv, Fv0, Partype),
+    X1 = xn(Pmt, Rate, Nper, Pv, Fv1, Partype),
+    secant(Fv1, Fv0, X1, X0, fun(N) -> xn(Pmt, Rate, Nper, Pv, N, Partype) end).
+                                     
+pmt(Args = [_, _, _, _, _]) ->
+    [Rate, Nper, Pv, Fv, Partype] = ?numbers(Args, ?default_rules),
+    Pmt0 = -Pv*Rate*(Nper/12)/Nper,
+    Pmt1 = Pmt0 - 50,
+    X0 = xn(Pmt0, Rate, Nper, Pv, Fv, Partype),
+    X1 = xn(Pmt1, Rate, Nper, Pv, Fv, Partype),
+    secant(Pmt1, Pmt0, X1, X0, fun(N) -> xn(N, Rate, Nper, Pv, Fv, Partype) end).
+    
+rate(Args = [_, _, _, _, _]) ->
+    [Nper, Pmt, Pv, Fv, Partype] = ?numbers(Args, ?default_rules),
+    Rate0 = 0.01,
+    Rate1 = 0.09,
+    X0 = xn(Pmt, Rate0, Nper, Pv, Fv, Partype),
+    X1 = xn(Pmt, Rate1, Nper, Pv, Fv, Partype),
+    secant(Rate1, Rate0, X1, X0, fun(N) -> xn(Pmt, N, Nper, Pv, Fv, Partype) end).
+
+nper(Args = [_, _, _, _, _]) ->
+    [Rate, Pmt, Pv, Fv, Partype] = ?numbers(Args, ?default_rules),
+    Nper0 = 10,
+    Nper1 = 16,
+    X0 = xn(Pmt, Rate, Nper0, Pv, Fv, Partype),
+    X1 = xn(Pmt, Rate, Nper1, Pv, Fv, Partype),
+    secant(Nper1, Nper0, X1, X0, fun(N) -> xn(Pmt, Rate, N, Pv, Fv, Partype) end).
+
+%%% helpers ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-define(ITERATION_LIMIT, 20).
+%% Calculate next approximation of value based on two previous approximations.
+secant(Pa, Ppa, Px, Ppx, Fun) -> secant(Pa, Ppa, Px, Ppx, Fun, 1).
+secant(_, _, _, _, _, I) when I == ?ITERATION_LIMIT -> ?ERR_NUM;
+secant(Pa, Ppa, Px, Ppx, Fun, I) ->
+    Ca = Pa-((Pa-Ppa)/(Px-Ppx))*Px,
+    Xn = Fun(Ca),
+    if Xn == 0 -> Ca;
+       ?else   -> secant(Ca, Pa, Xn, Px, Fun, I+1)
+    end.
+            
+%% Calculate ƒ(X) given Pmt for current iteration of one of the arguments.
+xn(Pmt, Rate, Nper, Pv, Fv, Partype) ->
+    Pv*math:pow(1+Rate, Nper) + Pmt*(1+Rate*Partype)*(math:pow(1+Rate, Nper)-1)/Rate+Fv.
