@@ -1,7 +1,7 @@
 %%% @doc Interface to the formula engine and the interpreter.
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 
-%% TODO: Need a generic apply(Node, Fun)
+%% TODO: Need a generic apply(Node, Fun), or better yet real macros.
 
 -module(muin).
 -export([run_formula/2, run_code/2]).
@@ -108,6 +108,7 @@ eval(Value) ->
 call(Func, Args) ->
     case attempt(?MODULE, funcall, [Func, Args]) of
         {error, Errv = {errval, _}} -> Errv;
+        {error, E}                  -> {error, error_in_formula};
         {ok, V}                     -> V
     end.
 
