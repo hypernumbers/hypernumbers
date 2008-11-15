@@ -495,13 +495,24 @@ funcall(pair_up, [A, V]) when ?is_area(A) andalso not(?is_area(V)) ->
 funcall(pair_up, [V, A]) when ?is_area(A) andalso not(?is_area(V)) ->
     funcall(pair_up, [A, V]);
 
-%% Function call, built-in or user-defined.
+%% Formula function call (built-in or user-defined).
 funcall(Fname, Args) ->
-    case keysearch(Fname, 1, ?STDFUNS) of
-        {value, {Fname, Modname}} ->
-            Modname:Fname(Args);
-        false ->
-            userdef_call(Fname, Args)
+    R = foldl(fun(M, Acc = {F, A, not_found_yet}) ->
+                      case attempt(M, F, [A]) of
+                          {error, undef} -> Acc;
+                          {ok, V}        -> {F, A, V};
+                          {error, Ev = {errval, _}} -> {F, A, Ev}
+                      end;
+               (_, Acc) ->
+                      Acc
+              end,
+              {Fname, Args, not_found_yet},
+              [stdfuns_math, stdfuns_stats, stdfuns_date, stdfuns_financial, stdfuns_info,
+               stdfuns_lookup_ref, stdfuns_eng, stdfuns_gg, stdfuns_logical, stdfuns_text]),
+    
+    case R of
+        {_, _, not_found_yet} -> userdef_call(Fname, Args);
+        {_, _, V}             -> V
     end.
 
 %%% Utility functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
