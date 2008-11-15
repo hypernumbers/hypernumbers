@@ -17,7 +17,7 @@
 
 -module(muin_collect).
 
--export([flatten_ranges/1,  flatten_arrays/1,
+-export([flatten_ranges/1,  flatten_arrays/1, flatten_areas/1,
          collect_numbers/2, collect_number/2,
          collect_strings/2, collect_string/2,
          collect_bools/2,   collect_bool/2,
@@ -33,29 +33,17 @@
 
 -import(muin_util, [cast/2]).
 
-%% @doc Replaces array objects with the values they contain. (Used by
-%% implementations of SUM and PRODUCT for example).
-flatten_arrays(Vs) ->
-    foldl(fun({array, Rows}, Acc) ->
-                  Allvs = foldl(fun(Row, Acc1) -> Acc1 ++ Row end,
-                                [], Rows),
-                  Acc ++ Allvs;
-             (X, Acc) ->
-                  Acc ++ [X]
-          end,
-          [], Vs).
+%% @doc Replaces array objects with values they contain.
+flatten_arrays([Hd|Tl]) ->
+    flatten_areas(Hd, Tl, [], fun(X) -> ?is_array(X) end).
 
-%% @doc Replaces range objects with the values they contain. (Used by
-%% implementations of SUM and PRODUCT for example).
-flatten_ranges(Vs) ->
-    foldl(fun({range, Rows}, Acc) ->
-                  Allvs = foldl(fun(Row, Acc1) -> Acc1 ++ Row end,
-                                [], Rows),
-                  Acc ++ Allvs;
-             (X, Acc) ->
-                  Acc ++ [X]
-          end,
-          [], Vs).
+%% @doc Replaces range objects with values they contain.
+flatten_ranges([Hd|Tl]) ->
+    flatten_areas(Hd, Tl, [], fun(X) -> ?is_range(X) end).
+
+%% @docc Replaces both array and range objects with values they contain.
+flatten_areas([Hd|Tl]) ->
+    flatten_areas(Hd, Tl, [], fun(X) -> ?is_area(X) end).
 
 %% Rules:
 %% ignore_strings | cast_strings | cast_strings_zero | ban_strings
@@ -228,6 +216,19 @@ is_blank(blank) ->
     true;
 is_blank(_) ->
     false.
+
+%%% Generic flattener ~~~~~~~~~~
+
+flatten_areas(Hd, [], Acc, Test) ->
+    case Test(Hd) of
+        true  -> Acc ++ area_util:to_list(Hd);
+        false -> Acc ++ [Hd]
+    end;
+flatten_areas(Hd, [NHd|Tl], Acc, Test) ->
+    case Test(Hd) of
+        true  -> flatten_areas(NHd, Tl, Acc ++ area_util:to_list(Hd), Test);
+        false -> flatten_areas(NHd, Tl, Acc ++ [Hd], Test)
+    end.
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
