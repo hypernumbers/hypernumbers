@@ -71,3 +71,5 @@
 
 %% Silly hack for ifs.
 -define(else, true).
+
+-define(DEFER(Expr), fun() -> Expr end).
