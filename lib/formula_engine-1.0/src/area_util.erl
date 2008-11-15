@@ -2,7 +2,7 @@
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 
 -module(area_util).
--export([apply_each/2, width/1, height/1, get_at/3, make_array/2]).
+-export([apply_each/2, width/1, height/1, get_at/3, make_array/2, to_list/1]).
 -compile(export_all).
 -include("handy_macros.hrl").
 -include("typechecks.hrl").
@@ -29,6 +29,12 @@ apply_each_with_pos(Fun, A = {Tag, Rows}) when ?is_area(A) ->
                            [Newrow|Acc]
                    end,
                    [], zip(Rows, seq(1, length(Rows)))))}.
+
+%% @doc Return area as a list with elements enumerated left-to-right top-down.
+%% @spec to_list(Area :: area()) -> list()
+to_list(Area = {_, _Rows = [H|T]}) when ?is_area(Area) -> to_list(H, T, []).
+to_list(Row, [], Acc) -> Acc ++ Row;
+to_list(Row, [NRow|Rest], Acc) -> to_list(NRow, Rest, Acc ++ Row).
 
 %% @doc Get width of array/range.
 width(A = {_, Rows}) when ?is_area(A) ->
