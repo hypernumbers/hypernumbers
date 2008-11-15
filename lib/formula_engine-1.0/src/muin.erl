@@ -34,6 +34,9 @@
 -define(is_funcall(X), % Is list a function call?
         ?is_list(X) andalso ?is_fn(hd(X))).
 
+-define(error_in_formula, {error, error_in_formula}).
+-define(syntax_error, {error, syntax_error}).
+
 -define(puts, io:format).
 
 %%% PUBLIC ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -41,10 +44,8 @@
 %% @doc Runs formula given as a string.
 run_formula(Fla, Rti = #muin_rti{col = Col, row = Row}) ->
     case compile(Fla, {Col, Row}) of
-        {ok, Ecode} -> 
-            muin:run_code(Ecode, Rti);
-        {error, error_in_formula} -> 
-            {error, error_in_formula}
+        {ok, Ecode}       -> muin:run_code(Ecode, Rti);
+        ?error_in_formula -> ?error_in_formula
     end.
 
 %% @doc Runs compiled formula.
@@ -70,8 +71,8 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
 %% @doc Compiles a formula against a cell.
 compile(Fla, {Col, Row}) ->
     case parse(Fla, {Col, Row}) of
-        {ok, Pcode}           -> {ok, Pcode};
-        {error, syntax_error} -> {error, error_in_formula}
+        {ok, Pcode}   -> {ok, Pcode};
+        ?syntax_error -> ?error_in_formula
     end.
 
 %% Formula -> sexp, relative to coord.
@@ -80,7 +81,7 @@ parse(Fla, {Col, Row}) ->
     {ok, Toks} = xfl_lexer:lex(Trans, {Col, Row}),
     case catch(xfl_parser:parse(Toks)) of
         {ok, Ast} -> {ok, Ast};
-        _         -> {error, syntax_error}
+        _         -> ?syntax_error
     end.
 
 %% Evaluate a form in the current rti context.
@@ -108,7 +109,7 @@ eval(Value) ->
 call(Func, Args) ->
     case attempt(?MODULE, funcall, [Func, Args]) of
         {error, Errv = {errval, _}} -> Errv;
-        {error, E}                  -> {error, error_in_formula};
+        {error, E}                  -> ?error_in_formula;
         {ok, V}                     -> V
     end.
 
