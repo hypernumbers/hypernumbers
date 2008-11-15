@@ -12,7 +12,8 @@
 -export([recalc/1, set_attribute/2, set_cell/2,
          get_cell_info/4, write_cell/5,
          get_hypernumber/9, copy_pages_below/2,
-         formula_to_range/2, constants_to_range/2 ]).
+         formula_to_range/2, constants_to_range/2,
+        get_pages_under/1]).
 
 %% @spec set_attribute(Ref, Val) -> ok.
 %% @doc set an attribute on a reference, if the attribute name

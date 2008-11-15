@@ -75,29 +75,29 @@ stdfuns_export_xml() ->
 
     Filter = fun
                  ({_Fun,Ident},Ident) -> true;
-        (_,_Ident) -> false
-                     end,
-
-Function = fun({Fun,_AtomIdent}) ->
-                   {function,[{label,atom_to_list(Fun)}],[]}
-           end,
-
-Category = fun({AtomIdent,Desc}) ->
-
-                   Funs = lists:filter(fun
-                                       (X) -> Filter(X,AtomIdent)
-                                      end, ?STDFUNS),
-
-                   {category,[{name,Desc}],
-                    lists:map(fun(X) -> Function(X) end,Funs)
-                   }
-           end,
-
-Cats = lists:map(
-         fun(X) -> Category(X) end,
-         ?CATEGORIES),
-
-{function,[],Cats}.
+                 (_,_Ident) -> false
+             end,
+    
+    Function = fun({Fun,_AtomIdent}) ->
+                       {function,[{label,atom_to_list(Fun)}],[]}
+               end,
+    
+    Category = fun({AtomIdent,Desc}) ->
+                       
+                       Funs = lists:filter(fun
+                                               (X) -> Filter(X,AtomIdent)
+                                           end, ?STDFUNS),
+                       
+                       {category,[{name,Desc}],
+                        lists:map(fun(X) -> Function(X) end,Funs)
+                       }
+               end,
+    
+    Cats = lists:map(
+             fun(X) -> Category(X) end,
+             ?CATEGORIES),
+    
+    {function,[],Cats}.
 
 import_xml_attributes(File,Url) ->
     {ok,Bin} = file:read_file(File),

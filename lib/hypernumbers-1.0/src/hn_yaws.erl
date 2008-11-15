@@ -97,6 +97,14 @@ req('GET',[],_,require_token,_Page)  ->
     {return,{status,503}};
 req('GET',[],[],_,Ref=#ref{ref={page,"/"},path=["_admin"]}) ->
     {return,{page,"/html/admin.html"}};
+req('GET',[],[],_,Ref=#ref{ref={page,"/"},path=["_save"]}) ->
+    F = fun(X) ->
+                {page,[{path,hn_util:list_to_path(X)}],
+                 [get_page_attributes(Ref#ref{path=X})]}
+        end,
+    Pages = lists:map(F,hn_main:get_pages_under([])),
+    {ok,{root,[{domain,Ref#ref.site}],Pages}};
+
 req('GET',[],[],_,Ref=#ref{ref={page,"/"}}) ->
     {ok,V} = hn_db:get_item_inherited(Ref#ref{name=gui},"index"),
     {return,{page,"/html/"++V++".html"}};
@@ -170,7 +178,8 @@ req('GET',[],[],_,Ref) ->
             {return,{content,"text/plain",hn_util:text(Val)}}
     end;
 
-req('POST',{login,[],[{email,[],[Email]},{password,[],[Pass]}]},[],_User,_Ref) ->
+req('POST',{login,[],[{email,[],[Email]},
+                      {password,[],[Pass]}]},[],_User,_Ref) ->
     case hn_users:login(Email,Pass) of
         {error,invalid_user} ->
             {ok,{auth,[],[{unauthorised,[],[]}]}};
