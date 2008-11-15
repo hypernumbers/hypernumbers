@@ -1,21 +1,17 @@
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 %%% @doc Type casting/coercion functions.
 
-%%% Collect functions are not guaranteed to be stable, i.e. the result list
-%%% may have cast values in different order from the original list.
-
-%%% Things that may be encountered by a collector function:
-%%% number, string, bool, date, blank, error value.
-
-%%% Basic model:
-%%% SOURCE type -> TARGET type
-%%% Must supply a rule for each of the types that may be encountered: cast,
-%%% ignore or ban.
-%%% Two kinds of rules for cast: cast and throw error if not possible (e.g.
-%%% trying coerce "hello" to number), and cast and return a default value
-%%% if not possible (e.g. 0 for previous example).
-
-%%% If an empty list comes out at the end of all pipes, an error is returned.
+%%% Source values flow through functions that process them according
+%%% to the appropriate rule. #VALUE! is returned if the resulting list
+%%% is empty.
+%%% A rule MUST be supplied for each type (number, string, bool, date,
+%%% blank). Rules for error values are optional.
+%%%
+%%% There are two basic kinds of rules:
+%%% 1. Try to cast and throw error if not possible, e.g. "bob" -> int
+%%% 2. Try to cast and return default value if not possible. "bob" -> int = 0.
+%%%
+%%% All collector functions are stable.
 
 %%% FIXME: Collectors for areas are very inefficient.
 
