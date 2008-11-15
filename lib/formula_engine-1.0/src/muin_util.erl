@@ -9,7 +9,8 @@
          just_ref/1,
          expand_cellrange/4,
          walk_path/2,
-         attempt/3]).
+         attempt/3,
+         attempt/1]).
 
 -import(string, [rchr/2, tokens/2]).
 -import(tconv, [to_i/1, to_s/1]).
@@ -129,7 +130,6 @@ expand_cellrange(StartRow, EndRow, StartCol, EndCol) ->
 
 %% Catch errors from error-throwing functions.
 attempt(Mod, F, Args) ->
-    %%io:format("in muin_util:attempt Mod is ~p F is ~p Args are ~p~n",[Mod,F,Args]),
     try apply(Mod, F, Args) of
         Val -> {ok, Val}
     catch
@@ -137,3 +137,12 @@ attempt(Mod, F, Args) ->
         exit:X  -> {error, X};
         error:X -> {error, X}
     end.
+
+attempt(Fun) when is_function(Fun) ->
+    try Fun() of
+        Val -> {ok, Val}
+    catch
+        throw:X -> {error, X};
+        exit:X  -> {error, X};
+        error:X -> {error, X}
+    end.        
