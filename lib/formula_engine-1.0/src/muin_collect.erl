@@ -97,20 +97,17 @@ collect_date(V, Rules) ->
 
 generic_collect(Vs, Rules, PartitionFun, Targtype) ->
     muin_checks:die_on_errval(Vs),
-    {Ok, Notok} = lists:partition(PartitionFun, Vs),
-    Ok2 = foldl(fun(cast_numbers, Acc) -> cast_numbers(Acc, Targtype);
-                   (cast_strings, Acc) -> cast_strings(Acc, Targtype);
-                   (cast_bools, Acc)   -> cast_bools(Acc, Targtype);
-                   (cast_dates, Acc)   -> cast_dates(Acc, Targtype);
-                   (cast_blanks, Acc)  -> cast_blanks(Acc, Targtype);
-                   (Func, Acc)         -> ?MODULE:Func(Acc)
+    Res = foldl(fun(cast_numbers, Acc) -> cast_numbers(Acc, Targtype);
+                 (cast_strings, Acc) -> cast_strings(Acc, Targtype);
+                 (cast_bools, Acc)   -> cast_bools(Acc, Targtype);
+                 (cast_dates, Acc)   -> cast_dates(Acc, Targtype);
+                 (cast_blanks, Acc)  -> cast_blanks(Acc, Targtype);
+                 (Func, Acc)         -> ?MODULE:Func(Acc)
                 end,
-                Notok, Rules),
-
-    Res = Ok ++ Ok2,
+                Vs, Rules),
 
     if(Res == []) -> ?ERR_VAL;
-      true        -> Res
+      true       -> Res
     end.
 
 %%% Ignores ~~~~~
@@ -146,12 +143,10 @@ cast_strings_zero(Xs) ->
 cast_strings_with_opt(Xs, Targtype, Action) ->
     Res = generic_cast(Xs, Targtype, fun is_string/1),
     %% Swap all {error, _} for Action().
-    foldl(fun({error, _}, Acc) ->
-                  [Action() | Acc];
-             (X, Acc) ->
-                  [X | Acc]
-          end,
-          [], Res).
+    reverse(foldl(fun({error, _}, Acc) -> [Action()|Acc];
+                   (X, Acc)          -> [X|Acc]
+                  end,
+                  [], Res)).
 
 cast_numbers(Xs, Targtype) ->
     generic_cast(Xs, Targtype, fun erlang:is_number/1).
