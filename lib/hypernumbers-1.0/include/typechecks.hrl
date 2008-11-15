@@ -9,8 +9,14 @@
 
 -include("errvals.hrl").
 
+-define(is_array(A),
+        (is_tuple(A) andalso (element(1, A) == array))).
+
+-define(is_range(A),
+        (is_tuple(A) andalso (element(1, A) == range))).
+
 -define(is_area(A),
-        is_tuple(A) andalso (element(1, A) == array orelse element(1, A) == range)).
+        (?is_array(A) orelse ?is_range(A))).
 
 -define(numbers(Xs, Rules),
         %%lists:map(fun(X) -> ?number(X, Rules) end, Xs)).
