@@ -109,9 +109,9 @@ avedev(Vs) ->
     ?ensure_nonzero(length(Nums)),
     avedev1(Nums).
 avedev1(Nums) ->
-    Avg = average1(Nums),
-    Deviation = foldl(fun(X, Acc) -> Acc + erlang:abs(Avg - X) end,
-                      Deviation / length(Nums).
+    Avg = average(Nums),
+    Deviation = foldl(fun(X, Acc) -> Acc + erlang:abs(Avg - X) end, 0, Nums),
+    Deviation / length(Nums).
 
 average(Vs) ->
     Flatvs = ?flatten_all(Vs),
@@ -122,8 +122,9 @@ average(Vs) ->
     case muin_util:attempt(?DEFER(?numbers(Flatvs, [ignore_strings, cast_bools, ignore_blanks, ban_dates]))) of
         {ok, Nums} -> average1(Nums);
         {error, _} -> ?ERR_DIV
-    end,
-    stdfuns_math:'/'([lists:sum(Nums), length(Nums)]).
+    end.
+average1(Nums) ->
+    lists:sum(Nums)/length(Nums).
 
 %% TODO: errvals -> 0s in args.
 averagea(Vs) ->
