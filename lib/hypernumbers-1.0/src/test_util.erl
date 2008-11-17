@@ -38,11 +38,15 @@ import_xls(Name) ->
 
     P = code:lib_dir(hypernumbers),
     [_Hn,_Lib,_DD,_Ebin|Rest] = lists:reverse(string:tokens(P,"/")),
-    File = "/"++string:join(lists:reverse(Rest),"/") 
+    File = string:join(lists:reverse(Rest),"/") 
         ++ "/tests/excel_files/Win_Excel07_As_97/"
         ++ Name ++ ".xls",
-  
-    Celldata = readxls(File),
+    File2 = case os:type() of
+                {win32, nt} -> File;
+                _           -> "/"++File
+            end,
+    io:format("in test_util:import_xls File is ~p~n",[File2]),
+    Celldata = readxls(File2),
     F = fun(X, _Acc = {Ls, Fs}) ->
                 {{{sheet, Sheetn}, {row_index, Row}, 
                   {col_index, Col}}, Val} = X,
@@ -63,7 +67,11 @@ import_xls(Name) ->
     Dopost = fun({Path, Ref, Postdata}) ->
                      Url = string:to_lower("http://127.0.0.1:9000"++Path++Ref),
                      {ok,NRef} = hn_util:parse_url(Url),
-                     hn_main:set_attribute(NRef#ref{name=formula},Postdata)
+                     try
+                         hn_main:set_attribute(NRef#ref{name=formula},Postdata)
+                     catch
+                         _ -> ok
+                     end
              end,
     
     ?INFO("Start Posting: ~p", [Name]),
