@@ -2,25 +2,9 @@
 %%% @doc Date functions.
 
 -module(stdfuns_date).
--export([
-         date/1,
-         datedif/1,
-         datevalue/1,
-         day/1,
-         month/1,
-         year/1,
-         edate/1,
-         eomonth/1,
-         networkdays/1,
-         today/1,
-         weekday/1,
-         weeknum/1,
-         hour/1,
-         minute/1,
-         second/1,
-         now/1,
-         timevalue/1
-        ]).
+-export([date/1, datedif/1, datevalue/1, day/1, month/1, year/1, edate/1, eomonth/1,
+         networkdays/1, today/1, weekday/1, weeknum/1, hour/1, minute/1, second/1,
+         now/1, timevalue/1]).
 
 -include("typechecks.hrl").
 -include("handy_macros.hrl").
