@@ -6,6 +6,8 @@
 # Usage: ruby readexcel.rb "C:\dir\somefile.xls"
 
 require "win32ole"
+load "gen_util.rb"
+include GenUtil
 
 def do_file(xlsfile)
 
@@ -18,10 +20,13 @@ def do_file(xlsfile)
   (1..wb.Worksheets.Count).each do |sheetidx|
     sheet = wb.Worksheets(sheetidx)
     sheetdata = [sheet.Name]
-    puts "Range is #{sheet.UsedRange.Address}"
-    (1..sheet.UsedRange.Rows.Count).each do |rowidx|
-      rowdata = [rowidx]
-      (1..sheet.UsedRange.Columns.Count).each do |colidx|
+    range=sheet.UsedRange.Address.split(":")
+    topleft=range[0].split("$")
+    firstrow=topleft[2].to_i+1
+    firstcol=topleft[1].to_i+1
+   (firstrow..sheet.UsedRange.Rows.Count).each do |rowidx|
+   rowdata = [rowidx]
+      (firstcol..sheet.UsedRange.Columns.Count).each do |colidx|
         cell = sheet.Cells(rowidx, colidx)
         if cell.Value != nil && cell.Formula != ""
           celldata = [colidx, {}]
