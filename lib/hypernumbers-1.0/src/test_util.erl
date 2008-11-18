@@ -79,11 +79,19 @@ import_xls(Name) ->
     lists:foreach(Dopost, Lits),
     lists:foreach(Dopost, Flas),
     ?INFO("Start Recalculating: ~p", [Name]),
-    gen_server:cast(dirty_cell, {setstate, active}),
-    gen_server:call(dirty_cell, flush, infinity),
+    Return1=gen_server:cast(dirty_cell, {setstate, active}),
+    Return2=gen_server:call(dirty_cell, flush, infinity),
+    loop(),
+    io:format("Return1 is ~p Return2 is ~p~n",[Return1,Return2]),
     ?INFO("End Import: ~p", [Name]),
     ok.
 
+loop()->
+    case mnesia:table_info(dirty_cell,size) of
+        0 -> ok;
+        _ -> timer:sleep(250),
+              loop()
+    end.
 
 %% Nasty function to convert 
 %% stuff'C:\\cygwin\\stuff\\[e_gnumeric_bitwise.xls]Name'!stuff
