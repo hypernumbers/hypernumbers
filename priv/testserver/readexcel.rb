@@ -18,6 +18,7 @@ def do_file(xlsfile)
   (1..wb.Worksheets.Count).each do |sheetidx|
     sheet = wb.Worksheets(sheetidx)
     sheetdata = [sheet.Name]
+    puts "Range is #{sheet.UsedRange.Address}"
     (1..sheet.UsedRange.Rows.Count).each do |rowidx|
       rowdata = [rowidx]
       (1..sheet.UsedRange.Columns.Count).each do |colidx|
@@ -41,4 +42,4 @@ def do_file(xlsfile)
   end
 end
 
-do_file(ARGV[0])
+#do_file(ARGV[0])
