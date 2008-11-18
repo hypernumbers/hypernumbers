@@ -341,4 +341,4 @@ get_pages_under(Under) ->
     Guard = "",
     Body  = ['$1'],
     Spec=[{Head,Guard,Body}],
-    List=muin:unique(Spec).
+    _List=muin:unique(Spec)++[].

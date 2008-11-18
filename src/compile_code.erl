@@ -19,7 +19,7 @@
          "/lib/read_excel-1.0/",
          "/lib/mochi-1.0/"]).
 
--define(EXTRA_ERL_FILES, []).
+-define(EXTRA_ERL_FILES, ["src/generate_tests.erl"]).
 
 start() ->
     
@@ -154,4 +154,5 @@ get_rel_file() ->
                       "{hypernumbers,\"1.0\"}]}."]),
     
     file:write_file("hypernumbers.rel",F),
-    systools:make_script("hypernumbers",[local,{path,["../lib/*/ebin"]}]).
+    systools:make_script("hypernumbers",
+                         [local,{path,["../lib/*/ebin","."]}]).

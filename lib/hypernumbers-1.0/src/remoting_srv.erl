@@ -28,8 +28,6 @@ init([]) ->
     {ok,Config} = file:consult(Path), 
     {value,{remoting_port,Port}} = lists:keysearch(remoting_port,1,Config),
    
-    ?INFO("~p",[Port]),
-
     Opts = [list, {reuseaddr, true},{packet, 0}],
     case gen_tcp:listen(Port,Opts) of
 

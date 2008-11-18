@@ -97,13 +97,13 @@ req('GET',[],_,require_token,_Page)  ->
     {return,{status,503}};
 req('GET',[],[],_,Ref=#ref{ref={page,"/"},path=["_admin"]}) ->
     {return,{page,"/html/admin.html"}};
-req('GET',[],[],_,Ref=#ref{ref={page,"/"},path=["_save"]}) ->
+req('GET',[],["save"],_,Ref=#ref{ref={page,"/"},path=Path}) ->
     F = fun(X) ->
                 {page,[{path,hn_util:list_to_path(X)}],
-                 [get_page_attributes(Ref#ref{path=X})]}
+                 [get_page_attributes(Ref#ref{path=Path++X})]}
         end,
-    Pages = lists:map(F,hn_main:get_pages_under([])),
-    {ok,{root,[{domain,Ref#ref.site}],Pages}};
+    Pages = lists:map(F,hn_main:get_pages_under(Path)),
+    {ok,{root,[{domain,Ref#ref.site++hn_util:list_to_path(Path)}],Pages}};
 
 req('GET',[],[],_,Ref=#ref{ref={page,"/"}}) ->
     {ok,V} = hn_db:get_item_inherited(Ref#ref{name=gui},"index"),

@@ -56,7 +56,7 @@ function build
         erl -noshell -s generate gen -s init stop
         cd ../../
     fi
-    
+
     echo "==============================="
     echo "       COMPILING COMPILER      "
     echo "==============================="
@@ -86,6 +86,21 @@ function start
         -hn_config $CONFIG \
         -hn_log $LOG_DIR \
         -mnesia dir "\"$MNESIA_DIR\""
+}
+
+function gen_tests
+{
+    erl -noshell \
+        -setcookie $COOKIE \
+        -sname $NODE@$HOST \
+        -boot $REL_DIR \
+        -config $SASL_DIR \
+        -hn_config $CONFIG \
+        -hn_log $LOG_DIR \
+        -mnesia dir "\"$MNESIA_DIR\""\
+        -pa ebin\
+        -s generate_tests run \
+        -s init stop
 }
 
 function test
@@ -119,6 +134,7 @@ function test
 
 case $1 in 
     start) start;;
-    build) build $2;;
+    build) build $2;;    
+    gen_tests) gen_tests;;
     test)  test $2;;
 esac

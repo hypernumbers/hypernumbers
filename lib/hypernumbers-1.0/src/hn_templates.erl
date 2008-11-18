@@ -138,7 +138,7 @@ new_p2(Ref,[{"username"}|T],UNm,Acc)    -> new_p2(Ref,T,UNm,
                                                   Acc++"/"++UNm);
 new_p2(Ref,[H|T],UNm,Acc)               -> new_p2(Ref,T,UNm,Acc++"/"++H).
 
-get_incr(Ref,Path) ->
+get_incr(_Ref,Path) ->
     Path2=string:tokens(Path,"/"),
     Ref2=ms_util:make_ms(ref,[{path,lists:append(Path2,'_')},
                               {ref,{page,"/"}}]),
