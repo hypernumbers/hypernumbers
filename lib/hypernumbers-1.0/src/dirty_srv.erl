@@ -42,15 +42,43 @@ handle_info(_Info,State) ->
     {noreply, State}.
 
 %% @spec handle_call(flush,From,State) -> {reply,ok,State}.
-%% @doc  flush the dirty table, read all the current dirty
-%%       cells and trigger recalculation
+%% @doc  first shrink dirty_cell, then flush the dirty table, 
+%%       read all the current dirty cells and trigger recalculation
 handle_call(flush, _From, State = #state{type=Type}) ->
-    Get = fun() ->
+
+    % This fun shrinks the dirty cell table
+    % (but not dirty_hypernumber)
+    ?INFO("In dirty_src:handle_call for flush (start) "++
+              "Dirty Cell Table Size is ~p~n",
+              [mnesia:table_info(dirty_cell,size)]),
+    Fun = fun() ->
+                  % see how big the dirty cell table is
+                  % get all the dirty_cell indices
+                  Match=ms_util:make_ms(dirty_cell,[{index,'$1'}]),
+                  List=mnesia:match_object(Match),
+                  % now for each index get its parents
+                  Fn2 = fun(X,Acc) ->
+                                {_,Index,_}=X,
+                                Links=hn_db:read_links(Index,parent),
+                                NewAcc = case Links of
+                                             [] -> Acc;
+                                             L  -> [{X,L}|Acc]
+                                         end
+                        end,
+                  LinksList=lists:foldl(Fn2,[],List),
+                  % now iterate over this list and look for parents that are
+                  % on the dirty list
+                  % If a dirty_cell has a dirty parent then we will shrink it out
+                  DeleteList=shrink(LinksList,List),
+                  Fn3 = fun({_,X,_}) -> mnesia:dirty_delete({dirty_cell,X}) end,
+                  lists:foreach(Fn3,DeleteList),
                   mnesia:match_object({Type,'_','_'})
           end,
-
-    {atomic,List} = mnesia:transaction(Get),
-    lists:foreach(fun(X) -> trigger_recalc(X,Type) end,List),
+    {atomic,List2} = mnesia:transaction(Fun),
+    ?INFO("In dirty_src:handle_call for flush (end) "++
+              "Dirty Cell Table Size is ~p~n",
+              [mnesia:table_info(dirty_cell,size)]),
+    lists:foreach(fun(X) -> trigger_recalc(X,Type) end,List2),
     
     {reply, ok, State}.
 
@@ -96,3 +124,23 @@ trigger_recalc(Rec,Type) ->
          end,
     ok.
 
+shrink(ParentsList,List) -> shrink(ParentsList,List,[]).
+
+shrink([],List,Acc) -> Acc;
+shrink([{Index,Parents}|T],List,Acc) ->
+    NewAcc=case has_dirty_parent(Parents,List) of
+               true  -> Acc;
+               false -> [Index|Acc]
+           end,
+    shrink(T,List,NewAcc).
+
+has_dirty_parent(Parents,List) -> has_dirty_parent(Parents,List,false).
+
+%% One true is good enough!
+has_dirty_parent(Parents,List,true) -> true;
+has_dirty_parent([],List,false)     -> false;
+has_dirty_parent([H|T],List,Status) ->
+    {local_cell_link,Parent,Child}=H,
+    has_dirty_parent(T,List,lists:keymember(Child,2,List)).
+
+           
