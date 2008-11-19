@@ -22,13 +22,17 @@ def do_file(xlsfile)
     sheetdata = [sheet.Name]
     range=sheet.UsedRange.Address.split(":")
     topleft=range[0].split("$")
-    firstrow=topleft[2].to_i+1
+    firstrow=topleft[2].to_i
     firstcol=topleft[1].to_i+1
-   (firstrow..sheet.UsedRange.Rows.Count).each do |rowidx|
+    # puts "firstrow is #{firstrow} and firstcol is #{firstcol}"
+    # puts "no of rows is #{sheet.UsedRange.Rows.Count}" 
+    # puts "no of cols is #{sheet.UsedRange.Columns.Count}"
+   (firstrow..sheet.UsedRange.Rows.Count+1).each do |rowidx|
    rowdata = [rowidx]
-      (firstcol..sheet.UsedRange.Columns.Count).each do |colidx|
+      (firstcol..sheet.UsedRange.Columns.Count+1).each do |colidx|
         cell = sheet.Cells(rowidx, colidx)
         if cell.Value != nil && cell.Formula != ""
+	    #puts "value is #{cell.Value} for row #{rowidx} and col #{colidx}"
           celldata = [colidx, {}]
           celldata[1][:text] = cell.Text # value as it is displayed
           celldata[1][:value] = cell.Value # real value underneath
