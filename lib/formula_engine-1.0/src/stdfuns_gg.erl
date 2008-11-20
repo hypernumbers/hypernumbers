@@ -97,11 +97,13 @@ roman([X, false]) -> roman([X, ?CONCISE3]);
 roman([X, Type])  when is_integer(X) ->
     %% we need to build the roman numbers right to left so we have to
     %% reverse the string representation of the number
-    get_roman(make_list(integer_to_list(X)), Type);
+    List=make_list(integer_to_list(X)),
+    get_roman(List, Type);
 roman([X, Type])  when is_float(X) ->
     %% we need to build the roman numbers right to left so we have to
     %% reverse the string representation of the number
-    get_roman(make_list(integer_to_list(round(X))), Type).
+    List=make_list(integer_to_list(round(X))),
+    get_roman(List, Type).
 
 %% first deal with the single digit number
 get_roman(["0"],_) -> "";
@@ -136,13 +138,17 @@ get_roman(["4","5"],_) -> "VL";
 get_roman(["4","6"],_) -> "VLI";
 get_roman(["4","7"],_) -> "VLII";
 get_roman(["4","8"],_) -> "VLIII";
-get_roman(["4","9"],_) -> "IL";
+%% special for 49
+get_roman(["4","9"],?CONCISE1) -> "VLIV";
+get_roman(["4","9"],_)         -> "IL";
 
 get_roman(["9","5"],_) -> "VC";
 get_roman(["9","6"],_) -> "VCI";
 get_roman(["9","7"],_) -> "VCII";
 get_roman(["9","8"],_) -> "VCIII";
-get_roman(["9","9"],_) -> "IC";
+%% special for 99
+get_roman(["9","9"],?CONCISE1) -> "VCIV";
+get_roman(["9","9"],_)         -> "IC";
 
 %% Now build the rest of the 2 digits
 get_roman([Second,First],_) -> get_roman2([Second])++get_roman([First],?CLASSIC);
@@ -162,27 +168,29 @@ get_roman(["4","4","5"],_) -> "CDVL";
 get_roman(["4","4","6"],_) -> "CDVLI";
 get_roman(["4","4","7"],_) -> "CDVLII";
 get_roman(["4","4","8"],_) -> "CDVLIII";
-get_roman(["4","4","9"],_) -> "CDIL";
+%% special for 449
+get_roman(["4","4","9"],?CONCISE1) -> "CDVLIV";
+get_roman(["4","4","9"],_)         -> "CDIL";
 %% now the 450's, 460's, 470's and 480's
-get_roman(["4","5",First],?CLASSIC) -> "CDL"   ++get_roman(First,?CLASSIC);
-get_roman(["4","6",First],?CLASSIC) -> "CDLX"  ++get_roman(First,?CLASSIC);
-get_roman(["4","7",First],?CLASSIC) -> "CDLXX" ++get_roman(First,?CLASSIC);
-get_roman(["4","8",First],?CLASSIC) -> "CDLXX" ++get_roman(First,?CLASSIC);
+get_roman(["4","5",First],?CLASSIC) -> "CDL"   ++get_roman([First],?CLASSIC);
+get_roman(["4","6",First],?CLASSIC) -> "CDLX"  ++get_roman([First],?CLASSIC);
+get_roman(["4","7",First],?CLASSIC) -> "CDLXX" ++get_roman([First],?CLASSIC);
+get_roman(["4","8",First],?CLASSIC) -> "CDLXXX" ++get_roman([First],?CLASSIC);
 
-get_roman(["4","5",First],_) -> "LD"    ++get_roman(First,?CLASSIC);
-get_roman(["4","6",First],_) -> "LDX"   ++get_roman(First,?CLASSIC);
-get_roman(["4","7",First],_) -> "LDXX"  ++get_roman(First,?CLASSIC);
-get_roman(["4","8",First],_) -> "LDXXX" ++get_roman(First,?CLASSIC);
-%% now the 490's
+get_roman(["4","5",First],_) -> "LD"    ++get_roman([First],?CLASSIC);
+get_roman(["4","6",First],_) -> "LDX"   ++get_roman([First],?CLASSIC);
+get_roman(["4","7",First],_) -> "LDXX"  ++get_roman([First],?CLASSIC);
+get_roman(["4","8",First],_) -> "LDXXX" ++get_roman([First],?CLASSIC);
+%% now the 490'syes
 %% Classic and Concise2 are both straightforward
-get_roman(["4","9",First],?CLASSIC)  -> "CDXC" ++get_roman(First,?CLASSIC);
-get_roman(["4","9",First],?CONCISE2) -> "XD" ++get_roman(First,?CONCISE2);
+get_roman(["4","9",First],?CLASSIC)  -> "CDXC" ++get_roman([First],?CLASSIC);
+get_roman(["4","9",First],?CONCISE2) -> "XD" ++get_roman([First],?CONCISE2);
 % Now do 495, 496, 497, 498 and 499 for Concise1, Concise2 and Simple
-get_roman(["4","9","5"],?CONCISE1) -> "LDVI";
-get_roman(["4","9","6"],?CONCISE1) -> "LDVII";
-get_roman(["4","9","7"],?CONCISE1) -> "LDVIII";
-get_roman(["4","9","8"],?CONCISE1) -> "LDIV";
-get_roman(["4","9","9"],?CONCISE1) -> "LDIV";
+get_roman(["4","9","5"],?CONCISE1) -> "LDVL";
+get_roman(["4","9","6"],?CONCISE1) -> "LDVLI";
+get_roman(["4","9","7"],?CONCISE1) -> "LDVLII";
+get_roman(["4","9","8"],?CONCISE1) -> "LDVLIII";
+get_roman(["4","9","9"],?CONCISE1) -> "LDVLIV";
 
 get_roman(["4","9","5"],?CONCISE3) -> "VD";
 get_roman(["4","9","6"],?CONCISE3) -> "VDI";
@@ -194,11 +202,11 @@ get_roman(["4","9","5"],?SIMPLIFIED) -> "VD";
 get_roman(["4","9","6"],?SIMPLIFIED) -> "VDI";
 get_roman(["4","9","7"],?SIMPLIFIED) -> "VDII";
 get_roman(["4","9","8"],?SIMPLIFIED) -> "VDIII";
-get_roman(["4","9","9"],?SIMPLIFIED) -> "VDIV";
+get_roman(["4","9","9"],?SIMPLIFIED) -> "ID";
 %% Now do 490, 491, 492, 493 and 494 for all the types
-get_roman(["4","9",First],?CLASSIC)  -> "CDXC" ++get_roman(First,?CLASSIC);
-get_roman(["4","9",First],?CONCISE1) -> "LDXL" ++get_roman(First,?CONCISE1);
-get_roman(["4","9",First],Type)      -> "XD" ++get_roman(First,Type);
+get_roman(["4","9",First],?CLASSIC)  -> "CDXC" ++get_roman([First],?CLASSIC);
+get_roman(["4","9",First],?CONCISE1) -> "LDXL" ++get_roman([First],?CONCISE1);
+get_roman(["4","9",First],Type)      -> "XD" ++get_roman([First],Type);
 
 %% Now deal with 945 to 999 first
 %% First 945 to 949
@@ -213,49 +221,46 @@ get_roman(["9","4","5"],_) -> "CMVL";
 get_roman(["9","4","6"],_) -> "CMVLI";
 get_roman(["9","4","7"],_) -> "CMVLII";
 get_roman(["9","4","8"],_) -> "CMVLIII";
-get_roman(["9","4","9"],_) -> "CMIL";
+%% special for 949
+get_roman(["9","4","9"],?CONCISE1) -> "CMVLIV";
+get_roman(["9","4","9"],_)         -> "CMIL";
 %% now the 950's, 960's, 970's and 980's
-get_roman(["9","5",First],?CLASSIC) -> "CML"   ++get_roman(First,?CLASSIC);
-get_roman(["9","6",First],?CLASSIC) -> "CMLX"  ++get_roman(First,?CLASSIC);
-get_roman(["9","7",First],?CLASSIC) -> "CMLXX" ++get_roman(First,?CLASSIC);
-get_roman(["9","8",First],?CLASSIC) -> "CMLXX" ++get_roman(First,?CLASSIC);
+get_roman(["9","5",First],?CLASSIC) -> "CML"   ++get_roman([First],?CLASSIC);
+get_roman(["9","6",First],?CLASSIC) -> "CMLX"  ++get_roman([First],?CLASSIC);
+get_roman(["9","7",First],?CLASSIC) -> "CMLXX" ++get_roman([First],?CLASSIC);
+get_roman(["9","8",First],?CLASSIC) -> "CMLXXX" ++get_roman([First],?CLASSIC);
 
-get_roman(["9","5",First],_) -> "LM"    ++get_roman(First,?CLASSIC);
-get_roman(["9","6",First],_) -> "LMX"   ++get_roman(First,?CLASSIC);
-get_roman(["9","7",First],_) -> "LMXX"  ++get_roman(First,?CLASSIC);
-get_roman(["9","8",First],_) -> "LMXXX" ++get_roman(First,?CLASSIC);
+get_roman(["9","5",First],_) -> "LM"    ++get_roman([First],?CLASSIC);
+get_roman(["9","6",First],_) -> "LMX"   ++get_roman([First],?CLASSIC);
+get_roman(["9","7",First],_) -> "LMXX"  ++get_roman([First],?CLASSIC);
+get_roman(["9","8",First],_) -> "LMXXX" ++get_roman([First],?CLASSIC);
 %% now the 990's
 %% Classic and Concise2 are both straightforward
-get_roman(["9","9",First],?CLASSIC)  -> "CMXC" ++get_roman(First,?CLASSIC);
-get_roman(["9","9",First],?CONCISE2) -> "XM"   ++get_roman(First,?CONCISE2);
+get_roman(["9","9",First],?CLASSIC)  -> "CMXC" ++get_roman([First],?CLASSIC);
+get_roman(["9","9",First],?CONCISE2) -> "XM"   ++get_roman([First],?CONCISE2);
 % Now do 995, 996, 997, 998 and 999 for Concise1, Concise2 and Simple
 get_roman(["9","9","5"],?CONCISE1) -> "LMVL";
 get_roman(["9","9","6"],?CONCISE1) -> "LMVLI";
 get_roman(["9","9","7"],?CONCISE1) -> "LMVLII";
-get_roman(["9","9","8"],?CONCISE1) -> "LMVLII";
+get_roman(["9","9","8"],?CONCISE1) -> "LMVLIII";
 get_roman(["9","9","9"],?CONCISE1) -> "LMVLIV";
 
-get_roman(["9","9","5"],?CONCISE3) -> "XMV";
-get_roman(["9","9","6"],?CONCISE3) -> "XMVI";
-get_roman(["9","9","7"],?CONCISE3) -> "XMVII";
-get_roman(["9","9","8"],?CONCISE3) -> "XMVIII";
-get_roman(["9","9","9"],?CONCISE3) -> "XMIX";
-
-get_roman(["9","9","5"],?SIMPLIFIED) -> "VM";
-get_roman(["9","9","6"],?SIMPLIFIED) -> "VMI";
-get_roman(["9","9","7"],?SIMPLIFIED) -> "VMII";
-get_roman(["9","9","8"],?SIMPLIFIED) -> "VMIII";
-get_roman(["9","9","9"],?SIMPLIFIED) -> "IM";
+get_roman(["9","9","5"],_) -> "VM";
+get_roman(["9","9","6"],_) -> "VMI";
+get_roman(["9","9","7"],_) -> "VMII";
+get_roman(["9","9","8"],_) -> "VMIII";
+get_roman(["9","9","9"],_) -> "IM";
 %% Now do 990, 991, 992, 993 and 994 for all the types
-get_roman(["9","9",First],?CLASSIC)  -> "CMXC" ++get_roman(First,?CLASSIC);
-get_roman(["9","9",First],?CONCISE1) -> "LMXL" ++get_roman(First,?CONCISE1);
-get_roman(["9","9",First],Type)      -> "XM"   ++get_roman(First,Type);
+get_roman(["9","9",First],?CLASSIC)  -> "CMXC" ++get_roman([First],?CLASSIC);
+get_roman(["9","9",First],?CONCISE1) -> "LMXL" ++get_roman([First],?CONCISE1);
+get_roman(["9","9",First],Type)      -> "XM"   ++get_roman([First],Type);
 
 %% Now do all the other 3 digit numbers
 get_roman([Third,Second,First],Type) -> get_roman3([Third])
 					    ++get_roman([Second,First|[]],Type);
 get_roman([Fourth|Rest],Type)        -> get_roman4([Fourth])++get_roman(Rest,Type).
 
+get_roman2(["0"]) -> "";
 get_roman2(["1"]) -> "X";
 get_roman2(["2"]) -> "XX";
 get_roman2(["3"]) -> "XXX";
@@ -266,6 +271,7 @@ get_roman2(["7"]) -> "LXX";
 get_roman2(["8"]) -> "LXXX";
 get_roman2(["9"]) -> "XC".
 
+get_roman3(["0"]) -> "";
 get_roman3(["1"]) -> "C";
 get_roman3(["2"]) -> "CC";
 get_roman3(["3"]) -> "CCC";
