@@ -95,7 +95,7 @@ req('GET',[],_,require_token,#ref{ref={page,"/"}}) ->
     {return,{page,"/html/token.html"}};
 req('GET',[],_,require_token,_Page)  ->
     {return,{status,503}};
-req('GET',[],[],_,Ref=#ref{ref={page,"/"},path=["_admin"]}) ->
+req('GET',[],[],_,Ref=#ref{ref={page,"/"},path=[]}) ->
     {return,{page,"/html/admin.html"}};
 req('GET',[],["save"],_,Ref=#ref{ref={page,"/"},path=Path}) ->
     F = fun(X) ->
