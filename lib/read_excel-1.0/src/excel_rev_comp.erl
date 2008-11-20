@@ -36,13 +36,19 @@ rev_comp(_Index,[],_TokenArray,Stack,_Tables) ->
     "="++to_str(lists:reverse(Stack));
 
 %% tExp
-%% tExp is a placeholder for a shared or array formula so first we
-%% read the array/shared formula then we push the shared formula onto
-%% the Stack in place of the tExp one and carry on
-rev_comp(I,[{expr_formula_range,{tExp,[Sheet,Row,Col], {return,none}}}|T], TokArr,Stack,Tbl) ->
-    [{_Id2,[_Type,{tokens,Tokens},{tokenarrays,_TkArr}]}] =
+%% tExp is a placeholder for a shared or array formula 
+%% we treat them differently
+%% 
+%% so first we read the array/shared formula then we push the 
+%% shared formula onto the Stack in place of the tExp one and carry on
+rev_comp(I,[{expr_formula_range,{tExp,[Sheet,Row,Col], {return,none}}}|T],
+         TokArr,Stack,Tbl) ->
+    [{_Id2,[{type,Type},{tokens,Tokens},{tokenarrays,_TkArr}]}] =
         excel_util:read_shared(Tbl,{Sheet,Row,Col}),
-    rev_comp(I,lists:append(Tokens,T),TokArr,Stack,Tbl);
+    case Type of
+        array  -> {ok, dont_process};
+        shared -> rev_comp(I,lists:append(Tokens,T),TokArr,Stack,Tbl)
+    end;
 
 %% tTbl
 %% tAdd tSub tMul tDiv tPower tConcat tLT tLE tEQ tGE tGT tNE tIsect

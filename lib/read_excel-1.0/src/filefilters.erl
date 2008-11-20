@@ -270,6 +270,7 @@ delete_ets([{_TableName,Tid}|T]) -> ets:delete(Tid),
 
 create_ets()->
     [{cell,           ets:new(cell,           [ordered_set,private])},
+     {array_formulae, ets:new(array_formulae, [ordered_set,private])},
      {cell_tokens,    ets:new(cell_tokens,    [ordered_set,private])},
      {strings,        ets:new(strings,        [ordered_set,private])},
      {names,          ets:new(names,          [ordered_set,private])},
@@ -335,7 +336,8 @@ test_DEBUG()->
     % File="f_loan_amortization_schedule.xls",
     % File="f_12_month_cash_flow_statement.xls",
     % File="f_payroll_calculator.xls",
-    File="f_services_invoice_with_tax_calculation.xls",
+    % File="f_services_invoice_with_tax_calculation.xls",
+    File="b_array_formulae.xls",
     FileRoot="C:/opt/code/trunk/tests/"++
         "excel_files/Win_Excel07_As_97",
     io:format("in filefilters:test_DEBUG FileRoot is ~p and File is ~p~n",
