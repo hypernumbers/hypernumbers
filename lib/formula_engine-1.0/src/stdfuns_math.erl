@@ -505,7 +505,7 @@ sumif1([], [], _F, Sum) ->
     Sum;
 sumif1([H1|T1], [H2|T2], F, Sum) ->
     case F(H1) of
-        true  -> sumif1(T1, T2, F, Sum + H1);
+        true  -> sumif1(T1, T2, F, Sum + H2);
         false -> sumif1(T1, T2, F, Sum)
     end.
 
