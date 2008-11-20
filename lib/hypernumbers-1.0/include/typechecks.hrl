@@ -19,15 +19,10 @@
         (?is_array(A) orelse ?is_range(A))).
 
 -define(numbers(Xs, Rules),
-        %%lists:map(fun(X) -> ?number(X, Rules) end, Xs)).
         muin_collect:collect_numbers(Xs, Rules)).
 
 -define(number(X, Rules),
-        muin_collect:collect_number(case X of
-                                        {array, _} -> muin_util:array_at(X, 1, 1);
-                                        _ -> X
-                                    end,
-                                    Rules)).
+        muin_collect:collect_number(X, Rules)).
 
 
 -define(int(X, Rules),
