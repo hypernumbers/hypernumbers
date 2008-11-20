@@ -61,9 +61,13 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
     Fcode = ?COND(?array_context, loopify(Pcode), Pcode),
     Ev = eval(Fcode),
     {RefTree, _Errors, References} = get(retvals),
-    Ev2 = ?COND(Ev == blank, 0, Ev),
-    {ok, {Fcode, Ev2, RefTree, 
-          References, get(recompile)}}.
+    case Ev of
+        ?error_in_formula ->
+            ?error_in_formula;
+        _ ->
+            Ev2 = ?COND(Ev == blank, 0, Ev),
+            {ok, {Fcode, Ev2, RefTree, References, get(recompile)}}
+    end.
 
 %%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -109,7 +113,7 @@ eval(Value) ->
 call(Func, Args) ->
     case attempt(?MODULE, funcall, [Func, Args]) of
         {error, Errv = {errval, _}} -> Errv;
-        {error, E}                  -> ?error_in_formula;
+        {error, E}                  -> io:format("muin:call error: ~p~n", [E]), ?error_in_formula;
         {ok, V}                     -> V
     end.
 
