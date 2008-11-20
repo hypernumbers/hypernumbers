@@ -35,15 +35,21 @@
 
 %% @doc Replaces array objects with values they contain.
 flatten_arrays([Hd|Tl]) ->
-    flatten_areas(Hd, Tl, [], fun(X) -> ?is_array(X) end).
+    flatten_areas(Hd, Tl, [], fun(X) -> ?is_array(X) end);
+flatten_arrays(A) ->
+    flatten_arrays([A]).
 
 %% @doc Replaces range objects with values they contain.
 flatten_ranges([Hd|Tl]) ->
-    flatten_areas(Hd, Tl, [], fun(X) -> ?is_range(X) end).
+    flatten_areas(Hd, Tl, [], fun(X) -> ?is_range(X) end);
+flatten_ranges(A) ->
+    flatten_ranges([A]).
 
 %% @docc Replaces both array and range objects with values they contain.
 flatten_areas([Hd|Tl]) ->
-    flatten_areas(Hd, Tl, [], fun(X) -> ?is_area(X) end).
+    flatten_areas(Hd, Tl, [], fun(X) -> ?is_area(X) end);
+flatten_areas(A) ->
+    flatten_areas([A]).
 
 %% Rules:
 %% ignore_strings | cast_strings | cast_strings_zero | ban_strings
