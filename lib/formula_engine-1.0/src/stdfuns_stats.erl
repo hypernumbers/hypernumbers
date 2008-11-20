@@ -27,13 +27,13 @@
          %%chiinv/1,
          %%chitest/1,
          %%confidence/1,
-         correl/1,
+         %%correl/1,
          count/1,
          %%counta/1,
          countblank/1,
          %%countif/1,
          %%countifs/1,
-         covar/1,
+         %%covar/1,
          critbinom/1,
          devsq/1,
          expondist/1,
@@ -89,7 +89,7 @@
          steyx/1,
          %%tdist/1,
          %%tinv/1,
-         trend/1,
+         %%trend/1,
          trimmean/1,
          %%ttest/1,
          var/1,
@@ -161,10 +161,6 @@ chidist1(X, Degfree) ->
     Chi = 1 / (math:pow(2, Alpha) * stdfuns_math:fact1(Alpha)),
     math:pow(Chi, (Alpha - 1)) * math:exp(X * -0.5).
 
-%% TODO:
-correl([_V1, _V2]) ->
-    0.
-
 count(Vs) ->
     Flatvs = ?flatten_all(Vs),
     %%Nums = ?numbers(Flatvs, ?default_rules),
@@ -173,10 +169,6 @@ count(Vs) ->
 countblank(Vs) ->
     Flatvs = ?flatten_all(Vs),
     length([X || X <- Flatvs, muin_collect:is_blank(X)]).
-
-%% TODO:
-covar([_, _]) ->
-    0.
 
 critbinom([V1, V2, V3]) ->
     Trials = ?int(V1, ?default_rules),
@@ -457,10 +449,6 @@ steyx([V1, V2]) ->
     steyx1(Ys, Xs).
 steyx1(Ys, Xs) ->
     math:pow(pearson1(Ys, Xs), 2).
-
-%% TODO:
-trend([_Kys0, _Kxs0, _Nxs0, _Const]) ->
-    0.
 
 trimmean([V1, V2]) ->
     Nums = ?numbers(?flatten_all(V1), ?default_rules),
