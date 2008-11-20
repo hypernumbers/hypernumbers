@@ -512,15 +512,21 @@ subtotal([_, _]) -> ?ERR_VAL.
 
 sumif([L, Crit]) ->
     sumif([L, Crit, L]);
-sumif([L, Crit, L2]) ->
+sumif([V1, Crit, V2]) ->
+    %% TODO: lists of different length
+    %% TODO: error in string fun
+    %% TODO: if crit is a number, it becomes "=that number"
+    L1 = ?numbers(?flatten_all(V1), ?default_rules),
+    L2 = ?numbers(?flatten_all(V2), ?default_rules),
     F = string_funs:make(Crit),
-    {Res, _} = foldl(fun(X, {Sum, Idx}) ->
-                             ?COND(F(X),
-                                   {Sum + cast(nth(Idx, L2), num), Idx + 1},
-                                   {Sum, Idx + 1})
-                     end,
-                     {0, 1}, L),
-    Res.
+    sumif1(L1, L2, F, 0).
+sumif1([], [], _F, Sum) ->
+    Sum;
+sumif1([H1|T1], [H2|T2], F, Sum) ->
+    case F(H1) of
+        true  -> sumif1(T1, T2, F, Sum + H1);
+        false -> sumif1(T1, T2, F, Sum)
+    end.
 
 sumproduct([L]) ->
     Numlists = map(fun(Xs) ->
