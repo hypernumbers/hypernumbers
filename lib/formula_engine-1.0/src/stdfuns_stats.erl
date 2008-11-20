@@ -263,7 +263,7 @@ intercept([_, _]) ->
 %%     {matrix, [M, C]} = linest1(Kys, Kxs),
 %%     C / M.
 
-kurt([V1]) ->
+kurt(V1) ->
     Flatvs = ?flatten_all(V1),
     Nums = ?numbers(Flatvs, ?default_rules),
     ?ensure(length(Nums) > 3, ?ERR_DIV),
@@ -405,7 +405,7 @@ rank1(N, Nums, true) ->
 rank1(N, Nums, false) ->
     (length(Nums) + 1) - rank1(N, Nums, true).
 
-skew([V1]) ->
+skew(V1) ->
     Nums = ?numbers(?flatten_all(V1), ?default_rules),
     ?ensure(length(Nums) >= 3, ?ERR_DIV),
     skew1(Nums).

@@ -18,7 +18,7 @@ if [ $ISCYGWIN = "CYGWIN_NT-6.0" ]
         TMP=`pwd`
         ROOT="c:/"`echo $TMP | cut -d "/" -f 4-`
    else
-        ROOT=$(dirname `readlink -f "$0"`)
+    ROOT=/Users/hasan/proj/hn-git/
 fi
 
 cd $ROOT
