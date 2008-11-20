@@ -85,7 +85,6 @@
          %% Special numbers
          pi/0,
          sqrtpi/1,
-         roman/1,
 
          %% Summation
          seriessum/1,
@@ -449,24 +448,6 @@ sqrtpi([V1]) ->
     Num = ?number(V1, ?default_rules),
     ?ensure(Num >= 0, ?ERR_NUM),
     math:sqrt(Num * math:pi()).
-
--define(DEC_ROMAN_TABLE,
-        [{1000, "M"}, {900, "CM"}, {500, "D"}, {400,"CD"},
-         {100,"C"}, {90,"XC"}, {50,"L"}, {40,"XL"}, {10,"X"},
-         {9,"IX"}, {5,"V"}, {4,"IV"}, {1,"I"}]).
-
-roman([V1]) ->
-    Num = ?number(V1, ?default_rules),
-    ?ensure(Num > 0, ?ERR_NUM),
-    ?ensure(Num =< 3999, ?ERR_VAL),
-    roman1(Num, "", ?DEC_ROMAN_TABLE).
-
-roman1(Num, S, [{Dec, _Rom} | Tl]) when Num < Dec ->
-    roman1(Num, S, Tl);
-roman1(Num, S, Tbl = [{Dec, Rom} | _]) ->
-    roman1(Num - Dec, S ++ Rom, Tbl);
-roman1(_Num, S, []) ->
-    S.
 
 %%% Summation ~~~~~
 
