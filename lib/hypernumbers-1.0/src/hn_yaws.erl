@@ -103,7 +103,16 @@ req('GET',[],["save"],_,Ref=#ref{ref={page,"/"},path=Path}) ->
                  [get_page_attributes(Ref#ref{path=Path++X})]}
         end,
     Pages = lists:map(F,hn_main:get_pages_under(Path)),
-    {ok,{root,[{domain,Ref#ref.site++hn_util:list_to_path(Path)}],Pages}};
+    Xml = {root,[{domain,Ref#ref.site++hn_util:list_to_path(Path)}],Pages},
+    Name = case Path of
+               [] -> "hypernumbers";
+               Else -> lists:last(Else)
+           end,
+    {return,
+     [{header, "Content-Type: application/xml"},
+      {header, "Content-Disposition: attachment; "
+                ++"filename=\""++Name++".xml\""},
+      {content,"text/xml",to_xml_string(Xml)}]};
 
 req('GET',[],[],_,Ref=#ref{ref={page,"/"}}) ->
     {ok,V} = hn_db:get_item_inherited(Ref#ref{name=gui},"index"),
