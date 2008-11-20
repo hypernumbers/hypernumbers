@@ -50,7 +50,7 @@ handle_call({change,Site,Path,Msg},_From,State) ->
     lists:foreach(
         fun(Z) ->
             case Z of
-            {Site,Path,Pid} -> Pid ! {msg,Msg};
+            {_Site,Path,Pid} -> Pid ! {msg,Msg};
             _ -> ok
             end
         end,State),

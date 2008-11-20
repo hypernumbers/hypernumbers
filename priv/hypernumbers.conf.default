@@ -1,5 +1,5 @@
 {hosts, [	
-	{{127,0,0,1},9000,["localhost","expenses.vixo.dev","accounts.hypernumbers.dev","il_ballo.dev"]}
+	{{209,20,70,129},9001,["alpha.hypernumbers.com"]}
 	]}.
 
-{remoting_port,1935}.
+{remoting_port,1936}.
