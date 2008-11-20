@@ -14,10 +14,7 @@ b_just_numbers.xls
 b_made_up_fn_names.xls
 b_multiple_sheets.xls
 b_nested_functions.xls
-b_pang.xls
-b_ping.xls
-b_pong.xls
-b_quadratic_equations.xls
+_quadratic_equations.xls
 b_shared_formulae.xls
 b_simple.xls
 b_simple_arrays_and_ranges.xls
