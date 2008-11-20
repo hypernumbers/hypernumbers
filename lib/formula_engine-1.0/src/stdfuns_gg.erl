@@ -249,7 +249,9 @@ get_roman(["9","9","5"],_) -> "VM";
 get_roman(["9","9","6"],_) -> "VMI";
 get_roman(["9","9","7"],_) -> "VMII";
 get_roman(["9","9","8"],_) -> "VMIII";
-get_roman(["9","9","9"],_) -> "IM";
+%% special for 999
+get_roman(["9","9","9"],?CONCISE3) -> "VMIV";
+get_roman(["9","9","9"],_)         -> "IM";
 %% Now do 990, 991, 992, 993 and 994 for all the types
 get_roman(["9","9",First],?CLASSIC)  -> "CMXC" ++get_roman([First],?CLASSIC);
 get_roman(["9","9",First],?CONCISE1) -> "LMXL" ++get_roman([First],?CONCISE1);
