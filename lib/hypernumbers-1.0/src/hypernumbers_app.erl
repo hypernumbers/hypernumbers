@@ -29,13 +29,14 @@ start(_Type, _Args) ->
         true  -> clean_start();
         false -> ok
     end,
-
-    ok = start_yaws(),
-    ok = start_dirty_subscribe(),
     
     case hypernumbers_sup:start_link() of
-        {ok, Pid} -> {ok, Pid};
-        Error     -> Error
+        {ok, Pid} -> 
+            ok = start_yaws(),
+            ok = start_dirty_subscribe(),
+            {ok, Pid};
+        Error -> 
+            Error
     end.
 
 %% @spec stop(State) -> ok
