@@ -1,4 +1,4 @@
-%%-----------------------------------------------------------------------------
+%-----------------------------------------------------------------------------
 %%% File        : hn_util.erl
 %%% Author      : Dale Harvey
 %%% Description : Utilities for hypernumbers application
@@ -101,7 +101,7 @@ to_xml(true)                     -> [{bool,[],   ["true"]}];
 to_xml(false)                    -> [{bool,[],   ["false"]}];    
 to_xml(Val) when is_integer(Val) -> [{int,[],    [integer_to_list(Val)]}];
 to_xml(Val) when is_float(Val)   -> [{float,[],  [float_to_list(Val)]}];
-to_xml({errval, Errval})         -> [{errval,[], [atom_to_list(Errval)]}];
+to_xml({error, Errval})          -> [{error,[], [atom_to_list(Errval)]}];
 to_xml({blank,[],[]})            ->
     io:format("in hn_util:to_xml bodging blank returns from hypernumbers!~n"),
     [{string,[], [""]}];
