@@ -29,7 +29,7 @@
          %%confidence/1,
          %%correl/1,
          count/1,
-         %%counta/1,
+         counta/1,
          countblank/1,
          %%countif/1,
          %%countifs/1,
@@ -161,10 +161,14 @@ chidist1(X, Degfree) ->
     Chi = 1 / (math:pow(2, Alpha) * stdfuns_math:fact1(Alpha)),
     math:pow(Chi, (Alpha - 1)) * math:exp(X * -0.5).
 
+counta(Vs) ->
+    Fvs = ?flatten_all(Vs),
+    length(Fvs).
+
 count(Vs) ->
     Flatvs = ?flatten_all(Vs),
-    %%Nums = ?numbers(Flatvs, ?default_rules),
-    length(Flatvs).
+    Nums = ?numbers(Flatvs, [ignore_strings, ignore_bools, ignore_dates, ignore_blanks]),
+    length(Nums).
 
 countblank(Vs) ->
     Flatvs = ?flatten_all(Vs),
