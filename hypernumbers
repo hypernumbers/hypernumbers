@@ -1,7 +1,7 @@
 #! /bin/bash
 
-NODE=notarrian
-HOST=hypernumbers
+NODE=arrian
+HOST=localhost
 RELNAME=hypernumbers
 SASL_CONF_FILE=sasl_dev_conf.config
 COOKIE=abc
@@ -18,13 +18,12 @@ if [ $ISCYGWIN = "CYGWIN_NT-6.0" ]
         TMP=`pwd`
         ROOT="c:/"`echo $TMP | cut -d "/" -f 4-`
    else
-    #ROOT=/Users/hasan/proj/hn-git/
-    ROOT=$(dirname `readlink -f "$0"`)
+        ROOT=$(dirname `readlink -f "$0"`)
 fi
 
 cd $ROOT
-MODE="-detached"
-RELOAD=""
+MODE=""
+RELOAD="-run reloader start"
 
 LOG_DIR=$ROOT/logs
 CONFIG=$ROOT/priv/hypernumbers.conf
@@ -81,7 +80,7 @@ function start
     erl $MODE \
         $RELOAD \
         -setcookie $COOKIE \
-	-sname $NODE@$HOST \
+        -sname $NODE@$HOST \
         -boot $REL_DIR \
         -config $SASL_DIR \
         -hn_config $CONFIG \
@@ -123,7 +122,7 @@ function test
     $ROOT/tests/common_test-1.3.0/priv/bin/run_test \
         -noshell \
         -setcookie $COOKIE \
-        -name $NODE@$HOST \
+        -sname $NODE@$HOST \
         -boot $REL_DIR \
         -config $SASL_DIR \
         -hn_config $CONFIG \

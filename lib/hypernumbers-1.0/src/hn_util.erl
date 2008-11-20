@@ -134,7 +134,6 @@ post(Url,Data) ->
     Body.
 
 post(Url,Data,Format) ->
-    io:format("url~p~n",[Url]),		      
     {ok, {{_V, _Status,_R},_H,Body}} =
         http:request(post,{Url,[],Format,Data},[],[]),
     Body.
@@ -150,7 +149,7 @@ parse_url(Url) when is_record(Url,url) ->
         {Else,_} -> integer_to_list(Else)
     end,
 
-    Site = lists:concat([Url#url.scheme,"://",Url#url.host,":","80"]),
+    Site = lists:concat([Url#url.scheme,"://",Url#url.host,":",Port]),
 
     {Ref,Path} = case lists:last(Url#url.path) of
                      $/ -> 

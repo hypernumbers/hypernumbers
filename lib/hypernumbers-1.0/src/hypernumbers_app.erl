@@ -123,7 +123,7 @@ set_def_perms([{{I1,I2,I3,I4},Port,Domains}|T])->
     Url = lists:concat(["http://",I1,".",I2,".",I3,".",I4,":",Port]),
     
     F = fun(X) ->
-                lists:concat(["http://"++X++":80"])
+                lists:concat(["http://"++X++":"++integer_to_list(Port)])
 	end,
 
     lists:map(fun set_perms/1, [Url|lists:map(F,Domains)]),
@@ -138,7 +138,7 @@ set_perms(Domains) ->
                ref  = {page,"/"}},
     
     hn_main:set_attribute(Ref#ref{name="__permissions"},
-                          [{user,"projectplayfair",admin}]),
+                          [{user,anonymous,admin}]),
     
     hn_main:set_attribute(Ref#ref{name="__groups"},
                           [{owner,[{user,"admin"}]}]),
