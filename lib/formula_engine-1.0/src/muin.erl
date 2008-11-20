@@ -423,6 +423,20 @@ funcall(choose, [V|Vs]) ->
     ?ensure(Idx > 0 andalso Idx =< length(Vs), ?ERR_VAL),
     eval(nth(Idx, Vs));
 
+funcall(offset, [Ref, Rows, Cols]) ->
+    {R, {H, W}} = case Ref of % calculate height & width of ref & return topleft cell in range if ref is a range.
+                      [':', {ref, R1, C1, P}, {ref, R2, C2, _}] ->
+                          {[ref, R1, C1, P], {toidx(C2)-toidx(C1)+1, toidx(R2)-toidx(C2)+1}};
+                      _ ->
+                          {Ref, {1, 1}}
+                  end,
+    funcall(offset, [R, Rows, Cols, H, W]);
+funcall(offset, [[ref, R, C, P], Rows, Cols, 1, 1]) ->
+    [ref, toidx(R)+Rows, toidx(C)+Cols, P];
+funcall(offset, [[ref, R, C, P], Rows, Cols, H, W]) ->
+    [':', {ref, toidx(R)+Rows, toidx(C)+Cols, P},
+          {ref, toidx(R)+Rows+H, toidx(C)+Cols+W, P}];
+
 funcall(make_list, Args) ->
     area_util:make_array([Args]); % horizontal array
 
