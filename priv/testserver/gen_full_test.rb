@@ -48,7 +48,7 @@ ssdoc.sheets.each_with_index do |sheet, idx|
   sheet.cells.each do |cell|
     if cell.type == :formula
       casename = "sheet#{idx + 1}_#{cell.a1ref}"
-      path = "/#{sheet.name}/".gsub(/[ ]/,"%20")
+      path = "/#{sheet.name}/".gsub(/[ ]/,"_")
       expval = preptype(cell.value)
       @testcasedata << [casename, path, cell.a1ref, expval]
     end
