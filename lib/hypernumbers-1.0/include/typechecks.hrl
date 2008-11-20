@@ -73,6 +73,9 @@
 -define(flatten_all(Xs),
         muin_collect:flatten_arrays(muin_collect:flatten_ranges(Xs))).
 
+%% Guard for strings.
+-define(is_string(X), (is_list(X)) orelse (is_tuple(X) andalso element(1, X) == ustring)).
+
 %%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %%% OLD STUFF BELOW.
 %%% TODO: Clean up.
