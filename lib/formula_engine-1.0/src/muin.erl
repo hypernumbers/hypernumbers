@@ -92,7 +92,7 @@ parse(Fla, {Col, Row}) ->
 eval(Node = [Func|Args]) when ?is_fn(Func) ->
     case preproc(Node) of
         false ->
-            case member(Func, ['if', choose]) of
+            case member(Func, ['if', choose, offset]) of
                 true  -> call(Func, Args);
                 false -> call(Func, [eval(X) || X <- Args])
             end;

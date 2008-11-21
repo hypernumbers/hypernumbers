@@ -24,7 +24,6 @@
 -define(number(X, Rules),
         muin_collect:collect_number(X, Rules)).
 
-
 -define(int(X, Rules),
         erlang:trunc(?number(X, Rules))).
 
