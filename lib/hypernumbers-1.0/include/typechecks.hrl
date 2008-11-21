@@ -9,6 +9,8 @@
 
 -include("errvals.hrl").
 
+%%% Guards
+
 -define(is_array(A),
         (is_tuple(A) andalso (element(1, A) == array))).
 
@@ -18,11 +20,23 @@
 -define(is_area(A),
         (?is_array(A) orelse ?is_range(A))).
 
+-define(is_string(X),
+        (is_list(X)) orelse (is_tuple(X) andalso element(1, X) == ustring)).
+
+%%% Collectors
+
+%% implicit iteration when not in array context :(
+-define(iinaa(X, Rules, Collector),
+        if ?is_array(X) -> Collector(element(2, area_util:get_at(1, 1, X)), Rules);
+           ?is_range(X) -> ?ERR_VAL;
+           true         -> Collector(X, Rules)
+        end).
+
 -define(numbers(Xs, Rules),
         muin_collect:collect_numbers(Xs, Rules)).
 
 -define(number(X, Rules),
-        muin_collect:collect_number(X, Rules)).
+        ?iinaa(X, Rules, fun(A_, B_) -> muin_collect:collect_number(A_, B_) end)).
 
 -define(int(X, Rules),
         erlang:trunc(?number(X, Rules))).
@@ -30,6 +44,14 @@
 -define(ints(Xs, Rules),
         lists:map(fun(X) -> erlang:trunc(X) end,
                   ?numbers(Xs, Rules))).
+
+-define(bool(X, Rules), ?iinaa(X, Rules, fun(A_, B_) -> muin_collect:collect_bool(A_, B_) end)).
+
+-define(bools(Xs, Rules),
+        muin_collect:collect_bools(Xs, Rules)).
+
+-define(flatten_all(Xs),
+        muin_collect:flatten_arrays(muin_collect:flatten_ranges(Xs))).
 
 -define(date(X, Rules),
         muin_collect:collect_date(X, Rules)).
@@ -57,18 +79,6 @@
 %% Ensure Xs are all strings.
 -define(estrings(Xs),
         foreach(fun(X) -> ?estring(X) end, Xs)).
-
--define(bool(X, Rules),
-        muin_collect:collect_bool(X, Rules)).
-
--define(bools(Xs, Rules),
-        muin_collect:collect_bools(Xs, Rules)).
-
--define(flatten_all(Xs),
-        muin_collect:flatten_arrays(muin_collect:flatten_ranges(Xs))).
-
-%% Guard for strings.
--define(is_string(X), (is_list(X)) orelse (is_tuple(X) andalso element(1, X) == ustring)).
 
 %%%~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 %%% OLD STUFF BELOW.
