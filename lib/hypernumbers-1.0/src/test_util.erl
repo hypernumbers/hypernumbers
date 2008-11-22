@@ -126,20 +126,23 @@ test_state(State)->
 read_from_excel_data(State,{Sheet,Row,Col})->
     Key={{sheet,Sheet},{row_index,Row},{col_index,Col}},
     Return=lists:keysearch(Key, 1, State),
-    {value, Result2}=Return,
-    El=element(2, Result2),
-    io:format("in test_util:read_from_excel_data El is ~p~n",[El]),
-    case El of
-        {value,number,Number}       -> {number,Number};
-        {string,String}             -> {string,String};
-        {formula,Formula}           -> {formula,Formula};
-        {value,boolean,Boolean}     -> {boolean,Boolean};
-        {value,error,Error}         -> {error, Error};
-        {value,date,{datetime,D,T}} -> {date,{D,T}};
-        Other                       -> 
-            io:format("(in test_util:read_from_excel_date "++
-                      " fix generatetest.rb - Other is ~p~n",
-                      [Other])
+    case Return of
+        {value, Result2} ->
+            El=element(2, Result2),
+            io:format("in test_util:read_from_excel_data El is ~p~n",[El]),
+            case El of
+                {value,number,Number}       -> {number,Number};
+                {string,String}             -> {string,String};
+                {formula,Formula}           -> {formula,Formula};
+                {value,boolean,Boolean}     -> {boolean,Boolean};
+                {value,error,Error}         -> {error, Error};
+                {value,date,{datetime,D,T}} -> {date,{D,T}};
+                Other                       -> 
+                    io:format("(in test_util:read_from_excel_date "++
+                              " fix generatetest.rb - Other is ~p~n",
+                              [Other])
+            end;
+        _ -> {fail, data_not_read}
     end.
 
 equal_to_digit(F1,F2,DigitIdx) ->
@@ -275,6 +278,7 @@ expected(Expected, Got) ->
     end.
 
 expected2(Expected, Got) ->
+    io:format(" in test_util:expected2 Expected is ~p and Got is ~p~n",[Expected,Got]),
     Result = excel_equal2(Expected, Got),
     case Result of
         true ->
