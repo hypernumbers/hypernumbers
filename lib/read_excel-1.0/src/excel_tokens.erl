@@ -47,7 +47,7 @@ parse_tokens(?tTbl,Name,Bin,TokenArray,Residuum)->
      ColIndex:16/little-unsigned-integer,
      R2/binary>>=Bin,
     parse_tokens(R2,Name,TokenArray,[{table_formula_range,
-                                      {tRbl,[{row_index,RowIndex},
+                                      {tTbl,[{row_index,RowIndex},
                                              {col_index,ColIndex}],
                                        {return,none}}}|Residuum]);
 %% tAdd
