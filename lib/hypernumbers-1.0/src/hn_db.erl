@@ -149,12 +149,18 @@ read_links(Index, Relation) ->
 %% @spec del_links(Cell,Relation) -> ok
 %% @doc  Deletes the links to or from a cell
 del_links(Index, Relation) ->
+
     Obj = ?COND(Relation == child,
                 {local_cell_link,'_',Index},
                 {local_cell_link,Index,'_'}),
-    F = fun() -> mnesia:dirty_delete_object(Obj) end,
-    {atomic, ok} = ?mn_tr(F),
-    ok.
+    
+    F = fun() -> 
+                lists:foreach(
+                  fun mnesia:delete_object/1, 
+                  mnesia:match_object(Obj))
+        end,
+
+    mnesia:activity(transaction,F).
 
 %% @spec del_remote_link(CellLink) -> ok
 %% @doc  Delete a link between a local and remote cell, send an 
