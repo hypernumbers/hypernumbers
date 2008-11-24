@@ -95,7 +95,7 @@ req('GET',[],_,require_token,#ref{ref={page,"/"}}) ->
     {return,{page,"/html/token.html"}};
 req('GET',[],_,require_token,_Page)  ->
     {return,{status,503}};
-req('GET',[],[],_,Ref=#ref{ref={page,"/"},path=[]}) ->
+req('GET',[],[],_,#ref{ref={page,"/"},path=[]}) ->
     {return,{page,"/html/admin.html"}};
 req('GET',[],["save"],_,Ref=#ref{ref={page,"/"},path=Path}) ->
     F = fun(X) ->
@@ -105,7 +105,7 @@ req('GET',[],["save"],_,Ref=#ref{ref={page,"/"},path=Path}) ->
     Pages = lists:map(F,hn_main:get_pages_under(Path)),
     Xml = {root,[{domain,Ref#ref.site++hn_util:list_to_path(Path)}],Pages},
     Name = case Path of
-               [] -> "hypernumbers";
+               []   -> "hypernumbers";
                Else -> lists:last(Else)
            end,
     {return,
@@ -121,9 +121,15 @@ req('GET',[],[{"gui",GUI}],_,#ref{ref={page,"/"}}) ->
     {return,{page,"/html/"++GUI++".html"}};
 
 req('GET',[],["new"],_,Ref=#ref{site=Site,ref={page,"/"}}) ->
-    [{tpl,Tpl},{url,Url}] = hn_db:get_item_val(Ref#ref{name="__template"}),
-    NPage=hn_templates:get_next2(#ref{site=Site},Url,"Blank"),
-    hn_main:copy_pages_below(Ref#ref{path=Tpl},NPage),
+    Tpl = case hn_db:get_item_val(Ref#ref{name="__template"}) of
+              [] -> 
+                  Path = hn_util:list_to_path(Ref#ref.path)++"{auto,incr}/",
+                  hn_templates:make_path(Path);
+              Else ->
+                  Else
+          end,
+    NPage=hn_templates:get_next2(#ref{site=Site},Tpl,"Blank"),
+    hn_main:copy_pages_below(Ref,NPage),
     {return,{redirect, Ref#ref.site++NPage}};
 
 %% deprecated
@@ -423,16 +429,15 @@ merge_trees(Tree,[[]])  -> Tree;
 merge_trees(Tree,[[]|T])-> merge_trees(Tree,T);
 merge_trees(Tree,[H|T]) ->
     {dir,[{path,P}],C1} = H,
-    F = fun(X) ->
-		case X of
-		    {dir,[{path,P}],_} ->
-                        true;
-		    _ ->
-                        false
-		end
-	end,
-    {Match,Rest} = lists:partition(F,Tree),
 
+    F = fun(X) ->
+                case X of
+                    {dir,[{path,P}],_} -> true;
+                    _ -> false
+                end
+        end,
+    {Match,Rest} = lists:partition(F,Tree),
+    
     case Match of
         %% No Matches, add entire tree
         [] ->

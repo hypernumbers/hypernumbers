@@ -8,6 +8,7 @@
 -module(remoting_soc).
 
 -include("spriki.hrl").
+-include("hypernumbers.hrl").
 
 -export([accept/1]).
 
@@ -15,8 +16,6 @@ accept(Listen) ->
     
     {ok, Soc} = gen_tcp:accept(Listen),
     Pid = spawn(fun() -> loop(Soc) end),
-    %% TODO : Fix possible? race condition, receives message
-    %% before controlling process activates
     gen_tcp:controlling_process(Soc,Pid),
     
     %% Start Listening for another connection

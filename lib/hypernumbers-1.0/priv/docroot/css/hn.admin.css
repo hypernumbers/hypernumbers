@@ -1,19 +1,21 @@
 *
 { 	
-    font :   11px "Lucida Grande","Lucida Sans Unicode","Helvetica Neue", sans-serif; 
+    font :  11px "Lucida Grande", sans-serif; 
     margin: 0px; 	
     padding:0px; 
 }
 
 h2 
 {
-    font: bold 18px "Lucida Grande","Lucida Sans Unicode","Helvetica Neue", sans-serif;  
+    font: bold 18px "Lucida Grande", sans-serif;  
+    margin-bottom:8px;
+  margin-top:0px;
 }
 
 h3
 {
     display:inline;
-    font: bold 14px "Lucida Grande","Lucida Sans Unicode","Helvetica Neue", sans-serif;  
+    font: bold 14px "Lucida Grande", sans-serif;  
 }
 
 ul{ list-style-type:none; }
@@ -36,12 +38,14 @@ strong
 #header
 {
     background:     #000;
+    margin-bottom:  5px;
+    padding:        3px;
 }
 
 #header img 
 {
     width:          253px;
-    margin:         3px 10px;
+    margin:         0px 10px;
     display:        block;
     border:         0px;
 }
@@ -61,18 +65,29 @@ strong
   padding-left:15px;
  }
 
-#mainpanel li
+#mainpanel li li
 {  
   padding-left:20px;
 }
 
 #mainpanel .row
-{ padding:5px; cursor:pointer; margin:3px;}
+{ 
+  padding:4px;
+  cursor:pointer; 
+  border:1px solid transparent;
+  border-bottom:1px solid #DDD;
+}
 
 #mainpanel .row:hover, #mainpanel .row.selected
 { 
-  background:#CCC;
+  background:#EEE;
  }
+
+#sheets { border-bottom:0px;}
+#mainpanel .row.selected
+{
+
+}
 
 #panel button { display:block; width:100px; }
 
@@ -82,7 +97,67 @@ strong
 
 button#instance { display:none; }
 
-.expand_btn { display:block; width:10px; height:10px; background:blue; float:left; margin:2px 5px; }
+.expand_btn,.leaf_btn 
+{ 
+  display:block; 
+  width:16px; 
+  height:16px; 
+  float:left; 
+  margin:2px 3px; 
+}
+
+.expand .expand_btn { background:url(/img/arrow_down.png); }
+.collapse .expand_btn { background:url(/img/arrow.png); }
+
+.edit
+{ 
+  padding-left:20px;
+  background:url(/img/application_view_columns.png) no-repeat 0px 2px; 
+  font: bold 16px arial, sans-serif;  
+  color:#CC6633;
+  cursor:pointer;
+}
+
+#sheets{ margin-top:10px; }
+
+#create_details
+{ 
+  display:none;
+ }
+
+#create
+{ 
+  font: bold 16px arial, sans-serif;  
+ }
+
+.edit:hover
+{
+  text-decoration:underline;
+ }
+
+button 
+{ 
+  padding:3px;
+}
+button img
+{
+  vertical-align:middle;
+ }
+button span
+{
+  line-height:16px;
+ }
+
+.delete
+{ 
+  display:block; 
+  width:16px; 
+  height:16px; 
+  position:absolute;
+  right:260px;
+  margin:0px 3px; 
+  background:url(/img/bin.png); 
+}
 
 .expand   ul { display:block; }
 .collapse ul { display:none;  }

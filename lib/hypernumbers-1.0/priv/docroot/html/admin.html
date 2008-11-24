@@ -1,6 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 	  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
     
@@ -31,14 +30,13 @@
     <body>
        
       <div id="header">
-        <a href="/_admin/"><img src="/img/logo.jpg" alt="header" /></a>
+        <a href="/"><img src="/img/logo.jpg" alt="header" /></a>
       </div>
 
-      <div id="admin">
-        <div id="panel">
+      <div id="admin" class="clearfix" style="position:relative;">
+
+        <div id="panel" style="position:absolute;right:0px;">
             <p><strong id="sel_name">&nbsp;</strong></p>
-            <button class="ss_btn" id="sel_edit">Edit</button>
-            <button class="ss_btn" id="sel_delete">Delete</button>
             <br />
             <button id="instance">Create New Instance</button>
             <button class="tpl_btn" id="sel_dyntpl">Create Dynamic</button>
@@ -48,22 +46,40 @@
               <input type="button" value="cancel" id="dyntpl_cancel" />
             </div>
         </div>
+
         <div id="mainpanel">
-          <div>
-            create new
-            <select id="new_type">
-              <option>spreadsheet</option>
-              <option>template</option>
-            </select>
-            called <input type="text" id="new_name" /> 
-            <input type="submit" value="create" id="new_submit" />
-          </div>
+
+            <button id="backup" style="float:right;margin-left:5px;">
+              <img src="/img/page_white_put.png" />
+              <span>Download Backup</span>
+            </button>
+
+            <button id="backup" style="float:right;margin-left:5px;">
+              <img src="/img/page_white_get.png" />
+              <span>Import Backup</span>
+            </button>
+
+
           <br />
-          <h2>Spreadsheets</h2>
+          <h2>My Workspace</h2>
+            <div style="margin-left:30px;height:30px;">
+                <button id="create">
+                  <img src="/img/application_add.png" />
+                  <span>New SpreadSheet</span>
+                </button>
+                <div id="create_details">
+                  Name : <input type="text" id="new_name" />
+                  <button id="create_go">
+                    <img src="/img/tick.png" />
+                    create
+                  </button>
+                  <button id="create_cancel">
+                    <img src="/img/exclamation.png" />
+                    cancel
+                  </button>
+                </div>
+            </div>
           <div id="sheets"></div>
-          <br />
-          <h2>Templates</h2>
-          <div id="templates"></div>
         </div>
       </div>
     </body>

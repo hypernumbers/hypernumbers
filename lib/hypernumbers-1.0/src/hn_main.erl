@@ -29,7 +29,6 @@ set_attribute(Ref = #ref{name=format}, Val) ->
                 end
         end,
     apply_range(Ref,F,[]);
-
 set_attribute(Ref,Val) ->
     hn_db:write_item(Ref,Val).
 
@@ -233,6 +232,7 @@ get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY) ->
     NewFPath = lists:filter(fun(X) -> not(X == $/) end, FPath),   
     
     To = #index{site=FSite,path=NewFPath,column=FX,row=FY},
+
     Fr = #index{site=TSite,path=NewTPath,column=TX,row=TY},
     
     case hn_db:get_hn(URL,Fr,To) of
@@ -281,23 +281,51 @@ recalc_cell(Index) ->
         _ ->
             Pcode = hn_db:get_item_val(Addr#ref{name = "__ast"}),
             Rti = ref_to_rti(Addr, false),
+            %TODO Save Dependancy tree
             case muin:run_code(Pcode, Rti) of
                 {ok, {_, Val, _, _, _}}  -> 
                     set_cell_rawvalue(Addr,Val),
                     hn_db:mark_dirty(Index, cell);
                 {error, _Reason} ->
-%                    ?INFO("Error running ~p",[Pcode]),
                     ok
             end
     end,
     ok.
 
-copy_pages_below(From,To) ->
-    #ref{path=RootPath}=From,
-    Under=get_pages_under(RootPath),
-    FromPages=[From#ref{path=lists:append([RootPath,X])} || X <- Under],
-    ToPages=[To++string:join(X,"/")++"/" || X <- Under],
+copy_pages_below(From = #ref{path=Root},To) ->
+
+    Under     = get_pages_under(Root),
+    ToFilter = filter_instance(From,Under,[]),
+    Tree     = dh_tree:create(Under),
+    NTree    = delete_map(Tree,ToFilter),
+    {ok,NPages}   = dh_tree:flatlist(NTree),
+
+    FromPages = [From#ref{path=lists:append([Root,X])} || X <- NPages],
+    ToPages   = [To++string:join(X,"/")++"/" || X <- NPages],
+
+    hn_main:set_attribute(From#ref{path=string:tokens(To,"/"),
+                                 name=instance},"true"),
+
     copy_pages(FromPages,ToPages).
+
+delete_map(Tree,[]) -> 
+    Tree;
+delete_map(Tree,[H|T]) ->
+    delete_map(dh_tree:erase(H,Tree),T).
+
+filter_instance(_Ref,[],Acc) -> 
+    Acc;
+filter_instance(Ref,[H|T],Acc) ->
+    case is_instance(Ref#ref{path=Ref#ref.path++H}) of
+        true  -> filter_instance(Ref,T,[H|Acc]);
+        false -> filter_instance(Ref,T,Acc)
+    end.
+
+is_instance(Ref = #ref{}) ->
+    case hn_db:get_item_val(Ref#ref{name=instance}) of
+        []     -> false;
+        _Else  -> true
+     end.
 
 copy_pages([],[]) -> ok;
 copy_pages([H1|T1],[H2|T2]) ->

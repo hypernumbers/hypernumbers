@@ -26,6 +26,7 @@
 %%% Collectors
 
 %% implicit iteration when not in array context :(
+%% a call to this macro has to be added to every single-value collector (e.g. ?number, ?bool &c)
 -define(iinaa(X, Rules, Collector),
         if ?is_array(X) -> Collector(element(2, area_util:get_at(1, 1, X)), Rules);
            ?is_range(X) -> ?ERR_VAL;

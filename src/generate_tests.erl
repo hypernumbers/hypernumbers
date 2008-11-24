@@ -1,4 +1,7 @@
+%% @author Dale Harvey <dale@hypernumbers.com>
+%% @copyright Hypernumbers Ltd.
 -module(generate_tests).
+
 -export([run/0]).
 -include("hypernumbers.hrl").
 -include("spriki.hrl").
@@ -61,7 +64,7 @@ gen_test_cases(Name,[{P,V}|List],Acc) ->
     Fun = ?FORMAT(Str,[gen_test_name(Name,P,V),P,Y]),
     gen_test_cases(Name,List,[Fun|Acc]).
 
-gen_test_list(Root,[],Acc) ->
+gen_test_list(_Root,[],Acc) ->
     Acc;
 gen_test_list(Root,[{page,[{path,Path}],Attr}|T],Acc) ->
     [{attr,[],Refs}] =  Attr,
