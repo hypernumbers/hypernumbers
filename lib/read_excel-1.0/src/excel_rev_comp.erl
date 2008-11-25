@@ -51,6 +51,8 @@ rev_comp(I,[{expr_formula_range,{tExp,[Sheet,Row,Col], {return,none}}}|T],
     end;
 
 %% tTbl
+%% used in what-if tables and stuff - not implemented yet!    
+
 %% tAdd tSub tMul tDiv tPower tConcat tLT tLE tEQ tGE tGT tNE tIsect
 %% Pop two off the stack and the build an operator set backwards
 %% ie second first and first second...
@@ -295,6 +297,7 @@ rev_comp(Index,[{relative_area,{tAreaN,[NewDetails|{type,_Type}],
 %% tNameX
 rev_comp(I,[{name_xref,{tNameX,[{reference_index,Ref},
                                 {name_index,Name},_Type],_Ret}}|T],TokArr,Stack,Tbl) ->
+    io:format("in excel_rev_comp:rev_comp for tNameX Name is ~p~n",[Name]),
     rev_comp(I,T,TokArr,[{string,get_ref_name(Ref,Name,Tbl)}|Stack],Tbl);
 
 %% tRef3d
@@ -348,7 +351,11 @@ get_ref_name(_RefIndex,NameIndex,Tables)->
     % bear in mind, dear chums, that the index we are looking up is a
     % '1'-based index and not a '0'-based index, it is for this reason
     % that we are subracting 1 from the NameIndex...
-    [{_,[{name,Name}]}]=excel_util:read(Tables,extra_fns,NameIndex-1),
+    {value,{names,Names}}=lists:keysearch(names,1,Tables),
+    Fun=fun(X,_Y) -> io:format("~p: ~p~n",[Names,X]) end,
+    ets:foldl(Fun,[],Names),
+    Return=excel_util:read(Tables,names,NameIndex-1),
+    [{_,[{sheetindex,_SheetIdx},{type,_Type},{name,Name}]}]=Return,
     Name.
 
 %% Looks up a reference to an externsheet and turns it into a sheet ref

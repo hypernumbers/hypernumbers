@@ -143,6 +143,7 @@ parse_rec(?DATEMODE,Bin,_Name,CurrentFormula,Tables)->
     {ok,CurrentFormula};
 parse_rec(?EXTERNNAME2,Bin,Name,CurrentFormula,Tables)->
     %% Best described by Section 5.39 of excelfileformatV1-41.pdf
+    io:format("in excel_records:parse_rec for EXTERNNAME2~n"),
     parse_externname(Bin,Tables),
     {ok,CurrentFormula};
 parse_rec(?LEFTMARGIN,_Bin,_Name,CurrentFormula,Tables)->
@@ -707,6 +708,8 @@ parse_Name(OptionFlag,_KybdShortCut,NameLength,_Size,SheetIndex,
                 _ -> local
             end,
     Index=excel_util:get_length(Tables,names),
+    io:format("in excel_records:parse_Name Name is ~p Scope is ~p "++
+              "Index is ~p~n",[Name,Scope,Index]),
     excel_util:write(Tables,names,[{index,Index},{sheetindex,SheetIndex},
                                    {type,Scope},{name,binary_to_list(Name)}]).
 
@@ -848,8 +851,8 @@ parse_filename(Bin) -> "../"++binary_to_list(Bin)++"/".
 
 snip_xls(Bin)->
     FileName=binary_to_list(Bin),
-    RegExp=".xls$", 
-    case regexp:gsub(FileName,RegExp,"") of
+    RegExp=".xls$", %" comment to fix syntax highlighting
+    case regexp:gsub(FileName,RegExp,"") of 
         {ok, NewString,_} -> NewString;
         {error,_}         -> FileName
     end.
