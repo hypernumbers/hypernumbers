@@ -28,6 +28,7 @@ b_special_chars_in_text
 b_sum_with_one_arg
 b_three_dee_ref
 b_wierd_failures
+b_wierd_formats
 c_basic_functions_a_b
 c_basic_functions_c_d
 c_basic_functions_e_f
