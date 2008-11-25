@@ -35,8 +35,8 @@
 get_src(Format)->
     try get_src2(Format)
     catch
-        exit:_ ->
-            {error,error_in_format}
+        error:_ -> {error,error_in_format};
+        exit:_  -> {error,error_in_format}
     end.
 
 get_src2(Format)->
