@@ -32,9 +32,15 @@ start(_Type, _Args) ->
     
     case hypernumbers_sup:start_link() of
         {ok, Pid} -> 
+            
+            {ok,[[Path]]} = init:get_argument(hn_config),	
+            {ok,Config} = file:consult(Path), 
+            gen_server:call(hn_config,{set_conf,Config}),
+            
             ok = start_yaws(),
             ok = start_dirty_subscribe(),
             {ok, Pid};
+
         Error -> 
             Error
     end.
@@ -72,7 +78,7 @@ clean_start() ->
               [dirty_cell,dirty_hypernumbers]),
 
     ok = hn_db:create(),
-    {ok,Hosts} = get_hosts_conf(),
+    Hosts = gen_server:call(hn_config,{get,hosts}),
     set_def_perms(Hosts),
     ok = start_dirty_subscribe(),
     ok.
@@ -82,7 +88,7 @@ clean_start() ->
 start_yaws() ->
     
     {ok,[[Log]]}  = init:get_argument(hn_log),
-    {ok,Hosts}    = get_hosts_conf(),
+    Hosts   = gen_server:call(hn_config,{get,hosts}),
 
     SConfs = lists:map(fun create_sconf/1,Hosts),    
     GC     = yaws_config:make_default_gconf(false, "id"),
@@ -98,14 +104,6 @@ start_dirty_subscribe() ->
     gen_server:cast(dirty_cell,        subscribe),
     gen_server:cast(dirty_hypernumber, subscribe),
     ok.
-
-%% @spec start_link() -> Return
-%% @doc  Supervisor call back
-get_hosts_conf() ->
-    {ok,[[Path]]} = init:get_argument(hn_config),	
-    {ok,Config} = file:consult(Path), 
-    {value,{hosts,HostList}} = lists:keysearch(hosts,1,Config),
-    {ok,HostList}.
 
 %% @spec create_sconf(Details) -> SConf
 %% @doc  Create SConf record for yaws setup

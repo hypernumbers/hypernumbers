@@ -45,10 +45,6 @@ start_link() ->
 %% Description: Initiates the server
 %%--------------------------------------------------------------------
 init([]) ->
-    io:format("Random_srv.erl:init~n"++
-	      "- this function should probably read a salt parameter from "++
-	      "the hypernumbers configuration file and use that to seed "++
-	      "the random number generator!~n"),
     {A1,A2,A3}=now(),
     _Return = random:seed(A1,A2,A3),
     {ok, #state{}}.
