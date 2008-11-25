@@ -92,7 +92,6 @@ f_sales_account_adjustment_forecast
 f_sales_quote
 f_services_invoice_with_tax_calculation
 f_service_quote
-f_small_business_cash_flow_projection
 f_streamlined_sales_forecast
 f_timeline
 f_value_analysis_calculator_for_product_service
@@ -116,3 +115,4 @@ y_loan_calculator_with_extra_payments
 y_mortgage_amortization_schedule
 y_portfolio_analysis
 z_gnumeric_lookup_9
+y_small_business_cash_flow_projection
