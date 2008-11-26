@@ -11,20 +11,18 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
 	 terminate/2, code_change/3]).
 
--spec start_link() -> 
-    {ok,pid()} | ignore | {error,any()}.
+-spec(start_link/0 :: () -> {ok,pid()} | ignore | {error,any()}).
+             
 %% @doc Start the server
 start_link() ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
--spec init(Args::any()) ->
-    {ok,any()} | {ok,any(),any()} | ignore | {stop,any()}.
+-spec(init/1 :: (Args::any()) -> {ok,any()} | {ok,any(),any()} | ignore | {stop,any()}).
 %% @doc Initiates the server
 init([]) ->
     {ok, #state{}}.
 
--spec handle_call(Request::any(), From::any(), State::any()) -> 
-    {reply, any(), any()} | {noreply, any()}.
+-spec(handle_call/3 :: (Request::any(), From::any(), State::any()) -> {reply, any(), any()} | {noreply, any()}).
 %% @doc Handling call messages
 %% Set the configuration on startup
 handle_call({set_conf,Conf}, _From, State) ->
