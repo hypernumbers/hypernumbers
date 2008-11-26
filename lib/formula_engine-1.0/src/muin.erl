@@ -512,7 +512,7 @@ funcall(loop, [A, Fn]) when ?is_area(A) ->
 
 funcall(pair_up, [A, B]) when ?is_area(A) andalso ?is_area(B) ->
     area_util:apply_each_with_pos(fun({X, {C, R}}) ->
-                                          case area_util:get_at(C, R, B) of
+                                          case area_util:at(C, R, B) of
                                               {ok, V}    -> [X, V];
                                               {error, _} -> ?ERRVAL_NA
                                           end
