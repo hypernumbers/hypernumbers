@@ -47,13 +47,16 @@ handle_call({unregister},From,State) ->
 %% Change Message, find everyone listening to 
 %% that page then send them a change message
 handle_call({change,Site,Path,Msg},_From,State) ->
-    lists:foreach(
-        fun(Z) ->
-            case Z of
-            {Site,Path,Pid} -> Pid ! {msg,Msg};
-            _ -> ok
-            end
-        end,State),
+    F = fun(Z) ->
+                case Z of                    
+                    %% TODO : Ignoring site for now to work
+                    %% behind reverse proxy
+                    {_Site,Path,Pid} -> 
+                        Pid ! {msg,Msg};
+                    _ -> ok
+                end
+        end,
+    lists:foreach(F,State),
     {reply,ok,State};
 
 %% Invalid Message

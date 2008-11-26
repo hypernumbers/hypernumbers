@@ -17,6 +17,7 @@
 %% @spec out(Arg) -> YawsReturn.
 %% @doc Yaws handler for all incoming HTTP requests
 out(Arg) ->
+
     Url      = yaws_api:request_url(Arg),
     FileName = Arg#arg.docroot++Url#url.path,
     %% Serve static files, can move to a different server later
@@ -142,6 +143,10 @@ req('GET',[],[{"new",Template}],_,Ref=#ref{site=Site,ref={page,"/"}}) ->
 
 req('GET',[],["templates"],_,_Ref=#ref{ref={page,"/"}}) ->
     hn_templates:get_templates();
+
+req('GET',[],["port"],_,_Ref) ->
+    Port = gen_server:call(hn_config,{get,remoting_port}),
+    {ok,{port,[],[integer_to_list(Port)]}};
 
 req('GET',[],["attr"],_,Ref) ->
     Attr = get_page_attributes(Ref),

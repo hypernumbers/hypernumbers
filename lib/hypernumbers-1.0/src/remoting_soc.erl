@@ -17,12 +17,11 @@ accept(Listen) ->
     {ok, Soc} = gen_tcp:accept(Listen),
     Pid = spawn(fun() -> loop(Soc) end),
     gen_tcp:controlling_process(Soc,Pid),
-    
     %% Start Listening for another connection
     remoting_soc:accept(Listen).
 
 loop(Socket)->
-    
+
     receive
         
         {tcp, Socket,"register"++Rest} ->

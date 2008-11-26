@@ -25,6 +25,7 @@ fi
 
 cd $ROOT
 MODE=""
+#MODE="-detached"
 RELOAD="-run reloader start"
 
 LOG_DIR=$ROOT/logs
@@ -88,6 +89,11 @@ function start
         -hn_config $CONFIG \
         -hn_log $LOG_DIR \
         -mnesia dir "\"$MNESIA_DIR\""
+
+    #erl -setcookie $COOKIE \
+    #    -sname $NODE-debug@$HOST \
+    #    -remsh $NODE@$HOST
+       
 }
 
 function gen_tests
@@ -134,8 +140,18 @@ function test
         -dir $TESTS
 }
 
+function stop
+{
+    erl -detached \
+        -sname $NODE-ctrl@$HOST \
+        -setcookie $COOKIE \
+        -eval "rpc:call($NODE@$HOST,init,stop,[])" \
+        -s init stop
+}
+
 case $1 in 
     start) start;;
+    stop)  stop;;
     build) build $2;;    
     gen_tests) gen_tests;;
     test)  test $2;;
