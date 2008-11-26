@@ -1,57 +1,65 @@
-%%% @doc Logical functions.
-%%% @author <hasan@hypernumbers.com>
+%%% @doc Built-in logical functions.
+%%% @author Hasan Veldstra <hasan@hypernumbers.com>
 
 -module(stdfuns_logical).
 -include("handy_macros.hrl").
 -include("typechecks.hrl").
 
--export([
-         '='/1,
-         '<>'/1,
-         '<'/1,
-         '>'/1,
-         '<='/1,
-         '>='/1,
-         'and'/1,
-         'if'/1,
-         iferror/1,
-         'not'/1,
-         'or'/1]).
+-export(['='/1, '<>'/1, '<'/1, '>'/1, '<='/1, '>='/1]).
+-export(['and'/1, 'if'/1, iferror/1, 'not'/1, 'or'/1]).
 
 -define(default_rules_bools, [cast_numbers, cast_strings, cast_blanks, cast_dates]).
 
-'='([V1, V2]) ->
-    V1 == V2.
+%% numbers & numbers
+'='([N1, N2]) when is_number(N1) andalso is_number(N2) -> N1 == N2;
+%% numbers & blanks
+'='([blank, N]) when N == 0                      -> true;
+'='([N, blank]) when N == 0                      -> true;
+%% numbers & bools
+'='([N, B]) when is_number(N) andalso is_boolean(B)    -> false;
+'='([B, N]) when is_number(N) andalso is_boolean(B)    -> false;
+%% strings & blanks
+'='([blank, S]) when ?is_string(S)               -> stdfuns_text:len([S]) == 0;
+'='([S, blank]) when ?is_string(S)               -> stdfuns_text:len([S]) == 0;
+%% bools & blanks
+'='([false, blank])                              -> true;
+'='([blank, true])                               -> true;
+%% strings & numbers
+'='([S, N]) when ?is_string(S) andalso is_number(N)    -> false;
+'='([N, S]) when ?is_string(S) andalso is_number(N)    -> false;
+%% default: true & blank, bool & bool, blank & blank, string & string.
+'='([V1, V2])                                    -> V1 == V2.
 
 '<>'([V1, V2]) ->
     not('='([V1, V2])).
 
-%% string is greater than any number
-%% two strings are compared based on length
-%% blanks are simply cast to 0s
-%% true > false
-%% true > any number
-%% true > any string
-%% same for false...
-%% array < positive numbers, but not negative ones (WTF?)
 '>'([N1, N2]) when is_number(N1) andalso is_number(N2)   -> N1 > N2;
 '>'([S, N]) when ?is_string(S) andalso is_number(N)      -> true;
-'>'([S1, S2]) when ?is_string(S1) andalso ?is_string(S2) -> stdfuns_text:len([S1]) > stdfuns_text:len([S2]);
+'>'([N, S]) when is_number(N) andalso ?is_string(S)      -> false;
+%% FIXME: 1) Will break on non Latin-1 strings.
+%%        2) Depends on Erlang's list representation of strings.
+'>'([S1, S2]) when ?is_string(S1) andalso ?is_string(S2) ->
+    if hd(S1) > hd(S2) -> true;  % compare alphabetically first
+       hd(S1) < hd(S2) -> false;
+       true            -> stdfuns_text:len([S1]) > stdfuns_text:len([S2]) % otherwise compare on length
+    end;
 '>'([true, _])                                     -> true;
 '>'([false, _])                                    -> true;
+'>'([_, true])                                     -> false;
+'>'([_, false])                                    -> false;
 '>'([A, N]) when ?is_area(A) andalso N > 0               -> true;
 '>'([A, N]) when ?is_area(A) andalso N =< 0               -> false;
-'>'([blank, X])                                    -> '>'([0, X]);
-'>'([X, blank])                                    -> '>'([X, 0]).
+'>'([blank, N]) when is_number(N)                  -> '>'([0, N]);
+'>'([N, blank]) when is_number(N)                  -> '>'([N, 0]);
+'>'([blank, S]) when ?is_string(S)                 -> false;
+'>'([S, blank]) when ?is_string(S)                 -> true.
 
-'<'([A, B]) ->
-    not('>'([A, B])).
+'<'([A, B]) -> '>'([B, A]).
 
-'<='([A, B]) ->
-    (A == B) orelse '<'([A, B]).
+'<='(Args = [_, _]) -> '<'(Args) orelse '='(Args).
 
-'>='([A, B]) ->
-    (A == B) orelse '>'([A, B]).
+'>='(Args = [_, _]) ->
+    '>'(Args) orelse '='(Args).
 
 'and'(Vs) ->
     Flatvs = ?flatten_all(Vs),
@@ -64,8 +72,7 @@
 'or'(Vs) ->
     Flatvs = ?flatten_all(Vs),
     Bools = ?bools(Flatvs, [cast_strings, cast_numbers, cast_blanks, cast_dates]),
-    any(fun(X) -> X == true end,
-        Bools).
+    any(fun(X) -> X == true end, Bools).
 
 'if'([Test, TrueExpr, FalseExpr]) ->
     V = muin:eval(Test),
