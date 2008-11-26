@@ -21,7 +21,7 @@
         (?is_array(A) orelse ?is_range(A))).
 
 -define(is_string(X),
-        (is_list(X)) orelse (is_tuple(X) andalso element(1, X) == ustring)).
+        ((is_list(X)) orelse (is_tuple(X) andalso element(1, X) == ustring))).
 
 %%% Collectors
 
