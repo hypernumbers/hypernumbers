@@ -133,11 +133,14 @@ offset([ref, C, R, P], Rows, Cols, 1, 1) ->
     [ref, Dc, Dr, P];
 offset([ref, R, C, P], Rows, Cols, H, W) ->
     [':',
-     {ref, toidx(C)+Cols, toidx(R)+Rows, P},
-     {ref, toidx(C)+Cols+W, toidx(R)+Rows+H, P}].
+     {ref, toidx(C)+Cols, toidx(R)+Rows, P, ""},
+     {ref, toidx(C)+Cols+W, toidx(R)+Rows+H, P, ""}].
 
-%% @doc Transforms certain types of sexps. Returns false if the sexp didn't
-%% need to be transformed.
+%% @doc Used for direct manipulations on the AST (think Lisp macros).
+%% E.g. OFFSET is done here because it needs to splice results directly back
+%% into the AST.
+%% Returns false if the node didn't need to be transformed.
+
 preproc(['let', NameNode, ValueNode, BodyNode]) ->
     Value = eval(ValueNode),
     {reeval, let_transform(NameNode, BodyNode, Value)};
@@ -175,7 +178,12 @@ preproc([offset, Ref, Rows, Cols]) ->
     preproc([offset, R, Rows, Cols, H, W]);
 preproc([offset, Ref, Rows, Cols, H, W]) ->
     %% TODO: Check args for correctness.
-    {reeval, offset(Ref, Rows, Cols, H, W)};
+    RULES = [ban_strings, ban_bools, ban_dates, ban_blanks],
+    Evald  = map(fun muin:eval/1, [Rows, Cols, H, W]),
+    [Rows2, Cols2, H2, W2] = map(fun(X) -> ?number(X, RULES) end, Evald),
+    {reeval, offset(Ref, Rows2, Cols2, H2, W2)};
+
+%% TODO: Move queries out.
 preproc(['query', Arg]) ->
     Toks = string:tokens(Arg, "/"),
     Idx = hslists:find("*", Toks),
