@@ -11,13 +11,16 @@ COOKIE=abc
 # if it breaks, can replace with 
 # (/home/dale/hypernumbers) temporarily
 # check if we are running under cywgin
-ISCYGWIN=`uname -a | cut -f 1 -d " "`
-if [ $ISCYGWIN = "CYGWIN_NT-6.0" ]
-    then
-        TMP=`pwd`
-        ROOT="c:/"`echo $TMP | cut -d "/" -f 4-`
-   else
-        ROOT=$(dirname `readlink -f "$0"`)
+OS_PLATFORM=`uname -a | cut -f 1 -d " "`
+if [ $OS_PLATFORM = "CYGWIN_NT-6.0" ]
+then
+    TMP=`pwd`
+    ROOT="c:/"`echo $TMP | cut -d "/" -f 4-`
+elif [ $OS_PLATFORM = "Darwin" ]
+then
+    ROOT=/Users/hasan/proj/hngit-new/trunk/
+else
+    ROOT=$(dirname `readlink -f "$0"`)
 fi
 
 cd $ROOT
