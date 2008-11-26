@@ -2,10 +2,12 @@
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 
 -module(area_util).
--export([apply_each/2, width/1, height/1, get_at/3, make_array/2, to_list/1]).
+-export([apply_each/2, width/1, height/1, at/3, make_array/2, to_list/1, col/2, row/2]).
 -compile(export_all).
 -include("handy_macros.hrl").
 -include("typechecks.hrl").
+
+-define(OUT_OF_RANGE, {error, out_of_range}).
 
 %% @doc Apply a function to each value in array/range.
 apply_each(Fun, A = {Tag, Rows}) when ?is_area(A) ->
@@ -46,17 +48,35 @@ height(A = {_, Rows}) when ?is_area(A) ->
 
 %% O(r + c)
 %% @doc Return value at position.
-get_at(Col, Row, A = {_, Rows}) when ?is_area(A) ->
-    get_at(Col, Row, Rows, width(A), height(A)).
+at(Col, Row, A = {_, Rows}) when ?is_area(A) ->
+    at(Col, Row, Rows, width(A), height(A)).
 
-get_at(Col, Row, _Rows, W, H) when Col > W orelse Row > H ->
-    {error, out_of_range};
-get_at(Col, Row, _Rows, _W, _H) when Col < 1 orelse Row < 1 ->
-    {error, out_of_range};
-get_at(Col, Row, Rows, _W, _H) ->
+at(Col, Row, _Rows, W, H) when Col > W orelse Row > H ->
+    ?OUT_OF_RANGE;
+at(Col, Row, _Rows, _W, _H) when Col < 1 orelse Row < 1 ->
+    ?OUT_OF_RANGE;
+at(Col, Row, Rows, _W, _H) ->
     {ok, nth(Col, nth(Row, Rows))}.
 
 make_array(Rows) when is_list(Rows) ->
     {array, Rows}. %% Check that all rows are of equal length?
 make_array(W, H) ->
     {array, lists:duplicate(H, lists:duplicate(W, 0))}.
+
+%% @doc Return horizontal array.
+
+row(N, A = {Tag, Rows}) when ?is_area(A) andalso is_integer(N) ->
+    H = height(A),
+    if H < N -> ?OUT_OF_RANGE;
+       true  -> {Tag, nth(N, Rows)}
+    end.
+
+%% @doc Return vertical array.
+
+col(N, A = {Tag, Rows}) when ?is_area(A) andalso is_integer(N) ->
+    W = width(A),
+    if W < N -> ?OUT_OF_RANGE;
+       true  ->
+            R = foldl(fun(X, Acc) -> [[nth(N, X)]|Acc] end, [], Rows),
+            {Tag, R}
+    end.
