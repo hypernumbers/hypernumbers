@@ -2,6 +2,7 @@
 %%% @author <hasan@hypernumbers.com>
 
 -module(stdfuns_lookup_ref).
+-export([address/1, index/1]).
 -compile(export_all).
 -include("typechecks.hrl").
 -include("handy_macros.hrl").
@@ -37,3 +38,31 @@ address1(Row, Col, 3, false) ->
     "R[" ++ tconv:to_s(Row) ++ "]C" ++ tconv:to_s(Col); 
 address1(Row, Col, 4, false) ->
     "R[" ++ tconv:to_s(Row) ++ "]C[" ++ tconv:to_s(Col) ++ "]".
+
+%% This is the array form of INDEX. The reference form is in preproc.
+
+%% Arg1 should be an array or range, but constants and cellrefs are also allowed.
+%% Row number or column number can be omitted for areas of height/width of 1.
+%% If either of them is omitted for areas that aren't of height/width 1, a
+%% vertical/horizontal array is returned.
+
+index([A, V]) when ?is_area(A) ->
+    W = area_util:width(A),
+    if W == 1 -> index([A, V, 1]);
+       ?else  -> index([A, 1, V])
+    end;
+index([X, V]) ->
+    index([area_util:make_array([[X]]), V]);
+index([A, V1, V2]) when ?is_area(A) ->
+    [Rown, Coln] = ?numbers([V1, V2], [cast_strings, cast_bools, ban_dates, ban_blanks]),
+    if Rown =< 0 andalso Coln =< 0 -> A;
+       Rown =< 0 -> area_util:col(Coln, A);
+       Coln =< 0 -> area_util:row(Rown, A);
+       ?else ->
+            case area_util:at(Coln, Rown, A) of
+                {ok, E}               -> E;
+                {error, out_of_range} -> ?ERR_REF
+            end
+    end;
+index([X, V1, V2]) ->
+    index([area_util:make_array([[X]]), V1, V2]).
