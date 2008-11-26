@@ -21,7 +21,7 @@
 post_process_tables(Tables) ->
 %% Excel has a number of built in formats
     {ok,ok}=add_built_in_formats(Tables),
-    % filefilters:dump(Tables),
+    filefilters:dump(Tables),
     type_formats(Tables),
     fix_up_externalrefs(Tables),
     fix_up_cells(Tables),
@@ -125,16 +125,16 @@ create_array_formulae(Tables)->
     {value,{array_formulae,ArrFormId}} = lists:keysearch(array_formulae,1,Tables),
     Fun = fun(X,_Acc) ->
                   {Id2,[{type,Type},{tokens,Tokens},{tokenarrays,TkArr}]} = X,
-                  io:format("in excel_post_process:create_array_formulae~n-"++
-                            "Id2 is ~p~n-Type is ~p~n-Tokens are ~p~n"++
-                            "TkArr is ~p~n",[Id2,Type,Tokens,TkArr]),
+                  % io:format("in excel_post_process:create_array_formulae~n-"++
+                  %          "Id2 is ~p~n-Type is ~p~n-Tokens are ~p~n"++
+                  %          "TkArr is ~p~n",[Id2,Type,Tokens,TkArr]),
                   case Type of
                       shared -> {ok, ok};
                       array  ->
                           Formula=excel_rev_comp:reverse_compile(Id2,Tokens,
                                                                  TkArr,Tables),
-                          io:format("in excel_post_process:create_array_formulae~n-"++
-                                    "Formula is ~p~n",[Formula]),
+                          % io:format("in excel_post_process:create_array_formulae~n-"++
+                          %          "Formula is ~p~n",[Formula]),
                           ets:insert(ArrFormId,[{Id2,{formula,Formula}}])
                   end
           end,
