@@ -2,13 +2,22 @@
 %%% @doc Date functions.
 
 -module(stdfuns_gg).
--export([harmean/1, mirr/1, npv/1, poisson/3, rand/0, cumpoisson/2, roman/1,
-         sln/3, syd/4, text/2]).
+-export([harmean/1,
+         mirr/1,
+         npv/1,
+         poisson/1,
+         rand/1,
+         cumpoisson/1,
+         roman/1,
+         sln/1,
+         syd/1,
+         text/1]).
 
 -include("typechecks.hrl").
 -include("handy_macros.hrl").
 -include("muin_records.hrl").
 
+%% Constants for roman - types of return
 -define(CLASSIC,0).
 -define(CONCISE1,1).
 -define(CONCISE2,2).
@@ -60,19 +69,19 @@ transsort([H|T],Pos,Neg,Num) when H < 0 -> transsort(T,Pos,[H|Neg],Num+1).
 
 npv([Rate|Payments]) -> io:format("in stdfns_gg:npv Rate is ~p "++
 				  "Payments are ~p~n",[Rate,Payments]),
-			npv(Rate,Payments,1,0).
+			npv1(Rate,Payments,1,0).
 
-npv(_Rate,[],_Num,Acc)   -> Acc;
-npv(Rate,[H|T],Num,Acc) -> npv(Rate,T,Num+1,Acc+H/(math:pow((1+Rate),Num))).
+npv1(_Rate,[],_Num,Acc)   -> Acc;
+npv1(Rate,[H|T],Num,Acc) -> npv1(Rate,T,Num+1,Acc+H/(math:pow((1+Rate),Num))).
     
-poisson(X,Lambda,false) when X >= 0, Lambda; is_float(X) > 0 ->
+poisson([X,Lambda,false]) when X >= 0, Lambda; is_float(X) > 0 ->
     noncumpoisson(trunc(X),Lambda);
-poisson(X,Lambda,false) when X >= 0, Lambda; is_integer(X) > 0 ->
+poisson([X,Lambda,false]) when X >= 0, Lambda; is_integer(X) > 0 ->
     noncumpoisson(X,Lambda);
-poisson(X,Lambda,true) when X >= 0, Lambda > 0; is_float(X) ->
-    cumpoisson(trunc(X),Lambda,0);
-poisson(X,Lambda,true) when X >= 0, Lambda > 0; is_float(X) ->
-    cumpoisson(X,Lambda,0).
+poisson([X,Lambda,true]) when X >= 0, Lambda > 0; is_float(X) ->
+    cumpoisson([trunc(X),Lambda,0]);
+poisson([X,Lambda,true]) when X >= 0, Lambda > 0; is_float(X) ->
+    cumpoisson([X,Lambda,0]).
 
 noncumpoisson(X,Lambda) ->
     %% get Euler's number
@@ -83,13 +92,13 @@ noncumpoisson(X,Lambda) ->
 	      [E,X,Lambda]),
     math:pow(E,-Lambda)*math:pow(Lambda,X)/stdfuns_math:fact([X]).
 
-cumpoisson(X,Lambda) -> cumpoisson(X,Lambda,0).
+cumpoisson([X,Lambda]) -> cumpoisson2(X,Lambda,0).
 
-cumpoisson(-1,_Lambda,Acc) -> Acc;
-cumpoisson(K,Lambda,Acc)  -> cumpoisson(K-1,Lambda,
-					Acc+noncumpoisson(K,Lambda)).
+cumpoisson2(-1,_Lambda,Acc) -> Acc;
+cumpoisson2(K,Lambda,Acc)  -> cumpoisson([K-1,Lambda,
+                                          Acc+noncumpoisson(K,Lambda)]).
 
-rand() -> gen_server:call(random_srv,{random,float}).
+rand([]) -> gen_server:call(random_srv,{random,float}).
 
 roman([X])        -> roman([X, 0]);
 roman([X, true])  -> roman([X, ?CLASSIC]);
@@ -303,16 +312,14 @@ make_list([55|T],Acc) -> make_list(T,["7"|Acc]);
 make_list([56|T],Acc) -> make_list(T,["8"|Acc]);
 make_list([57|T],Acc) -> make_list(T,["9"|Acc]).
 
-sln(Cost,SalvageVal,NoPeriods) -> (Cost-SalvageVal)/NoPeriods.
+sln([Cost,SalvageVal,NoPeriods]) -> (Cost-SalvageVal)/NoPeriods.
 
-syd(Cost,SalvageVal,Life,Period) -> (Cost-SalvageVal)*(Life-Period+1)*2/(Life*(Life+1)).
+syd([Cost,SalvageVal,Life,Period]) -> (Cost-SalvageVal)*(Life-Period+1)*2/(Life*(Life+1)).
 
-text(Value,Format) -> 
+text([Value,Format]) -> 
     {erlang,{_Type,Output}}=format:get_src(Format),
     {ok,{_Colour,Text2}}=format:run_format(Value,Output),
     Text2.
-
-
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

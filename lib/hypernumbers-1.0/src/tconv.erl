@@ -9,7 +9,7 @@
          to_f/1,
          to_s/1,
          to_num/1,
-	 b26_to_i/1]).
+         b26_to_i/1]).
 
 %% String -> integer.
 to_i(Str) when is_list(Str) ->

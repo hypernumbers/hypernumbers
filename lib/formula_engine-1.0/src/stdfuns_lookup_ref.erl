@@ -7,37 +7,95 @@
 -include("typechecks.hrl").
 -include("handy_macros.hrl").
 
-address([Row, Col]) ->
-    address([Row, Col, 1, true, ""]);
-address([Row, Col, IsAbs]) ->
-    address([Row, Col, IsAbs, true, ""]);
-address([Row, Col, IsAbs, IsA1]) ->
-    address([Row, Col, IsAbs, IsA1, ""]);
-address([V1, V2, V3, V4, V5]) ->
-    [Row, Col, AbsNum] = ?numbers([V1, V2, V3], [cast_strings, cast_bools, ban_blanks, ban_dates]),
-    IsA1 = ?bool(V4, [cast_numbers, cast_strings, cast_blanks, ban_dates]),
-    PagePath = ?estring(V5),
-    ?ensure(Row > 0, ?ERR_VAL),
-    ?ensure(Col > 0, ?ERR_VAL),
-    ?ensure(AbsNum > 0, ?ERR_VAL),
-    Addr = address1(Row, Col, AbsNum, IsA1),
-    ?COND(PagePath == "", Addr, Addr ++ "/" ++ PagePath).
-address1(Row, Col, 1, true) ->
-    "$" ++ tconv:to_b26(Col) ++ "$" ++ tconv:to_s(Row);
-address1(Row, Col, 2, true) ->
-    tconv:to_b26(Col) ++ "$" ++ tconv:to_s(Row);
-address1(Row, Col, 3, true) ->
-    "$" ++ tconv:to_b26(Col) ++ tconv:to_s(Row);
-address1(Row, Col, 4, true) ->
-    tconv:to_b26(Col) ++ tconv:to_s(Row);
-address1(Row, Col, 1, false) ->
-    "R" ++ tconv:to_s(Row) ++ "C" ++ tconv:to_s(Col);
-address1(Row, Col, 2, false) ->
-    "R" ++ tconv:to_s(Row) ++ "C[" ++ tconv:to_s(Col) ++ "]";
-address1(Row, Col, 3, false) ->
-    "R[" ++ tconv:to_s(Row) ++ "]C" ++ tconv:to_s(Col); 
-address1(Row, Col, 4, false) ->
-    "R[" ++ tconv:to_s(Row) ++ "]C[" ++ tconv:to_s(Col) ++ "]".
+%% Constants for address - types of absoulute/relative address
+-define(ABS,1).
+-define(ABS_ROW,2).
+-define(ABS_COL,3).
+-define(REL,4).
+
+%% leave space for casting etc...
+address([R,C])              -> address([R,C,?ABS,true,""]);
+address([R,C,Option])       -> address([R,C,Option,true,""]);
+address([R,C,Option,Style]) -> address([R,C,Option,Style,""]);
+address([R,C,Option,Style,Str]) ->
+    % io:format("in stdfuns_lookup_ref:address R is ~p C is ~p Option is ~p Style is ~p Str is ~p~n",
+    %          [R,C,Option,Style,Str]),
+    [Row, Col, Opt2] = ?numbers([R, C, Option], [ban_strings, ban_bools, ban_blanks, ban_dates]),
+    ?ensure(Row  > 0, ?ERR_VAL),
+    ?ensure(Col  > 0, ?ERR_VAL),
+    ?ensure(Opt2 > 0, ?ERR_VAL),
+    ?ensure(Opt2 < 5, ?ERR_VAL),
+    IsA1 = ?bool(Style, [cast_numbers, cast_strings, cast_blanks, ban_dates]),    
+    PagePath = ?estring(Str),
+    Addr = add2(R,C,Opt2,IsA1),
+    ?COND(PagePath == "", Addr, PagePath ++ "/" ++ Addr).
+
+add2(R,C,Option,Style) ->
+    row(R,Option,Style)++col(C,Option,Style).
+
+row(R,Option,false) ->
+    case Option of
+        ?ABS     -> "R"++integer_to_list(R);
+        ?ABS_ROW -> "R"++integer_to_list(R);
+        ?ABS_COL -> "R["++integer_to_list(R)++"]";
+        ?REL     -> "R["++integer_to_list(R)++"]"
+    end;
+row(R,Option,true) ->
+    case Option of
+        ?ABS     -> "$"++integer_to_list(R); %" fix syntax highlighting
+        ?ABS_ROW -> "$"++integer_to_list(R); %" fix syntax highlighting
+        ?ABS_COL -> integer_to_list(R); 
+        ?REL     -> integer_to_list(R)
+    end.
+                         
+col(C,Option,false) ->
+    case Option of
+        ?ABS     -> "C"++integer_to_list(C);
+        ?ABS_ROW -> "C["++integer_to_list(C);
+        ?ABS_COL -> "C"++integer_to_list(C)++"]";
+        ?REL     -> "C["++integer_to_list(C)++"]"
+    end;
+col(C,Option,true) ->
+    case Option of
+        ?ABS     -> "$"++tconv:to_b26(C); %" fix syntax highlighting
+        ?ABS_ROW -> tconv:to_b26(C);
+        ?ABS_COL -> "$"++tconv:to_b26(C); %" fix syntax highlighting
+        ?REL     -> tconv:to_b26(C)
+    end.
+
+
+
+%address([Row, Col]) ->
+%    address([Row, Col, 1, true, ""]);
+%address([Row, Col, IsAbs]) ->
+%    address([Row, Col, IsAbs, true, ""]);
+%address([Row, Col, IsAbs, IsA1]) ->
+%    address([Row, Col, IsAbs, IsA1, ""]);
+%address([V1, V2, V3, V4, V5]) ->
+%    [Row, Col, AbsNum] = ?numbers([V1, V2, V3], [cast_strings, cast_bools, ban_blanks, ban_dates]),
+%    IsA1 = ?bool(V4, [cast_numbers, cast_strings, cast_blanks, ban_dates]),
+%    PagePath = ?estring(V5),
+%    ?ensure(Row > 0, ?ERR_VAL),
+%    ?ensure(Col > 0, ?ERR_VAL),
+%    ?ensure(AbsNum > 0, ?ERR_VAL),
+%    Addr = address1(Row, Col, AbsNum, IsA1),
+%    ?COND(PagePath == "", Addr, Addr ++ "/" ++ PagePath).
+%address1(Row, Col, 1, true) ->
+%    "$" ++ tconv:to_b26(Col) ++ "$" ++ tconv:to_s(Row);
+%address1(Row, Col, 2, true) ->
+%    tconv:to_b26(Col) ++ "$" ++ tconv:to_s(Row);
+%address1(Row, Col, 3, true) ->
+%    "$" ++ tconv:to_b26(Col) ++ tconv:to_s(Row);
+%address1(Row, Col, 4, true) ->
+%    tconv:to_b26(Col) ++ tconv:to_s(Row);
+%address1(Row, Col, 1, false) ->
+%    "R" ++ tconv:to_s(Row) ++ "C" ++ tconv:to_s(Col);
+%address1(Row, Col, 2, false) ->
+%    "R" ++ tconv:to_s(Row) ++ "C[" ++ tconv:to_s(Col) ++ "]";
+%address1(Row, Col, 3, false) ->
+%    "R[" ++ tconv:to_s(Row) ++ "]C" ++ tconv:to_s(Col); 
+%address1(Row, Col, 4, false) ->
+%    "R[" ++ tconv:to_s(Row) ++ "]C[" ++ tconv:to_s(Col) ++ "]".
 
 %% This is the array form of INDEX. The reference form is in preproc.
 
@@ -66,3 +124,4 @@ index([A, V1, V2]) when ?is_area(A) ->
     end;
 index([X, V1, V2]) ->
     index([area_util:make_array([[X]]), V1, V2]).
+

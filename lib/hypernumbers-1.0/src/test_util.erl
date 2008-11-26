@@ -338,7 +338,7 @@ make_float2(List)->
     catch
       exit:_Reason   -> "not float";
       error:_Message -> "not float";
-      throw:_Term     -> "not float"
+      throw:_Term    -> "not float"
     end.
 
 
@@ -351,9 +351,9 @@ wait(N) -> internal_wait(?DEFAULT * N).
 
 hnget(Path, Ref) ->
     Url = Url = string:to_lower(?HNSERVER ++ Path ++ Ref),
-    %io:format("hnget Url ~p~n",[Url]),
+    % io:format("hnget Url ~p~n",[Url]),
     {ok, {{_V, _Code, _R}, _H, Body}} = http:request(get, {Url, []}, [], []),
-    %io:format("Code for ~p~p is ~p.~nBody is: ~p~n~n", [Path, Ref, Code, Body]),
+    % io:format("Code for ~p ~p is ~p.~nBody is: ~p~n~n", [Path, Ref, Code, Body]),
     Body.
   
 hnpost(Path, Ref, Postdata) ->
@@ -377,11 +377,22 @@ handle_return({ok, {{_V, Code, _R}, _H, Body}}, Ref) ->
 	      [Ref, Code, Body]).
 
 cmp(G, E) ->
-    Val = conv_from_get(G),
-    if is_float(Val) andalso is_float(E) ->
-            float_cmp(Val, E, 5);
+    io:format("in test_util:cmp G is ~p E is ~p~n",[G,E]),
+    E2 = case E of
+             true   -> true;
+             false  -> false;
+             _Other -> case tconv:to_num(E) of
+                           N when is_number(N) -> N;
+                           {error, nan}        -> E
+                       end
+         end,
+G2 = conv_from_get(G),
+    if is_float(G2) andalso is_float(E2) ->
+            io:format("in test_util:cmp (1) Val is ~p E is ~p~n",[G2,E2]),
+            float_cmp(G2, E2, 5);
        true ->
-            Val == E
+            io:format("in test_util:cmp (2) Val is ~p E is ~p~n",[G2,E2]),
+            E2 == G2
     end.
 
 conv_from_get("true")  -> true;
@@ -394,10 +405,8 @@ conv_from_get(X)       -> case lists:member(X, ["#NULL!", "#DIV/0!", "#VALUE!",
 				  list_to_atom(X);
 			      false ->
 				  case tconv:to_num(X) of
-				      N when is_number(N) -> % number
-					  N;
-				      {error, nan} -> % string
-					  X
+				      N when is_number(N) -> N; % number
+				      {error, nan}        -> X % string
 				  end
 			  end.
 

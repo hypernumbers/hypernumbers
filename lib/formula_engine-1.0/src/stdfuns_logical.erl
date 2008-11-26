@@ -75,8 +75,11 @@
     any(fun(X) -> X == true end, Bools).
 
 'if'([Test, TrueExpr, FalseExpr]) ->
+    io:format("in stdfuns_logical:if Test is ~p TrueExpr is ~p FalseExpr is ~p~n",
+              [Test,TrueExpr,FalseExpr]),
     V = muin:eval(Test),
     B = ?bool(V, [cast_strings, cast_numbers, cast_blanks, ban_dates]),
+    io:format("in stdfuns_logical:if B is ~p V is ~p~n",[B,V]),
     ?COND(B, muin:eval(TrueExpr), muin:eval(FalseExpr)).
 
 iferror([Test, TrueExpr, FalseExpr]) ->

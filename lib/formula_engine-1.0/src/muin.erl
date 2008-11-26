@@ -112,7 +112,10 @@ eval(Value) ->
 call(Func, Args) ->
     case attempt(?MODULE, funcall, [Func, Args]) of
         {error, Errv = {errval, _}} -> Errv;
-        {error, E}                  -> io:format("muin:call error: ~p~n", [E]), ?error_in_formula;
+        {error, E}                  -> io:format("in muin:call Func is ~p~n-"++
+                                                 "Args are ~p~n-E is ~p~n",
+                                                 [Func,Args,E]),
+                                       ?error_in_formula;
         {ok, V}                     -> V
     end.
 

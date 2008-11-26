@@ -83,7 +83,7 @@
          trunc/1,
 
          %% Special numbers
-         pi/0,
+         pi/1,
          sqrtpi/1,
 
          %% Summation
@@ -138,7 +138,8 @@
 
 '/'([V1, V2]) ->
     [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
-    ?ensure(Num2 =/= 0, ?ERR_DIV),
+    ?ensure(Num2 =/= 0,   ?ERR_DIV),
+    ?ensure(Num2 =/= 0.0, ?ERR_DIV),
     Num1/Num2.
 
 negate([V]) ->
@@ -194,6 +195,7 @@ exp([V1]) ->
 
 %% NOTE: Artificially limited to 256 (Excel's limit is 170).
 fact([V1]) ->
+    io:format("in fact V1 is ~p~n",[V1]),
     Num = ?int(V1, ?default_rules),
     ?ensure(Num =< 256, ?ERR_NUM),
     ?ensure(Num >= 0, ?ERR_NUM),
@@ -204,17 +206,42 @@ fact1(Num) ->
     foldl(fun(X, Acc) -> X * Acc end,
           1, seq(1, Num)).
 
-gcd([V1, V2]) ->
-    [A, B] = ?numbers([V1, V2], ?default_rules),
-    gcd1(A, B).
-gcd1(A, 0) -> A;
-gcd1(A, B) -> gcd1(B, A rem B).
+%% Keep the rource of the old one until we are sure
+%% the new one works :)
+%%gcd([V1, V2]) ->
+%%    [A, B] = ?numbers([V1, V2], ?default_rules),
+%%    gcd1(A, B).
+%%gcd1(A, 0) -> A;
+%%gcd1(A, B) -> gcd1(B, A rem B).
 
-lcm([V1, V2]) ->
-    [A, B] = ?numbers([V1, V2], ?default_rules),
-    lcm1(A, B).
-lcm1(A, B) ->
-    A * B / gcd1(A, B).
+gcd(V) -> [A|T] = ?numbers(V, ?default_rules),
+          gcd1(A,T).
+
+gcd1(A,[])    -> A;
+gcd1(A,[0|T]) -> gcd1(A,T);
+gcd1(A,[B|T]) -> A2=gcd2(A,B),
+                 gcd1(A2,T).
+    
+gcd2(A,0) -> A;
+gcd2(A,B) -> gcd2(B, A rem B).
+
+
+%% Keep the rource of the old one until we are sure
+%% the new one works :)    
+%% lcm([V1, V2]) ->
+%%    [A, B] = ?numbers([V1, V2], ?default_rules),
+%%    lcm1(A, B).
+%% lcm1(A, B) ->
+%%    A * B / gcd1(A, B).
+
+lcm(V) -> [A|T] = ?numbers(V, ?default_rules),
+          lcm1(A,T).
+
+lcm1(A,[])    -> A;
+lcm1(A,[B|T]) -> Div=gcd2(A,B),
+                 % A2 should be an integer - use round to cast it to one 
+                 A2=erlang:round(A*B/Div),
+                 lcm1(A2,T).
 
 %% Returns the remainder after number is divided by divisor. The result
 %% has the same sign as divisor.
@@ -281,15 +308,17 @@ mmult([L1, L2]) ->
             ?ERR_VAL
     end.
 
-multinomial([L]) ->
+multinomial(L) ->
     Nums = ?filter_numbers_with_cast(?ensure_no_errvals(?flatten(L))),
     Allok = all(fun(X) -> X >= 1 end, Nums),
     ?COND(Allok, multinomial1(Nums), ?ERR_NUM).
 multinomial1(Nums) ->
-    fact(sum(Nums)) / foldl(fun(X, Acc) ->
-                                    Acc * fact(X)
-                            end,
-                            1, Nums).
+    Nom = fact([sum(Nums)]),
+    Div = foldl(fun(X, Acc) ->
+                        Acc * fact([X])
+                end,
+                1, Nums),
+    Nom/Div.
 
 %%% Logarithms ~~~~~
 
@@ -441,7 +470,7 @@ trunc([V1, V2]) ->
 
 %%% Special numbers ~~~~~
 
-pi() ->
+pi([]) ->
     math:pi().
 
 sqrtpi([V1]) ->
@@ -509,7 +538,7 @@ sumif1([H1|T1], [H2|T2], F, Sum) ->
         false -> sumif1(T1, T2, F, Sum)
     end.
 
-sumproduct([L]) ->
+sumproduct(L) ->
     Numlists = map(fun(Xs) ->
                            [cast(X, num) ||
                                X <- ?ensure_no_errvals(?flatten(Xs))]
@@ -523,7 +552,7 @@ sumproduct1(Numlists) ->
     foldl(fun(Xs, Acc) -> Acc + product1(tuple_to_list(Xs)) end,
           0, hslists:zipn(Numlists)).
 
-sumsq([L]) ->
+sumsq(L) ->
     Nums = ?filter_numbers(?ensure_no_errvals(?flatten(L))),
     sumsq1(Nums).
 sumsq1(Nums) ->

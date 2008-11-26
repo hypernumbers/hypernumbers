@@ -72,7 +72,8 @@ die_on_errval(Vs) ->
                (?ERRVAL_CIRCREF) -> ?ERR_CIRCREF;
                (_)               -> nothing
             end,
-            Vs).
+            Vs),
+    Vs.
 
 %% Lazy test.
 ensure(true, _Action) ->
@@ -81,7 +82,7 @@ ensure(false, Action) ->
     Action().
 
 filter_numbers(Vs) ->
-    [X || X <- Vs, is_number(Vs)].
+    [X || X <- Vs, is_number(X)].
 
 filter_numbers_all(Vs) ->
     [cast(X, num) || X <- Vs, is_number(cast(X, num))].
@@ -95,8 +96,8 @@ deck([H|T]) ->
     deck1(H, T, []);
 deck(Z) ->
     deck1(Z, [], []).
-deck1(_, [], Acc) ->
-    Acc;
+deck1(Val, [], Acc) ->
+    append([Acc,[Val]]);
 deck1({matrix, _, L}, [H|T], Acc) ->
     deck1(H, T, append([Acc, L]));
 deck1(Val, [H|T], Acc) ->

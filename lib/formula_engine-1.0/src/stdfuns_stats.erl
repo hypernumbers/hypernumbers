@@ -286,49 +286,59 @@ linest(_) ->
 linest1(_, _) ->
     0.
 
-max([V1]) ->
+max(V1) ->
     Flatvs = ?flatten_all(V1),
     Nums = ?numbers(Flatvs, ?default_rules),
     ?COND(length(Nums) == 0, 0, lists:max(Nums)).
 
-maxa([V1]) ->
+maxa(V1) ->
     Flatvs = ?flatten_all(V1),
     Nums = ?numbers(Flatvs,
                     ?default_rules -- [cast_strings] ++ [cast_strings_zero]),
     ?COND(length(Nums) == 0, 0, lists:max(Nums)).
 
-median([V1]) ->
+median(V1) ->
     Nums = ?numbers(?flatten_all(V1), ?default_rules),
-    quartile1(Nums, 2).
+    Sum=stdfuns_math:sum(Nums),
+    Count=count(Nums),
+    Sum/Count.
 
-min([V1]) ->
+min(V1) ->
     Nums = ?numbers(?flatten_all(V1), ?default_rules),
     ?COND(length(Nums) == 0, 0, lists:min(Nums)).
 
-mina([V1]) ->
+mina(V1) ->
     Nums = ?numbers(?flatten_all(V1),
                     ?default_rules -- [cast_strings] ++ [cast_strings_zero]),
     ?COND(length(Nums) == 0, 0, lists:min(Nums)).
 
-mode([V1]) ->
+mode(V1) ->
     Nums = ?numbers(?flatten_all(V1), ?default_rules),
     mode1(Nums).
+
 mode1(Nums) ->
     Maptbl = mode1(Nums, []),
-    {Num, Count} = foldl(fun(Elt = {_, Cnt}, Acc = {_, Maxcnt}) ->
-                                 ?COND(Cnt > Maxcnt, Elt, Acc)
+    {N,C,Uniq} = foldl(fun({V, Cnt, _}, Acc = {_, Maxcnt,_}) ->
+                               {NewV,NewCnt,_}=?COND(Cnt >= Maxcnt,{V,Cnt,false},Acc),
+                               NewUniq=?COND(Cnt == Maxcnt,false,true),
+                               {NewV,NewCnt,NewUniq}
                          end,
                          hd(Maptbl), tl(Maptbl)),
-    ?COND(Count == 1,
+    ?COND(C == 1,
           ?ERR_NA, % no duplicates
-          Num).
+          ?COND(Uniq == false,
+                ?ERR_VAL, % must have one median (ie 1,2,2,3,3 is not valid)
+                N)).
 
 mode1([H|T], Maptbl) ->
     case keysearch(H, 1, Maptbl) of
-        {value, {H, Cnt}} -> % update count
-            mode1(T, lists:keyreplace(H, 1, {H, Cnt + 1}, Maptbl));
-        false -> % create entry
-            mode1(T, [Maptbl | [{H, 1}]])
+        % update count
+        {value, {H, Cnt,true}} ->
+            mode1(T, lists:keyreplace(H, 1, Maptbl,{H, Cnt + 1,true}));
+        % create entry
+        % the third parameter true is used in the foldl of mode1/1
+        false ->
+            mode1(T, lists:merge([Maptbl,[{H,1,true}]]))
     end;
 mode1([], Maptbl) ->
     Maptbl.
@@ -427,23 +437,23 @@ standardize(Arg = [_, _, _]) ->
 standardize1(Num, Mean, Stdev) ->
     (Num - Mean) / math:sqrt(Stdev).
 
-stdev([V1]) ->
+stdev(V1) ->
     Nums = ?numbers(?flatten_all(V1), ?default_rules),
     stdev1(Nums).
 stdev1(Nums) ->
     math:sqrt(devsq1(Nums) / (length(Nums) - 1)).
 
-stdeva([V1]) ->
+stdeva(V1) ->
     Nums = ?numbers(?flatten_all(V1), ?default_rules),
     stdev1(Nums).
 
-stdevp([V1]) ->
+stdevp(V1) ->
     Nums = ?numbers(?flatten_all(V1), ?default_rules),
     stdevp1(Nums).
 stdevp1(Nums) ->
     math:sqrt(devsq1(Nums) / (length(Nums) - 1)).
 
-stdevpa([V1]) ->
+stdevpa(V1) ->
     Nums = ?numbers(?flatten_all(V1), ?default_rules),
     stdevp1(Nums).
 
@@ -464,23 +474,23 @@ trimmean1(Nums, Percent) ->
     N = round((Percent / 100) * length(Nums)) div 2,
     average1(sublist(sort(Nums), N + 1, length(Nums) - 2 * N)).
 
-var([V1]) ->
+var(V1) ->
     Nums = ?numbers(?flatten_all(V1), ?default_rules),
     var1(Nums).
 var1(Nums) ->
     math:pow(stdev1(Nums), 2).
 
-vara([V1]) ->
+vara(V1) ->
     Nums = ?numbers(?flatten_all(V1), ?default_rules),
     var1(Nums).
 
-varp([V1]) ->
+varp(V1) ->
     Nums = ?numbers(?flatten_all(V1), ?default_rules),
     varp1(Nums).
 varp1(Nums) ->
     math:pow(stdevp1(Nums), 2).
 
-varpa([V1]) ->
+varpa(V1) ->
     Nums = ?numbers(?flatten_all(V1), ?default_rules),
     varp1(Nums).
 

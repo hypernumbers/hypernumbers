@@ -159,8 +159,17 @@ from_rfc1123_string(S) when is_list(S) ->
         {ok, {D, T}}   -> #datetime{date = D, time = T}
     end.
 
+%% Nicked from httpd_util:rfc1123_date (but doesn't convert from summertime)
+to_rfc1123_string(#datetime{date = {0,0,0}, time = {0,0,0}}) ->
+    to_rfc1123_string(#datetime{date = {1,1,1},time = {0,0,0}});
 to_rfc1123_string(#datetime{date = D, time = T}) ->
-    httpd_util:rfc1123_date({D, T}).
+    {YYYY,MM,DD}=D,
+    {Hour,Min,Sec}=T,
+    DayNumber = calendar:day_of_the_week({YYYY,MM,DD}),
+    lists:flatten(
+      io_lib:format("~s, ~2.2.0w ~3.s ~4.4.0w ~2.2.0w:~2.2.0w:~2.2.0w GMT",
+                    [rfc1123_day(DayNumber),DD,rfc1123_month(MM),YYYY,
+                     Hour,Min,Sec])).
 
 %%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -198,6 +207,33 @@ get_numdays(N, windows) when N =< 60 ->
     calendar:date_to_gregorian_days(?EXCEL_WIN_EPOCH) + N - 1;
 get_numdays(N, windows) ->
     calendar:date_to_gregorian_days(?EXCEL_WIN_EPOCH) + N - 2.
+
+%% Nicked from httpd_util.erl in inets
+%% RFC1123 compliant
+%% rfc1123_day
+rfc1123_day(1) -> "Mon";
+rfc1123_day(2) -> "Tue";
+rfc1123_day(3) -> "Wed";
+rfc1123_day(4) -> "Thu";
+rfc1123_day(5) -> "Fri";
+rfc1123_day(6) -> "Sat"; 
+rfc1123_day(7) -> "Sun".
+
+%% Nicked from httpd_util.erl in inets
+%% RFC1123 compliant
+%% rfc1123_month
+rfc1123_month(1)  -> "Jan";
+rfc1123_month(2)  -> "Feb";
+rfc1123_month(3)  -> "Mar";
+rfc1123_month(4)  -> "Apr";
+rfc1123_month(5)  -> "May";
+rfc1123_month(6)  -> "Jun";
+rfc1123_month(7)  -> "Jul";
+rfc1123_month(8)  -> "Aug";
+rfc1123_month(9)  -> "Sep";
+rfc1123_month(10) -> "Oct";
+rfc1123_month(11) -> "Nov";
+rfc1123_month(12) -> "Dec".
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

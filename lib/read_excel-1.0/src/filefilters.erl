@@ -345,31 +345,21 @@ test_DEBUG()->
     read(excel,FileRoot++"/"++File),
     io:format("~s processed~n",[File]).
 
-dump([])-> ok; %io:format("All tables dumped~n");
-%% dump([{cell_tokens,_}|T])->
-%%     io:format("~nSkipping out cell_tokens in dump~n"),
-%%    dump(T);
-dump([{lacunae,_}|T])->
-    io:format("~nSkipping out lacunae in dump~n"),
-    dump(T);
-dump([{formats,_}|T])->
-    io:format("~nSkipping out formats in dump~n"),
-    dump(T);
-dump([{xf,_}|T])->
-    io:format("~nSkipping out formats in dump~n"),
-    dump(T);
-%% dump([{Table,Tid}|T])->
-%%    case Table of
-%% externalrefs -> dump2(Table,Tid);
-%% externsheets -> dump2(Table,Tid);
-%% misc         -> dump2(Table,Tid);
-%% lacunae      -> dump2(Table,Tid);
-%% extra_fns    -> dump2(Table,Tid);
-%%        cell         -> dump2(Table,Tid);
-%%        _            -> io:format("skipping Table ~p in filefilters:dump~n",[Table])
-%%    end,
-dump([{Table,Tid}|T]) ->
+dump([])-> io:format("All tables dumped~n");
+dump([{Table,Tid}|T])->
+    case Table of
+        externalrefs -> dump2({Table,Tid});
+        externsheets -> dump2({Table,Tid});
+        names        -> dump2({Table,Tid});
+        % lacunae      -> dump2({Table,Tid});
+        % extra_fns    -> dump2({Table,Tid});
+        % cell         -> dump2({Table,Tid});
+        _            -> io:format("skipping Table ~p in filefilters:dump~n",[Table])
+    end,
+    dump(T).
+
+dump2({Table,Tid}) ->
     io:format("~nDumping table: ~p~n",[Table]),
     Fun = fun(X,_Y) -> io:format("~p: ~p~n",[Table,X]) end,
-    ets:foldl(Fun,[],Tid),
-    dump(T).
+    ets:foldl(Fun,[],Tid).
+

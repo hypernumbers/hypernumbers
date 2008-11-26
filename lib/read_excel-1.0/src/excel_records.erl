@@ -143,7 +143,6 @@ parse_rec(?DATEMODE,Bin,_Name,CurrentFormula,Tables)->
     {ok,CurrentFormula};
 parse_rec(?EXTERNNAME2,Bin,Name,CurrentFormula,Tables)->
     %% Best described by Section 5.39 of excelfileformatV1-41.pdf
-    io:format("in excel_records:parse_rec for EXTERNNAME2~n"),
     parse_externname(Bin,Tables),
     {ok,CurrentFormula};
 parse_rec(?LEFTMARGIN,_Bin,_Name,CurrentFormula,Tables)->
