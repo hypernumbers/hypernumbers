@@ -439,22 +439,44 @@ standardize1(Num, Mean, Stdev) ->
 
 stdev(V1) ->
     Nums = ?numbers(?flatten_all(V1), ?default_rules),
+    % Minimum of 2 parameters
+    case V1 of
+        [_] -> ?ERR_DIV;
+        _   -> ok
+    end,
     stdev1(Nums).
 stdev1(Nums) ->
     math:sqrt(devsq1(Nums) / (length(Nums) - 1)).
 
 stdeva(V1) ->
-    Nums = ?numbers(?flatten_all(V1), ?default_rules),
+	Rules=[ignore_strings,cast_bools,ignore_blanks,ignore_dates],
+    Nums = ?numbers(?flatten_all(V1), Rules),	
+    % Minimum of 2 parameters
+    case V1 of
+        [_] -> ?ERR_DIV;
+        _   -> ok
+    end,
     stdev1(Nums).
 
 stdevp(V1) ->
     Nums = ?numbers(?flatten_all(V1), ?default_rules),
+    % Minimum of 2 parameters
+    case V1 of
+        [_] -> ?ERR_DIV;
+        _   -> ok
+    end,
     stdevp1(Nums).
 stdevp1(Nums) ->
     math:sqrt(devsq1(Nums) / (length(Nums) - 1)).
 
 stdevpa(V1) ->
-    Nums = ?numbers(?flatten_all(V1), ?default_rules),
+	Rules=[ignore_strings,cast_bools,ignore_blanks,ignore_dates],
+    Nums = ?numbers(?flatten_all(V1), Rules),
+    % Minimum of 2 parameters
+    case V1 of
+        [_] -> ?ERR_DIV;
+        _   -> ok
+    end,
     stdevp1(Nums).
 
 steyx([V1, V2]) ->

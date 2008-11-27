@@ -539,18 +539,24 @@ sumif1([H1|T1], [H2|T2], F, Sum) ->
     end.
 
 sumproduct(L) ->
+    io:format("in stdfuns_math:sumproduct L is ~p~n",[L]),
     Numlists = map(fun(Xs) ->
                            [cast(X, num) ||
                                X <- ?ensure_no_errvals(?flatten(Xs))]
                    end,
                    L),
+    io:format("in stdfuns_math:sumproduct Numlists is ~p~n",[Numlists]),
     Len = length(hd(Numlists)),
+    io:format("in stdfuns_math:sumproduct Len is ~p~n",[Len]),
     Allok = all(fun(X) -> length(X) == Len end,
                 tl(Numlists)),
+    io:format("in stdfuns_math:sumproduct Allok is ~p~n",[Allok]),
     ?COND(Allok, sumproduct1(Numlists), ?ERR_VAL).
 sumproduct1(Numlists) ->
-    foldl(fun(Xs, Acc) -> Acc + product1(tuple_to_list(Xs)) end,
-          0, hslists:zipn(Numlists)).
+    %% WONT WORK
+    %% No such function hslists:zipn
+    foldl(fun(Xs, Acc) -> Accc + product1(tuple_to_list(Xs)) end,0,
+          hslists:zip(Numlists)).
 
 sumsq(L) ->
     Nums = ?filter_numbers(?ensure_no_errvals(?flatten(L))),
