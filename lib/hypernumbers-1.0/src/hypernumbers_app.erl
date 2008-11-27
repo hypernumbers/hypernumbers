@@ -24,19 +24,19 @@ start(_Type, _Args) ->
         _ -> 
             ok
     end,
-    
-    case is_fresh_startup() of
-        true  -> clean_start();
-        false -> ok
-    end,
-    
+        
     case hypernumbers_sup:start_link() of
         {ok, Pid} -> 
-            
+    
             {ok,[[Path]]} = init:get_argument(hn_config),	
             {ok,Config} = file:consult(Path), 
             gen_server:call(hn_config,{set_conf,Config}),
-            
+
+            case is_fresh_startup() of
+                true  -> clean_start();
+                false -> ok
+            end,
+                        
             ok = start_yaws(),
             ok = start_dirty_subscribe(),
             {ok, Pid};
