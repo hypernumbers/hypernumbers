@@ -12,7 +12,7 @@
 -import(simplexml,[to_xml_string/1,to_json_string/1]).
 -export([ out/1, get_page_attributes/1 ]).
 
-%% -record(upload, {fd,filename, last}).
+-record(upload, {fd,filename, last}).
 
 %% @spec out(Arg) -> YawsReturn.
 %% @doc Yaws handler for all incoming HTTP requests
@@ -48,7 +48,7 @@ do_request(Arg,Url) ->
     {ok,Ref} = hn_util:parse_url(Url),
     Vars = lists:map(RV,yaws_api:parse_query(Arg)),
     {ok,Type} = hn_util:get_req_type(Vars),
-    {ok,PostData} = get_post_data(Arg,Type),
+    {ok,PostData} = get_post_data(Arg,Type,Vars),
     
     %% Verify AuthToken, authtoken can be passed via url
     %% or cookies, url takes precedence
@@ -253,7 +253,12 @@ req('POST',{create,[],Data},Vars,_User,Ref = #ref{auth=Auth}) ->
     {ok,{success,[],[]}};
 
 req('POST',{delete,[],[]},_Attr,_User,Ref = #ref{ref={page,"/"}}) ->
-    hn_db:remove_item(Ref#ref{ref='_'}),
+    F = fun(X) ->
+                Path = Ref#ref.path,
+                hn_db:remove_item(Ref#ref{path=Path++X,ref='_'})
+        end,
+    Pages = hn_main:get_pages_under(Ref#ref.path)++[Ref#ref.path],
+    lists:foreach(F,Pages),
     {ok,{success,[],[]}};
 
 req('POST',{delete,[],Data},_Vars,_User,Ref) ->
@@ -310,6 +315,15 @@ req('POST',{template,[],[{url,[],[Path]}]},_Attr,_User,Ref) ->
     ok=hn_main:set_attribute(NRef#ref{name=dynamic},"true"),
     {ok,{success,[],[]}};
 
+req('POST',Data,["import"],_User,_Page) ->
+    F = fun() ->
+                {ok,_Stuff} = hn_import:hn_xml("/tmp/"++Data)
+        end,
+    F(),
+    %TODO: GET RID OF  - should also import permissions
+    hypernumbers_app:set_def_perms(),
+    {ok,{success,[],[]}};
+
 req(Method,Data,Vars,User,Page) ->
     throw({unmatched_request,Method,Data,Vars,User,Page}).
 
@@ -325,41 +339,6 @@ api_change([{biccie,[],     [Bic]},
 
     {ok,{success,[],[]}}.
 
-
-%%% API call - IMPORT
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% import an excel file, the import and log txt probably needs
-%% cleaned up
-%% api_import(Arg,Page) ->
-%%     F = fun(X) ->
-%%         filefilters:read(excel,X,fun(A) -> import(A,Page) end)
-%%     end,
-%%     case hn_util:upload(Arg,"Filedata",F) of
-%%     ok ->    {ok,{create,[],["success"]}};
-%%     error -> {ok,{create,[],["error"]}}
-%%    end.
-
-%% import([],_)-> ok;
-%% import([{_Name,Tid}|T],Page)->
-%%     Fun = fun(X,_Y) ->
-%%         case X of
-%%         {{_,{row_index,Row},{col_index,Col}},[_,Val]} ->
-%%             Req = lists:flatten([Page#page.site,Page#page.path,
-%%                 util2:make_b26(Col+1),hn_util:text(Row+1)]),
-%%             V = case Val of
-%%                 {value,number,Num} -> Num;
-%%                 {formula,Form}     -> Form;
-%%                 {string,Str}       -> Str
-%%             end,
-%%             hn_util:post(Req,"<create><formula>"++
-%%                 hn_util:text(V)++"</formula></create>","text/xml");
-%%         _ -> false
-%%         end
-%%     end,
-%%     ets:foldl(Fun,[],Tid),
-%%    import(T,Page).
-
-
 %% Utility functions
 %%--------------------------------------------------------------------
 get_page_attributes(Ref) ->
@@ -373,11 +352,13 @@ get_page_attributes(Ref) ->
     List = lists:map(fun hn_util:item_to_xml/1,Items),
     {attr,[],List}.
 
-get_post_data(Arg,_) when (Arg#arg.req)#http_request.method == 'GET' ->
+get_post_data(Arg,_,_) when (Arg#arg.req)#http_request.method == 'GET' ->
     {ok,[]};
-get_post_data(Arg,json) ->
+get_post_data(Arg,_,["import"]) ->
+    {ok,upload(Arg)};
+get_post_data(Arg,json,_) ->
     {ok,simplexml:from_json_string(binary_to_list(Arg#arg.clidata))};
-get_post_data(Arg,xml) ->
+get_post_data(Arg,xml,_) ->
     {ok,simplexml:from_xml_string(binary_to_list(Arg#arg.clidata))}.
 
 get_default(public) -> "public";
@@ -473,25 +454,108 @@ get_var_or_cookie(Name,Vars,Arg) ->
             {ok,Auth}
     end.
 
-%% upload(A,Name,Fun) when A#arg.state == undefined ->
-%%     multipart(A, #upload{},Name,Fun);
-%% upload(A,Name,Fun) ->
-%%     multipart(A, A#arg.state,Name,Fun).
 
-%% multipart(A,State,Name,Fun) ->
-%%     Parse = yaws_api:parse_multipart_post(A),
-%%     case Parse of
-%%         {cont, Cont, Res} ->
-%%             case addFileChunk(A, Res, State, Name,Fun) of
-%%                 {done, Result} ->   Result;
-%%                 {cont, NewState} -> {get_more, Cont, NewState}
-%%             end;
-%%         {result, Res} ->
-%%             case addFileChunk(A, Res, State#upload{last=true},Name,Fun) of
-%%                 {done, Result}  -> Result;
-%%                 {cont, _}       -> error
-%%  	        end
-%%     end.
+%% Urm, fix all this
+upload(A) when A#arg.state == undefined ->
+    State = #upload{},
+    multipart(A, State);
+upload(A) ->
+    multipart(A, A#arg.state).
+
+err() ->
+    throw(oops).
+
+multipart(A, State) ->
+    Parse = yaws_api:parse_multipart_post(A),
+    case Parse of
+        {cont, Cont, Res} ->
+            case addFileChunk(A, Res, State) of
+                {done, Result} ->
+                    Result;
+                {cont, NewState} ->
+                    {get_more, Cont, NewState}
+            end;
+        {result, Res} ->
+            case addFileChunk(A, Res, State#upload{last=true}) of
+                {done, Result} ->
+                    Result;
+                {cont, _} ->
+                    err()
+            end
+    end.
+
+addFileChunk(A, [{part_body, Data}|Res], State) ->
+    addFileChunk(A, [{body, Data}|Res], State);
+
+addFileChunk(_A, [], State) when State#upload.last==true,
+                                 State#upload.filename /= undefined,
+                                 State#upload.fd /= undefined ->
+    file:close(State#upload.fd),
+    %%file:delete([?DIR,State#upload.filename]),
+    {done, State#upload.filename};
+
+addFileChunk(_A, [], State) when State#upload.last==true ->
+    throw(incomplete);
+
+addFileChunk(_A, [], State) ->
+    {cont, State};
+
+addFileChunk(A, [{head, {"restorefile", Opts}}|Res], State ) ->
+    case lists:keysearch(filename, 1, Opts) of
+        {value, {_, Fname0}} ->
+            Fname = yaws_api:sanitize_file_name(basename(Fname0)),
+            case file:open(["/tmp/", Fname] ,[write]) of
+                {ok, Fd} ->
+                    S2 = State#upload{filename = Fname, fd = Fd},
+                    addFileChunk(A, Res, S2);
+                _Err ->
+                    {done, err()}
+            end;
+        false ->
+            {done, err()}
+    end;
+
+addFileChunk(A, [{body, Data}|Res], State) 
+  when State#upload.filename /= undefined ->
+    case file:write(State#upload.fd, Data) of
+        ok ->
+            addFileChunk(A, Res, State);
+        _Err ->
+            {done, err()}
+    end.
+
+
+basename(FilePath) ->
+    case string:rchr(FilePath, $\\) of
+        0 ->
+            %% probably not a DOS name
+            filename:basename(FilePath);
+        N ->
+            %% probably a DOS name, remove everything after last \
+            basename(string:substr(FilePath, N+1))
+    end.
+
+
+
+%%  upload(A,Name,Fun) when A#arg.state == undefined ->
+%%      multipart(A, #upload{},Name,Fun);
+%%  upload(A,Name,Fun) ->
+%%      multipart(A, A#arg.state,Name,Fun).
+
+%%  multipart(A,State,Name,Fun) ->
+%%      Parse = yaws_api:parse_multipart_post(A),
+%%      case Parse of
+%%          {cont, Cont, Res} ->
+%%              case addFileChunk(A, Res, State, Name,Fun) of
+%%                  {done, Result} ->   Result;
+%%                  {cont, NewState} -> {get_more, Cont, NewState}
+%%              end;
+%%          {result, Res} ->
+%%              case addFileChunk(A, Res, State#upload{last=true},Name,Fun) of
+%%                  {done, Result}  -> Result;
+%%                  {cont, _}       -> error
+%%   	        end
+%%      end.
 
 %% addFileChunk(A, [{part_body, Data}|Res], State,Name,Fun) ->
 %%     addFileChunk(A, [{body, Data}|Res], State,Name,Fun);
@@ -505,29 +569,29 @@ get_var_or_cookie(Name,Vars,Arg) ->
 %% addFileChunk(_A, [], State,_Name,_Fun) -> {cont, State};
 %% addFileChunk(A, [{head, {Name, Opts}}|Res], State,Name,Fun) ->
 %%     case lists:keysearch(filename, 1, Opts) of
-%%     {value, {_, Fname0}} ->
-%%         Fname = yaws_api:sanitize_file_name(basename(Fname0)),
-%%         case file:open(["/tmp/", Fname] ,[write]) of
-%%         {ok, Fd} ->
-%%             S2 = State#upload{filename = Fname,fd = Fd},
-%%             addFileChunk(A, Res, S2,Name,Fun);
-%%         _ -> {done, ok}
-%%         end;
-%%     false -> {done, ok}
+%%         {value, {_, Fname0}} ->
+%%             Fname = yaws_api:sanitize_file_name(basename(Fname0)),
+%%             case file:open(["/tmp/", Fname] ,[write]) of
+%%                 {ok, Fd} ->
+%%                     S2 = State#upload{filename = Fname,fd = Fd},
+%%                     addFileChunk(A, Res, S2,Name,Fun);
+%%                 _ -> {done, ok}
+%%             end;
+%%         false -> {done, ok}
 %%     end;
 %% addFileChunk(A, [{body, Data}|Res], State,Name,Fun)
 %%   when State#upload.filename /= undefined ->
 %%     case file:write(State#upload.fd, Data) of
-%%     ok -> addFileChunk(A, Res, State, Name,Fun);
-%%     _  -> {done, ok}
+%%         ok -> addFileChunk(A, Res, State, Name,Fun);
+%%         _  -> {done, ok}
 %%     end;
 %% addFileChunk(A, [_N|Res], State,Name,Fun) ->
 %%     addFileChunk(A, Res, State,Name,Fun).
 
 %% basename(FilePath) ->
 %%     case string:rchr(FilePath, $\\) of
-%%     0 ->%% probably not a DOS name
-%%         filename:basename(FilePath);
-%%     N ->%% probably a DOS name, remove everything after last \
-%%         basename(string:substr(FilePath, N+1))
+%%         0 ->% probably not a DOS name
+%%             filename:basename(FilePath);
+%%         N ->% probably a DOS name, remove everything after last \
+%%             basename(string:substr(FilePath, N+1))
 %%     end.

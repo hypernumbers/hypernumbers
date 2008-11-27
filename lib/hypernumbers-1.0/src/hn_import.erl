@@ -10,6 +10,8 @@
 %% @doc Yaws handler for all incoming HTTP requests
 hn_xml(FileName) -> 
 
+    ?INFO("Importing ~p",[FileName]),
+
     {ok,Xml} = file:read_file(FileName),
     {root,[{domain,Domain}],Pages} 
         = simplexml:from_xml_string(binary_to_list(Xml)),

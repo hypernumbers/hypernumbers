@@ -162,22 +162,25 @@ button span
 .expand   ul { display:block; }
 .collapse ul { display:none;  }
 
+#loading { display:none; }
+
 #import 
-{ 
+{
+ display:none; 
   background:white;
   top:50%;
   left:50%;
   margin-left:-150px;
-  margin-top:-100px;
+  margin-top:-75px;
   position:absolute;
   width:300px;
-  height:200px;
+  height:150px;
   padding:10px;
   border:5px solid grey;
 }
 
 .cover
-{ 
+{ display:none;
   position:absolute;
   top:0px;
   left:0px;

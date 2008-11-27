@@ -8,7 +8,7 @@
 -include("spriki.hrl").
 
 -export([start/2, stop/1, clean_start/0 ]).
-
+-export([set_def_perms/0]).
 %% @spec start(Type,Args) -> {ok,Pid} | Error
 %% @doc  Application callback
 start(_Type, _Args) ->
@@ -78,8 +78,7 @@ clean_start() ->
               [dirty_cell,dirty_hypernumbers]),
 
     ok = hn_db:create(),
-    Hosts = gen_server:call(hn_config,{get,hosts}),
-    set_def_perms(Hosts),
+    set_def_perms(),
     ok = start_dirty_subscribe(),
     ok.
 
@@ -115,6 +114,10 @@ create_sconf({IP,Port,_Domains}) ->
 
 %% @spec set_def_perms(Hosts) -> ok
 %% @doc  Set the default permissions on each domain
+set_def_perms() ->
+    Hosts = gen_server:call(hn_config,{get,hosts}),
+    set_def_perms(Hosts).
+
 set_def_perms([]) -> ok;
 set_def_perms([{{I1,I2,I3,I4},Port,Domains}|T])->
     
