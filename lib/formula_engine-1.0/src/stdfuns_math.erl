@@ -555,7 +555,7 @@ sumproduct(L) ->
 sumproduct1(Numlists) ->
     %% WONT WORK
     %% No such function hslists:zipn
-    foldl(fun(Xs, Acc) -> Accc + product1(tuple_to_list(Xs)) end,0,
+    foldl(fun(Xs, Acc) -> Acc + product1(tuple_to_list(Xs)) end,0,
           hslists:zip(Numlists)).
 
 sumsq(L) ->
