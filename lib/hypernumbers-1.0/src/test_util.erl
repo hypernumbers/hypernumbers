@@ -381,12 +381,16 @@ cmp(G, E) ->
     E2 = case E of
              true   -> true;
              false  -> false;
-             _Other -> case tconv:to_num(E) of
-                           N when is_number(N) -> N;
-                           {error, nan}        -> E
+             _Other -> case lists:member(E, ['#NULL!', '#DIV/0!', '#VALUE!',
+						'#REF!', '#NAME?', '#NUM!', '#N/A']) of
+                           true    -> E;
+                           _Other2 -> case tconv:to_num(E) of
+                                          N when is_number(N) -> N;
+                                          {error, nan}        -> E
+                                      end
                        end
          end,
-G2 = conv_from_get(G),
+    G2 = conv_from_get(G),
     if is_float(G2) andalso is_float(E2) ->
             io:format("in test_util:cmp (1) Val is ~p E is ~p~n",[G2,E2]),
             float_cmp(G2, E2, 5);
