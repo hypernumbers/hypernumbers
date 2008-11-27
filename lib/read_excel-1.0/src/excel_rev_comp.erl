@@ -297,8 +297,6 @@ rev_comp(Index,[{relative_area,{tAreaN,[NewDetails|{type,_Type}],
 %% tNameX
 rev_comp(I,[{name_xref,{tNameX,[{reference_index,Ref},
                                 {name_index,Name},Type],Ret}}|T],TokArr,Stack,Tbl) ->
-    io:format("in excel_rev_comp:rev_comp for tNameX Name is ~p Ref is ~p~n",
-              [Name,Ref]),
     rev_comp(I,T,TokArr,[{string,get_ref_name(Ref,Name,Tbl)}|Stack],Tbl);
 
 %% tRef3d
@@ -357,12 +355,6 @@ get_ref_name(_RefIndex,NameIndex,Tables)->
     % that we are subracting 1 from the NameIndex...
     [{_,[{name,Name}]}]=excel_util:read(Tables,extra_fns,NameIndex-1),
     Name.
-%%  {value,{names,Names}}=lists:keysearch(names,1,Tables),
-%%  Fun=fun(X,_Y) -> io:format("~p: ~p~n",[Names,X]) end,
-%%  ets:foldl(Fun,[],Names),
-%%  Return=excel_util:read(Tables,names,NameIndex-1),
-%%  [{_,[{sheetindex,_SheetIdx},{type,_Type},{name,Name}]}]=Return,
-%%  Name.
 
 %% Looks up a reference to an externsheet and turns it into a sheet ref
 get_sheet_ref(Index,Tables)->
@@ -609,39 +601,20 @@ popSpaces(List)            -> {[],List}.
 %%           returns and unaries) which we want to keep sooking
 %%           into the function until they all run out...
 %%           
-%%           which is why the three clauses before the terminator don't
-%%           decrement the counter I :)
+%%           which also is why the three clauses before the terminator 
+%%           don't decrement the counter I :)
+%%           
 popVars(I,[{space,Val}|T],Args) ->
-    % io:format("in excel_rev_comp:popVars (space) I is ~p Val is ~p~n-Args is ~p~n",
-    %          [I,Val,Args]),
     popVars(I,T,[{space,Val}|Args]);
 popVars(I,[{unary,Op}|T],Args) ->
-    % io:format("in excel_rev_comp:popVars (unary) I is ~p Op is ~p~n-Args is ~p~n",
-    %          [I,Op,Args]),
     popVars(I,T,[{unary,Op}|Args]);
 popVars(I,[{return}|T],Args) ->
-    % io:format("in excel_rev_comp:popVars (return) I is ~p~n-Args is ~p~n",[I,Args]),
     popVars(I,T,[{return}|Args]);
 %% THIS IS THE TERMINATOR
 popVars(0,Stack,Args) ->
-    % io:format("in excel_rev_comp:popVars (finish) Stack is ~p~n-Args are ~p~n",[Stack,Args]),
     {Stack,lists:reverse(Args)};
 popVars(I,[Else|T],Args) ->
-    % io:format("in excel_rev_comp:popVars (var) I is ~p Else is ~p~n-T is ~p~n"++
-    %          "Args is ~p~n",[I,Else,T,Args]),
     popVars(I-1,T,[Else|Args]).
-
-%%push([],Val)    -> [lists:append([],Val)];
-%%push(List,Val)  ->
-%%    lists:reverse(lists:flatten([Val,lists:reverse(List)])).
-
-%%pop([H|[]]) -> {H,[]};
-%%pop(List)   ->
-%%    [Pop|NewList]=lists:reverse(List),
-%%    case Pop of    %%
-%%    {space,Val} -> pop(lists:reverse(NewList));
-%%    _Else       -> {Pop,lists:reverse(NewList)}
-%%    end.
 
 %% this function makes a range from the start and end cell specifications
 make_range(StartCell,EndCell)->
@@ -653,9 +626,9 @@ make_range(StartCell,EndCell)->
 make_cell({Row,Col,rel_row,rel_col}) ->
     string:to_upper(util2:make_b26(Col+1)++integer_to_list(Row+1));
 make_cell({Row,Col,abs_row,rel_col}) ->
-    string:to_upper(util2:make_b26(Col+1)++"$"++integer_to_list(Row+1));
+    string:to_upper(util2:make_b26(Col+1)++"$"++integer_to_list(Row+1)); %"
 make_cell({Row,Col,rel_row,abs_col}) ->
-    string:to_upper("$"++util2:make_b26(Col+1)++integer_to_list(Row+1));
+    string:to_upper("$"++util2:make_b26(Col+1)++integer_to_list(Row+1)); %"
 make_cell({Row,Col,abs_row,abs_col}) ->
     string:to_upper("$"++util2:make_b26(Col+1)++"$"++integer_to_list(Row+1)).
 
@@ -1166,7 +1139,8 @@ macro_no_of_args(360) -> 1.
 esc(String) ->
     case string:words(String) of
         1 -> string:to_lower(String);
-        _ -> "'"++string:to_lower(String)++"'"
+        _ -> {ok, NewString,_}=regexp:gsub(string:to_lower(String)," ","_"),
+             NewString
     end.
 
 
