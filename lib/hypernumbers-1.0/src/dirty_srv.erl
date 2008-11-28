@@ -59,10 +59,10 @@ handle_call(flush, _From, State = #state{type=Type}) ->
                   Fn2 = fun(X,Acc) ->
                                 {_,Index,_}=X,
                                 Links=hn_db:read_links(Index,parent),
-                                NewAcc = case Links of
-                                             [] -> Acc;
-                                             L  -> [{X,L}|Acc]
-                                         end
+                                case Links of
+                                    [] -> Acc;
+                                    L  -> [{X,L}|Acc]
+                                end
                         end,
                   LinksList=lists:foldl(Fn2,[],List),
                   % now iterate over this list and look for parents that are
@@ -115,7 +115,7 @@ trigger_recalc(Rec,Type) ->
     Index = ?COND(Type == dirty_cell,
                   Rec#dirty_cell.index,
                   Rec#dirty_hypernumber.index),
-    #index{path=Path,row=Row,column=Col}=Index,
+    % #index{path=Path,row=Row,column=Col}=Index,
     % Str=string:join(Path,"/")++" Row "++integer_to_list(Row)++" Col "
     %    ++integer_to_list(Col),
     % bits:log(Str),
@@ -126,24 +126,28 @@ trigger_recalc(Rec,Type) ->
          end,
     ok.
 
-shrink(ParentsList,List) -> shrink(ParentsList,List,[]).
+shrink(ParentsList,List) -> % io:format("in shrink~n-ParentsList is ~p~n-List is ~p~n",
+                            %          [ParentsList,List]),
+                            shrink(ParentsList,List,[]).
 
-shrink([],List,Acc) -> Acc;
-shrink([{Index,Parents}|T],List,Acc) ->
-    NewAcc=case has_dirty_parent(Parents,List) of
-               true  -> [Index|Acc];
-               false -> Acc
-           end,
+shrink([],_List,Acc) -> Acc;
+shrink([Dirty|T],List,Acc) ->
+    DirtyParents = has_dirty_parent(List,Dirty), 
+    NewAcc = case DirtyParents of
+                 false  -> Acc;
+                 Dirty2 -> [Dirty2|Acc]
+             end,
+    % io:format("in dirty_srv:shrink NewAcc is ~p~n",[NewAcc]),
     shrink(T,List,NewAcc).
 
-has_dirty_parent(Parents,List) -> has_dirty_parent(Parents,List,false).
-
 %% One true is good enough!
-has_dirty_parent(Parents,List,true) -> true;
-has_dirty_parent([],List,false)     -> false;
-has_dirty_parent([H|T],List,Status) ->
-    {local_cell_link,Parent,Child}=H,
-    Lookup=lists:keymember(Child,2,List),
-    has_dirty_parent(T,List,Lookup).
-
-           
+has_dirty_parent([],_Dirty) -> false;
+has_dirty_parent([H|T],Parent)  ->
+    {dirty_cell,Index,_}=H,
+    {Cell,Links}=Parent,
+    case lists:keymember(Index,3,Links) of
+        true  -> % io:format("true~n"),
+                 H;
+        false -> % io:format("false~n"),
+                 has_dirty_parent(T,Parent)
+    end.
