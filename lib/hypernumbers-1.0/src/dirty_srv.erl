@@ -56,7 +56,6 @@ handle_call(flush, _From, State = #state{type=Type}) ->
                   % get all the dirty_cell indices
                   Match=ms_util:make_ms(dirty_cell,[{index,'$1'}]),
                   List=mnesia:match_object(Match),
-                  % now for each index get its parents
                   Fn2 = fun(X,Acc) ->
                                 {_,Index,_}=X,
                                 Links=hn_db:read_links(Index,parent),
@@ -116,7 +115,10 @@ trigger_recalc(Rec,Type) ->
     Index = ?COND(Type == dirty_cell,
                   Rec#dirty_cell.index,
                   Rec#dirty_hypernumber.index),
-    
+    #index{path=Path,row=Row,column=Col}=Index,
+    % Str=string:join(Path,"/")++" Row "++integer_to_list(Row)++" Col "
+    %    ++integer_to_list(Col),
+    % bits:log(Str),
     ok = mnesia:dirty_delete({Type, Index}),
     ok = case Type of
              dirty_cell        -> hn_db:cell_changed(Index);
@@ -129,8 +131,8 @@ shrink(ParentsList,List) -> shrink(ParentsList,List,[]).
 shrink([],List,Acc) -> Acc;
 shrink([{Index,Parents}|T],List,Acc) ->
     NewAcc=case has_dirty_parent(Parents,List) of
-               true  -> Acc;
-               false -> [Index|Acc]
+               true  -> [Index|Acc];
+               false -> Acc
            end,
     shrink(T,List,NewAcc).
 
@@ -141,6 +143,7 @@ has_dirty_parent(Parents,List,true) -> true;
 has_dirty_parent([],List,false)     -> false;
 has_dirty_parent([H|T],List,Status) ->
     {local_cell_link,Parent,Child}=H,
-    has_dirty_parent(T,List,lists:keymember(Child,2,List)).
+    Lookup=lists:keymember(Child,2,List),
+    has_dirty_parent(T,List,Lookup).
 
            
