@@ -1,5 +1,6 @@
 always_fails__missing_functions
 a_alignment
+a_quis_custodiet_custodiens
 a_sheet_name_with_spaces
 a_should_be_10_tests
 a_should_be_15_tests
@@ -20,6 +21,7 @@ b_just_numbers
 b_made_up_fn_names
 b_multiple_sheets
 b_nested_functions
+b_plus_and_sum_are_different
 b_quadratic_equations
 b_shared_formulae
 b_simple
