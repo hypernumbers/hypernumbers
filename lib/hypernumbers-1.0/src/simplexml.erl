@@ -11,15 +11,6 @@
     from_xml_string/1,
     search/2 ]).
 
--export([ 
-    to_json/1, 
-    to_json_string/1, 
-    from_json/1,
-    from_json_string/1,
-    to_xml_string/1,
-    from_xml_string/1,
-    search/2 ]).
-
 %% @doc Exports a json encoded string taking "simple-form" XML content
 to_json_string(SimpleXML) -> 
     JSON = to_json(SimpleXML),
