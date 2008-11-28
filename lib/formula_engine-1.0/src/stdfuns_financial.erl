@@ -14,23 +14,28 @@
 
 
 db([V1, V2, V3, V4]) ->
-    db([V1, V2, V3, V4, 12]);
+    "the function db has an infinite loop!";
+    % db([V1, V2, V3, V4, 12]);
 db([V1, V2, V3, V4, V5]) ->
     [Cost, Salvage, Life, Period, Month] = ?numbers([V1, V2, V3, V4, V5],
                                                     ?default_rules),
     ?ensure((Month >= 1) andalso (Month =< 12), ?ERR_NUM), 
-    db1(Cost, Salvage, Life, Period, Month).
+    "the function db has an infinite loop!".
+    % db1(Cost, Salvage, Life, Period, Month).
 -define(dbrate,
         (stdfuns_math:round1(1 - math:pow(Salvage / Cost, 1 / Life), 3))).
 db1(Cost, Salvage, Life, Life, Month) -> % Last period
+    io:format("in stdfuns_financial:db1 (1)~n"),
     Prevdepr = foldl(fun(X, Acc) ->
                              Acc + db1(Cost, Salvage, Life, X, Month)
                      end,
                      0, seq(1, Life - 1)),
     ((Cost - Prevdepr) * ?dbrate * (12 - Month)) / 12;
 db1(Cost, Salvage, Life, 1, Month) -> % First period
+    io:format("in stdfuns_financial:db1 (2)~n"),
     Cost * ?dbrate * Month / 12;
 db1(Cost, Salvage, Life, Period, Month) -> % Some other period
+    io:format("in stdfuns_financial:db1 (3)~n"),
     Prevdepr = foldl(fun(X, Acc) ->
                              Acc + db1(Cost, Salvage, Life, X, Month)
                      end,
