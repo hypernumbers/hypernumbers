@@ -7,6 +7,8 @@
 -include("hypernumbers.hrl").
 
 -define(mn_tr,mnesia:transaction).
+-define(mn_ac,mnesia:activity).
+
 %% record_info isnt available at runtime
 -define(create(Name,Type,Storage),
         fun() ->
@@ -51,7 +53,7 @@ create()->
 write_item(Addr,Val) when is_record(Addr,ref) ->
     Item = #hn_item{addr=Addr, val=Val},
     Fun  = fun()-> mnesia:write(Item) end,
-    {atomic, ok} = ?mn_tr(Fun),
+    ok = ?mn_ac(async_dirty,Fun),
     spawn(fun() -> notify_remote(Item) end),
     ok.
 
@@ -67,7 +69,7 @@ get_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
                 Match = #hn_item{addr = NRef, _ = '_'},
                 mnesia:match_object(hn_item,Match,read)
         end,
-    {atomic, List} = ?mn_tr(F),
+    List = ?mn_ac(ets,F),
     case Ref of
         {cell,_} -> List;
         {page,_} -> List;
@@ -93,7 +95,7 @@ get_ref_from_name(Name) ->
                   Match = #hn_item{addr=#ref{name=name, _ = '_'}, val = Name},
                   mnesia:match_object(hn_item,Match,read)
           end,
-    {atomic, Items} = ?mn_tr(Fun),
+    Items = ?mn_ac(ets,Fun),
     [X#hn_item.addr || X <- Items].
 
 %% @spec get_item_inherited(Ref) -> {ok,Value}
@@ -121,7 +123,7 @@ remove_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
                 Fun   = fun(X) -> notify_remove(X),mnesia:delete_object(X) end,
                 lists:map(Fun,mnesia:match_object(hn_item,Match,read))
         end,
-    {atomic, _Okay} = ?mn_tr(F),
+    _Okay = ?mn_ac(transaction,F),
     ok.
 
 %% @spec write_local_link(Parent,Child) -> ok
@@ -130,7 +132,7 @@ write_local_link(Parent,Child) ->
     F = fun()->
                 mnesia:write(#local_cell_link{parent=Parent,child=Child})
         end,
-    {atomic,ok}=?mn_tr(F),
+    ok = ?mn_ac(async_dirty,F),
     ok.
 
 %% @spec read_links(Cell,Relation) -> Links
@@ -142,7 +144,7 @@ read_links(Index, Relation) ->
                 {local_cell_link,Index,'_'}),
 
     F = fun() -> mnesia:match_object(Obj) end,
-    {atomic, List} = ?mn_tr(F),
+    List = ?mn_ac(ets,F),
 
     List.
 
@@ -182,7 +184,7 @@ del_remote_link(Obj=#remote_cell_link{type=outgoing}) ->
                         ok
                 end
         end,
-    {atomic,ok}=?mn_tr(F),
+    ok = ?mn_ac(transaction,F),
     ok;
 
 del_remote_link(Obj = #remote_cell_link{type=incoming}) ->
@@ -222,7 +224,7 @@ del_remote_link(Obj = #remote_cell_link{type=incoming}) ->
                 Hn
         end,
     
-    {atomic, Hn} = ?mn_tr(F),
+    Hn = ?mn_ac(transaction,F),
     
     %% Unregister
     Url     = hn_util:index_to_url(Obj#remote_cell_link.parent),
@@ -263,7 +265,7 @@ write_remote_link(Parent,Child,Type) ->
                 end
         end,
 
-    {atomic , {ok,Link}} = ?mn_tr(F),
+    {ok,Link} = ?mn_ac(transaction,F),
 
     case Link of
         {register,Hn} ->            
@@ -290,7 +292,7 @@ read_remote_links(Index, Relation,Type) ->
                 {remote_cell_link,'_',Index,Type},
                 {remote_cell_link,Index,'_',Type}),
     F = fun() -> mnesia:match_object(Obj) end,
-    {atomic, List} = ?mn_tr(F),
+    List = ?mn_ac(ets,F),
     List.
 
 %% @spec cell_changed(Cell) -> ok
@@ -308,7 +310,7 @@ cell_changed(Cell) ->
                 Links = mnesia:match_object(Rem),
                 {ok,list_hn(Links,[]),lists:append(Direct,Queries)}
         end,
-    {atomic, {ok,Remote,Local}} = ?mn_tr(F),
+    {ok,Remote,Local} = ?mn_ac(transaction,F),
     
     Val = get_item_val((to_ref(Cell))#ref{name=rawvalue}),
     
@@ -333,7 +335,7 @@ hn_changed(Cell) ->
                 lists:foreach(X,mnesia:match_object(Link)),
                 ok
         end,
-    {atomic, ok} = ?mn_tr(F),
+    ok = ?mn_ac(transaction,F),
     ok.
 
 %% @spec mark_dirty(Type,Cell) -> ok
@@ -345,7 +347,7 @@ mark_dirty(Index,Type) ->
           end,
 
     F = fun() -> mnesia:write(Obj) end,
-    {atomic, ok} = ?mn_tr(F),
+    ok = ?mn_ac(async_dirty,F),
     ok.
 
 %% @spec update_hn(From,Bic,Val,Version) -> ok
@@ -360,7 +362,7 @@ update_hn(From,Bic,Val,_Version)->
                 mnesia:write(Obj#incoming_hn{value=hn_util:xml_to_val(Val)}),
                 mark_dirty(Index,hypernumber)
         end,
-    {atomic, ok} = ?mn_tr(F),
+    ok = ?mn_ac(transaction,F),
     ok.
 
 %% @spec get_hn(Url,From,To) -> ok
@@ -368,7 +370,7 @@ update_hn(From,Bic,Val,_Version)->
 %%       or remote site
 get_hn(Url,_From,To)->
     F = fun() -> do_get_hn(Url,To) end,
-    {atomic, List} = ?mn_tr(F),
+    List = ?mn_ac(transaction,F),
     List.
 
 do_get_hn(Url,To)->
@@ -416,7 +418,7 @@ register_hn(To,From,Bic,Proxy,Url) ->
                 mnesia:write(Hn),
                 ok
         end,
-    {atomic , _Ok} = ?mn_tr(F),
+    _Ok = ?mn_ac(transaction,F),
 	ok.
 
 %%--------------------------------------------------------------------
@@ -425,7 +427,7 @@ register_hn(To,From,Bic,Proxy,Url) ->
 get_par(Index,Path) ->
     El = {local_cell_link,Index#index{path=Path},'_'},
     F = fun() -> mnesia:match_object(El) end,
-    {atomic,List} = ?mn_tr(F),
+    List = ?mn_ac(ets,F),
     List.
 
 dyn_parents(_Index = #index{path=[]},Results, _Acc) ->
@@ -500,18 +502,18 @@ write_template(Name,TemplatePath,Gui,Form) ->
     Fun  = fun() ->
 		   mnesia:write(Template)
 	   end,
-    {atomic, ok} = ?mn_tr(Fun),
+    ok = ?mn_ac(async_dirty,Fun),
     {ok,ok}.
 
 read_template(Name) ->
     Fun = fun() -> mnesia:read({template,Name}) end,
-    {atomic,[Template]}=?mn_tr(Fun),
+    [Template] = ?mn_ac(ets,Fun),
     {ok,Template}.
 
 get_templates() ->
     Match=ms_util:make_ms(template,[]),
     Fun = fun() -> mnesia:match_object(Match) end,
-    {atomic,Templates}=?mn_tr(Fun),
+    Templates = ?mn_ac(ets,Fun),
     {ok,Templates}.
 
 
@@ -521,7 +523,7 @@ match_ref(Ptn) ->
     F = fun() ->
                 mnesia:match_object(hn_item,#hn_item{addr=Ptn,_='_'},read)
         end,
-    {atomic, List} = ?mn_tr(F),
+    List = ?mn_ac(ets,F),
     List.
 
 get_item_list(RefType,Addr,Acc) ->
