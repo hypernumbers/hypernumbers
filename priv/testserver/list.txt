@@ -19,6 +19,7 @@ b_if_and_conditionals
 b_if_and_conditionals_arrays
 b_just_numbers
 b_made_up_fn_names
+b_multiple_errors
 b_multiple_sheets
 b_nested_functions
 b_plus_and_sum_are_different
