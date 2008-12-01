@@ -101,8 +101,13 @@ collect_date(V, Rules) ->
 
 %%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-generic_collect(Vs, Rules, PartitionFun, Targtype) ->
-    muin_checks:die_on_errval(Vs),
+%%% TODO: Rewrite this.
+%%% Instead of working rule-by-rule, go value-by-value & die on the first encountered error value.
+%%% Checking for error values after everything has been [attempted to be] cast works but is not
+%%% efficient.
+%%% Clients of the interface aren't affected by these changes so the quick fix is ok for now.
+%%% FIXME: PartitionFun is not used.
+generic_collect(Vs, Rules, _PartitionFun, Targtype) ->
     Res = foldl(fun(cast_numbers, Acc) -> cast_numbers(Acc, Targtype);
                  (cast_strings, Acc) -> cast_strings(Acc, Targtype);
                  (cast_bools, Acc)   -> cast_bools(Acc, Targtype);
@@ -112,6 +117,8 @@ generic_collect(Vs, Rules, PartitionFun, Targtype) ->
                 end,
                 Vs, Rules),
 
+    muin_checks:die_on_errval(Res),
+    
     if(Res == []) -> ?ERR_VAL;
       true       -> Res
     end.
@@ -140,7 +147,7 @@ ignore(Fun, Xs) ->
 %%% Casts ~~~~~
 
 cast_strings(Xs, Targtype) ->
-    cast_strings_with_opt(Xs, Targtype, fun() -> ?ERR_VAL end).
+    cast_strings_with_opt(Xs, Targtype, fun() -> ?ERRVAL_VAL end).
 cast_strings_false(Xs) ->
     cast_strings_with_opt(Xs, bool, fun() -> false end).
 cast_strings_zero(Xs) ->
@@ -195,7 +202,7 @@ ban_blanks(Xs) ->
 
 generic_ban(Xs, Detectorf) ->
     case any(Detectorf, Xs) of
-        true  -> ?ERR_VAL;
+        true  -> ?ERR_VAL; % For this to work properly, generic_collect needs to go value-by-value.
         false -> Xs
     end.
 
