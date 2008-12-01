@@ -240,34 +240,34 @@ flatten_areas(Hd, [NHd|Tl], Acc, Test) ->
 
 %%% TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--include_lib("eunit/include/eunit.hrl").
--define(L1, [1, 2, 3, true, false, "11.22", blank, 99.9]).
--define(L2, [0, 0.0, 1, 999, "true", "TrUe", "FALse", blank, true, false]).
+%% -include_lib("eunit/include/eunit.hrl").
+%% -define(L1, [1, 2, 3, true, false, "11.22", blank, 99.9]).
+%% -define(L2, [0, 0.0, 1, 999, "true", "TrUe", "FALse", blank, true, false]).
 
-collect_numbers_test_() ->
-    [
-     ?_assert(collect_numbers(?L1, [ignore_strings, ignore_bools, ignore_blanks]) ==
-              [1, 2, 3, 99.9]),
-     ?_assert(collect_numbers(?L1, [cast_strings, ignore_bools, ignore_blanks]) ==
-              [1, 2, 3, 11.22, 99.9]),
-     ?_assert(collect_numbers(?L1, [cast_strings, cast_bools, ignore_blanks]) ==
-              [1, 2, 3, 1, 0, 11.22, 99.9]),
-     ?_assert(collect_numbers(?L1, [cast_strings, cast_bools, zero_blanks]) ==
-              [1, 2, 3, 1, 0, 11.22, 0, 99.9]),
-     ?_assert(collect_numbers(?L1, [cast_strings_zero, ignore_bools, zero_blanks]) ==
-              [1, 2, 3, 11.22, 0, 99.9])
-    ].
+%% collect_numbers_test_() ->
+%%     [
+%%      ?_assert(collect_numbers(?L1, [ignore_strings, ignore_bools, ignore_blanks]) ==
+%%               [1, 2, 3, 99.9]),
+%%      ?_assert(collect_numbers(?L1, [cast_strings, ignore_bools, ignore_blanks]) ==
+%%               [1, 2, 3, 11.22, 99.9]),
+%%      ?_assert(collect_numbers(?L1, [cast_strings, cast_bools, ignore_blanks]) ==
+%%               [1, 2, 3, 1, 0, 11.22, 99.9]),
+%%      ?_assert(collect_numbers(?L1, [cast_strings, cast_bools, zero_blanks]) ==
+%%               [1, 2, 3, 1, 0, 11.22, 0, 99.9]),
+%%      ?_assert(collect_numbers(?L1, [cast_strings_zero, ignore_bools, zero_blanks]) ==
+%%               [1, 2, 3, 11.22, 0, 99.9])
+%%     ].
 
-collect_bools_test_() ->
-    [
-     ?_assert(collect_bools(?L1, [ignore_strings, cast_numbers, ignore_blanks]) ==
-              [true, true, true, true, false, true]),
-     ?_assert(collect_bools(?L1, [ignore_strings, cast_numbers, false_blanks]) ==
-              [true, true, true, true, false, false, true]),
-     ?_assert(collect_bools(?L1, [ignore_strings, ignore_numbers, false_blanks]) ==
-              [true, false, false]),
-     ?_assert(collect_bools(?L2, [ignore_numbers, ignore_strings, ignore_blanks]) ==
-              [true, false]),
-     ?_assert(collect_bools(?L2, [cast_numbers, cast_strings, false_blanks]) ==
-              [false, false, true, true, true, true, false, false, true, false])
-    ].
+%% collect_bools_test_() ->
+%%     [
+%%      ?_assert(collect_bools(?L1, [ignore_strings, cast_numbers, ignore_blanks]) ==
+%%               [true, true, true, true, false, true]),
+%%      ?_assert(collect_bools(?L1, [ignore_strings, cast_numbers, false_blanks]) ==
+%%               [true, true, true, true, false, false, true]),
+%%      ?_assert(collect_bools(?L1, [ignore_strings, ignore_numbers, false_blanks]) ==
+%%               [true, false, false]),
+%%      ?_assert(collect_bools(?L2, [ignore_numbers, ignore_strings, ignore_blanks]) ==
+%%               [true, false]),
+%%      ?_assert(collect_bools(?L2, [cast_numbers, cast_strings, false_blanks]) ==
+%%               [false, false, true, true, true, true, false, false, true, false])
+%%     ].
