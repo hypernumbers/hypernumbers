@@ -162,14 +162,19 @@ preproc([':', StartExpr, EndExpr]) ->
     R = [':', Eval(StartExpr), Eval(EndExpr)],
     R;
 preproc([indirect, Arg]) ->
-    Str = plain_eval(Arg),
-    {ok, Toks} = xfl_lexer:lex(Str, {?mx, ?my}),
-    case Toks of
-        [{ref, R, C, P, _}] ->
-            put(recompile, true),
-            [ref, R, C, P];
-        _ ->
-            ?ERR_REF
+    case ?is_string(Arg) of
+        true ->
+            Str = plain_eval(Arg),
+            {ok, Toks} = xfl_lexer:lex(Str, {?mx, ?my}),
+            case Toks of
+                [{ref, R, C, P, _}] ->
+                    put(recompile, true),
+                    [ref, R, C, P];
+                _ ->
+                    {reeval, ?ERRVAL_REF}
+            end;
+        false ->
+            {reeval, ?ERRVAL_VAL}
     end;
 preproc([offset, Ref, Rows, Cols]) ->
     {R, {H, W}} = case Ref of % calculate height & width of ref & return topleft cell in range if ref is a range.
