@@ -52,7 +52,7 @@
         muin_collect:collect_bools(Xs, Rules)).
 
 -define(flatten_all(Xs),
-        muin_collect:flatten_arrays(muin_collect:flatten_ranges(Xs))).
+        muin_collect:flatten_areas(Xs)).
 
 -define(date(X, Rules),
         muin_collect:collect_date(X, Rules)).
