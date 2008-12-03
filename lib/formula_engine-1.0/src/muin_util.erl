@@ -41,8 +41,8 @@ get_type(X) ->
     end.
 
 %% X -> boolean
-cast(X, num, bool) when X =< 0 -> false;
-cast(X, num, bool) -> true;
+cast(X, num, bool) when X == 0 -> false;
+cast(_X, num, bool) -> true;
 cast(X, str, bool) ->
             case string:to_upper(X) of
                 "TRUE"  -> true;
