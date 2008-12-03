@@ -7,21 +7,21 @@
 -include("typechecks.hrl").
 -import(muin_util, [conv/2, cast/2]).
 
--export([db/1, effect/1, fv/1, ipmt/1, ispmt/1, nominal/1, npv/1, pv/1,
+-export([effect/1, fv/1, ipmt/1, ispmt/1, nominal/1, npv/1, pv/1,
          sln/1, syd/1, pmt/1, rate/1, nper/1]).
 -compile(export_all).
 -define(default_rules, [cast_strings, cast_bools, cast_blanks, cast_dates]).
 
 
-db([V1, V2, V3, V4]) ->
-    "the function db has an infinite loop!";
-    % db([V1, V2, V3, V4, 12]);
-db([V1, V2, V3, V4, V5]) ->
-    [Cost, Salvage, Life, Period, Month] = ?numbers([V1, V2, V3, V4, V5],
-                                                    ?default_rules),
-    ?ensure((Month >= 1) andalso (Month =< 12), ?ERR_NUM), 
-    "the function db has an infinite loop!".
-    % db1(Cost, Salvage, Life, Period, Month).
+%% db([V1, V2, V3, V4]) ->
+%%     "the function db has an infinite loop!";
+%%     % db([V1, V2, V3, V4, 12]);
+%% db([V1, V2, V3, V4, V5]) ->
+%%     [Cost, Salvage, Life, Period, Month] = ?numbers([V1, V2, V3, V4, V5],
+%%                                                     ?default_rules),
+%%     ?ensure((Month >= 1) andalso (Month =< 12), ?ERR_NUM), 
+%%     "the function db has an infinite loop!".
+%%     % db1(Cost, Salvage, Life, Period, Month).
 -define(dbrate,
         (stdfuns_math:round1(1 - math:pow(Salvage / Cost, 1 / Life), 3))).
 db1(Cost, Salvage, Life, Life, Month) -> % Last period
