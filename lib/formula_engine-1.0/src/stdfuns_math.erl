@@ -626,7 +626,8 @@ atan([V]) ->
     math:atan(Num).
 
 atan2([V1, V2]) ->
-    [X, Y] = ?numbers([V1, V2], ?default_rules),
+    X = ?number(V1, ?default_rules),
+    Y = ?number(V2, ?default_rules),
 
     if X == 0 andalso Y == 0 -> ?ERR_DIV;
        true -> ok
