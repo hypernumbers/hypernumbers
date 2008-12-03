@@ -7,6 +7,7 @@
 
 -include("spriki.hrl").
 -include("regexp.hrl").
+-include("hypernumbers.hrl").
 -include("yaws.hrl").
 -include("yaws_api.hrl").
 -include("handy_macros.hrl").
@@ -103,14 +104,13 @@ to_xml(Val) when is_integer(Val) -> [{int,[],    [integer_to_list(Val)]}];
 to_xml(Val) when is_float(Val)   -> [{float,[],  [float_to_list(Val)]}];
 to_xml({errval, Errval})         -> [{error,[], [atom_to_list(Errval)]}];
 to_xml({error, Errval})          -> [{error,[], [atom_to_list(Errval)]}];
-to_xml({blank,[],[]})            ->
-    io:format("in hn_util:to_xml bodging blank returns from hypernumbers!~n"),
-    [{string,[], [""]}];
+to_xml(blank)                    -> [{blank,[], []}];
 to_xml(Dt) when is_record(Dt, datetime) ->
     [{string, [], [muin_date:to_rfc1123_string(Dt)]}];
 to_xml({X,Values}) when X == range; X == array ->
-    F = fun(Z) ->
-                {row,[],lists:map(fun to_xml/1,Z)}
+    ?INFO("range ~p",[Values]),
+    F = fun(Z) when is_list(Z) -> {row,[],lists:map(fun to_xml/1,Z)};
+           (_)                 -> throw({not_range,{X,Values}})
         end,
     [{X,[],lists:map(F,Values)}];
 to_xml(Else) ->
