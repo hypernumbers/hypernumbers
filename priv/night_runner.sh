@@ -3,7 +3,7 @@
 DATE=`date +%Y-%m-%d.%T`
 
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-export HOME=/home/hypernumbers
+export HOME=/home/hypernumbers/tests.hypernumbers.com
 REPO=http://svn.arandomurl.com/hypernumbers/code/trunk
 TESTDIR=hn_test_stage
 LASTRUN=$HOME/test_results/last_run/
