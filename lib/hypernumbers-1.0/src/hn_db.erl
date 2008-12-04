@@ -120,7 +120,9 @@ remove_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
                 N = ?COND(Name == undef,'_',Name),
                 Attr  = #ref{site=Site, path=Path,ref=Ref, name=N, _ = '_'},
                 Match = #hn_item{addr = Attr, _ = '_'},
+                ?INFO("Attr ~p",[Attr]),
                 Fun   = fun(X) -> notify_remove(X),mnesia:delete_object(X) end,
+                ?INFO("remove ~p",[mnesia:match_object(hn_item,Match,read)]),
                 lists:map(Fun,mnesia:match_object(hn_item,Match,read))
         end,
     _Okay = ?mn_ac(transaction,F),
