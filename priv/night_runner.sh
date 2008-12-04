@@ -1,4 +1,4 @@
-#!/bin/sh                                                                                                                                                                           
+#!/bin/sh                                                                       
 
 DATE=`date +%Y-%m-%d.%T`
 
@@ -14,7 +14,8 @@ svn co $REPO $HOME/$TESTDIR
 
 cd $TESTDIR
 
-./compile_code
+./hypernumbers build
+./hypernumbers gen_tests
 
 cd priv/testserver
 
@@ -36,6 +37,7 @@ cd ../../
 ./hypernumbers test 2e
 ./hypernumbers test 2f
 ./hypernumbers test 2x
+./hypernumbers test system_test
 
 rm -rf $LASTRUN
 mkdir $LASTRUN
