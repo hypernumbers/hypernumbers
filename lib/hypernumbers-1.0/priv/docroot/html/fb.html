@@ -1,0 +1,58 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>	
+	<head>
+	<title>Drag And Drop Formbuilder</title>
+    
+    <!-- Combo-handled YUI CSS files: -->
+    <link rel="stylesheet" type="text/css" href="http://yui.yahooapis.com/combo?2.6.0/build/menu/assets/skins/sam/menu.css&2.6.0/build/resize/assets/skins/sam/resize.css">
+    <!-- Combo-handled YUI JS files: -->
+    <!--Hypernumbers CSS file-->
+    <link rel="stylesheet" type="text/css" href="/css/fb.css">
+    
+    <script type="text/javascript" src="http://yui.yahooapis.com/combo?2.6.0/build/yahoo-dom-event/yahoo-dom-event.js&2.6.0/build/animation/animation-min.js&2.6.0/build/dragdrop/dragdrop-min.js&2.6.0/build/element/element-beta-min.js&2.6.0/build/container/container_core-min.js&2.6.0/build/menu/menu-min.js&2.6.0/build/resize/resize-min.js"></script>
+
+    <!--Hypernumbers Javascript library-->
+    <script type="text/javascript" src="/js/fb_lang.js"></script>
+    <script type="text/javascript" src="/js/fb.js"></script>
+
+    <script type="text/javascript">
+      // This variable will be used to allocated id's to new divs
+      var _GLOBAL_formComponentId = 1;
+      
+      // Master global array for components on the form
+      var compForm = new Object();
+      var oFormFocus = new Focus();
+      var oLangFocus = new Focus();
+      var formBuilderLang = "";
+      var oLangStrFrmBuilder = new LangStr();
+    </script>
+    
+  </head>
+  
+  <body class="yui-skin-sam">
+    <div id="nodropzone">
+      <div id="formbuilder_lang"></div>
+          <table><tbody><tr>
+            <td>
+              <div id="debugging" class="dialog">
+                <h3 id="multi_1" lang="en">(Debugging)</h3>
+                <p id="multi_2" lang="en">(Current Object)</p><div id="objId" class="params2">&nbsp;</div>
+              </div>
+              <div id="all_dialog" class="dialog">
+                <h3 id="multi_3" lang="en">(Common)</h3><table>
+                </table>
+              </div>
+              <div id="headline_dialog" class="dialog">
+                <h3 id="multi_6" lang="en">(Properties)</h3>
+                <p id="multi_7" lang="en">(Text:)</p><div id="text" class="params2">&nbsp;</div>
+              </div>
+            </td>
+            <td>
+              <div id="dropzone">
+                <p id="multi_8" lang="en">(Right-click on the panel to build a form)</p>
+                <p id="multi_9" lang="en">(Double-click on form elements to configure them)</p></div>
+            </td></td>
+        </tbody></table>          
+    </div>
+  </body>
+</html>
