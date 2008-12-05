@@ -91,7 +91,7 @@ parse(Fla, {Col, Row}) ->
 eval(Node = [Func|Args]) when ?is_fn(Func) ->
     case preproc(Node) of
         false ->
-            case member(Func, ['if', choose]) of
+            case member(Func, ['if', choose, column]) of
                 true  -> call(Func, Args);
                 false -> call(Func, [eval(X) || X <- Args])
             end;
@@ -458,6 +458,10 @@ funcall(choose, [V|Vs]) ->
     ?ensure(Idx > 0 andalso Idx =< length(Vs), ?ERR_VAL),
     eval(nth(Idx, Vs));
 
+funcall(column, [])                     -> ?mx;
+funcall(column, [[ref, Col, _Row, _]]) -> toidx(Col);
+funcall(column, _)                     -> ?ERR_VAL;
+
 funcall(make_list, Args) ->
     area_util:make_array([Args]); % horizontal array
 
@@ -547,7 +551,8 @@ funcall(Fname, Args) ->
               end,
               {Fname, Args, not_found_yet},
               [stdfuns_math, stdfuns_stats, stdfuns_date, stdfuns_financial, stdfuns_info,
-               stdfuns_lookup_ref, stdfuns_eng, stdfuns_gg, stdfuns_logical, stdfuns_text]),
+               stdfuns_lookup_ref, stdfuns_eng, stdfuns_gg, stdfuns_logical, stdfuns_text,
+               stdfuns_db]),
     
     case R of
         {_, _, not_found_yet} -> userdef_call(Fname, Args);
