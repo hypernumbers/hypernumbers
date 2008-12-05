@@ -10,25 +10,30 @@
 
 -define(default_rules_bools, [cast_numbers, cast_strings, cast_blanks, cast_dates]).
 
+'='([A,B]) ->
+    ?ensure_no_errvals([A]),
+    ?ensure_no_errvals([B]),
+    eq([A,B]).
+
 %% numbers & numbers
-'='([N1, N2]) when is_number(N1) andalso is_number(N2) -> N1 == N2;
+eq([N1, N2]) when is_number(N1) andalso is_number(N2) -> N1 == N2;
 %% numbers & blanks
-'='([blank, N]) when N == 0                      -> true;
-'='([N, blank]) when N == 0                      -> true;
+eq([blank, N]) when N == 0                           -> true;
+eq([N, blank]) when N == 0                           -> true;
 %% numbers & bools
-'='([N, B]) when is_number(N) andalso is_boolean(B)    -> false;
-'='([B, N]) when is_number(N) andalso is_boolean(B)    -> false;
+eq([N, B]) when is_number(N) andalso is_boolean(B)    -> false;
+eq([B, N]) when is_number(N) andalso is_boolean(B)    -> false;
 %% strings & blanks
-'='([blank, S]) when ?is_string(S)               -> stdfuns_text:len([S]) == 0;
-'='([S, blank]) when ?is_string(S)               -> stdfuns_text:len([S]) == 0;
+eq([blank, S]) when ?is_string(S)               -> stdfuns_text:len([S]) == 0;
+eq([S, blank]) when ?is_string(S)               -> stdfuns_text:len([S]) == 0;
 %% bools & blanks
-'='([false, blank])                              -> true;
-'='([blank, true])                               -> true;
+eq([false, blank])                              -> true;
+eq([blank, true])                               -> true;
 %% strings & numbers
-'='([S, N]) when ?is_string(S) andalso is_number(N)    -> false;
-'='([N, S]) when ?is_string(S) andalso is_number(N)    -> false;
+eq([S, N]) when ?is_string(S) andalso is_number(N)    -> false;
+eq([N, S]) when ?is_string(S) andalso is_number(N)    -> false;
 %% default: true & blank, bool & bool, blank & blank, string & string.
-'='([V1, V2])                                    -> V1 == V2.
+eq([V1, V2])                                    -> V1 == V2.
 
 '<>'([V1, V2]) ->
     not('='([V1, V2])).
