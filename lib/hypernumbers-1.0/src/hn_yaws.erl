@@ -255,13 +255,18 @@ req('POST',{create,[],Data},Vars,_User,Ref = #ref{auth=Auth}) ->
      ),
     {ok,{success,[],[]}};
 
-req('POST',{delete,[],[]},_Attr,_User,Ref = #ref{ref={page,"/"}}) ->
+req('POST',{delete,[],Recurse},_Attr,_User,Ref = #ref{ref={page,"/"}}) ->
+    
     F = fun(X) ->
                 Path = Ref#ref.path,
                 hn_db:remove_item(Ref#ref{path=Path++X,ref='_'})
         end,
-    Pages = hn_main:get_pages_under(Ref#ref.path)++[[]],
-    lists:foreach(F,Pages),
+
+    Pages = case Recurse of
+                [] -> hn_main:get_pages_under(Ref#ref.path);
+                {nochilden,[],[]} -> []
+            end,
+    lists:foreach(F,Pages++[[]]]),
     {ok,{success,[],[]}};
 
 req('POST',{delete,[],Data},_Vars,_User,Ref) ->
