@@ -24,6 +24,7 @@ b_multiple_sheets
 b_nested_functions
 b_plus_and_sum_are_different
 b_quadratic_equations
+b_saved_in_r1c1_style
 b_shared_formulae
 b_simple
 b_simple_arrays_and_ranges
