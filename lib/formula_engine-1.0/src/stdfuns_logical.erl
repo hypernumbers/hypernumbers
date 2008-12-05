@@ -33,26 +33,32 @@
 '<>'([V1, V2]) ->
     not('='([V1, V2])).
 
-'>'([N1, N2]) when is_number(N1) andalso is_number(N2)   -> N1 > N2;
-'>'([S, N]) when ?is_string(S) andalso is_number(N)      -> true;
-'>'([N, S]) when is_number(N) andalso ?is_string(S)      -> false;
+'>'([A,B]) ->
+    ?ensure_no_errvals([A]),
+    ?ensure_no_errvals([B]),
+    gt([A,B]).
+
+gt([N1, N2]) when is_number(N1) andalso is_number(N2)   -> N1 > N2;
+gt([S, N]) when ?is_string(S) andalso is_number(N)      -> true;
+gt([N, S]) when is_number(N) andalso ?is_string(S)      -> false;
 %% FIXME: 1) Will break on non Latin-1 strings.
 %%        2) Depends on Erlang's list representation of strings.
-'>'([S1, S2]) when ?is_string(S1) andalso ?is_string(S2) ->
+gt([S1, S2]) when ?is_string(S1) andalso ?is_string(S2) ->
     if hd(S1) > hd(S2) -> true;  % compare alphabetically first
        hd(S1) < hd(S2) -> false;
        true            -> stdfuns_text:len([S1]) > stdfuns_text:len([S2]) % otherwise compare on length
     end;
-'>'([true, _])                                     -> true;
-'>'([false, _])                                    -> true;
-'>'([_, true])                                     -> false;
-'>'([_, false])                                    -> false;
-'>'([A, N]) when ?is_area(A) andalso N > 0               -> true;
-'>'([A, N]) when ?is_area(A) andalso N =< 0               -> false;
-'>'([blank, N]) when is_number(N)                  -> '>'([0, N]);
-'>'([N, blank]) when is_number(N)                  -> '>'([N, 0]);
-'>'([blank, S]) when ?is_string(S)                 -> false;
-'>'([S, blank]) when ?is_string(S)                 -> true.
+gt([true, _])                                     -> true;
+gt([false, _])                                    -> true;
+gt([_, true])                                     -> false;
+gt([_, false])                                    -> false;
+gt([A, N]) when ?is_area(A) andalso N > 0         -> true;
+gt([A, N]) when ?is_area(A) andalso N =< 0        -> false;
+gt([blank, N]) when is_number(N)                  -> '>'([0, N]);
+gt([N, blank]) when is_number(N)                  -> '>'([N, 0]);
+gt([blank, S]) when ?is_string(S)                 -> false;
+gt([S, blank]) when ?is_string(S)                 -> true;
+gt([blank,blank])                                 -> false.
 
 '<'([A, B]) -> '>'([B, A]).
 
