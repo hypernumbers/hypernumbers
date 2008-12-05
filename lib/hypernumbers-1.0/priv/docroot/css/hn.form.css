@@ -6,8 +6,8 @@
 
 h1
 {
-  font: bold 24px sans-serif;
-  color: #F5C71F;
+  font: normal 24px sans-serif;
+  color: #000;
   }
 
 h2
@@ -19,8 +19,8 @@ h2
 
 h3
 {
-  font: bold 14px sans-serif;
-  color: #F5C71F;
+  font: normal 14px sans-serif;
+  color: #000;
   }
 
 hr {  background-color: #EEE; color:#EEE;  }
