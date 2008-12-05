@@ -9,6 +9,9 @@
 -include("handy_macros.hrl").
 -include("hypernumbers.hrl").
 
+-define(NOCACHE,[{header,{cache_control,"no-cache"}},
+                 {status,200}]).
+
 -import(simplexml,[to_xml_string/1,to_json_string/1]).
 -export([ out/1, get_page_attributes/1 ]).
 
@@ -78,9 +81,8 @@ do_request(Arg,Url) ->
                  {ok,Data} ->
                      case Type of
                          xml ->
-                             [{header,{cache_control,"no-cache"}},
-                              {status,200},
-                              {content,"text/xml",to_xml_string(Data)}];
+                             ?NOCACHE++
+                             [{content,"text/xml",to_xml_string(Data)}];
                          json ->
                              [{content,"text/plain",to_json_string(Data)}]
                      end
@@ -122,7 +124,7 @@ req('GET',[],[],_,Ref=#ref{ref={page,"/"}}) ->
         end,
     {return,{page,"/html/"++F++".html"}};
 req('GET',[],[{"gui",GUI}],_,#ref{ref={page,"/"}}) ->
-    {return,{page,"/html/"++GUI++".html"}};
+    {return,?NOCACHE++[{page,"/html/"++GUI++".html"}]};
 
 req('GET',[],["new"],_,Ref=#ref{site=Site,ref={page,"/"}}) ->
     Tpl = case hn_db:get_item_val(Ref#ref{name="__template"}) of
