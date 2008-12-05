@@ -304,7 +304,7 @@ copy_pages_below(From = #ref{path=Root},To) ->
     ToPages   = [To++string:join(X,"/")++"/" || X <- NPages],
 
     hn_main:set_attribute(From#ref{path=string:tokens(To,"/"),
-                                 name=instance},"true"),
+                          name=instance},hn_util:list_to_path(Root)),
 
     copy_pages(FromPages,ToPages).
 

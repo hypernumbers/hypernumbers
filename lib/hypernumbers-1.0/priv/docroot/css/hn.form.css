@@ -27,7 +27,7 @@ hr {  background-color: #EEE; color:#EEE;  }
 
 body 
 { 
-  background:#F8F8FF;
+  background:#F3F3FF;
  }
 
 #grey
@@ -50,6 +50,33 @@ body
   width:650px;
   margin:0px auto;
   padding:10px;
+}
+
+#toolbar
+{  
+  background:#000;
+  padding:4px;
+}
+
+#toolbar h3
+{ 
+  font:bold 9px sans-serif;
+  float:left;
+  color:#FFF;
+}
+
+#toolbar a
+{ 
+  font:normal 9px sans-serif;
+  float:right;
+  color:#FFF;
+}
+
+#footer
+{
+  width:650px;
+  margin:5px auto;
+  text-align:right;
 }
 
 .row

@@ -116,8 +116,11 @@ req('GET',[],["save"],_,Ref=#ref{ref={page,"/"},path=Path}) ->
       {content,"text/xml",to_xml_string(Xml)}]};
 
 req('GET',[],[],_,Ref=#ref{ref={page,"/"}}) ->
-    {ok,V} = hn_db:get_item_inherited(Ref#ref{name=gui},"index"),
-    {return,{page,"/html/"++V++".html"}};
+    F = case hn_db:get_item_val(Ref#ref{name=gui}) of
+            []    -> "index";
+            Else  -> Else
+        end,
+    {return,{page,"/html/"++F++".html"}};
 req('GET',[],[{"gui",GUI}],_,#ref{ref={page,"/"}}) ->
     {return,{page,"/html/"++GUI++".html"}};
 

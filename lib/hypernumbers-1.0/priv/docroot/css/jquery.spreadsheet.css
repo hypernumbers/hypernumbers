@@ -259,6 +259,10 @@
     background-image:  url('../img/text_strikethrough.png'); }
 .spreadsheet .toolbar .format {
     background-image:  url('../img/style_edit.png'); }
+.spreadsheet .toolbar .form {
+    background-image:  url('../img/application_form_edit.png'); }
+.spreadsheet .toolbar .formview {
+    background-image:  url('../img/application_form.png'); }
 
 /******************************************************************************
 	GLOBAL STYLES

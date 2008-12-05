@@ -69,7 +69,7 @@ get_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->
                 Match = #hn_item{addr = NRef, _ = '_'},
                 mnesia:match_object(hn_item,Match,read)
         end,
-    List = ?mn_ac(ets,F),
+    List = mnesia:activity(transaction,F),
     case Ref of
         {cell,_} -> List;
         {page,_} -> List;
@@ -459,8 +459,8 @@ filter_cell({range,{_,Y1,_,Y2}},{row,Y})
   when Y > Y1; Y < Y2 -> true;
 filter_cell({range,{X1,_,X2,_}},{column,X}) 
   when X > X1; X < X2 -> true;
-filter_cell({range,{X1,Y1,X2,Y2}},{cell,{X,Y}})
-  when Y >= Y1; Y =< Y2 andalso X >= X1; X =< X2 -> true;
+filter_cell({range,Range},{cell,Cell}) -> 
+    hn_util:in_range({range,Range},{cell,Cell});
 filter_cell(_,_) -> false.
 
 notify_remote_change(Hn,Value) ->
