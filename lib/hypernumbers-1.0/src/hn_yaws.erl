@@ -261,12 +261,11 @@ req('POST',{delete,[],Recurse},_Attr,_User,Ref = #ref{ref={page,"/"}}) ->
                 Path = Ref#ref.path,
                 hn_db:remove_item(Ref#ref{path=Path++X,ref='_'})
         end,
-
     Pages = case Recurse of
                 [] -> hn_main:get_pages_under(Ref#ref.path);
-                {nochilden,[],[]} -> []
+                [{nochildren,[],[]}] -> []
             end,
-    lists:foreach(F,Pages++[[]]]),
+    lists:foreach(F,Pages++[[]]),
     {ok,{success,[],[]}};
 
 req('POST',{delete,[],Data},_Vars,_User,Ref) ->
