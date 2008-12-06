@@ -96,8 +96,15 @@ p
 
 .editable
 {
+  text-indent:5px;
+  cursor:pointer;
   text-decoration:underline;
   color:blue;
+}
+
+.editable:hover
+{ 
+  background: url(/img/bullet_add.png) no-repeat 0px 5px;
 }
 
 .edit
@@ -105,7 +112,7 @@ p
   margin-top:-20px;
   background:#EEE;
   padding:5px;
-  border:#666;
+  border:1px solid #AAA;
   position:absolute;
 }
 
