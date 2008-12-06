@@ -54,24 +54,29 @@
         ]).
 
 %% Default set of rules for text
--define(default_rules, [cast_strings, cast_bools, cast_blanks, cast_dates]).
+-define(default_num_rules, [cast_strings, cast_bools,
+                            cast_blanks, cast_dates]).
+-define(default_str_rules, [cast_numbers, cast_bools,
+                            cast_blanks, cast_dates]).
 
-replace([OldList,Start,Replace,InsertList]) ->
-    ?estring(OldList),
-    StartInt=?int(Start,?default_rules),
-    ReplaceInt=?int(Replace,?default_rules),
+replace([Str,Start,Replace,InsertStr]) ->
+    NewStr=?string(Str,?default_str_rules),
+    StartInt=?int(Start,?default_num_rules),
+    ?ensure(StartInt >= 0,?ERR_VAL),
+    ReplaceInt=?int(Replace,?default_num_rules),
+    ?ensure(ReplaceInt >= 0,?ERR_VAL),
     io:format("in stdfuns_text:replace StartInt is ~p and ReplaceInt is ~p~n",
               [StartInt,ReplaceInt]),
-    ?estring(InsertList),
+    NewInsertStr=?string(InsertStr,?default_str_rules),
     if
-        (StartInt >= length(OldList)) -> lists:concat([OldList,InsertList]);
+        (StartInt >= length(NewStr)) -> lists:concat([Str,NewInsertStr]);
         
         true                          ->
-            {StartStr,MiddleStr}=lists:split(StartInt-1,OldList),
+            {StartStr,MiddleStr}=lists:split(StartInt-1,NewStr),
             io:format("in stdfuns_text:replace StartStr is ~p MiddleStr is ~p~n",
                       [StartStr,MiddleStr]),
             {_Delete,EndStr}=lists:split(ReplaceInt,MiddleStr),
-            lists:concat([StartStr,InsertList,EndStr])
+            lists:concat([StartStr,NewInsertStr,EndStr])
     end.
 
 exact([Str1, Str1]) ->
@@ -143,25 +148,48 @@ find([Substr, Str, Start]) ->
     Idx = string:str(SearchStr, Substr),
     Idx + (string:len(Str) - (string:len(Str) - Start + 1)).
 
+left([Str])->
+    NewStr=?string(Str,?default_str_rules),
+    io:format("in stdfuns_text:left NewStr is ~p~n",[NewStr]),
+    [lists:nth(1,NewStr)];
 left([Str, Len]) ->
-    string:substr(Str, 1, Len).
+    NewStr=?string(Str,?default_str_rules),
+    NewLen=?int(Len,?default_num_rules),
+    ?ensure(NewLen >= 0,?ERR_VAL),
+    string:substr(NewStr, 1, NewLen).
 
+right([Str])->
+    NewStr=?string(Str,?default_str_rules),
+    Len=length(NewStr),
+    [lists:nth(Len,NewStr)];
 right([Str, Len]) ->
-    string:substr(Str, string:len(Str) - Len + 1, Len).
+    NewStr=?string(Str,?default_str_rules),
+    NewLen=?int(Len,?default_num_rules),
+    ?ensure(NewLen >= 0,?ERR_VAL),
+    TotalLen=length(NewStr),
+    if
+        (NewLen > TotalLen) -> NewStr;
+        true                -> string:substr(Str,TotalLen-NewLen+1,NewLen)
+    end.
 
 '&'(Strs) ->
     concatenate(Strs).
 
 concatenate(Vs) ->
-    Strs = muin_collect:collect_strings(Vs, [cast_numbers, cast_bools,
-                                             cast_dates, cast_blanks]),
+    Strs = ?strings(Vs,?default_str_rules),
     foldl(fun(X, Acc) ->
                   Acc ++ X
           end,
           "", Strs).
 
 rept([Str, Reps]) ->
-    concatenate([map(fun(_) -> (Str) end, lists:seq(1, Reps))]).
+    NewStr=?string(Str,?default_str_rules),
+    NewReps=?int(Reps,?default_num_rules),
+    Len=length(NewStr)*NewReps,
+    ?ensure(Len < 32767, ?ERR_VAL),
+    ?ensure(Len >= 0,    ?ERR_VAL),
+    Fun = fun(_) -> (NewStr) end,
+    lists:flatten(concatenate([map(Fun, lists:seq(1, NewReps))])).
 
 substitute([Text, Oldtext, Newtext]) ->
     {ok, Res, _Repcnt} = regexp:gsub(Text, Oldtext, Newtext),
