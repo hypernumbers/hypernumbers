@@ -53,7 +53,7 @@
          upper/1
         ]).
 
-%% Try a standard set of rules
+%% Default set of rules for text
 -define(default_rules, [cast_strings, cast_bools, cast_blanks, cast_dates]).
 
 replace([OldList,Start,Replace,InsertList]) ->
