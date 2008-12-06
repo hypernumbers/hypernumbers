@@ -113,33 +113,37 @@ mid([Str, Start, Len]) ->
 mid1(Str, Start, Len) ->
     string:substr(Str, Start, Len).
 
-clean([Str]) ->
-    Clean = fun(X) -> (X > 31 andalso X < 123) end,
-    filter(Clean, Str).
+clean([true])  -> "TRUE";
+clean([false]) -> "FALSE";
+clean([Str])   -> NewStr=?string(Str,?default_str_rules),
+                  Clean = fun(X) -> (X > 31 andalso X < 123) end,
+                  filter(Clean, NewStr).
 
+%% Fixed is a bit of a mess
 fixed([Num]) ->
-    fixed([Num, 2]);
-fixed([Num, Decimals]) when is_number(Decimals) ->
-    fixed([Num, Decimals, false]);
-fixed([Num, NoCommas]) when is_boolean(NoCommas) ->
-    fixed([Num, 2, NoCommas]);
-fixed([Num, Decimals, NoCommas]) ->
-    RoundedNum = stdfuns_math:round(Num, Decimals) * 1.0,
-    Str = ?COND(Decimals > 0,
-                hd(io_lib:format("~." ++ to_l(Decimals) ++ "f", [RoundedNum])),
+    fixed([Num, 2, false]);
+fixed([Num, Decimals]) ->
+    fixed1([Num, Decimals, false]);
+fixed([Num, Decimals, true]) ->
+    fixed1([Num,Decimals,true]);
+fixed([Num, Decimals, false]) ->
+    fixed1([Num,Decimals,false]).
+% all the casting etc is done in the helper
+fixed1([Num,Decimals,NoCommas]) ->
+    NewNum=?number(Num,?default_num_rules),
+    NewDecs=?number(Decimals,?default_num_rules),
+    ?ensure(NewDecs =< 127, ?ERR_VAL),
+    RoundedNum = stdfuns_math:round([NewNum, NewDecs]) * 1.0,
+    Str = ?COND(NewDecs > 0,
+                hd(io_lib:format("~." ++ to_l(NewDecs) ++ "f", [RoundedNum])),
                 to_l(erlang:trunc(RoundedNum))),
-
+    io:format("in stdfuns_test:fixed1 Str is ~p~n",[Str]),
     case NoCommas of
         true ->
             Str;
         false ->
-            commify(Str) ++
-                ?COND(Decimals > 0,
-                      begin
-                          Idx = string:rchr(Str, $.),
-                          "." ++ sublist(Str, Idx + 1, length(Str) - Idx)
-                      end,
-                      "")
+            [Int,Dec]=string:tokens(Str,"."),
+            commify(Int) ++ "."++Dec
     end.
 
 lower([Str]) ->
