@@ -94,6 +94,21 @@ p
   padding:5px 10px;
 }
 
+.editable
+{
+  text-decoration:underline;
+  color:blue;
+}
+
+.edit
+{
+  margin-top:-20px;
+  background:#EEE;
+  padding:5px;
+  border:#666;
+  position:absolute;
+}
+
 #flashcontent
 {
   position:absolute;
