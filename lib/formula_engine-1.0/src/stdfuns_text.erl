@@ -89,9 +89,15 @@ exact([Str1, Str2]) ->
         NewStr2 -> true;
         _       -> false
     end.
-    
+
+len([Str]) when is_float(Str) ->
+    case mochinum:digits(Str) of
+          "0.0" -> 1;
+          S     -> length(S)
+         end;
 len([Str]) ->
-    length(Str).
+    NewStr=?string(Str,?default_str_rules),
+    length(NewStr).
 
 mid([Str, Start, Len]) ->
     NewStr=?string(Str,?default_str_rules),
@@ -190,12 +196,25 @@ right([Str, Len]) ->
 '&'(Strs) ->
     concatenate(Strs).
 
-concatenate(Vs) ->
-    Strs = ?strings(Vs,?default_str_rules),
-    foldl(fun(X, Acc) ->
-                  Acc ++ X
-          end,
-          "", Strs).
+concatenate(Str) -> concatenate1(Str,[]).
+
+concatenate1([],Acc) ->
+    Acc;
+concatenate1([H|T],Acc) when is_float(H) ->
+    case mochinum:digits(H) of
+        "0.0" -> concatenate1(["0"|T],Acc);
+        S     -> concatenate1([S|T],Acc)
+    end;
+concatenate1([true|T],Acc) ->
+    concatenate1(["TRUE"|T],Acc);
+concatenate1([false|T],Acc) ->
+    concatenate1(["FALSE"|T],Acc);
+concatenate1(["0.0"|T],Acc) ->
+    concatenate1(["0"|T],Acc);
+concatenate1([H|T],Acc) ->
+    Str = ?string(H,?default_str_rules),
+    NewAcc=Acc++Str,
+    concatenate1(T,NewAcc).
 
 rept([Str, Reps]) ->
     NewStr=?string(Str,?default_str_rules),
