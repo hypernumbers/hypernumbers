@@ -49,6 +49,8 @@ def do_file(xlsfile)
   File.open(File.basename(xlsfile, ".xls") + ".dat", "w") do |f|
     f << xlsdata.inspect
   end
+  xl.ActiveWorkbook.Close(0);
+  xl.Quit();
 end
 
 #do_file(ARGV[0])
