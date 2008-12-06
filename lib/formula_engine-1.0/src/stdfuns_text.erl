@@ -94,7 +94,16 @@ len([Str]) ->
     length(Str).
 
 mid([Str, Start, Len]) ->
-    mid1(Str, ?ensure_number(Start), ?ensure_number(Len)).
+    NewStr=?string(Str,?default_str_rules),
+    NewStart=?int(Start,?default_num_rules),
+    ?ensure(NewStart >0, ?ERR_VAL),
+    NewLen=?int(Len,?default_num_rules),
+    ?ensure(NewLen >0, ?ERR_VAL),
+    if
+        (NewLen >= length(NewStr)) -> NewStr;
+        true                       -> mid1(NewStr,NewStart,NewLen)
+    end.
+
 mid1(Str, Start, Len) ->
     string:substr(Str, Start, Len).
 
