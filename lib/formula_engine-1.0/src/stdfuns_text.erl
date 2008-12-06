@@ -28,7 +28,7 @@
 -export([
          %%dollar/2, TODO: Need formats.
          %%pound/2,  TODO: Need formats.
-         %%replace/1, TODO:
+         replace/1,
          %%search/1, TODO:
          %%t/1, TODO: Needs types.
          %%trim/1, TODO:
@@ -52,6 +52,27 @@
          text/1,
          upper/1
         ]).
+
+%% Try a standard set of rules
+-define(default_rules, [cast_strings, cast_bools, cast_blanks, cast_dates]).
+
+replace([OldList,Start,Replace,InsertList]) ->
+    ?estring(OldList),
+    StartInt=?int(Start,?default_rules),
+    ReplaceInt=?int(Replace,?default_rules),
+    io:format("in stdfuns_text:replace StartInt is ~p and ReplaceInt is ~p~n",
+              [StartInt,ReplaceInt]),
+    ?estring(InsertList),
+    if
+        (StartInt >= length(OldList)) -> lists:concat([OldList,InsertList]);
+        
+        true                          ->
+            {StartStr,MiddleStr}=lists:split(StartInt-1,OldList),
+            io:format("in stdfuns_text:replace StartStr is ~p MiddleStr is ~p~n",
+                      [StartStr,MiddleStr]),
+            {_Delete,EndStr}=lists:split(ReplaceInt,MiddleStr),
+            lists:concat([StartStr,InsertList,EndStr])
+    end.
 
 exact([Str1, Str1]) ->
     true;
@@ -132,7 +153,8 @@ right([Str, Len]) ->
     concatenate(Strs).
 
 concatenate(Vs) ->
-    Strs = muin_collect:collect_strings(Vs, [cast_numbers, cast_bools, cast_dates, cast_blanks]),
+    Strs = muin_collect:collect_strings(Vs, [cast_numbers, cast_bools,
+                                             cast_dates, cast_blanks]),
     foldl(fun(X, Acc) ->
                   Acc ++ X
           end,
