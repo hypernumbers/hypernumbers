@@ -144,6 +144,7 @@ table=doc.at("table")
 rows=table.search("tr")
 # puts "rows are #{rows}"
 
+Dir.mkdir("../../logs/visualisation")
 rows.each do |r|
  ahref=r.search('a') #.first[:href]
  if ahref.any?
