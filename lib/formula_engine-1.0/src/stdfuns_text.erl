@@ -81,8 +81,14 @@ replace([Str,Start,Replace,InsertStr]) ->
 
 exact([Str1, Str1]) ->
     true;
-exact(_) ->
-    false.
+exact([Str1, Str2]) -> 
+    Rules=[ban_bools,ban_dates,ban_blanks,cast_strings],
+    NewStr1 = ?number(Str1,Rules),
+    NewStr2 = ?number(Str2,Rules),
+    case NewStr1 of
+        NewStr2 -> true;
+        _       -> false
+    end.
     
 len([Str]) ->
     length(Str).
