@@ -29,7 +29,7 @@
          %%dollar/2, TODO: Need formats.
          %%pound/2,  TODO: Need formats.
          replace/1,
-         %%search/1, TODO:
+         search/1,
          %%t/1, TODO: Needs types.
          %%trim/1, TODO:
          %%value/1, TODO: Need formats.
@@ -58,6 +58,27 @@
                             cast_blanks, cast_dates]).
 -define(default_str_rules, [cast_numbers, cast_bools,
                             cast_blanks, cast_dates]).
+
+search([FindText,WithinText])->
+    NewFind=lower(?string(FindText,?default_str_rules)),
+    NewWithin=lower(?string(WithinText,?default_str_rules)),
+    io:format("in stdfuns_text:search NewFind is ~p NewWithin is ~p~n",[NewFind,NewWithin]),
+    RegExp=wild_to_rgx(NewFind),
+    case regexp:match(NewWithin,RegExp) of
+        {match,Start,_Length} -> Start;
+        nomatch               -> ?ERR_VAL
+    end;
+search([FindText,WithinText,StartPoint])->
+    NewFind=?string(FindText,?default_str_rules),
+    NewWithin=?string(WithinText,?default_str_rules),
+    NewStart=?int(StartPoint,?default_num_rules),
+    RegExp=wild_to_rgx(NewFind),
+    io:format("in stdfuns_text:search NewFind is ~p NewWithin is ~p~n",[NewFind,NewWithin]),
+    {_Start,End}=lists:split(NewStart-1,NewWithin),
+    case regexp:match(End,RegExp) of
+        {match,Start,_Length} -> Start+NewStart-1;
+        nomatch               -> ?ERR_VAL
+    end.
 
 replace([Str,Start,Replace,InsertStr]) ->
     NewStr=?string(Str,?default_str_rules),
@@ -239,7 +260,11 @@ substitute([Text,OldText,NewText]) ->
     Text2=?string(Text,?default_str_rules),
     OldText2=?string(OldText,?default_str_rules),
     NewText2=?string(NewText,?default_str_rules),
-        case regexp:gsub(Text2, OldText2, NewText2) of
+    io:format("in stdfuns_text:substitute Text2 is ~p OldText2 is ~p NewText2 is~p~n",
+              [Text2,OldText2,NewText2]),
+    OldText3=esc_rgx(OldText2),
+    io:format("in stdfuns_text:substitute OldText3 is~p~n",[OldText3]),
+        case regexp:gsub(Text2, OldText3, NewText2) of
             {ok, Res, _Repcnt} -> Res;
             nomatch            -> Text2
         end;
@@ -273,3 +298,44 @@ commify([A, B, C, D | T], P, Acc) ->
   commify([D|T], P, [P, C, B, A|Acc]);
 commify(L, _, Acc) ->
   lists:reverse(L) ++ Acc.
+
+%% turns an Excel type wildcard into a regexp
+wild_to_rgx(Str) -> wild_to_rgx(Str,[]).
+
+%% converts Excel wild cards into Erlang RegExps
+wild_to_rgx([],Acc)        -> lists:reverse(Acc);
+wild_to_rgx([$~,$*|T],Acc) -> wild_to_rgx(T,[$*,"\\"|Acc]);   % escape Excel wild card
+wild_to_rgx([$~,$?|T],Acc) -> wild_to_rgx(T,[$?,"\\"|Acc]);   % escape Excel wild card
+wild_to_rgx(["\\"|T],Acc)  -> wild_to_rgx(T,["\\","\\"|Acc]); % escape Erlang RegExp
+wild_to_rgx([$^|T],Acc)    -> wild_to_rgx(T,[$^,"\\"|Acc]);   % escape Erlang RegExp
+wild_to_rgx([$$|T],Acc)    -> wild_to_rgx(T,[$$,"\\"|Acc]);   % escape Erlang RegExp
+wild_to_rgx([$[|T],Acc)    -> wild_to_rgx(T,[$[,"\\"|Acc]);   % escape Erlang RegExp
+wild_to_rgx([$]|T],Acc)    -> wild_to_rgx(T,[$],"\\"|Acc]);   % escape Erlang RegExp
+wild_to_rgx([$(|T],Acc)    -> wild_to_rgx(T,[$(,"\\"|Acc]);   % escape Erlang RegExp
+wild_to_rgx([$)|T],Acc)    -> wild_to_rgx(T,[$0,"\\"|Acc]);   % escape Erlang RegExp
+wild_to_rgx([$||T],Acc)    -> wild_to_rgx(T,[$|,"\\"|Acc]);   % escape Erlang RegExp
+wild_to_rgx([$+|T],Acc)    -> wild_to_rgx(T,[$+,"\\"|Acc]);   % escape Erlang RegExp
+wild_to_rgx([$.|T],Acc)    -> wild_to_rgx(T,[$.,"\\"|Acc]);   % escape Erlang RegExp
+wild_to_rgx([$*|T],Acc)    -> wild_to_rgx(T,[$+,$.|Acc]);     % convert Excel wildcard
+wild_to_rgx([$?|T],Acc)    -> wild_to_rgx(T,[$.|Acc]);        % convert Excel wildcard
+wild_to_rgx([H|T],Acc)     -> wild_to_rgx(T,[H|Acc]).         % let the char through
+
+%% escapes Erlang wild card characters for match expressions passed in from the
+%% front then
+
+esc_rgx(Str) -> esc_rgx(Str,[]).
+
+esc_rgx([],Acc)        -> lists:reverse(Acc);
+esc_rgx([$~,$?|T],Acc) -> esc_rgx(T,[$?,"\\"|Acc]);   % escape Excel wild card
+esc_rgx(["\\"|T],Acc)  -> esc_rgx(T,["\\","\\"|Acc]); % escape Erlang RegExp
+esc_rgx([$^|T],Acc)    -> esc_rgx(T,[$^,"\\"|Acc]);   % escape Erlang RegExp
+esc_rgx([$$|T],Acc)    -> esc_rgx(T,[$$,"\\"|Acc]);   % escape Erlang RegExp
+esc_rgx([$[|T],Acc)    -> esc_rgx(T,[$[,"\\"|Acc]);   % escape Erlang RegExp
+esc_rgx([$]|T],Acc)    -> esc_rgx(T,[$],"\\"|Acc]);   % escape Erlang RegExp
+esc_rgx([$(|T],Acc)    -> esc_rgx(T,[$(,"\\"|Acc]);   % escape Erlang RegExp
+esc_rgx([$)|T],Acc)    -> esc_rgx(T,[$0,"\\"|Acc]);   % escape Erlang RegExp
+esc_rgx([$||T],Acc)    -> esc_rgx(T,[$|,"\\"|Acc]);   % escape Erlang RegExp
+esc_rgx([$+|T],Acc)    -> esc_rgx(T,[$+,"\\"|Acc]);   % escape Erlang RegExp
+esc_rgx([$.|T],Acc)    -> esc_rgx(T,[$.,"\\"|Acc]);   % escape Erlang RegExp
+esc_rgx([H|T],Acc)     -> esc_rgx(T,[H|Acc]).         % let the char through
+
