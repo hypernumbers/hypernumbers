@@ -65,16 +65,12 @@ replace([Str,Start,Replace,InsertStr]) ->
     ?ensure(StartInt >= 0,?ERR_VAL),
     ReplaceInt=?int(Replace,?default_num_rules),
     ?ensure(ReplaceInt >= 0,?ERR_VAL),
-    io:format("in stdfuns_text:replace StartInt is ~p and ReplaceInt is ~p~n",
-              [StartInt,ReplaceInt]),
     NewInsertStr=?string(InsertStr,?default_str_rules),
     if
         (StartInt >= length(NewStr)) -> lists:concat([Str,NewInsertStr]);
         
         true                          ->
             {StartStr,MiddleStr}=lists:split(StartInt-1,NewStr),
-            io:format("in stdfuns_text:replace StartStr is ~p MiddleStr is ~p~n",
-                      [StartStr,MiddleStr]),
             {_Delete,EndStr}=lists:split(ReplaceInt,MiddleStr),
             lists:concat([StartStr,NewInsertStr,EndStr])
     end.
@@ -137,7 +133,6 @@ fixed1([Num,Decimals,NoCommas]) ->
     Str = ?COND(NewDecs > 0,
                 hd(io_lib:format("~." ++ to_l(NewDecs) ++ "f", [RoundedNum])),
                 to_l(erlang:trunc(RoundedNum))),
-    io:format("in stdfuns_test:fixed1 Str is ~p~n",[Str]),
     case NoCommas of
         true ->
             Str;
@@ -187,7 +182,6 @@ find([SubStr, Str, Start]) ->
 
 left([Str])->
     NewStr=?string(Str,?default_str_rules),
-    io:format("in stdfuns_text:left NewStr is ~p~n",[NewStr]),
     [lists:nth(1,NewStr)];
 left([Str, Len]) ->
     NewStr=?string(Str,?default_str_rules),
@@ -245,8 +239,6 @@ substitute([Text,OldText,NewText]) ->
     Text2=?string(Text,?default_str_rules),
     OldText2=?string(OldText,?default_str_rules),
     NewText2=?string(NewText,?default_str_rules),
-    io:format("in stdfuns_text:substitute (1) NewText is ~p NewOldText is ~p NewNewText is ~p ",
-              [Text2,OldText2,NewText2]),
         case regexp:gsub(Text2, OldText2, NewText2) of
             {ok, Res, _Repcnt} -> Res;
             nomatch            -> Text2
@@ -256,9 +248,6 @@ substitute([Text,OldText,NewText,N]) ->
     OldText2=?string(OldText,?default_str_rules),
     NewText2=?string(NewText,?default_str_rules),
     List=string:tokens(Text2,OldText2),
-    io:format("in stdfuns_text:substitute (2) NewText is ~p NewOldText is ~p NewNewText is ~p "++
-              "List is ~p~n",
-              [Text2,OldText2,NewText2,List]),
     if
         (N > length(List)) ->
             Text;
