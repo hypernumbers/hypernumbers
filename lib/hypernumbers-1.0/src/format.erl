@@ -57,10 +57,20 @@ run_format(X,Src)->
 %%% @doc Run-time interface not an API - this function should *NOT*
 %%% be programmed against
 %%% @end
+%%format(X,{general,_Format}) when is_integer(X) ->
+%%    format(X,{number,{format,"0"}});
+%%format(X,{general,_Format}) when is_float(X) ->
+%%    format(X,{number,{format,"0.00"}});
+%%format(X,{general,_Format}) when is_list(X) ->
+%%    format(X,{number,{format,"@"}});
+%%format(X,{general,_Format}) when is_boolean(X) ->
+%%    atom_to_list(X);
+%%format(X,{general,_Format})  ->
+%%    format(X,{date,{format,"dd/mm/yyyy"}});
 format(X,{date,Format})   -> format_date(calendar:gregorian_seconds_to_datetime(X),
                                          Format);
-format(X,{number,Format}) -> format_num(X,Format);
-format(X,{text,Format})   -> format(X,Format,[]).
+format(X,{number,Format})  -> format_num(X,Format);
+format(X,{text,Format})    -> format(X,Format,[]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                           %%
@@ -558,3 +568,12 @@ get_len(List) when is_list(List) -> length(List).
 strip_commas(A) ->
     {ok,Return,_}=regexp:gsub(A,",",""),
     Return.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                           %%
+%% Callback from parser - dont know at compile time which general format     %%
+%% to give the number X - is it a float? or an integer?                      %%
+%%                                                                           %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+get_general(X) when is_integer(X) -> {format,"0"};
+get_general(X) when is_float(X)   -> {format, "0.00"}.

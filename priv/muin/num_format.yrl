@@ -321,7 +321,17 @@ strip({string,A}) ->
         A1=string:strip(A,both,$"),%" syntax highlighting fix
         {string,A1}.
 
-get_general() -> make_src([[{number,[{format,"0.00"}]}]]).
+%get_general() -> make_src([[{number,[{format,"0.00"}]}]]).
+
+get_general()->
+    Src="fun(X) -> "++
+        "  if "++
+        "    not(is_number(X)) -> {black,X};"++
+        "    is_integer(X)     -> {black,format:format(X,{number,[{format,\"0\"}]})};"++
+        "    is_float(X)       -> {black,format:format(X,{number,[{format,\"0.00\"}]})}"++
+        "  end "++
+        "end.",
+     {number,Src}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                           %%
@@ -397,24 +407,11 @@ gen_src2(Clauses)->
    Src="fun(X) -> "++
               " Return = if "++
               "    not(is_number(X)) ->"++ 
- 	      "      try list_to_integer(X)"++
- 	      "       catch"++
- 	      "         error: _ ->"++
- 	      "           try tconv:to_f(X)"++
- 	      "           catch"++
- 	      "               error: ErrVal ->"++
- 	      "                    {error, ErrVal}"++
- 	      "           end"++
- 	      "       end;"++
-	      "      true -> X"++
-              "    end,"++
- 	      "    case Return of"++
- 	      "      {error,_} -> "++
- 	                  Clause4++";"++
- 	      "      _ ->"++
- 	      "          if "++
+	                  Clause4++";"++
+ 	         "      true ->"++
+ 	      "           if "++
  	                    NewClauses++
- 	      "          end"++
+ 	      "           end"++
  	      "      end"++
  	      "   end.",
   lists:flatten(Src).
