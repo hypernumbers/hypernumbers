@@ -147,16 +147,19 @@ fixed1([Num,Decimals,NoCommas]) ->
     end.
 
 lower([Str]) ->
-    string:to_lower(Str).
+    NewStr=?string(Str,?default_str_rules),
+    string:to_lower(NewStr).
 
 proper([Str]) ->
-    {ok, Words} = regexp:split(Str, "\\s+"),
+    NewStr=?string(Str,?default_str_rules),
+    {ok, Words} = regexp:split(NewStr, "\\s+"),
     Capwords = map(fun([H|T]) -> string:to_upper([H]) ++ T end,
                    Words),
     string:join(Capwords, " ").
 
 upper([Str]) ->
-    string:to_upper(Str).
+    NewStr=?string(Str,?default_str_rules),
+    string:to_upper(NewStr).
 
 char([V1]) ->
     Code = ?number(V1, [cast_strings, cast_bools, ban_dates, ban_blanks]),
@@ -165,13 +168,22 @@ char([V1]) ->
 code([Str]) ->
     xmerl_ucs:from_utf8(string:substr(Str, 1)).
 
-find([Substr, Str]) ->
-    find([Substr, Str, 1]);
-find([Substr, Str, Start]) ->
-    SearchStr = string:substr(Str, Start,
-                              string:len(Str) - Start + 1), %% Slice from Start to end
-    Idx = string:str(SearchStr, Substr),
-    Idx + (string:len(Str) - (string:len(Str) - Start + 1)).
+find([SubStr, Str]) ->
+    NewSubStr=?string(SubStr,?default_str_rules),
+    NewStr=?string(Str,?default_str_rules),
+    find([NewSubStr, NewStr, 1]);
+find([SubStr, Str, Start]) ->
+    NewSubStr=?string(SubStr,?default_str_rules),
+    NewStr=?string(Str,?default_str_rules),
+    NewStart=?number(Start,?default_num_rules),
+    SearchStr = string:substr(NewStr, NewStart,
+                              string:len(NewStr) - NewStart + 1), %% Slice from Start to end
+    Idx = string:str(SearchStr, NewSubStr),
+    case Idx + (string:len(NewStr) - (string:len(NewStr) - NewStart + 1)) of
+        0     -> ?ERR_VAL;
+        Other -> Other
+    end.
+            
 
 left([Str])->
     NewStr=?string(Str,?default_str_rules),
@@ -229,9 +241,31 @@ rept([Str, Reps]) ->
     Fun = fun(_) -> (NewStr) end,
     lists:flatten(concatenate([map(Fun, lists:seq(1, NewReps))])).
 
-substitute([Text, Oldtext, Newtext]) ->
-    {ok, Res, _Repcnt} = regexp:gsub(Text, Oldtext, Newtext),
-    Res.
+substitute([Text,OldText,NewText]) ->
+    Text2=?string(Text,?default_str_rules),
+    OldText2=?string(OldText,?default_str_rules),
+    NewText2=?string(NewText,?default_str_rules),
+    io:format("in stdfuns_text:substitute (1) NewText is ~p NewOldText is ~p NewNewText is ~p ",
+              [Text2,OldText2,NewText2]),
+        case regexp:gsub(Text2, OldText2, NewText2) of
+            {ok, Res, _Repcnt} -> Res;
+            nomatch            -> Text2
+        end;
+substitute([Text,OldText,NewText,N]) ->
+    Text2=?string(Text,?default_str_rules),
+    OldText2=?string(OldText,?default_str_rules),
+    NewText2=?string(NewText,?default_str_rules),
+    List=string:tokens(Text2,OldText2),
+    io:format("in stdfuns_text:substitute (2) NewText is ~p NewOldText is ~p NewNewText is ~p "++
+              "List is ~p~n",
+              [Text2,OldText2,NewText2,List]),
+    if
+        (N > length(List)) ->
+            Text;
+        true ->
+            {StartList,EndList}=list:split(N,List),
+            string:join(StartList,OldText2)++NewText2++string:join(EndList,OldText2)
+    end.
 
 text([Value, Format]) ->
     {erlang, {_Type, Output}} = format:get_src(Format),
