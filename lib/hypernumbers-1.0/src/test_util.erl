@@ -68,6 +68,8 @@ import_xls(Name) ->
                      Url = string:to_lower("http://127.0.0.1:9000"++Path++Ref),
                      {ok,NRef} = hn_util:parse_url(Url),
                      try
+                         % io:format("in test_util:import_xls NRef is ~p "++
+                         %          "Postdata is ~p~n",[NRef,Postdata]),
                          hn_main:set_attribute(NRef#ref{name=formula},Postdata)
                      catch
                          _ -> ok
@@ -156,7 +158,8 @@ equal_to_digit(F1,F2,DigitIdx) ->
     As==Bs.
 
 float_cmp(Res, Expres, Digit) ->
-    abs(Res - Expres) < math:pow(0.1, Digit).
+    % measure the relative precision (and not the absolute!)
+    (abs(Res - Expres)/Res) < math:pow(0.1, Digit).
 
 excel_equal("-2146826281","#DIV/0!") -> true;
 excel_equal("-2146826246","#N/A")    -> true;
@@ -376,7 +379,8 @@ handle_return({ok, {{_V, Code, _R}, _H, Body}}, Ref) ->
     io:format("in test_util:handle_return HTTP POST error (~s)~n-code:~p~n-body:~p~n",
 	      [Ref, Code, Body]).
 
-cmp(G, E) ->
+cmp(A,A) -> true;
+cmp(G,E) ->
     io:format("in test_util:cmp G is ~p E is ~p~n",[G,E]),
     E2 = case E of
              true   -> true;
