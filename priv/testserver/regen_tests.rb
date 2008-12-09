@@ -14,7 +14,7 @@ generator = (series == "1" ?
              "reader_test_generator.rb" : "gen_full_test.rb")
 datfiles = Dir[fullpath + "*.dat"]
 
-suites = ARGV[1] || "abcdef"
+suites = ARGV[1] || "abcdefx"
 
 datfiles.select { |fn| suites.include?(File.basename(fn)[0].chr) }.each do |fn|
   print "-> #{File.basename(fn, ".dat")}... "; $stdout.flush
