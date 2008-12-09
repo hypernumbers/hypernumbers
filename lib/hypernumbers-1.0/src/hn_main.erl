@@ -13,7 +13,7 @@
          get_cell_info/4, write_cell/5,
          get_hypernumber/9, copy_pages_below/2,
          formula_to_range/2, constants_to_range/2,
-        get_pages_under/1]).
+         get_pages_under/1]).
 
 %% @spec set_attribute(Ref, Val) -> ok.
 %% @doc set an attribute on a reference, if the attribute name
@@ -68,7 +68,7 @@ formula_to_range(Formula, Ref = #ref{ref = {range, {TlCol, TlRow, BrCol, BrRow}}
     SetCell = fun({Col, Row}) ->
                       OffsetCol = Col - TlCol + 1,
                       OffsetRow = Row - TlRow + 1,
-                      Value = case area_util:get_at(OffsetCol, OffsetRow, Res) of
+                      Value = case area_util:at(OffsetCol, OffsetRow, Res) of
                                   {ok, V}    -> V;
                                   {error, _} -> ?ERRVAL_NA
                               end,
