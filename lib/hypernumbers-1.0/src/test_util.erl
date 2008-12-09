@@ -21,7 +21,8 @@
          float_cmp/3,
          stripfileref/1,
          transform_reader_output/1,
-         import_xls/1
+         import_xls/1,
+         load_perf_tests/0
 	]).
 
 -include("excel_errors.hrl").
@@ -32,8 +33,12 @@
 -define(EXCEL_IMPORT_FLOAT_PRECISION, 9).
 -define(DEFAULT,1000000).
 
-import_xls(Name) ->
+load_perf_tests()->
+    import_xls("w_recalc_perf_tests_1"),
+    import_xls("w_recalc_perf_tests_2"),
+    import_xls("w_recalc_perf_tests_3").    
 
+import_xls(Name) ->
     hypernumbers_app:clean_start(),
 
     P = code:lib_dir(hypernumbers),
@@ -63,7 +68,8 @@ import_xls(Name) ->
                 end
         end,
     {Lits, Flas} = lists:foldl(F,{[], []}, Celldata),
-    
+    ?INFO("in test_util:import_xls~n-num of literals is ~p~n-"++
+              "num of formulae is ~p~n",[length(Lits),length(Flas)]),
     Dopost = fun({Path, Ref, Postdata}) ->
                      Url = string:to_lower("http://127.0.0.1:9000"++Path++Ref),
                      {ok,NRef} = hn_util:parse_url(Url),
@@ -75,16 +81,28 @@ import_xls(Name) ->
                          _ -> ok
                      end
              end,
-    
+
     ?INFO("Start Posting: ~p", [Name]),
     gen_server:cast(dirty_cell,  {setstate, passive}),
+    % Time1=calendar:datetime_to_gregorian_seconds(calendar:local_time()),
     lists:foreach(Dopost, Lits),
+    % Time2=calendar:datetime_to_gregorian_seconds(calendar:local_time()),
     lists:foreach(Dopost, Flas),
+    % Time3=calendar:datetime_to_gregorian_seconds(calendar:local_time()),
     ?INFO("Start Recalculating: ~p", [Name]),
-    Return1=gen_server:cast(dirty_cell, {setstate, active}),
-    Return2=gen_server:call(dirty_cell, flush, infinity),
+    gen_server:cast(dirty_cell,{setstate,active}),
+    % String="File,"++Name++","++
+    %    "No Of Literals,"++integer_to_list(length(Lits))++","++
+    %    "No Of Formulae,"++integer_to_list(length(Flas))++","++
+    %    "Time To Post Literals (secs),"++integer_to_list(Time2-Time1)++","++
+    %    "Time To Post Formulae (secs),"++integer_to_list(Time3-Time2),
+    % bits:log(String),
+    % Time4=calendar:datetime_to_gregorian_seconds(calendar:local_time()),
+    gen_server:call(dirty_cell,flush,infinity),
+    % Time5=calendar:datetime_to_gregorian_seconds(calendar:local_time()),
+    % String2="Time to recalc,"++integer_to_list(Time5-Time4),
+    % bits:log(String),
     loop(),
-    io:format("Return1 is ~p Return2 is ~p~n",[Return1,Return2]),
     ?INFO("End Import: ~p", [Name]),
     ok.
 
@@ -157,9 +175,9 @@ equal_to_digit(F1,F2,DigitIdx) ->
     Bs=string:substr(Bs0,1,DigitIdx+2),
     As==Bs.
 
-float_cmp(Res, Expres, Digit) ->
-    % measure the relative precision (and not the absolute!)
-    (abs(Res - Expres)/Res) < math:pow(0.1, Digit).
+float_cmp(0.0,0.0,_)          -> true;
+float_cmp(0.0,Expres,Digit)   -> (Expres < math:pow(0.1, Digit));
+float_cmp(Res, Expres, Digit) -> (abs(Res - Expres)/Res) < math:pow(0.1, Digit).
 
 excel_equal("-2146826281","#DIV/0!") -> true;
 excel_equal("-2146826246","#N/A")    -> true;
