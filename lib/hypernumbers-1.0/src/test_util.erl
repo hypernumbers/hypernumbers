@@ -38,71 +38,68 @@ load_perf_tests()->
     import_xls("w_recalc_perf_tests_2"),
     import_xls("w_recalc_perf_tests_3").    
 
+%% what a crap sandwich this whole thing is
+
+read_reader_record({{{sheet, SheetName}, {row_index, Row}, {col_index, Col}}, Val}) ->
+    {SheetName, {Row, Col}, Val};
+read_reader_record({{{sheet, SheetName}, {firstrow, Fr}, {firstcol, Fc}, {lastrow, Lr}, {lastcol, Lc}}, Fla}) ->
+    {SheetName, {{Fr, Fc}, {Lr, Lc}}, Fla}.
+
+%% @doc Convert row & column pair to A1-style ref.
+%% @spec rc_to_a1(Row :: integer(), Col :: integer()) -> string()
+rc_to_a1(Row, Col) ->
+    tconv:to_b26(Col + 1) ++ tconv:to_s(Row + 1).
+
 import_xls(Name) ->
     hypernumbers_app:clean_start(),
 
     P = code:lib_dir(hypernumbers),
-    [_Hn,_Lib,_DD,_Ebin|Rest] = lists:reverse(string:tokens(P,"/")),
-    File = string:join(lists:reverse(Rest),"/") 
-        ++ "/tests/excel_files/Win_Excel07_As_97/"
-        ++ Name ++ ".xls",
+    [_Hn, _Lib, _DD, _Ebin | Rest] = lists:reverse(string:tokens(P, "/")),
+    File = string:join(lists:reverse(Rest), "/") ++
+           "/tests/excel_files/Win_Excel07_As_97/" ++
+           Name ++ ".xls",
     File2 = case os:type() of
                 {win32, nt} -> File;
-                _           -> "/"++File
+                _           -> "/" ++ File
             end,
     io:format("in test_util:import_xls File is ~p~n",[File2]),
     Celldata = readxls(File2),
-    F = fun(X, _Acc = {Ls, Fs}) ->
-                {{{sheet, Sheetn}, {row_index, Row}, 
-                  {col_index, Col}}, Val} = X,
-                {ok, Sheet, _} = regexp:gsub(Sheetn, "\\s+", "_"),
-                Postdata = conv_for_post(Val),
+    F = fun(X, {Ls, Fs}) ->
+                {SheetName, Target, V} = read_reader_record(X),
+                {ok, Sheet, _} = regexp:gsub(SheetName, "\\s+", "_"),
+                Postdata = conv_for_post(V),
                 Path = "/" ++ Name ++ "/" ++ Sheet ++ "/",
-                Ref = tconv:to_b26(Col + 1) ++ tconv:to_s(Row + 1),
+                Ref = case Target of
+                          {{Fr, Fc}, {Lr, Lc}} -> {rc_to_a1(Fr, Fc), rc_to_a1(Lr, Lc)};
+                          {Row, Col}           -> rc_to_a1(Row, Col)
+                      end,
                 Datatpl = {Path, Ref, Postdata},
                 case Postdata of
-                    [$= | _ ] -> % formula
-                        {Ls, Fs ++ [Datatpl]};
-                    _ ->
-                        {Ls ++ [Datatpl], Fs}
-                end
+                    [$=|_] -> {Ls, [Datatpl|Fs]};
+                    _      -> {[Datatpl|Ls], Fs}
+                end                
         end,
     {Lits, Flas} = lists:foldl(F,{[], []}, Celldata),
-    ?INFO("in test_util:import_xls~n-num of literals is ~p~n-"++
-              "num of formulae is ~p~n",[length(Lits),length(Flas)]),
-    Dopost = fun({Path, Ref, Postdata}) ->
-                     Url = string:to_lower("http://127.0.0.1:9000"++Path++Ref),
-                     {ok,NRef} = hn_util:parse_url(Url),
-                     try
-                         % io:format("in test_util:import_xls NRef is ~p "++
-                         %          "Postdata is ~p~n",[NRef,Postdata]),
-                         hn_main:set_attribute(NRef#ref{name=formula},Postdata)
-                     catch
-                         _ -> ok
-                     end
-             end,
 
+    Dopost = fun({Path, Ref, Postdata}) when is_list(Ref) -> % single cell
+                     Url = string:to_lower("http://127.0.0.1:9000" ++ Path ++ Ref),
+                     {ok, RefRec} = hn_util:parse_url(Url),
+                     hn_main:set_cell(RefRec, Postdata);
+                ({Path, {Tl, Br}, Postdata}) -> % array formula
+                     Url = string:to_lower("http://127.0.0.1:9000" ++ Path ++ Tl ++ ":" ++ Br),
+                     {ok, RefRec} = hn_util:parse_url(Url),
+                     hn_main:formula_to_range(Postdata, RefRec)
+             end,
+    
     ?INFO("Start Posting: ~p", [Name]),
     gen_server:cast(dirty_cell,  {setstate, passive}),
-    % Time1=calendar:datetime_to_gregorian_seconds(calendar:local_time()),
     lists:foreach(Dopost, Lits),
-    % Time2=calendar:datetime_to_gregorian_seconds(calendar:local_time()),
     lists:foreach(Dopost, Flas),
-    % Time3=calendar:datetime_to_gregorian_seconds(calendar:local_time()),
     ?INFO("Start Recalculating: ~p", [Name]),
-    gen_server:cast(dirty_cell,{setstate,active}),
-    % String="File,"++Name++","++
-    %    "No Of Literals,"++integer_to_list(length(Lits))++","++
-    %    "No Of Formulae,"++integer_to_list(length(Flas))++","++
-    %    "Time To Post Literals (secs),"++integer_to_list(Time2-Time1)++","++
-    %    "Time To Post Formulae (secs),"++integer_to_list(Time3-Time2),
-    % bits:log(String),
-    % Time4=calendar:datetime_to_gregorian_seconds(calendar:local_time()),
-    gen_server:call(dirty_cell,flush,infinity),
-    % Time5=calendar:datetime_to_gregorian_seconds(calendar:local_time()),
-    % String2="Time to recalc,"++integer_to_list(Time5-Time4),
-    % bits:log(String),
+    Return1=gen_server:cast(dirty_cell, {setstate, active}),
+    Return2=gen_server:call(dirty_cell, flush, infinity),
     loop(),
+    io:format("Return1 is ~p Return2 is ~p~n",[Return1,Return2]),
     ?INFO("End Import: ~p", [Name]),
     ok.
 
@@ -332,8 +329,11 @@ expected4(Expected, Got) ->
             exit({"E:", Expected, "G:", Got})
     end.
 
-readxls(Filename) ->
-    filefilters:read(excel, Filename, fun extract_cell_info/1).
+%% @doc Read XLS file.
+%% TODO: this should be part of the reader - clients should not need to
+%% decipher the collection of ETS tables dumped on them.
+readxls(Fn) ->
+    filefilters:read(excel, Fn, fun decipher_ets_tables/1).
 
 read_excel_file(Filename) ->
     c:pwd(),
@@ -481,19 +481,18 @@ transform_reader_output(O) ->
                 end,
                 [], O).
 
-%% Gets the list of xls table names and their ETS table ids, grabs the cell table
-%% and extracts cell information from it (sheet, row, col, contents).
-
-%% add the following to the cell list:
-%% * format
-%% * style
-%% do something fancy to call out the
-%% * names
-
-extract_cell_info(Tables) ->
-    {value,{cell,Tid1}}=lists:keysearch(cell,1,Tables),
-    Cells=ets:foldl(fun(X,Acc) -> [X|Acc] end,[],Tid1),
-    lists:map(fun({Index,[_,Body]}) -> {Index,Body} end,Cells).
+%% Input: list of {key, id} pairs where key is an ETS table holding info
+%% about some part of the XLS file.
+%% TODO: formats, names, styles.
+decipher_ets_tables(TIds) ->
+    %% Grab information about single cell values.
+    {value, {cell, Tid1}} = lists:keysearch(cell, 1, TIds),
+    CellRecs = ets:foldl(fun(X, Acc) -> [X|Acc] end, [], Tid1),
+    CellInfo = lists:map(fun({Index, [_, Body]}) -> {Index, Body} end, CellRecs),
+    %% Grab information about array formulas.
+    {value, {array_formulae, Tid2}} = lists:keysearch(array_formulae, 1, TIds),
+    AFRecs = ets:foldl(fun(X, Acc) -> [X|Acc] end, [], Tid2),
+    CellInfo ++ AFRecs.
 
 internal_wait(0) ->
     ok;
