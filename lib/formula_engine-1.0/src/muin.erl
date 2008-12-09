@@ -110,12 +110,10 @@ eval(Value) ->
     Value.
 
 call(Func, Args) ->
-    case attempt(?MODULE, funcall, [Func, Args]) of
+    R = attempt(?MODULE, funcall, [Func, Args]),
+    case R of
         {error, Errv = {errval, _}} -> Errv;
-        {error, E}                  -> io:format("in muin:call Func is ~p~n-"++
-                                                 "Args are ~p~n-E is ~p~n",
-                                                 [Func,Args,E]),
-                                       ?error_in_formula;
+        {error, _E}                 -> ?error_in_formula;
         {ok, V}                     -> V
     end.
 
@@ -509,7 +507,7 @@ funcall(hn, [Url]) ->
     funcall(hypernumber, [Url]);
 
 funcall(loop, [A, Fn]) when ?is_area(A) ->
-    area_util:apply_each(fun(L) when is_list(L) -> % paired up
+    R = area_util:apply_each(fun(L) when is_list(L) -> % paired up
                                  funcall(Fn, L);
                             (X) -> % single value from array
                                  case Fn of
@@ -520,7 +518,8 @@ funcall(loop, [A, Fn]) when ?is_area(A) ->
                                          funcall(Fn, [X])
                                  end
                          end,
-                         A);
+                         A),
+    R;
 
 funcall(pair_up, [A, B]) when ?is_area(A) andalso ?is_area(B) ->
     area_util:apply_each_with_pos(fun({X, {C, R}}) ->
@@ -562,9 +561,10 @@ funcall(Fname, Args) ->
 %%% Utility functions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 %% TODO: Beef up.
+%% TODO: what's the real type of ':'? (vararg works for now).
 fntype(Fn) ->
     ?COND(member(Fn, [transpose, mmult, munit, frequency]), matrix,
-          ?COND(member(Fn, [sum, count]),                   vararg,
+          ?COND(member(Fn, [sum, count, ':']),              vararg,
                                                             other)).
 
 is_binop(X) ->
