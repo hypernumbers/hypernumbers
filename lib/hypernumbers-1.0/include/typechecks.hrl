@@ -60,6 +60,12 @@
 -define(dates(Xs, Rules),
         muin_collect:collect_dates(Xs, Rules)).
 
+-define(string(X, Rules),
+        muin_collect:collect_string(X, Rules)).
+
+-define(strings(Xs, Rules),
+        muin_collect:collect_strings(Xs, Rules)).
+
 -define(edate(X),
         if is_record(X, datetime) -> ok;
            true -> ?ERR_VAL
