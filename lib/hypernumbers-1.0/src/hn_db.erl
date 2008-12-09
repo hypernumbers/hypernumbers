@@ -270,7 +270,7 @@ write_remote_link(Parent,Child,Type) ->
     case Link of
         {register,Hn} ->            
             Url   = hn_util:index_to_url(Child),
-            Proxy = Child#index.site ++ Child#index.path,
+            Proxy = Child#index.site ++"/"++ string:join(Child#index.path,"/")++"/",
             Actions = simplexml:to_xml_string(
                         {register,[],[
                                       {biccie,[],[Hn#incoming_hn.biccie]},
@@ -298,27 +298,7 @@ read_remote_links(Index, Relation,Type) ->
 %% @spec cell_changed(Cell) -> ok
 %% @doc  called from dirty_srv when a number changes
 cell_changed(Cell) ->
-    %% Make a list of cells hypernumbers + direct
-    %% cell links, and check for any wildcard * on the path
-    F = fun() ->
-                %% Read dynamic links "/page/*/a1"
-                NIndex = Cell#index{path=lists:reverse(Cell#index.path)},
-                Queries = dyn_parents(NIndex,[],[]),
-                Direct = read_links(Cell,parent),
-                Rem = #remote_cell_link{parent=Cell,
-                                        type=outgoing,_='_'},
-                Links = mnesia:match_object(Rem),
-                {ok,list_hn(Links,[]),lists:append(Direct,Queries)}
-        end,
-    {ok,Remote,Local} = ?mn_ac(transaction,F),
-    
-    Val = get_item_val((to_ref(Cell))#ref{name=rawvalue}),
-    
-    Recalc = fun(#local_cell_link{child=To}) -> hn_main:recalc(To) end,
-    Notify = fun(X) -> notify_remote_change(X,Val) end,    
-
-    lists:foreach(Notify,Remote),
-    lists:foreach(Recalc,Local),
+    hn_main:recalc(Cell),
     ok.
 
 %% @spec hn_changed(Cell) -> ok
@@ -340,14 +320,49 @@ hn_changed(Cell) ->
 
 %% @spec mark_dirty(Type,Cell) -> ok
 %% @doc  Marks a cell dirty (triggers recalculation)
-mark_dirty(Index,Type) ->
-    Obj = case Type of
-              cell ->         #dirty_cell{index=Index};
-              hypernumber ->  #dirty_hypernumber{index=Index}
-          end,
-
-    F = fun() -> mnesia:write(Obj) end,
-    ok = ?mn_ac(async_dirty,F),
+mark_dirty(Index,cell) ->
+    % Make a list of cells hypernumbers + direct
+    % cell links, and check for any wildcard * on the path
+        Fun1 = fun() ->
+                       % First read dynamic links "/page/*/a1"
+                       NIndex = Index#index{path=lists:reverse(Index#index.path)},
+                       Queries = dyn_parents(NIndex,[],[]),
+                       % Second read direct links
+                       Direct = read_links(Index,parent),
+                       % Last get hypernumbers that are children
+                       Rem = #remote_cell_link{parent=Index,
+                                               type=outgoing,_='_'},
+                       Links = mnesia:match_object(Rem),
+                       RemReturn=list_hn(Links,[]),
+                       {ok,RemReturn,lists:append(Direct,Queries)}
+               end,
+    {ok,Remote,Local} = ?mn_ac(transaction,Fun1),
+    % Now write the local children to dirty_cell
+    Fun2 = fun(#local_cell_link{child=To}) -> 
+                   Fun3 = fun() -> mnesia:write(#dirty_cell{index=To}) end,
+                   ?mn_ac(transaction,Fun3)
+           end,
+    _Return1=lists:foreach(Fun2,Local),
+    % Now write notify the remote children that they are dirty
+    % get the new value first
+    Val = get_item_val((to_ref(Index))#ref{name=rawvalue}),
+    Notify = fun(X) -> notify_remote_change(X,Val) end,        
+    _Return2=lists:foreach(Notify,Remote),
+    ok;
+mark_dirty(Index,hypernumber) ->
+    Fun1 = fun() ->
+                   Rem = #remote_cell_link{parent=Index,
+                                           type=incoming,_='_'},
+                   Links = mnesia:match_object(Rem),
+                   {ok,Links}
+           end,
+    {ok,Local} = ?mn_ac(transaction,Fun1),
+    Fun2 = fun(X) ->
+                   #remote_cell_link{child=Index2}=X,
+                   Fun3 = fun() -> mnesia:write(#dirty_cell{index=Index2}) end,
+                   ?mn_ac(transaction,Fun3)
+           end,
+    _Return1=lists:foreach(Fun2,Local),
     ok.
 
 %% @spec update_hn(From,Bic,Val,Version) -> ok
@@ -403,6 +418,8 @@ do_get_hn(Url,To)->
 %% @spec register_hn(To,From,Bic,Proxy,Url) -> ok
 %% @doc  Recieve registration for a hypernumber
 register_hn(To,From,Bic,Proxy,Url) ->
+    io:format("in register_hn~n-To is ~p~n-From is ~p~n-Bic is ~p~n-"++
+              "Proxy is ~p~n-Url is ~p~n",[To,From,Bic,Proxy,Url]),
     F = fun()->
                 Link = #remote_cell_link{
                   parent=To,
@@ -493,8 +510,9 @@ list_hn([],List) -> List;
 list_hn([H|T],List) ->
     Cell = H#remote_cell_link.parent,
     [Hn] = mnesia:match_object(#outgoing_hn{index={'_',Cell},_='_'}),
-    list_hn(T,hn_util:add_uniq(List,Hn)).
-
+    Return=list_hn(T,hn_util:add_uniq(List,Hn)),
+    Return.
+    
 write_template(Name,TemplatePath,Gui,Form) ->
     CompiledPath=hn_templates:make_path(TemplatePath),
     Template=#template{name=Name,temp_path=CompiledPath,
