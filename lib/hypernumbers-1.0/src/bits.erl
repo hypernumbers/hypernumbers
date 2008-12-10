@@ -17,7 +17,7 @@ run_formula(S) ->
 log(String) ->
     File= case os:type() of
 	      {win32,nt} -> "c:\\tmp\\hypernumbers_log.txt";
-	      _          -> "/tmp/hypernumbers_log.txt"
+	      _          -> "../../logs/recalc/recalc_logs.txt"
 	  end,
     _Return=filelib:ensure_dir(File),
     case file:open(File, [append]) of

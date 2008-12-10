@@ -339,8 +339,16 @@ mark_dirty(Index,cell) ->
     {ok,Remote,Local} = ?mn_ac(transaction,Fun1),
     % Now write the local children to dirty_cell
     Fun2 = fun(#local_cell_link{child=To}) -> 
-                   Fun3 = fun() -> mnesia:write(#dirty_cell{index=To}) end,
-                   ?mn_ac(transaction,Fun3)
+                   F = fun() -> 
+                               %% only write the dirty cell if 
+                               %% it doesnt already exist
+                               Match=#dirty_cell{index=To,_='_'},
+                               case mnesia:match_object(Match) of
+                                   [] -> mnesia:write(#dirty_cell{index=To}) ;
+                                   _  -> ok
+                               end
+                       end,
+                   ?mn_ac(transaction,F)
            end,
     _Return1=lists:foreach(Fun2,Local),
     % Now write notify the remote children that they are dirty

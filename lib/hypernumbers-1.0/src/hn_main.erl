@@ -155,7 +155,7 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
               ok
       end,
       Parents),
-    
+    #index{row=Row,column=Col}=Index,
     hn_db:mark_dirty(Index,cell),    
     ok.
 
@@ -285,6 +285,12 @@ recalc_cell(Index) ->
             case muin:run_code(Pcode, Rti) of
                 {ok, {_, Val, _, _, _}}  -> 
                     set_cell_rawvalue(Addr,Val),
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    % Logging code                                      %
+                    % #index{row=Row,column=Col}=Index,                 %
+                    % bits:log("Row,"++integer_to_list(Row)++",Col,"++  %
+                    %         integer_to_list(Col)), 5                  %
+                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     hn_db:mark_dirty(Index, cell);
                 {error, _Reason} ->
                     ok

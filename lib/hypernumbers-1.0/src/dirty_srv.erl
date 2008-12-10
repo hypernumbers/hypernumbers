@@ -115,11 +115,15 @@ trigger_recalc(Rec,Type) ->
     Index = ?COND(Type == dirty_cell,
                   Rec#dirty_cell.index,
                   Rec#dirty_hypernumber.index),
-    % #index{path=Path,row=Row,column=Col}=Index,
-    % Str=string:join(Path,"/")++" Row "++integer_to_list(Row)++" Col "
-    %    ++integer_to_list(Col),
-    % bits:log(Str),
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Logging code                                                    %
+    #index{path=Path,row=Row,column=Col}=Index,                       %
+    Str=string:join(Path,"/")++" Row "++integer_to_list(Row)++" Col " %
+        ++integer_to_list(Col),                                       %
+    bits:log(Str),                                                    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ok = mnesia:dirty_delete({Type, Index}),
+    #index{row=Row,column=Col}=Index,
     ok = case Type of
              dirty_cell        -> hn_db:cell_changed(Index);
              dirty_hypernumber -> hn_db:hn_changed(Index)
