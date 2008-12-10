@@ -3,108 +3,86 @@ require 'png'
 
 # Define the make_png function
 
-$zoom=4
+$yzoom=4
+$xzoom=$yzoom*8
+
+def is_higher(a,b)
+	if a > b
+	  return a
+	else
+	  return b
+	end
+end
+
+def make_border(canvas,xsize,ysize,colour)
+  # puts "in make_border xsize is #{xsize} and ysize is #{ysize}"
+  x=0
+  while x < xsize
+    canvas[x,0]=colour
+    canvas[x,ysize-1]=colour
+    x=x+1
+  end
+  y=0
+  while y < ysize
+    canvas[0,y]=colour
+    canvas[xsize-1,y]=colour
+    y=y+1
+  end
+end
 
 def colour_block(canvas,x,y,colour)
-	xstart=x*$zoom
-	ystart=y*$zoom
-	xend=xstart+$zoom
-	yend=ystart+$zoom
-	# puts "x #{x} y#{y} xstart #{xstart} ystart #{ystart} xend #{xend} yend #{yend}"
+	xstart=x*$xzoom
+	ystart=y*$yzoom
+	xend=xstart+$xzoom
+	yend=ystart+$yzoom
+	# puts "x #{x} y #{y} xstart #{xstart} ystart #{ystart} xend #{xend} yend #{yend}"
 	while xstart < xend
 		while ystart < yend
 			canvas[xstart,ystart]=colour
 		  	ystart += 1
 		end
-		ystart=y*$zoom
+		ystart=y*$yzoom
 		xstart += 1
 	end
 end		 
 
-def make_png(file)
-	@data = []
-	$limits={}
-	$canvas={}
-	$offsets={}
-	newfile="../../logs/"+file
-	# puts newfile
-	segments=newfile.split("/")
-	# puts segments
-	pngnames=segments[4].split(".")
-	pngname=pngnames[1]
-	puts pngname
-	# puts pngname
-	doc=open("../../logs/"+file)  {|f| Hpricot(f) }
-	table=doc.at("table")
-	rows=table.search("tr")
-	rows.each do |r|
-	 cells=r.search('//td')
-	 if (cells.first && cells.first.to_s != "<td></td>")
-	 	file=cells[1].inner_text
-	 	split=cells[2].inner_text.split("_")
-	 	sheet=file+"_"+split[0]
-	 	c = b26toi(split[1][/[a-zA-Z]+/])
- 		r = split[1][/[0-9]+/].to_i
- 		result=cells[5].inner_text
-	 	# puts "Result: #{sheet} C#{c} R#{r} #{result}"
-	 	@data << [sheet,c,r,result]
-	 	if $limits[sheet] != nil
-	 	 # puts "running!"
-	 	 vals=$limits[sheet]
-	 	 chigh=vals[0]
-	 	 rhigh=vals[1]
-	 	 # puts "#{sheet} X#{c} Y#{r} XU#{chigh} YU#{rhigh}"
-	 	 $limits[sheet]=[is_higher(chigh,c),is_higher(rhigh,r)]
-	       else
-	         # puts "initialising!"
-	 	 # puts "#{sheet} X#{c} Y#{r}"
-	         $limits[sheet]=[c,r]
-	       end	
-	 end
-	end
-	 # puts $limits
-	 # puts "starting the dump!"
-	 $limits.each do |lim|
-	 	# puts "new lim"
-	 	xupper=(lim[1][0]+1)*$zoom
-	 	yupper=(lim[1][1]+1)*$zoom
-	 	# puts "#{lim[0]} xupper is #{xupper} yupper is #{yupper}"
-	 	$canvas[lim[0]] = PNG::Canvas.new xupper,yupper,(PNG::Color::Black)
- 		# puts $canvas[lim[0]].to_s
- 	 end
-	 # now colour it
-	 @data.each do |line|
-	 	# puts "New Line"
-	 	sheet=line[0]
-	 	x=line[1]
-	 	y=line[2]
-	 	limits=$limits[sheet]
-	 	# puts "limits are #{limits}"
-	 	yupper=(limits[1]+1)
-	 	# puts "yupper is #{yupper}"
-	 	result=line[3]
- 	        canvas=$canvas[sheet]
-	 	# puts "Writing colours #{sheet} X:#{x} Y:#{y} Yu:#{yupper} R:#{result}"
-	 	# y goes down for us - not up...
-	 	if result == "Ok"
-	 	     colour_block(canvas,x,yupper-y-1,PNG::Color::Green)
-	 	elsif result == "FAILED"
-	 	     colour_block(canvas,x,yupper-y-1,PNG::Color::Red)
-	 	elsif result == "SKIPPED"
-	 	     colour_block(canvas,x,yupper-y-1,PNG::Color::Yellow)	 	
-		end	 	     
-	 end
-	 $canvas.each do |png|
-		puts png[0].to_s
-	 	subfile=png[0]
-	 	filename=pngname+"_"+subfile+".png"
-	 	path="../../logs/visualisation/"
-	 	# puts filename
-	 	pngfile = PNG.new png[1]
-	 	pngfile.save path+filename
-	 	rowdetails="<tr><td>&nbsp;</td></tr><tr><td>&nbsp;</td></tr><tr valign=\"top\"><td>"+pngname+" "+subfile+"</td><td><img src=\""+filename+"\"></td></tr>"
-		$htmlpage += rowdetails 
-	 end
+def make_png(name,data,bounds,colourzoom)
+  # create a new canvas
+  # puts "name is #{name}"
+  # puts "data is #{data}"
+  # puts "bounds is #{bounds}"
+  # puts "colourzoom is #{colourzoom}"
+  xupper=bounds[1].to_i
+  yupper=bounds[0].to_i
+  # puts "yupper is #{yupper}"
+  # puts "xupper is #{xupper}"
+  canvasx=(xupper+1)*$xzoom+2
+  canvasy=(yupper+1)*$yzoom+2
+  # puts "canvasx is #{canvasx} and canvasy is #{canvasy}"
+  canvas = PNG::Canvas.new canvasx, canvasy ,(PNG::Color::White)
+  data.each_key do |line|
+    if data[line]
+      # puts "line is #{line}"
+      data[line].each_key do |cell|
+        # puts "cell is #{cell}"
+        y=line
+        x=cell
+        val=data[line][cell]
+        # puts "x is #{x} and y is #{y} cell is #{val}"
+        shade=val*colourzoom+1
+        shade=256-shade.to_i
+        # puts "val is #{val} shade is #{shade}"
+        colour=PNG::Color.new(shade,shade,shade,255)
+        colour_block(canvas,x,yupper-y,colour)
+      end
+    end
+  end
+  make_border(canvas,canvasx,canvasy,PNG::Color::Black)
+  pngfile = PNG.new canvas
+  filename="../../logs/recalc/"+name+".png"
+  pngfile.save filename
+  rowdetails="<tr><td>&nbsp;</td></tr><tr><td>&nbsp;</td></tr><tr valign=\"top\"><td>"+name+"</td><td><img src=\""+filename+"\"></td></tr>"
+  $htmlpage += rowdetails 
 end
 
 #
@@ -116,8 +94,88 @@ $htmlpage="<html><head></head><body><h1>Recalc Visualisation</h1><table>"
 
 # Set up some globals
 
-Details= {},
+sheets={}
+details={}
+bounds={}
+count={}
 # read the index file
 f = File.open("../../logs/recalc/recalc_logs.txt","r")
 f.each_line do |line|
-  if line.slice(0,4) == "File"
+  v=line.split(" ")
+  # puts "sheets #{v[0]} Row #{v[2]} and Col #{v[4]}"
+  name=v[0]
+  row=v[2].to_i
+  col=v[4].to_i
+  if sheets[name]
+    details=sheets[name]
+    # puts "name is #{name} and details are #{details}"
+    bound=bounds[name]
+    rupper=bound[0]
+    cupper=bound[1]
+    maxcount=count[2]
+    bounds[name]=[is_higher(rupper,row),is_higher(cupper,col)]
+  else
+    details={}
+    count[name]=1
+    bounds[name]=[row,col]
+  end
+  if (details[row])
+    if (details[row][col])
+      details[row][col] = details[row][col]+1
+      # puts "updating     row is   #{row} and col #{col} with #{details[row][col]}"
+      # puts "#{details}"
+      count[name]=is_higher(count[name],details[row][col])
+    else
+      details[row][col] = 1        
+      # puts "creating col row is   #{row} and col #{col} with #{details[row][col]}"
+      # puts "#{details}"
+    end
+  else
+    details[row] = {}
+    details[row][col] = 1
+    # puts "creating row row is #{row} and col #{col} with #{details[row][col]}"
+    # puts "#{details}"
+  end
+  # puts "count is #{details[row][col]}"
+  sheets[name]=details
+end
+# puts "bounds are #{bounds}"
+# puts "count is #{count}"
+
+# now calculate the colour zoom
+maxcount=0
+count.each do |c|
+  maxcount=is_higher(maxcount,c[1])
+end
+# puts "maxcount is #{maxcount}"
+if maxcount > 256
+  colourzoom = 1.0/((maxcount/256).to_i+1)
+else
+  colourzoom = (256.0/maxcount).to_i
+end
+# puts "colourzoom is #{colourzoom}"
+
+# Start making the results page
+$htmlpage="<html><head></head><body><h1>Recalculation Visualisation</h1><table>"
+
+sheets.each_key do |name|
+  # puts "name is #{name}"
+  name2=name.gsub("/","_")
+  # puts "name is #{name} and name2 is #{name2}"
+  data=sheets[name]
+  # puts "@data is #{data} of type #{data.class}"
+  # data.each_key do |idx|
+  #  puts "idx is #{idx}"
+  #  if data[idx]
+  #     data[idx].each_key do |idx2|
+  #      puts "    idx2 is #{idx2} with contents #{data[idx][idx2]}"
+  #    end
+  #   end
+  #end
+  # puts "bounds are #{bounds[name]}"
+  make_png(name2,data,bounds[name],colourzoom)
+end
+  
+# now close off the html file
+$htmlpage += "</table></body></html>"
+File.open("../../logs/recalc/index.html", "w") { |f| f << $htmlpage }

@@ -7,7 +7,8 @@ require 'png'
 NT_TO_B26_MAP = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN", "AO", "AP", "AQ", "AR", "AS", "AT", "AU", "AV", "AW", "AX", "AY", "AZ", "BA", "BB", "BC", "BD", "BE", "BF", "BG", "BH", "BI", "BJ", "BK", "BL", "BM", "BN", "BO", "BP", "BQ", "BR", "BS", "BT", "BU", "BV", "BW", "BX", "BY", "BZ", "CA", "CB", "CC", "CD", "CE", "CF", "CG", "CH", "CI", "CJ", "CK", "CL", "CM", "CN", "CO", "CP", "CQ", "CR", "CS", "CT", "CU", "CV", "CW", "CX", "CY", "CZ", "DA", "DB", "DC", "DD", "DE", "DF", "DG", "DH", "DI", "DJ", "DK", "DL", "DM", "DN", "DO", "DP", "DQ", "DR", "DS", "DT", "DU", "DV", "DW", "DX", "DY", "DZ", "EA", "EB", "EC", "ED", "EE", "EF", "EG", "EH", "EI", "EJ", "EK", "EL", "EM", "EN", "EO", "EP", "EQ", "ER", "ES", "ET", "EU", "EV", "EW", "EX", "EY", "EZ", "FA", "FB", "FC", "FD", "FE", "FF", "FG", "FH", "FI", "FJ", "FK", "FL", "FM", "FN", "FO", "FP", "FQ", "FR", "FS", "FT", "FU", "FV", "FW", "FX", "FY", "FZ", "GA", "GB", "GC", "GD", "GE", "GF", "GG", "GH", "GI", "GJ", "GK", "GL", "GM", "GN", "GO", "GP", "GQ", "GR", "GS", "GT", "GU", "GV", "GW", "GX", "GY", "GZ", "HA", "HB", "HC", "HD", "HE", "HF", "HG", "HH", "HI", "HJ", "HK", "HL", "HM", "HN", "HO", "HP", "HQ", "HR", "HS", "HT", "HU", "HV", "HW", "HX", "HY", "HZ", "IA", "IB", "IC", "ID", "IE", "IF", "IG", "IH", "II", "IJ", "IK", "IL", "IM", "IN", "IO", "IP", "IQ", "IR", "IS", "IT", "IU", "IV"]
 
 $htmlpage=""
-$zoom=4
+$yzoom=4
+$xzoom=$yzoom*8
 
 # Column name -> index, e.g. AZ -> 52.
 def b26toi(str)
@@ -27,17 +28,17 @@ def is_higher(a,b)
 end
 
 def colour_block(canvas,x,y,colour)
-	xstart=x*$zoom
-	ystart=y*$zoom
-	xend=xstart+$zoom
-	yend=ystart+$zoom
+	xstart=x*$xzoom
+	ystart=y*$yzoom
+	xend=xstart+$xzoom
+	yend=ystart+$yzoom
 	# puts "x #{x} y#{y} xstart #{xstart} ystart #{ystart} xend #{xend} yend #{yend}"
 	while xstart < xend
 		while ystart < yend
-			canvas[xstart,ystart]=colour
+			canvas[xstart+1,ystart+1]=colour
 		  	ystart += 1
 		end
-		ystart=y*$zoom
+		ystart=y*$yzoom
 		xstart += 1
 	end
 end		 
@@ -87,8 +88,8 @@ def make_png(file)
 	 # puts "starting the dump!"
 	 $limits.each do |lim|
 	 	# puts "new lim"
-	 	xupper=(lim[1][0]+1)*$zoom
-	 	yupper=(lim[1][1]+1)*$zoom
+	 	xupper=(lim[1][0]+1)*$xzoom+2
+	 	yupper=(lim[1][1]+1)*$yzoom+2
 	 	# puts "#{lim[0]} xupper is #{xupper} yupper is #{yupper}"
 	 	$canvas[lim[0]] = PNG::Canvas.new xupper,yupper,(PNG::Color::Black)
  		# puts $canvas[lim[0]].to_s
