@@ -36,8 +36,8 @@ def colour_block(canvas,x,y,colour)
 	xend=xstart+$xzoom
 	yend=ystart+$yzoom
 	# puts "x #{x} y #{y} xstart #{xstart} ystart #{ystart} xend #{xend} yend #{yend}"
-	while xstart < xend
-		while ystart < yend
+	while xstart < xend-1
+		while ystart < yend-1
 			canvas[xstart,ystart]=colour
 		  	ystart += 1
 		end

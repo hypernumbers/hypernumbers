@@ -1,3 +1,4 @@
+require 'fileutils'
 require 'rubygems'
 require 'hpricot'
 require 'png'
@@ -33,8 +34,8 @@ def colour_block(canvas,x,y,colour)
 	xend=xstart+$xzoom
 	yend=ystart+$yzoom
 	# puts "x #{x} y#{y} xstart #{xstart} ystart #{ystart} xend #{xend} yend #{yend}"
-	while xstart < xend
-		while ystart < yend
+	while xstart < xend-1
+		while ystart < yend-1
 			canvas[xstart+1,ystart+1]=colour
 		  	ystart += 1
 		end
@@ -145,7 +146,6 @@ table=doc.at("table")
 rows=table.search("tr")
 # puts "rows are #{rows}"
 
-Dir.mkdir("../../logs/visualisation")
 rows.each do |r|
  ahref=r.search('a') #.first[:href]
  if ahref.any?
@@ -155,4 +155,5 @@ end
 
 # now close off the html file
 $htmlpage += "</table></body></html>"
-File.open("../../logs/visualisation/index.html", "w") { |f| f << $htmlpage }
+filename="../../logs/visualisation/index.html"
+File.open(filename, "w") { |f| f << $htmlpage }
