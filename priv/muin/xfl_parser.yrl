@@ -21,6 +21,7 @@ int float bool str
 ref
 errval
 '(' ')' ',' '{' '}' ';'
+ssatomref ssnumref
 .
 
 Rootsymbol Formula.
@@ -75,9 +76,19 @@ Uplus  -> '+' E  : '$2'.
 E -> ref  ':' ref    : [':', '$1', '$3'].
 
 %%% row & col ranges.
+
+%% same page
+
 E -> atom ':' atom   : [':', '$1', '$3'].
 E -> int  ':' int    : [':', '$1', '$3'].
+
+%% other pages
+
+E -> ssatomref ':' atom : [':', '$1', '$3'].
+E -> ssnumref  ':' int  : [':', '$1', '$3'].
+
 %% INDIRECT ranges.
+
 E -> Funcall ':' ref : [':', '$1', '$3'].
 E -> ref ':' Funcall : [':', '$1', '$3'].
 

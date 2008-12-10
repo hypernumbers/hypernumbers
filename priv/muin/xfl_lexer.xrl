@@ -1,8 +1,7 @@
 %%% @doc    Lexer for Muin's formula language.
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 
-%%% NOTE: Expects all input to be in upper case (apart from
-%%% contents of strings)!
+%%% input is expected in upper case (function names &c).
 
 Definitions.
 
@@ -38,6 +37,10 @@ SSA1REF  = {START_OF_SSREF}{MAYBE_PATH}{A1REF}
 SSRCREF  = {START_OF_SSREF}{MAYBE_PATH}{RCREF}
 SSNAMEREF = {START_OF_SSREF}{MAYBE_PATH}{NAME}
 
+%% things like /a/b/c/Z and /a/b/c/24
+SSATOMREF = ({START_OF_SSREF}{MAYBE_PATH}{ATOM})
+SSNUMREF  = ({START_OF_SSREF}{MAYBE_PATH}{INT})
+
 %% Whitespace.
 WHITESPACE = ([\000-\s]*)
 
@@ -45,12 +48,17 @@ WHITESPACE = ([\000-\s]*)
 Rules.
 
 %% These are converted to universal refs, see lex/1.
-{A1REF}    : {token, {a1ref, YYtext}}.
-{SSA1REF}  : {token, {ssa1ref, debang(YYtext)}}.
-{RCREF}    : {token, {rcref, YYtext}}.
-{SSRCREF}  : {token, {ssrcref, debang(YYtext)}}.
+{A1REF}     : {token, {a1ref,     YYtext}}.
+{SSA1REF}   : {token, {ssa1ref,   debang(YYtext)}}.
+{RCREF}     : {token, {rcref,     YYtext}}.
+{SSRCREF}   : {token, {ssrcref,   debang(YYtext)}}.
 {SSNAMEREF} : {token, {ssnameref, debang(YYtext)}}.
-                
+
+%% these are NOT converted to universal refs
+%% (they're not cellrefs and they need work in the parser)
+{SSATOMREF} : {token, {ssatomref, debang(YYtext)}}.
+{SSNUMREF}  : {token, {ssnumref,  debang(YYtext)}}.
+
 %% Basic data types.
 {INT}      : {token, {int, tconv:to_i(YYtext)}}.
 {FLOATDEC} : {token, {float, tconv:to_f(YYtext)}}.
