@@ -43,7 +43,7 @@ rm -rf $LASTRUN
 mkdir $LASTRUN
 
 cd priv/test_visualiser
-ruby visualise_tests.rb
+#ruby visualise_tests.rb
 cd ../..
 
 cp -r logs/* $LASTRUN
