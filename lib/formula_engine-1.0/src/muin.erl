@@ -486,7 +486,13 @@ funcall(':', [{ref, Col1, Row1, Path1, _}, {ref, Col2, Row2, "./", _}]) ->
     Resrange = {range, reverse(Revrows)},
     Resrange;
 
-%% TODO: Column & row ranges.
+%% column & row ranges. the tokens come straight from the lexer.
+
+funcall(':', [{ssatomref, _Ssa}, {atom, _A}]) ->
+    ok; % TODO: column range
+
+funcall(':', [{ssnumref, _Snr}, {atom, _A}]) ->
+    ok; % TODO: row range
 
 funcall(name, [Name, Path]) ->
     Refs = hn_db:get_ref_from_name(Name),
