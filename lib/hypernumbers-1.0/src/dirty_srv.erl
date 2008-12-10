@@ -115,13 +115,13 @@ trigger_recalc(Rec,Type) ->
     Index = ?COND(Type == dirty_cell,
                   Rec#dirty_cell.index,
                   Rec#dirty_hypernumber.index),
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % Logging code                                                    %
-    #index{path=Path,row=Row,column=Col}=Index,                       %
-    Str=string:join(Path,"/")++" Row "++integer_to_list(Row)++" Col " %
-        ++integer_to_list(Col),                                       %
-    bits:log(Str),                                                    %
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % Logging code                                                      %
+    % #index{path=Path,row=Row,column=Col}=Index,                       %
+    % Str=string:join(Path,"/")++" Row "++integer_to_list(Row)++" Col " %
+    %    ++integer_to_list(Col),                                        %
+    % bits:log(Str),                                                    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ok = mnesia:dirty_delete({Type, Index}),
     #index{row=Row,column=Col}=Index,
     ok = case Type of
@@ -130,9 +130,11 @@ trigger_recalc(Rec,Type) ->
          end,
     ok.
 
-shrink(ParentsList,List) -> % io:format("in shrink~n-ParentsList is ~p~n-List is ~p~n",
-                            %          [ParentsList,List]),
-                            shrink(ParentsList,List,[]).
+%%%
+%%% Utility Functions
+%%% 
+
+shrink(ParentsList,List) -> shrink(ParentsList,List,[]).
 
 shrink([],_List,Acc) -> Acc;
 shrink([Dirty|T],List,Acc) ->
@@ -141,7 +143,6 @@ shrink([Dirty|T],List,Acc) ->
                  false  -> Acc;
                  Dirty2 -> [Dirty2|Acc]
              end,
-    % io:format("in dirty_srv:shrink NewAcc is ~p~n",[NewAcc]),
     shrink(T,List,NewAcc).
 
 %% One true is good enough!
@@ -150,8 +151,6 @@ has_dirty_parent([H|T],Parent)  ->
     {dirty_cell,Index,_}=H,
     {Cell,Links}=Parent,
     case lists:keymember(Index,3,Links) of
-        true  -> % io:format("true~n"),
-                 H;
-        false -> % io:format("false~n"),
-                 has_dirty_parent(T,Parent)
+        true  -> H;
+        false -> has_dirty_parent(T,Parent)
     end.
