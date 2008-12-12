@@ -66,7 +66,7 @@ import_xls(Name) ->
     Celldata = readxls(File2),
     F = fun(X, {Ls, Fs}) ->
                 {SheetName, Target, V} = read_reader_record(X),
-                {ok, Sheet, _} = regexp:gsub(SheetName, "\\s+", "_"),
+                Sheet=excel_util:esc_tab_name(SheetName),
                 Postdata = conv_for_post(V),
                 Path = "/" ++ Name ++ "/" ++ Sheet ++ "/",
                 Ref = case Target of
@@ -82,9 +82,10 @@ import_xls(Name) ->
     {Lits, Flas} = lists:foldl(F,{[], []}, Celldata),
 
     Dopost = fun({Path, Ref, Postdata}) when is_list(Ref) -> % single cell
-                     Url = string:to_lower("http://127.0.0.1:9000" ++ Path ++ Ref),
+                      Url = string:to_lower("http://127.0.0.1:9000" ++ Path ++ Ref),
                      {ok, RefRec} = hn_util:parse_url(Url),
-                     hn_main:set_cell(RefRec, Postdata);
+                     Postdata2=fix_integers(Postdata),
+                     ok=hn_main:set_cell(RefRec, Postdata2);
                 ({Path, {Tl, Br}, Postdata}) -> % array formula
                      Url = string:to_lower("http://127.0.0.1:9000" ++ Path ++ Tl ++ ":" ++ Br),
                      {ok, RefRec} = hn_util:parse_url(Url),
@@ -102,6 +103,15 @@ import_xls(Name) ->
     io:format("Return1 is ~p Return2 is ~p~n",[Return1,Return2]),
     ?INFO("End Import: ~p", [Name]),
     ok.
+
+fix_integers(X) ->
+    case make_float(X) of
+        "not float" -> X;
+        X2          -> if
+                           (X2-round(X2)) == 0.0 -> integer_to_list(round(X2));
+                           true                  -> X
+                       end
+    end.
 
 loop()->
     case mnesia:table_info(dirty_cell,size) of
@@ -188,10 +198,8 @@ excel_equal("-2146826273","#VALUE!") -> true;
 excel_equal(String1,String2) when is_list(String1), is_list(String2) ->
   %% fix-up the fact that we have changed the name of the function Error.Type to ErrorType
     Return=regexp:gsub(String2,"ERROR.TYPE","ERRORTYPE"),
-    io:format("Return is ~p~n",[Return]),
     {ok,String2a,_}=Return,
     R2 = stripfileref(String2a),
-    io:format("String1 is ~p and R2 is ~p~n",[String1,R2]),
     Result = case String1 of
             R2 -> true;
             _        -> false

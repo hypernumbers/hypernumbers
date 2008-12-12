@@ -21,7 +21,8 @@
          read/3,
          read_shared/2,
          get_length/2,
-         append_sheetname/2]).
+         append_sheetname/2,
+         esc_tab_name/1]).
 
 %%% Debugging exports
 -export([parse_CRS_RK_TESTING/1,shift_left2_TESTING/1]).
@@ -70,8 +71,6 @@ parse_CRS_RK(RKBin)->
 %% There is a bit mask applied but it is against the reassembled
 %% number and not the first digits of the little endian stream!
     <<Rem:6,Type:1,Shift:1,Rest:24>>=RKBin,
-%% io:format("in excel_util:parse_CRS_RK RKBin is ~p Rem is ~p Type is ~p "++
-%%        "Shift is ~p and Rest is ~p~n",[RKBin,Rem,Type,Shift,Rest]),
 %% Rebuild the number
     Num2 = case Type of
                ?CRS_RK_FLOATING_POINT ->
@@ -79,17 +78,11 @@ parse_CRS_RK(RKBin)->
                    <<Num:64/little-float>>= <<0:32,FPVal/binary>>,
                    Num;
                ?CRS_RK_INTEGER ->
-%% io:format("in excel_util:parse_CRS_RK Integer~n"),
                    <<RKBin2:32/little-signed-integer>>=RKBin,
                    RKBin3= <<RKBin2:32>>,
-%% io:format("in excel_util:parse_CRS_RK~n-RKBin is  ~p~n-"++
-%%       "RKBin3 is ~p~n",[RKBin,RKBin3]),
                    Num=get_integer(RKBin3),
-%% io:format("in excel_util:parse_CRS_RK~n-Num is ~p~n",[Num]),
-%% <<Num:64/little-unsigned-integer>>= <<0:32,IntVal/binary>>,
                    Num
            end,
-%% io:format("in excel_util:parse_CRS_RK Num2 is ~p~n",[Num2]),
     case Shift of
         ?CRS_RK_UNCHANGED         -> Num2;
         ?CRS_RK_SHIFT_DOWN_BY_100 -> Num2/100
@@ -108,8 +101,6 @@ parse_CRS_Uni16(Bin)->
             parse_CRS_Uni16(Bin,2);
           error:_Message ->
 %% Try again with an index of 2
-            io:format("in parse_CRS_Uni16 "++
-                      "trying an index length of 2~n"),
             parse_CRS_Uni16(Bin,2);
           throw:Term ->
             io:format("in parse_CRS_Uni16 "++
@@ -200,11 +191,8 @@ get_bits_CRS_Uni16(Len,IndexSize,Bin,NFlags)->
 %% is stored
 %%
 read_cell_range_add_list(Bin,Size)->
-%%io:format("in excel_util:read_cell_range_add_list Bin is ~p~n",[Bin]),
     <<NoAddies:16/little-signed-integer,
      Rest/binary>>=Bin,
-%%io:format("in excel_rev_comp:read_cell_range_add_list NoAddies is ~p~n",
-%%      [NoAddies]),
     read_cell_range_addies(NoAddies,Size,Rest).
 
 %% This function pulls a set of cell_range_addies out of the list of them.
@@ -304,24 +292,20 @@ read_shared(Tables,{{sheet,Name},{row_index,Row},{col_index,Col}})->
                       end
               end,
     FirstReturn = ets:foldl(ArrayFn,[],Tid),
-%% io:format("in excel_util:read_shared FirstReturn is ~p~n",[FirstReturn]),
     SecondReturn = case FirstReturn of
                        []      -> ets:foldl(ExShrdFn,[],Tid);
                        _Other2 -> FirstReturn
                    end,
-%% io:format("in excel_util:read_shared SecondReturn is ~p~n",[SecondReturn]),
     ThirdReturn = case SecondReturn of
                       []      -> ets:foldl(IntShrdFn,[],Tid);
                       _Other3 -> SecondReturn
                   end,
-%% io:format("in excel_util:read_shared ThirdReturn is ~p~n",[ThirdReturn]),
-%% sometimes Excel will store two or more shared formulae that overlap
-%% or more acurately it stores the same token set with two different ranges
-%% this tends to cause things to wig...
-%% so we need to check that when there is more than one formula returned
-%% the tokens are the same
+    % sometimes Excel will store two or more shared formulae that overlap
+    % or more acurately it stores the same token set with two different ranges
+    % this tends to cause things to wig...
+    % so we need to check that when there is more than one formula returned
+    % the tokens are the same
     FourthReturn=check_formulae(ThirdReturn),
-%% io:format("in excel_util:read_shared FourthReturn is ~p~n",[FourthReturn]),
     FourthReturn.
 
 check_formulae([H|T]) -> case check_formulae([H|T],[]) of
@@ -397,18 +381,62 @@ shift_left2(Bin)->
     <<Return:32>>=Bin2,
     Return.
 
-%%shift_left2(<<End:6,_:2>>,Acc)->
-%%    list_to_binary(lists:reverse([<<End:6,0:2>>|Acc]));
-%%shift_left2(<<Rem1:6,_:2,Rem2:6,Shift:2,Rest/binary>>,Acc)->
-%%    shift_left2(<<Rem2:6,Shift:2,Rest/binary>>,[<<Shift:2,Rem1:6>>|Acc]);
-%%shift_left2(<<Rem1:6,_:2,Rem2:6,Shift:2>>,Acc)->
-%%    shift_left2(<<Rem2:6,Shift:2>>,[<<Shift:2,Rem1:6>>|Acc]).
-
 check_flags(NFlags,Flag)->
     case NFlags band Flag of
         Flag -> {ok, match};
         _    -> {ok, no_match}
     end.
+
+%% This function cleans up tab names for Excel
+%% it doesn't clean up a ref error in a tab name though...
+esc_tab_name("#REF") -> "#REF";
+esc_tab_name(String) -> flatpack(string:to_lower(String)).
+
+flatpack(List) -> flatpack(lists:reverse(List),[]).
+
+flatpack([],Acc)       -> {ok,Return,_}=regexp:gsub(Acc," ","_"),
+                          flatpack2(Return);
+flatpack([$¬|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$`|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$!|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$"|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$$|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$%|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$%|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$^|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$&|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$*|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$(|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$)|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([${|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$}|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$[|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$]|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$+|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$=|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$:|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$;|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$@|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$'|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$<|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$,|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$>|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$.|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$?|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$/|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$||T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$-|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$#|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack([$~|T],Acc)   -> flatpack(T,[$_|Acc]);
+flatpack(["\\"|T],Acc) -> flatpack(T,[$_|Acc]);
+flatpack([H|T],Acc)    -> flatpack(T,[H|Acc]).
+
+flatpack2(List) -> flatpack2(List,99).
+
+flatpack2(List,0) -> List;
+flatpack2(List,N) -> {ok,Return,N2}=regexp:gsub(List,"__","_"),
+                     flatpack2(Return,N2).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%

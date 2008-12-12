@@ -22,3 +22,6 @@
 -define(chStartUpDir,6).
 -define(chAltStartUpDir,7).
 -define(chLibDir,8).
+
+%% this is the marker for a name that refers to an external Excel file
+-define(FE_external,65534).

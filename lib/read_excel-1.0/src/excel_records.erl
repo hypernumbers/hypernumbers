@@ -94,7 +94,7 @@ parse_rec(?EXTERNSHEET,Bin,_Name,CurrentFormula,Tables)->
      R2/binary>>=Bin,
     parse_externsheet(R2,0,Tables),
     {ok,CurrentFormula};
-parse_rec(?NAME,Bin,_Name,CurrentFormula,Tables)->
+parse_rec(?NAME,Bin,Name,CurrentFormula,Tables)-> % renamed DEFINEDNAME in v1.42
     <<OptionFlag:2/binary,
      KybdShortCut:8/little-unsigned-integer,
      NameLength:8/little-unsigned-integer,
@@ -107,7 +107,7 @@ parse_rec(?NAME,Bin,_Name,CurrentFormula,Tables)->
      StatusTxtLen:8/little-unsigned-integer,
      Rest/binary>>=Bin,
     parse_Name(OptionFlag,KybdShortCut,NameLength,Size,SheetIndex,
-               MenuTxtLen,DescTxtLen,HelpTxtLen,StatusTxtLen,Rest,Tables),
+               MenuTxtLen,DescTxtLen,HelpTxtLen,StatusTxtLen,Name,Rest,Tables),
     {ok,CurrentFormula};
 parse_rec(?WINDOWPROTECT,_Bin,_Name,CurrentFormula,Tables)->
     excel_util:write(Tables,lacunae,[{identifier,"WINDOWPROTECT"},
@@ -136,13 +136,13 @@ parse_rec(?SELECTION,_Bin,_Name,CurrentFormula,Tables)->
 parse_rec(?DATEMODE,Bin,_Name,CurrentFormula,Tables)->
     <<DateMode:16/little-unsigned-integer>>=Bin,
     DateMode2=case DateMode of
-		  ?rc_DATEMODE_WINDOWS   -> "Windows";
-		  ?rc_DATEMODE_MACINTOSH -> "Macintosh"
-	      end,
+                  ?rc_DATEMODE_WINDOWS   -> "Windows";
+                  ?rc_DATEMODE_MACINTOSH -> "Macintosh"
+              end,
     excel_util:write(Tables,misc,[{index,datemode},{value,DateMode2}]),
     {ok,CurrentFormula};
 parse_rec(?EXTERNNAME2,Bin,Name,CurrentFormula,Tables)->
-    %% Best described by Section 5.39 of excelfileformatV1-41.pdf
+    % Best described by Section 5.39 of excelfileformatV1-41.pdf
     parse_externname(Bin,Tables),
     {ok,CurrentFormula};
 parse_rec(?LEFTMARGIN,_Bin,_Name,CurrentFormula,Tables)->
@@ -375,11 +375,11 @@ parse_rec(?XF2,Bin,_Name,CurrentFormula,Tables)->
      _XFFlags:8/little-unsigned-integer,
      _XFCellBorders:80/little-unsigned-integer>>=Bin,
     Type = case XFType of
-	       ?rc_CELL_XF  -> cell;
-	       ?rc_STYLE_XF -> style
-	   end,
+               ?rc_CELL_XF  -> cell;
+               ?rc_STYLE_XF -> style
+           end,
     excel_util:append(Tables,xf,[{format_index,FormatIndex},{type,Type},
-				 {parent_index,XFParentIndex}]),
+                                 {parent_index,XFParentIndex}]),
     {ok,CurrentFormula};
 parse_rec(?MERGEDCELLS,_Bin,_Name,CurrentFormula,Tables)->
     excel_util:write(Tables,lacunae,[{identifier,"MERGEDCELLS"},
@@ -408,7 +408,7 @@ parse_rec(?LABELSST,Bin,Name,CurrentFormula,Tables)->
      XFIndex:16/little-unsigned-integer,
      SSTIndex:32/little-unsigned-integer,
      _Rest/binary>>=Bin,
-    %% Now look up the string in the string table
+    % Now look up the string in the string table
     String=excel_util:lookup_string(Tables,SSTIndex),
     excel_util:write(Tables,cell,[{{sheet,Name},{row_index,RowIndex},
                                    {col_index,ColIndex}},
@@ -446,7 +446,7 @@ parse_rec(?SUPBOOK,Bin,_Name,CurrentFormula,Tables)->
             write_externalref({skipped,add_ins},[],Tables),
             excel_util:write(Tables,lacunae,[{identifier,"Add_In_Fns"},
                                              {source,excel_records.erl},
-					     {msg,"not being processed"}]);
+                                             {msg,"not being processed"}]);
         <<?DDE_OLE:16/little-unsigned-integer,_Rest/binary>> ->
             write_externalref({skipped,dde_ole},[],Tables),
             excel_util:write(Tables,lacunae,
@@ -501,10 +501,10 @@ parse_rec(?LABEL2,_Bin,_Name,CurrentFormula,Tables)->
                                      {msg,"not being processed"}]),
     {ok,CurrentFormula};
 parse_rec(?BOOLERR2,Bin,Name,CurrentFormula,Tables)->
-    %% One might think that a record called BoolErr would contain a boolean error
-    %% and error pertaining or obtaining in some straightforwar dway to Booleans
-    %% wouldn't one? But on no - it contains a Boolean *OR* an Error
-    %% How mad the fuck is that?
+    % One might think that a record called BoolErr would contain a boolean error
+    % and error pertaining or obtaining in some straightforward way to Booleans
+    % wouldn't one? But on no - it contains a Boolean *OR* an Error
+    % How mad the fuck is that?
     <<RowIndex:16/little-unsigned-integer,
      ColIndex:16/little-unsigned-integer,
      XFIndex:16/little-unsigned-integer,
@@ -608,9 +608,9 @@ parse_rec(?FORMAT2,Bin,_Name,CurrentFormula,Tables)->
     Return=excel_util:parse_CRS_Uni16(FormatBin),
     FormatString=excel_util:get_utf8(Return),
     excel_util:write(Tables,formats,[{format_index,FormatIndex},
-				     {type,unknown_as_yet},
-				     {category,userdefined},
-				     {format,FormatString}]),
+                                     {type,unknown_as_yet},
+                                     {category,userdefined},
+                                     {format,FormatString}]),
     {ok,CurrentFormula};
 parse_rec(?SHRFMLA,Bin,Name,CurrentFormula,Tables)->
     <<Range:6/binary,
@@ -630,7 +630,7 @@ parse_rec(?QUICKTIP,_Bin,_Name,CurrentFormula,Tables)->
                                      {msg,"not being processed"}]),
     {ok,CurrentFormula};
 parse_rec(?BOF4,Bin,_Name,CurrentFormula,_Tables)->
-    %% BOF BIFF8 Section 5.8.1 excelfileformat.pdf V1.40
+%% BOF BIFF8 Section 5.8.1 excelfileformat.pdf V1.40
     <<_BiffVsn:16/little-unsigned-integer,
      _Type:16/little-unsigned-integer,
      _BuildID:16/little-unsigned-integer,
@@ -683,7 +683,7 @@ parse_FRM_Results(Bin,Name) ->
     {Tks,TkArray2}=case Size of
                        0        -> {[],[]};
                        RPN_Size -> <<RPN:RPN_Size/binary,TkArray/binary>>=Rest,
-				   excel_tokens:parse_tokens(RPN,Name,TkArray,[])
+                                   excel_tokens:parse_tokens(RPN,Name,TkArray,[])
                    end,
     {Tks,TkArray2}.
 
@@ -694,23 +694,33 @@ parse_FRM_Results(Bin,Name) ->
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 parse_Name(OptionFlag,_KybdShortCut,NameLength,_Size,SheetIndex,
-           _MenuTxtLen,_DescTxtLen,_HelpTxtLen,_StatusTxtLen,Bin,Tables)->
+           MenuTxtLen,DescTxtLen,HelpTxtLen,StatusTxtLen,Name,Bin,Tables)->
     <<_Hidden:1/integer,_Func:1/integer,_VBasic:1/integer,_Macro:1/integer,
      _Complex:1/integer,_BuiltIn:1/integer,_FuncGroup1:1/integer,
      _FuncGroup2:1/integer,_FuncGroup3:1/integer,_FuncGroup4:1/integer,
      _FuncGroup5:1/integer,_FuncGroup6:1/integer,
      _Binary:1/integer,_A:1/integer,_B:1/integer,_C:1/integer>>=OptionFlag,
-    <<_Options:1/binary,Name:NameLength/binary,_Rest/binary>>=Bin,
-    %% "Unicode names at the moment - will wig when not using Latin-1~n"),
+    TrailingDataLen=MenuTxtLen+DescTxtLen+HelpTxtLen+StatusTxtLen,
+    <<_Options:1/binary,NameName:NameLength/binary,Rest/binary>>=Bin,
+    Tokens=binary_to_list(Rest),
+    Len=length(Tokens),
+    % {RPN,Discard}=lists:split(Len-TrailingDataLen,Tokens),
+    % in FORMULA the RPN tokens may have an additional token stream appended
+    % to them that the formula users (see 3.1.1 of excelfileformatV1-42)
+    % as a result they start with a len record that describes how long the
+    % token string is
+    % for a NAME that lenght is just the length of the RPN Token stream so add it
+    RPN2= <<Len:16/little,Rest/binary>>,
+    {RPNTokens,TokenArray}=parse_FRM_Results(RPN2,Name),
+    % "Unicode names at the moment - will wig when not using Latin-1~n"),
     Scope = case SheetIndex of
                 0 -> global;
                 _ -> local
             end,
     Index=excel_util:get_length(Tables,names),
-    io:format("in excel_records:parse_Name Name is ~p Scope is ~p "++
-              "Index is ~p~n",[Name,Scope,Index]),
     excel_util:write(Tables,names,[{index,Index},{sheetindex,SheetIndex},
-                                   {type,Scope},{name,binary_to_list(Name)}]).
+                                   {type,Scope},{name,binary_to_list(NameName)},
+                                   {rpn,RPNTokens}]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -724,8 +734,8 @@ parse_XF_RK(Bin)->
 parse_XF_RK(<<_LastColIndex:16/little-unsigned-integer>>,Residuum)->
     lists:reverse(Residuum);
 parse_XF_RK(<<XFIndex:16/little-unsigned-integer,
-	     RKValue:32/little-unsigned-integer,
-	     Rest/binary>>,Residuum)->
+             RKValue:32/little-unsigned-integer,
+             Rest/binary>>,Residuum)->
     Num=excel_util:parse_CRS_RK(<<RKValue:32/little-unsigned-integer>>),
     NewResiduum=[{{xf_index,XFIndex},{value,number,Num}}|Residuum],
     parse_XF_RK(Rest,NewResiduum).
@@ -742,39 +752,39 @@ parse_SST(NoOfStrings,NoOfStrings,_Tables,_)->
 parse_SST(StringNo,NoOfStrings,Tables,[BinHead|BinTail])->
     BinLen1=length(binary_to_list(BinHead)),
     <<BinLen2:16/little-unsigned-integer,_Rest/binary>>=BinHead,
-    %% This clause handles the case where a record falls over a continuation
-    %% if it does it rejigs parse_SST to move down the Binary List
+    % This clause handles the case where a record falls over a continuation
+    % if it does it rejigs parse_SST to move down the Binary List
     if
-	(BinLen1 > BinLen2+3) ->
-	    NewBinHead = BinHead,
-	    NewBinTail = BinTail,
-	    ParseBin=BinHead;
-	(BinLen1 == BinLen2+3)->
-	    case BinTail of
-		[] -> 
-		    H1 = [],
-		    T1 = [];
-		_Other -> 
-		    [H1|T1] = BinTail
-	    end,
-	    NewBinTail=T1,
-	    ParseBin=BinHead,
-	    NewBinHead=list_to_binary([ParseBin,H1]);
-	true ->
-	    ExtLen=BinLen2+3-BinLen1,
-	    [H2|T2] = BinTail,
-	    %% remember to discard the 8 byte unicode flag
-	    <<_Bits:1/binary,Ext:ExtLen/binary,NewBinHeadPart/binary>>=H2,
-	    NewBinTail=T2,
-	    ParseBin=list_to_binary([BinHead,Ext]),
-	    NewBinHead=list_to_binary([ParseBin,
-				       NewBinHeadPart])
+        (BinLen1 > BinLen2+3) ->
+            NewBinHead = BinHead,
+            NewBinTail = BinTail,
+            ParseBin=BinHead;
+        (BinLen1 == BinLen2+3)->
+            case BinTail of
+                [] -> 
+                    H1 = [],
+                    T1 = [];
+                _Other -> 
+                    [H1|T1] = BinTail
+            end,
+            NewBinTail=T1,
+            ParseBin=BinHead,
+            NewBinHead=list_to_binary([ParseBin,H1]);
+        true ->
+            ExtLen=BinLen2+3-BinLen1,
+            [H2|T2] = BinTail,
+            % remember to discard the 8 byte unicode flag
+            <<_Bits:1/binary,Ext:ExtLen/binary,NewBinHeadPart/binary>>=H2,
+            NewBinTail=T2,
+            ParseBin=list_to_binary([BinHead,Ext]),
+            NewBinHead=list_to_binary([ParseBin,
+                                       NewBinHeadPart])
     end,
     Return=excel_util:parse_CRS_Uni16(ParseBin,2),
     String=excel_util:get_utf8(Return),
     {_,StringLen,_RestLen}=Return,    
     Len=string:len(String),
-     BinLen=8*StringLen,
+    BinLen=8*StringLen,
     <<_String2:BinLen/little-unsigned-integer,Rest/binary>>=NewBinHead,
     excel_util:write(Tables,strings,[{index,StringNo},{string,String}]),
     parse_SST(StringNo+1,NoOfStrings,Tables,[Rest|NewBinTail]).
@@ -851,27 +861,27 @@ parse_filename(Bin) -> "../"++binary_to_list(Bin)++"/".
 snip_xls(Bin)->
     FileName=binary_to_list(Bin),
     RegExp=".xls$", %" comment to fix syntax highlighting
-    case regexp:gsub(FileName,RegExp,"") of 
-        {ok, NewString,_} -> NewString;
-        {error,_}         -> FileName
-    end.
+        case regexp:gsub(FileName,RegExp,"") of 
+            {ok, NewString,_} -> NewString;
+            {error,_}         -> FileName
+        end.
 
 parse_externname(Bin,Tables)->
-    %% we dont care mostly but for the first 4 bits (the minioptions) and
-    %% we chuck the remaining 12 bits away (the discard) mostly - except
-    %% when we don't :(
+%% we dont care mostly but for the first 4 bits (the minioptions) and
+%% we chuck the remaining 12 bits away (the discard) mostly - except
+%% when we don't :(
     <<MiniOptions:4/little-unsigned-integer,
      Discard:12/little-unsigned-integer,
      Rest/binary>>=Bin,
     case MiniOptions of
         ?STANDARD   -> <<_NameIndex:16/little-unsigned-integer,
-			_NotUsed:16/little-unsigned-integer,
-			Name/binary>>=Rest,
-		       {[{_,Name2}],Len1,_Len2}=excel_util:parse_CRS_Uni16(Name,1),
-		       NameLen=8*Len1,
-		       <<_Name:NameLen/little-unsigned-integer,_Rest2/binary>>=Name,
-		       Name3=binary_to_list(Name2),
-		       case Discard of
+                        _NotUsed:16/little-unsigned-integer,
+                        Name/binary>>=Rest,
+                       {[{_,Name2}],Len1,_Len2}=excel_util:parse_CRS_Uni16(Name,1),
+                       NameLen=8*Len1,
+                       <<_Name:NameLen/little-unsigned-integer,_Rest2/binary>>=Name,
+                       Name3=binary_to_list(Name2),
+                       case Discard of
                            0 -> excel_util:append(Tables,extra_fns,[{name,Name3}]);
                            _ -> write_externname(Name3,Tables)
                        end;
@@ -898,3 +908,4 @@ write_externname(Name,_Tables)->
     io:format("in excel_records Name is ~p~n",[Name]),
     io:format("in excel_records JUST KINDA WIGGIN OUT...~n"),
     ok.
+

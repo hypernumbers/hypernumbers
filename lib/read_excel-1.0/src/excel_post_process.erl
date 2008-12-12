@@ -10,6 +10,8 @@
 
 -export([post_process_tables/1]).
 
+-define(read,excel_util:read).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                     %%%
 %%% The excel file is processed on record at a time into a set of ets   %%%
@@ -21,14 +23,75 @@
 post_process_tables(Tables) ->
 %% Excel has a number of built in formats
     {ok,ok}=add_built_in_formats(Tables),
-    filefilters:dump(Tables),
+    % filefilters:dump(Tables),
     type_formats(Tables),
     fix_up_externalrefs(Tables),
+    fix_up_names(Tables),
     fix_up_cells(Tables),
     convert_dates(Tables),
     create_array_formulae(Tables),
     % filefilters:dump(Tables),
     ok.
+
+fix_up_names(Tables) ->
+    % Excel names have two different scopes
+    % * global <-- pertains to a workbook
+    % * local  <-- pertains to a worksheet
+    % 
+    % There are some interesting glitches
+    % * the same name can be on different worksheets
+    % * the same name can be a global name and one or more local names
+    % * names are *NOT* case sensitive
+    % * names can be called from external workbooks
+    % * a name on a page can point to a cell on a different page
+    % 
+    % There are some subtleties that will be hard to fix up...
+    % 
+    % ****Quote From Excel Help ********
+    % You can even define the same name, GrossProfit, for the global
+    % workbook level, but again the scope is unique. In this case, 
+    % however, there can be a name conflict. To resolve this 
+    % conflict, by default Excel uses the name that is defined 
+    % for the worksheet because the local worksheet level takes 
+    % precedence over the global workbook level. If you want 
+    % to override the precedence and you want to use the workbook 
+    % name, you can disambiguate the name by prefixing the workbook 
+    % name as the following example shows:
+    % 
+    % WorkbookFile!GrossProfit
+    % 
+    % You can override the local worksheet level for all worksheets
+    % in the workbook, with the exception of the first worksheet, 
+    % which always uses the local name if there is a name conflict
+    % and cannot be overridden.
+    % 
+    % *********End Quote************
+    {value,{names,Tid1}}=lists:keysearch(names,1,Tables),
+    
+    {value,{fixedupnames,Tid2}}=lists:keysearch(fixedupnames,1,Tables),
+    Fun=fun(X,_Acc)->
+                {Index,[{sheetindex,SheetIndex},{type,Scope},
+                        {name,Name},{rpn,RPNTokens}]}=X,
+                Page=case Scope of
+                         local  -> [{_I,[_T,List]}]=?read(Tables,externalrefs,0),
+                                   RawName=lists:nth(SheetIndex,List),
+                                   excel_util:esc_tab_name(RawName);
+                         global -> ""
+                     end,
+                case excel_rev_comp:reverse_compile(Index,RPNTokens,[],
+                                                    Tables) of
+                    {ok,dont_process} -> exit("I dont understand!");
+                    NameVal           -> io:format("in excel_post_process:fix_up_names "++
+                                                   "Scope is ~p Name is ~p "++
+                                                   "NameVal is ~p~n",
+                                                   [Scope,Name,NameVal]),
+                                         ets:insert(Tid2,[{Index,[{scope,Scope},
+                                                                  {page,Page},
+                                                                  {name,"@"++Name},
+                                                                  {value,NameVal}]}])
+                end
+        end,
+    ets:foldl(Fun,[],Tid1).
 
 %% this function adds the data type to format information
 %% eg is this format for text, numbers or dates or general
@@ -50,8 +113,7 @@ type_formats(Tables) ->
                   NewFormat={format,Format},
                   ets:insert(Tid,[{Index,[{type,Type2},Category,{NewFormat}]}])
           end,
-    Return=ets:foldl(Fun,[],Tid),
-    Return.
+    ets:foldl(Fun,[],Tid).
 
 %% reverse compile the basic cells
 %% this fun reverse compiles all the tokens in the table 'cell_tokens' and
@@ -66,6 +128,7 @@ fix_up_cells(Tables)->
                                                     Tables) of
                     {ok,dont_process} -> {ok,ok};
                     Formula           ->
+                        io:format("in fix_up_cells Formula is ~p~n",[Formula]),
                         ets:insert(CellId,[{Index,[XF,{formula,Formula}]}])
                 end
         end,
@@ -125,16 +188,11 @@ create_array_formulae(Tables)->
     {value,{array_formulae,ArrFormId}} = lists:keysearch(array_formulae,1,Tables),
     Fun = fun(X,_Acc) ->
                   {Id2,[{type,Type},{tokens,Tokens},{tokenarrays,TkArr}]} = X,
-                  % io:format("in excel_post_process:create_array_formulae~n-"++
-                  %          "Id2 is ~p~n-Type is ~p~n-Tokens are ~p~n"++
-                  %          "TkArr is ~p~n",[Id2,Type,Tokens,TkArr]),
                   case Type of
                       shared -> {ok, ok};
                       array  ->
                           Formula=excel_rev_comp:reverse_compile(Id2,Tokens,
                                                                  TkArr,Tables),
-                          % io:format("in excel_post_process:create_array_formulae~n-"++
-                          %          "Formula is ~p~n",[Formula]),
                           ets:insert(ArrFormId,[{Id2,{formula,Formula}}])
                   end
           end,

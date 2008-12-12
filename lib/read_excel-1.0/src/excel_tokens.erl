@@ -627,7 +627,7 @@ parse_tokens(tRef3d,Name,Bin,TokenArray,Type,Residuum)->
      Cell:4/binary,
      R2/binary>>=Bin,
     ParsedAddy=parse_cell_addy(Cell),
-    parse_tokens(R2,Name,TokenArray,[{three_dee_reference,
+    parse_tokens(R2,Name,TokenArray,[{three_dee_ref,
                                       {tRef3d,[{reference_index,RefIndex},
                                                ParsedAddy,{type,Type}],
                                        {return,reference}}}|Residuum]);
@@ -652,7 +652,7 @@ parse_tokens(tRefErr3d,Name,Bin,TokenArray,Type,Residuum)->
      RefIndex:16/little-unsigned-integer,
      _NotUsed:32/little-unsigned-integer,
      R2/binary>>=Bin,
-    parse_tokens(R2,Name,TokenArray,[{three_dee_error_reference,
+    parse_tokens(R2,Name,TokenArray,[{three_dee_error_ref,
                                       {tRefErr3d,[{reference_index,RefIndex},
                                                   {type,Type}],
                                        {return,reference}}}|Residuum]);

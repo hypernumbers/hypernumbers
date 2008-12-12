@@ -274,6 +274,7 @@ create_ets()->
      {cell_tokens,    ets:new(cell_tokens,    [ordered_set,private])},
      {strings,        ets:new(strings,        [ordered_set,private])},
      {names,          ets:new(names,          [ordered_set,private])},
+     {fixedupnames,   ets:new(fixedupnames,   [ordered_set,private])},
      {sh_arr_formula, ets:new(sh_arr_formula, [ordered_set,private])},
      {externsheets,   ets:new(externsheets,   [ordered_set,private])},
      {sheetnames,     ets:new(sheetnames,     [ordered_set,private])},
@@ -282,7 +283,8 @@ create_ets()->
      {xf,             ets:new(xf,             [ordered_set,private])},
      {extra_fns,      ets:new(extra_fns,      [ordered_set,private])},
      {lacunae,        ets:new(lacunae,        [ordered_set,private])},
-     {misc,           ets:new(misc,           [ordered_set,private])}].
+     {misc,           ets:new(misc,           [ordered_set,private])},
+     {warnings,       ets:new(warnings,       [ordered_set,private])}].
 
 %% Bodge string attempts to take a list in some class of unicode encoding and
 %% make it 'readable' - it is for logging/debugging only and not to be used
@@ -348,13 +350,19 @@ test_DEBUG()->
 dump([])-> io:format("All tables dumped~n");
 dump([{Table,Tid}|T])->
     case Table of
-        externalrefs -> dump2({Table,Tid});
-        externsheets -> dump2({Table,Tid});
-        names        -> dump2({Table,Tid});
-        % lacunae      -> dump2({Table,Tid});
-        % extra_fns    -> dump2({Table,Tid});
-        % cell         -> dump2({Table,Tid});
-        _            -> io:format("skipping Table ~p in filefilters:dump~n",[Table])
+        externalrefs   -> dump2({Table,Tid});
+        externsheets   -> dump2({Table,Tid});
+        % names          -> dump2({Table,Tid});
+        fixedupnames   -> dump2({Table,Tid});
+        % lacunae        -> dump2({Table,Tid});
+        % extra_fns      -> dump2({Table,Tid});
+        % cell           -> dump2({Table,Tid});
+        % sheetnames     -> dump2({Table,Tid});
+        % xf             -> dump2({Table,Tid});
+        % formats        -> dump2({Table,Tid});
+        % sh_arr_formula -> dump2({Table,Tid});
+        warnings       -> dump2({Table,Tid});
+        _              -> io:format("skipping Table ~p in filefilters:dump~n",[Table])
     end,
     dump(T).
 

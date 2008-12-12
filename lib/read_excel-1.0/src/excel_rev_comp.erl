@@ -17,6 +17,10 @@
 -include("excel_attributes.hrl").
 -include("excel_array_elements.hrl").
 -include("excel_errors.hrl").
+-include("excel_supbook.hrl").
+
+-define(read,excel_util:read).
+-define(write,excel_util:write).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
@@ -28,11 +32,11 @@
 
 %% The formulae are stored in reverse Polish Notation within excel
 %% The reverse compiler recreates the original formula by running the RPN
-reverse_compile(Index,Tokens,TokenArray,Tables)->
-    rev_comp(Index,Tokens,TokenArray,[],Tables).
+reverse_compile(Index,Tokens,TokArr,Tbl)->
+    rev_comp(Index,Tokens,TokArr,[],Tbl).
 
 %% When the tokens are exhausted the Stack is just flattened to a string
-rev_comp(_Index,[],_TokenArray,Stack,_Tables) ->
+rev_comp(_Index,[],_TokArr,Stack,_Tbl) ->
     "="++to_str(lists:reverse(Stack));
 
 %% tExp
@@ -132,7 +136,7 @@ rev_comp(I,[{attributes,Attributes}|T],TokArr,Stack,Tbl)  ->
                    %   [{space, flatten(duplicate(Chars, " "))} | Stack]
                    % Kill spaces
                    {tAttrSpace,special_character,[{char,_Type},
-                                                  {no_of_chars,Chars}],_Ret} -> Stack
+                                                  {no_of_chars,_Chars}],_Ret} -> Stack
                end,
 
     rev_comp(I,T,TokArr,NewStack,Tbl);
@@ -142,7 +146,7 @@ rev_comp(I,[{attributes,Attributes}|T],TokArr,Stack,Tbl)  ->
 %% tEndSheet
 
 %% tErr
-rev_comp(Index,[{error,{tErr,[{value,Value}],{return,_Return}}}|T],TokenArray,Stack,Tables)  ->
+rev_comp(Index,[{error,{tErr,[{value,Value}],{return,_Return}}}|T],TokArr,Stack,Tbl)  ->
     Error = case Value of
                 ?NullError    -> "#NULL!";
                 ?DivZeroError -> "#DIV/0!";
@@ -152,37 +156,37 @@ rev_comp(Index,[{error,{tErr,[{value,Value}],{return,_Return}}}|T],TokenArray,St
                 ?NumError     -> "#NUM!";
                 ?NAError      -> "#N/A"
             end,
-    rev_comp(Index,T,TokenArray,[{string,Error}|Stack],Tables);
+    rev_comp(Index,T,TokArr,[{string,Error}|Stack],Tbl);
 
 %% tBool
-rev_comp(Index,[{boolean,{tBool,[{value,Value}],{return,value}}}|T],TokenArray,Stack,Tables) ->
+rev_comp(Index,[{boolean,{tBool,[{value,Value}],{return,value}}}|T],TokArr,Stack,Tbl) ->
     Bool = case Value of
                1 -> "TRUE";
                0 -> "FALSE"
            end,
-    rev_comp(Index,T,TokenArray,[{string,Bool}|Stack],Tables);
+    rev_comp(Index,T,TokArr,[{string,Bool}|Stack],Tbl);
 
 %% tInt
-rev_comp(Index,[{integer,{tInt,[{value,Val}],{return,value}}}|T],TokenArray,Stack,Tables)  ->
-    rev_comp(Index,T,TokenArray,[{integer,Val}|Stack],Tables);
+rev_comp(Index,[{integer,{tInt,[{value,Val}],{return,value}}}|T],TokArr,Stack,Tbl)  ->
+    rev_comp(Index,T,TokArr,[{integer,Val}|Stack],Tbl);
 
 %% tNum
-rev_comp(Index,[{number,{tNum,[{value,Val}],{return,value}}}|T],TokenArray,Stack,Tables)  ->
-    rev_comp(Index,T,TokenArray,[{float,Val}|Stack],Tables);
+rev_comp(Index,[{number,{tNum,[{value,Val}],{return,value}}}|T],TokArr,Stack,Tbl)  ->
+    rev_comp(Index,T,TokArr,[{float,Val}|Stack],Tbl);
 
 %%%
 %%% Classified Tokens
 %%%
 
 %% tArray
-rev_comp(Index,[{array_type,{tArray,[{type,_Type}],{return,_Reference}}}|T],TokenArray,Stack,Tables)  ->
-    {{NoCols,NoRows,Array},ArrayTail}=read_const_val_array(TokenArray),
+rev_comp(Index,[{array_type,{tArray,[{type,_Type}],{return,_Reference}}}|T],TokArr,Stack,Tbl)  ->
+    {{NoCols,NoRows,Array},ArrayTail}=read_const_val_array(TokArr),
     ArrayString=array_to_str(Array,NoCols,NoRows),
-    rev_comp(Index,T,ArrayTail,[{string,ArrayString}|Stack],Tables);
+    rev_comp(Index,T,ArrayTail,[{string,ArrayString}|Stack],Tbl);
 
 %% tFunc
 rev_comp(Index,[{functional_index,{Function,[{value,FuncVar},{type,_Type}],
-                                   {return,_Return}}}|T],TokenArray,Stack,Tables)
+                                   {return,_Return}}}|T],TokArr,Stack,Tbl)
   when Function =:= tFunc ; Function =:= tFuncVar ;
        Function =:= tFuncVarV ;Function =:= tFuncVarR ;
        Function =:= tFuncVarA ->
@@ -190,22 +194,29 @@ rev_comp(Index,[{functional_index,{Function,[{value,FuncVar},{type,_Type}],
     % (new items append to tail opposed to head
     NumArgs=macro_no_of_args(FuncVar),
     {Rest,FunArgs} = popVars(NumArgs,Stack,[]),
-    rev_comp(Index,T,TokenArray,[{func,FuncVar,lists:reverse(FunArgs)}|Rest],Tables);
+    rev_comp(Index,T,TokArr,[{func,FuncVar,lists:reverse(FunArgs)}|Rest],Tbl);
 
 %% tFuncVar
 rev_comp(Index,[{var_func_idx,{Fun,[{value,FuncVar},
                                     {number_of_args,NumArgs},{user_prompt,_Prompt},
                                     {type,_Type}],
-                               {return,_ReturnType}}}|T],TokenArray,Stack,Tables) when
+                               {return,_ReturnType}}}|T],TokArr,Stack,Tbl) when
 Fun =:= tFuncVar; Fun =:= tFuncVarV; Fun =:= tFuncVarR; Fun =:= tFuncVarA ->
     {Rest,FunArgs} = popVars(NumArgs,Stack,[]),
-    rev_comp(Index,T,TokenArray,[{func,FuncVar,lists:reverse(FunArgs)}|Rest],Tables);
+    rev_comp(Index,T,TokArr,[{func,FuncVar,lists:reverse(FunArgs)}|Rest],Tbl);
 
 %% tName
 rev_comp(Index,[{name_index,{tName,[{value,Value},{type,_Type}],
-                             {return,reference}}}|T],TokenArray,Stack,Tables) ->
-    [{_Index1,[_Id2,_Type2,{name,Name}]}] = excel_util:read(Tables,names,Value),
-    rev_comp(Index,T,TokenArray,[{string,Name}|Stack],Tables);
+                             {return,reference}}}|T],TokArr,Stack,Tbl) ->
+    [{_Index1,[_Scope,{page,Page},{name,NameVal},_Val]}] = ?read(Tbl,fixedupnames,Value),
+    {{sheet,SheetName},_,_}=Index,
+    EscSheet=excel_util:esc_tab_name(SheetName),
+    NameStr = case Page of
+                  EscSheet -> NameVal;
+                  "" -> "../"++NameVal;
+                  _  -> "../"++Page++"/"++NameVal
+              end,
+    rev_comp(Index,T,TokArr,[{string,NameStr}|Stack],Tbl);
 
 %% tRef
 rev_comp(I,[{abs_ref,{tRef,[{value,{Row,Col,RType,CType}}|{type,_Type}],
@@ -219,24 +230,24 @@ rev_comp(I,[{absolute_area,{tArea,[[{start_cell,Start}|{end_cell,End}]|_R1],
 
 %% tMemArea
 rev_comp(Index,[{memory_area,{tMemArea,[{value,_MemArea},{type,_Type}],
-                              {return,reference}}}|T],TokenArray,Stack,Tables) ->
+                              {return,reference}}}|T],TokArr,Stack,Tbl) ->
 %% See discussion in Section 3.1.6 of excelfileformat.v1.40.pdf
 %%
-%% for tMemArea there is an appended set of tokens in the TokenArray
+%% for tMemArea there is an appended set of tokens in the TokArr
 %% which must be read in and then *DISCARDED*
 %%
-%% for instance if the tMemArea is "A1:A2 A2:A3" then the TokenArray
+%% for instance if the tMemArea is "A1:A2 A2:A3" then the TokArr
 %% will contain the *RESULT* of the intersection, ie "A2"
 %%
 %% So to calculate Excel would discard the value that would be
 %% in the tMemArea token - 19 in this instance - but use "A2"
 %% whereas reverse compiling is only interested in the full
-%% range "A1:A2 A2:A3" and discards the TokenArray "A2"
+%% range "A1:A2 A2:A3" and discards the TokArr "A2"
 %% ie the first return variable in the next line
-    {_Array,ArrayTail}=excel_util:read_cell_range_add_list(TokenArray,'16bit'),
+    {_Array,ArrayTail}=excel_util:read_cell_range_add_list(TokArr,'16bit'),
     % Given that this token holds a look up to the results of parsing
     % the subsequent array we can just chuck it away.
-    rev_comp(Index,T,ArrayTail,Stack,Tables);
+    rev_comp(Index,T,ArrayTail,Stack,Tbl);
 
 %% tMemErr - this token does nothing for reverse compile - skip...
 rev_comp(I,[{memory_err,{tMemErr,_ValType,_Ret}}|T],TokArr,Stack,Tbl) ->
@@ -275,7 +286,7 @@ rev_comp(I,[{relative_reference,{tRefN,[{value,{Row,Col,RowType,ColType}},_Type]
 %% 256 (2^8) columns so the relative addresses must 'overflow' those
 %% bounds
 rev_comp(Index,[{relative_area,{tAreaN,[NewDetails|{type,_Type}],
-                                {return,reference}}}|T],TokenArray,Stack,Tables) ->
+                                {return,reference}}}|T],TokArr,Stack,Tbl) ->
     {{sheet,_Sheet},{row_index,TopRow},{col_index,TopCol}}=Index,
     [{start_cell,{StartRow,StartCol,StartRowType,StartColType}}|
      {end_cell,{EndRow,EndCol,EndRowType,EndColType}}]=NewDetails,
@@ -286,7 +297,7 @@ rev_comp(Index,[{relative_area,{tAreaN,[NewDetails|{type,_Type}],
     StartCell=make_cell({NewStartRow,NewStartCol,StartRowType,StartColType}),
     EndCell=make_cell({NewEndRow,NewEndCol,EndRowType,EndColType}),
     NewRange=StartCell++":"++EndCell,
-    rev_comp(Index,T,TokenArray,[{string,NewRange}|Stack],Tables);
+    rev_comp(Index,T,TokArr,[{string,NewRange}|Stack],Tbl);
 
 %% tMemAreaN
 
@@ -295,28 +306,36 @@ rev_comp(Index,[{relative_area,{tAreaN,[NewDetails|{type,_Type}],
 %% tFuncCE
 
 %% tNameX
-rev_comp(I,[{name_xref,{tNameX,[{reference_index,Ref},
-                                {name_index,Name},Type],Ret}}|T],TokArr,Stack,Tbl) ->
-    rev_comp(I,T,TokArr,[{string,get_ref_name(Ref,Name,Tbl)}|Stack],Tbl);
+rev_comp(Index,[{name_xref,{tNameX,[{reference_index,Ref},
+                                {name_index,Name},_Type],_Ret}}|T],TokArr,Stack,Tbl) ->
+    [{_Index1,[_Scope,{page,Page},{name,NameVal},_Val]}] = ?read(Tbl,fixedupnames,Name),
+    {{sheet,SheetName},_,_}=Index,
+    EscSheet=excel_util:esc_tab_name(SheetName),
+    NameStr = case Page of
+                  EscSheet -> NameVal;
+                  ""       -> "../"++NameVal;
+                  _        -> "../"++Page++"/"++NameVal
+              end,
+    rev_comp(Index,T,TokArr,[{string,NameStr}|Stack],Tbl);
 
 %% tRef3d
-rev_comp(I,[{three_dee_reference,{tRef3d,[{reference_index,RefIdx},
-                                          Ref,_Type],_Ret}}|T],TokArr,Stack,Tbl) ->
+rev_comp(I,[{three_dee_ref,{tRef3d,[{reference_index,RefIdx},
+                                    Ref,_Type],_Ret}}|T],TokArr,Stack,Tbl) ->
     Sheet = get_sheet_ref(RefIdx,Tbl),
-    Sheet2=esc(Sheet),
-    rev_comp(I,T,TokArr,[{string,"../"++Sheet2++"!"++make_cell(Ref)}|Stack],Tbl);
+    Sheet2=excel_util:esc_tab_name(Sheet),
+    rev_comp(I,T,TokArr,[{string,"../"++Sheet2++"/"++make_cell(Ref)}|Stack],Tbl);
 
 %% tArea3d
 rev_comp(I,[{three_dee_area,{tArea3d,[{reference_index,RefIdx},
                                       Reference,_Type],_Ret}}|T],TokArr,Stack,Tbl) ->
     Sheet = get_sheet_ref(RefIdx,Tbl),
-    Sheet2=esc(Sheet),
+    Sheet2=excel_util:esc_tab_name(Sheet),
     [{start_cell,Ref1}|{end_cell,Ref2}] = Reference,
     Range=make_range(Ref1,Ref2),
-    rev_comp(I,T,TokArr,[{string,Sheet2++"!"++Range}|Stack],Tbl);
+    rev_comp(I,T,TokArr,[{string,"../"++Sheet2++"/"++Range}|Stack],Tbl);
 
 %% tRefErr3d
-rev_comp(I,[{three_dee_error_reference,{tRefErr3d,[{reference_index,RefIndex},{type,Type}],
+rev_comp(I,[{three_dee_error_ref,{tRefErr3d,[{reference_index,_RefIndex},{type,_Type}],
                                         {return,reference}}}|T],TokArr,Stack,Tbl) ->
     rev_comp(I,T,TokArr,[{string,"!REF"}|Stack],Tbl);
 
@@ -325,11 +344,11 @@ rev_comp(I,[{three_dee_error_reference,{tRefErr3d,[{reference_index,RefIndex},{t
 %%%%%%%%%%%%%%%%%%%%%%
 
 %% This will catch missed out stuff...
-rev_comp(_Index,Form,TokenArray,_Stack,_Tables) ->
-    io:format("in reverse compile missing tokens are ~p with a TokenArray of ~p~n",
-              [Form,TokenArray]),
+rev_comp(_Index,Form,TokArr,_Stack,_Tbl) ->
+    io:format("in reverse compile missing tokens are ~p with a TokArr of ~p~n",
+              [Form,TokArr]),
     exit("missing tokens in excel_rev_comp:reverse_compile").
-%% reverse_compile(Index,T,TokenArray,Stack,Residuum,Tables).
+%% reverse_compile(Index,T,TokArr,Stack,Residuum,Tbl).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                         %%%
@@ -348,48 +367,39 @@ get_col(Col,TopCol,ColType)->
         abs_col -> Col
     end.
 
-%% Looks up an external reference from the Supbook
-get_ref_name(_RefIndex,NameIndex,Tables)->
-    % bear in mind, dear chums, that the index we are looking up is a
-    % '1'-based index and not a '0'-based index, it is for this reason
-    % that we are subracting 1 from the NameIndex...
-    [{_,[{name,Name}]}]=excel_util:read(Tables,extra_fns,NameIndex-1),
-    Name.
-
 %% Looks up a reference to an externsheet and turns it into a sheet ref
-get_sheet_ref(Index,Tables)->
-    Record1=excel_util:read(Tables,externsheets,Index),
+get_sheet_ref(Index,Tbl)->
+    Record1=?read(Tbl,externsheets,Index),
     case Record1 of
         [{_,[{subrec,_SR},{firstsheet,?FF_Ref},{lastsheet,_}]}] ->
             "#REF";
+        [{_,[{subrec,_SR},{firstsheet,?FE_external},{lastsheet,_}]}] ->
+            exit("cant use get_sheet_ref to get a sheet for a non-local reference");
         [{_,[{subrec,SR},{firstsheet,FS},{lastsheet,FS}]}]->
-            get_ref(SR,FS,Tables);
+            get_ref(SR,FS,Tbl);
         [{_,[{subrec,SR},{firstsheet,FS},{lastsheet,LS}]}] ->
-            get_range(SR,FS,LS,Tables)
+            get_range(SR,FS,LS,Tbl)
     end.
 
-get_ref(SubRec,FirstSheet,Tables)->
-    Record=excel_util:read(Tables,externalrefs,SubRec),
+get_ref(SubRec,FirstSheet,Tbl)->
+    Record=?read(Tbl,externalrefs,SubRec),
     [{{index,SubRec},[Location,SheetList]}]=Record,
-    Prefix=case Location of
-               {this_file,expanded} -> [];
-               {name,Name}          -> Name
-           end,
     % lists:nth is '1' based but the index is 'zero' based!
-    Sheet=lists:nth(FirstSheet+1,SheetList),
-    lists:concat([Prefix,Sheet]).
+    case Location of
+        {this_file,expanded} -> lists:nth(FirstSheet+1,SheetList);
+        {name,Name}          -> Name
+    end.
 
-get_range(SubRec,FirstSheet,LastSheet,Tables)->
-    Record=excel_util:read(Tables,externalrefs,SubRec),
+get_range(SubRec,FirstSheet,LastSheet,Tbl)->
+    Record=?read(Tbl,externalrefs,SubRec),
     [{{index,SubRec},[Location,SheetList]}]=Record,
-    Prefix=case Location of
-               {this_file,expanded} -> [];
-               {name,Name}          -> Name
-           end,
     % lists:nth is '1' based but the index is 'zero' based!
-    Sheet1=lists:nth(FirstSheet+1,SheetList),
-    Sheet2=lists:nth(LastSheet+1, SheetList),
-    lists:concat([Prefix,Sheet1,":",Sheet2]).
+    case Location of
+        {this_file,expanded} -> Sheet1=lists:nth(FirstSheet+1,SheetList),
+                                Sheet2=lists:nth(LastSheet+1, SheetList),
+                                lists:concat([Sheet1,":",Sheet2]);
+        {name,Name}          -> Name
+    end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                         %%%
@@ -578,8 +588,8 @@ array_to_str(Array,NoCols,_NoRows) ->
     array_to_str(Array,NoCols,1,["{"]).
 
 array_to_str([],_NoCols,_N,[_Comma|Tail]) -> % cut off the additional ","
-    TokenArray=lists:reverse(["}"|Tail]),
-    lists:flatten(TokenArray);
+    TokArr=lists:reverse(["}"|Tail]),
+    lists:flatten(TokArr);
 array_to_str([H|T],NoCols,NoCols,Residuum)-> % list seperator is a semi-colon
     NewResiduum=[to_str(H)|Residuum],
     NewResiduum2=[";"|NewResiduum],
@@ -1134,13 +1144,4 @@ macro_no_of_args(358) ->
               "this is a cludge!~n"),
     2;
 macro_no_of_args(360) -> 1.
-
-%% This function wraps a string in "'"s if the string contains a space
-esc(String) ->
-    case string:words(String) of
-        1 -> string:to_lower(String);
-        _ -> {ok, NewString,_}=regexp:gsub(string:to_lower(String)," ","_"),
-             NewString
-    end.
-
 
