@@ -136,18 +136,6 @@ make_text(Item) ->
         _ -> Item
     end.
 
-get_ref(Site,Formula)->
-    [Ref|Rest]=util2:rev_chop(Formula),
-    Path=repath(Rest),
-    case string:tokens(Ref,":") of
-        [[$x|X],[$y|Y]] ->
-            make_text(spriki:get_value(Site,Path,X,Y));
-        _ -> "UNDEFINED"
-    end.
-
-get_cell_ref(Site,Path,X,Y)->
-    make_text(spriki:get_value(Site,Path,X,Y)).
-
 %% this will fuck up the spriki - final slash added to repath!
 repath("/")  -> "/";
 repath([])   -> "/";
