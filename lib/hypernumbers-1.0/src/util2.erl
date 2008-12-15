@@ -21,8 +21,6 @@
          strip_ref/1,
          get_page_path/1,
          make_text/1,
-         get_ref/2,
-         get_cell_ref/4,
          repath/1,
          pad_list/1,
          unpack_text/1,
@@ -82,7 +80,7 @@ invalid()->{1,[],[{"invalid code"}],[]}.
 
 make_num(List)->
     case regexp:match(List,"^-?[0-9]*$") of %" to fix the syntax highlighting
-                      {match,_,_} -> list_to_integer(List);
+                      {match,_,_}  -> list_to_integer(List);
                       _Other       -> list_to_float(List)
                      end.
 
@@ -131,9 +129,9 @@ make_text(Item) ->
         Item when is_float(Item)  -> float_to_list(Item);
         Item when is_list(Item)   -> lists:flatten(Item);
         Item when is_atom(Item)   -> atom_to_list(Item);
-        false -> "False";
-        true -> "True";
-        _ -> Item
+        false                     -> "False";
+        true                      -> "True";
+        _                         -> Item
     end.
 
 %% this will fuck up the spriki - final slash added to repath!
@@ -183,7 +181,7 @@ mk_str_frm_list([],[_H|T]) ->
 
 strip_brackets(A1) when is_list(A1) ->
     {ok,A2,1}=regexp:sub(A1,"^\\(",""),
-    {ok,A3,1}=regexp:sub(A2,"\\)$",""),
+    {ok,A3,1}=regexp:sub(A2,"\\)$",""), %"
     A3.
 
 print_as_hex(Text,Binary) ->
