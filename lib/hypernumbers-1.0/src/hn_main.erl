@@ -12,7 +12,7 @@
 -export([recalc/1, set_attribute/2, set_cell/2,
          get_cell_info/4, write_cell/5,
          get_hypernumber/9, copy_pages_below/2,
-         formula_to_range/2, constants_to_range/2,
+         formula_to_range/2, attributes_to_range/2,
          get_pages_under/1]).
 
 %% @spec set_attribute(Ref, Val) -> ok.
@@ -21,6 +21,7 @@
 set_attribute(Ref = #ref{name=formula},Val) -> 
     set_cell(Ref,Val);
 set_attribute(Ref = #ref{name=format}, Val) ->
+    io:format("in set_attribute Ref is ~p Val is ~p~n",[Ref,Val]),
     hn_db:write_item(Ref,Val),
     F = fun(X,[]) ->
                 case hn_db:get_item_val(X#ref{name=rawvalue}) of
@@ -85,8 +86,8 @@ formula_to_range(Formula, Ref = #ref{ref = {range, {TlCol, TlRow, BrCol, BrRow}}
     Coords = muin_util:expand_cellrange(TlRow, BrRow, TlCol, BrCol),
     foreach(SetCell, Coords).
 
-%% @doc Apply list of constants posted to a range.
-constants_to_range(Data, Ref = #ref{ref = {range,{Y1, X1, Y2, X2}}}) ->
+%% @doc Apply list of attributes posted to a range.
+attributes_to_range(Data, Ref = #ref{ref = {range,{Y1, X1, Y2, X2}}}) ->
     F = fun(X,Y,Z) ->
                 case lists:nth(Z,Data) of
                     {_Name,[],[]} ->

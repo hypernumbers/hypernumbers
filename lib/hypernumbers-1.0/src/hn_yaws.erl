@@ -226,10 +226,8 @@ req('POST', {create, [], Data}, _Attr, _User, Ref = #ref{ref = {range, _}}) ->
     case Data of
         [{formula, [], [Formula]}] ->
             hn_main:formula_to_range(Formula, Ref);
-        {format, [], [Format]} ->
-            hn_main:format_to_range(Format, Ref);
         _ ->
-            hn_main:constants_to_range(Data, Ref)
+            hn_main:attributes_to_range(Data, Ref)
     end,
     {ok, {success, [], []}};
 
