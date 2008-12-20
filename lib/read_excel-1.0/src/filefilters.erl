@@ -269,22 +269,32 @@ delete_ets([{_TableName,Tid}|T]) -> ets:delete(Tid),
                                     delete_ets(T).
 
 create_ets()->
-    [{cell,           ets:new(cell,           [ordered_set,private])},
-     {array_formulae, ets:new(array_formulae, [ordered_set,private])},
-     {cell_tokens,    ets:new(cell_tokens,    [ordered_set,private])},
-     {strings,        ets:new(strings,        [ordered_set,private])},
-     {names,          ets:new(names,          [ordered_set,private])},
-     {fixedupnames,   ets:new(fixedupnames,   [ordered_set,private])},
-     {sh_arr_formula, ets:new(sh_arr_formula, [ordered_set,private])},
-     {externsheets,   ets:new(externsheets,   [ordered_set,private])},
-     {sheetnames,     ets:new(sheetnames,     [ordered_set,private])},
-     {externalrefs,   ets:new(externalrefs,   [ordered_set,private])},
-     {formats,        ets:new(formats,        [ordered_set,private])},
-     {xf,             ets:new(xf,             [ordered_set,private])},
-     {extra_fns,      ets:new(extra_fns,      [ordered_set,private])},
-     {lacunae,        ets:new(lacunae,        [ordered_set,private])},
-     {misc,           ets:new(misc,           [ordered_set,private])},
-     {warnings,       ets:new(warnings,       [ordered_set,private])}].
+    Tables=[{cell,             ets:new(cell,             [ordered_set,private])},
+            {array_formulae,   ets:new(array_formulae,   [ordered_set,private])},
+            {formats,          ets:new(formats,          [ordered_set,private])},
+            {names,            ets:new(names,            [ordered_set,private])},
+            {css,              ets:new(css,              [bag,private])},
+            {lacunae,          ets:new(lacunae,          [ordered_set,private])},
+            {misc,             ets:new(misc,             [ordered_set,private])},
+            {warnings,         ets:new(warnings,         [ordered_set,private])},
+            {tmp_cell,         ets:new(tmp_cell,         [ordered_set,private])},
+            {tmp_blanks,       ets:new(tmp_blanks,       [ordered_set,private])},
+            {tmp_strings,      ets:new(tmp_strings,      [ordered_set,private])},
+            {tmp_names,        ets:new(tmp_names,        [ordered_set,private])},
+            {tmp_sh_arr_fml,   ets:new(tmp_sh_arr_fml,   [ordered_set,private])},
+            {tmp_extsheets,    ets:new(tmp_extsheets,    [ordered_set,private])},
+            {tmp_sheetnames,   ets:new(tmp_sheetnames,   [ordered_set,private])},
+            {tmp_externalbook, ets:new(tmp_externalbook, [ordered_set,private])},
+            {tmp_formats,      ets:new(tmp_formats,      [ordered_set,private])},
+            {tmp_xf,           ets:new(tmp_xf,           [ordered_set,private])},
+            {tmp_externnames,  ets:new(tmp_externnames,  [bag,private])},
+            {tmp_fonts,        ets:new(tmp_fonts,        [ordered_set,private])},
+            {tmp_colours,      ets:new(tmp_colours,      [ordered_set,private])},
+            {tmp_rows,         ets:new(tmp_rows,         [ordered_set,private])}],
+    % now preload the colour_index table with the default palette
+    % an individual file may overwrite any of these on import
+    {ok, ok} = create_default_palette(Tables),
+    Tables.
 
 %% Bodge string attempts to take a list in some class of unicode encoding and
 %% make it 'readable' - it is for logging/debugging only and not to be used
@@ -350,19 +360,20 @@ test_DEBUG()->
 dump([])-> io:format("All tables dumped~n");
 dump([{Table,Tid}|T])->
     case Table of
-        externalrefs   -> dump2({Table,Tid});
-        externsheets   -> dump2({Table,Tid});
-        % names          -> dump2({Table,Tid});
-        fixedupnames   -> dump2({Table,Tid});
-        % lacunae        -> dump2({Table,Tid});
-        % extra_fns      -> dump2({Table,Tid});
         % cell           -> dump2({Table,Tid});
-        % sheetnames     -> dump2({Table,Tid});
-        % xf             -> dump2({Table,Tid});
+        % array_formulae -> dump2({Table,Tid});
         % formats        -> dump2({Table,Tid});
-        % sh_arr_formula -> dump2({Table,Tid});
-        warnings       -> dump2({Table,Tid});
-        _              -> io:format("skipping Table ~p in filefilters:dump~n",[Table])
+        % names          -> dump2({Table,Tid}); 
+        % css            -> dump2({Table,Tid});
+        % lacunaue       -> dump2({Table,Tid});
+        % misc           -> dump2({Table,Tid});
+        warnings         -> dump3({Table,Tid}); % has a bodge in it!
+        % tmp_colours    -> dump2({Table,Tid});
+        tmp_names        -> dump2({Table,Tid});
+        tmp_extsheets    -> dump2({Table,Tid});
+        tmp_externalbook -> dump2({Table,Tid});
+        tmp_externnames  -> dump2({Table,Tid});
+        _       -> io:format("skipping Table ~p in filefilters:dump~n",[Table])
     end,
     dump(T).
 
@@ -370,4 +381,102 @@ dump2({Table,Tid}) ->
     io:format("~nDumping table: ~p~n",[Table]),
     Fun = fun(X,_Y) -> io:format("~p: ~p~n",[Table,X]) end,
     ets:foldl(Fun,[],Tid).
+
+dump3({Table,Tid}) ->
+    io:format("~nDumping table: ~p~n",[Table]),
+    Fun = fun({I,X},_Y) -> io:format("~p: ~p ~p~n",[Table, I, bodge(X)]) end,
+    ets:foldl(Fun,[],Tid).
+
+%% Make Microsoft URL's printable
+%% TODO: fix me (duh!)
+bodge(List) -> bodge(List, []).
+
+bodge([], Acc)                  -> lists:reverse(Acc);
+bodge([H | T], Acc) when H < 32 -> bodge(T, Acc);
+bodge([H | T], Acc)             -> bodge(T, [H | Acc]).
+
+%% this function creates the default palette as per Section 5.74.2 and 
+%%  5.74.3 of excelfileformatV1-42.pdf
+create_default_palette(Tables) ->
+    L = [[{colour_index, 16#00}, {colour, "rgb(000,000,000)"}], % EGA Black
+         [{colour_index, 16#01}, {colour, "rgb(255,255,255)"}], % EGA White
+         [{colour_index, 16#02}, {colour, "rgb(255,000,000)"}], % EGA Red
+         [{colour_index, 16#03}, {colour, "rgb(000,255,000)"}], % EGA Green
+         [{colour_index, 16#04}, {colour, "rgb(000,000,255)"}], % EGA Blue
+         [{colour_index, 16#05}, {colour, "rgb(255,255,000)"}], % EGA Yellow
+         [{colour_index, 16#06}, {colour, "rgb(255,000,255)"}], % EGA Magenta
+         [{colour_index, 16#07}, {colour, "rgb(000,255,255)"}], % EGA Cyan
+         [{colour_index, 16#08}, {colour, "rgb(000,000,000)"}],
+         [{colour_index, 16#09}, {colour, "rgb(255,255,255)"}],
+         [{colour_index, 16#0A}, {colour, "rgb(255,000,000)"}],
+         [{colour_index, 16#0B}, {colour, "rgb(000,255,000)"}],
+         [{colour_index, 16#0C}, {colour, "rgb(000,000,255)"}],
+         [{colour_index, 16#0D}, {colour, "rgb(255,255,000)"}],
+         [{colour_index, 16#0E}, {colour, "rgb(255,000,255)"}],
+         [{colour_index, 16#0F}, {colour, "rgb(000,255,255)"}],
+         [{colour_index, 16#10}, {colour, "rgb(128,000,000)"}],
+         [{colour_index, 16#11}, {colour, "rgb(000,128,000)"}],
+         [{colour_index, 16#12}, {colour, "rgb(000,000,128)"}],
+         [{colour_index, 16#13}, {colour, "rgb(128,128,000)"}],
+         [{colour_index, 16#14}, {colour, "rgb(128,000,128)"}],
+         [{colour_index, 16#15}, {colour, "rgb(000,128,128)"}],
+         [{colour_index, 16#16}, {colour, "rgb(192,192,192)"}],
+         [{colour_index, 16#17}, {colour, "rgb(128,128,128)"}],
+         [{colour_index, 16#18}, {colour, "rgb(153,153,255)"}],
+         [{colour_index, 16#19}, {colour, "rgb(153,051,102)"}],
+         [{colour_index, 16#1A}, {colour, "rgb(255,255,204)"}],
+         [{colour_index, 16#1B}, {colour, "rgb(204,255,255)"}],
+         [{colour_index, 16#1C}, {colour, "rgb(102,000,102)"}],
+         [{colour_index, 16#1D}, {colour, "rgb(255,128,128)"}],
+         [{colour_index, 16#1E}, {colour, "rgb(000,102,204)"}],
+         [{colour_index, 16#1F}, {colour, "rgb(204,204,255)"}],
+         [{colour_index, 16#20}, {colour, "rgb(000,000,128)"}],
+         [{colour_index, 16#21}, {colour, "rgb(255,000,255)"}],
+         [{colour_index, 16#22}, {colour, "rgb(255,255,000)"}],
+         [{colour_index, 16#23}, {colour, "rgb(000,255,255)"}],
+         [{colour_index, 16#24}, {colour, "rgb(128,000,128)"}],
+         [{colour_index, 16#25}, {colour, "rgb(128,000,000)"}],
+         [{colour_index, 16#26}, {colour, "rgb(000,128,128)"}],
+         [{colour_index, 16#27}, {colour, "rgb(000,000,255)"}],
+         [{colour_index, 16#28}, {colour, "rgb(000,204,255)"}],
+         [{colour_index, 16#29}, {colour, "rgb(204,255,255)"}],
+         [{colour_index, 16#2A}, {colour, "rgb(204,255,204)"}],
+         [{colour_index, 16#2B}, {colour, "rgb(255,255,153)"}],
+         [{colour_index, 16#2C}, {colour, "rgb(153,204,255)"}],
+         [{colour_index, 16#2D}, {colour, "rgb(255,153,204)"}],
+         [{colour_index, 16#2E}, {colour, "rgb(204,153,255)"}],
+         [{colour_index, 16#2F}, {colour, "rgb(255,204,153)"}],
+         [{colour_index, 16#30}, {colour, "rgb(051,102,255)"}],
+         [{colour_index, 16#31}, {colour, "rgb(051,204,204)"}],
+         [{colour_index, 16#32}, {colour, "rgb(153,204,000)"}],
+         [{colour_index, 16#33}, {colour, "rgb(255,204,000)"}],
+         [{colour_index, 16#34}, {colour, "rgb(255,153,000)"}],
+         [{colour_index, 16#35}, {colour, "rgb(255,102,000)"}],
+         [{colour_index, 16#36}, {colour, "rgb(102,102,153)"}],
+         % excelfileformatV1-52.pdf would have you believe this next one
+         % is rgb(150,150,150) but I hae ma doots!
+         [{colour_index, 16#37}, {colour, "rgb(153,153,153)"}],
+         [{colour_index, 16#38}, {colour, "rgb(000,051,102)"}],
+         [{colour_index, 16#39}, {colour, "rgb(051,153,102)"}],
+         [{colour_index, 16#3A}, {colour, "rgb(000,051,000)"}],
+         [{colour_index, 16#3B}, {colour, "rgb(051,051,000)"}],
+         [{colour_index, 16#3C}, {colour, "rgb(153,051,000)"}],
+         [{colour_index, 16#3D}, {colour, "rgb(153,051,102)"}],
+         [{colour_index, 16#3E}, {colour, "rgb(051,051,153)"}],
+         [{colour_index, 16#3F}, {colour, "rgb(051,051,051)"}],
+         %Sometimes Excel uses system colours like these ones..
+         [{colour_index, 16#40}, {colour, "rgb(255,000,000)"}], % broken
+         [{colour_index, 16#41}, {colour, "rgb(255,255,255)"}], % fixed
+         [{colour_index, 16#43}, {colour, "rgb(000,000,255)"}], % broken
+         [{colour_index, 16#4D}, {colour, "rgb(255,255,000)"}], % broken
+         [{colour_index, 16#4E}, {colour, "rgb(255,000,255)"}], % broken
+         [{colour_index, 16#4F}, {colour, "rgb(000,000,000)"}],
+         [{colour_index, 16#50}, {colour, "rgb(000,255,255)"}], % broken
+         [{colour_index, 16#51}, {colour, "rgb(255,255,255)"}], % broken
+         [{colour_index, 16#7FFF}, {colour, "rgb(051,051,051)"}]],
+
+    Fun = fun(Record,[]) -> excel_util:write(Tables,tmp_colours,Record), [] end,
+    []=lists:foldl(Fun,[],L),
+    io:format("in excel:create_default_palette - palette created!~n"),
+    {ok,ok}.
 

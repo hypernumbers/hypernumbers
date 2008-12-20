@@ -246,7 +246,6 @@ parse_tokens(?tNum,Name,Bin,TokenArray,Residuum)->
     <<_Tk:8/little-unsigned-integer,
      Num:64/little-float,
      R2/binary>>=Bin,
-    %%io:format("in excel_tokens:parse_tokens for tNum Num is ~p~n",[Num]),
     parse_tokens(R2,Name,TokenArray,[{number,{tNum,[{value,Num}],
                                               {return,value}}}|Residuum]);
 
@@ -609,14 +608,14 @@ parse_tokens(tAreaN,Name,Bin,TokenArray,Type,Residuum)->
 %% tNameX
 parse_tokens(tNameX,Name,Bin,TokenArray,Type,Residuum)->
     <<_Tk:8/little-unsigned-integer,
-     RefIndex:16/little-unsigned-integer,
+     RefIndex:16/little-signed-integer,
      NameIndex:16/little-unsigned-integer,
      _NotUsed:16/little-unsigned-integer,
      R2/binary>>=Bin,
-    %% this is a *ONE* based index so drop it by one...
+    %% NameIndex is a *ONE* based index so drop it by one...
     parse_tokens(R2,Name,TokenArray,[{name_xref,{tNameX,
-                                                 [{reference_index,RefIndex-1},
-                                                  {name_index,NameIndex},
+                                                 [{reference_index,RefIndex},
+                                                  {name_index,NameIndex-1},
                                                   {type,Type}],
                                                  {return,reference}}}|Residuum]);
 

@@ -39,10 +39,6 @@
 get_utf8({[{'uni16-8',String}],_B,_C})->
     xmerl_ucs:to_utf8(binary_to_list(String));
 get_utf8({[{'uni16-16',String}],_B,_C})->
-    io:format("***********************************~n"),
-    io:format("* in excel_util:get_utf8          *~n"),
-    io:format("* This should not be being called *~n"),
-    io:format("***********************************~n"),
     xmerl_ucs:to_utf8(xmerl_ucs:from_utf16le(binary_to_list(String)));
 get_utf8({[{richtext,_},{'uni16-8',String}],_,_}) ->
     xmerl_ucs:to_utf8(binary_to_list(String)).
@@ -71,7 +67,7 @@ parse_CRS_RK(RKBin)->
 %% There is a bit mask applied but it is against the reassembled
 %% number and not the first digits of the little endian stream!
     <<Rem:6,Type:1,Shift:1,Rest:24>>=RKBin,
-%% Rebuild the number
+    % Rebuild the number
     Num2 = case Type of
                ?CRS_RK_FLOATING_POINT ->
                    FPVal= <<Rem:6,0:2,Rest:24>>,
@@ -89,18 +85,18 @@ parse_CRS_RK(RKBin)->
     end.
 
 parse_CRS_Uni16(Bin)->
-%% Section 2.5.3 of excelfileformats.pdf V1.40
-%% The plan is simple - proceed as if the initial index is a single byte
-%% long - but once you have enough info check if the string length is valid
-%% if it isn't then start again with the presumption that it is a 2 indexer
+    % Section 2.5.3 of excelfileformats.pdf V1.40
+    % The plan is simple - proceed as if the initial index is a single byte
+    % long - but once you have enough info check if the string length is valid
+    % if it isn't then start again with the presumption that it is a 2 indexer
     try
         parse_CRS_Uni16_intermediate(Bin)
     catch
         exit:_Reason ->
-%% Try again with an index of 2
+            %Try again with an index of 2
             parse_CRS_Uni16(Bin,2);
           error:_Message ->
-%% Try again with an index of 2
+            % Try again with an index of 2
             parse_CRS_Uni16(Bin,2);
           throw:Term ->
             io:format("in parse_CRS_Uni16 "++
@@ -128,7 +124,7 @@ parse_CRS_Uni16(Bin,IndexSize)->
      {RICH_TEXT,LenRichText,_LenRichTextIdx},
      {ASIAN,LenAsian,_LenAsianIdx},Rest3}=get_bits_CRS_Uni16(Len,IndexSize,Rest,NFlags),
     BinLen2=erlang:size(Bin),
-%% Now we need to parse the rest of the binary
+    % Now we need to parse the rest of the binary
     <<String:LenStr/binary,Rest4/binary>>=Rest3,
     List1=[{Encoding,String}],
     case RICH_TEXT of
@@ -175,7 +171,7 @@ get_bits_CRS_Uni16(Len,IndexSize,Bin,NFlags)->
             LenAsian=0,
             LenAsianIdx=0
     end,
-%% We now have info to calculate the length of the binary
+    % We now have info to calculate the length of the binary
     {LenStr,Encoding} = case UNCOMP of
                             match    -> {Len*2,'uni16-16'};
                             no_match -> {Len,  'uni16-8'}
@@ -228,6 +224,7 @@ read_cell_range_addies(N,'8bit',Bin,Acc)->
 
 %% get the current length of the table
 get_length(Tables,Name)->
+    % io:format("in get_length Name is ~p~n",[Name]),
     {value,{Name,Tid}}=lists:keysearch(Name,1,Tables),
     Info=ets:info(Tid),
     {_,{_,Length}}=lists:keysearch(size,1,Info),
@@ -235,6 +232,7 @@ get_length(Tables,Name)->
 
 %% append a value to a table that needs a sequential index
 append(Tables,Name,Record) ->
+    % io:format("in append Name is ~p~n",[Name]),
     Index={index,get_length(Tables,Name)},
     {value,{Name,Tid}}=lists:keysearch(Name,1,Tables),
     ets:insert(Tid,{Index,Record}).
@@ -261,9 +259,8 @@ write(Tables,Name,[H|T])->
 %% on a shared (ie don't check the top left but that the passed in row/col
 %% intersects the range
 read_shared(Tables,{{sheet,Name},{row_index,Row},{col_index,Col}})->
-    TableName=sh_arr_formula,
-    {value,{_,Tid}}=lists:keysearch(TableName,1,Tables),
-%% this fun reads an array formula
+    {value,{_,Tid}}=lists:keysearch(tmp_sh_arr_fml,1,Tables),
+    % this fun reads an array formula
     ArrayFn=fun(X,Acc)->
                     case X of
                         {{{sheet,Name},{row_index,Row},
@@ -271,7 +268,7 @@ read_shared(Tables,{{sheet,Name},{row_index,Row},{col_index,Col}})->
                         _Other                    -> Acc
                     end
             end,
-%% this fun reads an shared formula which matches at the top left
+    % this fun reads an shared formula which matches at the top left
     ExShrdFn = fun(X,Acc)->
                        case X of
                            {{{sheet,Name},{firstrow,Row},
@@ -280,7 +277,7 @@ read_shared(Tables,{{sheet,Name},{row_index,Row},{col_index,Col}})->
                            _Other                      -> Acc
                        end
                end,
-%% this fun reads a shared formula which intersects with the range
+    % this fun reads a shared formula which intersects with the range
     IntShrdFn=fun(X,Acc)->
                       case X of
                           {{{sheet,Name},{firstrow,FirstRow},
@@ -308,14 +305,16 @@ read_shared(Tables,{{sheet,Name},{row_index,Row},{col_index,Col}})->
     FourthReturn=check_formulae(ThirdReturn),
     FourthReturn.
 
-check_formulae([H|T]) -> case check_formulae([H|T],[]) of
-                             true  -> [H|[]];
-                             false -> exit("overlapping incompatible shared formulae")
-                         end.
+check_formulae([H|T]) ->
+    case check_formulae([H|T],[]) of
+        true  -> [H|[]];
+        false -> exit("overlapping incompatible shared formulae")
+    end.
 
 check_formulae([],Acc)    -> check2(Acc);
 check_formulae([H|T],Acc) ->
-    {{{sheet,Name},{firstrow,_A},{firstcol,_B},{lastrow,_C},{lastcol,_T}},Tokens} = H,
+    {{{sheet,Name},{firstrow,_A},{firstcol,_B},
+      {lastrow,_C},{lastcol,_T}},Tokens} = H,
     check_formulae(T,[{Name,Tokens}|Acc]).
 
 check2(List) -> check2(List, []).
@@ -328,13 +327,12 @@ check2([_H|_T],_Acc) -> false.
 %% read values from the tables
 read(Tables,Name,Key)->
     {value,{_TableName,Tid}}=lists:keysearch(Name,1,Tables),
-%% filefilters:dump([{Name,Tid}]),
     ets:lookup(Tid,{index,Key}).
 
 %% append a sheet name to the sheetname table with a zero-based
 %% index value
 append_sheetname(Tables,SheetName)->
-    {value,{_TableName,Tid}}=lists:keysearch(sheetnames,1,Tables),
+    {value,{_TableName,Tid}}=lists:keysearch(tmp_sheetnames,1,Tables),
     Size=ets:info(Tid,size),
     Record={{index,Size},[{name,SheetName}]},
     ets:insert(Tid,Record).
@@ -347,7 +345,7 @@ append_sheetname(Tables,SheetName)->
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 lookup_string(Tables,SSTIndex)->
-    {value,{strings,Tid}}=lists:keysearch(strings,1,Tables),
+    {value,{tmp_strings,Tid}}=lists:keysearch(tmp_strings,1,Tables),
     [{_,[{_,String}]}]=ets:lookup(Tid,{index,SSTIndex}),
     String.
 
@@ -368,12 +366,7 @@ get_integer(Bin) ->
 
 ones_complement(Bin) ->
     Mask=1073741823, % 30 ones in binary 111111111111111111111111111111
-%% Return=Int bxor Mask,
     Bin bxor Mask.
-
-%% ones_complement(<<>>,Acc)                -> list_to_binary(lists:reverse(Acc));
-%% ones_complement(<<1:1,Rest/binary>>,Acc) -> ones_complement(<<Rest/binary>>,[0|Acc]);
-%% ones_complement(<<0:1,Rest/binary>>,Acc) -> ones_complement(<<Rest/binary>>,[1,Acc]).
 
 shift_left2(Bin)->
     <<Thirty:30,_:2>>=Bin,
@@ -401,7 +394,6 @@ flatpack([$`|T],Acc)   -> flatpack(T,[$_|Acc]);
 flatpack([$!|T],Acc)   -> flatpack(T,[$_|Acc]);
 flatpack([$"|T],Acc)   -> flatpack(T,[$_|Acc]);
 flatpack([$$|T],Acc)   -> flatpack(T,[$_|Acc]);
-flatpack([$%|T],Acc)   -> flatpack(T,[$_|Acc]);
 flatpack([$%|T],Acc)   -> flatpack(T,[$_|Acc]);
 flatpack([$^|T],Acc)   -> flatpack(T,[$_|Acc]);
 flatpack([$&|T],Acc)   -> flatpack(T,[$_|Acc]);

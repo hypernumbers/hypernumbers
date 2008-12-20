@@ -1,12 +1,10 @@
 -module(test_util).
 
--export([
-         expected/2,
+-export([expected/2,
          expected2/2,
          expected3/2,
          expected4/2,
          readxls/1,
-         read_excel_file/1,
          equal_to_digit/3,
          excel_equal/2,
          wait/0,
@@ -22,8 +20,8 @@
          stripfileref/1,
          transform_reader_output/1,
          import_xls/1,
-         load_perf_tests/0
-	]).
+         load_perf_tests/0,
+         rc_to_a1/2]).
 
 -include("excel_errors.hrl").
 -include("hypernumbers.hrl").
@@ -63,12 +61,12 @@ import_xls(Name) ->
                 _           -> "/" ++ File
             end,
     io:format("in test_util:import_xls File is ~p~n",[File2]),
-    Celldata = readxls(File2),
+    {Celldata, Names, Formats, CSS} = readxls(File2),
     F = fun(X, {Ls, Fs}) ->
-                {SheetName, Target, V} = read_reader_record(X),
-                Sheet=excel_util:esc_tab_name(SheetName),
-                Postdata = conv_for_post(V),
-                Path = "/" ++ Name ++ "/" ++ Sheet ++ "/",
+                 {SheetName, Target, V} = read_reader_record(X),
+                Sheet = excel_util:esc_tab_name(SheetName),
+                 Postdata = conv_for_post(V),
+                 Path = "/" ++ Name ++ "/" ++ Sheet ++ "/",
                 Ref = case Target of
                           {{Fr, Fc}, {Lr, Lc}} -> {rc_to_a1(Fr, Fc), rc_to_a1(Lr, Lc)};
                           {Row, Col}           -> rc_to_a1(Row, Col)
@@ -82,10 +80,10 @@ import_xls(Name) ->
     {Lits, Flas} = lists:foldl(F,{[], []}, Celldata),
 
     Dopost = fun({Path, Ref, Postdata}) when is_list(Ref) -> % single cell
-                      Url = string:to_lower("http://127.0.0.1:9000" ++ Path ++ Ref),
+                     Url = string:to_lower("http://127.0.0.1:9000" ++ Path ++ Ref),
                      {ok, RefRec} = hn_util:parse_url(Url),
-                     Postdata2=fix_integers(Postdata),
-                     ok=hn_main:set_cell(RefRec, Postdata2);
+                     Postdata2 = fix_integers(Postdata),
+                     ok = hn_main:set_cell(RefRec, Postdata2);
                 ({Path, {Tl, Br}, Postdata}) -> % array formula
                      Url = string:to_lower("http://127.0.0.1:9000" ++ Path ++ Tl ++ ":" ++ Br),
                      {ok, RefRec} = hn_util:parse_url(Url),
@@ -97,12 +95,43 @@ import_xls(Name) ->
     lists:foreach(Dopost, Lits),
     lists:foreach(Dopost, Flas),
     ?INFO("Start Recalculating: ~p", [Name]),
-    Return1=gen_server:cast(dirty_cell, {setstate, active}),
-    Return2=gen_server:call(dirty_cell, flush, infinity),
+    _Return1=gen_server:cast(dirty_cell, {setstate, active}),
+    _Return2=gen_server:call(dirty_cell, flush, infinity),
+    % Now fire in the CSS and formats
+    % WriteFormat = fun(
+    % 
+    WriteCSS = fun(X) ->
+                       {{{sheet, SheetName}, {row_index, Row}, {col_index, Col}}, CSSItem} = X,
+                       Sheet = excel_util:esc_tab_name(SheetName),
+                       Path = "/" ++ Name ++ "/" ++ Sheet ++ "/",
+                       Ref = rc_to_a1(Row,Col),
+                       Url = string:to_lower("http://127.0.0.1:9000" ++ Path ++ Ref),
+                       {ok, RefRec} = hn_util:parse_url(Url),
+                       % io:format("in WriteCSS CSSItem is ~p~n", [CSSItem]),
+                       % exit("kill me now!"),
+                       {ok, ok} = write_css(CSSItem, RefRec, Url)
+               end,
+    lists:foreach(WriteCSS, CSS),
     loop(),
-    io:format("Return1 is ~p Return2 is ~p~n",[Return1,Return2]),
     ?INFO("End Import: ~p", [Name]),
     ok.
+
+write_css([], _RefRec, _Url) -> {ok, ok};
+write_css([H | T], RefRec, Url) ->
+    % io:format("in write_css H is ~p~n T is ~p",[H, T]),
+    {Attr, Val} = H,
+    Val2 = flatpack(Val),
+    RefRec2 = RefRec#ref{name=Attr},
+    % io:format("in WriteCSS fun RefRec is ~p~nRefRec2 is ~p~nAttr is ~p~n"++
+    %          "Val is ~p~nVal2 is ~p~n",
+    %          [RefRec, RefRec2, Attr, Val, Val2]),
+    hn_main:set_attribute(RefRec2, Val2),
+    write_css(T, RefRec, Url).
+
+flatpack(List) -> flatpack(List, []).
+
+flatpack([H | []], Acc) -> lists:concat(lists:reverse([H | Acc]));
+flatpack([H | T], Acc)  -> flatpack(T, [" ", H | Acc]).
 
 fix_integers(X) ->
     case make_float(X) of
@@ -173,7 +202,7 @@ read_from_excel_data(State,{Sheet,Row,Col})->
     end.
 
 equal_to_digit(F1,F2,DigitIdx) ->
-    %% force any rogue integers to floats  
+    % force any rogue integers to floats  
     F1a=float(F1),
     F2a=float(F2),
     [As0,Bs0]=io_lib:fwrite("~.*f~.*f",[DigitIdx+1,F1a-erlang:trunc(F1a), 
@@ -193,10 +222,10 @@ excel_equal("-2146826288","#NULL!")  -> true;
 excel_equal("-2146826252","#NUM!")   -> true;
 excel_equal("-2146826265","#REF!")   -> true;
 excel_equal("-2146826273","#VALUE!") -> true;
-%% Checks that two Excel values are equal.
 
+%% Checks that two Excel values are equal.
 excel_equal(String1,String2) when is_list(String1), is_list(String2) ->
-  %% fix-up the fact that we have changed the name of the function Error.Type to ErrorType
+    % fix-up the fact that we have changed the name of the function Error.Type to ErrorType
     Return=regexp:gsub(String2,"ERROR.TYPE","ERRORTYPE"),
     {ok,String2a,_}=Return,
     R2 = stripfileref(String2a),
@@ -204,7 +233,7 @@ excel_equal(String1,String2) when is_list(String1), is_list(String2) ->
             R2 -> true;
             _        -> false
       end,
-    %% if the strings aren't the same try and make numbers of them and compare then
+    % if the strings aren't the same try and make numbers of them and compare then
     case Result of
       true  -> true;
       false ->
@@ -240,16 +269,16 @@ excel_equal2({date, F1}, {string, F2}) ->
 excel_equal2({number, F1}, {number, F2}) ->
     equal_to_digit(F1, F2, ?EXCEL_IMPORT_FLOAT_PRECISION);
 excel_equal2({formula, PreFla1}, {formula, Fla2}) ->
-    %% if row address, strip the column bounds (=$A169:$IV169) becomes (=169:169)
+    % if row address, strip the column bounds (=$A169:$IV169) becomes (=169:169)
     Fla1 = case regexp:match(PreFla1,"\\$A[0-9]+:\\$IV[0-9]+") of
     {match,_,_} ->
         {ok,Str,_Count} = regexp:gsub(PreFla1,"\\$A|\\$IV",""),
         Str;
     _ -> PreFla1
     end,
-    %% fix-up the fact that we have changed the name of the function Error.Type 
-    %% to ErrorType
-    %% Ugly bodge    
+    % fix-up the fact that we have changed the name of the function Error.Type 
+    % to ErrorType
+    % Ugly bodge    
     {ok,Fla2a,_} = regexp:gsub(Fla2,"ERROR.TYPE","ERRORTYPE"),
     R2 = stripfileref(Fla2a),
     eq(Fla1,R2);
@@ -343,11 +372,6 @@ expected4(Expected, Got) ->
 readxls(Fn) ->
     filefilters:read(excel, Fn, fun decipher_ets_tables/1).
 
-read_excel_file(Filename) ->
-    c:pwd(),
-    io:format("in test_util:read_excel_file Filename is ~p~n",[Filename]),
-    readxls(Filename).
-
 make_float(List) ->
     Return = try
                 list_to_float(List)
@@ -380,15 +404,12 @@ wait(N) -> internal_wait(?DEFAULT * N).
 
 hnget(Path, Ref) ->
     Url = Url = string:to_lower(?HNSERVER ++ Path ++ Ref),
-    % io:format("hnget Url ~p~n",[Url]),
     {ok, {{_V, _Code, _R}, _H, Body}} = http:request(get, {Url, []}, [], []),
-    % io:format("Code for ~p ~p is ~p.~nBody is: ~p~n~n", [Path, Ref, Code, Body]),
     Body.
   
 hnpost(Path, Ref, Postdata) ->
     Url = string:to_lower(?HNSERVER ++ Path ++ Ref),
     Postreq = "<create><formula><![CDATA[" ++ Postdata ++ "]]></formula></create>",
-    %io:format("Posting ~p to ~s...~n", [Postdata, Url]),
     Return = http:request(post,
                           {Url, [], "text/xml", Postreq},
                           [{timeout, 5000}],
@@ -396,10 +417,8 @@ hnpost(Path, Ref, Postdata) ->
     handle_return(Return, Ref).
 
 handle_return({error, timeout}, _Ref) ->
-    %%io:format("TIMEOUT~n"),
-    bits:log("in test_util:handle_return OTIMEOUT!");
+    bits:log("in test_util:handle_return TIMEOUT!");
 handle_return({ok, {{_V, 200, _R}, _H, _Body}}, _Ref) ->
-    %%io:format("in test_util:handle_return OK~n"),
     ok;
 handle_return({ok, {{_V, Code, _R}, _H, Body}}, Ref) ->
     io:format("in test_util:handle_return HTTP POST error (~s)~n-code:~p~n-body:~p~n",
@@ -492,15 +511,38 @@ transform_reader_output(O) ->
 %% Input: list of {key, id} pairs where key is an ETS table holding info
 %% about some part of the XLS file.
 %% TODO: formats, names, styles.
-decipher_ets_tables(TIds) ->
-    %% Grab information about single cell values.
-    {value, {cell, Tid1}} = lists:keysearch(cell, 1, TIds),
+decipher_ets_tables(Tids) ->
+    %
+    % First get the formulae/string data
+    % 
+    % Grab information about single cell values.
+    {value, {cell, Tid1}} = lists:keysearch(cell, 1, Tids),
     CellRecs = ets:foldl(fun(X, Acc) -> [X|Acc] end, [], Tid1),
     CellInfo = lists:map(fun({Index, [_, Body]}) -> {Index, Body} end, CellRecs),
-    %% Grab information about array formulas.
-    {value, {array_formulae, Tid2}} = lists:keysearch(array_formulae, 1, TIds),
+    % Grab information about array formulas.
+    {value, {array_formulae, Tid2}} = lists:keysearch(array_formulae, 1, Tids),
     AFRecs = ets:foldl(fun(X, Acc) -> [X|Acc] end, [], Tid2),
-    CellInfo ++ AFRecs.
+    Celldata = CellInfo ++ AFRecs,
+
+    %
+    % Now get the Names information
+    % 
+    {value, {names, Tid3}} = lists:keysearch(names, 1, Tids),
+    Names = ets:foldl(fun(X, Acc) -> [X | Acc] end, [], Tid3),
+
+    %
+    % Now get the Format information
+    % 
+    {value, {formats, Tid4}} = lists:keysearch(formats, 1, Tids),
+    Formats = ets:foldl(fun(X, Acc) -> [X | Acc] end, [], Tid4),
+    
+    %
+    % Now get the CSS information
+    % 
+    {value, {css, Tid5}} = lists:keysearch(css, 1, Tids),
+    CSS = ets:foldl(fun(X, Acc) -> [X | Acc] end, [], Tid5),
+
+    {Celldata, Names, Formats, CSS}.
 
 internal_wait(0) ->
     ok;

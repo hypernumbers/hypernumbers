@@ -24,4 +24,4 @@
 -define(chLibDir,8).
 
 %% this is the marker for a name that refers to an external Excel file
--define(FE_external,65534).
+-define(EXTERNALBOOK,-2).

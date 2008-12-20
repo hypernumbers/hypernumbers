@@ -208,14 +208,17 @@ Fun =:= tFuncVar; Fun =:= tFuncVarV; Fun =:= tFuncVarR; Fun =:= tFuncVarA ->
 %% tName
 rev_comp(Index,[{name_index,{tName,[{value,Value},{type,_Type}],
                              {return,reference}}}|T],TokArr,Stack,Tbl) ->
-    [{_Index1,[_Scope,{page,Page},{name,NameVal},_Val]}] = ?read(Tbl,fixedupnames,Value),
-    {{sheet,SheetName},_,_}=Index,
-    EscSheet=excel_util:esc_tab_name(SheetName),
-    NameStr = case Page of
-                  EscSheet -> NameVal;
-                  "" -> "../"++NameVal;
-                  _  -> "../"++Page++"/"++NameVal
+    [{_Index1, [{extbook, _EXBIdx},{sheetindex, _SheetIdx}, {type, Type},
+                {name, NameVal}, _Val]}] = ?read(Tbl,tmp_names,Value),
+    io:format("in tName Value is ~p NameVal is ~p~n",[Value,NameVal]),
+    % if the type is local look up the sheet name
+    NameStr = case Type of
+                  global -> "../"++"@"++NameVal;
+                  local  -> {{sheet,SheetName},_,_}=Index,
+                            EscSheet=excel_util:esc_tab_name(SheetName),
+                            "../"++EscSheet++"/"++"@"++NameVal
               end,
+    % io:format("in excel_rev_comp for tName EXBIdx is ~p NameStr is ~p~n",[EXBIdx, NameStr]),
     rev_comp(Index,T,TokArr,[{string,NameStr}|Stack],Tbl);
 
 %% tRef
@@ -306,28 +309,88 @@ rev_comp(Index,[{relative_area,{tAreaN,[NewDetails|{type,_Type}],
 %% tFuncCE
 
 %% tNameX
-rev_comp(Index,[{name_xref,{tNameX,[{reference_index,Ref},
-                                {name_index,Name},_Type],_Ret}}|T],TokArr,Stack,Tbl) ->
-    [{_Index1,[_Scope,{page,Page},{name,NameVal},_Val]}] = ?read(Tbl,fixedupnames,Name),
-    {{sheet,SheetName},_,_}=Index,
-    EscSheet=excel_util:esc_tab_name(SheetName),
-    NameStr = case Page of
-                  EscSheet -> NameVal;
-                  ""       -> "../"++NameVal;
-                  _        -> "../"++Page++"/"++NameVal
-              end,
-    rev_comp(Index,T,TokArr,[{string,NameStr}|Stack],Tbl);
-
+rev_comp(Index,[{name_xref,{tNameX,
+                            [{reference_index,Ref},{name_index,NameIdx},_Type],
+                            _Ret}}|T],TokArr,Stack,Tbl) ->
+    Return = ?read(Tbl,tmp_extsheets, Ref),
+    [{_Idx, [{extbook_index, EXBIdx}, {firstsheet,FirstIdx}, _]}] = Return,
+    io:format("~n~nin excel_rev_comp:rev_comp~n-tNameX Index is ~p~n-Ref is ~p~n"++
+              "NameIdx is ~p~n-Return is ~p~n-EXBIdx is ~p~n-FirstIdx is ~p~n",
+              [Index, Ref, NameIdx, Return, EXBIdx, FirstIdx]),
+    % now work out if this EXBIdx points to the root page of the workbook
+    [{_I, [Worksheet, _]}] = ?read(Tbl, tmp_externalbook, EXBIdx),
+    io:format("Worksheet is ~p~n",[Worksheet]),
+    NameVal =
+        case FirstIdx of
+            ?EXTERNALBOOK ->
+                case Worksheet of
+                    {this_file, expanded} ->
+                        io:format("in this branch~n"),
+                        [{_I2, [{extbook, _E},{sheetindex, _S}, {type, _},
+                                {name, LocalName}, _V]}] = ?read(Tbl,tmp_names,NameIdx),
+                        {{sheet,SheetName},_,_}=Index,
+                        EscSheet=excel_util:esc_tab_name(SheetName),
+                        io:format("LocalName is ~p SheetName is ~p EscSheet is ~p~n",
+                                  [LocalName, SheetName, EscSheet]),
+                        "../"++EscSheet++"/"++"@"++LocalName;
+                    {skipped, add_ins} ->
+                        io:format("its a skipper~n"),
+                        % First get all the externames with the EXBindex of EXBIdx
+                        % get the cell name
+                        {{sheet,S}, {row_index, R}, {col_index, C}} = Index,
+                        % now get the sheet name
+                        {value,{_TableName,Tid}}=lists:keysearch(tmp_externnames,1,Tbl),
+                        ExtNameList = ets:lookup(Tid, {extbook_index, EXBIdx}), 
+                        io:format("-EXBIdx is ~p ExtNameList is ~p Name is ~p~n",
+                                  [EXBIdx, ExtNameList, NameIdx]),
+                        ExtName = get_extname(ExtNameList, NameIdx),
+                        io:format("ExtName is ~p~n",[ExtName]),
+                        ExtName;
+                    _ ->
+                        io:format("nay, nay and thrice nay~n"),
+                        % First get all the externames with the EXBindex of EXBIdx
+                        % get the cell name
+                        {{sheet,S}, {row_index, R}, {col_index, C}} = Index,
+                        % now get the sheet name
+                        {value,{_TableName,Tid}}=lists:keysearch(tmp_externnames,1,Tbl),
+                        ExtNameList = ets:lookup(Tid, {extbook_index, EXBIdx}), 
+                        io:format("-EXBIdx is ~p ExtNameList is ~p Name is ~p~n",
+                                  [EXBIdx, ExtNameList, NameIdx]),
+                        ExtName = get_extname(ExtNameList, NameIdx),
+                        io:format("ExtName is ~p~n",[ExtName]),
+                        % now get the file name
+                        {value,{_TableName2,Tid2}}=lists:keysearch(tmp_externalbook,1,Tbl),
+                        Lookup = ets:lookup(Tid2, {index, EXBIdx}),
+                        case Lookup of
+                            [{_I, [{name, FileName}, _]}] ->
+                                Str = io_lib:format("Cell ~s on page ~s has a reference to "++
+                                                    "the name ~s on file ~s",
+                                                    [test_util:rc_to_a1(R,C), S,
+                                                     ExtName, FileName]),
+                                excel_util:append(Tbl, warnings, lists:flatten(Str)),
+                                "#REF!";
+                            [{_I, [{skipped, Reason}, _]}] ->
+                                Str = io_lib:format("Cell ~s on page ~s has a reference to "++
+                                                    "the function ~s which is not implemented",
+                                                    [test_util:rc_to_a1(R,C), S, ExtName]),
+                                "#REF!"
+                        end
+                end
+        end,
+    io:format("-NameVal is ~p~n", [NameVal]),
+    rev_comp(Index,T,TokArr,[{string,NameVal}|Stack],Tbl);
 %% tRef3d
 rev_comp(I,[{three_dee_ref,{tRef3d,[{reference_index,RefIdx},
                                     Ref,_Type],_Ret}}|T],TokArr,Stack,Tbl) ->
     Sheet = get_sheet_ref(RefIdx,Tbl),
     Sheet2=excel_util:esc_tab_name(Sheet),
-    rev_comp(I,T,TokArr,[{string,"../"++Sheet2++"/"++make_cell(Ref)}|Stack],Tbl);
+    rev_comp(I,T,TokArr,[{string,"../"++Sheet2++"/"++make_cell(Ref)}|Stack],
+             Tbl);
 
 %% tArea3d
 rev_comp(I,[{three_dee_area,{tArea3d,[{reference_index,RefIdx},
-                                      Reference,_Type],_Ret}}|T],TokArr,Stack,Tbl) ->
+                                      Reference,_Type],_Ret}}|T],
+         TokArr,Stack,Tbl) ->
     Sheet = get_sheet_ref(RefIdx,Tbl),
     Sheet2=excel_util:esc_tab_name(Sheet),
     [{start_cell,Ref1}|{end_cell,Ref2}] = Reference,
@@ -336,7 +399,7 @@ rev_comp(I,[{three_dee_area,{tArea3d,[{reference_index,RefIdx},
 
 %% tRefErr3d
 rev_comp(I,[{three_dee_error_ref,{tRefErr3d,[{reference_index,_RefIndex},{type,_Type}],
-                                        {return,reference}}}|T],TokArr,Stack,Tbl) ->
+                                  {return,reference}}}|T],TokArr,Stack,Tbl) ->
     rev_comp(I,T,TokArr,[{string,"!REF"}|Stack],Tbl);
 
 %% tAreaErr3d
@@ -348,13 +411,16 @@ rev_comp(_Index,Form,TokArr,_Stack,_Tbl) ->
     io:format("in reverse compile missing tokens are ~p with a TokArr of ~p~n",
               [Form,TokArr]),
     exit("missing tokens in excel_rev_comp:reverse_compile").
-%% reverse_compile(Index,T,TokArr,Stack,Residuum,Tbl).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                         %%%
 %%% Internal functions                                                      %%%
 %%%                                                                         %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+get_extname([{_SBIdx, [{ext_index, NameIdex}, {name, Name}]} | _T], NameIdx) -> Name;
+get_extname([_H | T], NameIdx) -> get_extname(T, NameIdx).
+
+
 get_row(Row,TopRow,RowType)->
     case RowType of
         rel_row -> Row+TopRow-65536*erlang:round((Row+TopRow)/65536);
@@ -369,20 +435,20 @@ get_col(Col,TopCol,ColType)->
 
 %% Looks up a reference to an externsheet and turns it into a sheet ref
 get_sheet_ref(Index,Tbl)->
-    Record1=?read(Tbl,externsheets,Index),
+    Record1=?read(Tbl,tmp_extsheets,Index),
     case Record1 of
-        [{_,[{subrec,_SR},{firstsheet,?FF_Ref},{lastsheet,_}]}] ->
+        [{_,[{extbook_index,EXBIdx},{firstsheet,?EXTERNALBOOK_REF_ERROR},{lastsheet,_}]}] ->
             "#REF";
-        [{_,[{subrec,_SR},{firstsheet,?FE_external},{lastsheet,_}]}] ->
+        [{_,[{extbook_index,EXBIdx},{firstsheet,?EXTERNALBOOK},{lastsheet,_}]}] ->
             exit("cant use get_sheet_ref to get a sheet for a non-local reference");
-        [{_,[{subrec,SR},{firstsheet,FS},{lastsheet,FS}]}]->
-            get_ref(SR,FS,Tbl);
-        [{_,[{subrec,SR},{firstsheet,FS},{lastsheet,LS}]}] ->
-            get_range(SR,FS,LS,Tbl)
+        [{_,[{extbook_index,EXBIdx},{firstsheet,FS},{lastsheet,FS}]}]->
+            get_ref(EXBIdx,FS,Tbl);
+        [{_,[{extbook_index,EXBIdx},{firstsheet,FS},{lastsheet,LS}]}] ->
+            get_range(EXBIdx,FS,LS,Tbl)
     end.
 
 get_ref(SubRec,FirstSheet,Tbl)->
-    Record=?read(Tbl,externalrefs,SubRec),
+    Record=?read(Tbl,tmp_externalbook,SubRec),
     [{{index,SubRec},[Location,SheetList]}]=Record,
     % lists:nth is '1' based but the index is 'zero' based!
     case Location of
@@ -391,7 +457,7 @@ get_ref(SubRec,FirstSheet,Tbl)->
     end.
 
 get_range(SubRec,FirstSheet,LastSheet,Tbl)->
-    Record=?read(Tbl,externalrefs,SubRec),
+    Record=?read(Tbl,tmp_externalbook,SubRec),
     [{{index,SubRec},[Location,SheetList]}]=Record,
     % lists:nth is '1' based but the index is 'zero' based!
     case Location of
@@ -575,11 +641,11 @@ to_str({float,Val}) ->
 to_str({abs_ref,Y,X,rel_row,rel_col}) ->
     util2:make_b26(X)++integer_to_list(Y);
 to_str({abs_ref,Y,X,abs_row,rel_col}) ->
-    util2:make_b26(X)++"$"++integer_to_list(Y);
+    util2:make_b26(X)++"$"++integer_to_list(Y); %"; fix syntax highlight
 to_str({abs_ref,Y,X,rel_row,abs_col}) ->
-    "$"++util2:make_b26(X)++integer_to_list(Y);
+    "$"++util2:make_b26(X)++integer_to_list(Y); %"; fix syntax highlight
 to_str({abs_ref,Y,X,abs_row,abs_col}) ->
-    "$"++util2:make_b26(X)++"$"++integer_to_list(Y);
+    "$"++util2:make_b26(X)++"$"++integer_to_list(Y); 
 to_str({L,S1,O,S2,R}) ->
     to_str(L)++to_str(S1)++to_str(O)++to_str(S2)++to_str(R).
 
@@ -637,10 +703,10 @@ make_cell({Row,Col,rel_row,rel_col}) ->
     string:to_upper(util2:make_b26(Col+1)++integer_to_list(Row+1));
 make_cell({Row,Col,abs_row,rel_col}) ->
     string:to_upper(util2:make_b26(Col+1)++"$"++integer_to_list(Row+1)); %"
-make_cell({Row,Col,rel_row,abs_col}) ->
-    string:to_upper("$"++util2:make_b26(Col+1)++integer_to_list(Row+1)); %"
-make_cell({Row,Col,abs_row,abs_col}) ->
-    string:to_upper("$"++util2:make_b26(Col+1)++"$"++integer_to_list(Row+1)).
+                    make_cell({Row,Col,rel_row,abs_col}) ->
+                           string:to_upper("$"++util2:make_b26(Col+1)++integer_to_list(Row+1)); %"
+                                           make_cell({Row,Col,abs_row,abs_col}) ->
+                                                  string:to_upper("$"++util2:make_b26(Col+1)++"$"++integer_to_list(Row+1)).
 
 %% this function looks up the Func ID and converts it to a name
 %%
