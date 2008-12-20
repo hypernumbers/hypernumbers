@@ -57,13 +57,11 @@ fix_up_formats(Tables) ->
     % to set them
     Fun1 = fun(X, _Acc)->
                    {CellRef, [{xf_index, XFIndex}, _]} = X,
-                   % io:format("In fix_up_formats XFIndex is ~p~n",[XFIndex]),
                    {ok, ok} = get_formatting(CellRef, XFIndex, Tables)
            end,
     ets:foldl(Fun1, [], CellId),
     Fun2 = fun(X, _Acc)->
                    {CellRef, [{xf_index, XFIndex}]} = X,
-                   % io:format("In fix_up_formats XFIndex is ~p~n",[XFIndex]),
                    {ok, ok} = get_formatting(CellRef, XFIndex, Tables)
            end,
     ets:foldl(Fun2, [], Tmp_BlanksId).
@@ -156,7 +154,6 @@ fix_up_cells(Tables)->
     {value, {tmp_cell, Tmp_CellId}} = ?k(tmp_cell, 1, Tables),
     {value, {cell,     CellId}}     = ?k(cell,     1, Tables),
     Fun=fun(X, _Acc)->
-                % io:format("in fix_up_cells fun X is ~p~n",[X]),
                 {Index, [XF, {tokens, Tokens}, {tokenarrays, TokenArray}]} = X,
                 case excel_rev_comp:reverse_compile(Index, Tokens, TokenArray,
                                                     Tables) of
@@ -248,7 +245,6 @@ get_fonts(FontIdx, Tables) ->
     {value,{tmp_fonts, FontsId}}     = ?k(tmp_fonts,   1, Tables),
     {value,{tmp_colours, ColoursId}} = ?k(tmp_colours, 1, Tables),
     [{_Index, [ColourIdx, {css, CSS}]}]  = ets:lookup(FontsId, {index, FontIdx2}),
-    % io:format("in get_fonts ColourIdx is ~p~n",[ColourIdx]),
     % lookup the colour
     [{_, [{colour,Col}]}] = ets:lookup(ColoursId, ColourIdx),
     lists:merge([[{'color', [Col]}],CSS]).

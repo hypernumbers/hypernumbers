@@ -210,7 +210,6 @@ rev_comp(Index,[{name_index,{tName,[{value,Value},{type,_Type}],
                              {return,reference}}}|T],TokArr,Stack,Tbl) ->
     [{_Index1, [{extbook, _EXBIdx},{sheetindex, _SheetIdx}, {type, Type},
                 {name, NameVal}, _Val]}] = ?read(Tbl,tmp_names,Value),
-    io:format("in tName Value is ~p NameVal is ~p~n",[Value,NameVal]),
     % if the type is local look up the sheet name
     NameStr = case Type of
                   global -> "../"++"@"++NameVal;
@@ -218,7 +217,6 @@ rev_comp(Index,[{name_index,{tName,[{value,Value},{type,_Type}],
                             EscSheet=excel_util:esc_tab_name(SheetName),
                             "../"++EscSheet++"/"++"@"++NameVal
               end,
-    % io:format("in excel_rev_comp for tName EXBIdx is ~p NameStr is ~p~n",[EXBIdx, NameStr]),
     rev_comp(Index,T,TokArr,[{string,NameStr}|Stack],Tbl);
 
 %% tRef
@@ -314,70 +312,56 @@ rev_comp(Index,[{name_xref,{tNameX,
                             _Ret}}|T],TokArr,Stack,Tbl) ->
     Return = ?read(Tbl,tmp_extsheets, Ref),
     [{_Idx, [{extbook_index, EXBIdx}, {firstsheet,FirstIdx}, _]}] = Return,
-    io:format("~n~nin excel_rev_comp:rev_comp~n-tNameX Index is ~p~n-Ref is ~p~n"++
-              "NameIdx is ~p~n-Return is ~p~n-EXBIdx is ~p~n-FirstIdx is ~p~n",
-              [Index, Ref, NameIdx, Return, EXBIdx, FirstIdx]),
     % now work out if this EXBIdx points to the root page of the workbook
     [{_I, [Worksheet, _]}] = ?read(Tbl, tmp_externalbook, EXBIdx),
-    io:format("Worksheet is ~p~n",[Worksheet]),
     NameVal =
         case FirstIdx of
             ?EXTERNALBOOK ->
                 case Worksheet of
                     {this_file, expanded} ->
-                        io:format("in this branch~n"),
                         [{_I2, [{extbook, _E},{sheetindex, _S}, {type, _},
                                 {name, LocalName}, _V]}] = ?read(Tbl,tmp_names,NameIdx),
                         {{sheet,SheetName},_,_}=Index,
                         EscSheet=excel_util:esc_tab_name(SheetName),
-                        io:format("LocalName is ~p SheetName is ~p EscSheet is ~p~n",
-                                  [LocalName, SheetName, EscSheet]),
                         "../"++EscSheet++"/"++"@"++LocalName;
                     {skipped, add_ins} ->
-                        io:format("its a skipper~n"),
                         % First get all the externames with the EXBindex of EXBIdx
                         % get the cell name
                         {{sheet,S}, {row_index, R}, {col_index, C}} = Index,
                         % now get the sheet name
                         {value,{_TableName,Tid}}=lists:keysearch(tmp_externnames,1,Tbl),
                         ExtNameList = ets:lookup(Tid, {extbook_index, EXBIdx}), 
-                        io:format("-EXBIdx is ~p ExtNameList is ~p Name is ~p~n",
-                                  [EXBIdx, ExtNameList, NameIdx]),
                         ExtName = get_extname(ExtNameList, NameIdx),
-                        io:format("ExtName is ~p~n",[ExtName]),
                         ExtName;
                     _ ->
-                        io:format("nay, nay and thrice nay~n"),
                         % First get all the externames with the EXBindex of EXBIdx
                         % get the cell name
                         {{sheet,S}, {row_index, R}, {col_index, C}} = Index,
                         % now get the sheet name
                         {value,{_TableName,Tid}}=lists:keysearch(tmp_externnames,1,Tbl),
                         ExtNameList = ets:lookup(Tid, {extbook_index, EXBIdx}), 
-                        io:format("-EXBIdx is ~p ExtNameList is ~p Name is ~p~n",
-                                  [EXBIdx, ExtNameList, NameIdx]),
                         ExtName = get_extname(ExtNameList, NameIdx),
-                        io:format("ExtName is ~p~n",[ExtName]),
                         % now get the file name
                         {value,{_TableName2,Tid2}}=lists:keysearch(tmp_externalbook,1,Tbl),
                         Lookup = ets:lookup(Tid2, {index, EXBIdx}),
                         case Lookup of
                             [{_I, [{name, FileName}, _]}] ->
-                                Str = io_lib:format("Cell ~s on page ~s has a reference to "++
-                                                    "the name ~s on file ~s",
+                                Str = io_lib:format("Cell ~s on page ~s has a "++
+                                                    "reference to the name ~s"++
+                                                    "on file ~s",
                                                     [test_util:rc_to_a1(R,C), S,
                                                      ExtName, FileName]),
                                 excel_util:append(Tbl, warnings, lists:flatten(Str)),
                                 "#REF!";
                             [{_I, [{skipped, Reason}, _]}] ->
-                                Str = io_lib:format("Cell ~s on page ~s has a reference to "++
-                                                    "the function ~s which is not implemented",
+                                Str = io_lib:format("Cell ~s on page ~s has a "++
+                                                    "reference to the function "++
+                                                    "~s which is not implemented",
                                                     [test_util:rc_to_a1(R,C), S, ExtName]),
                                 "#REF!"
                         end
                 end
         end,
-    io:format("-NameVal is ~p~n", [NameVal]),
     rev_comp(Index,T,TokArr,[{string,NameVal}|Stack],Tbl);
 %% tRef3d
 rev_comp(I,[{three_dee_ref,{tRef3d,[{reference_index,RefIdx},

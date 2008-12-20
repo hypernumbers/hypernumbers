@@ -92,11 +92,9 @@ parse_rec(?FOOTER,_Bin,_Name,CurrentFormula,Tbl)->
 parse_rec(?EXTERNSHEET,Bin,_Name,CurrentFormula,Tbl)->
     <<_NumRefs:16/little-unsigned-integer,
      R2/binary>>=Bin,
-    io:format("EXTERNSHEET~n"),
     parse_externsheet(R2,0,Tbl),
     {ok,CurrentFormula};
 parse_rec(?NAME,Bin,Name,CurrentFormula,Tbl)-> % renamed DEFINEDNAME in v1.42
-    io:format("NAME~n"),
     <<OptionFlag:2/binary,
      KybdShortCut:8/little-unsigned-integer,
      NameLength:8/little-unsigned-integer,
@@ -145,7 +143,6 @@ parse_rec(?DATEMODE,Bin,_Name,CurrentFormula,Tbl)->
     {ok,CurrentFormula};
 parse_rec(?EXTERNNAME2,Bin,_Name,CurrentFormula,Tbl)->
     % Best described by Section 5.39 of excelfileformatV1-41.pdf
-    io:format("EXTERNNAME~n"),
     parse_externname(Bin,Tbl),
     {ok,CurrentFormula};
 parse_rec(?LEFTMARGIN,_Bin,_Name,CurrentFormula,Tbl)->
@@ -677,28 +674,23 @@ parse_rec(?DSF,_Bin,_Name,CurrentFormula,Tbl)->
 %% 
 %% In addition entries into the table 
 parse_rec(?SUPBOOK,Bin,_Name,CurrentFormula,Tbl)->
-    io:format("SUPBOOK/EXTERNALBOOK~n"),
     case Bin of
         <<NoSheets:16/little-unsigned-integer,
          ?InternalReferences:16/little-unsigned-integer>> ->
-            io:format("-writing 1~n"),
             write_externalref({this_file,placeholder},[],Tbl),
             excel_util:write(Tbl,misc,[{index,noofsheets},{value,NoSheets}]);
         <<?Add_In_Fns1:16/little-unsigned-integer,
          ?Add_In_Fns2:16/little-unsigned-integer>> ->
-            io:format("-writing 2~n"),
             write_externalref({skipped,add_ins},[],Tbl),
             excel_util:write(Tbl,lacunae,[{identifier,"Add_In_Fns"},
                                           {source,excel_records.erl},
                                           {msg,"not being processed"}]);
         <<?DDE_OLE:16/little-unsigned-integer,_Rest/binary>> ->
-            io:format("-writing 3~n"),
             write_externalref({skipped,dde_ole},[],Tbl),
             excel_util:write(Tbl,lacunae,
                              [{identifier,"DDE and OLE links",Tbl},
                               {source,excel_records.erl}]);
         _ -> 
-            io:format("-writing 4~n"),
             parse_externalrefs(Bin,Tbl)
     end,
     {ok,CurrentFormula};

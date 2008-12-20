@@ -224,7 +224,6 @@ read_cell_range_addies(N,'8bit',Bin,Acc)->
 
 %% get the current length of the table
 get_length(Tables,Name)->
-    % io:format("in get_length Name is ~p~n",[Name]),
     {value,{Name,Tid}}=lists:keysearch(Name,1,Tables),
     Info=ets:info(Tid),
     {_,{_,Length}}=lists:keysearch(size,1,Info),
@@ -232,7 +231,6 @@ get_length(Tables,Name)->
 
 %% append a value to a table that needs a sequential index
 append(Tables,Name,Record) ->
-    % io:format("in append Name is ~p~n",[Name]),
     Index={index,get_length(Tables,Name)},
     {value,{Name,Tid}}=lists:keysearch(Name,1,Tables),
     ets:insert(Tid,{Index,Record}).

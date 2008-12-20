@@ -58,11 +58,7 @@ init([]) ->
 %%--------------------------------------------------------------------
 handle_call(Request, _From, State) ->
     {{file_type,Type},{file_in,FileIn}}=Request,
-    io:format(" in read_file_srv:handle_call Type is ~p FileIn is ~p~n",
-	      [Type,FileIn]),
     Pid=spawn_link(filefilters,read,[Type,FileIn]),
-    io:format(" in read_file_srv:handle_call worker spawned with Pid ~p~n",
-	      [Pid]),
     Reply = ok,
     {reply, Reply, State}.
 
