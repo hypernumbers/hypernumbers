@@ -5,6 +5,7 @@
          expected3/2,
          expected4/2,
          readxls/1,
+         read_excel_file/1,
          equal_to_digit/3,
          excel_equal/2,
          wait/0,
@@ -371,6 +372,11 @@ expected4(Expected, Got) ->
 %% decipher the collection of ETS tables dumped on them.
 readxls(Fn) ->
     filefilters:read(excel, Fn, fun decipher_ets_tables/1).
+
+read_excel_file(Filename) ->
+    c:pwd(),
+    io:format("in test_util:read_excel_file Filename is ~p~n",[Filename]),
+    readxls(Filename).
 
 make_float(List) ->
     Return = try
