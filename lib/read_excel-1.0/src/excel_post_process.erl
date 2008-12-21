@@ -279,9 +279,10 @@ get_formatting(CellRef,XFIndex,Tables) ->
     {value, {tmp_xf, XFId}}           = ?k(tmp_xf,      1, Tables),
     {value, {tmp_formats, FormatsId}} = ?k(tmp_formats, 1, Tables),
     {value, {tmp_colours, ColoursId}} = ?k(tmp_colours, 1, Tables),
-
+    % filefilters:dump(Tables),
     [{_XF, XFList}] = ets:lookup(XFId, {index, XFIndex}),
 
+    
     % Formats in Excel are stored in a heirarchical arrangement
     % We need to know the parent (or style) record for this record)
 
@@ -317,9 +318,9 @@ get_formatting(CellRef,XFIndex,Tables) ->
     {value, {number, PNumAttr}} = ?k(number, 1, PAttrList), 
     {value, {format_index, FormatIdx}} =
         case {NumAttr, PNumAttr} of
-            {use_this, _}       -> ?k(format_index, 1, XFList);
-            {use_parent, valid} -> ?k(format_index, 1, PXFList);
-            _                   -> []
+            {use_this, _}        -> ?k(format_index, 1, XFList);
+            {use_parent, valid}  -> ?k(format_index, 1, PXFList);
+            {use_parent, ignore} -> ?k(format_index, 1, XFList)
         end,
     Return = ets:lookup(FormatsId, {format_index, FormatIdx}),
     [{_Idx, [_Type, _Category, Format]}] = Return,
@@ -330,9 +331,9 @@ get_formatting(CellRef,XFIndex,Tables) ->
     {value, {font, PFontAttr}} = ?k(font, 1, PAttrList), 
     {value, {font_index, FontIdx}} =
         case {FontAttr, PFontAttr} of
-            {use_this, _}       -> ?k(font_index, 1, XFList);
-            {use_parent, valid} -> ?k(font_index, 1, PXFList);
-            _                   -> []
+            {use_this, _}        -> ?k(font_index, 1, XFList);
+            {use_parent, valid}  -> ?k(font_index, 1, PXFList);
+            {use_parent, ignore} -> ?k(font_index, 1, XFList)
         end,
 
     % now look up the font
@@ -346,9 +347,12 @@ get_formatting(CellRef,XFIndex,Tables) ->
     {value, {text, PTextAttr}} = ?k(text, 1, PAttrList), 
     TextCSS =
         case {TextAttr, PTextAttr} of
-            {use_this, _}       -> get_css(CSSList,  ['vertical-align','text-align']);
-            {use_parent, valid} -> get_css(PCSSList, ['vertical-align','text-align']);
-            _                   -> []
+            {use_this, _}        -> get_css(CSSList, ['vertical-align',
+                                                      'text-align']);
+            {use_parent, valid}  -> get_css(PCSSList,['vertical-align',
+                                                      'text-align']);
+            {use_parent, ignore} -> get_css(CSSList, ['vertical-align',
+                                                      'text-align'])
         end,
 
     % Attribute 4 BORDER
@@ -371,18 +375,21 @@ get_formatting(CellRef,XFIndex,Tables) ->
 
     BorderCSS =
         case {BorderAttr, PBorderAttr} of
-            {use_this, _}       ->
+            {use_this, _}        ->
                 S = get_css(CSSList, ['border-left', 'border-right',
                                       'border-top',  'border-bottom']),
                 C = get_colours(ColoursList,Tables),
                 lists:merge([S, C]);
-            {use_parent, valid} ->
+            {use_parent, valid}  ->
                 S = get_css(PCSSList, ['border-left', 'border-right',
                                        'border-top',  'border-bottom']),
                 C = get_colours(PColoursList,Tables),
                 lists:merge([S, C]);
-            _                   ->
-                []
+            {use_parent, ignore} ->
+                S = get_css(CSSList, ['border-left', 'border-right',
+                                      'border-top',  'border-bottom']),
+                C = get_colours(ColoursList,Tables),
+                lists:merge([S, C])
         end,
 
     % Attribute 5 BACKGROUND
@@ -396,13 +403,18 @@ get_formatting(CellRef,XFIndex,Tables) ->
 
     BackgroundCSS =
         case {BackgroundAttr, PBackgroundAttr} of
-            {use_this, _}       -> C2  = ets:lookup(ColoursId, {colour_index, BGColour}),
+            {use_this, _}        -> C2  = ets:lookup(ColoursId,
+                                                     {colour_index, BGColour}),
+                                    [{_, [{colour,Col}]}] = C2,
+                                    {'background-color', [Col]};
+            {use_parent, valid}  -> C2 = ets:lookup(ColoursId,
+                                                    {colour_index, PBGColour}),
                                    [{_, [{colour,Col}]}] = C2,
                                    {'background-color', [Col]};
-            {use_parent, valid} -> C2 = ets:lookup(ColoursId, {colour_index, PBGColour}),
-                                   [{_, [{colour,Col}]}] = C2,
-                                   {'background-color', [Col]};
-            _                   -> []
+            {use_parent, ignore} -> C2  = ets:lookup(ColoursId,
+                                                     {colour_index, BGColour}),
+                                    [{_, [{colour,Col}]}] = C2,
+                                    {'background-color', [Col]}
         end,
 
     % Attribute 6 PROTECTION
