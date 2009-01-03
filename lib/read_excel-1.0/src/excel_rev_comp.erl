@@ -382,11 +382,16 @@ rev_comp(I,[{three_dee_area,{tArea3d,[{reference_index,RefIdx},
     rev_comp(I,T,TokArr,[{string,"../"++Sheet2++"/"++Range}|Stack],Tbl);
 
 %% tRefErr3d
-rev_comp(I,[{three_dee_error_ref,{tRefErr3d,[{reference_index,_RefIndex},{type,_Type}],
+rev_comp(I,[{three_dee_error_ref,{tRefErr3d,[{reference_index,_RefIndex},
+                                             {type,_Type}],
                                   {return,reference}}}|T],TokArr,Stack,Tbl) ->
     rev_comp(I,T,TokArr,[{string,"!REF"}|Stack],Tbl);
 
 %% tAreaErr3d
+rev_comp(I,[{three_dee_area_error,{tAreaErr3d,[{reference_index,_RefIndex},
+                                               {type,_Type}],
+                                  {return,reference}}}|T],TokArr,Stack,Tbl) ->
+    rev_comp(I,T,TokArr,[{string,"!REF"}|Stack],Tbl);
 
 %%%%%%%%%%%%%%%%%%%%%%
 
