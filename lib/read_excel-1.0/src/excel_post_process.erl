@@ -27,7 +27,7 @@
 post_process_tables(Tables) ->
 %% Excel has a number of built in formats
     {ok,ok}=add_built_in_formats(Tables),
-    % filefilters:dump(Tables),
+    filefilters:dump(Tables),
     type_formats(Tables),
     fix_up_externalrefs(Tables),
     fix_up_names(Tables),
@@ -35,7 +35,7 @@ post_process_tables(Tables) ->
     convert_dates(Tables),
     fix_up_formats(Tables),
     create_array_formulae(Tables),
-    filefilters:dump(Tables),
+    % filefilters:dump(Tables),
     ok.
 
 %% This function takes the raw format data and turns into the apppriate format
@@ -55,15 +55,18 @@ fix_up_formats(Tables) ->
     {value,{tmp_blanks, Tmp_BlanksId}} = ?k(tmp_blanks, 1, Tables),
     % now we step through the formats and later we will use hn_main:set_attribute 
     % to set them
+    io:format("got to 1~n"),
     Fun1 = fun(X, _Acc)->
                    {CellRef, [{xf_index, XFIndex}, _]} = X,
                    {ok, ok} = get_formatting(CellRef, XFIndex, Tables)
            end,
     ets:foldl(Fun1, [], CellId),
+    io:format("got to 2~n"),
     Fun2 = fun(X, _Acc)->
                    {CellRef, [{xf_index, XFIndex}]} = X,
                    {ok, ok} = get_formatting(CellRef, XFIndex, Tables)
            end,
+    io:format("got to 3~n"),
     ets:foldl(Fun2, [], Tmp_BlanksId).
 
 %% this function deals with all the names defined in the names table
@@ -282,26 +285,33 @@ get_formatting(CellRef,XFIndex,Tables) ->
     % filefilters:dump(Tables),
     [{_XF, XFList}] = ets:lookup(XFId, {index, XFIndex}),
 
-    
     % Formats in Excel are stored in a heirarchical arrangement
     % We need to know the parent (or style) record for this record)
 
     {value, {type, Type}} = ?k(type, 1, XFList),
-    case Type of
-        cell  -> ok;
-        style -> exit("I don't think this should ever read a style XF record")
-    end,
+    % It appears that sometimes a cell format can reference a style record directly!
+    % By definition in this case the cell format has no parent
+    PXFList = case Type of
+                  cell  ->
+                      % Look up the parent XF record
+                      {value, {parent_index, XFParentIndex}} =
+                          ?k(parent_index, 1, XFList),
+                      [{_PXF, PXFList2}] = ets:lookup(XFId, {index, XFParentIndex}),
+                      % the parent should be a style - check that it is so
+                      {value, {type, PType}} = ?k(type, 1, PXFList2),
+                      case PType of
+                          cell  -> exit("I don't think this should ever read a "++
+                                        "cell XF record");
+                          style -> ok
+                      end,
+                      PXFList2;
+                  style -> io:format("I don't think this should ever read "++
+                                     "a style XF record~n"),
+                           % Just return the XFList
+                           % ie kid on that the format is its own parent
+                           XFList
+              end,
 
-    % Look up the parent XF record
-    {value, {parent_index, XFParentIndex}} = ?k(parent_index, 1, XFList),
-    [{_PXF, PXFList}] = ets:lookup(XFId, {index, XFParentIndex}),
-
-    % the parent should be a style - check that it is so
-    {value, {type, PType}} = ?k(type, 1, PXFList),
-    case PType of
-        cell  -> exit("I don't think this should ever read a cell XF record");
-        style -> ok
-    end,
     % 
     % What attributes apply are determined by the XF attributes so get them first
     % 
@@ -320,6 +330,7 @@ get_formatting(CellRef,XFIndex,Tables) ->
         case {NumAttr, PNumAttr} of
             {use_this, _}        -> ?k(format_index, 1, XFList);
             {use_parent, valid}  -> ?k(format_index, 1, PXFList);
+            {valid, valid}       -> ?k(format_index, 1, PXFList); % parent is child
             {use_parent, ignore} -> ?k(format_index, 1, XFList)
         end,
     Return = ets:lookup(FormatsId, {format_index, FormatIdx}),
@@ -333,6 +344,7 @@ get_formatting(CellRef,XFIndex,Tables) ->
         case {FontAttr, PFontAttr} of
             {use_this, _}        -> ?k(font_index, 1, XFList);
             {use_parent, valid}  -> ?k(font_index, 1, PXFList);
+            {valid, valid}       -> ?k(font_index, 1, PXFList); % parent is child
             {use_parent, ignore} -> ?k(font_index, 1, XFList)
         end,
 
@@ -351,6 +363,8 @@ get_formatting(CellRef,XFIndex,Tables) ->
                                                       'text-align']);
             {use_parent, valid}  -> get_css(PCSSList,['vertical-align',
                                                       'text-align']);
+            {valid, valid}       -> get_css(PCSSList,['vertical-align',
+                                                      'text-align']); % parent is child
             {use_parent, ignore} -> get_css(CSSList, ['vertical-align',
                                                       'text-align'])
         end,
@@ -385,6 +399,11 @@ get_formatting(CellRef,XFIndex,Tables) ->
                                        'border-top',  'border-bottom']),
                 C = get_colours(PColoursList,Tables),
                 lists:merge([S, C]);
+            {valid, valid}       -> % parent is child
+                S = get_css(PCSSList, ['border-left', 'border-right',
+                                       'border-top',  'border-bottom']),
+                C = get_colours(PColoursList,Tables),
+                lists:merge([S, C]);
             {use_parent, ignore} ->
                 S = get_css(CSSList, ['border-left', 'border-right',
                                       'border-top',  'border-bottom']),
@@ -403,18 +422,22 @@ get_formatting(CellRef,XFIndex,Tables) ->
 
     BackgroundCSS =
         case {BackgroundAttr, PBackgroundAttr} of
-            {use_this, _}        -> C2  = ets:lookup(ColoursId,
-                                                     {colour_index, BGColour}),
-                                    [{_, [{colour,Col}]}] = C2,
-                                    {'background-color', [Col]};
-            {use_parent, valid}  -> C2 = ets:lookup(ColoursId,
-                                                    {colour_index, PBGColour}),
-                                   [{_, [{colour,Col}]}] = C2,
-                                   {'background-color', [Col]};
-            {use_parent, ignore} -> C2  = ets:lookup(ColoursId,
-                                                     {colour_index, BGColour}),
-                                    [{_, [{colour,Col}]}] = C2,
-                                    {'background-color', [Col]}
+            {use_this, _}        ->
+                C2  = ets:lookup(ColoursId,{colour_index, BGColour}),
+                [{_, [{colour,Col}]}] = C2,
+                {'background-color', [Col]};
+            {use_parent, valid}  ->
+                C2 = ets:lookup(ColoursId,{colour_index, PBGColour}),
+                [{_, [{colour,Col}]}] = C2,
+                {'background-color', [Col]};
+            {valid, valid}       -> % parent is child
+                C2 = ets:lookup(ColoursId,{colour_index, PBGColour}),
+                [{_, [{colour,Col}]}] = C2,
+                {'background-color', [Col]};
+            {use_parent, ignore} ->
+                C2  = ets:lookup(ColoursId,{colour_index, BGColour}),
+                [{_, [{colour,Col}]}] = C2,
+                {'background-color', [Col]}
         end,
 
     % Attribute 6 PROTECTION
