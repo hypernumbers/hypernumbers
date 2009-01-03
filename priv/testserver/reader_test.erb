@@ -12,12 +12,13 @@
                     Msg ->
                         test_util:expected2(Msg, Expval)
                 after 500 ->
-                        exit("timeout in ~s~n", [Name])
+                        Str = io_lib:format("timeout in ~s~n", [Name]),
+                        exit(Str)
                 end).
 
 init_per_suite(Config) ->
     Xlsfile = "../../tests/excel_files/Win_Excel07_As_97/<%= @basename + ".xls"%>",
-    Data = test_util:read_excel_file(Xlsfile),
+    {Data, _, _, _} = test_util:read_excel_file(Xlsfile),
     Pid = spawn(test_util, test_state, [Data]),
     [{?MODULE, Pid} | Config].
 
