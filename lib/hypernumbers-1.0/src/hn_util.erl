@@ -98,10 +98,10 @@ to_val(Else) ->
     false -> throw({unmatched_type,Else})
     end.
 
-to_xml(true)                     -> [{bool,[],   ["true"]}];
-to_xml(false)                    -> [{bool,[],   ["false"]}];    
-to_xml(Val) when is_integer(Val) -> [{int,[],    [integer_to_list(Val)]}];
-to_xml(Val) when is_float(Val)   -> [{float,[],  [float_to_list(Val)]}];
+to_xml(true)                     -> [{bool,[],  ["true"]}];
+to_xml(false)                    -> [{bool,[],  ["false"]}];    
+to_xml(Val) when is_integer(Val) -> [{int,[],   [integer_to_list(Val)]}];
+to_xml(Val) when is_float(Val)   -> [{float,[], [float_to_list(Val)]}];
 to_xml({errval, Errval})         -> [{error,[], [atom_to_list(Errval)]}];
 to_xml({error, Errval})          -> [{error,[], [atom_to_list(Errval)]}];
 to_xml(blank)                    -> [{blank,[], []}];
