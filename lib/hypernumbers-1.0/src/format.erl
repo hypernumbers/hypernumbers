@@ -67,7 +67,7 @@ run_format(X,Src)->
 %%    atom_to_list(X);
 %%format(X,{general,_Format})  ->
 %%    format(X,{date,{format,"dd/mm/yyyy"}});
-format(X,{date,Format})   -> format_date(calendar:gregorian_seconds_to_datetime(X),
+format(X,{date,Format})    -> format_date(calendar:gregorian_seconds_to_datetime(X),
                                          Format);
 format(X,{number,Format})  -> format_num(X,Format);
 format(X,{text,Format})    -> format(X,Format,[]).
@@ -89,13 +89,14 @@ format_num(X,Format)->
            true  -> X * 100;
            false -> X
        end,
-    % we need to know the length of the format incluse of the decimal place (if any)
-    % but exclusive of any commas
-    % The reason for this is you might have a number like '1234' and a format like 'x0.00'
+    % we need to know the length of the format incluse of the decimal place 
+    % (if any) but exclusive of any commas. The reason for this is you
+    % might have a number like '1234' and a format like 'x0.00'
     % This will give a format of '0.00' and an insert point of '{4,x}'
-    % the number 1234 busts out of the measure '0.00' to the left and the insert
-    % point needs to realise that the x should be placed at the beginning
-    % to give 'x1234.00' and not at the insert point of 4 because '123x4.00' is not right
+    % the number 1234 busts out of the measure '0.00' to the left and 
+    % the insert point needs to realise that the x should be placed at
+    % the beginning to give 'x1234.00' and not at the insert point of 4
+    % because '123x4.00' is not right
     Number=lists:flatten(print_num(X2,NewFormat)),
     NewFmtLen=string:len(strip_commas(NewFormat)),
     NumLen=string:len(Number),
@@ -105,11 +106,10 @@ format_num(X,Format)->
                   end,
     % insert needs to know if there are commas in the output
     StrippedNumber=strip_commas(Number),
-    NewNumber = case StrippedNumber of
-                    Number -> insert(Number,NewInsertList,no_commas);
-                    _Other -> insert(Number,NewInsertList,commas)
-                end,
-    NewNumber.
+    case StrippedNumber of
+        Number -> insert(Number,NewInsertList,no_commas);
+        _Other -> insert(Number,NewInsertList,commas)
+    end.
 
 fix_insert_list(InsertList,NumLen,FmtLen) -> fix_insert_list(InsertList,NumLen,FmtLen,[]).
 
@@ -222,13 +222,12 @@ print_num(Output,Format) ->
 % of any additional strings stuff or other components...
 get_num_output(Integers,IntFormat,Decimals,DecFormat)->
     {ok,Has_Exp}=has(exponent,DecFormat),
-    Return=case Has_Exp of
-               false -> A=get_num_output1(Integers,IntFormat),
-                        B=get_num_output2(Decimals,DecFormat),
-                        A++B;
-               true  -> get_num_exp(Integers,IntFormat,Decimals,DecFormat)
-           end,
-    Return.
+    case Has_Exp of
+        false -> A=get_num_output1(Integers,IntFormat),
+                 B=get_num_output2(Decimals,DecFormat),
+                 A++B;
+        true  -> get_num_exp(Integers,IntFormat,Decimals,DecFormat)
+    end.
 
 get_num_output1(Integers,IntFormat)->
     {ok,Has_Commas}=has(commas,IntFormat),
@@ -340,10 +339,18 @@ trunc(Decimals,Len) ->
     RegExp="(e\\+000)",
     {ok,Decimals2,_}=regexp:sub(Decimals,RegExp,""),
     Trunc=round(list_to_integer(Decimals2)/Divisor),
+    Trunc2=integer_to_list(Trunc),
+    OldLen = string:len(Decimals)-Len,
+    NewLen = string:len(Trunc2),
+    % if the truncated string is now too small pad it with zero's to the left
+    Trunc3 = case (OldLen > NewLen) of
+                 true -> get_pad(OldLen - NewLen, ?ASC_ZERO)++Trunc2;
+                 false -> Trunc2
+               end,
     % we now strip off any trailing zeros
     % because if the format is something like "00.0?" that trailing zero is
     % to be replaced by a space...
-    string:strip(integer_to_list(Trunc),right,?ASC_ZERO).
+    string:strip(Trunc3,right,?ASC_ZERO).
 
 %% formats integers that are passed in as strings
 format_int([?ASC_MINUS|Integers],Format)->
@@ -564,7 +571,7 @@ format(X,[{_Type,Bit}|T],Acc) -> format(X,T,[Bit|Acc]).
 get_len(null)                    -> 0;
 get_len(List) when is_list(List) -> length(List).
 
-%% strips commans out of a string
+%% strips commas out of a string
 strip_commas(A) ->
     {ok,Return,_}=regexp:gsub(A,",",""),
     Return.
@@ -573,6 +580,9 @@ strip_commas(A) ->
 %%                                                                           %%
 %% Callback from parser - dont know at compile time which general format     %%
 %% to give the number X - is it a float? or an integer?                      %%
+%%                                                                           %%
+%% Appears as a compiler warning because the code that calls it is passed in %%
+%% to this module as source code and then 'evaled'                           %%
 %%                                                                           %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 get_general(X) when is_integer(X) -> {format,"0"};
