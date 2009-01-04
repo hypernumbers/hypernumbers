@@ -326,9 +326,9 @@ strip({string,A}) ->
 get_general()->
     Src="fun(X) -> "++
         "  if "++
-        "    not(is_number(X)) -> {black,X};"++
-        "    is_integer(X)     -> {black,format:format(X,{number,[{format,\"0\"}]})};"++
-        "    is_float(X)       -> {black,format:format(X,{number,[{format,\"0.00\"}]})}"++
+        "    not(is_number(X)) -> {auto,X};"++
+        "    is_integer(X)     -> {auto,format:format(X,{number,[{format,\"0\"}]})};"++
+        "    is_float(X)       -> {auto,format:format(X,{number,[{format,\"0.00\"}]})}"++
         "  end "++
         "end.",
      {number,Src}.
@@ -463,7 +463,7 @@ make_clause3([{condition,Cond},{colour,Col},{Type,Format}]) ->
   Bits2=lists:flatten(Bits),
   "X"++tart_up(Cond)++" -> {"++atom_to_list(Col)++",format:format(X,"++Bits2++")}".
 
-default_clause() -> "{black,X}".
+default_clause() -> "{auto,X}".
 
 %% tart_up just makes the condition clauses well behaved
 tart_up(text)                  -> "= text";
@@ -480,14 +480,14 @@ tart_up([Op|Rest])             ->[?ASC_SPACE,Op,?ASC_SPACE|Rest].
 swap_cond(Cond,[{condition,_OldCond}|Rest]) -> [{condition,Cond}|Rest].
 
 make_default([{colour,Col}|Rest]) -> [{condition,text},{colour,Col}|Rest];
-make_default(Plain)               -> [{condition,text},{colour,black}|Plain].
+make_default(Plain)               -> [{condition,text},{colour,auto}|Plain].
     
 make_default([{condition,Cond},{colour,Col}|R],_Def)-> [{condition,Cond},{colour,Col}|R];
 make_default([{colour,Col}|R],Def)                  -> [{condition,Def},{colour,Col}|R];
-make_default([{condition,Cond}|R],_Def)             -> [{condition,Cond},{colour,black}|R];
-make_default([],Def)                                -> [{condition,Def},{colour,black},
+make_default([{condition,Cond}|R],_Def)             -> [{condition,Cond},{colour,auto}|R];
+make_default([],Def)                                -> [{condition,Def},{colour,auto},
 							{number,[{format,""}]}];
-make_default(Plain,Def)                             -> [{condition,Def},{colour,black}|Plain].
+make_default(Plain,Def)                             -> [{condition,Def},{colour,auto}|Plain].
 
 organise_clauses(A) ->
   Clauses=organise_clauses(A,[],[]),
