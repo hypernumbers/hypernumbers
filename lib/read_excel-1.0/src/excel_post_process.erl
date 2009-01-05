@@ -55,18 +55,15 @@ fix_up_formats(Tables) ->
     {value,{tmp_blanks, Tmp_BlanksId}} = ?k(tmp_blanks, 1, Tables),
     % now we step through the formats and later we will use hn_main:set_attribute 
     % to set them
-    io:format("got to 1~n"),
     Fun1 = fun(X, _Acc)->
                    {CellRef, [{xf_index, XFIndex}, _]} = X,
                    {ok, ok} = get_formatting(CellRef, XFIndex, Tables)
            end,
     ets:foldl(Fun1, [], CellId),
-    io:format("got to 2~n"),
     Fun2 = fun(X, _Acc)->
                    {CellRef, [{xf_index, XFIndex}]} = X,
                    {ok, ok} = get_formatting(CellRef, XFIndex, Tables)
            end,
-    io:format("got to 3~n"),
     ets:foldl(Fun2, [], Tmp_BlanksId).
 
 %% this function deals with all the names defined in the names table
