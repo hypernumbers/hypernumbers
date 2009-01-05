@@ -22,192 +22,192 @@
 -define(FORMAT1,"0").
 
 -define(VALUE1a,33).
--define(OUTPUT1a,{number,{black,"33"}}).
+-define(OUTPUT1a,{number,{auto,"33"}}).
 
 -define(VALUE1b,-33).
--define(OUTPUT1b,{number,{black,"-33"}}).
+-define(OUTPUT1b,{number,{auto,"-33"}}).
 
 -define(VALUE1c,33.333).
--define(OUTPUT1c,{number,{black,"33"}}).
+-define(OUTPUT1c,{number,{auto,"33"}}).
 
 -define(VALUE1d,-33.33).
--define(OUTPUT1d,{number,{black,"-33"}}).
+-define(OUTPUT1d,{number,{auto,"-33"}}).
 
 -define(VALUE1e,0).
--define(OUTPUT1e,{number,{black,"0"}}).
+-define(OUTPUT1e,{number,{auto,"0"}}).
 
 -define(VALUE1f,0.0).
--define(OUTPUT1f,{number,{black,"0"}}).
+-define(OUTPUT1f,{number,{auto,"0"}}).
 
 -define(VALUE1g,"bob").
--define(OUTPUT1g,{number,{black,"bob"}}).
+-define(OUTPUT1g,{number,{auto,"bob"}}).
 
 -define(VALUE1h,0.0003333).
--define(OUTPUT1h,{number,{black,"0"}}).
+-define(OUTPUT1h,{number,{auto,"0"}}).
 
 -define(VALUE1i,-0.000033).
--define(OUTPUT1i,{number,{black,"0"}}).
+-define(OUTPUT1i,{number,{auto,"0"}}).
 
 -define(VALUE1j,0.000000000000000000000000000003333).
--define(OUTPUT1j,{number,{black,"0"}}).
+-define(OUTPUT1j,{number,{auto,"0"}}).
 
 -define(VALUE1k,-0.00000000000000000000000000000033).
--define(OUTPUT1k,{number,{black,"0"}}).
+-define(OUTPUT1k,{number,{auto,"0"}}).
 
 -define(VALUE1l,33330000000000000000000000000000000000000000000).
--define(OUTPUT1l,{number,{black,"33330000000000000000000000000000000000000000000"}}).
+-define(OUTPUT1l,{number,{auto,"33330000000000000000000000000000000000000000000"}}).
 
 -define(VALUE1m,-33330000000000000000000000000000000000000000000).
--define(OUTPUT1m,{number,{black,"-33330000000000000000000000000000000000000000000"}}).
+-define(OUTPUT1m,{number,{auto,"-33330000000000000000000000000000000000000000000"}}).
 
 -define(VALUE1n,2.999).
--define(OUTPUT1n,{number,{black,"3"}}).
+-define(OUTPUT1n,{number,{auto,"3"}}).
 
 %% Test 1X
 
 -define(FORMAT1X,"00.00").
 -define(VALUE1X,2).
--define(OUTPUT1X,{number,{black,"02.00"}}).
+-define(OUTPUT1X,{number,{auto,"02.00"}}).
 
 %% Test 2
 -define(FORMAT2,"0.00").
 -define(VALUE2a,33).
--define(OUTPUT2a,{number,{black,"33.00"}}).
+-define(OUTPUT2a,{number,{auto,"33.00"}}).
 
 -define(VALUE2b,-33).
--define(OUTPUT2b,{number,{black,"-33.00"}}).
+-define(OUTPUT2b,{number,{auto,"-33.00"}}).
 
 -define(VALUE2c,33.333).
--define(OUTPUT2c,{number,{black,"33.33"}}).
+-define(OUTPUT2c,{number,{auto,"33.33"}}).
 
 -define(VALUE2d,-33.33).
--define(OUTPUT2d,{number,{black,"-33.33"}}).
+-define(OUTPUT2d,{number,{auto,"-33.33"}}).
 
 -define(VALUE2e,0).
--define(OUTPUT2e,{number,{black,"0.00"}}).
+-define(OUTPUT2e,{number,{auto,"0.00"}}).
 
 -define(VALUE2f,0.0).
--define(OUTPUT2f,{number,{black,"0.00"}}).
+-define(OUTPUT2f,{number,{auto,"0.00"}}).
 
 -define(VALUE2g,"bob").
--define(OUTPUT2g,{number,{black,"bob"}}).
+-define(OUTPUT2g,{number,{auto,"bob"}}).
 
 -define(VALUE2h,0.0003333).
--define(OUTPUT2h,{number,{black,"0.00"}}).
+-define(OUTPUT2h,{number,{auto,"0.00"}}).
 
 -define(VALUE2i,-0.000033).
--define(OUTPUT2i,{number,{black,"0.00"}}).
+-define(OUTPUT2i,{number,{auto,"0.00"}}).
 
 -define(VALUE2j,0.000000000000000000000000000003333).
--define(OUTPUT2j,{number,{black,"0.00"}}).
+-define(OUTPUT2j,{number,{auto,"0.00"}}).
 
 -define(VALUE2k,-0.00000000000000000000000000000033).
--define(OUTPUT2k,{number,{black,"0.00"}}).
+-define(OUTPUT2k,{number,{auto,"0.00"}}).
 
 -define(VALUE2l,33330000000000000000000000000000000000000000000).
--define(OUTPUT2l,{number,{black,"33330000000000000000000000000000000000000000000.00"}}).
+-define(OUTPUT2l,{number,{auto,"33330000000000000000000000000000000000000000000.00"}}).
 
 -define(VALUE2m,-33330000000000000000000000000000000000000000000).
--define(OUTPUT2m,{number,{black,"-33330000000000000000000000000000000000000000000.00"}}).
+-define(OUTPUT2m,{number,{auto,"-33330000000000000000000000000000000000000000000.00"}}).
 
 %% Test 3
 -define(FORMAT3,"#,##0").
 
 -define(VALUE3a,3333).
--define(OUTPUT3a,{number,{black,"3,333"}}).
+-define(OUTPUT3a,{number,{auto,"3,333"}}).
 
 -define(VALUE3b,-3333).
--define(OUTPUT3b,{number,{black,"-3,333"}}).
+-define(OUTPUT3b,{number,{auto,"-3,333"}}).
 
 -define(VALUE3c,3333.333).
--define(OUTPUT3c,{number,{black,"3,333"}}).
+-define(OUTPUT3c,{number,{auto,"3,333"}}).
 
 -define(VALUE3d,-3333.33).
--define(OUTPUT3d,{number,{black,"-3,333"}}).
+-define(OUTPUT3d,{number,{auto,"-3,333"}}).
 
 %% Test 3X
 -define(FORMAT3X,"?0.0?").
 
 -define(VALUE3Xa,333.333).
--define(OUTPUT3Xa,{number,{black,"333.33"}}).
+-define(OUTPUT3Xa,{number,{auto,"333.33"}}).
 
 -define(VALUE3Xb,-333.333).
--define(OUTPUT3Xb,{number,{black,"-333.33"}}).
+-define(OUTPUT3Xb,{number,{auto,"-333.33"}}).
 
 -define(VALUE3Xc,3.33).
--define(OUTPUT3Xc,{number,{black," 3.33"}}).
+-define(OUTPUT3Xc,{number,{auto," 3.33"}}).
 
 -define(VALUE3Xd,-3.33).
--define(OUTPUT3Xd,{number,{black,"- 3.33"}}).
+-define(OUTPUT3Xd,{number,{auto,"- 3.33"}}).
 
 -define(VALUE3Xe,33.3).
--define(OUTPUT3Xe,{number,{black,"33.3 "}}).
+-define(OUTPUT3Xe,{number,{auto,"33.3 "}}).
 
 -define(VALUE3Xf,-33.3).
--define(OUTPUT3Xf,{number,{black,"-33.3 "}}).
+-define(OUTPUT3Xf,{number,{auto,"-33.3 "}}).
 
 %% Test 3Y
 -define(FORMAT3Y,"#0.0#").
 
 -define(VALUE3Ya,333.333).
--define(OUTPUT3Ya,{number,{black,"333.33"}}).
+-define(OUTPUT3Ya,{number,{auto,"333.33"}}).
 
 -define(VALUE3Yb,-333.333).
--define(OUTPUT3Yb,{number,{black,"-333.33"}}).
+-define(OUTPUT3Yb,{number,{auto,"-333.33"}}).
 
 -define(VALUE3Yc,3.33).
--define(OUTPUT3Yc,{number,{black,"3.33"}}).
+-define(OUTPUT3Yc,{number,{auto,"3.33"}}).
 
 -define(VALUE3Yd,-3.33).
--define(OUTPUT3Yd,{number,{black,"-3.33"}}).
+-define(OUTPUT3Yd,{number,{auto,"-3.33"}}).
 
 -define(VALUE3Ye,33.3).
--define(OUTPUT3Ye,{number,{black,"33.3"}}).
+-define(OUTPUT3Ye,{number,{auto,"33.3"}}).
 
 -define(VALUE3Yf,-33.3).
--define(OUTPUT3Yf,{number,{black,"-33.3"}}).
+-define(OUTPUT3Yf,{number,{auto,"-33.3"}}).
 
 %% Test 4
 -define(FORMAT4,"#,##0.00").
 
 -define(VALUE4a,3333).
--define(OUTPUT4a,{number,{black,"3,333.00"}}).
+-define(OUTPUT4a,{number,{auto,"3,333.00"}}).
 
 -define(VALUE4b,-3333).
--define(OUTPUT4b,{number,{black,"-3,333.00"}}).
+-define(OUTPUT4b,{number,{auto,"-3,333.00"}}).
 
 -define(VALUE4c,3333.33).
--define(OUTPUT4c,{number,{black,"3,333.33"}}).
+-define(OUTPUT4c,{number,{auto,"3,333.33"}}).
 
 -define(VALUE4d,-3333.33).
--define(OUTPUT4d,{number,{black,"-3,333.33"}}).
+-define(OUTPUT4d,{number,{auto,"-3,333.33"}}).
 
 %% Test 5
 -define(FORMAT5,"#,##0;-#,##0").
 
 -define(VALUE5a,3333).
--define(OUTPUT5a,{number,{black,"3,333"}}).
+-define(OUTPUT5a,{number,{auto,"3,333"}}).
 
 -define(VALUE5b,-3333).
--define(OUTPUT5b,{number,{black,"-3,333"}}).
+-define(OUTPUT5b,{number,{auto,"-3,333"}}).
 
 -define(VALUE5c,3333.333).
--define(OUTPUT5c,{number,{black,"3,333"}}).
+-define(OUTPUT5c,{number,{auto,"3,333"}}).
 
 -define(VALUE5d,-3333.33).
--define(OUTPUT5d,{number,{black,"-3,333"}}).
+-define(OUTPUT5d,{number,{auto,"-3,333"}}).
 
 %% Test 6
 -define(FORMAT6,"#,##0;[Red]-#,##0").
 
 -define(VALUE6a,3333).
--define(OUTPUT6a,{number,{black,"3,333"}}).
+-define(OUTPUT6a,{number,{auto,"3,333"}}).
 
 -define(VALUE6b,-3333).
 -define(OUTPUT6b,{number,{red,"-3,333"}}).
 
 -define(VALUE6c,3333.333).
--define(OUTPUT6c,{number,{black,"3,333"}}).
+-define(OUTPUT6c,{number,{auto,"3,333"}}).
 
 -define(VALUE6d,-3333.33).
 -define(OUTPUT6d,{number,{red,"-3,333"}}).
@@ -216,28 +216,28 @@
 -define(FORMAT7,"#,##0.00;-#,##0.00").
 
 -define(VALUE7a,3333).
--define(OUTPUT7a,{number,{black,"3,333.00"}}).
+-define(OUTPUT7a,{number,{auto,"3,333.00"}}).
 
 -define(VALUE7b,-3333).
--define(OUTPUT7b,{number,{black,"-3,333.00"}}).
+-define(OUTPUT7b,{number,{auto,"-3,333.00"}}).
 
 -define(VALUE7c,3333.333333).
--define(OUTPUT7c,{number,{black,"3,333.33"}}).
+-define(OUTPUT7c,{number,{auto,"3,333.33"}}).
 
 -define(VALUE7d,-3333.333333).
--define(OUTPUT7d,{number,{black,"-3,333.33"}}).
+-define(OUTPUT7d,{number,{auto,"-3,333.33"}}).
 
 %% Test 8
 -define(FORMAT8,"#,##0.00;[ReD]-#,##0.00").
 
 -define(VALUE8a,3333).
--define(OUTPUT8a,{number,{black,"3,333.00"}}).
+-define(OUTPUT8a,{number,{auto,"3,333.00"}}).
 
 -define(VALUE8b,-3333).
 -define(OUTPUT8b,{number,{red,"-3,333.00"}}).
 
 -define(VALUE8c,3333.333333).
--define(OUTPUT8c,{number,{black,"3,333.33"}}).
+-define(OUTPUT8c,{number,{auto,"3,333.33"}}).
 
 -define(VALUE8d,-3333.333333).
 -define(OUTPUT8d,{number,{red,"-3,333.33"}}).
@@ -246,28 +246,28 @@
 -define(FORMAT9,"£#,##0;-£#,##0").
 
 -define(VALUE9a,3333).
--define(OUTPUT9a,{number,{black,"£3,333"}}).
+-define(OUTPUT9a,{number,{auto,"£3,333"}}).
 
 -define(VALUE9b,-3333).
--define(OUTPUT9b,{number,{black,"-£3,333"}}).
+-define(OUTPUT9b,{number,{auto,"-£3,333"}}).
 
 -define(VALUE9c,3333.333333).
--define(OUTPUT9c,{number,{black,"£3,333"}}).
+-define(OUTPUT9c,{number,{auto,"£3,333"}}).
 
 -define(VALUE9d,-3333.333333).
--define(OUTPUT9d,{number,{black,"-£3,333"}}).
+-define(OUTPUT9d,{number,{auto,"-£3,333"}}).
 
 %% Test 10
 -define(FORMAT10,"£#,##0;[Red]-£#,##0").
 
 -define(VALUE10a,3333).
--define(OUTPUT10a,{number,{black,"£3,333"}}).
+-define(OUTPUT10a,{number,{auto,"£3,333"}}).
 
 -define(VALUE10b,-3333).
 -define(OUTPUT10b,{number,{red,"-£3,333"}}).
 
 -define(VALUE10c,3333.333333).
--define(OUTPUT10c,{number,{black,"£3,333"}}).
+-define(OUTPUT10c,{number,{auto,"£3,333"}}).
 
 -define(VALUE10d,-3333.333333).
 -define(OUTPUT10d,{number,{red,"-£3,333"}}).
@@ -276,28 +276,28 @@
 -define(FORMAT11,"£#,##0.00;-£#,##0.00").
 
 -define(VALUE11a,3333).
--define(OUTPUT11a,{number,{black,"£3,333.00"}}).
+-define(OUTPUT11a,{number,{auto,"£3,333.00"}}).
 
 -define(VALUE11b,-3333).
--define(OUTPUT11b,{number,{black,"-£3,333.00"}}).
+-define(OUTPUT11b,{number,{auto,"-£3,333.00"}}).
 
 -define(VALUE11c,3333.333333).
--define(OUTPUT11c,{number,{black,"£3,333.33"}}).
+-define(OUTPUT11c,{number,{auto,"£3,333.33"}}).
 
 -define(VALUE11d,-3333.333333).
--define(OUTPUT11d,{number,{black,"-£3,333.33"}}).
+-define(OUTPUT11d,{number,{auto,"-£3,333.33"}}).
 
 %% Test 12
 -define(FORMAT12,"£#,##0.00;[Red]-£#,##0.00").
 
 -define(VALUE12a,3333).
--define(OUTPUT12a,{number,{black,"£3,333.00"}}).
+-define(OUTPUT12a,{number,{auto,"£3,333.00"}}).
 
 -define(VALUE12b,-3333).
 -define(OUTPUT12b,{number,{red,"-£3,333.00"}}).
 
 -define(VALUE12c,3333.333333).
--define(OUTPUT12c,{number,{black,"£3,333.33"}}).
+-define(OUTPUT12c,{number,{auto,"£3,333.33"}}).
 
 -define(VALUE12d,-3333.333333).
 -define(OUTPUT12d,{number,{red,"-£3,333.33"}}).
@@ -306,61 +306,61 @@
 -define(FORMAT13,"0%").
 
 -define(VALUE13a,3333).
--define(OUTPUT13a,{number,{black,"333300%"}}).
+-define(OUTPUT13a,{number,{auto,"333300%"}}).
 
 -define(VALUE13b,-3333).
--define(OUTPUT13b,{number,{black,"-333300%"}}).
+-define(OUTPUT13b,{number,{auto,"-333300%"}}).
 
 -define(VALUE13c,3333.333333).
--define(OUTPUT13c,{number,{black,"333333%"}}).
+-define(OUTPUT13c,{number,{auto,"333333%"}}).
 
 -define(VALUE13d,-3333.333333).
--define(OUTPUT13d,{number,{black,"-333333%"}}).
+-define(OUTPUT13d,{number,{auto,"-333333%"}}).
 
 %% Test 14
 -define(FORMAT14,"0.00%").
 
 -define(VALUE14a,3333).
--define(OUTPUT14a,{number,{black,"333300.00%"}}).
+-define(OUTPUT14a,{number,{auto,"333300.00%"}}).
 
 -define(VALUE14b,-3333).
--define(OUTPUT14b,{number,{black,"-333300.00%"}}).
+-define(OUTPUT14b,{number,{auto,"-333300.00%"}}).
 
 -define(VALUE14c,3333.333333).
--define(OUTPUT14c,{number,{black,"333333.33%"}}).
+-define(OUTPUT14c,{number,{auto,"333333.33%"}}).
 
 -define(VALUE14d,-3333.333333).
--define(OUTPUT14d,{number,{black,"-333333.33%"}}).
+-define(OUTPUT14d,{number,{auto,"-333333.33%"}}).
 
 %% Test 15
 -define(FORMAT15,"0.00E+0").
 
 -define(VALUE15a,3333).
--define(OUTPUT15a,{number,{black,"3.33e+3"}}).
+-define(OUTPUT15a,{number,{auto,"3.33e+3"}}).
 
 -define(VALUE15b,-3333).
--define(OUTPUT15b,{number,{black,"-3.33e+3"}}).
+-define(OUTPUT15b,{number,{auto,"-3.33e+3"}}).
 
 -define(VALUE15c,3333.333333).
--define(OUTPUT15c,{number,{black,"3.33e+3"}}).
+-define(OUTPUT15c,{number,{auto,"3.33e+3"}}).
 
 -define(VALUE15d,-3333.333333).
--define(OUTPUT15d,{number,{black,"-3.33e+3"}}).
+-define(OUTPUT15d,{number,{auto,"-3.33e+3"}}).
 
 %% Test 16
 -define(FORMAT16,"##0.0E+00").
 
 -define(VALUE16a,3333).
--define(OUTPUT16a,{number,{black,"3.3e+3"}}).
+-define(OUTPUT16a,{number,{auto,"3.3e+3"}}).
 
 -define(VALUE16b,-3333).
--define(OUTPUT16b,{number,{black,"-3.3e+3"}}).
+-define(OUTPUT16b,{number,{auto,"-3.3e+3"}}).
 
 -define(VALUE16c,3333.333333).
--define(OUTPUT16c,{number,{black,"3.3e+3"}}).
+-define(OUTPUT16c,{number,{auto,"3.3e+3"}}).
 
 -define(VALUE16d,-3333.333333).
--define(OUTPUT16d,{number,{black,"-3.3e+3"}}).
+-define(OUTPUT16d,{number,{auto,"-3.3e+3"}}).
 
 %% Test 17
 -define(FORMAT17,"# ?/?").
@@ -374,152 +374,152 @@
 %% Test 19
 -define(FORMAT19,"dd/mm/yyyy").
 
--define(VALUE19a,(12345-1+693960)*86400). % corrected to a seconds-based time where 0 is 1st Jan 1900
--define(OUTPUT19a,{date,{black,"18/10/1933"}}).
+-define(VALUE19a,{date,(12345-1+693960)*86400}). % corrected to a seconds-based time where 0 is 1st Jan 1900
+-define(OUTPUT19a,{date,{auto,"18/10/1933"}}).
 
 %% Test 20
 -define(FORMAT20,"dd-mmm-yy").
 
--define(VALUE20a,(12345-1+693960)*86400). % corrected to a seconds-based time where 0 is 1st Jan 1900
--define(OUTPUT20a,{date,{black,"18-Oct-33"}}).
+-define(VALUE20a,{date,(12345-1+693960)*86400}). % corrected to a seconds-based time where 0 is 1st Jan 1900
+-define(OUTPUT20a,{date,{auto,"18-Oct-33"}}).
 
 %% Test 21
 -define(FORMAT21,"dd-mmm").
 
--define(VALUE21a,(12345-1+693960)*86400). % corrected to a seconds-based time where 0 is 1st Jan 1900
--define(OUTPUT21a,{date,{black,"18-Oct"}}).
+-define(VALUE21a,{date,(12345-1+693960)*86400}). % corrected to a seconds-based time where 0 is 1st Jan 1900
+-define(OUTPUT21a,{date,{auto,"18-Oct"}}).
 
 %% Test 22
 -define(FORMAT22,"mmm-yy").
 
--define(VALUE22a,(12345-1+693960)*86400). % corrected to a seconds-based time where 0 is 1st Jan 1900
--define(OUTPUT22a,{date,{black,"Oct-33"}}).
+-define(VALUE22a,{date,(12345-1+693960)*86400}). % corrected to a seconds-based time where 0 is 1st Jan 1900
+-define(OUTPUT22a,{date,{auto,"Oct-33"}}).
 
 %% Test 23
 -define(FORMAT23,"h:mm AM/PM").
 
--define(VALUE23a,round(0.5*86400)).
--define(OUTPUT23a,{date,{black,"12:00 AM"}}).
+-define(VALUE23a,{date,round(0.5*86400)}).
+-define(OUTPUT23a,{date,{auto,"12:00 AM"}}).
 
--define(VALUE23b,round(0.25*86400)).
--define(OUTPUT23b,{date,{black,"6:00 AM"}}).
+-define(VALUE23b,{date,round(0.25*86400)}).
+-define(OUTPUT23b,{date,{auto,"6:00 AM"}}).
 
--define(VALUE23c,round(0.75*86400)).
--define(OUTPUT23c,{date,{black,"6:00 PM"}}).
+-define(VALUE23c,{date,round(0.75*86400)}).
+-define(OUTPUT23c,{date,{auto,"6:00 PM"}}).
 
--define(VALUE23d,0).
--define(OUTPUT23d,{date,{black,"0:00 AM"}}).
+-define(VALUE23d,{date,0}).
+-define(OUTPUT23d,{date,{auto,"0:00 AM"}}).
 
--define(VALUE23e,86400).
--define(OUTPUT23e,{date,{black,"0:00 AM"}}).
+-define(VALUE23e,{date,86400}).
+-define(OUTPUT23e,{date,{auto,"0:00 AM"}}).
 
 %% Test 24
 -define(FORMAT24,"h:mm:ss AM/PM").
 
--define(VALUE24a,round(0.5*86400)).
--define(OUTPUT24a,{date,{black,"12:00:00 AM"}}).
+-define(VALUE24a,{date,round(0.5*86400)}).
+-define(OUTPUT24a,{date,{auto,"12:00:00 AM"}}).
 
--define(VALUE24b,round(0.25*86400)).
--define(OUTPUT24b,{date,{black,"6:00:00 AM"}}).
+-define(VALUE24b,{date,round(0.25*86400)}).
+-define(OUTPUT24b,{date,{auto,"6:00:00 AM"}}).
 
--define(VALUE24c,round(0.75*86400)).
--define(OUTPUT24c,{date,{black,"6:00:00 PM"}}).
+-define(VALUE24c,{date,round(0.75*86400)}).
+-define(OUTPUT24c,{date,{auto,"6:00:00 PM"}}).
 
--define(VALUE24d,0).
--define(OUTPUT24d,{date,{black,"0:00:00 AM"}}).
+-define(VALUE24d,{date,0}).
+-define(OUTPUT24d,{date,{auto,"0:00:00 AM"}}).
 
--define(VALUE24e,86400).
--define(OUTPUT24e,{date,{black,"0:00:00 AM"}}).
+-define(VALUE24e,{date,86400}).
+-define(OUTPUT24e,{date,{auto,"0:00:00 AM"}}).
 
 %% Test 25
 -define(FORMAT25,"hh:mm").
 
--define(VALUE25a,round(0.5*86400)).
--define(OUTPUT25a,{date,{black,"12:00"}}).
+-define(VALUE25a,{date,round(0.5*86400)}).
+-define(OUTPUT25a,{date,{auto,"12:00"}}).
 
--define(VALUE25b,round(0.25*86400)).
--define(OUTPUT25b,{date,{black,"06:00"}}).
+-define(VALUE25b,{date,round(0.25*86400)}).
+-define(OUTPUT25b,{date,{auto,"06:00"}}).
 
 -define(VALUE25c,round(0.75*86400)).
--define(OUTPUT25c,{date,{black,"18:00"}}).
+-define(OUTPUT25c,{date,{auto,"18:00"}}).
 
--define(VALUE25d,0).
--define(OUTPUT25d,{date,{black,"00:00"}}).
+-define(VALUE25d,{date,0}).
+-define(OUTPUT25d,{date,{auto,"00:00"}}).
 
--define(VALUE25e,86400).
--define(OUTPUT25e,{date,{black,"00:00"}}).
+-define(VALUE25e,{date,86400}).
+-define(OUTPUT25e,{date,{auto,"00:00"}}).
 
 %% Test 26
 -define(FORMAT26,"hh:mm:ss").
 
--define(VALUE26a,round(0.5*86400)).
--define(OUTPUT26a,{date,{black,"12:00:00"}}).
+-define(VALUE26a,{date,round(0.5*86400)}).
+-define(OUTPUT26a,{date,{auto,"12:00:00"}}).
 
--define(VALUE26b,round(0.25*86400)).
--define(OUTPUT26b,{date,{black,"06:00:00"}}).
+-define(VALUE26b,{date,(0.25*86400)}).
+-define(OUTPUT26b,{date,{auto,"06:00:00"}}).
 
--define(VALUE26c,round(0.75*86400)).
--define(OUTPUT26c,{date,{black,"18:00:00"}}).
+-define(VALUE26c,{date,round(0.75*86400)}).
+-define(OUTPUT26c,{date,{auto,"18:00:00"}}).
 
--define(VALUE26d,0).
--define(OUTPUT26d,{date,{black,"00:00:00"}}).
+-define(VALUE26d,{date,0}).
+-define(OUTPUT26d,{date,{auto,"00:00:00"}}).
 
--define(VALUE26e,86400).
--define(OUTPUT26e,{date,{black,"00:00:00"}}).
+-define(VALUE26e,{date,86400}).
+-define(OUTPUT26e,{date,{auto,"00:00:00"}}).
 
 %% Test 27
 -define(FORMAT27,"dd/mm/yyyy hh:mm").
 
--define(VALUE27a,round(0.5*86400)).
--define(OUTPUT27a,{date,{black,"01/01/0000 12:00"}}).
+-define(VALUE27a,{date,round(0.5*86400)}).
+-define(OUTPUT27a,{date,{auto,"01/01/0000 12:00"}}).
 
--define(VALUE27b,round(0.25*86400)).
--define(OUTPUT27b,{date,{black,"01/01/0000 06:00"}}).
+-define(VALUE27b,{date,round(0.25*86400)}).
+-define(OUTPUT27b,{date,{auto,"01/01/0000 06:00"}}).
 
--define(VALUE27c,round(0.75*86400)).
--define(OUTPUT27c,{date,{black,"01/01/0000 18:00"}}).
+-define(VALUE27c,{date,round(0.75*86400)}).
+-define(OUTPUT27c,{date,{auto,"01/01/0000 18:00"}}).
 
--define(VALUE27d,0).
--define(OUTPUT27d,{date,{black,"01/01/0000 00:00"}}).
+-define(VALUE27d,{date,0}).
+-define(OUTPUT27d,{date,{auto,"01/01/0000 00:00"}}).
 
--define(VALUE27e,86400).
--define(OUTPUT27e,{date,{black,"02/01/0000 00:00"}}).
+-define(VALUE27e,{date,86400}).
+-define(OUTPUT27e,{date,{auto,"02/01/0000 00:00"}}).
 
 %% Test 28
 -define(FORMAT28,"mm:ss").
 
--define(VALUE28a,round(0.5*86400)).
--define(OUTPUT28a,{date,{black,"00:00"}}).
+-define(VALUE28a,{date,round(0.5*86400)}).
+-define(OUTPUT28a,{date,{auto,"00:00"}}).
 
--define(VALUE28b,round(0.25*86400)).
--define(OUTPUT28b,{date,{black,"00:00"}}).
+-define(VALUE28b,{date,round(0.25*86400)}).
+-define(OUTPUT28b,{date,{auto,"00:00"}}).
 
--define(VALUE28c,round(0.75*86400)).
--define(OUTPUT28c,{date,{black,"00:00"}}).
+-define(VALUE28c,{date,round(0.75*86400)}).
+-define(OUTPUT28c,{date,{auto,"00:00"}}).
 
--define(VALUE28d,0).
--define(OUTPUT28d,{date,{black,"00:00"}}).
+-define(VALUE28d,{date,0}).
+-define(OUTPUT28d,{date,{auto,"00:00"}}).
 
--define(VALUE28e,86400).
--define(OUTPUT28e,{date,{black,"00:00"}}).
+-define(VALUE28e,{date,86400}).
+-define(OUTPUT28e,{date,{auto,"00:00"}}).
 
 %% Test 29
 -define(FORMAT29,"mm:ss.0").
 
--define(VALUE29a,round(0.5*86400)).
--define(OUTPUT29a,{date,{black,"00:00.0"}}).
+-define(VALUE29a,{date,round(0.5*86400)}).
+-define(OUTPUT29a,{date,{auto,"00:00.0"}}).
 
--define(VALUE29b,round(0.25*86400)).
--define(OUTPUT29b,{date,{black,"00:00.0"}}).
+-define(VALUE29b,{date,round(0.25*86400)}).
+-define(OUTPUT29b,{date,{auto,"00:00.0"}}).
 
--define(VALUE29c,round(0.75*86400)).
--define(OUTPUT29c,{date,{black,"00:00.0"}}).
+-define(VALUE29c,{date,round(0.75*86400)}).
+-define(OUTPUT29c,{date,{auto,"00:00.0"}}).
 
--define(VALUE29d,0).
--define(OUTPUT29d,{date,{black,"00:00.0"}}).
+-define(VALUE29d,{date,0}).
+-define(OUTPUT29d,{date,{auto,"00:00.0"}}).
 
--define(VALUE29e,86400).
--define(OUTPUT29e,{date,{black,"00:00.0"}}).
+-define(VALUE29e,{date,86400}).
+-define(OUTPUT29e,{date,{auto,"00:00.0"}}).
 
 %% Test 30
 -define(FORMAT30,"@").
@@ -527,80 +527,80 @@
 %% Test 31
 -define(FORMAT31,"[h]:mm:ss").
 
--define(VALUE31a,round(0.5*86400)).
--define(OUTPUT31a,{date,{black,"12:00:00"}}).
+-define(VALUE31a,{date,round(0.5*86400)}).
+-define(OUTPUT31a,{date,{auto,"12:00:00"}}).
 
--define(VALUE31b,round(0.25*86400)).
--define(OUTPUT31b,{date,{black,"6:00:00"}}).
+-define(VALUE31b,{date,round(0.25*86400)}).
+-define(OUTPUT31b,{date,{auto,"6:00:00"}}).
 
--define(VALUE31c,round(0.75*86400)).
--define(OUTPUT31c,{date,{black,"18:00:00"}}).
+-define(VALUE31c,{date,round(0.75*86400)}).
+-define(OUTPUT31c,{date,{auto,"18:00:00"}}).
 
--define(VALUE31d,0).
--define(OUTPUT31d,{date,{black,"0:00:00"}}).
+-define(VALUE31d,{date,0}).
+-define(OUTPUT31d,{date,{auto,"0:00:00"}}).
 
--define(VALUE31e,86400).
--define(OUTPUT31e,{date,{black,"24:00:00"}}).
+-define(VALUE31e,{date,86400}).
+-define(OUTPUT31e,{date,{auto,"24:00:00"}}).
 
 %% Test 32
 -define(FORMAT32,"_-£* #,##0_-;-£* #,##0_-;_-£* \"-\"_-;_-@_-").
 
 -define(VALUE32a,1111.111).
--define(OUTPUT32a,{number,{black," £ 1,111 "}}).
+-define(OUTPUT32a,{number,{auto," £ 1,111 "}}).
 
 -define(VALUE32b,-1111.111).
--define(OUTPUT32b,{number,{black,"-£ 1,111 "}}).
+-define(OUTPUT32b,{number,{auto,"-£ 1,111 "}}).
 
 -define(VALUE32c,0).
--define(OUTPUT32c,{number,{black," £ - "}}).
+-define(OUTPUT32c,{number,{auto," £ - "}}).
 
 -define(VALUE32d,"bob").
--define(OUTPUT32d,{number,{black," bob "}}).
+-define(OUTPUT32d,{number,{auto," bob "}}).
 
 %% Test 33
 -define(FORMAT33,"_-* #,##0_-;-* #,##0_-;_-* \"-\"_-;_-@_-").
 
 -define(VALUE33a,1111.111).
--define(OUTPUT33a,{number,{black,"  1,111 "}}).
+-define(OUTPUT33a,{number,{auto,"  1,111 "}}).
 
 -define(VALUE33b,-1111.111).
--define(OUTPUT33b,{number,{black,"- 1,111 "}}).
+-define(OUTPUT33b,{number,{auto,"- 1,111 "}}).
 
 -define(VALUE33c,0).
--define(OUTPUT33c,{number,{black,"  - "}}).
+-define(OUTPUT33c,{number,{auto,"  - "}}).
 
 -define(VALUE33d,"bob").
--define(OUTPUT33d,{number,{black," bob "}}).
+-define(OUTPUT33d,{number,{auto," bob "}}).
 
 %% Test 34
 -define(FORMAT34,"_-£* #,##0.00_-;-£* #,##0.00_-;_-£* \"-\"??_-;_-@_-").
 
 -define(VALUE34a,1111.111).
--define(OUTPUT34a,{number,{black," £ 1,111.11 "}}).
+-define(OUTPUT34a,{number,{auto," £ 1,111.11 "}}).
 
 -define(VALUE34b,-1111.111).
--define(OUTPUT34b,{number,{black,"-£ 1,111.11 "}}).
+-define(OUTPUT34b,{number,{auto,"-£ 1,111.11 "}}).
 
 -define(VALUE34c,0).
--define(OUTPUT34c,{number,{black," £ -   "}}).
+-define(OUTPUT34c,{number,{auto," £ -   "}}).
 
 -define(VALUE34d,"bob").
--define(OUTPUT34d,{number,{black," bob "}}).
+-define(OUTPUT34d,{number,{auto," bob "}}).
 
 %% Test 35
 -define(FORMAT35,"_-* #,##0.00_-;-* #,##0.00_-;_-* \"-\"??_-;_-@_-").
 
 -define(VALUE35a,1111.111).
--define(OUTPUT35a,{number,{black,"  1,111.11 "}}).
+-define(OUTPUT35a,{number,{auto,"  1,111.11 "}}).
 
 -define(VALUE35b,-1111.111).
--define(OUTPUT35b,{number,{black,"- 1,111.11 "}}).
+-define(OUTPUT35b,{number,{auto,"- 1,111.11 "}}).
 
 -define(VALUE35c,0).
--define(OUTPUT35c,{number,{black,"  -   "}}).
+-define(OUTPUT35c,{number,{auto,"  -   "}}).
 
 -define(VALUE35d,"bob").
--define(OUTPUT35d,{number,{black," bob "}}).
+-define(OUTPUT35d,{number,{auto," bob "}}).
 
 %% Test 36
 -define(FORMAT36,"[Blue][=<2000]0.00;[Red][>2000]0.00;[Green]??_-;[Yellow]_-@_-").
@@ -621,16 +621,16 @@
 -define(FORMAT37,"[=<100]_-* #,##0_-;[>=100]-* #,##0_-;_-* \"-\"_-;_-@_-").
 
 -define(VALUE37a,1234).
--define(OUTPUT37a,{number,{black,"- 1,234 "}}).
+-define(OUTPUT37a,{number,{auto,"- 1,234 "}}).
 
 -define(VALUE37b,12.34).
--define(OUTPUT37b,{number,{black,"  12 "}}).
+-define(OUTPUT37b,{number,{auto,"  12 "}}).
 
 -define(VALUE37c,0).
--define(OUTPUT37c,{number,{black,"  - "}}).
+-define(OUTPUT37c,{number,{auto,"  - "}}).
 
 -define(VALUE37d,"bob").
--define(OUTPUT37d,{number,{black," bob "}}).
+-define(OUTPUT37d,{number,{auto," bob "}}).
 
 %% Test 38
 -define(FORMAT38,"[ReD][>100.0]_-£* #,##0_-;[BLue][<=100.0]-£* #,##0_-;[GreEn]_-£* \"-\"_-;_-@_-").
@@ -645,379 +645,379 @@
 -define(OUTPUT38c,{number,{green," £ - "}}).
 
 -define(VALUE38d,"bob").
--define(OUTPUT38d,{number,{black," bob "}}).
+-define(OUTPUT38d,{number,{auto," bob "}}).
 
 -define(FORMAT39,"[<=100.0]_-* #,##0_-;[>=100.0]-* #,##0_-;_-* \"-\"_-;_-@_-").
 
 -define(VALUE39a,1234).
--define(OUTPUT39a,{number,{black,"- 1,234 "}}).
+-define(OUTPUT39a,{number,{auto,"- 1,234 "}}).
 
 -define(VALUE39b,12.34).
--define(OUTPUT39b,{number,{black,"  12 "}}).
+-define(OUTPUT39b,{number,{auto,"  12 "}}).
 
 -define(VALUE39c,0).
--define(OUTPUT39c,{number,{black,"  - "}}).
+-define(OUTPUT39c,{number,{auto,"  - "}}).
 
 -define(VALUE39d,"bob").
--define(OUTPUT39d,{number,{black," bob "}}).
+-define(OUTPUT39d,{number,{auto," bob "}}).
 
 %% Test 40
 -define(FORMAT40,"0;;").
 
 -define(VALUE40a,1234).
--define(OUTPUT40a,{number,{black,"1234"}}).
+-define(OUTPUT40a,{number,{auto,"1234"}}).
 
 -define(VALUE40b,-1234.56).
--define(OUTPUT40b,{number,{black,""}}).
+-define(OUTPUT40b,{number,{auto,""}}).
 
 -define(VALUE40c,0).
--define(OUTPUT40c,{number,{black,""}}).
+-define(OUTPUT40c,{number,{auto,""}}).
 
 -define(VALUE40d,"bob").
--define(OUTPUT40d,{number,{black,"bob"}}).
+-define(OUTPUT40d,{number,{auto,"bob"}}).
 
 %% Test 40X
 -define(FORMAT40X,"General").
 
 -define(VALUE40Xa,1234).
--define(OUTPUT40Xa,{number,{black,"1234.00"}}).
+-define(OUTPUT40Xa,{number,{auto,"1234.00"}}).
 
 -define(VALUE40Xb,-1234.56).
--define(OUTPUT40Xb,{number,{black,"-1234.56"}}).
+-define(OUTPUT40Xb,{number,{auto,"-1234.56"}}).
 
 -define(VALUE40Xc,0).
--define(OUTPUT40Xc,{number,{black,"0.00"}}).
+-define(OUTPUT40Xc,{number,{auto,"0.00"}}).
 
 -define(VALUE40Xd,"bob").
--define(OUTPUT40Xd,{number,{black,"bob"}}).
+-define(OUTPUT40Xd,{number,{auto,"bob"}}).
 
 %% Now some more tests
 -define(FORMAT41,"0000").
 
 -define(VALUE41a,33).
--define(OUTPUT41a,{number,{black,"0033"}}).
+-define(OUTPUT41a,{number,{auto,"0033"}}).
 
 -define(VALUE41b,33.3).
--define(OUTPUT41b,{number,{black,"0033"}}).
+-define(OUTPUT41b,{number,{auto,"0033"}}).
 
 -define(VALUE41c,-33).
--define(OUTPUT41c,{number,{black,"-0033"}}).
+-define(OUTPUT41c,{number,{auto,"-0033"}}).
 
 -define(VALUE41d,-33.3).
--define(OUTPUT41d,{number,{black,"-0033"}}).
+-define(OUTPUT41d,{number,{auto,"-0033"}}).
 
 
 -define(FORMAT42,"??00").
 
 -define(VALUE42a,33).
--define(OUTPUT42a,{number,{black,"  33"}}).
+-define(OUTPUT42a,{number,{auto,"  33"}}).
 
 -define(VALUE42b,33.3).
--define(OUTPUT42b,{number,{black,"  33"}}).
+-define(OUTPUT42b,{number,{auto,"  33"}}).
 
 -define(VALUE42c,-33).
--define(OUTPUT42c,{number,{black,"-  33"}}).
+-define(OUTPUT42c,{number,{auto,"-  33"}}).
 
 -define(VALUE42d,-33.3).
--define(OUTPUT42d,{number,{black,"-  33"}}).
+-define(OUTPUT42d,{number,{auto,"-  33"}}).
 
 -define(FORMAT43,"##00").
 
 -define(VALUE43a,33).
--define(OUTPUT43a,{number,{black,"33"}}).
+-define(OUTPUT43a,{number,{auto,"33"}}).
 
 -define(VALUE43b,33.3).
--define(OUTPUT43b,{number,{black,"33"}}).
+-define(OUTPUT43b,{number,{auto,"33"}}).
 
 -define(VALUE43c,-33).
--define(OUTPUT43c,{number,{black,"-33"}}).
+-define(OUTPUT43c,{number,{auto,"-33"}}).
 
 -define(VALUE43d,-33.3).
--define(OUTPUT43d,{number,{black,"-33"}}).
+-define(OUTPUT43d,{number,{auto,"-33"}}).
 
 -define(FORMAT44,"0#?0").
 
 -define(VALUE44a,33).
--define(OUTPUT44a,{number,{black,"033"}}).
+-define(OUTPUT44a,{number,{auto,"033"}}).
 
 -define(VALUE44b,33.3).
--define(OUTPUT44b,{number,{black,"033"}}).
+-define(OUTPUT44b,{number,{auto,"033"}}).
 
 -define(VALUE44c,-33).
--define(OUTPUT44c,{number,{black,"-033"}}).
+-define(OUTPUT44c,{number,{auto,"-033"}}).
 
 -define(VALUE44d,-33.3).
--define(OUTPUT44d,{number,{black,"-033"}}).
+-define(OUTPUT44d,{number,{auto,"-033"}}).
 
 -define(FORMAT45,"0?#0").
 
 -define(VALUE45a,33).
--define(OUTPUT45a,{number,{black,"0 33"}}).
+-define(OUTPUT45a,{number,{auto,"0 33"}}).
 
 -define(VALUE45b,33.3).
--define(OUTPUT45b,{number,{black,"0 33"}}).
+-define(OUTPUT45b,{number,{auto,"0 33"}}).
 
 -define(VALUE45c,-33).
--define(OUTPUT45c,{number,{black,"-0 33"}}).
+-define(OUTPUT45c,{number,{auto,"-0 33"}}).
 
 -define(VALUE45d,-33.3).
--define(OUTPUT45d,{number,{black,"-0 33"}}).
+-define(OUTPUT45d,{number,{auto,"-0 33"}}).
 
 -define(FORMAT46,"0,000").
 
 -define(VALUE46a,3333).
--define(OUTPUT46a,{number,{black,"3,333"}}).
+-define(OUTPUT46a,{number,{auto,"3,333"}}).
 
 -define(VALUE46b,3333.33).
--define(OUTPUT46b,{number,{black,"3,333"}}).
+-define(OUTPUT46b,{number,{auto,"3,333"}}).
 
 -define(VALUE46c,-3333).
--define(OUTPUT46c,{number,{black,"-3,333"}}).
+-define(OUTPUT46c,{number,{auto,"-3,333"}}).
 
 -define(VALUE46d,-3333.33).
--define(OUTPUT46d,{number,{black,"-3,333"}}).
+-define(OUTPUT46d,{number,{auto,"-3,333"}}).
 
 -define(FORMAT47,"00,00").
 
 -define(VALUE47a,3333).
--define(OUTPUT47a,{number,{black,"3,333"}}).
+-define(OUTPUT47a,{number,{auto,"3,333"}}).
 
 -define(VALUE47b,3333.33).
--define(OUTPUT47b,{number,{black,"3,333"}}).
+-define(OUTPUT47b,{number,{auto,"3,333"}}).
 
 -define(VALUE47c,-3333).
--define(OUTPUT47c,{number,{black,"-3,333"}}).
+-define(OUTPUT47c,{number,{auto,"-3,333"}}).
 
 -define(VALUE47d,-3333.33).
--define(OUTPUT47d,{number,{black,"-3,333"}}).
+-define(OUTPUT47d,{number,{auto,"-3,333"}}).
 
 -define(FORMAT48,"00\"tt\"00").
 
 -define(VALUE48a,3333).
--define(OUTPUT48a,{number,{black,"33tt33"}}).
+-define(OUTPUT48a,{number,{auto,"33tt33"}}).
 
 -define(VALUE48b,3333.33).
--define(OUTPUT48b,{number,{black,"33tt33"}}).
+-define(OUTPUT48b,{number,{auto,"33tt33"}}).
 
 -define(VALUE48c,-3333).
--define(OUTPUT48c,{number,{black,"-33tt33"}}).
+-define(OUTPUT48c,{number,{auto,"-33tt33"}}).
 
 -define(VALUE48d,-3333.33).
--define(OUTPUT48d,{number,{black,"-33tt33"}}).
+-define(OUTPUT48d,{number,{auto,"-33tt33"}}).
 
 -define(FORMAT49,"0,0\"s\"0\"t\"0\"u\"0\"v\"0\"w\"0\"x\"0\"y\"0").
 
 -define(VALUE49a,12345678).
--define(OUTPUT49a,{number,{black,"01s2,t3u4v5,w6x7y8"}}).
+-define(OUTPUT49a,{number,{auto,"01s2,t3u4v5,w6x7y8"}}).
 
 -define(VALUE49b,12345678.98).
--define(OUTPUT49b,{number,{black,"01s2,t3u4v5,w6x7y9"}}).
+-define(OUTPUT49b,{number,{auto,"01s2,t3u4v5,w6x7y9"}}).
 
 -define(VALUE49c,-12345678).
--define(OUTPUT49c,{number,{black,"-01s2,t3u4v5,w6x7y8"}}).
+-define(OUTPUT49c,{number,{auto,"-01s2,t3u4v5,w6x7y8"}}).
 
 -define(VALUE49d,-12345678.98).
--define(OUTPUT49d,{number,{black,"-01s2,t3u4v5,w6x7y9"}}).
+-define(OUTPUT49d,{number,{auto,"-01s2,t3u4v5,w6x7y9"}}).
 
 -define(FORMAT50,"00\"a\"0.0\"b\"0").
 
 -define(VALUE50a,123456).
--define(OUTPUT50a,{number,{black,"12345a6.0b0"}}).
+-define(OUTPUT50a,{number,{auto,"12345a6.0b0"}}).
 
 -define(VALUE50b,123456.78).
--define(OUTPUT50b,{number,{black,"12345a6.7b8"}}).
+-define(OUTPUT50b,{number,{auto,"12345a6.7b8"}}).
 
 -define(VALUE50c,-123456).
--define(OUTPUT50c,{number,{black,"-12345a6.0b0"}}).
+-define(OUTPUT50c,{number,{auto,"-12345a6.0b0"}}).
 
 -define(VALUE50d,-123456.78).
--define(OUTPUT50d,{number,{black,"-12345a6.7b8"}}).
+-define(OUTPUT50d,{number,{auto,"-12345a6.7b8"}}).
 
 -define(FORMAT51,"00\"a\"0.\"b\"00").
 
 -define(VALUE51a,123456).
--define(OUTPUT51a,{number,{black,"12345a6.b00"}}).
+-define(OUTPUT51a,{number,{auto,"12345a6.b00"}}).
 
 -define(VALUE51b,123456.78).
--define(OUTPUT51b,{number,{black,"12345a6.b78"}}).
+-define(OUTPUT51b,{number,{auto,"12345a6.b78"}}).
 
 -define(VALUE51c,-123456).
--define(OUTPUT51c,{number,{black,"-12345a6.b00"}}).
+-define(OUTPUT51c,{number,{auto,"-12345a6.b00"}}).
 
 -define(VALUE51d,-123456.78).
--define(OUTPUT51d,{number,{black,"-12345a6.b78"}}).
+-define(OUTPUT51d,{number,{auto,"-12345a6.b78"}}).
 
 -define(FORMAT52,"000\"a\".\"b\"00").
 
 -define(VALUE52a,123456).
--define(OUTPUT52a,{number,{black,"123456a.b00"}}).
+-define(OUTPUT52a,{number,{auto,"123456a.b00"}}).
 
 -define(VALUE52b,123456.78).
--define(OUTPUT52b,{number,{black,"123456a.b78"}}).
+-define(OUTPUT52b,{number,{auto,"123456a.b78"}}).
 
 -define(VALUE52c,-123456).
--define(OUTPUT52c,{number,{black,"-123456a.b00"}}).
+-define(OUTPUT52c,{number,{auto,"-123456a.b00"}}).
 
 -define(VALUE52d,-123456.78).
--define(OUTPUT52d,{number,{black,"-123456a.b78"}}).
+-define(OUTPUT52d,{number,{auto,"-123456a.b78"}}).
 
 -define(FORMAT53,"00\"x\"0,00\"y\"0,000\"a\".\"b\"00").
 
 -define(VALUE53a,123456).
--define(OUTPUT53a,{number,{black,"00x0,12y3,456a.b00"}}).
+-define(OUTPUT53a,{number,{auto,"00x0,12y3,456a.b00"}}).
 
 -define(VALUE53b,123456.78).
--define(OUTPUT53b,{number,{black,"00x0,12y3,456a.b78"}}).
+-define(OUTPUT53b,{number,{auto,"00x0,12y3,456a.b78"}}).
 
 -define(VALUE53c,-123456).
--define(OUTPUT53c,{number,{black,"-00x0,12y3,456a.b00"}}).
+-define(OUTPUT53c,{number,{auto,"-00x0,12y3,456a.b00"}}).
 
 -define(VALUE53d,-123456.78).
--define(OUTPUT53d,{number,{black,"-00x0,12y3,456a.b78"}}).
+-define(OUTPUT53d,{number,{auto,"-00x0,12y3,456a.b78"}}).
 
 -define(FORMAT54,"0,0\"a\"0.0\"b\"0e+2").
 
 -define(VALUE54a,123456).
--define(OUTPUT54a,{number,{black,"1,23a4.5b6e+2"}}).
+-define(OUTPUT54a,{number,{auto,"1,23a4.5b6e+2"}}).
 
 -define(VALUE54b,123456.78).
--define(OUTPUT54b,{number,{black,"1,23a4.5b7e+2"}}).
+-define(OUTPUT54b,{number,{auto,"1,23a4.5b7e+2"}}).
 
 -define(VALUE54c,-123456).
--define(OUTPUT54c,{number,{black,"-1,23a4.5b6e+2"}}).
+-define(OUTPUT54c,{number,{auto,"-1,23a4.5b6e+2"}}).
 
 -define(VALUE54d,-123456.78).
--define(OUTPUT54d,{number,{black,"-1,23a4.5b7e+2"}}).
+-define(OUTPUT54d,{number,{auto,"-1,23a4.5b7e+2"}}).
 
 -define(FORMAT55,"0,0\"a\"0.0\"b\"0e-02").
 
 -define(VALUE55a,123456).
--define(OUTPUT55a,{number,{black,"12,345,6a00.b00e-2"}}).
+-define(OUTPUT55a,{number,{auto,"12,345,6a00.b00e-2"}}).
 
 -define(VALUE55b,123456.78).
--define(OUTPUT55b,{number,{black,"12,345,6a78.b00e-2"}}).
+-define(OUTPUT55b,{number,{auto,"12,345,6a78.b00e-2"}}).
 
 -define(VALUE55c,-123456).
--define(OUTPUT55c,{number,{black,"-12,345,6a00.b00e-2"}}).
+-define(OUTPUT55c,{number,{auto,"-12,345,6a00.b00e-2"}}).
 
 -define(VALUE55d,-123456.78).
--define(OUTPUT55d,{number,{black,"-12,345,6a78.b00e-2"}}).
+-define(OUTPUT55d,{number,{auto,"-12,345,6a78.b00e-2"}}).
 
 -define(FORMAT55X,"0,0\"a\"0.0\"b\"0%").
 
 -define(VALUE55Xa,123456).
--define(OUTPUT55Xa,{number,{black,"12,345,60a0.0b0%"}}).
+-define(OUTPUT55Xa,{number,{auto,"12,345,60a0.0b0%"}}).
 
 -define(VALUE55Xb,123456.789).
--define(OUTPUT55Xb,{number,{black,"12,345,67a8.9b0%"}}).
+-define(OUTPUT55Xb,{number,{auto,"12,345,67a8.9b0%"}}).
 
 -define(VALUE55Xc,-123456).
--define(OUTPUT55Xc,{number,{black,"-12,345,60a0.0b0%"}}).
+-define(OUTPUT55Xc,{number,{auto,"-12,345,60a0.0b0%"}}).
 
 -define(VALUE55Xd,-123456.789).
--define(OUTPUT55Xd,{number,{black,"-12,345,67a8.9b0%"}}).
+-define(OUTPUT55Xd,{number,{auto,"-12,345,67a8.9b0%"}}).
 
 %% Test 56
 -define(FORMAT56,"h:mm am/pm").
 
--define(VALUE56a,round(0.5*86400)).
--define(OUTPUT56a,{date,{black,"12:00 am"}}).
+-define(VALUE56a,{date,round(0.5*86400)}).
+-define(OUTPUT56a,{date,{auto,"12:00 am"}}).
 
--define(VALUE56b,round(0.25*86400)).
--define(OUTPUT56b,{date,{black,"6:00 am"}}).
+-define(VALUE56b,{date,round(0.25*86400)}).
+-define(OUTPUT56b,{date,{auto,"6:00 am"}}).
 
--define(VALUE56c,round(0.75*86400)).
--define(OUTPUT56c,{date,{black,"6:00 pm"}}).
+-define(VALUE56c,{date,round(0.75*86400)}).
+-define(OUTPUT56c,{date,{auto,"6:00 pm"}}).
 
--define(VALUE56d,0).
--define(OUTPUT56d,{date,{black,"0:00 am"}}).
+-define(VALUE56d,{date,0}).
+-define(OUTPUT56d,{date,{auto,"0:00 am"}}).
 
--define(VALUE56e,86400).
--define(OUTPUT56e,{date,{black,"0:00 am"}}).
+-define(VALUE56e,{date,86400}).
+-define(OUTPUT56e,{date,{auto,"0:00 am"}}).
 
 %% Test 57
 -define(FORMAT57,"h:mm A/P").
 
--define(VALUE57a,round(0.5*86400)).
--define(OUTPUT57a,{date,{black,"12:00 A"}}).
+-define(VALUE57a,{date,round(0.5*86400)}).
+-define(OUTPUT57a,{date,{auto,"12:00 A"}}).
 
--define(VALUE57b,round(0.25*86400)).
--define(OUTPUT57b,{date,{black,"6:00 A"}}).
+-define(VALUE57b,{date,round(0.25*86400)}).
+-define(OUTPUT57b,{date,{auto,"6:00 A"}}).
 
--define(VALUE57c,round(0.75*86400)).
--define(OUTPUT57c,{date,{black,"6:00 P"}}).
+-define(VALUE57c,{date,round(0.75*86400)}).
+-define(OUTPUT57c,{date,{auto,"6:00 P"}}).
 
--define(VALUE57d,0).
--define(OUTPUT57d,{date,{black,"0:00 A"}}).
+-define(VALUE57d,{date,0}).
+-define(OUTPUT57d,{date,{auto,"0:00 A"}}).
 
--define(VALUE57e,86400).
--define(OUTPUT57e,{date,{black,"0:00 A"}}).
+-define(VALUE57e,{date,86400}).
+-define(OUTPUT57e,{date,{auto,"0:00 A"}}).
 
 %% Test 58
 -define(FORMAT58,"h:mm a/p").
 
--define(VALUE58a,round(0.5*86400)).
--define(OUTPUT58a,{date,{black,"12:00 a"}}).
+-define(VALUE58a,{date,round(0.5*86400)}).
+-define(OUTPUT58a,{date,{auto,"12:00 a"}}).
 
--define(VALUE58b,round(0.25*86400)).
--define(OUTPUT58b,{date,{black,"6:00 a"}}).
+-define(VALUE58b,{date,round(0.25*86400)}).
+-define(OUTPUT58b,{date,{auto,"6:00 a"}}).
 
--define(VALUE58c,round(0.75*86400)).
--define(OUTPUT58c,{date,{black,"6:00 p"}}).
+-define(VALUE58c,{date,round(0.75*86400)}).
+-define(OUTPUT58c,{date,{auto,"6:00 p"}}).
 
--define(VALUE58d,0).
--define(OUTPUT58d,{date,{black,"0:00 a"}}).
+-define(VALUE58d,{date,0}).
+-define(OUTPUT58d,{date,{auto,"0:00 a"}}).
 
--define(VALUE58e,86400).
--define(OUTPUT58e,{date,{black,"0:00 a"}}).
+-define(VALUE58e,{date,86400}).
+-define(OUTPUT58e,{date,{auto,"0:00 a"}}).
 
 %% Test 59
 -define(FORMAT59,"\"general\"0.0").
 
 -define(VALUE59,4).
--define(OUTPUT59,{number,{black,"general4.0"}}).
+-define(OUTPUT59,{number,{auto,"general4.0"}}).
 
 %% Test 60
 -define(FORMAT60,"0.0\"general\"").
 
 -define(VALUE60,4).
--define(OUTPUT60,{number,{black,"4.0general"}}).
+-define(OUTPUT60,{number,{auto,"4.0general"}}).
 
 %% Test 61
 -define(FORMAT61,"[m]").
 
--define(VALUE61a,round(0.5*86400)).
--define(OUTPUT61a,{date,{black,"720"}}).
+-define(VALUE61a,{date,round(0.5*86400)}).
+-define(OUTPUT61a,{date,{auto,"720"}}).
 
--define(VALUE61b,round(0.25*86400)).
--define(OUTPUT61b,{date,{black,"360"}}).
+-define(VALUE61b,{date,round(0.25*86400)}).
+-define(OUTPUT61b,{date,{auto,"360"}}).
 
--define(VALUE61c,round(0.75*86400)).
--define(OUTPUT61c,{date,{black,"1080"}}).
+-define(VALUE61c,{date,round(0.75*86400)}).
+-define(OUTPUT61c,{date,{auto,"1080"}}).
 
--define(VALUE61d,0).
--define(OUTPUT61d,{date,{black,"0"}}).
+-define(VALUE61d,{date,0}).
+-define(OUTPUT61d,{date,{auto,"0"}}).
 
--define(VALUE61e,86400).
--define(OUTPUT61e,{date,{black,"1440"}}).
+-define(VALUE61e,{date,86400}).
+-define(OUTPUT61e,{date,{auto,"1440"}}).
 
 %% Test 62
 -define(FORMAT62,"[s]").
 
--define(VALUE62a,round(0.5*86400)).
--define(OUTPUT62a,{date,{black,"43200"}}).
+-define(VALUE62a,{date,round(0.5*86400)}).
+-define(OUTPUT62a,{date,{auto,"43200"}}).
 
--define(VALUE62b,round(0.25*86400)).
--define(OUTPUT62b,{date,{black,"21600"}}).
+-define(VALUE62b,{date,round(0.25*86400)}).
+-define(OUTPUT62b,{date,{auto,"21600"}}).
 
--define(VALUE62c,round(0.75*86400)).
--define(OUTPUT62c,{date,{black,"64800"}}).
+-define(VALUE62c,{date,round(0.75*86400)}).
+-define(OUTPUT62c,{date,{auto,"64800"}}).
 
--define(VALUE62d,0).
--define(OUTPUT62d,{date,{black,"0"}}).
+-define(VALUE62d,{date,0}).
+-define(OUTPUT62d,{date,{auto,"0"}}).
 
--define(VALUE62e,86400).
--define(OUTPUT62e,{date,{black,"86400"}}).
+-define(VALUE62e,{date,86400}).
+-define(OUTPUT62e,{date,{auto,"86400"}}).
 
 %% These tests were as the result of bugs found in implementing formats 
 %% in the test suites
@@ -1025,50 +1025,50 @@
 %% Test 501
 -define(FORMAT501,"M/D/YY").
 
--define(VALUE501,((12345-1+693960)*86400)).
--define(OUTPUT501,{date,{black,"10/18/33"}}).
+-define(VALUE501,{date,((12345-1+693960)*86400)}).
+-define(OUTPUT501,{date,{auto,"10/18/33"}}).
 
 %% Test 502
 -define(FORMAT502,"_(\\\"$\\\"*#,##0_);_(\\\"$\\\"*(#,##0);_($\\\"*\\\"-\\\"_);_(@_)").
 
 -define(VALUE502a,1234.56).
--define(OUTPUT502a,{number,{black," \"$\"1,235 "}}).
+-define(OUTPUT502a,{number,{auto," \"$\"1,235 "}}).
 
 -define(VALUE502b,-1234.56).
--define(OUTPUT502b,{number,{black," \"$\"(1,235)"}}).
+-define(OUTPUT502b,{number,{auto," \"$\"(1,235)"}}).
 
 -define(VALUE502c,0).
--define(OUTPUT502c,{number,{black," $\"\"-\" "}}).
+-define(OUTPUT502c,{number,{auto," $\"\"-\" "}}).
 
 -define(VALUE502d,"bob").
--define(OUTPUT502d,{number,{black," bob "}}).
+-define(OUTPUT502d,{number,{auto," bob "}}).
 
 %% Test 503
 -define(FORMAT503,"\"$\"#,##0_);[Red]\\(\"$\"#,##0\\)").
 
 -define(VALUE503a,1234.56).
--define(OUTPUT503a,{number,{black,"$1,235 "}}). 
+-define(OUTPUT503a,{number,{auto,"$1,235 "}}). 
 
 -define(VALUE503b,-1234.56).
 -define(OUTPUT503b,{number,{red,"\($1,235\)"}}).
 
 -define(VALUE503c,0).
--define(OUTPUT503c,{number,{black,"$0 "}}).
+-define(OUTPUT503c,{number,{auto,"$0 "}}).
 
 -define(VALUE503d,"bob").
--define(OUTPUT503d,{number,{black,"bob"}}).
+-define(OUTPUT503d,{number,{auto,"bob"}}).
 
 %% Test 504
 -define(FORMAT504,"\\_0.00").
 
 -define(VALUE504,1234.5).
--define(OUTPUT504,{number,{black,"_1234.50"}}). 
+-define(OUTPUT504,{number,{auto,"_1234.50"}}). 
 
 %% Test 505
 -define(FORMAT505,"\\\\_0.00").
 
 -define(VALUE505,1234.5).
--define(OUTPUT505,{number,{black,"_1234.50"}}). 
+-define(OUTPUT505,{number,{auto,"_1234.50"}}). 
 
 %% Test 506
 -define(FORMAT506,"[Red](\"$\"#,##0\\)"). %" fix syntax hightlighting
@@ -1083,80 +1083,85 @@
 -define(OUTPUT506c,{number,{red,"($0)"}}). 
 
 -define(VALUE506d,"bob").
--define(OUTPUT506d,{number,{black,"bob"}}). 
+-define(OUTPUT506d,{number,{auto,"bob"}}). 
 
 %% Test 507
 -define(FORMAT507,"m").
 
 -define(VALUE507,round(0.5*86400)).
--define(OUTPUT507,{date,{black,"1"}}). 
+-define(OUTPUT507,{date,{auto,"1"}}). 
 
 %% Test 508
 -define(FORMAT508,"0.00").
 
 -define(VALUE508,0.142857143).
--define(OUTPUT508,{number,{black,"0.14"}}). 
+-define(OUTPUT508,{number,{auto,"0.14"}}). 
 
 %% Test 509a %% These are all valid in Excel and used to 'cover up' workings
 -define(FORMAT509a,";;;").
 
 -define(VALUE509a,0.142857143).
--define(OUTPUT509a,{number,{black,""}}). 
+-define(OUTPUT509a,{number,{auto,""}}). 
 
 %% Test 509b
 -define(FORMAT509b,";;").
 
 -define(VALUE509b,0.142857143).
--define(OUTPUT509b,{number,{black,""}}). 
+-define(OUTPUT509b,{number,{auto,""}}). 
 
 %% Test 509c
 -define(FORMAT509c,";;\"\";").
 
 -define(VALUE509c,0.142857143).
--define(OUTPUT509c,{number,{black,""}}). 
+-define(OUTPUT509c,{number,{auto,""}}). 
 
 %% Test 510
 -define(FORMAT510,"General_)"). %% fix that!
 
 -define(VALUE510,0.142857143).
--define(OUTPUT510,{number,{black,"this test finds a fuck up may need a big rewrite, "++
+-define(OUTPUT510,{number,{auto,"this test finds a fuck up may need a big rewrite, "++
 			   "I just bodged the 'general Tokens' clause "++
 			   "in number_format.yrl"}}). 
 
 -define(FORMAT511,";0.00;\"bbb\"").
 
 -define(VALUE511,333).
--define(OUTPUT511,{number,{black,""}}). % is this right?
+-define(OUTPUT511,{number,{auto,""}}). % is this right?
 
 -define(FORMAT512a,"_(\"$\"*#,##0_);_(\"$\"*(#,##0);_($\"*\"-\"_);_(@_)"). %" fix syntax highlighting
 
 -define(VALUE512a,333).
--define(OUTPUT512a,{number,{black,"\"$\"#############,333"}}). %" fix syntax highlighting
+-define(OUTPUT512a,{number,{auto,"\"$\"#############,333"}}). %" fix syntax highlighting
                             
 -define(FORMAT512b,"_(\"$\"*#,##0_)"). %" fix syntax highlighting
                             
 -define(VALUE512b,333).
--define(OUTPUT512b,{number,{black,"\"$\"#############,333"}}). %" fix syntax highlighting                            
+-define(OUTPUT512b,{number,{auto,"\"$\"#############,333"}}). %" fix syntax highlighting                            
                             
 -define(FORMAT512c,"_(\"$\"*(#,##0)"). %" fix syntax highlighting
 
 -define(VALUE512c,333).
--define(OUTPUT512c,{number,{black,"\"$\"(((((((((((((,333"}}).
+-define(OUTPUT512c,{number,{auto,"\"$\"(((((((((((((,333"}}).%" fix syntax highlighting
 
--define(FORMAT512d,"_($\"*\"-\"_)"). %" fix syntax highlighting
+-define(FORMAT512d,"_($\"*\"-\"_)").
 
 -define(VALUE512d,333).
--define(OUTPUT512d,{number,{black,"\"$\"\\\\\\\\\\\\\\,333"}}). %" fix syntax highlighting
+-define(OUTPUT512d,{number,{auto,"\"$\"\\\\\\\\\\\\\\,333"}}). %" fix syntax highlighting
                             
 -define(FORMAT512e,"_(@_)").
 
 -define(VALUE512e,333).
--define(OUTPUT512e,{number,{black,"333"}}).
+-define(OUTPUT512e,{number,{auto,"333"}}).
 
 -define(FORMAT513,"0").
 
 -define(VALUE513,"33300000000e+000").
--define(OUTPUT513,{number,{black,"33300000000"}}).
+-define(OUTPUT513,{number,{auto,"33300000000"}}).
+
+-define(FORMAT514,"General").
+
+-define(VALUE514,"0.01").
+-define(OUTPUT514,{number,{auto,"0.01"}}).
 
 
 %% Failing tests
@@ -1528,18 +1533,26 @@ all() ->
      num_parser_test512d,     
      num_parser_test512e,
      num_parser_test513,
+     num_parser_test514,
      num_parser_fail1a,
      num_parser_fail2a
     ].
 
 %% Case executor
 executor(Format,Value,Expected)->
-    io:format("in num_parser_test:executor Format is ~p Value is ~p~n",
-	      [Format,Value]),
+    Value2 = case Value of
+                 {date, Date} ->
+                     {Day, Time} = calendar:gregorian_seconds_to_datetime(Date),
+                     {datetime, Day, Time};
+                 _            ->
+                     Value
+             end,
+    io:format("in num_parser_test:executor Format is ~p Value2 is ~p~n",
+	      [Format,Value2]),
     {erlang,Output}=format:get_src(Format),
     io:format("in num_parser_test:executor got to 2 Output is ~p~n",[Output]),
     {Type,Output2}=Output,
-    {ok,Got}=format:run_format(Value,Output2),
+    {ok,Got}=format:run_format(Value2,Output2),
     io:format("in num_parser_test:executor Got is ~p~n",[Got]),
     test_util:expected3(Expected,{Type,Got}).
 
@@ -3353,6 +3366,12 @@ num_parser_test513() ->
 
 num_parser_test513(Config) when is_list(Config) -> 
     executor(?FORMAT513,?VALUE513,?OUTPUT513).
+
+num_parser_test514() -> 
+    [{userdata,[{doc,"Describe the main purpose of test case"}]}].
+
+num_parser_test514(Config) when is_list(Config) -> 
+    executor(?FORMAT514,?VALUE514,?OUTPUT514).
 
 
 %% Failing tests
