@@ -47,7 +47,7 @@ get_general()->
         "                         {number,[{format,\"0.00\"}]})}"++
         "  end "++
         "end.",
-     {number,Src}.
+    {number,Src}.
 
 concat(A,B) -> [A,B].
 
@@ -94,15 +94,15 @@ verify_num([H|T],Acc,N) -> verify_num(T,[H|Acc],N+get_decimals(H)).
 %% resolve_date just interprets them contextually
 %% 'm' next to 'y' or 'd' is month and 'm' next to 'h' or 's' is minute
 resolve_date(DateFormat) ->
-    %% First up strip out all guff from the format to get the underlying
-    %% date format
+%% First up strip out all guff from the format to get the underlying
+%% date format
     StrippedFormat=strip_date_format(DateFormat),
-    %% Now examine each 'min_mon' format item in the context of what
-    %% comes before and after it and decide if it is a 'min' or a 'mon'
+%% Now examine each 'min_mon' format item in the context of what
+%% comes before and after it and decide if it is a 'min' or a 'mon'
     CorrectedFormat=corr(StrippedFormat),
-    %% Now we have to match up the corrected and stripped format and the
-    %% original unstripped format and apply the changes to the unstripped
-    %% format and return that
+%% Now we have to match up the corrected and stripped format and the
+%% original unstripped format and apply the changes to the unstripped
+%% format and return that
     FixedUpFormat=fix_up(DateFormat,CorrectedFormat),
     FixedUpFormat.
 
@@ -148,7 +148,7 @@ clean_up_text([{char,"*"}|T],Residuum) -> clean_up_text(T,Residuum);
 clean_up_text([H|T],Residuum)          -> clean_up_text(T,[H|Residuum]).
 
 to_num(List) -> NewList=clear_underscores(List),
-		to_num(NewList,[]).
+                to_num(NewList,[]).
 
 to_num([],Acc)                    -> lists:reverse(Acc);
 to_num([{colour,Colour}|T],Acc)   -> to_num(T,[{colour,Colour}|Acc]);
@@ -229,9 +229,9 @@ count_dec([_H|T],N)            -> count_dec(T,N).
 %%                                                                           %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
 make_src2(A) ->
-  Type=get_type(A),
-  Clauses=organise_clauses(A),
-  {Type,gen_src(Clauses,[">0","<0","=0"])}.
+    Type=get_type(A),
+    Clauses=organise_clauses(A),
+    {Type,gen_src(Clauses,[">0","<0","=0"])}.
 
 get_type(A)                                           -> get_type(A,[]).
 get_type([],Acc)                                      -> verify_type(lists:reverse(Acc));
@@ -274,7 +274,7 @@ gen_src(Clauses,Defaults) -> gen_src(Clauses,Defaults,[]).
 %% if there aren't enough conditions repeat the first one
 gen_src([],[],Acc)           -> gen_src2(lists:reverse(Acc));
 %% this is nasty to fix the ghastly 'feature' of sign swapping for explicity
-%% specified '<0' clauses - this one isn't and we 
+%% specified '<0' clauses - this one isn't and we won't do it!
 gen_src([],["<0"|T2],Acc)    -> gen_src([],T2,[swap_cond("dont swap sign",
                                                          lists:last(Acc))|Acc]); 
 gen_src([],[H2|T2],Acc)      -> gen_src([],T2,[swap_cond(H2,lists:last(Acc))|Acc]); 
@@ -308,13 +308,13 @@ gen_src2(Clauses)->
 
 %% Rearrange clauses to ensure that the equality clause appears first
 rearrange_clauses(Clause1,Clause2,Clause3)->
-  Order={is_eq(Clause1),is_eq(Clause2),is_eq(Clause3)},
-  case Order of
-    {true,false,false}  -> Clause1++"; "++Clause2++"; "++Clause3++" ";
-    {false,true,false}  -> Clause2++"; "++Clause1++"; "++Clause3++" ";
-    {false,false,true}  -> Clause3++"; "++Clause1++"; "++Clause2++" ";
-    {false,false,false} -> Clause1++"; "++Clause2++"; "++Clause3++" "
-  end.
+    Order={is_eq(Clause1),is_eq(Clause2),is_eq(Clause3)},
+    case Order of
+        {true,false,false}  -> Clause1++"; "++Clause2++"; "++Clause3++" ";
+        {false,true,false}  -> Clause2++"; "++Clause1++"; "++Clause3++" ";
+        {false,false,true}  -> Clause3++"; "++Clause1++"; "++Clause2++" ";
+        {false,false,false} -> Clause1++"; "++Clause2++"; "++Clause3++" "
+    end.
 
 is_eq([$X,?ASC_SPACE,?ASC_EQ,?ASC_EQ|_T]) -> true;
 is_eq(_Other)                             -> false.
@@ -322,7 +322,7 @@ is_eq(_Other)                             -> false.
 strip_condition(Clause) -> 
 	Loc=string:str(Clause,"-> "),
 	Len=string:len(Clause),
-        string:right(Clause,Len-(Loc+2)).% 2 for the additional chars
+    string:right(Clause,Len-(Loc+2)).% 2 for the additional chars
 
 make_clause(N,[{condition,Cond},{colour,Col}]) ->
     [{condition,Cond},{colour,Col}];
@@ -380,7 +380,7 @@ swap_cond(Cond,[{condition,_OldCond}|Rest]) -> [{condition,Cond}|Rest].
 
 make_default([{colour,Col}|Rest]) -> [{condition,text},{colour,Col}|Rest];
 make_default(Plain)               -> [{condition,text},{colour,auto}|Plain].
-    
+
 make_default([{condition,Cond},{colour,Col}|R],_Def)->
     [{condition,Cond},{colour,Col}|R];
 make_default([{colour,Col}|R],Def)                  ->
@@ -393,8 +393,8 @@ make_default(Plain,Def)                             ->
     [{condition,Def},{colour,auto}|Plain].
 
 organise_clauses(A) ->
-  Clauses=organise_clauses(A,[],[]),
-   promote_subclauses(Clauses).
+    Clauses=organise_clauses(A,[],[]),
+    promote_subclauses(Clauses).
 
 organise_clauses([],Acc1,Acc2)                ->
     [lists:reverse(Acc1)|Acc2]; % don't reverse the Acc!
@@ -408,13 +408,13 @@ promote_subclauses(A) -> promote_subclauses(A,[]).
 promote_subclauses([],Acc) -> Acc; % don't reverse the Acc!
 %% swap the order of the colour and condition clauses!!
 promote_subclauses([[{Type,[{colour,Col},{condition,Cond}|Rest]}]|T],Acc) ->
-  promote_subclauses(T,[[{condition,Cond},{colour,Col}|[{Type,Rest}]]|Acc]);
+    promote_subclauses(T,[[{condition,Cond},{colour,Col}|[{Type,Rest}]]|Acc]);
 promote_subclauses([[{Type,[{condition,Cond}|Rest]}]|T],Acc) ->
-  promote_subclauses(T,[[{condition,Cond}|[{Type,Rest}]]|Acc]);
+    promote_subclauses(T,[[{condition,Cond}|[{Type,Rest}]]|Acc]);
 promote_subclauses([[{Type,[{colour,Col}|Rest]}]|T],Acc) ->
-  promote_subclauses(T,[[{colour,Col}|[{Type,Rest}]]|Acc]);
+    promote_subclauses(T,[[{colour,Col}|[{Type,Rest}]]|Acc]);
 promote_subclauses([H|T],Acc) ->
-  promote_subclauses(T,[H|Acc]).
+    promote_subclauses(T,[H|Acc]).
 
 
 
