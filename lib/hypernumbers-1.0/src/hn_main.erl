@@ -54,8 +54,7 @@ value_to_cell(Addr, Val) ->
 
                     ?IF(Pcode =/= nil,     db_put(Addr, "__ast", Pcode)),
                     ?IF(Recompile == true, db_put(Addr, "__recompile", true)),
-                    io:format("in superparser Res is ~p~n",[Res]),
-                    % write the default text align
+                    % write the default text align for the result
                     if
                         is_number(Res) ->
                             hn_db:write_item(Addr#ref{name='text-align'}, "right");

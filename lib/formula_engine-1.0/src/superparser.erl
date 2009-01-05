@@ -30,18 +30,18 @@ process(Input) ->
                  [{'-'}, {int, I}]          -> [{int, -I},
                                                 {'text-align', "right"},
                                                 {format, "null"}];
-                 [{float, F}, {'%'}]        -> [{float, F/100},
+                 [{float, F}, {'%'}]        -> [{float,F/100},
                                                 {'text-align', "right"},
                                                 {format, "0.00%"}];
-                 [{int, I}, {'%'}]          -> [{float, I/100},
+                 [{int, I}, {'%'}]          -> [{float,I/100},
+                                                {'text-align', "right"},
+                                                {format, "0%"}];
+                 [{'-'}, {float, F}, {'%'}] -> [{float,F/100},
                                                 {'text-align', "right"},
                                                 {format, "0.00%"}];
-                 [{'-'}, {float, F}, {'%'}] -> [{float, -F/100},
+                 [{'-'}, {int, I}, {'%'}]   -> [{float,I/100},
                                                 {'text-align', "right"},
-                                                {format, "0.00%"}];
-                 [{'-'}, {int, I}, {'%'}]   -> [{float, -I/100},
-                                                {'text-align', "right"},
-                                                {format, "0.00%"}];
+                                                {format, "0%"}];
                  % type tag gets discarded by caller which is ok for 
                  % the rest of them, but not here
                  [{errval, E}]       -> [{errval, {errval, E}}, 
