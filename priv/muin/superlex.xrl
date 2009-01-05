@@ -20,15 +20,17 @@ SSNAMEREF = {START_OF_SSREF}{MAYBE_PATH}{NAME}
 
 STRING = (\"[^"\n]*\")
 %"%
-WHITESPACE = ([\s\t]+)
+SPACE = ([\s]+)
+WHITESPACE = ([\t]+)
 
 Rules.
 
 %% string tag means "leave as-is". TODO: rename.
-{SSA1REF} : {token, {string, xfl_lexer:debang(YYtext)}}.
-{SSRCREF} : {token, {string, xfl_lexer:debang(YYtext)}}.
-{SSNAMEREF} : {token, {string, xfl_lexer:debang(YYtext)}}.
+{SSA1REF}    : {token, {string, xfl_lexer:debang(YYtext)}}.
+{SSRCREF}    : {token, {string, xfl_lexer:debang(YYtext)}}.
+{SSNAMEREF}  : {token, {string, xfl_lexer:debang(YYtext)}}.
 {STRING}     : {token, {string, YYtext}}.
+{SPACE}      : {token, {string, YYtext}}.
 {WHITESPACE} : skip_token.
-\n : {end_token, {'$end'}}.
-.  : {token, {stuff, YYtext}}.
+\n           : {end_token, {'$end'}}.
+.            : {token, {stuff, YYtext}}.
