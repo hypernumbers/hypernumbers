@@ -46,14 +46,24 @@ value_to_cell(Addr, Val) ->
             Rti = ref_to_rti(Addr, false),
             case muin:run_formula(Fla, Rti) of
                 {error, _Error} -> 
-                    %% TODO, notify clients
+                    % TODO, notify clients
                     ok;       
                 {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
                     Parxml = map(fun muin_link_to_simplexml/1, Parents),
                     Deptreexml = map(fun muin_link_to_simplexml/1, Deptree),
-                    
+
                     ?IF(Pcode =/= nil,     db_put(Addr, "__ast", Pcode)),
                     ?IF(Recompile == true, db_put(Addr, "__recompile", true)),
+                    io:format("in superparser Res is ~p~n",[Res]),
+                    % write the default text align
+                    if
+                        is_number(Res) ->
+                            hn_db:write_item(Addr#ref{name='text-align'}, "right");
+                        is_list(Res) -> 
+                            hn_db:write_item(Addr#ref{name='text-align'}, "left");
+                        true ->
+                            hn_db:write_item(Addr#ref{name='text-align'}, "center")
+                        end,
                     write_cell(Addr, Res, "=" ++ Fla, Parxml, Deptreexml)
             end;            
         [{_Type, Value}, {'text-align', Align}, Format] ->
@@ -89,7 +99,7 @@ formula_to_range(Formula, Ref = #ref{ref = {range, {TlCol, TlRow, BrCol, BrRow}}
                       db_put(Addr, "__area", {TlCol, TlRow, BrCol, BrRow}),
                       write_cell(Addr, Value, Formula, ParentsXml, DepTreeXml)
               end,
-    
+
     Coords = muin_util:expand_cellrange(TlRow, BrRow, TlCol, BrCol),
     foreach(SetCell, Coords).
 
@@ -104,10 +114,10 @@ attributes_to_range(Data, Ref = #ref{ref = {range,{Y1, X1, Y2, X2}}}) ->
                         hn_main:set_attribute(NewRef,Val)
                 end
         end,
-    
+
     [[F(X,Y,((X-X1)*(Y2-Y1+1))+(Y-Y1)+1) 
       || Y <- lists:seq(Y1,Y2)] 
-      || X <- lists:seq(X1,X2)].
+     || X <- lists:seq(X1,X2)].
 
 %%%-----------------------------------------------------------------
 %%% Function    : write_cell()
@@ -117,25 +127,25 @@ attributes_to_range(Data, Ref = #ref{ref = {range,{Y1, X1, Y2, X2}}}) ->
 %%%               references
 %%%-----------------------------------------------------------------    
 write_cell(Addr, Value, Formula, Parents, DepTree) ->
-    
+
     Index = to_index(Addr),
-    
+
     hn_db:write_item(Addr#ref{name=formula},Formula),
     set_cell_rawvalue(Addr,Value),
-    
-    %% Delete attribute if empty, else store
+
+%% Delete attribute if empty, else store
     Set = fun(Ref,{xml,[]}) -> hn_db:remove_item(Ref);
              (Ref,Val)      -> hn_db:write_item(Ref,Val)
           end,
 
     Set(Addr#ref{name=parents},{xml,Parents}),
     Set(Addr#ref{name='dependancy-tree'},{xml,DepTree}),
-    %% Delete the references
-    
+%% Delete the references
+
     hn_db:del_links(Index,child),
-    %% probably to be cleaned up, go through the remote parents
-    %% to this cell, if they dont exist within the list of new
-    %% parents, delete it (and unregister)
+%% probably to be cleaned up, go through the remote parents
+%% to this cell, if they dont exist within the list of new
+%% parents, delete it (and unregister)
     lists:foreach(
       fun(X) when is_record(X,remote_cell_link) ->
               Url  = hn_util:index_to_url(X#remote_cell_link.parent),
@@ -148,8 +158,8 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
          (_) -> ok
       end,
       hn_db:read_remote_links(Index,child,incoming)),
-    
-    %% Writes all the parent links 
+
+%% Writes all the parent links 
     lists:map( 
       fun({url,[{type,Type}],[Url]}) ->
               {ok,#ref{site=Site,path=Path,ref={cell,{X,Y}}}} = hn_util:parse_url(Url),
@@ -193,7 +203,7 @@ apply_range(Addr,Fun,Args) ->
                            end,lists:seq(X1,X2));
         {cell,{_X,_Y}} ->
             apply(Fun,[Addr,Args])
-            %% TODO : Add row / col / page?
+%% TODO : Add row / col / page?
     end.
 
 %%%-----------------------------------------------------------------
@@ -204,57 +214,57 @@ apply_range(Addr,Fun,Args) ->
 %%%               parents/ dependancy tree, and value
 %%%-----------------------------------------------------------------
 get_cell_info(Site, TmpPath, X, Y) ->
-    
+
     Path = lists:filter(fun(Z) -> not(Z == $/) end, TmpPath),   
     Ref = #ref{site=string:to_lower(Site),path=Path,ref={cell,{X,Y}}},
     Value   = hn_db:get_item_val(Ref#ref{name=rawvalue}),
-    
+
     DepTree = case hn_db:get_item_val(Ref#ref{name='dependancy-tree'}) of
                   {xml,Tree} -> Tree;
                   []         -> []
               end,
-    
+
     Val = case Value of
               []                 -> blank;
               {datetime, _, [N]} -> muin_date:from_gregorian_seconds(N);
               Else               -> Else %% Strip other type tags.
           end,
-    
+
     F = fun({url,[{type,Type}],[Url]}) -> 
                 {ok,#ref{site=S,path=P,ref={cell,{X1,Y1}}}} = hn_util:parse_url(Url),
                 P2 = string:tokens(P,"/"),
                 {Type,{S,P2,X1,Y1}}
         end,
-    
+
     Dep = lists:map(F,DepTree) ++ [{"local",{Site,Path,X,Y}}],
     {Val,Dep,[],[{"local",{Site,Path,X,Y}}]}.
-       
+
 %%%-----------------------------------------------------------------
 %%% Function    : get_hypernumber/lots
 %%% Types       : 
 %%% Description : 
 %%%-----------------------------------------------------------------
 get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY) ->
-    
+
     NewTPath = lists:filter(fun(X) -> not(X == $/) end, TPath),   
     NewFPath = lists:filter(fun(X) -> not(X == $/) end, FPath),   
-    
+
     To = #index{site=FSite,path=NewFPath,column=FX,row=FY},
 
     Fr = #index{site=TSite,path=NewTPath,column=TX,row=TY},
-    
+
     case hn_db:get_hn(URL,Fr,To) of
-        
+
         {error,permission_denied} ->
             {{errval,'#AUTH'},[],[],[]};
-        
+
         #incoming_hn{value=Val,deptree=T} ->
             F = fun({url,[{type,Type}],[Url]}) ->
-                        
+
                         {ok,#ref{site=S,path=P,ref={cell,{X,Y}}}} = hn_util:parse_url(Url),
                         {Type,{S,P,X,Y}}
                 end,
-            
+
             Dep = lists:map(F,T) ++ [{"remote",{FSite,NewFPath,FX,FY}}],            
             {Val,Dep,[],[{"remote",{FSite,NewFPath,FX,FY}}]}
     end.
@@ -293,12 +303,12 @@ recalc_cell(Index) ->
             case muin:run_code(Pcode, Rti) of
                 {ok, {_, Val, _, _, _}}  -> 
                     set_cell_rawvalue(Addr,Val),
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     % Logging code                                      %
                     % #index{row=Row,column=Col}=Index,                 %
                     % bits:log("Row,"++integer_to_list(Row)++",Col,"++  %
                     %         integer_to_list(Col)), 5                  %
-                    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     hn_db:mark_dirty(Index, cell);
                 {error, _Reason} ->
                     ok
@@ -318,7 +328,7 @@ copy_pages_below(From = #ref{path=Root},To) ->
     ToPages   = [To++string:join(X,"/")++"/" || X <- NPages],
 
     hn_main:set_attribute(From#ref{path=string:tokens(To,"/"),
-                          name=instance},hn_util:list_to_path(Root)),
+                                   name=instance},hn_util:list_to_path(Root)),
 
     copy_pages(FromPages,ToPages).
 
@@ -339,7 +349,7 @@ is_instance(Ref = #ref{}) ->
     case hn_db:get_item_val(Ref#ref{name=instance}) of
         []     -> false;
         _Else  -> true
-     end.
+    end.
 
 copy_pages([],[]) -> ok;
 copy_pages([H1|T1],[H2|T2]) ->
