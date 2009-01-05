@@ -2,34 +2,65 @@
 %%% <hasan@hypernumbers.com>
 
 -module(superparser).
+
 -export([process/1]).
+
 -define(upcase(S),
         ustring:pr(ustring:to_upper(ustring:new(S)))).
 
 process([$= | Tl]) when Tl =/= [] ->
     {formula, upcase(Tl)};
-process([39 | Tl]) -> %% singly quoted string
-    {string, Tl};
+process([39 | Tl]) -> % singly quoted string
+    [{string, Tl},{'text-align', "left"},{format, "null"}];
 process(Input) ->
     {ok, Toks} = xfl_lexer:lex(upcase(Input), {1, 1}),
-    case Toks of
-        [{bool, B}]         -> {bool, B};
-        [{float, F}]        -> {float, F};
-        [{int, I}]          -> {int, I};
-        [{'-'}, {float, F}] -> {float, -F};
-        [{'-'}, {int, I}]   -> {int, -I};
-        [{errval, E}]       -> {errval, {errval, E}}; % type tag gets discarded by caller which is ok for the rest of them, but not here
-        _Other              ->
-            case muin_date:from_rfc1123_string(Input) of
-                bad_date -> {string, Input};
-                Dt       -> {datetime, Dt} % as with errval
-            end
-    end.
+    Return = case Toks of
+                 [{bool, B}]                -> [{bool, B},
+                                                {'text-align', "center"}, % css is yanktastic
+                                                {format, "null"}];
+                 [{float, F}]               -> [{float, F},
+                                                {'text-align', "right"},
+                                                {format, "null"}];
+                 [{int, I}]                 -> [{int, I},
+                                                {'text-align', "right"},
+                                                {format, "null"}];
+                 [{'-'}, {float, F}]        -> [{float, -F},
+                                                {'text-align', "right"},
+                                                {format, "null"}];
+                 [{'-'}, {int, I}]          -> [{int, -I},
+                                                {'text-align', "right"},
+                                                {format, "null"}];
+                 [{float, F}, {'%'}]        -> [{float, F/100},
+                                                {'text-align', "right"},
+                                                {format, "0.00%"}];
+                 [{int, I}, {'%'}]          -> [{float, I/100},
+                                                {'text-align', "right"},
+                                                {format, "0.00%"}];
+                 [{'-'}, {float, F}, {'%'}] -> [{float, -F/100},
+                                                {'text-align', "right"},
+                                                {format, "0.00%"}];
+                 [{'-'}, {int, I}, {'%'}]   -> [{float, -I/100},
+                                                {'text-align', "right"},
+                                                {format, "0.00%"}];
+                 % type tag gets discarded by caller which is ok for 
+                 % the rest of them, but not here
+                 [{errval, E}]       -> [{errval, {errval, E}}, 
+                                         {'text-align', "center"},  % css is yanktastic
+                                         {format, "null"}]; 
+                 _Other              ->
+                     case super_util:autoparse(Toks) of
+                         {ok, bad_date} -> [{string, Input},
+                                            {'text-align', "left"},
+                                            {format, "null"}];
+                         Other          -> Other
+                     end
+             end,
+    Return.
 
 %% Converts formula to upper-case, leaving only string literals as-is.
 upcase(Str) ->
     {ok, Tokens, _} = superlex:string(Str),
-    %% List of numbers (codepoints) interspersed with {string, _} tuples.
+    % List of numbers (codepoints) interspersed with {string, _} tuples.
     Str2 = 
         tl(lists:foldl(fun({stuff, X}, Acc) ->
                                hslists:init(Acc) ++ ([lists:last(Acc)] ++ X);

@@ -21,7 +21,6 @@
 set_attribute(Ref = #ref{name=formula},Val) -> 
     set_cell(Ref,Val);
 set_attribute(Ref = #ref{name=format}, Val) ->
-    io:format("in set_attribute Ref is ~p Val is ~p~n",[Ref,Val]),
     hn_db:write_item(Ref,Val),
     F = fun(X,[]) ->
                 case hn_db:get_item_val(X#ref{name=rawvalue}) of
@@ -57,7 +56,15 @@ value_to_cell(Addr, Val) ->
                     ?IF(Recompile == true, db_put(Addr, "__recompile", true)),
                     write_cell(Addr, Res, "=" ++ Fla, Parxml, Deptreexml)
             end;            
-        {_Type, Value} ->
+        [{_Type, Value}, {'text-align', Align}, Format] ->
+            % write out the alignment
+            hn_db:write_item(Addr#ref{name='text-align'},Align),
+            % write out the format (if any)
+            case Format of
+                {format, "null"} -> ok;
+                {format, F}      -> hn_db:write_item(Addr#ref{name=format},F)
+            end,
+            % now write out the actual cell
             write_cell(Addr, Value, hn_util:text(Value), [], [])
     end.
 

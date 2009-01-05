@@ -205,7 +205,7 @@ req('GET',[],[],_,Ref) ->
 
 req('POST',{login,[],[{email,[],[Email]},
                       {password,[],[Pass]}]},[],_User,_Ref) ->
-    case hn_users:login(Email,Pass) of
+     case hn_users:login(Email,Pass) of
         {error,invalid_user} ->
             {ok,{auth,[],[{unauthorised,[],[]}]}};
         {ok,Record} ->
@@ -216,14 +216,14 @@ req('POST',{login,[],[{email,[],[Email]},
     end;
 
 req('POST',[],_,X,_) when X == no_access; X == read  ->
-    {return,{status,503}};
+     {return,{status,503}};
 
 req('POST', {create, [], [{Name, [], [Value]}]}, _Attr, _User, Ref = #ref{ref = {cell, _, _}}) ->
-    hn_main:set_attribute(Ref#ref{name=Name},Value),
+     hn_main:set_attribute(Ref#ref{name=Name},Value),
     {ok,{success,[],[]}};
 
 req('POST', {create, [], Data}, _Attr, _User, Ref = #ref{ref = {range, _}}) ->
-    case Data of
+     case Data of
         [{formula, [], [Formula]}] ->
             hn_main:formula_to_range(Formula, Ref);
         _ ->
@@ -256,7 +256,7 @@ req('POST',{create,[],Data},Vars,_User,Ref = #ref{auth=Auth}) ->
     {ok,{success,[],[]}};
 
 req('POST',{delete,[],Recurse},_Attr,_User,Ref = #ref{ref={page,"/"}}) ->
-    
+ 
     F = fun(X) ->
                 Path = Ref#ref.path,
                 hn_db:remove_item(Ref#ref{path=Path++X,ref='_'})
@@ -269,7 +269,7 @@ req('POST',{delete,[],Recurse},_Attr,_User,Ref = #ref{ref={page,"/"}}) ->
     {ok,{success,[],[]}};
 
 req('POST',{delete,[],Data},_Vars,_User,Ref) ->
-    lists:map
+     lists:map
       (
       fun({Attr,[],[]}) ->
               hn_db:remove_item(Ref#ref{name=Attr})

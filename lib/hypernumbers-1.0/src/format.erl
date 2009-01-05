@@ -24,10 +24,15 @@
 %% The module format is called from within generated code only
 %% It is *NOT* an interface that should be programmed against
 -export([
-         format/2
+         format/2,
+         conditional/3
         ]).
 
 -include("ascii.hrl").
+
+%%%
+%%% Public Interfaces
+%%% 
 
 %%% @doc takes a format and returns the compiled code that will format input to that format
 %%% @end
@@ -35,14 +40,11 @@
 get_src(Format)->
     try get_src2(Format)
     catch
-        error:_ -> {error,error_in_format};
-        exit:_  -> {error,error_in_format}
+        error:Err -> io:format("get_src fails with error ~p~n",[Err]),
+                     {error,error_in_format};
+        exit:Exit  -> io:format("get_src fails with exit ~p~n",[Exit]),
+                     {error,error_in_format}
     end.
-
-get_src2(Format)->
-    {ok,Tokens,_}=num_format_lexer:string(Format),
-    {ok,Output}=num_format_parser:parse(Tokens),
-    {erlang,Output}.
 
 %%% @doc takes a value and the src code for a format and returns the
 %%% value formatted by the source code
@@ -54,29 +56,55 @@ run_format(X,Src)->
     {value,Fun,_}    = erl_eval:exprs(ErlAbsForm,[]),
     {ok,Fun(X)}.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                           %%%
+%%% Run-time interfaces - not to be programmed against!                       %%%
+%%%                                                                           %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %%% @doc Run-time interface not an API - this function should *NOT*
 %%% be programmed against
 %%% @end
-%%format(X,{general,_Format}) when is_integer(X) ->
-%%    format(X,{number,{format,"0"}});
-%%format(X,{general,_Format}) when is_float(X) ->
-%%    format(X,{number,{format,"0.00"}});
-%%format(X,{general,_Format}) when is_list(X) ->
-%%    format(X,{number,{format,"@"}});
-%%format(X,{general,_Format}) when is_boolean(X) ->
-%%    atom_to_list(X);
-%%format(X,{general,_Format})  ->
-%%    format(X,{date,{format,"dd/mm/yyyy"}});
-format(X,{date,Format})    -> format_date(calendar:gregorian_seconds_to_datetime(X),
-                                         Format);
+format(X,{date,Format})    -> {_, Date, Time} = X,
+                              Y = {Date, Time},
+                              format_date(Y,Format);
 format(X,{number,Format})  -> format_num(X,Format);
 format(X,{text,Format})    -> format(X,Format,[]).
 
+%%% @doc run-time interface not an API - this function should *NOT*
+%%% be programmed against
+%%% @end
+conditional({datetime, _D, _T}, ">", B) -> true;
+conditional({datetime, _D, _T}, _C, B)  -> false;
+conditional(A, ">", B)                  -> (A > B);
+conditional(A, ">=", B)                 -> (A >= B);
+conditional(A, "==", B)                 -> (A == B);
+conditional(A, "=<", B)                 -> (A =< B);
+conditional(A, "<", B)                  -> (A < B).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                           %%%
+%%% Callback from parser - dont know at compile time which general format     %%%
+%%% to give the number X - is it a float? or an integer?                      %%%
+%%%                                                                           %%%
+%%% Appears as a compiler warning because the code that calls it is passed in %%%
+%%% to this module as source code and then 'evaled'                           %%%
+%%%                                                                           %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+get_general(X) when is_integer(X) -> {format,"0"};
+get_general(X) when is_float(X)   -> {format, "0.00"}.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%                                                                           %%
-%% All these functions are called from format and are internal               %%
-%%                                                                           %%
+%%%                                                                         %%%
+%%% All these functions are called from format and are internal             %%%
+%%%                                                                         %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+get_src2(Format)->
+    {ok,Tokens,_}=num_format_lexer:string(Format),
+    {ok,Output}=num_format_parser:parse(Tokens),
+    {erlang,Output}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                           %%
@@ -576,14 +604,3 @@ strip_commas(A) ->
     {ok,Return,_}=regexp:gsub(A,",",""),
     Return.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%                                                                           %%
-%% Callback from parser - dont know at compile time which general format     %%
-%% to give the number X - is it a float? or an integer?                      %%
-%%                                                                           %%
-%% Appears as a compiler warning because the code that calls it is passed in %%
-%% to this module as source code and then 'evaled'                           %%
-%%                                                                           %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-get_general(X) when is_integer(X) -> {format,"0"};
-get_general(X) when is_float(X)   -> {format, "0.00"}.
