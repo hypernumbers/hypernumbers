@@ -129,20 +129,17 @@ fix_up_names(Tables) ->
 type_formats(Tables) ->
     {value,{tmp_formats, Tid}}=?k(tmp_formats, 1, Tables),
     Fun = fun(X, _Residuum) ->
-                  {Index, [{type, _Type1}, Category, {format, Format}]} = X,
-                  Return=format:get_src(Format),
-                  case Return of
-                      {erlang, {Type2, _Output}} ->
-                          ok;
-                      {error,error_in_format} ->
-                          io:format("in excel:type_tmp_formats bug in "++
-                                    "format parser for format: ~p~n",
-                                    [Format]),
-                          Type2='needed to make the case safe',
-                          exit("number format parser bug!")
-                  end,
-                  NewFormat={format, Format},
-                  ets:insert(Tid, [{Index, [{type, Type2}, Category, NewFormat]}])
+                  {Idx, [{type, _Type1}, Category, {format, Fmt}]} = X,
+                  Return=format:get_src(Fmt),
+                  {Type2, NewFmt}
+                      = case Return of
+                            {erlang, {Type3, _Output}} -> {Type3, Fmt};
+                            {error,error_in_format} ->
+                                Warn = "Bug: Format "++Fmt++"doenst compile",
+                                ?write(Tables, warnings, Warn),
+                                {text, "general"}
+                        end,
+                  ets:insert(Tid, [{Idx, [{type, Type2}, Category, NewFmt]}])
           end,
     ets:foldl(Fun, [], Tid).
 
