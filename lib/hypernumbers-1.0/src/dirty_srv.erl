@@ -115,13 +115,13 @@ trigger_recalc(Rec,Type) ->
     Index = ?COND(Type == dirty_cell,
                   Rec#dirty_cell.index,
                   Rec#dirty_hypernumber.index),
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Logging code                                                      %
     % #index{path=Path,row=Row,column=Col}=Index,                       %
     % Str=string:join(Path,"/")++" Row "++integer_to_list(Row)++" Col " %
     %    ++integer_to_list(Col),                                        %
     % bits:log(Str),                                                    %
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ok = mnesia:dirty_delete({Type, Index}),
     #index{row=Row,column=Col}=Index,
     ok = case Type of
