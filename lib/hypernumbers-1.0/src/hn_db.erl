@@ -17,14 +17,41 @@
                 {atomic,ok} = mnesia:create_table(Name, Attr)
         end()).
 
--export([create/0, write_item/2, get_item/1, get_item_val/1, 
-         get_item_inherited/2, get_item_list/1, remove_item/1,
-         read_links/2, del_links/2, write_local_link/2,
-         read_remote_links/3, write_remote_link/3,del_remote_link/1,
-         register_hn/5, update_hn/4, get_hn/3, cell_changed/1,
-         mark_dirty/2, write_template/4, read_template/1, 
-         get_templates/0, get_ref_from_name/1, hn_changed/1]).
-          
+-export([create/0,
+         write_item/2,
+         get_item/1,
+         get_item_val/1, 
+         get_item_inherited/2,
+         get_item_list/1,
+         remove_item/1,
+         read_links/2,
+         del_links/2,
+         write_local_link/2,
+         read_remote_links/3,
+         write_remote_link/3,
+         del_remote_link/1,
+         register_hn/5,
+         update_hn/4,
+         get_hn/3,
+         cell_changed/1,
+         mark_dirty/2,
+         write_template/4,
+         read_template/1, 
+         get_templates/0,
+         get_ref_from_name/1,
+         hn_changed/1,
+         drag_n_drop/2,
+         copy_n_paste/2,
+         delete_cells/1,
+         clear_cells/1]).
+
+%%% Debugging interface
+-export([drag_n_drop_DEBUG/0,
+         drag_n_drop_DEBUG/2,
+         delete_cells_DEBUG/0,
+         clear_cells_DEBUG/0,
+         copy_n_paste_DEBUG/0]).
+
 %% @spec create() -> ok
 %% @doc  Creates the database for hypernumbers
 create()->
@@ -166,7 +193,7 @@ del_links(Index, Relation) ->
 
 %% @spec del_remote_link(CellLink) -> ok
 %% @doc  Delete a link between a local and remote cell, send an 
-%%       unregister message so the child doesnt recieve any more 
+%%       unregister message so the child doesnt receive any more 
 %%       updates
 del_remote_link(Obj=#remote_cell_link{type=outgoing}) ->
     F = fun() ->
@@ -240,7 +267,7 @@ del_remote_link(Obj = #remote_cell_link{type=incoming}) ->
 %% @spec write_remote_link(Parent,Child,Type) -> ok
 %% @doc  Establishes a link between here and a remote cell if the 
 %%       link doesnt already exist, register with the remote cell 
-%%       to recieve updates
+%%       to receive updates
 write_remote_link(Parent,Child,Type) ->
     F = fun()->
                 ParentRef = #ref{
@@ -383,7 +410,7 @@ update_hn(From,Bic,Val,_Version)->
                 [Obj] = mnesia:match_object(Rec),
                 
                 mnesia:write(Obj#incoming_hn{value=hn_util:xml_to_val(Val)}),
-                mark_dirty(Index,hypernumber)
+                ok = mark_dirty(Index,hypernumber)
         end,
     ok = ?mn_ac(transaction,F),
     ok.
@@ -424,10 +451,8 @@ do_get_hn(Url,To)->
     end.
 
 %% @spec register_hn(To,From,Bic,Proxy,Url) -> ok
-%% @doc  Recieve registration for a hypernumber
+%% @doc  Receive registration for a hypernumber
 register_hn(To,From,Bic,Proxy,Url) ->
-    io:format("in register_hn~n-To is ~p~n-From is ~p~n-Bic is ~p~n-"++
-              "Proxy is ~p~n-Url is ~p~n",[To,From,Bic,Proxy,Url]),
     F = fun()->
                 Link = #remote_cell_link{
                   parent=To,
@@ -446,9 +471,229 @@ register_hn(To,From,Bic,Proxy,Url) ->
     _Ok = ?mn_ac(transaction,F),
 	ok.
 
+%% @spec copy_n_paste(From, To) -> ok;
+%% @doc copies the formula and formats from a cell or range and 
+%% pastes them to the destination (the difference between drag'n'drop
+%% and cut'n'paste is that drag'n'drop increments)
+copy_n_paste(From, To) ->
+    case is_valid(From, To) of
+        {ok, single_cell, Incr}   -> copy_n_paste1(From, To, false);
+        {ok, 'onto self', _Incr}  -> {ok, ok};
+        {ok, cell_to_range, Incr} -> copy_n_paste2(From, To, false)
+    end.
+
+%% @spec drag_n_drop(From, To) -> ok;
+%% @doc takes the formula and formats from a cell and drag_n_drops 
+%% them over a destination (the difference between drag'n'drop
+%% and cut'n'paste is that drag'n'drop increments)
+drag_n_drop(From, To) ->
+    case is_valid(From, To) of
+        {ok, single_cell, Incr}   -> copy_n_paste1(From, To, Incr);
+        {ok, 'onto self', _Incr}  -> {ok, ok};
+        {ok, cell_to_range, Incr} -> copy_n_paste2(From, To, Incr)
+    end.
+
+copy_n_paste1(From, To, Incr) ->
+    FromList = get_item(From),
+    {Contents, FilteredList} = filter_for_drag_n_drop(FromList),
+    Output = case Contents of
+                 [Contents2] -> superparser:process(Contents2);
+                 []          -> ""
+             end,
+    #ref{ref = {cell, {FX, FY}}} = From,
+    #ref{ref = {cell, {TX, TY}}} = To,
+    case Output of
+        {formula, Formula} ->
+            % TODO - make me work properly
+            {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {FX, FY}),
+            NewToks = offset(Toks, (TX - FX), (TY - FY)),
+            NewFormula = make_formula(NewToks),
+            io:format("in copy_n_paste1 NewFormula are ~p~n",[NewFormula]),
+            hn_main:set_cell(To#ref{name=formula}, NewFormula);
+        [{Type, V},  _A, _F] ->
+            V2 = case Incr of
+                     false ->
+                         tconv:to_s(V);
+                     _     -> 
+                         case Type of
+                             int      -> NewV = V + diff(FX, FY, TX, TY, Incr),
+                                         tconv:to_s(NewV);
+                             datetime -> {datetime, {Y, M, D}, T} = V,
+                                         D2 = D + diff(FX, FY, TX, TY, Incr),
+                                         tconv:to_s({datetime, {Y, M, D2}, T}); 
+                             _        -> tconv:to_s(V)
+                         end
+                 end,
+            hn_main:set_cell(To#ref{name=formula}, V2);
+        []  -> delete_cells(To)
+    end,
+    % You want to copy the attributes AFTER setting the value
+    % because setting a value sets the default alignment and format
+    % and if the source cell has been reformatted after the data was entered
+    % you want to carry that forward.
+    {ok, ok} = copy_attributes(FilteredList, To),
+    ok.
+
+copy_n_paste2(From, To, Incr) ->
+    #ref{ref = {range, {X1, Y1, X2, Y2}}} = To,
+    List = range_to_list(To, X1, Y1, X2, Y2),
+    lists:map(fun(X) -> copy_n_paste1(From, X, Incr) end, List).
+
+offset(Toks, XOffset, YOffset) -> offset(Toks, XOffset, YOffset, []).
+
+offset([], _XOffset, _YOffset, Acc) -> lists:reverse(Acc);
+offset([{ref, Col, Row, Path, Cell} | T], XOffset, YOffset, Acc) ->
+    io:format("in offset Col is ~p Row is ~p Cell is ~p~n",[Col, Row, Cell]),
+    {XDollar, X, YDollar, Y} = parse_cell(Cell),
+    NewCell = make_cell(XDollar, X, XOffset, YDollar, Y, YOffset),
+    NewRef = {ref, Col, Row, Path, NewCell},
+    offset(T, XOffset, YOffset, [NewRef | Acc]);
+offset([H | T], XOffset, YOffset, Acc) ->
+    offset(T, XOffset, YOffset, [H | Acc]).
+
+parse_cell(Ref) ->
+    {XDollar, Rest} = case Ref of
+                           [$$ | T1] -> {true, T1};
+                           _         -> {false, Ref}
+                       end,
+    Fun = fun(XX) ->
+                  if XX < 97  -> false;
+                     XX > 122 -> false;
+                     true     -> true
+                  end
+          end,
+    {XBits, YBits} = lists:partition(Fun,string:to_lower(Rest)),
+    {YDollar, Y} = case YBits of
+                       [$$ | T2] -> {true, T2};
+                       _         -> {false, YBits}
+                   end,
+    {XDollar, tconv:to_i(XBits), YDollar, list_to_integer(Y)}.
+
+make_cell(false, X, XOffset, false, Y, YOffset) ->
+    tconv:to_b26(X + XOffset)++tconv:to_s(Y + YOffset);
+make_cell(true, X, XOffset, false, Y, YOffset) ->
+    [$$]++tconv:to_b26(X)++tconv:to_s(Y + YOffset);
+make_cell(false, X, XOffset, true, Y, YOffset) ->
+    tconv:to_b26(X + XOffset)++[$$]++tconv:to_s(Y);
+make_cell(true, X, XOffset, true, Y, YOffset)  -> 
+    [$$]++tconv:to_b26(X)++[$$]++tconv:to_s(Y).
+
+make_formula(Toks) -> io:format("in make_formula Toks are ~p~n",[Toks]),
+                      mk_f(Toks, []).
+
+mk_f([], Acc)                        -> "="++lists:flatten(lists:reverse(Acc));
+mk_f([{ref, _, _, _, Ref} | T], Acc) -> mk_f(T, [Ref | Acc]);
+mk_f([{atom, H} | T], Acc)           -> mk_f(T, [H | Acc]);
+mk_f([{H} | T], Acc)                 -> mk_f(T, [atom_to_list(H) | Acc]).
+                              
+diff(FX, FY, TX, TY, x) -> TX - FX;
+diff(FX, FY, TX, TY, y) -> TY - FY.
+
+%% @spec delete_cells(#ref) -> ok
+%% @doc deletes the value of a cell (but not any formatting information)
+delete_cells(Ref = #ref{ref = {range, {X, Y, X, Y}}}) ->
+    delete_cells(Ref =#ref{ref = {cell, {X, Y}}});
+delete_cells(Ref = #ref{ref = {range, {X1, Y1, X2, Y2}}}) ->
+    List = range_to_list(Ref, X1, Y1, X2, Y2),
+    lists:map(fun(X) -> delete_cells(X) end, List);
+delete_cells(Ref = #ref{ref = {cell, {X, Y}}}) ->
+    Data = [{formula, [], []},
+            {rawvalue, [],[]},
+            {value, [], []},
+            {'__ast', [], []},
+            {'__recompile', [], []},
+            {'__shared', [], []},
+            {'__area', [], []},
+            {'dependency-tree', [], []},
+            {parents, [], []}],
+        lists:map
+      (
+      fun({Attr,[],[]}) ->
+              hn_db:remove_item(Ref#ref{name=Attr})
+      end,
+      Data
+     ).
+
+%% @spec clear_cells(#ref) -> {ok, ok}
+%% @doc clears the values and all the formats of a cell
+clear_cells(Ref = #ref{ref = {range, {X, Y, X, Y}}}) ->
+    clear_cells(Ref =#ref{ref = {cell, {X, Y}}});
+clear_cells(Ref = #ref{ref = {range, {X1, Y1, X2, Y2}}}) ->
+    List = range_to_list(Ref, X1, Y1, X2, Y2),
+    lists:map(fun(X) -> clear_cells(X) end, List);
+clear_cells(Ref = #ref{ref = {cell, {X, Y}}}) ->
+    io:format("in clear_cells for Ref ~p~n", [Ref]),
+    remove_item(Ref#ref{name = undef}).
+    
 %%--------------------------------------------------------------------
 %% Internal Functions
 %%--------------------------------------------------------------------
+range_to_list(Ref, X1, Y1, X2, Y2) -> range_to_list(Ref, X1, X1, Y1, X2, Y2, []).
+
+range_to_list(Ref, Reset, X, Y, X, Y, Acc) -> [Ref#ref{ref = {cell, {X, Y}}} | Acc];
+range_to_list(Ref, Reset, X2, Y1, X2, Y2, Acc) ->
+    range_to_list(Ref, Reset, Reset, Y1+1, X2, Y2,
+                  [Ref#ref{ref = {cell, {X2, Y1}}} | Acc]);
+range_to_list(Ref, Reset, X1, Y1, X2, Y2, Acc) ->
+    range_to_list(Ref, Reset, X1 + 1, Y1, X2, Y2,
+                  [Ref#ref{ref = {cell, {X1, Y1}}} | Acc]).
+
+copy_attributes([],To)       -> {ok, ok};
+copy_attributes([{_, Ref, V} | T], To) ->
+    #ref{name = Name} = Ref,
+    Addr=To#ref{name = Name},
+    hn_main:set_attribute(Addr, V),
+    copy_attributes(T, To).
+
+%% the last parameter returned is whether dates and integers should be incremented
+%% this can only be true for a vertical or horizontal drag (returning 'y' and 'x')
+%% or is otherwise false
+%% cell to cell drag'n'drop
+is_valid(#ref{ref = {cell, A}}, #ref{ref = {cell, A}}) ->
+    {ok, 'onto self', false};
+is_valid(#ref{ref = {cell, {X, Y1}}}, #ref{ref = {cell, {X, Y2}}}) ->
+    {ok, single_cell, y};
+is_valid(#ref{ref = {cell, {X1, Y}}}, #ref{ref = {cell, {X2, Y}}}) ->
+    {ok, single_cell, x};
+is_valid(#ref{ref = {cell, _}}, #ref{ref = {cell, _}}) ->
+    {ok, single_cell, false};
+%% cell to range drag'n'drop
+is_valid(#ref{ref = {cell, {FX, FY}}}, #ref{ref = {range, {TX, TY1, TX, TY2}}}) ->
+    {ok, cell_to_range, y};
+is_valid(#ref{ref = {cell, {FX, FY}}}, #ref{ref = {range, {TX1, TY, TX2, TY}}}) ->
+    {ok, cell_to_range, x};
+is_valid(#ref{ref = {cell, {FX, FY}}}, #ref{ref = {range, {TX1, TY1, TX2, TY2}}}) ->
+    {ok, cell_to_range, false};
+%% range to range drag'n'drop
+is_valid(#ref{ref = {range, Range}}, #ref{ref = {range, Range}}) ->
+    {ok, 'onto self', false};
+is_valid(#ref{ref = {range, {FX, FY1, FX, FY2}}}, #ref{ref = {range, TRange}}) ->
+    {TX1, TY1, TX2, TY2} = TRange,
+    case ((TY2 - TY1) - (FY2 - FY1)) of
+       0    -> {ok, col_range_to_range};
+       true -> {error, "target range is not the same height as the source range"}
+    end;
+is_valid(#ref{ref = {range, {FX1, FY, FX2, FY}}}, #ref{ref = {range, TRange}}) ->
+    {TX1, TY1, TX2, TY2} = TRange,
+    case ((TX2 - TX1) - (FX2 - FX1)) of
+       0    -> {ok, row_range_to_range};
+       true -> {error, "target range is not the same width as the source range"}
+    end;
+is_valid(#ref{ref = {range, FRange}}, #ref{ref = {range, TRange}}) ->
+    {error, "from range is invalid"};
+is_valid(_, _) -> {error, "not valid either"}.
+    
+filter_for_drag_n_drop(List) -> fl(List, [], []).
+
+fl([], A, B)                                                 -> {A, B};
+fl([{_, {ref, _, _, _, value, _}, _}| T], A, B)              -> fl(T, A, B);
+fl([{_, {ref, _, _, _, rawvalue, _}, _}| T], A, B)           -> fl(T, A, B);
+fl([{_, {ref, _, _, _, parents, _}, _}| T], A, B)            -> fl(T, A, B);
+fl([{_, {ref, _, _, _, 'dependancy-tree', _}, _}| T], A, B)  -> fl(T, A, B);
+fl([{_, {ref, _, _, _, '__ast', _}, _}| T], A, B)            -> fl(T, A, B);
+fl([{_, {ref, _, _, _, formula, _}, F}| T], A, B)            -> fl(T, [F | A], B);
+fl([H | T], A, B)                                            -> fl(T, A, [H | B]).
+
 get_par(Index,Path) ->
     El = {local_cell_link,Index#index{path=Path},'_'},
     F = fun() -> mnesia:match_object(El) end,
@@ -467,13 +712,14 @@ dyn_parents(Index = #index{path=[H|T]},Results,Acc) ->
 
 %% @spec notify_remote(Item) -> ok
 %% @doc  Adds an attribute to a reference addressed by Ref
-notify_remote(#hn_item{addr=#ref{name="__"++_}}) ->
-    ok;
-notify_remote(Item=#hn_item{addr=#ref{site=Site,path=Path}}) ->
-    MsgXml=hn_util:item_to_xml(Item),
-    Msg = ?FORMAT("change ~s",[simplexml:to_xml_string(MsgXml)]),
-    gen_server:call(remoting_reg,{change,Site,Path,Msg},?TIMEOUT),
-    ok.
+notify_remote(Item=#hn_item{addr=#ref{site=Site,path=Path,name=Name}}) ->
+    case atom_to_list(Name) of
+        [$_, $_|_R] -> ok; % names of form '__name' are not notified to front-end
+        Other       -> MsgXml=hn_util:item_to_xml(Item),
+                       Msg = ?FORMAT("change ~s",[simplexml:to_xml_string(MsgXml)]),
+                       gen_server:call(remoting_reg,{change,Site,Path,Msg},?TIMEOUT),
+                       ok
+    end.
 
 %% @spec filter_cell(Range,Ref) -> true | false
 %% @doc  Returns true for Refs that are inside Range
@@ -634,3 +880,52 @@ notify_remove(#hn_item{addr=#ref{site=Site,path=Path,ref=Ref,name=Name}}) ->
     Msg = ?FORMAT("delete ~p ~p",[Name,hn_util:ref_to_str(Ref)]),
     gen_server:call(remoting_reg,{change,Site,Path,Msg},?TIMEOUT),
     ok.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                            %%
+%% Debugging interfaces                                                       %%
+%%                                                                            %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+drag_n_drop_DEBUG() ->
+    io:format("in drag_n_drop_DEBUG should fail (1)~n"),
+    drag_n_drop_DEBUG({cell, {1, 1}}, {cell, {1, 1}}),
+    io:format("in drag_n_drop_DEBUG should fail (2)~n"),
+    drag_n_drop_DEBUG({range, {1, 2, 3, 4}}, {range, {1, 2, 3, 4}}), 
+    io:format("in drag_n_drop_DEBUG should go through (3)~n"),
+    drag_n_drop_DEBUG({cell, {1, 1}}, {cell, {1, 2}}),
+%    io:format("in drag_n_drop_DEBUG should go through (4)~n"),
+%    drag_n_drop_DEBUG({cell, {1, 8}}, {cell, {2, 8}}),
+%    io:format("in drag_n_drop_DEBUG should go through (5)~n"),
+%    drag_n_drop_DEBUG({cell, {1, 9}}, {cell, {2, 10}}),    
+    io:format("in drag_n_drop_DEBUG should go through (6)~n"),
+    drag_n_drop_DEBUG({cell, {2, 1}}, {range, {2, 2, 3, 6}}).
+%    io:format("in drag_n_drop_DEBUG should go through (7)~n"),
+%    drag_n_drop_DEBUG({cell, {4, 1}}, {range, {4, 2, 4, 6}}),
+%    io:format("in drag_n_drop_DEBUG should go through (8)~n"),
+%    drag_n_drop_DEBUG({cell, {5, 1}}, {range, {6, 1, 8, 1}}).
+
+drag_n_drop_DEBUG(F, T) ->
+    Site = "http://127.0.0.1:9000",
+    From = #ref{site = Site, path = ["drag_n_drop"], ref = F},
+    To = #ref{site = Site, path = ["drag_n_drop"], ref = T},
+    drag_n_drop(From, To).
+
+delete_cells_DEBUG() ->
+    Site = "http://127.0.0.1:9000",
+    Target = #ref{site = Site, path = ["drag_n_drop"], ref = {range, {1, 1, 20, 20}}},
+    delete_cells(Target).
+   
+clear_cells_DEBUG() ->
+    Site = "http://127.0.0.1:9000",
+    Target = #ref{site = Site, path = ["drag_n_drop"], ref = {range, {1, 1, 20, 20}}},
+    clear_cells(Target).
+
+copy_n_paste_DEBUG() ->
+    Site = "http://127.0.0.1:9000",
+    From1 = #ref{site = Site, path = ["drag_n_drop"], ref = {cell, {1, 1}}},
+    To1 = #ref{site = Site, path = ["drag_n_drop"], ref = {cell, {1, 2}}},
+    copy_n_paste(From1, To1),
+    From2 = #ref{site = Site, path = ["drag_n_drop"], ref = {cell, {2, 1}}},
+    To2 = #ref{site = Site, path = ["drag_n_drop"], ref = {cell, {2, 2}}},
+    drag_n_drop(From2, To2).
+    

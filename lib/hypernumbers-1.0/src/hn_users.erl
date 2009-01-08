@@ -66,8 +66,8 @@ p(Pass) ->
 %% Given a user find the most elevated permission
 %% granted to that user
 get_permissions(User,Ref=#ref{site=Site}) ->
-    Groups = hn_db:get_item_val(#ref{site=Site,ref={page,"/"},name="__groups"}),
-    {ok,Perms}   = hn_db:get_item_list(Ref#ref{name="__permissions"}),
+    Groups = hn_db:get_item_val(#ref{site=Site,ref={page,"/"},name='__groups'}),
+    {ok,Perms}   = hn_db:get_item_list(Ref#ref{name='__permissions'}),
     {ok,UGroups} = find_groups(Groups,User),
     {ok,Access}  = find_perms(User,UGroups,[no_access],Perms),
     %% Sort permissions in order of precedence then pick

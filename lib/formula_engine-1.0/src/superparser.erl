@@ -5,18 +5,19 @@
 
 -export([process/1]).
 
--define(upcase(S),
-        ustring:pr(ustring:to_upper(ustring:new(S)))).
-
 process([$= | Tl]) when Tl =/= [] ->
-    {formula, upcase(Tl)};
+    {formula, super_util:upcase(Tl)};
 process([39 | Tl]) -> % singly quoted string
-    [{string, Tl},{'text-align', "left"},{format, "null"}];
+    io:format("got to here!~n"),
+    [{quote, Tl},{'text-align', "left"},{format, "null"}];
 process(Input) ->
-    {ok, Toks} = xfl_lexer:lex(upcase(Input), {1, 1}),
+    % the xfl_lexer:lex takes a cell address to lex against
+    % in this case {1, 1} is used because the results of this
+    % are not actually going to be used here (ie {1, 1} is a dummy!)
+    {ok, Toks} = xfl_lexer:lex(super_util:upcase(Input), {1, 1}),
     Return = case Toks of
                  [{bool, B}]                -> [{bool, B},
-                                                {'text-align', "center"}, % css is yanktastic
+                                                {'text-align', "center"},
                                                 {format, "null"}];
                  [{float, F}]               -> [{float, F},
                                                 {'text-align', "right"},
@@ -49,32 +50,18 @@ process(Input) ->
                                          {format, "null"}]; 
                  _Other              ->
                      case super_util:autoparse(Toks) of
-                         {ok, bad_date} -> [{string, Input},
-                                            {'text-align', "left"},
-                                            {format, "null"}];
+                         {ok, maybe_bad_date} ->
+                             Date = muin_date:from_rfc1123_string(Input),
+                             case Date of
+                                 bad_date -> [{string, Input},
+                                              {'text-align', "left"},
+                                              {format, "null"}];
+                                 _        -> [{string, Date},
+                                              {'text-align', "center"},
+                                              {format, "dd-mm-yyyy"}]
+                             end;
                          Other          -> Other
                      end
              end,
     Return.
 
-%% Converts formula to upper-case, leaving only string literals as-is.
-upcase(Str) ->
-    {ok, Tokens, _} = superlex:string(Str),
-    % List of numbers (codepoints) interspersed with {string, _} tuples.
-    Str2 = 
-        tl(lists:foldl(fun({stuff, X}, Acc) ->
-                               hslists:init(Acc) ++ ([lists:last(Acc)] ++ X);
-                          (Tok = {string, _}, Acc) ->
-                               Acc ++ [Tok]
-                       end,
-                       [junk],
-                       Tokens)),
-    R = upcase1(Str2, [], []),
-    R.
-
-upcase1([Hd | Tl], Intermbuf, Res) when is_number(Hd) ->
-    upcase1(Tl, Intermbuf ++ [Hd], Res);
-upcase1([{string, Val} | Tl], Intermbuf, Res) ->
-    upcase1(Tl, [], lists:append([Res, ?upcase(Intermbuf), Val]));
-upcase1([], Intermbuf, Res) ->
-    lists:append([Res, ?upcase(Intermbuf)]).

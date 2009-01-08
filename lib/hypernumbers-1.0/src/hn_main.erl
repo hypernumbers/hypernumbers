@@ -9,11 +9,17 @@
 -include("errvals.hrl").
 -include("muin_records.hrl").
 
--export([recalc/1, set_attribute/2, set_cell/2,
-         get_cell_info/4, write_cell/5,
-         get_hypernumber/9, copy_pages_below/2,
-         formula_to_range/2, attributes_to_range/2,
-         get_pages_under/1]).
+-export([recalc/1,
+         set_attribute/2,
+         set_cell/2,
+         get_cell_info/4,
+         write_cell/5,
+         get_hypernumber/9,
+         copy_pages_below/2,
+         formula_to_range/2,
+         attributes_to_range/2,
+         get_pages_under/1,
+         value_to_cell/2]).
 
 %% @spec set_attribute(Ref, Val) -> ok.
 %% @doc set an attribute on a reference, if the attribute name
@@ -35,12 +41,13 @@ set_attribute(Ref,Val) ->
 %% @spec set_cell(Addr, Val) -> ok.
 %% @doc process_formula
 set_cell(Addr, Val) ->
-    case hn_db:get_item_val(Addr#ref{name = "__shared"}) of
+    case hn_db:get_item_val(Addr#ref{name = '__shared'}) of
         true -> throw({error, cant_change_part_of_array});
         _    -> value_to_cell(Addr, Val)
     end.
 
 value_to_cell(Addr, Val) ->
+
     case superparser:process(Val) of
         {formula, Fla} ->
             Rti = ref_to_rti(Addr, false),
@@ -52,8 +59,8 @@ value_to_cell(Addr, Val) ->
                     Parxml = map(fun muin_link_to_simplexml/1, Parents),
                     Deptreexml = map(fun muin_link_to_simplexml/1, Deptree),
 
-                    ?IF(Pcode =/= nil,     db_put(Addr, "__ast", Pcode)),
-                    ?IF(Recompile == true, db_put(Addr, "__recompile", true)),
+                    ?IF(Pcode =/= nil,     db_put(Addr, '__ast', Pcode)),
+                    ?IF(Recompile == true, db_put(Addr, '__recompile', true)),
                     % write the default text align for the result
                     if
                         is_number(Res) ->
@@ -65,7 +72,7 @@ value_to_cell(Addr, Val) ->
                         end,
                     write_cell(Addr, Res, "=" ++ Fla, Parxml, Deptreexml)
             end;            
-        [{_Type, Value}, {'text-align', Align}, Format] ->
+        [{Type, Value}, {'text-align', Align}, Format] ->
             % write out the alignment
             hn_db:write_item(Addr#ref{name='text-align'},Align),
             % write out the format (if any)
@@ -74,8 +81,13 @@ value_to_cell(Addr, Val) ->
                 {format, F}      -> hn_db:write_item(Addr#ref{name=format},F)
             end,
             % now write out the actual cell
-            write_cell(Addr, Value, hn_util:text(Value), [], [])
-    end.
+            Formula = case Type of
+                          quote    -> [39 | Value];
+                          datetime -> Val;
+                          _        -> hn_util:text(Value)
+                      end,
+            write_cell(Addr, Value, Formula, [], [])
+       end.
 
 %% @doc Process a formula in array mode.
 formula_to_range(Formula, Ref = #ref{ref = {range, {TlCol, TlRow, BrCol, BrRow}}}) ->
@@ -92,10 +104,10 @@ formula_to_range(Formula, Ref = #ref{ref = {range, {TlCol, TlRow, BrCol, BrRow}}
                       ParentsXml = map(fun muin_link_to_simplexml/1, Parents),
                       DepTreeXml = map(fun muin_link_to_simplexml/1, DepTree),
                       Addr = Ref#ref{ref = {cell, {Col, Row}}},
-                      db_put(Addr, "__ast", Pcode),
-                      db_put(Addr, "__recompile", Recompile),
-                      db_put(Addr, "__shared", true),
-                      db_put(Addr, "__area", {TlCol, TlRow, BrCol, BrRow}),
+                      db_put(Addr, '__ast', Pcode),
+                      db_put(Addr, '__recompile', Recompile),
+                      db_put(Addr, '__shared', true),
+                      db_put(Addr, '__area', {TlCol, TlRow, BrCol, BrRow}),
                       write_cell(Addr, Value, Formula, ParentsXml, DepTreeXml)
               end,
 
@@ -132,19 +144,19 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
     hn_db:write_item(Addr#ref{name=formula},Formula),
     set_cell_rawvalue(Addr,Value),
 
-%% Delete attribute if empty, else store
+    % Delete attribute if empty, else store
     Set = fun(Ref,{xml,[]}) -> hn_db:remove_item(Ref);
              (Ref,Val)      -> hn_db:write_item(Ref,Val)
           end,
 
     Set(Addr#ref{name=parents},{xml,Parents}),
     Set(Addr#ref{name='dependancy-tree'},{xml,DepTree}),
-%% Delete the references
+    % Delete the references
 
     hn_db:del_links(Index,child),
-%% probably to be cleaned up, go through the remote parents
-%% to this cell, if they dont exist within the list of new
-%% parents, delete it (and unregister)
+    % probably to be cleaned up, go through the remote parents
+    % to this cell, if they dont exist within the list of new
+    % parents, delete it (and unregister)
     lists:foreach(
       fun(X) when is_record(X,remote_cell_link) ->
               Url  = hn_util:index_to_url(X#remote_cell_link.parent),
@@ -158,7 +170,7 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
       end,
       hn_db:read_remote_links(Index,child,incoming)),
 
-%% Writes all the parent links 
+    % Writes all the parent links 
     lists:map( 
       fun({url,[{type,Type}],[Url]}) ->
               {ok,#ref{site=Site,path=Path,ref={cell,{X,Y}}}} = hn_util:parse_url(Url),
@@ -277,14 +289,14 @@ get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY) ->
 %%%-----------------------------------------------------------------
 recalc(Index) ->
     Addr = index_to_ref(Index),
-    case hn_db:get_item_val(Addr#ref{name = "__shared"}) of
+    case hn_db:get_item_val(Addr#ref{name = '__shared'}) of
         true -> recalc_array(Index);
         _    -> recalc_cell(Index)
     end.
 
 recalc_array(Index) ->
     Addr = index_to_ref(Index),
-    {TlCol, TlRow, BrCol, BrRow} = hn_db:get_item_val(Addr#ref{name = "__area"}),
+    {TlCol, TlRow, BrCol, BrRow} = hn_db:get_item_val(Addr#ref{name = '__area'}),
     Formula = hn_db:get_item_val(Addr#ref{name = formula}),
     Target = Addr#ref{ref = {range, {TlCol, TlRow, BrCol, BrRow}}},
     formula_to_range(Formula, Target),
@@ -292,22 +304,22 @@ recalc_array(Index) ->
 
 recalc_cell(Index) ->
     Addr = index_to_ref(Index),
-    case hn_db:get_item_val(Addr#ref{name = "__recompile"}) of
+    case hn_db:get_item_val(Addr#ref{name = '__recompile'}) of
         true ->
             set_cell(Addr, hn_db:get_item_val(Addr#ref{name = formula}));
         _ ->
-            Pcode = hn_db:get_item_val(Addr#ref{name = "__ast"}),
+            Pcode = hn_db:get_item_val(Addr#ref{name = '__ast'}),
             Rti = ref_to_rti(Addr, false),
             %TODO Save Dependancy tree
             case muin:run_code(Pcode, Rti) of
                 {ok, {_, Val, _, _, _}}  -> 
                     set_cell_rawvalue(Addr,Val),
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     % Logging code                                      %
                     % #index{row=Row,column=Col}=Index,                 %
                     % bits:log("Row,"++integer_to_list(Row)++",Col,"++  %
                     %         integer_to_list(Col)), 5                  %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+                    % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
                     hn_db:mark_dirty(Index, cell);
                 {error, _Reason} ->
                     ok
@@ -370,7 +382,8 @@ to_index(#ref{site=Site,path=Path,ref={cell,{X,Y}}}) ->
 index_to_ref(_I = #index{site = Site, path = Path, column = Col, row = Row}) ->
     #ref{site = Site, path = Path, ref = {cell, {Col, Row}}}.
 
-%% @doc Make a #muin_rti record out of a ref record & a flag that specifies whether to run formula in an array context.
+%% @doc Make a #muin_rti record out of a ref record & a flag that specifies 
+%% whether to run formula in an array context.
 ref_to_rti(#ref{site = Site, path = Path, ref = {cell, {Col, Row}}}, ArrayContext) when is_boolean(ArrayContext) ->
     #muin_rti{site = Site, path = Path, col = Col, row = Row, array_context = ArrayContext};
 ref_to_rti(#ref{site = Site, path = Path, ref = {range, {Col, Row, _, _}}}, ArrayContext) when is_boolean(ArrayContext) ->

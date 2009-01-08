@@ -138,10 +138,10 @@ set_perms(Domains) ->
                path = [],
                ref  = {page,"/"}},
     
-    hn_main:set_attribute(Ref#ref{name="__permissions"},
+    hn_main:set_attribute(Ref#ref{name='__permissions'},
                           [{user,anonymous,admin}]),
     
-    hn_main:set_attribute(Ref#ref{name="__groups"},
+    hn_main:set_attribute(Ref#ref{name='__groups'},
                           [{owner,[{user,"admin"}]}]),
 
     ok.

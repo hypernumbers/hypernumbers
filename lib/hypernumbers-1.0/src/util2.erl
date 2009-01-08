@@ -19,6 +19,7 @@
          make_num/1,
          parse_range/1,
          strip_ref/1,
+         make_ref/1,
          get_page_path/1,
          make_text/1,
          repath/1,
@@ -70,11 +71,9 @@ remove_auth(Site)->
           end,
     Protocol++"//"++Site3.
 
-chop(Path)->
-    string:tokens(Path, "/").
+chop(Path)-> string:tokens(Path, "/").
 
-rev_chop(Path)->
-    lists:reverse(chop(Path)).
+rev_chop(Path)-> lists:reverse(chop(Path)).
 
 invalid()->{1,[],[{"invalid code"}],[]}.
 
@@ -114,8 +113,9 @@ strip_ref(Ref) ->
                          true     -> true
                       end
               end,string:to_lower(Ref)),
-
     {tconv:to_i(X),list_to_integer(Y)}.
+
+make_ref({X, Y}) -> tconv:to_b26(X)++tconv:to_s(Y).
 
 get_page_path(Path) ->
     case util2:rev_chop(Path) of

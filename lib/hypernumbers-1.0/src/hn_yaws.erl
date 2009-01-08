@@ -127,7 +127,7 @@ req('GET',[],[{"gui",GUI}],_,#ref{ref={page,"/"}}) ->
     {return,?NOCACHE++[{page,"/html/"++GUI++".html"}]};
 
 req('GET',[],["new"],_,Ref=#ref{site=Site,ref={page,"/"}}) ->
-    Tpl = case hn_db:get_item_val(Ref#ref{name="__template"}) of
+    Tpl = case hn_db:get_item_val(Ref#ref{name='__template'}) of
               [] -> 
                   Path = hn_util:list_to_path(Ref#ref.path)++"{auto,incr}/",
                   hn_templates:make_path(Path);
@@ -269,7 +269,9 @@ req('POST',{delete,[],Recurse},_Attr,_User,Ref = #ref{ref={page,"/"}}) ->
     {ok,{success,[],[]}};
 
 req('POST',{delete,[],Data},_Vars,_User,Ref) ->
-     lists:map
+    % TODO when the API is set up this function should be swapped out for
+    % hn_db:delete_cells()
+    lists:map
       (
       fun({Attr,[],[]}) ->
               hn_db:remove_item(Ref#ref{name=Attr})
@@ -318,7 +320,7 @@ req('POST',{template,[],[{url,[],[Path]}]},_Attr,_User,Ref) ->
     [_Head|Rest] = lists:reverse(string:tokens(Path,"/")),
     NRef = Ref#ref{path=lists:reverse(Rest)},
     Tpl = [{tpl,Ref#ref.path},{url,hn_templates:make_path(Path)}],
-    ok=hn_main:set_attribute(NRef#ref{name="__template"},Tpl),
+    ok=hn_main:set_attribute(NRef#ref{name='__template'},Tpl),
     ok=hn_main:set_attribute(NRef#ref{name=dynamic},"true"),
     {ok,{success,[],[]}};
 
@@ -350,7 +352,7 @@ api_change([{biccie,[],     [Bic]},
 %%--------------------------------------------------------------------
 get_page_attributes(Ref) ->
     F = fun(#hn_item{addr=A}) ->
-                case (A)#ref.name of
+                case atom_to_list((A)#ref.name) of
                     "__"++_ -> false;
                     _       -> true
                 end

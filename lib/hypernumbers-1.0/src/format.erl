@@ -66,11 +66,12 @@ run_format(X,Src)->
 %%% @doc Run-time interface not an API - this function should *NOT*
 %%% be programmed against
 %%% @end
-format(X,{date,Format})    -> {_, Date, Time} = X,
-                              Y = {Date, Time},
-                              format_date(Y,Format);
-format(X,{number,Format})  -> format_num(X,Format);
-format(X,{text,Format})    -> format(X,Format,[]).
+format(X = {datetime, _, _},{date,Format}) -> {_, Date, Time} = X,
+                                              Y = {Date, Time},
+                                              format_date(Y,Format);
+format(X,{date, Format})                   -> tconv:to_s(X); 
+format(X,{number,Format})                  -> format_num(X,Format);
+format(X,{text,Format})                    -> format(X,Format,[]).
 
 %%% @doc run-time interface not an API - this function should *NOT*
 %%% be programmed against
@@ -475,8 +476,7 @@ shift(Number,?ASC_MINUS,Exp) ->
 %% Format dates                                                              %%
 %%                                                                           %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-format_date(X,Format)->
+format_date(X, Format) ->
     Has_AMPM=has_AMPM(Format),
     format_date(X,Format,Has_AMPM,[]).
 
