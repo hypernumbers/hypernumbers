@@ -42,21 +42,20 @@
          hn_changed/1,
          drag_n_drop/2,
          copy_n_paste/2,
+         cut_n_paste/2,
          delete_cells/1,
          clear_cells/1]).
 
 %%% Debugging interface
--export([drag_n_drop_DEBUG/0,
-         drag_n_drop_DEBUG/2,
-         delete_cells_DEBUG/0,
-         clear_cells_DEBUG/0,
-         copy_n_paste_DEBUG/0]).
+-export([copy_DEBUG/0,
+         delete_cells_DEBUG/1,
+         clear_cells_DEBUG/1]).
 
 %% @spec create() -> ok
 %% @doc  Creates the database for hypernumbers
 create()->
-    %% Seems sensible to keep this restricted
-    %% to disc_copies for now
+%% Seems sensible to keep this restricted
+%% to disc_copies for now
     Storage = disc_copies,
     application:stop(mnesia),
     ok = mnesia:delete_schema([node()]),
@@ -143,7 +142,7 @@ get_item_list(Addr = #ref{ref={RefType,_}}) ->
 %% @doc  Removes item addressed by Ref
 remove_item(#ref{site=Site,path=Path,ref=Ref,name=Name}) ->    
     F = fun() ->
-                %% If Name is defined, match it
+%% If Name is defined, match it
                 N = ?COND(Name == undef,'_',Name),
                 Attr  = #ref{site=Site, path=Path,ref=Ref, name=N, _ = '_'},
                 Match = #hn_item{addr = Attr, _ = '_'},
@@ -182,7 +181,7 @@ del_links(Index, Relation) ->
     Obj = ?COND(Relation == child,
                 {local_cell_link,'_',Index},
                 {local_cell_link,Index,'_'}),
-    
+
     F = fun() -> 
                 lists:foreach(
                   fun mnesia:delete_object/1, 
@@ -198,10 +197,10 @@ del_links(Index, Relation) ->
 del_remote_link(Obj=#remote_cell_link{type=outgoing}) ->
     F = fun() ->
                 mnesia:dirty_delete_object(Obj),
-                
+
                 Me       = Obj#remote_cell_link.parent,
                 Outgoing = #remote_cell_link{parent=Me,type=outgoing,_='_'},
-                
+
                 case mnesia:match_object(Outgoing) of
                     [] ->
                         Out  = #outgoing_hn{index={'_',Me},_='_'},
@@ -217,32 +216,32 @@ del_remote_link(Obj=#remote_cell_link{type=outgoing}) ->
 del_remote_link(Obj = #remote_cell_link{type=incoming}) ->
 
     ChildUrl = hn_util:index_to_url(Obj#remote_cell_link.child),
-    
+
     F = fun() ->
                 Remote = Obj#remote_cell_link.parent,
-                %% Remove the relevant child attribute
+%% Remove the relevant child attribute
                 ParentRef = #ref{
                   site=Remote#index.site,
                   path=Remote#index.path,
                   name=children,
                   ref= {cell,{Remote#index.column,
                               Remote#index.row}}},
-                
+
                 Fun = fun(X) ->
                               ?COND(X == {url,[{type,"remote"}],[ChildUrl]}, 
                                     false, true)
                       end,
-                
+
                 Children = lists:filter(Fun,get_item_val(ParentRef)),                
-                
+
                 case Children of
                     [] -> hn_db:remove_item(ParentRef);
                     _  -> hn_db:write_item(ParentRef,Children)
                 end,
-                
+
                 mnesia:dirty_delete_object(Obj),
                 [Hn] = mnesia:match_object(#incoming_hn{remote=Remote,_='_'}),
-                
+
                 Link = #remote_cell_link{parent=Remote,type=incoming,_='_'},
                 case mnesia:match_object(Link) of
                     [] -> mnesia:delete_object(Hn);
@@ -250,10 +249,10 @@ del_remote_link(Obj = #remote_cell_link{type=incoming}) ->
                 end,
                 Hn
         end,
-    
+
     Hn = ?mn_ac(transaction,F),
-    
-    %% Unregister
+
+%% Unregister
     Url     = hn_util:index_to_url(Obj#remote_cell_link.parent),
     Actions = simplexml:to_xml_string(
                 {unregister,[],[
@@ -261,7 +260,7 @@ del_remote_link(Obj = #remote_cell_link{type=incoming}) ->
                                 {url,   [],[ChildUrl]}
                                ]}),    
     hn_util:post(Url++"?hypernumber",Actions,"text/xml"),
-    
+
     ok.
 
 %% @spec write_remote_link(Parent,Child,Type) -> ok
@@ -275,12 +274,12 @@ write_remote_link(Parent,Child,Type) ->
                   path=Parent#index.path,
                   ref= {cell,{Parent#index.column,Parent#index.row}},
                   name = children},
-                
+
                 Children = [{url,[{type,"remote"}],[hn_util:index_to_url(Child)]}
                             | get_item_val(ParentRef)],
-                
+
                 hn_db:write_item(ParentRef,{xml,Children}),
-                
+
                 Link = #remote_cell_link{parent=Parent,child=Child,type=Type},
                 case mnesia:match_object(Link) of
                     [] ->
@@ -304,11 +303,11 @@ write_remote_link(Parent,Child,Type) ->
                                       {proxy, [],[Proxy]},
                                       {url,   [],[Url]}
                                      ]}),
-            
+
             PUrl = hn_util:index_to_url(Parent),
             hn_util:post(PUrl++"?hypernumber",Actions,"text/xml"),
             ok;
-        
+
         _-> ok
     end.
 
@@ -334,11 +333,11 @@ hn_changed(Cell) ->
     F = fun() ->
                 Link = #remote_cell_link{
                   parent=Cell,type=incoming,_='_'},
-                
+
                 X = fun(#remote_cell_link{child=Child}) ->
                             hn_main:recalc(Child)
                     end,
-                
+
                 lists:foreach(X,mnesia:match_object(Link)),
                 ok
         end,
@@ -350,25 +349,25 @@ hn_changed(Cell) ->
 mark_dirty(Index,cell) ->
     % Make a list of cells hypernumbers + direct
     % cell links, and check for any wildcard * on the path
-        Fun1 = fun() ->
-                       % First read dynamic links "/page/*/a1"
-                       NIndex = Index#index{path=lists:reverse(Index#index.path)},
-                       Queries = dyn_parents(NIndex,[],[]),
-                       % Second read direct links
-                       Direct = read_links(Index,parent),
-                       % Last get hypernumbers that are children
-                       Rem = #remote_cell_link{parent=Index,
-                                               type=outgoing,_='_'},
-                       Links = mnesia:match_object(Rem),
-                       RemReturn=list_hn(Links,[]),
-                       {ok,RemReturn,lists:append(Direct,Queries)}
-               end,
+    Fun1 = fun() ->
+                   % First read dynamic links "/page/*/a1"
+                   NIndex = Index#index{path=lists:reverse(Index#index.path)},
+                   Queries = dyn_parents(NIndex,[],[]),
+                   % Second read direct links
+                   Direct = read_links(Index,parent),
+                   % Last get hypernumbers that are children
+                   Rem = #remote_cell_link{parent=Index,
+                                           type=outgoing,_='_'},
+                   Links = mnesia:match_object(Rem),
+                   RemReturn=list_hn(Links,[]),
+                   {ok,RemReturn,lists:append(Direct,Queries)}
+           end,
     {ok,Remote,Local} = ?mn_ac(transaction,Fun1),
     % Now write the local children to dirty_cell
     Fun2 = fun(#local_cell_link{child=To}) -> 
                    F = fun() -> 
-                               %% only write the dirty cell if 
-                               %% it doesnt already exist
+%% only write the dirty cell if 
+%% it doesnt already exist
                                Match=#dirty_cell{index=To,_='_'},
                                case mnesia:match_object(Match) of
                                    [] -> mnesia:write(#dirty_cell{index=To}) ;
@@ -408,7 +407,7 @@ update_hn(From,Bic,Val,_Version)->
                 Index = hn_util:ref_to_index(ParsedFrom),
                 Rec   = #incoming_hn{ remote = Index, biccie = Bic, _='_'},
                 [Obj] = mnesia:match_object(Rec),
-                
+
                 mnesia:write(Obj#incoming_hn{value=hn_util:xml_to_val(Val)}),
                 ok = mark_dirty(Index,hypernumber)
         end,
@@ -430,21 +429,21 @@ do_get_hn(Url,To)->
         []->
             case http:request(get,{Url,[]},[],[]) of
                 {ok,{{_V,200,_R},_H,Xml}} ->
-                    
+
                     {hypernumber,[],[
                                      {value,[],              [Val]},
                                      {'dependancy-tree',[],  Tree}]
                     } = simplexml:from_xml_string(Xml),
-                    
+
                     HNumber = #incoming_hn{
                       value   = hn_util:xml_to_val(Val),
                       deptree = Tree,
                       remote  = To,
                       biccie  = util2:get_biccie()},
-                    
+
                     mnesia:write(HNumber),
                     HNumber;
-                
+
                 {ok,{{_V,503,_R},_H,_Body}} ->
                     {error,permission_denied}
             end
@@ -458,12 +457,12 @@ register_hn(To,From,Bic,Proxy,Url) ->
                   parent=To,
                   child=From,
                   type=outgoing},
-                
+
                 Hn = #outgoing_hn{
                   index  = {Proxy,To},
                   biccie = Bic,
                   url    = Url},
-                
+
                 mnesia:write(Link),
                 mnesia:write(Hn),
                 ok
@@ -471,29 +470,57 @@ register_hn(To,From,Bic,Proxy,Url) ->
     _Ok = ?mn_ac(transaction,F),
 	ok.
 
+
+%% @spec cut_n_paste(From, To) -> ok;
+%% @doc copies the formula and formats from a cell or range and 
+%% pastes them to the destination  then deletes the original
+%% (the difference between drag'n'drop
+%% and copy/cut'n'paste is that drag'n'drop increments)
+cut_n_paste(From, To) ->
+    case is_valid_c_n_p(From, To) of
+        {ok, single_cell}    -> copy_cut_drag_n_paste_drop(From, To, false);
+        {ok, 'onto self'}    -> {ok, ok};
+        {ok, cell_to_range}  -> copy_cut_drag_n_paste_drop2(From, To, false);
+        {ok, range_to_range} -> exit("erk!")
+    end,
+    delete_cells(From).
+
 %% @spec copy_n_paste(From, To) -> ok;
 %% @doc copies the formula and formats from a cell or range and 
 %% pastes them to the destination (the difference between drag'n'drop
-%% and cut'n'paste is that drag'n'drop increments)
+%% and copy/cut'n'paste is that drag'n'drop increments)
 copy_n_paste(From, To) ->
-    case is_valid(From, To) of
-        {ok, single_cell, Incr}   -> copy_n_paste1(From, To, false);
-        {ok, 'onto self', _Incr}  -> {ok, ok};
-        {ok, cell_to_range, Incr} -> copy_n_paste2(From, To, false)
+    case is_valid_c_n_p(From, To) of
+        {ok, single_cell}    -> copy_cut_drag_n_paste_drop(From, To, false);
+        {ok, 'onto self'}    -> {ok, ok};
+        {ok, cell_to_range}  -> copy_cut_drag_n_paste_drop2(From, To, false);
+        {ok, range_to_range} -> exit("erk!")
+    end.
+
+is_valid_c_n_p(From, From)                                    -> {ok, 'onto self'};
+is_valid_c_n_p(#ref{ref = {cell, _}}, #ref{ref = {cell, _}})  -> {ok, single_cell};
+is_valid_c_n_p(#ref{ref = {cell, _}}, #ref{ref = {range, _}}) -> {ok, cell_to_range};
+is_valid_c_n_p(#ref{ref = {range, {FX1, FY1, FX2, FY2}}}, #ref{ref = {range, {TX1, TY1, TX2, TY2}}}) ->
+    % two ranges for copy'n'paste (and cut'n'paste) must be the same shape
+    X = TX2 - TX1,
+    Y = TY2 - TY1,
+    case {FX2 - FX1, FY2 - FY1} of
+        {X, Y} -> {ok, range_to_range};
+        _Other -> exit(invalid_range)
     end.
 
 %% @spec drag_n_drop(From, To) -> ok;
 %% @doc takes the formula and formats from a cell and drag_n_drops 
 %% them over a destination (the difference between drag'n'drop
-%% and cut'n'paste is that drag'n'drop increments)
+%% and copy/cut'n'paste is that drag'n'drop increments)
 drag_n_drop(From, To) ->
-    case is_valid(From, To) of
-        {ok, single_cell, Incr}   -> copy_n_paste1(From, To, Incr);
+    case is_valid_d_n_d(From, To) of
+        {ok, single_cell, Incr}   -> copy_cut_drag_n_paste_drop(From, To, Incr);
         {ok, 'onto self', _Incr}  -> {ok, ok};
-        {ok, cell_to_range, Incr} -> copy_n_paste2(From, To, Incr)
+        {ok, cell_to_range, Incr} -> copy_cut_drag_n_paste_drop2(From, To, Incr)
     end.
 
-copy_n_paste1(From, To, Incr) ->
+copy_cut_drag_n_paste_drop(From, To, Incr) ->
     FromList = get_item(From),
     {Contents, FilteredList} = filter_for_drag_n_drop(FromList),
     Output = case Contents of
@@ -504,11 +531,9 @@ copy_n_paste1(From, To, Incr) ->
     #ref{ref = {cell, {TX, TY}}} = To,
     case Output of
         {formula, Formula} ->
-            % TODO - make me work properly
             {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {FX, FY}),
             NewToks = offset(Toks, (TX - FX), (TY - FY)),
             NewFormula = make_formula(NewToks),
-            io:format("in copy_n_paste1 NewFormula are ~p~n",[NewFormula]),
             hn_main:set_cell(To#ref{name=formula}, NewFormula);
         [{Type, V},  _A, _F] ->
             V2 = case Incr of
@@ -534,16 +559,15 @@ copy_n_paste1(From, To, Incr) ->
     {ok, ok} = copy_attributes(FilteredList, To),
     ok.
 
-copy_n_paste2(From, To, Incr) ->
+copy_cut_drag_n_paste_drop2(From, To, Incr) ->
     #ref{ref = {range, {X1, Y1, X2, Y2}}} = To,
     List = range_to_list(To, X1, Y1, X2, Y2),
-    lists:map(fun(X) -> copy_n_paste1(From, X, Incr) end, List).
+    lists:map(fun(X) -> copy_cut_drag_n_paste_drop(From, X, Incr) end, List).
 
 offset(Toks, XOffset, YOffset) -> offset(Toks, XOffset, YOffset, []).
 
 offset([], _XOffset, _YOffset, Acc) -> lists:reverse(Acc);
 offset([{ref, Col, Row, Path, Cell} | T], XOffset, YOffset, Acc) ->
-    io:format("in offset Col is ~p Row is ~p Cell is ~p~n",[Col, Row, Cell]),
     {XDollar, X, YDollar, Y} = parse_cell(Cell),
     NewCell = make_cell(XDollar, X, XOffset, YDollar, Y, YOffset),
     NewRef = {ref, Col, Row, Path, NewCell},
@@ -553,9 +577,9 @@ offset([H | T], XOffset, YOffset, Acc) ->
 
 parse_cell(Ref) ->
     {XDollar, Rest} = case Ref of
-                           [$$ | T1] -> {true, T1};
-                           _         -> {false, Ref}
-                       end,
+                          [$$ | T1] -> {true, T1};
+                          _         -> {false, Ref}
+                      end,
     Fun = fun(XX) ->
                   if XX < 97  -> false;
                      XX > 122 -> false;
@@ -578,14 +602,13 @@ make_cell(false, X, XOffset, true, Y, YOffset) ->
 make_cell(true, X, XOffset, true, Y, YOffset)  -> 
     [$$]++tconv:to_b26(X)++[$$]++tconv:to_s(Y).
 
-make_formula(Toks) -> io:format("in make_formula Toks are ~p~n",[Toks]),
-                      mk_f(Toks, []).
+make_formula(Toks) -> mk_f(Toks, []).
 
 mk_f([], Acc)                        -> "="++lists:flatten(lists:reverse(Acc));
 mk_f([{ref, _, _, _, Ref} | T], Acc) -> mk_f(T, [Ref | Acc]);
 mk_f([{atom, H} | T], Acc)           -> mk_f(T, [H | Acc]);
 mk_f([{H} | T], Acc)                 -> mk_f(T, [atom_to_list(H) | Acc]).
-                              
+
 diff(FX, FY, TX, TY, x) -> TX - FX;
 diff(FX, FY, TX, TY, y) -> TY - FY.
 
@@ -606,7 +629,7 @@ delete_cells(Ref = #ref{ref = {cell, {X, Y}}}) ->
             {'__area', [], []},
             {'dependency-tree', [], []},
             {parents, [], []}],
-        lists:map
+    lists:map
       (
       fun({Attr,[],[]}) ->
               hn_db:remove_item(Ref#ref{name=Attr})
@@ -622,13 +645,26 @@ clear_cells(Ref = #ref{ref = {range, {X1, Y1, X2, Y2}}}) ->
     List = range_to_list(Ref, X1, Y1, X2, Y2),
     lists:map(fun(X) -> clear_cells(X) end, List);
 clear_cells(Ref = #ref{ref = {cell, {X, Y}}}) ->
-    io:format("in clear_cells for Ref ~p~n", [Ref]),
     remove_item(Ref#ref{name = undef}).
-    
+
 %%--------------------------------------------------------------------
 %% Internal Functions
 %%--------------------------------------------------------------------
-range_to_list(Ref, X1, Y1, X2, Y2) -> range_to_list(Ref, X1, X1, Y1, X2, Y2, []).
+rectify_range(X1, Y1, X2, Y2) ->
+    % in case the range is passed in arsey-backwards
+    {X1a, X2a} = if
+                     X1 < X2 -> {X1, X2};
+                     true    -> {X2, X1}
+                 end,
+    {Y1a, Y2a} = if
+                     Y1 < Y2 -> {Y1, Y2};
+                     true    -> {Y2, Y1}
+                 end,
+    {X1a, Y1a, X2a, Y2a}.
+
+range_to_list(Ref, X1, Y1, X2, Y2) ->
+    {X1a, Y1a, X2a, Y2a} = rectify_range(X1, Y1, X2, Y2),
+    range_to_list(Ref, X1a, X1a, Y1a, X2a, Y2a, []).
 
 range_to_list(Ref, Reset, X, Y, X, Y, Acc) -> [Ref#ref{ref = {cell, {X, Y}}} | Acc];
 range_to_list(Ref, Reset, X2, Y1, X2, Y2, Acc) ->
@@ -649,40 +685,40 @@ copy_attributes([{_, Ref, V} | T], To) ->
 %% this can only be true for a vertical or horizontal drag (returning 'y' and 'x')
 %% or is otherwise false
 %% cell to cell drag'n'drop
-is_valid(#ref{ref = {cell, A}}, #ref{ref = {cell, A}}) ->
+is_valid_d_n_d(#ref{ref = {cell, A}}, #ref{ref = {cell, A}}) ->
     {ok, 'onto self', false};
-is_valid(#ref{ref = {cell, {X, Y1}}}, #ref{ref = {cell, {X, Y2}}}) ->
+is_valid_d_n_d(#ref{ref = {cell, {X, Y1}}}, #ref{ref = {cell, {X, Y2}}}) ->
     {ok, single_cell, y};
-is_valid(#ref{ref = {cell, {X1, Y}}}, #ref{ref = {cell, {X2, Y}}}) ->
+is_valid_d_n_d(#ref{ref = {cell, {X1, Y}}}, #ref{ref = {cell, {X2, Y}}}) ->
     {ok, single_cell, x};
-is_valid(#ref{ref = {cell, _}}, #ref{ref = {cell, _}}) ->
+is_valid_d_n_d(#ref{ref = {cell, _}}, #ref{ref = {cell, _}}) ->
     {ok, single_cell, false};
 %% cell to range drag'n'drop
-is_valid(#ref{ref = {cell, {FX, FY}}}, #ref{ref = {range, {TX, TY1, TX, TY2}}}) ->
+is_valid_d_n_d(#ref{ref = {cell, {FX, FY}}}, #ref{ref = {range, {TX, TY1, TX, TY2}}}) ->
     {ok, cell_to_range, y};
-is_valid(#ref{ref = {cell, {FX, FY}}}, #ref{ref = {range, {TX1, TY, TX2, TY}}}) ->
+is_valid_d_n_d(#ref{ref = {cell, {FX, FY}}}, #ref{ref = {range, {TX1, TY, TX2, TY}}}) ->
     {ok, cell_to_range, x};
-is_valid(#ref{ref = {cell, {FX, FY}}}, #ref{ref = {range, {TX1, TY1, TX2, TY2}}}) ->
+is_valid_d_n_d(#ref{ref = {cell, {FX, FY}}}, #ref{ref = {range, {TX1, TY1, TX2, TY2}}}) ->
     {ok, cell_to_range, false};
 %% range to range drag'n'drop
-is_valid(#ref{ref = {range, Range}}, #ref{ref = {range, Range}}) ->
+is_valid_d_n_d(#ref{ref = {range, Range}}, #ref{ref = {range, Range}}) ->
     {ok, 'onto self', false};
-is_valid(#ref{ref = {range, {FX, FY1, FX, FY2}}}, #ref{ref = {range, TRange}}) ->
+is_valid_d_n_d(#ref{ref = {range, {FX, FY1, FX, FY2}}}, #ref{ref = {range, TRange}}) ->
     {TX1, TY1, TX2, TY2} = TRange,
     case ((TY2 - TY1) - (FY2 - FY1)) of
-       0    -> {ok, col_range_to_range};
-       true -> {error, "target range is not the same height as the source range"}
+        0    -> {ok, col_range_to_range};
+        true -> {error, "target range is not the same height as the source range"}
     end;
-is_valid(#ref{ref = {range, {FX1, FY, FX2, FY}}}, #ref{ref = {range, TRange}}) ->
+is_valid_d_n_d(#ref{ref = {range, {FX1, FY, FX2, FY}}}, #ref{ref = {range, TRange}}) ->
     {TX1, TY1, TX2, TY2} = TRange,
     case ((TX2 - TX1) - (FX2 - FX1)) of
-       0    -> {ok, row_range_to_range};
-       true -> {error, "target range is not the same width as the source range"}
+        0    -> {ok, row_range_to_range};
+        true -> {error, "target range is not the same width as the source range"}
     end;
-is_valid(#ref{ref = {range, FRange}}, #ref{ref = {range, TRange}}) ->
+is_valid_d_n_d(#ref{ref = {range, FRange}}, #ref{ref = {range, TRange}}) ->
     {error, "from range is invalid"};
-is_valid(_, _) -> {error, "not valid either"}.
-    
+is_valid_d_n_d(_, _) -> {error, "not valid either"}.
+
 filter_for_drag_n_drop(List) -> fl(List, [], []).
 
 fl([], A, B)                                                 -> {A, B};
@@ -744,13 +780,13 @@ notify_remote_change(Hn,Value) ->
                            [Version]),
 
     Actions = simplexml:to_xml_string(
-        {notify,[],[
-            {biccie,      [],[Hn#outgoing_hn.biccie]},
-            {cell,        [],[hn_util:index_to_url(Cell)]},
-            {type,        [],["change"]},
-            {value,       [],hn_util:to_xml(Value)},
-            {version,     [],["1"]}
-        ]}),
+                {notify,[],[
+                            {biccie,      [],[Hn#outgoing_hn.biccie]},
+                            {cell,        [],[hn_util:index_to_url(Cell)]},
+                            {type,        [],["change"]},
+                            {value,       [],hn_util:to_xml(Value)},
+                            {version,     [],["1"]}
+                           ]}),
 
     hn_util:post(Server,Actions,"text/xml"),
     ok.
@@ -766,14 +802,14 @@ list_hn([H|T],List) ->
     [Hn] = mnesia:match_object(#outgoing_hn{index={'_',Cell},_='_'}),
     Return=list_hn(T,hn_util:add_uniq(List,Hn)),
     Return.
-    
+
 write_template(Name,TemplatePath,Gui,Form) ->
     CompiledPath=hn_templates:make_path(TemplatePath),
     Template=#template{name=Name,temp_path=CompiledPath,
                        gui=Gui,form=Form},
     Fun  = fun() ->
-		   mnesia:write(Template)
-	   end,
+                   mnesia:write(Template)
+           end,
     ok = ?mn_ac(async_dirty,Fun),
     {ok,ok}.
 
@@ -886,46 +922,241 @@ notify_remove(#hn_item{addr=#ref{site=Site,path=Path,ref=Ref,name=Name}}) ->
 %% Debugging interfaces                                                       %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-drag_n_drop_DEBUG() ->
-    io:format("in drag_n_drop_DEBUG should fail (1)~n"),
-    drag_n_drop_DEBUG({cell, {1, 1}}, {cell, {1, 1}}),
-    io:format("in drag_n_drop_DEBUG should fail (2)~n"),
-    drag_n_drop_DEBUG({range, {1, 2, 3, 4}}, {range, {1, 2, 3, 4}}), 
-    io:format("in drag_n_drop_DEBUG should go through (3)~n"),
-    drag_n_drop_DEBUG({cell, {1, 1}}, {cell, {1, 2}}),
-%    io:format("in drag_n_drop_DEBUG should go through (4)~n"),
-%    drag_n_drop_DEBUG({cell, {1, 8}}, {cell, {2, 8}}),
-%    io:format("in drag_n_drop_DEBUG should go through (5)~n"),
-%    drag_n_drop_DEBUG({cell, {1, 9}}, {cell, {2, 10}}),    
-    io:format("in drag_n_drop_DEBUG should go through (6)~n"),
-    drag_n_drop_DEBUG({cell, {2, 1}}, {range, {2, 2, 3, 6}}).
-%    io:format("in drag_n_drop_DEBUG should go through (7)~n"),
-%    drag_n_drop_DEBUG({cell, {4, 1}}, {range, {4, 2, 4, 6}}),
-%    io:format("in drag_n_drop_DEBUG should go through (8)~n"),
-%    drag_n_drop_DEBUG({cell, {5, 1}}, {range, {6, 1, 8, 1}}).
+copy_DEBUG() ->
+    copy_DEBUG2("drag_n_drop"),
+    copy_DEBUG2("copy_n_paste"),
+    copy_DEBUG2("cut_n_paste").
 
-drag_n_drop_DEBUG(F, T) ->
-    Site = "http://127.0.0.1:9000",
-    From = #ref{site = Site, path = ["drag_n_drop"], ref = F},
-    To = #ref{site = Site, path = ["drag_n_drop"], ref = T},
-    drag_n_drop(From, To).
+copy_DEBUG2(FunName) ->
+    delete_cells_DEBUG(FunName),
+    write_value(FunName, FunName++" - cell to cell", {1, 1}, [bold, underline]),
 
-delete_cells_DEBUG() ->
+    % cell to cell drop down
+    write_value(FunName, "integer below", {1, 2}, [bold]),
+    write_value(FunName, "1", {1, 3}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {1, 3}}, {cell, {1, 4}}),
+    colour(FunName, {1, 3}, "cyan"),
+
+    write_value(FunName, "float below", {1, 5}, [bold]),
+    write_value(FunName, "1.1", {1, 6}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {1, 6}}, {cell, {1, 7}}),
+    colour(FunName, {1, 6}, "cyan"),
+
+    write_value(FunName, "string below", {1, 8}, [bold]),
+    write_value(FunName, "hey!", {1, 9}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {1, 9}}, {cell, {1, 10}}),
+    colour(FunName, {1, 9}, "cyan"),
+
+    write_value(FunName, "date below", {1, 11}, [bold]),
+    write_value(FunName, "1/2/3 4:5:6", {1, 12}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {1, 12}}, {cell, {1, 13}}),
+    colour(FunName, {1, 12}, "cyan"),
+
+    write_value(FunName, "boolean below", {1, 14}, [bold]),
+    write_value(FunName, "true", {1, 15}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {1, 15}}, {cell, {1, 16}}),
+    colour(FunName, {1, 15}, "cyan"),
+
+    % cell to cell across
+    write_value(FunName, "integer beside", {2, 2}, [bold]),
+    write_value(FunName, "1", {2, 3}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {2, 3}}, {cell, {3, 3}}),
+    colour(FunName, {2, 3}, "cyan"),
+
+    write_value(FunName, "float beside", {2, 5}, [bold]),
+    write_value(FunName, "1.1", {2, 6}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {2, 6}}, {cell, {3, 6}}),
+    colour(FunName, {2, 6}, "cyan"),
+
+    write_value(FunName, "string beside", {2, 8}, [bold]),
+    write_value(FunName, "hey!", {2, 9}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {2, 9}}, {cell, {3, 9}}),
+    colour(FunName, {2, 9}, "cyan"),
+
+    write_value(FunName, "date beside", {2, 11}, [bold]),
+    write_value(FunName, "1/2/3 4:5:6", {2, 12}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {2, 12}}, {cell, {3, 12}}),
+    colour(FunName, {2, 12}, "cyan"),
+
+    write_value(FunName, "boolean beside", {2, 14}, [bold]),
+    write_value(FunName, "true", {2, 15}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {2, 15}}, {cell, {3, 15}}),
+    colour(FunName, {2, 15}, "cyan"),
+
+    make_thin(FunName, 4),
+
+    write_value(FunName, "Drag'n'Drop - cell to down 'thin' range", {5, 1}, [bold, underline]),
+    % cell to range down
+    write_value(FunName, "integer below", {5, 2}, [bold]),
+    write_value(FunName, "1", {5, 3}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {5, 3}}, {range, {5, 4, 5, 5}}),
+    colour(FunName, {5, 3}, "cyan"),
+
+    write_value(FunName, "float below", {6, 5}, [bold]),
+    write_value(FunName, "1.1", {6, 6}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {6, 6}}, {range, {6, 7, 6, 8}}),
+    colour(FunName, {6, 6}, "cyan"),
+
+    write_value(FunName, "string below", {5, 8}, [bold]),
+    write_value(FunName, "hey!", {5, 9}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {5, 9}}, {range, {5, 10, 5, 11}}),
+    colour(FunName, {5, 9}, "cyan"),
+
+    write_value(FunName, "date below", {6, 11}, [bold]),
+    write_value(FunName, "1/2/3 4:5:6", {6, 12}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {6, 12}}, {range, {6, 13, 6, 14}}),
+    colour(FunName, {6, 12}, "cyan"),
+
+    write_value(FunName, "boolean below", {5, 14}, [bold]),
+    write_value(FunName, "true", {5, 15}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {5, 15}}, {range, {5, 16, 5, 17}}),
+    colour(FunName, {5, 15}, "cyan"),
+
+    write_value(FunName, "Drag'n'Drop - cell to across 'thin' range", {7, 1}, [bold, underline]),
+    % cell to range down
+    write_value(FunName, "integer beside", {7, 2}, [bold]),
+    write_value(FunName, "1", {7, 3}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {7, 3}}, {range, {7, 4, 8, 4}}),
+    colour(FunName, {7, 3}, "cyan"),
+
+    write_value(FunName, "float beside", {7, 5}, [bold]),
+    write_value(FunName, "1.1", {7, 6}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {7, 6}}, {range, {7, 7, 8, 7}}),
+    colour(FunName, {7, 6}, "cyan"),
+
+    write_value(FunName, "string beside", {7, 8}, [bold]),
+    write_value(FunName, "hey!", {7, 9}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {7, 9}}, {range, {7, 10, 8, 10}}),
+    colour(FunName, {7, 9}, "cyan"),
+
+    write_value(FunName, "date beside", {7, 11}, [bold]),
+    write_value(FunName, "1/2/3 4:5:6", {7, 12}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {7, 12}}, {range, {7, 13, 8, 13}}),
+    colour(FunName, {7, 12}, "cyan"),
+
+    write_value(FunName, "boolean beside", {7, 14}, [bold]),
+    write_value(FunName, "true", {7, 15}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {7, 15}}, {range, {7, 16,  8, 16}}),
+    colour(FunName, {7, 15}, "cyan"),
+
+    make_thin(FunName, 9),
+
+    % cell to 'thick' ranges don't increment even if they are drag'n'drop
+    write_value(FunName, "Drag'n'Drop - cell to 'thick' range", {10,1}, [bold, underline]),
+
+    write_value(FunName, "integer", {10,2}, [bold]),
+    write_value(FunName, "1", {10,3}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {10,3}}, {range, {10,4, 11, 10}}),
+    colour(FunName, {10,3}, "cyan"),
+
+    % same as above but arsey backwards range
+    write_value(FunName, "testing inverted range", {10,11}, [bold]),
+    write_value(FunName, "1", {10,12}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {10,12}}, {range, {10, 20, 11, 13}}),
+    colour(FunName, {10,3}, "cyan"),
+
+    make_thin(FunName, 12),
+
+    % set up formula data
+    write_value(FunName, "data for formula", {13,2}, [bold]),
+    colour(FunName, {13, 2}, "yellow"),
+    write_value(FunName, "1", {13, 3}, []),
+    write_value(FunName, "22", {13, 4}, []),
+    write_value(FunName, "333", {13, 5}, []),
+    write_value(FunName, "4444", {13, 6}, []),
+    write_value(FunName, "5555", {13, 7}, []),
+    write_value(FunName, "11111", {14, 3}, []),
+    write_value(FunName, "222222", {14, 4}, []),
+    write_value(FunName, "333333", {14, 5}, []),
+    write_value(FunName, "4444444", {14, 6}, []),
+    write_value(FunName, "55555555", {14, 7}, []),
+    colour(FunName, {13, 3}, "orange"),
+    colour(FunName, {13, 4}, "orange"),
+    colour(FunName, {13, 5}, "orange"),
+    colour(FunName, {13, 6}, "orange"),
+    colour(FunName, {13, 7}, "orange"),
+    colour(FunName, {14, 3}, "orange"),
+    colour(FunName, {14, 4}, "orange"),
+    colour(FunName, {14, 5}, "orange"),
+    colour(FunName, {14, 6}, "orange"),
+    colour(FunName, {14, 7}, "orange"),
+
+    make_thin(FunName, 15),
+
+    % some formula stuff
+    write_value(FunName, "formula below", {16, 2}, [bold]),
+    write_value(FunName, "=m3+n3", {16, 3}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {16, 3}}, {range, {16, 4, 17, 6}}),
+    colour(FunName, {16, 3}, "cyan"),
+
+    write_value(FunName, "fix col formula below", {16, 7}, [bold]),
+    write_value(FunName, "=$m3+n3", {16, 8}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {16, 8}}, {range, {16, 9, 17, 11}}),
+    colour(FunName, {16, 8}, "cyan"),
+
+    write_value(FunName, "fix row formula below", {16, 12}, [bold]),
+    write_value(FunName, "=m$3+n3", {16, 13}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {16, 13}}, {range, {16, 14, 17, 16}}),
+    colour(FunName, {16, 13}, "cyan"),
+
+    write_value(FunName, "fix row and col formula below", {16,17}, [bold]),
+    write_value(FunName, "=$m$3+n3", {16, 18}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {16, 18}}, {range, {16, 19, 17, 21}}),
+    colour(FunName, {16, 18}, "cyan").
+
+%    io:format("in drag_n_drop should go through (4)~n"),
+%    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {1, 8}}, {cell, {2, 8}}),
+%    io:format("in drag_n_drop should go through (5)~n"),
+%    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {1, 9}}, {cell, {2, 10}}),    
+%    io:format("in drag_n_drop should go through (6)~n"),
+%    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {2, 1}}, {range, {2, 2, 3, 6}}).
+%    io:format("in drag_n_drop should go through (7)~n"),
+%    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {4, 1}}, {range, {4, 2, 4, 6}}),
+%    io:format("in drag_n_drop should go through (8)~n"),
+%    cut_n_drag_n_copy_n_drop_n_paste(FunName, {cell, {5, 1}}, {range, {6, 1, 8, 1}}).
+
+cut_n_drag_n_copy_n_drop_n_paste(FunName, From, To) ->
     Site = "http://127.0.0.1:9000",
-    Target = #ref{site = Site, path = ["drag_n_drop"], ref = {range, {1, 1, 20, 20}}},
+    From1 = #ref{site =  Site, path = [FunName], ref = From},
+    To1 = #ref{site =  Site, path = [FunName], ref = To},
+    erlang:apply(?MODULE, list_to_atom(FunName), [From1, To1]).
+
+write_value(Path, Value, {X, Y}, Attributes) ->
+    Site = "http://127.0.0.1:9000",
+    Cell = #ref{site = Site, path = [Path], ref = {cell, {X, Y}}},
+    hn_main:set_cell(Cell#ref{name=formula}, Value),
+    write_attributes(Attributes, {X, Y}, Cell).
+
+write_attributes([], _, _) -> ok;
+write_attributes([Attr | T], {X, Y}, Cell) ->
+    {Name, V} = case Attr of
+                    bold              -> {'font-weight', "bold"};
+                    underline         -> {'text-decoration', "underline"};
+                    {colour, Colour}  -> {'background-color', Colour};
+                    thin              -> {width, 30}
+                end,
+    Addr = Cell#ref{name=Name},
+    hn_main:set_attribute(Addr, V),
+    write_attributes(T, {X, Y}, Cell).
+
+colour(Path, {X, Y}, Colour) ->
+    Site = "http://127.0.0.1:9000",
+    Cell = #ref{site = Site, path = [Path], ref = {cell, {X, Y}}},
+    write_attributes([{colour, Colour}], {X, Y}, Cell).
+
+make_thin(Path, X) ->
+    Site = "http://127.0.0.1:9000",
+    Ref = #ref{site = Site, path = [Path], ref = {column, X}, name = width},
+    hn_main:set_attribute(Ref, "20").
+
+delete_cells_DEBUG(Path) ->
+    Site = "http://127.0.0.1:9000",
+    Target = #ref{site = Site, path = [Path], ref = {range, {1, 1, 30, 30}}},
     delete_cells(Target).
-   
-clear_cells_DEBUG() ->
+
+clear_cells_DEBUG(Path) ->
     Site = "http://127.0.0.1:9000",
-    Target = #ref{site = Site, path = ["drag_n_drop"], ref = {range, {1, 1, 20, 20}}},
+    Target = #ref{site = Site, path = [Path], ref = {range, {1, 1, 30, 30}}},
     clear_cells(Target).
 
-copy_n_paste_DEBUG() ->
-    Site = "http://127.0.0.1:9000",
-    From1 = #ref{site = Site, path = ["drag_n_drop"], ref = {cell, {1, 1}}},
-    To1 = #ref{site = Site, path = ["drag_n_drop"], ref = {cell, {1, 2}}},
-    copy_n_paste(From1, To1),
-    From2 = #ref{site = Site, path = ["drag_n_drop"], ref = {cell, {2, 1}}},
-    To2 = #ref{site = Site, path = ["drag_n_drop"], ref = {cell, {2, 2}}},
-    drag_n_drop(From2, To2).
-    
+
