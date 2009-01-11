@@ -27,6 +27,7 @@
 
 -include("handy_macros.hrl").
 -include("typechecks.hrl").
+-include("muin_records.hrl").
 
 -import(muin_util, [cast/2]).
 
@@ -123,11 +124,29 @@
 -define(default_rules, [cast_strings, cast_bools, cast_blanks, cast_dates]).
 
 %%% Operators ~~~~~
-
+'+'([{datetime, D, T}, V2]) when is_number(V2) -> '+'([V2, {datetime, D, T}]);
+'+'([V1, {datetime, D, T}]) when is_number(V1) ->
+    io:format("in '+' D is ~p T is ~p V1 is ~p~n", [D, T, V1]),
+    Days = erlang:trunc(V1),
+    Secs = V1 - Days,
+    OldDays = calendar:date_to_gregorian_days(D),
+    OldSecs = calendar:time_to_seconds(T),
+    {datetime, calendar:gregorian_days_to_date(OldDays + Days),
+     calendar:seconds_to_time(OldSecs + Secs)};
 '+'([V1, V2]) ->
+    io:format(" in '+' V1 is ~p V2 is ~p~n", [V1, V2]),
     [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
-    Num1+Num2.
+     Num1+Num2.
 
+%% note that there is an operation =date - number
+%% but no = number - date
+'-'([{datetime, D, T}, V2]) when is_number(V2) -> 
+    Days = erlang:trunc(V2),
+    Secs = V2 - Days,
+    OldDays = calendar:date_to_gregorian_days(D),
+    OldSecs = calendar:time_to_seconds(T),
+    #datetime{date= calendar:gregorian_days_to_date(OldDays - Days),
+              time = calendar:seconds_to_time(OldSecs - Secs)};
 '-'([V1, V2]) ->
     [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
     Num1 - Num2.

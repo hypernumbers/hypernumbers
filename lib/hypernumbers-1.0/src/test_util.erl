@@ -64,10 +64,10 @@ import_xls(Name) ->
     io:format("in test_util:import_xls File is ~p~n",[File2]),
     {Celldata, Names, Formats, CSS} = readxls(File2),
     F = fun(X, {Ls, Fs}) ->
-                 {SheetName, Target, V} = read_reader_record(X),
+                {SheetName, Target, V} = read_reader_record(X),
                 Sheet = excel_util:esc_tab_name(SheetName),
-                 Postdata = conv_for_post(V),
-                 Path = "/" ++ Name ++ "/" ++ Sheet ++ "/",
+                Postdata = conv_for_post(V),
+                Path = "/" ++ Name ++ "/" ++ Sheet ++ "/",
                 Ref = case Target of
                           {{Fr, Fc}, {Lr, Lc}} -> {rc_to_a1(Fr, Fc), rc_to_a1(Lr, Lc)};
                           {Row, Col}           -> rc_to_a1(Row, Col)
@@ -79,8 +79,10 @@ import_xls(Name) ->
                 end                
         end,
     {Lits, Flas} = lists:foldl(F,{[], []}, Celldata),
-
+    
     Dopost = fun({Path, Ref, Postdata}) when is_list(Ref) -> % single cell
+                     io:format("in test_util:import_xls Postdata is ~p~n",
+                               [Postdata]),
                      Url = string:to_lower("http://127.0.0.1:9000" ++ Path ++ Ref),
                      {ok, RefRec} = hn_util:parse_url(Url),
                      Postdata2 = fix_integers(Postdata),
@@ -183,6 +185,8 @@ test_state(State)->
 read_from_excel_data(State,{Sheet,Row,Col})->
     Key={{sheet,Sheet},{row_index,Row},{col_index,Col}},
     Return=lists:keysearch(Key, 1, State),
+    io:format("in read_from_excel Sheet is ~p Row is ~p Col is ~p "++
+              "State is ~p~n", [Sheet, Row, Col, State]),
     case Return of
         {value, Result2} ->
             El=element(2, Result2),
@@ -199,7 +203,8 @@ read_from_excel_data(State,{Sheet,Row,Col})->
                               " fix generatetest.rb - Other is ~p~n",
                               [Other])
             end;
-        _ -> {fail, data_not_read}
+        Other2 -> io:format("In read_from_excel_data Other2 is ~p~n",[Other2]),
+                  {fail, data_not_read}
     end.
 
 equal_to_digit(F1,F2,DigitIdx) ->
@@ -300,7 +305,7 @@ make_date_string({Days,Time}) ->
      make_day_string(Days)++" "++make_time_string(Time).
 
 make_day_string({Year,Month,Day}) ->
-    integer_to_list(Year)++"/"++pad(integer_to_list(Month))++"/"++pad(integer_to_list(Day)).
+    integer_to_list(Day)++"/"++pad(integer_to_list(Month))++"/"++pad(integer_to_list(Year)).
 
 make_time_string({Hour,Minute,Second})->
     pad(integer_to_list(Hour))++":"++pad(integer_to_list(Minute))++":"++pad(integer_to_list(Second)).
@@ -432,12 +437,11 @@ handle_return({ok, {{_V, Code, _R}, _H, Body}}, Ref) ->
 
 cmp(A,A) -> true;
 cmp(G,E) ->
-    io:format("in test_util:cmp G is ~p E is ~p~n",[G,E]),
     E2 = case E of
              true   -> true;
              false  -> false;
              _Other -> case lists:member(E, ['#NULL!', '#DIV/0!', '#VALUE!',
-						'#REF!', '#NAME?', '#NUM!', '#N/A']) of
+                                             '#REF!', '#NAME?', '#NUM!', '#N/A']) of
                            true    -> E;
                            _Other2 -> case tconv:to_num(E) of
                                           N when is_number(N) -> N;
@@ -446,8 +450,8 @@ cmp(G,E) ->
                        end
          end,
     G2 = conv_from_get(G),
+    io:format("in cmp G2 is ~p~n", [G2]),
     if is_float(G2) andalso is_float(E2) ->
-            io:format("in test_util:cmp (1) Val is ~p E is ~p~n",[G2,E2]),
             float_cmp(G2, E2, 5);
        true ->
             io:format("in test_util:cmp (2) Val is ~p E is ~p~n",[G2,E2]),
@@ -458,23 +462,38 @@ conv_from_get("true")  -> true;
 conv_from_get("false") -> false;
 conv_from_get("TRUE")  -> true;
 conv_from_get("FALSE") -> false;
-conv_from_get(X)       -> case lists:member(X, ["#NULL!", "#DIV/0!", "#VALUE!",
-						"#REF!", "#NAME?", "#NUM!", "#N/A"]) of
-			      true -> % error value
-				  list_to_atom(X);
-			      false ->
-				  case tconv:to_num(X) of
-				      N when is_number(N) -> N; % number
-				      {error, nan}        -> X % string
-				  end
-			  end.
+conv_from_get(X)       ->
+    % need to try and convert to a date
+    case muin_date:from_rfc1123_string(X) of
+        {datetime, D, T} -> make_string(D, T);
+        _                  -> conv_from_get2(X)
+    end.
+
+conv_from_get2(X) ->
+    case lists:member(X, ["#NULL!", "#DIV/0!", "#VALUE!",
+                          "#REF!", "#NAME?", "#NUM!", "#N/A"]) of
+        true -> % error value
+            list_to_atom(X);
+        false ->
+            case tconv:to_num(X) of
+                N when is_number(N) -> N; % number
+                {error, nan}        -> X % string
+            end
+    end.
+
+make_string({Y, M, D}, {H, Mn, S}) -> integer_to_list(Y)++"/"++
+                                           pad(integer_to_list(M))++"/"++
+                                           pad(integer_to_list(D))++" "++
+                                           pad(integer_to_list(H))++":"++
+                                           pad(integer_to_list(Mn))++":"++
+                                           pad(integer_to_list(S)).
 
 %% TODO: Some of these conversion need to be done inside the reader itself.
 conv_for_post(Val) ->
     case Val of
         {_, boolean, true}        -> "true";
         {_, boolean, false}       -> "false";
-	{_, date, {datetime,D,T}} -> make_date_string({D,T});
+        {_, date, {datetime,D,T}} -> make_date_string({D,T});
         {_, number, N}            -> tconv:to_s(N);
         {_, error, E}             -> E;
         {string, X}               -> X;

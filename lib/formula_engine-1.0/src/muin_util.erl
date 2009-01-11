@@ -12,6 +12,8 @@
          attempt/3,
          attempt/1]).
 
+-define(SECS_IN_DAY, 86400).
+
 -import(string, [rchr/2, tokens/2]).
 -import(tconv, [to_i/1, to_s/1]).
 
@@ -26,14 +28,10 @@ cast(X, Targtype) ->
     Xtype = get_type(X),
     cast(X, Xtype, Targtype).
 
-get_type(X) when is_number(X) ->
-    num;
-get_type(X) when is_boolean(X) ->
-    bool;
-get_type(X) when is_record(X, datetime) ->
-    date;
-get_type(blank) ->
-    blank;
+get_type(X) when is_number(X)           -> num;
+get_type(X) when is_boolean(X)          -> bool;
+get_type(X) when is_record(X, datetime) -> date;
+get_type(blank)                         -> blank;
 get_type(X) ->
     case muin_collect:is_string(X) of
         true -> str;
@@ -42,45 +40,50 @@ get_type(X) ->
 
 %% X -> boolean
 cast(X, num, bool) when X == 0 -> false;
-cast(_X, num, bool) -> true;
-cast(X, str, bool) ->
-            case string:to_upper(X) of
-                "TRUE"  -> true;
-                "FALSE" -> false;
-                _       -> {error, nab}
-            end;    
-cast(X, bool, bool)  -> X;
-cast(_, date, bool)  -> true;
-cast(_, blank, bool) -> false;
-cast(_, _, bool) ->
-    {error, nab};
+cast(_X, num, bool)            -> true;
+cast(X, str, bool)             -> case string:to_upper(X) of
+                                      "TRUE"  -> true;
+                                      "FALSE" -> false;
+                                      _       -> {error,  nab}
+                                  end;    
+cast(X, bool, bool)            -> X;
+cast(_, date, bool)            -> true;
+cast(_, blank, bool)           -> false;
+cast(_, _, bool          )     -> {error, nab};
 
 %% X -> number
 cast(X, num, num)      -> X;
 cast(true, bool, num)  -> 1;
 cast(false, bool, num) -> 0;
-cast(X, str, num) ->
-    tconv:to_num(X);
-cast(_X, date, num) ->
-    42; %% TODO:
-cast(_, blank, num) -> 0;
-cast(_, _, num) ->
-    {error, nan};
+cast(X, str, num)      -> tconv:to_num(X);
+cast(X, date, num)     -> #datetime{date = D, time = T} = X,
+                          Days = calendar:date_to_gregorian_days(D),
+                          Secs = calendar:time_to_seconds(T),
+                          Days + Secs/?SECS_IN_DAY;
+cast(_, blank, num)    -> 0;
+cast(_, _, num)        -> {error, nan};
 
 %% X -> string
-cast(X, num, str) ->
-    tconv:to_s(X);
+cast(X, num, str)      -> tconv:to_s(X);
 cast(X, str, str)      -> X;
 cast(true, bool, str)  -> "true";  % STR!
 cast(false, bool, str) -> "false"; % STR!
-cast(_X, date, str) ->
-    "1/1/1900"; % TODO:
-cast(_, blank, str) -> ""; % STR!
-cast(_, _, str) ->
-    {error, nas};
+cast(X, date, str)     -> muin_date:to_rfc1123_string(X);
+cast(_, blank, str)    -> "";      % STR!
+cast(_, _, str)        -> {error, nas};
 
-cast(_X, _, date) ->
-    #datetime{}. % TODO!
+%% X -> date   
+cast(X, num, date) ->  D = erlang:trunc(X),
+                       S = X - D,
+                       #datetime{date= calendar:gregorian_days_to_date(D),
+                                 time = calendar:seconds_to_time(S)};
+cast(X, str, date) -> {D1, T1} =
+                          case muin_date:from_rfc1123_string(X) of
+                              {ok, {D, T}} -> {D, T};
+                              _            -> {{0, 0, 1}, {0, 0, 0}}
+                          end,
+                      #datetime{date = D1, time = T1};
+cast(_X, _, str)   -> #datetime{date = {0, 0, 1}, time = {0, 0, 0}}.
     
 %% Splits ssref to [Path, Ref]
 split_ssref(Ssref) ->
