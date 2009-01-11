@@ -8,7 +8,6 @@
 process([$= | Tl]) when Tl =/= [] ->
     {formula, super_util:upcase(Tl)};
 process([39 | Tl]) -> % singly quoted string
-    io:format("got to here!~n"),
     [{quote, Tl},{'text-align', "left"},{format, "null"}];
 process(Input) ->
     % the xfl_lexer:lex takes a cell address to lex against
@@ -46,7 +45,7 @@ process(Input) ->
                  % type tag gets discarded by caller which is ok for 
                  % the rest of them, but not here
                  [{errval, E}]       -> [{errval, {errval, E}}, 
-                                         {'text-align', "center"},  % css is yanktastic
+                                         {'text-align', "center"},
                                          {format, "null"}]; 
                  _Other              ->
                      case super_util:autoparse(Toks) of
@@ -64,4 +63,3 @@ process(Input) ->
                      end
              end,
     Return.
-

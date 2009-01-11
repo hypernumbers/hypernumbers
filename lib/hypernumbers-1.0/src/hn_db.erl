@@ -40,11 +40,13 @@
          get_templates/0,
          get_ref_from_name/1,
          hn_changed/1,
-         drag_n_drop/2,
-         copy_n_paste/2,
-         cut_n_paste/2,
          delete_cells/1,
          clear_cells/1]).
+
+%% server-side drag'n'drop
+-export([drag_n_drop/2,
+         copy_n_paste/2,
+         cut_n_paste/2]).
 
 %%% Debugging interface
 -export([copy_DEBUG/0,
@@ -471,147 +473,6 @@ register_hn(To,From,Bic,Proxy,Url) ->
 	ok.
 
 
-%% @spec cut_n_paste(From, To) -> ok;
-%% @doc copies the formula and formats from a cell or range and 
-%% pastes them to the destination  then deletes the original
-%% (the difference between drag'n'drop
-%% and copy/cut'n'paste is that drag'n'drop increments)
-cut_n_paste(From, To) ->
-    case is_valid_c_n_p(From, To) of
-        {ok, single_cell}    -> copy_cut_drag_n_paste_drop(From, To, false);
-        {ok, 'onto self'}    -> {ok, ok};
-        {ok, cell_to_range}  -> copy_cut_drag_n_paste_drop2(From, To, false);
-        {ok, range_to_range} -> exit("erk!")
-    end,
-    delete_cells(From).
-
-%% @spec copy_n_paste(From, To) -> ok;
-%% @doc copies the formula and formats from a cell or range and 
-%% pastes them to the destination (the difference between drag'n'drop
-%% and copy/cut'n'paste is that drag'n'drop increments)
-copy_n_paste(From, To) ->
-    case is_valid_c_n_p(From, To) of
-        {ok, single_cell}    -> copy_cut_drag_n_paste_drop(From, To, false);
-        {ok, 'onto self'}    -> {ok, ok};
-        {ok, cell_to_range}  -> copy_cut_drag_n_paste_drop2(From, To, false);
-        {ok, range_to_range} -> exit("erk!")
-    end.
-
-is_valid_c_n_p(From, From)                                    -> {ok, 'onto self'};
-is_valid_c_n_p(#ref{ref = {cell, _}}, #ref{ref = {cell, _}})  -> {ok, single_cell};
-is_valid_c_n_p(#ref{ref = {cell, _}}, #ref{ref = {range, _}}) -> {ok, cell_to_range};
-is_valid_c_n_p(#ref{ref = {range, {FX1, FY1, FX2, FY2}}}, #ref{ref = {range, {TX1, TY1, TX2, TY2}}}) ->
-    % two ranges for copy'n'paste (and cut'n'paste) must be the same shape
-    X = TX2 - TX1,
-    Y = TY2 - TY1,
-    case {FX2 - FX1, FY2 - FY1} of
-        {X, Y} -> {ok, range_to_range};
-        _Other -> exit(invalid_range)
-    end.
-
-%% @spec drag_n_drop(From, To) -> ok;
-%% @doc takes the formula and formats from a cell and drag_n_drops 
-%% them over a destination (the difference between drag'n'drop
-%% and copy/cut'n'paste is that drag'n'drop increments)
-drag_n_drop(From, To) ->
-    case is_valid_d_n_d(From, To) of
-        {ok, single_cell, Incr}   -> copy_cut_drag_n_paste_drop(From, To, Incr);
-        {ok, 'onto self', _Incr}  -> {ok, ok};
-        {ok, cell_to_range, Incr} -> copy_cut_drag_n_paste_drop2(From, To, Incr)
-    end.
-
-copy_cut_drag_n_paste_drop(From, To, Incr) ->
-    FromList = get_item(From),
-    {Contents, FilteredList} = filter_for_drag_n_drop(FromList),
-    Output = case Contents of
-                 [Contents2] -> superparser:process(Contents2);
-                 []          -> ""
-             end,
-    #ref{ref = {cell, {FX, FY}}} = From,
-    #ref{ref = {cell, {TX, TY}}} = To,
-    case Output of
-        {formula, Formula} ->
-            {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {FX, FY}),
-            NewToks = offset(Toks, (TX - FX), (TY - FY)),
-            NewFormula = make_formula(NewToks),
-            hn_main:set_cell(To#ref{name=formula}, NewFormula);
-        [{Type, V},  _A, _F] ->
-            V2 = case Incr of
-                     false ->
-                         tconv:to_s(V);
-                     _     -> 
-                         case Type of
-                             int      -> NewV = V + diff(FX, FY, TX, TY, Incr),
-                                         tconv:to_s(NewV);
-                             datetime -> {datetime, {Y, M, D}, T} = V,
-                                         D2 = D + diff(FX, FY, TX, TY, Incr),
-                                         tconv:to_s({datetime, {Y, M, D2}, T}); 
-                             _        -> tconv:to_s(V)
-                         end
-                 end,
-            hn_main:set_cell(To#ref{name=formula}, V2);
-        []  -> delete_cells(To)
-    end,
-    % You want to copy the attributes AFTER setting the value
-    % because setting a value sets the default alignment and format
-    % and if the source cell has been reformatted after the data was entered
-    % you want to carry that forward.
-    {ok, ok} = copy_attributes(FilteredList, To),
-    ok.
-
-copy_cut_drag_n_paste_drop2(From, To, Incr) ->
-    #ref{ref = {range, {X1, Y1, X2, Y2}}} = To,
-    List = range_to_list(To, X1, Y1, X2, Y2),
-    lists:map(fun(X) -> copy_cut_drag_n_paste_drop(From, X, Incr) end, List).
-
-offset(Toks, XOffset, YOffset) -> offset(Toks, XOffset, YOffset, []).
-
-offset([], _XOffset, _YOffset, Acc) -> lists:reverse(Acc);
-offset([{ref, Col, Row, Path, Cell} | T], XOffset, YOffset, Acc) ->
-    {XDollar, X, YDollar, Y} = parse_cell(Cell),
-    NewCell = make_cell(XDollar, X, XOffset, YDollar, Y, YOffset),
-    NewRef = {ref, Col, Row, Path, NewCell},
-    offset(T, XOffset, YOffset, [NewRef | Acc]);
-offset([H | T], XOffset, YOffset, Acc) ->
-    offset(T, XOffset, YOffset, [H | Acc]).
-
-parse_cell(Ref) ->
-    {XDollar, Rest} = case Ref of
-                          [$$ | T1] -> {true, T1};
-                          _         -> {false, Ref}
-                      end,
-    Fun = fun(XX) ->
-                  if XX < 97  -> false;
-                     XX > 122 -> false;
-                     true     -> true
-                  end
-          end,
-    {XBits, YBits} = lists:partition(Fun,string:to_lower(Rest)),
-    {YDollar, Y} = case YBits of
-                       [$$ | T2] -> {true, T2};
-                       _         -> {false, YBits}
-                   end,
-    {XDollar, tconv:to_i(XBits), YDollar, list_to_integer(Y)}.
-
-make_cell(false, X, XOffset, false, Y, YOffset) ->
-    tconv:to_b26(X + XOffset)++tconv:to_s(Y + YOffset);
-make_cell(true, X, XOffset, false, Y, YOffset) ->
-    [$$]++tconv:to_b26(X)++tconv:to_s(Y + YOffset);
-make_cell(false, X, XOffset, true, Y, YOffset) ->
-    tconv:to_b26(X + XOffset)++[$$]++tconv:to_s(Y);
-make_cell(true, X, XOffset, true, Y, YOffset)  -> 
-    [$$]++tconv:to_b26(X)++[$$]++tconv:to_s(Y).
-
-make_formula(Toks) -> mk_f(Toks, []).
-
-mk_f([], Acc)                        -> "="++lists:flatten(lists:reverse(Acc));
-mk_f([{ref, _, _, _, Ref} | T], Acc) -> mk_f(T, [Ref | Acc]);
-mk_f([{atom, H} | T], Acc)           -> mk_f(T, [H | Acc]);
-mk_f([{H} | T], Acc)                 -> mk_f(T, [atom_to_list(H) | Acc]).
-
-diff(FX, FY, TX, TY, x) -> TX - FX;
-diff(FX, FY, TX, TY, y) -> TY - FY.
-
 %% @spec delete_cells(#ref) -> ok
 %% @doc deletes the value of a cell (but not any formatting information)
 delete_cells(Ref = #ref{ref = {range, {X, Y, X, Y}}}) ->
@@ -916,6 +777,177 @@ notify_remove(#hn_item{addr=#ref{site=Site,path=Path,ref=Ref,name=Name}}) ->
     Msg = ?FORMAT("delete ~p ~p",[Name,hn_util:ref_to_str(Ref)]),
     gen_server:call(remoting_reg,{change,Site,Path,Msg},?TIMEOUT),
     ok.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                            %%
+%% server side drag'n'drop                                                    %%
+%%                                                                            %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% @spec cut_n_paste(From, To) -> ok;
+%% @doc copies the formula and formats from a cell or range and 
+%% pastes them to the destination  then deletes the original
+%% (the difference between drag'n'drop
+%% and copy/cut'n'paste is that drag'n'drop increments)
+cut_n_paste(From, To) ->
+    case is_valid_c_n_p(From, To) of
+        {ok, single_cell}    -> copy_cut_drag_n_paste_drop(From, To, false);
+        {ok, 'onto self'}    -> {ok, ok};
+        {ok, cell_to_range}  -> copy_cut_drag_n_paste_drop2(From, To, false);
+        {ok, range_to_range} -> exit("erk!")
+    end,
+    delete_cells(From).
+
+%% @spec copy_n_paste(From, To) -> ok;
+%% @doc copies the formula and formats from a cell or range and 
+%% pastes them to the destination (the difference between drag'n'drop
+%% and copy/cut'n'paste is that drag'n'drop increments)
+copy_n_paste(From, To) ->
+    case is_valid_c_n_p(From, To) of
+        {ok, single_cell}    -> copy_cut_drag_n_paste_drop(From, To, false);
+        {ok, 'onto self'}    -> {ok, ok};
+        {ok, cell_to_range}  -> copy_cut_drag_n_paste_drop2(From, To, false);
+        {ok, range_to_range} -> exit("erk!")
+    end.
+
+is_valid_c_n_p(From, From)                                    -> {ok, 'onto self'};
+is_valid_c_n_p(#ref{ref = {cell, _}}, #ref{ref = {cell, _}})  -> {ok, single_cell};
+is_valid_c_n_p(#ref{ref = {cell, _}}, #ref{ref = {range, _}}) -> {ok, cell_to_range};
+is_valid_c_n_p(#ref{ref = {range, {FX1, FY1, FX2, FY2}}}, #ref{ref = {range, {TX1, TY1, TX2, TY2}}}) ->
+    % two ranges for copy'n'paste (and cut'n'paste) must be the same shape
+    X = TX2 - TX1,
+    Y = TY2 - TY1,
+    case {FX2 - FX1, FY2 - FY1} of
+        {X, Y} -> {ok, range_to_range};
+        _Other -> exit(invalid_range)
+    end.
+
+%% drag'n'drop has an interesting specification
+%% (taken from Excel 2007 help)
+%% currently excludes customer autofil
+
+%% Initial selection   Extended series 
+%% -----------------   ---------------
+%% 1, 2, 3             4, 5, 6,... 
+%% 9:00 10:00,         11:00, 12:00,... 
+%% Mon Tue,            Wed, Thu,... 
+%% Monday Tuesday,     Wednesday, Thursday,... 
+%% Jan Feb,            Mar, Apr,... 
+%% Jan, Apr            Jul, Oct, Jan,... 
+%% Jan-07, Apr-07      Jul-07, Oct-07, Jan-08,... 
+%% 15-Jan, 15-Apr      15-Jul, 15-Oct,... 
+%% 2007, 2008          2009, 2010, 2011,... 
+%% 1-Jan, 1-Mar        1-May, 1-Jul, 1-Sep,... 
+%% Qtr3                Qtr4, Qtr1, Qtr2,... 
+%% Q3                  Q4, Q1, Q2,... 
+%% Quarter3            Quarter4, Quarter1, Quarter2,... 
+%% text1, textA text2, textA, text3, textA,... 
+%% 1st Period          2nd Period, 3rd Period,... 
+%% Product 1           Product 2, Product 3,... 
+%% 1 Product           2 Product, 3 Product
+
+%% @spec drag_n_drop(From, To) -> ok;
+%% @doc takes the formula and formats from a cell and drag_n_drops 
+%% them over a destination (the difference between drag'n'drop
+%% and copy/cut'n'paste is that drag'n'drop increments)
+drag_n_drop(From, To) ->
+    case is_valid_d_n_d(From, To) of
+        {ok, single_cell, Incr}   -> copy_cut_drag_n_paste_drop(From, To, Incr);
+        {ok, 'onto self', _Incr}  -> {ok, ok};
+        {ok, cell_to_range, Incr} -> copy_cut_drag_n_paste_drop2(From, To, Incr)
+    end.
+
+copy_cut_drag_n_paste_drop(From, To, Incr) ->
+    FromList = get_item(From),
+    {Contents, FilteredList} = filter_for_drag_n_drop(FromList),
+    Output = case Contents of
+                 [Contents2] -> superparser:process(Contents2);
+                 []          -> ""
+             end,
+    #ref{ref = {cell, {FX, FY}}} = From,
+    #ref{ref = {cell, {TX, TY}}} = To,
+    case Output of
+        {formula, Formula} ->
+            {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {FX, FY}),
+            NewToks = offset(Toks, (TX - FX), (TY - FY)),
+            NewFormula = make_formula(NewToks),
+            hn_main:set_cell(To#ref{name=formula}, NewFormula);
+        [{Type, V},  _A, _F] ->
+            V2 = case Incr of
+                     false ->
+                         tconv:to_s(V);
+                     _     -> 
+                         case Type of
+                             int      -> NewV = V + diff(FX, FY, TX, TY, Incr),
+                                         tconv:to_s(NewV);
+                             datetime -> {datetime, {Y, M, D}, T} = V,
+                                         D2 = D + diff(FX, FY, TX, TY, Incr),
+                                         tconv:to_s({datetime, {Y, M, D2}, T}); 
+                             _        -> tconv:to_s(V)
+                         end
+                 end,
+            hn_main:set_cell(To#ref{name=formula}, V2);
+        []  -> delete_cells(To)
+    end,
+    % You want to copy the attributes AFTER setting the value
+    % because setting a value sets the default alignment and format
+    % and if the source cell has been reformatted after the data was entered
+    % you want to carry that forward.
+    {ok, ok} = copy_attributes(FilteredList, To),
+    ok.
+
+copy_cut_drag_n_paste_drop2(From, To, Incr) ->
+    #ref{ref = {range, {X1, Y1, X2, Y2}}} = To,
+    List = range_to_list(To, X1, Y1, X2, Y2),
+    lists:map(fun(X) -> copy_cut_drag_n_paste_drop(From, X, Incr) end, List).
+
+offset(Toks, XOffset, YOffset) -> offset(Toks, XOffset, YOffset, []).
+
+offset([], _XOffset, _YOffset, Acc) -> lists:reverse(Acc);
+offset([{ref, Col, Row, Path, Cell} | T], XOffset, YOffset, Acc) ->
+    {XDollar, X, YDollar, Y} = parse_cell(Cell),
+    NewCell = make_cell(XDollar, X, XOffset, YDollar, Y, YOffset),
+    NewRef = {ref, Col, Row, Path, NewCell},
+    offset(T, XOffset, YOffset, [NewRef | Acc]);
+offset([H | T], XOffset, YOffset, Acc) ->
+    offset(T, XOffset, YOffset, [H | Acc]).
+
+parse_cell(Ref) ->
+    {XDollar, Rest} = case Ref of
+                          [$$ | T1] -> {true, T1};
+                          _         -> {false, Ref}
+                      end,
+    Fun = fun(XX) ->
+                  if XX < 97  -> false;
+                     XX > 122 -> false;
+                     true     -> true
+                  end
+          end,
+    {XBits, YBits} = lists:partition(Fun,string:to_lower(Rest)),
+    {YDollar, Y} = case YBits of
+                       [$$ | T2] -> {true, T2};
+                       _         -> {false, YBits}
+                   end,
+    {XDollar, tconv:to_i(XBits), YDollar, list_to_integer(Y)}.
+
+make_cell(false, X, XOffset, false, Y, YOffset) ->
+    tconv:to_b26(X + XOffset)++tconv:to_s(Y + YOffset);
+make_cell(true, X, XOffset, false, Y, YOffset) ->
+    [$$]++tconv:to_b26(X)++tconv:to_s(Y + YOffset);
+make_cell(false, X, XOffset, true, Y, YOffset) ->
+    tconv:to_b26(X + XOffset)++[$$]++tconv:to_s(Y);
+make_cell(true, X, XOffset, true, Y, YOffset)  -> 
+    [$$]++tconv:to_b26(X)++[$$]++tconv:to_s(Y).
+
+make_formula(Toks) -> mk_f(Toks, []).
+
+mk_f([], Acc)                        -> "="++lists:flatten(lists:reverse(Acc));
+mk_f([{ref, _, _, _, Ref} | T], Acc) -> mk_f(T, [Ref | Acc]);
+mk_f([{atom, H} | T], Acc)           -> mk_f(T, [H | Acc]);
+mk_f([{H} | T], Acc)                 -> mk_f(T, [atom_to_list(H) | Acc]).
+
+diff(FX, FY, TX, TY, x) -> TX - FX;
+diff(FX, FY, TX, TY, y) -> TY - FY.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                            %%
