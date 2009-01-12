@@ -81,8 +81,6 @@ import_xls(Name) ->
     {Lits, Flas} = lists:foldl(F,{[], []}, Celldata),
     
     Dopost = fun({Path, Ref, Postdata}) when is_list(Ref) -> % single cell
-                     io:format("in test_util:import_xls Postdata is ~p~n",
-                               [Postdata]),
                      Url = string:to_lower("http://127.0.0.1:9000" ++ Path ++ Ref),
                      {ok, RefRec} = hn_util:parse_url(Url),
                      Postdata2 = fix_integers(Postdata),
@@ -110,8 +108,6 @@ import_xls(Name) ->
                        Ref = rc_to_a1(Row,Col),
                        Url = string:to_lower("http://127.0.0.1:9000" ++ Path ++ Ref),
                        {ok, RefRec} = hn_util:parse_url(Url),
-                       % io:format("in WriteCSS CSSItem is ~p~n", [CSSItem]),
-                       % exit("kill me now!"),
                        {ok, ok} = write_css(CSSItem, RefRec, Url)
                end,
     lists:foreach(WriteCSS, CSS),
@@ -121,13 +117,9 @@ import_xls(Name) ->
 
 write_css([], _RefRec, _Url) -> {ok, ok};
 write_css([H | T], RefRec, Url) ->
-    % io:format("in write_css H is ~p~n T is ~p",[H, T]),
     {Attr, Val} = H,
     Val2 = flatpack(Val),
     RefRec2 = RefRec#ref{name=Attr},
-    % io:format("in WriteCSS fun RefRec is ~p~nRefRec2 is ~p~nAttr is ~p~n"++
-    %          "Val is ~p~nVal2 is ~p~n",
-    %          [RefRec, RefRec2, Attr, Val, Val2]),
     hn_main:set_attribute(RefRec2, Val2),
     write_css(T, RefRec, Url).
 
@@ -185,12 +177,9 @@ test_state(State)->
 read_from_excel_data(State,{Sheet,Row,Col})->
     Key={{sheet,Sheet},{row_index,Row},{col_index,Col}},
     Return=lists:keysearch(Key, 1, State),
-    io:format("in read_from_excel Sheet is ~p Row is ~p Col is ~p "++
-              "State is ~p~n", [Sheet, Row, Col, State]),
     case Return of
         {value, Result2} ->
             El=element(2, Result2),
-            io:format("in test_util:read_from_excel_data El is ~p~n",[El]),
             case El of
                 {value,number,Number}       -> {number,Number};
                 {string,String}             -> {string,String};
@@ -203,8 +192,7 @@ read_from_excel_data(State,{Sheet,Row,Col})->
                               " fix generatetest.rb - Other is ~p~n",
                               [Other])
             end;
-        Other2 -> io:format("In read_from_excel_data Other2 is ~p~n",[Other2]),
-                  {fail, data_not_read}
+        _Other2 -> {fail, data_not_read}
     end.
 
 equal_to_digit(F1,F2,DigitIdx) ->
@@ -255,22 +243,17 @@ excel_equal(String1,String2) when is_list(String1), is_list(String2) ->
     end.
 
 eq(X,Y) ->
-    io:format("in test_util:eq X is ~p Y is ~p~n",[X,Y]),
     if
         X == Y -> true;
         true   -> false
     end.
 
 excel_equal2({date,F1},{number,Number})->
-    io:format("in test_util:excel_equal2 F1 is ~p Number is ~p~n",[F1,Number]),
     {datetime,D,T}=muin_date:excel_win_to_gregorian(Number),
     F2={D,T},
-    io:format("in test_util:excel_equal2 F2 is ~p~n",[F2]),
     eq(F1,F2);
 excel_equal2({date, F1}, {string, F2}) ->
-    io:format("in test_util:excel_equal2 F1 is ~p F2 is ~p~n",[F1,F2]),
     F1String=make_date_string(F1),
-    io:format("in test_util:excel_equal2 F1String is ~p~n",[F1String]),
     eq(F1String,F2);
 excel_equal2({number, F1}, {number, F2}) ->
     equal_to_digit(F1, F2, ?EXCEL_IMPORT_FLOAT_PRECISION);
@@ -298,7 +281,6 @@ excel_equal2({error,Error1},{error,Error2}) ->
 excel_equal2({string,String1},{string,String2}) ->
     eq(String1,String2);
 excel_equal2({number,Num},{string,Str})->
-    io:format("in test_util:excel_equal2 trying to compare a number to a string? Number is ~p String is ~p~n",[Num,Str]),
     eq(Num,tconv:to_num(Str)).
 
 make_date_string({Days,Time}) ->
@@ -450,12 +432,9 @@ cmp(G,E) ->
                        end
          end,
     G2 = conv_from_get(G),
-    io:format("in cmp G2 is ~p~n", [G2]),
     if is_float(G2) andalso is_float(E2) ->
             float_cmp(G2, E2, 5);
-       true ->
-            io:format("in test_util:cmp (2) Val is ~p E is ~p~n",[G2,E2]),
-            E2 == G2
+       true -> E2 == G2
     end.
 
 conv_from_get("true")  -> true;
