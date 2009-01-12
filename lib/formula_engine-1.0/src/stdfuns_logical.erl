@@ -39,8 +39,11 @@
 
 '>'([A, B]) -> muin_checks:die_on_errval([A]),
                muin_checks:die_on_errval([B]),
-               '>1'(A, B).
+               [A1, B1] = ?numbers([A, B], [cast_dates]),
+               io:format("A1 is ~p B1 is ~p~n", [A1, B1]),
+               '>1'(A1, B1).
 
+'>1'(N, N) -> false;
 '>1'(N1, N2) when is_number(N1) andalso is_number(N2)   -> N1 > N2;
 '>1'(S, N) when ?is_string(S) andalso is_number(N)      -> true;
 '>1'(N, S) when is_number(N) andalso ?is_string(S)      -> false;
@@ -53,7 +56,8 @@
     end;
 '>1'(true, false)                                 -> true;
 '>1'(false, true)                                 -> false;
-'>1'(true, _)                                     -> true;
+'>1'(false, blank)                                -> false;
+'>1'(true, _)                                     -> true; 
 '>1'(false, _)                                    -> true;
 '>1'(_, true)                                     -> false;
 '>1'(_, false)                                    -> false;
@@ -65,7 +69,11 @@
 '>1'(S, blank) when ?is_string(S)                 -> true;
 '>1'(blank, blank)                                -> false.
 
-'<'([A, B]) -> '>'([B, A]).
+'<'([A, B]) -> muin_checks:die_on_errval([A]),
+               muin_checks:die_on_errval([B]),
+               [A1, B1] = ?numbers([A, B], [cast_dates]),
+               io:format("A1 is ~p B1 is ~p~n", [A1, B1]),
+               '>1'(B1, A1).
 
 '<='(Args = [_, _]) -> '='(Args) orelse '<'(Args).
 
