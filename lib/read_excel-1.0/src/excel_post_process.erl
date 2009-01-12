@@ -197,7 +197,6 @@ convert_dates(Tables)->
                             date   -> convert_dates2(Body, Tables);
                             _      -> Body
                         end,
-                io:format("in excel_post_process:convert_dates Body2 is ~p~n", [Body2]),
                 ets:insert(Tid1, [{Index, [{xf_index, XF}, Body2]}])
         end,
     ets:foldl(Fun, [], Tid1).
