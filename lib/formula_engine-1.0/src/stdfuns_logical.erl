@@ -51,6 +51,8 @@
        hd(S1) < hd(S2) -> false;
        true            -> stdfuns_text:len([S1]) > stdfuns_text:len([S2]) % otherwise compare on length
     end;
+'>1'(true, false)                                 -> true;
+'>1'(false, true)                                 -> false;
 '>1'(true, _)                                     -> true;
 '>1'(false, _)                                    -> true;
 '>1'(_, true)                                     -> false;
