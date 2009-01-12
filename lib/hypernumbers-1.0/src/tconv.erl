@@ -30,11 +30,13 @@ to_f(Str) when is_list(Str) ->
 %% String -> number.
 to_num(Str) when is_list(Str)   -> try conv_to_int(Str)
                                    catch
-                                       error:_ ->
+                                       exit : _ ->
                                            try to_f(Str)
                                            catch
-                                               error:_ ->
-                                                   {error, nan}
+                                               error:
+                                                 _ -> {error, nan};
+                                                 exit:
+                                                 _ -> {error, nan}
                                            end
                                    end;
 to_num(Num) when is_number(Num) ->   Num.
@@ -79,24 +81,16 @@ conv_to_int(Str) when is_list(Str) ->
     try list_to_integer(Str)
     catch
         error:_ ->
-            case exp_to_int(Str) of
-                {ok, Int}    -> Int;
-                {error, nan} -> {error, nan}
+            case string:tokens(Str, "e+") of
+                [Int, Exp] ->
+                    I2 = to_num(Int),
+                    E2 = to_num(Exp),
+                    case {I2, E2} of
+                        {{error, nan}, _} -> exit("not integer");
+                        {_, {error, nan}} -> exit("not integer");
+                        {I3, E3}          -> I3 * math:pow(10, E3)
+                    end;
+                _          -> exit("not integer")
             end
     end.
 
-exp_to_int(Str) ->
-    case string:tokens(Str, "e+") of
-        [Int, Exp] -> get_int(Int, Exp);
-        _          -> {error, nan}
-    end.
-
-get_int(I, E) ->
-    I2 = to_num(I),
-    E2 = to_num(E),
-    case {I2, E2} of
-        {{error, nan}, _} -> {error, nan};
-        {_, {error, nan}} -> {error, nan};
-        {I3, E3}          -> {ok, I3 * math:pow(10, E3)}
-    end.
-            
