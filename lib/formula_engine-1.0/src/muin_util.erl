@@ -15,7 +15,7 @@
 -define(SECS_IN_DAY, 86400).
 
 -import(string, [rchr/2, tokens/2]).
--import(tconv, [to_i/1, to_s/1]).
+-import(tconv, [to_i/1, to_s/1, to_num/1]).
 
 -include("handy_macros.hrl").
 -include("typechecks.hrl").
@@ -55,7 +55,7 @@ cast(_, _, bool          )     -> {error, nab};
 cast(X, num, num)      -> X;
 cast(true, bool, num)  -> 1;
 cast(false, bool, num) -> 0;
-cast(X, str, num)      -> tconv:to_num(X);
+cast(X, str, num)      -> to_num(X);
 cast(X, date, num)     -> #datetime{date = D, time = T} = X,
                           Days = calendar:date_to_gregorian_days(D),
                           Secs = calendar:time_to_seconds(T),
@@ -64,7 +64,7 @@ cast(_, blank, num)    -> 0;
 cast(_, _, num)        -> {error, nan};
 
 %% X -> string
-cast(X, num, str)      -> tconv:to_s(X);
+cast(X, num, str)      -> to_s(X);
 cast(X, str, str)      -> X;
 cast(true, bool, str)  -> "true";  % STR!
 cast(false, bool, str) -> "false"; % STR!

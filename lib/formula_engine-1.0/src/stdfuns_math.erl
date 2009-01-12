@@ -136,6 +136,7 @@
 '+'([V1, V2]) ->
     io:format(" in '+' V1 is ~p V2 is ~p~n", [V1, V2]),
     [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
+    io:format(" in '+' Num1 is ~p Num2 is ~p~n", [Num1, Num2]),
      Num1+Num2.
 
 %% note that there is an operation =date - number
