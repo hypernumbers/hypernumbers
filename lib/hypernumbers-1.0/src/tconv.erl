@@ -28,7 +28,7 @@ to_f(Str) when is_list(Str) ->
     Val.
 
 %% String -> number.
-to_num(Str) when is_list(Str)   -> try list_to_integer(Str)
+to_num(Str) when is_list(Str)   -> try conv_to_int(Str)
                                    catch
                                        error:_ ->
                                            try to_f(Str)
@@ -39,7 +39,7 @@ to_num(Str) when is_list(Str)   -> try list_to_integer(Str)
                                    end;
 to_num(Num) when is_number(Num) ->   Num.
 
-to_s(DateTime = {datetime, _D, _T}) -> muin_date:to_rfc1123_string(DateTime);   
+to_s(DateTime = {datetime, _D, _T}) -> muin_date:to_rfc1123_string(DateTime);
 to_s(Int) when is_integer(Int)      -> integer_to_list(Int);
 to_s(Flt) when is_float(Flt)        -> float_to_list(Flt);
 to_s(Str) when is_list(Str)         -> Str;
@@ -74,3 +74,29 @@ b26_to_i([H|T],Power,Value)->
                        exit([H | T] ++ " is not a valid base 26 number")
                end,
     b26_to_i(T, Power + 1, NewValue + Value).
+
+conv_to_int(Str) when is_list(Str) ->
+    try list_to_integer(Str)
+    catch
+        error:_ ->
+            case exp_to_int(Str) of
+                {ok, Int}    -> Int;
+                {error, nan} -> {error, nan}
+            end
+    end.
+
+exp_to_int(Str) ->
+    case string:tokens(Str, "e+") of
+        [Int, Exp] -> get_int(Int, Exp);
+        _          -> {error, nan}
+    end.
+
+get_int(I, E) ->
+    I2 = to_num(I),
+    E2 = to_num(E),
+    case {I2, E2} of
+        {{error, nan}, _} -> {error, nan};
+        {_, {error, nan}} -> {error, nan};
+        {I3, E3}          -> {ok, I3 * math:pow(10, E3)}
+    end.
+            
