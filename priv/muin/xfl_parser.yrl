@@ -61,6 +61,7 @@ E -> E '/' E : op('$1', '$2', '$3').
 E -> E '^' E : op('$1', {power}, '$3').
 E -> ref ref : special_div('$1', '$2').
 E -> E ref   : special_div('$1', '$2').
+E -> E ssnumref : special_div('$1', '$2').
 
 E -> E '%' : ['/', '$1', [int, 100]].
 
@@ -161,7 +162,7 @@ lit({_Type, Data}, Fun) -> Fun(Data).
 %% operator function calls
 op(Arg1, {Op}, Arg2) -> [Op, Arg1, Arg2].
 
-%%% special cases for division / path separator ambiguity.
+%%% special cases for division / path separator ambiguity:
 
 special_div(Ref1 = {ref, _, _, _, _}, Ref2 = {ref, _, _, "/", _}) ->
     Ref22 = setelement(4, Ref2, "."), % the cell is on current page, NOT root.
@@ -170,7 +171,9 @@ special_div(Ref1 = {ref, _, _, _, _}, Ref2 = {ref, _, _, "/", _}) ->
        hslists:init(tuple_to_list(Ref22)));
 special_div(E, Ref = {ref, _, _, "/", _}) ->
     Ref2 = setelement(4, Ref, "."), 
-    op(E, {'/'}, hslists:init(tuple_to_list(Ref2))).
+    op(E, {'/'}, hslists:init(tuple_to_list(Ref2)));
+special_div(E, _Ref = {ssnumref, Str}) -> % Str is something like "/59"
+    op(E, {'/'}, list_to_integer(tl(Str))).
 
 %% token + list of args -> function call for AST.
 func(Tuple, Args) -> [func_name(Tuple)] ++ Args.
