@@ -172,11 +172,6 @@ f_value_analysis_calculator_for_product_service.xls
 f_variance_report.xls
 f_weekly_time_sheet.xls
 f_weekly_time_sheet_with_breaks.xls
-junk.xls
-manual_tests.xls
-timeout_tests.xls
-w_formatting_stuff.xls
-w_formatting_stuff_full.xls
 x_detailed_sales_forecast.xls
 x_detailed_sales_pipeline_management.xls
 x_il_ballo_income_tax_2008_09.xls
