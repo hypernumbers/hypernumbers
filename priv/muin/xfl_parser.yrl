@@ -145,6 +145,7 @@ ArrayLiteral -> str       : lit('$1').
 Erlang code.
 
 -include("handy_macros.hrl").
+%%-export([test/0]).
 
 %% Make a function name for the AST from lexer tokens.
 func_name({atom, NameAsStr})      -> list_to_atom(NameAsStr);
@@ -194,3 +195,29 @@ to_native_list(Ary) ->
 
 postproc(Ast) ->
     Ast.
+
+%% -define(CURRENT_CELL, {10, 10}).
+%% -define(TESTS,
+%%         [
+%%          { "1/2",  ['/',1,2]},
+%%          { "ABC123 / 42", ['/',[ref,{col,721},{row,113},"./"],42] },
+%%          { "/some/pretty/long/path/B75 / 100", % significant whitespace
+%%            ['/', [ref,{col,-8},{row,65},"/some/pretty/long/path/"],100]},
+%%          { "(/some/pretty/long/path/B75)/100", % disambiguate with parenthesis
+%%            ['/',[ref,{col,-8},{row,65},"/some/pretty/long/path/"],100]}
+%%         ]).
+
+%% test() ->
+%%     Parse = fun(Str) ->
+%%                     {ok, Toks} = xfl_lexer:lex(Str, ?CURRENT_CELL),
+%%                     {ok, Ast} = xfl_parser:parse(Toks),
+%%                     Ast
+%%             end,
+    
+%%     foreach(fun({Str, ExpectedAst}) ->
+%%                     case Parse(Str) of
+%%                         ExpectedAst -> ok;
+%%                         _Other      -> io:format("FAIL: mismatch for: ~s~n", [Str])
+%%                     end
+%%             end,
+%%             ?TESTS).
