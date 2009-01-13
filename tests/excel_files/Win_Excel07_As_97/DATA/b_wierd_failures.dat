@@ -1,1 +1,0 @@
-[["Sheet1", [1, [1, {:formula=>"=SUM(B1:D1)", :format=>"General", :value=>12.0, :text=>"12"}], [2, {:formula=>"3", :format=>"General", :value=>3.0, :text=>"3"}], [3, {:formula=>"4", :format=>"General", :value=>4.0, :text=>"4"}], [4, {:formula=>"5", :format=>"General", :value=>5.0, :text=>"5"}]], [2]], ["Sheet2", [1], [2]], ["Sheet3", [1], [2]]]

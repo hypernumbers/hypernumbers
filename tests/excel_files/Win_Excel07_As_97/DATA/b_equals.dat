@@ -1,1 +1,0 @@
-[["Sheet1", [1, [1, {:formula=>"This function tests giving a simple equals sign", :format=>"General", :value=>"This function tests giving a simple equals sign", :text=>"This function tests giving a simple equals sign"}]], [2, [1, {:formula=>"=", :format=>"General", :value=>"=", :text=>"="}]], [3]], ["Sheet2", [1], [2]], ["Sheet3", [1], [2]]]
