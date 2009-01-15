@@ -276,6 +276,5 @@ y_employee_shift_schedule.xls
 y_loan_amortization_schedule.xls
 y_loan_analysis_worksheet.xls
 y_loan_calculator.xls
-y_mortgage_amortization_schedule.xls
 y_portfolio_analysis.xls
 y_small_business_cash_flow_projection.xls
