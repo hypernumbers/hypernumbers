@@ -327,7 +327,7 @@ parse_rec(?COLINFO,Bin,_Name,CurrentFormula,Tbl)->
      _Discard:4/little-unsigned-integer,
      _Options:16/little-unsigned-integer,
      _NotUsed:16/little-unsigned-integer>> = Bin,
-%% Can't seem to get a COLINFO record somehow...
+    % Can't seem to get a COLINFO record somehow...
     % rc_COLUMN_HIDDEN
     % rc_COLUMN_COLLAPSED
     excel_util:write(Tbl,lacunae,[{identifier,"COLINFO"},
@@ -653,26 +653,26 @@ parse_rec(?DSF,_Bin,_Name,CurrentFormula,Tbl)->
                                   {source,excel_records.erl},
                                   {msg,"not being processed"}]),
     {ok,CurrentFormula};
-%% SUPBOOK is called EXTERNALBOOK in excelfileformatv1-42.pdf
-%% 
-%% the workbook structure will be built up fror the appropriate records
-%% as described in Section 4.10.3 of the excelfileformatsV1-42.pdf
-%% 
-%% The records involved are:
-%% * SUPBOOK/EXTERNALBOOK
-%% * EXERNSHEET
-%% * EXTERNNAME
-%% * NAME/DEFINEDNAME
-%% 
-%% The strategy is to take advantage of the sequential nature of 
-%% the Excel file format. As an EXTERNALBOOK record is read it
-%%  will be appended to the table:
-%% * tmp_workbook
-%%
-%% an EXTERNSHEET record will be given an index to the last SUPBOOK/EXTERNALBOOK
-%% record
-%% 
-%% In addition entries into the table 
+% SUPBOOK is called EXTERNALBOOK in excelfileformatv1-42.pdf
+% 
+% the workbook structure will be built up fror the appropriate records
+% as described in Section 4.10.3 of the excelfileformatsV1-42.pdf
+% 
+% The records involved are:
+% * SUPBOOK/EXTERNALBOOK
+% * EXERNSHEET
+% * EXTERNNAME
+% * NAME/DEFINEDNAME
+% 
+% The strategy is to take advantage of the sequential nature of 
+% the Excel file format. As an EXTERNALBOOK record is read it
+%  will be appended to the table:
+% * tmp_workbook
+%
+% an EXTERNSHEET record will be given an index to the last SUPBOOK/EXTERNALBOOK
+% record
+% 
+% In addition entries into the table 
 parse_rec(?SUPBOOK,Bin,_Name,CurrentFormula,Tbl)->
     case Bin of
         <<NoSheets:16/little-unsigned-integer,

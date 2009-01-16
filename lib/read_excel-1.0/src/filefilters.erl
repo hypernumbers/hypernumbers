@@ -80,28 +80,28 @@ read_compound_file_header(<<?BIFF8_MAGIC_NUMBER:64/little-signed-integer,
                            NoOfMSATSectors:32/little-signed-integer,
                            BulkMSAT:436/binary>>,
                           FileIn)->
-%% SectorSize is calculated via power of 2 ssz as per Section 4.1 of
-%% http://sc.openoffice.org/compdocfileformat.pdf
+    % SectorSize is calculated via power of 2 ssz as per Section 4.1 of
+    % http://sc.openoffice.org/compdocfileformat.pdf
     SectorSize=trunc(math:pow(2,RawSectorSize)),
 
-%% As per SectorSize
+    % As per SectorSize
     ShortSectorSize=trunc(math:pow(2,RawShortSectorSize)),
 
-%% Now lets process the header
-%% First up read the master Sector Allocation Table
-%% Described in Section 5.1 of
-%% http://sc.openoffice.org/compdocfileformat.pdf
+    % Now lets process the header
+    % First up read the master Sector Allocation Table
+    % Described in Section 5.1 of
+    % http://sc.openoffice.org/compdocfileformat.pdf
     MSAT=read_MSAT(NoOfMSATSectors,FirstSectorMSAT_SID,BulkMSAT),
 
-%% Now lets process the Sector Allocation Table
-%% as per Section 5.2 of
-%% http://sc.openoffice.org/compdocfileformat.pdf
+    % Now lets process the Sector Allocation Table
+    % as per Section 5.2 of
+    % http://sc.openoffice.org/compdocfileformat.pdf
     RawSAT=read_sectors(MSAT,SectorSize,FileIn),
     ParsedSAT=parse_SAT(RawSAT),
 
-%% Now lets process the Short-Sector Allocation Table
-%% as per Section 6.2 of
-%% http://sc.openoffice.org/compdocfileformat.pdf
+    % Now lets process the Short-Sector Allocation Table
+    % as per Section 6.2 of
+    % http://sc.openoffice.org/compdocfileformat.pdf
     if
         SSAT_StartSID > 0 ->
             RawSSAT=read_sectors([SSAT_StartSID],SectorSize,FileIn),
@@ -111,8 +111,8 @@ read_compound_file_header(<<?BIFF8_MAGIC_NUMBER:64/little-signed-integer,
             ParsedSSAT=[]
     end,
 
-%% Moving onto the Directory as per Section 7.1 of
-%% http://sc.openoffice.org/compdocfileformat.pdf
+    % Moving onto the Directory as per Section 7.1 of
+    % http://sc.openoffice.org/compdocfileformat.pdf
     DirectorySIDs=get_SIDs(ParsedSAT,DirectoryFirstSID),
     RawDirectory=read_sectors(DirectorySIDs,SectorSize,FileIn),
     ParsedDirectory=parse_Directory(list_to_binary(RawDirectory),
@@ -220,8 +220,8 @@ parse_Directory(<<Name:64/binary,
                  StreamSize:32/little-signed-integer,
                  _Blank:4/binary,
                  Rest/binary>>,MinStreamSize,Residuum) ->
-%% If the Sector Size is bigger than the stream size then the stream
-%% will be in the short sector table - otherwise it will be in a normal one
+    % If the Sector Size is bigger than the stream size then the stream
+    % will be in the short sector table - otherwise it will be in a normal one
     Location=if (StreamSize >= MinStreamSize) -> normal_stream;
                 true                          -> short_stream
              end,
@@ -248,20 +248,20 @@ parse_Directory(Other,_MinStreamSize,Other2)->
               "Oh, shit!~n",[Other,Other2]).
 
 print_structure(_FileIn,_Directory,{SubLocation,_SubStreams})->
-%% This function will bork as soon as it is handed a substream name
-%% that has a Asian or Rich Text Name - but as it is fed by
-%% output that is internal to Excel I think it will still continue
-%% to come in unicode16-8 format (suck'n'see fella)
+    % This function will bork as soon as it is handed a substream name
+    % that has a Asian or Rich Text Name - but as it is fed by
+    % output that is internal to Excel I think it will still continue
+    % to come in unicode16-8 format (suck'n'see fella)
     {_SubLoc,_SID}=SubLocation,
-%%    io:format("~nThe structure of the Microsoft Coumpound Document Object ~p "++
-%%              "is:~n",[FileIn]),
-%%    List=[{lists:keysearch('bodge_name',1,X),lists:keysearch(location,1,X)}
-%%    || {_,X} <- Directory],
-%%    [io:format("* stream ~p is in ~p~n",
-%%         [BodgeName,Location]) || {{_,{_,BodgeName}},
-%%                   {_,{_,Location}}} <- List],
-%%    io:format("the substreams in ~p are:~n",[SubLoc]),
-%%    [io:format("* substream: ~p~n",[X]) || {[{_,X}],_} <- SubStreams],
+    %    io:format("~nThe structure of the Microsoft Coumpound Document Object ~p "++
+    %              "is:~n",[FileIn]),
+    %    List=[{lists:keysearch('bodge_name',1,X),lists:keysearch(location,1,X)}
+    %    || {_,X} <- Directory],
+    %    [io:format("* stream ~p is in ~p~n",
+    %         [BodgeName,Location]) || {{_,{_,BodgeName}},
+    %                   {_,{_,Location}}} <- List],
+    %    io:format("the substreams in ~p are:~n",[SubLoc]),
+    %    [io:format("* substream: ~p~n",[X]) || {[{_,X}],_} <- SubStreams],
     ok.
 
 delete_ets([])    -> ok;
@@ -304,6 +304,7 @@ create_ets()->
 %% and generally 'do the wrong thing' just for convenience - in this case
 %% we assume that the language is some class of Western European/Latin script
 %% and to hell with the rest of the world/accented letters etc...
+%% TODO replace this with a Unicode clean-up function (which we now have)
 bodge_string(_Bin,0)->
     [];
 bodge_string(Bin,NameSize)->
@@ -360,19 +361,21 @@ test_DEBUG()->
 dump([])-> io:format("All tables dumped~n");
 dump([{Table,Tid}|T])->
     case Table of
-        % cell           -> dump2({Table,Tid});
+        cell           -> dump2({Table,Tid});
         % array_formulae -> dump2({Table,Tid});
         % formats        -> dump2({Table,Tid});
         % names          -> dump2({Table,Tid}); 
         % css            -> dump2({Table,Tid});
         % lacunaue       -> dump2({Table,Tid});
         % misc           -> dump2({Table,Tid});
-        warnings         -> dump3({Table,Tid}); % has a bodge in it!
-        % tmp_colours    -> dump2({Table,Tid});
-        tmp_names        -> dump2({Table,Tid});
-        tmp_extsheets    -> dump2({Table,Tid});
-        tmp_externalbook -> dump2({Table,Tid});
-        tmp_externnames  -> dump2({Table,Tid});
+        % warnings         -> dump3({Table,Tid}); % has a bodge in it!
+        tmp_cell       -> dump2({Table,Tid});
+        % tmp_xf           -> dump2({Table,Tid});
+        % tmp_colours      -> dump2({Table,Tid});
+        % tmp_names        -> dump2({Table,Tid});
+        % tmp_extsheets    -> dump2({Table,Tid});
+        % tmp_externalbook -> dump2({Table,Tid});
+        % tmp_externnames  -> dump2({Table,Tid});
         _       -> io:format("skipping Table ~p in filefilters:dump~n",[Table])
     end,
     dump(T).

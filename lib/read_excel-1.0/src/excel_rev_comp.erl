@@ -39,7 +39,7 @@ reverse_compile(Index,Tokens,TokArr,Tbl)->
 rev_comp(_Index,[],_TokArr,Stack,_Tbl) ->
     "="++to_str(lists:reverse(Stack));
 
-%% tExp
+%% tExp1
 %% tExp is a placeholder for a shared or array formula 
 %% we treat them differently
 %% 
@@ -212,10 +212,10 @@ rev_comp(Index,[{name_index,{tName,[{value,Value},{type,_Type}],
                 {name, NameVal}, _Val]}] = ?read(Tbl,tmp_names,Value),
     % if the type is local look up the sheet name
     NameStr = case Type of
-                  global -> "../"++"@"++NameVal;
+                  global -> "..!"++"@"++NameVal;
                   local  -> {{sheet,SheetName},_,_}=Index,
                             EscSheet=excel_util:esc_tab_name(SheetName),
-                            "../"++EscSheet++"/"++"@"++NameVal
+                            "..!"++EscSheet++"!"++"@"++NameVal
               end,
     rev_comp(Index,T,TokArr,[{string,NameStr}|Stack],Tbl);
 
@@ -232,19 +232,19 @@ rev_comp(I,[{absolute_area,{tArea,[[{start_cell,Start}|{end_cell,End}]|_R1],
 %% tMemArea
 rev_comp(Index,[{memory_area,{tMemArea,[{value,_MemArea},{type,_Type}],
                               {return,reference}}}|T],TokArr,Stack,Tbl) ->
-%% See discussion in Section 3.1.6 of excelfileformat.v1.40.pdf
-%%
-%% for tMemArea there is an appended set of tokens in the TokArr
-%% which must be read in and then *DISCARDED*
-%%
-%% for instance if the tMemArea is "A1:A2 A2:A3" then the TokArr
-%% will contain the *RESULT* of the intersection, ie "A2"
-%%
-%% So to calculate Excel would discard the value that would be
-%% in the tMemArea token - 19 in this instance - but use "A2"
-%% whereas reverse compiling is only interested in the full
-%% range "A1:A2 A2:A3" and discards the TokArr "A2"
-%% ie the first return variable in the next line
+    % See discussion in Section 3.1.6 of excelfileformat.v1.40.pdf
+    %
+    % for tMemArea there is an appended set of tokens in the TokArr
+    % which must be read in and then *DISCARDED*
+    %
+    % for instance if the tMemArea is "A1:A2 A2:A3" then the TokArr
+    % will contain the *RESULT* of the intersection, ie "A2"
+    %
+    % So to calculate Excel would discard the value that would be
+    % in the tMemArea token - 19 in this instance - but use "A2"
+    % whereas reverse compiling is only interested in the full
+    % range "A1:A2 A2:A3" and discards the TokArr "A2"
+    % ie the first return variable in the next line
     {_Array,ArrayTail}=excel_util:read_cell_range_add_list(TokArr,'16bit'),
     % Given that this token holds a look up to the results of parsing
     % the subsequent array we can just chuck it away.
@@ -323,7 +323,7 @@ rev_comp(Index,[{name_xref,{tNameX,
                                 {name, LocalName}, _V]}] = ?read(Tbl,tmp_names,NameIdx),
                         {{sheet,SheetName},_,_}=Index,
                         EscSheet=excel_util:esc_tab_name(SheetName),
-                        "../"++EscSheet++"/"++"@"++LocalName;
+                        "..!"++EscSheet++"!"++"@"++LocalName;
                     {skipped, add_ins} ->
                         % First get all the externames with the EXBindex of EXBIdx
                         % get the cell name
@@ -368,7 +368,7 @@ rev_comp(I,[{three_dee_ref,{tRef3d,[{reference_index,RefIdx},
                                     Ref,_Type],_Ret}}|T],TokArr,Stack,Tbl) ->
     Sheet = get_sheet_ref(RefIdx,Tbl),
     Sheet2=excel_util:esc_tab_name(Sheet),
-    rev_comp(I,T,TokArr,[{string,"../"++Sheet2++"/"++make_cell(Ref)}|Stack],
+    rev_comp(I,T,TokArr,[{string,"..!"++Sheet2++"!"++make_cell(Ref)}|Stack],
              Tbl);
 
 %% tArea3d
@@ -379,7 +379,7 @@ rev_comp(I,[{three_dee_area,{tArea3d,[{reference_index,RefIdx},
     Sheet2=excel_util:esc_tab_name(Sheet),
     [{start_cell,Ref1}|{end_cell,Ref2}] = Reference,
     Range=make_range(Ref1,Ref2),
-    rev_comp(I,T,TokArr,[{string,"../"++Sheet2++"/"++Range}|Stack],Tbl);
+    rev_comp(I,T,TokArr,[{string,"..!"++Sheet2++"!"++Range}|Stack],Tbl);
 
 %% tRefErr3d
 rev_comp(I,[{three_dee_error_ref,{tRefErr3d,[{reference_index,_RefIndex},
@@ -390,7 +390,7 @@ rev_comp(I,[{three_dee_error_ref,{tRefErr3d,[{reference_index,_RefIndex},
 %% tAreaErr3d
 rev_comp(I,[{three_dee_area_error,{tAreaErr3d,[{reference_index,_RefIndex},
                                                {type,_Type}],
-                                  {return,reference}}}|T],TokArr,Stack,Tbl) ->
+                                   {return,reference}}}|T],TokArr,Stack,Tbl) ->
     rev_comp(I,T,TokArr,[{string,"!REF"}|Stack],Tbl);
 
 %%%%%%%%%%%%%%%%%%%%%%
@@ -527,27 +527,9 @@ read_token_array(N,<<?ErrorArrayEl:8/little-unsigned-integer,
             end,
     read_token_array(N-1,Rest,[{string,Value}|Residuum]).
 
-%%--------------------------------------------------------------------
-%% Function:    implode/2
-%%
-%% Description: Add all the items in the list together into a string
-%%              interspace with 'Token' (number converted to strings).
-%%              (Token doesn't get added on to the last element).
-%%--------------------------------------------------------------------
-%%implode(List, Token) ->
-%%    F = fun(X, Acc) ->
-%%        if
-%%            is_integer(X) -> [Token,integer_to_list(X)|Acc];
-%%            %% float like "2.000" to come back as "2"
-%%            is_float(X)   -> [Token,to_str({float,X})|Acc];
-%%            true          -> [Token,X|Acc]
-%%        end
-%%    end,
-%%    [_TrailingToken|RealList]=lists:foldl(F, [], List),
-%%    lists:flatten(lists:reverse(RealList)).
 
-%%% set of functions used by reverse_compile to generate the actual
-%%% Formula Strings that are in the cells
+%% set of functions used by reverse_compile to generate the actual
+%% Formula Strings that are in the cells
 to_str(addition)              -> "+";
 to_str(subtraction)           -> "-";
 to_str(multiply)              -> "*";

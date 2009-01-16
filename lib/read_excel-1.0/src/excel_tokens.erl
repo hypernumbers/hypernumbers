@@ -189,16 +189,16 @@ parse_tokens(?tMissArg,Name,Bin,TokenArray,Residuum)->
 
 %% tStr
 parse_tokens(?tStr,Name,Bin,TokenArray,Residuum)->
-    %% all strings in formulae have a 1-byte index
+    % all strings in formulae have a 1-byte index
     <<_Tk:8/little-unsigned-integer,
      Rest/binary>>=Bin,
     <<Len:8/little-unsigned-integer,
      NFlags:8/little-unsigned-integer,
      R3/binary>>=Rest,
     BinLen=excel_util:get_len_CRS_Uni16(Len,1,R3,NFlags),
-    %% The 2nd byte which contains the encoding flags needs to be included...
-    %% if the String is Rich Text or Asian this next bit might blow up
-    %% (who knows!)
+    % The 2nd byte which contains the encoding flags needs to be included...
+    % if the String is Rich Text or Asian this next bit might blow up
+    % (who knows!)
     <<StrBin:BinLen/binary,R4/binary>>=Rest,
     String2=excel_util:get_utf8(excel_util:parse_CRS_Uni16(StrBin,1)),
     String3=list_to_binary(lists:flatten([$",String2,$"])),
@@ -462,9 +462,9 @@ parse_tokens(tFuncVar,Name,Bin,TokenArray,Type,Residuum)->
      Index:16/little-unsigned-integer,
      R2/binary>>=Bin,
     {NArgs,UserPrompt} = case Flags band 16#80 of
-			     16#80 -> {Flags-16#80,true};
-			     _     -> {Flags,false}
-			 end,
+                             16#80 -> {Flags-16#80,true};
+                             _     -> {Flags,false}
+                         end,
     {FuncIndex,_FuncType} = case Index band 16#8000 of
                                 16#8000 -> {Index-16#8000,built_in};
                                 _       -> {Index,macro}
@@ -484,7 +484,7 @@ parse_tokens(tName,Name,Bin,TokenArray,Type,Residuum)->
      Index:16/little-unsigned-integer,
      _NotUsed:16/little-unsigned-integer,
      R2/binary>>=Bin,
-    %% this is a *ONE* based index so drop it by one...
+    % this is a *ONE* based index so drop it by one...
     parse_tokens(R2,Name,TokenArray,[{name_index,
                                       {tName,[{value,Index-1},{type,Type}],
                                        {return,reference}}}|Residuum]);
@@ -612,7 +612,7 @@ parse_tokens(tNameX,Name,Bin,TokenArray,Type,Residuum)->
      NameIndex:16/little-unsigned-integer,
      _NotUsed:16/little-unsigned-integer,
      R2/binary>>=Bin,
-    %% NameIndex is a *ONE* based index so drop it by one...
+    % NameIndex is a *ONE* based index so drop it by one...
     parse_tokens(R2,Name,TokenArray,[{name_xref,{tNameX,
                                                  [{reference_index,RefIndex},
                                                   {name_index,NameIndex-1},
@@ -690,16 +690,16 @@ parse_cell_range(Range)->
 parse_cell_addy(Addy)->
     <<RowIdx:16/little-unsigned-integer,
      RawCol:16/little-unsigned-integer>>=Addy,
-    %% Now unpack the flags
+    % Now unpack the flags
     {Col,RowType,ColType}=unpack_raw(RawCol),
     {RowIdx,Col,RowType,ColType}.
 
 unpack_raw(RawCol)->
     case RawCol band 16#C000 of
-	16#C000 -> {RawCol-16#C000,rel_row,rel_col};
- 	16#8000 -> {RawCol-16#8000,rel_row,abs_col};
- 	16#4000 -> {RawCol-16#4000,abs_row,rel_col};
- 	_       -> {RawCol,abs_row,abs_col}
+        16#C000 -> {RawCol-16#C000,rel_row,rel_col};
+        16#8000 -> {RawCol-16#8000,rel_row,abs_col};
+        16#4000 -> {RawCol-16#4000,abs_row,rel_col};
+        _       -> {RawCol,abs_row,abs_col}
     end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -709,16 +709,16 @@ unpack_raw(RawCol)->
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 parse_attr(<<?tAttrVolatile:8/little-unsigned-integer,
-	    _NotUsed:16/little-unsigned-integer,
-	    R/binary>>)->
+            _NotUsed:16/little-unsigned-integer,
+            R/binary>>)->
     {{attributes,{tAttrVolatile,volatile_attribute,[],{return,none}}},R};
 parse_attr(<<?tAttrIf:8/little-unsigned-integer,
-	    Jump:16/little-unsigned-integer,
-	    R/binary>>)->
+            Jump:16/little-unsigned-integer,
+            R/binary>>)->
     {{attributes,{tAttrIf,if_attribute,[{jump,Jump}],{return,none}}},R};
 parse_attr(<<?tAttrChoose:8/little-unsigned-integer,
-	    NumberOfChoices:16/little-unsigned-integer,
-	    R/binary>>)->
+            NumberOfChoices:16/little-unsigned-integer,
+            R/binary>>)->
     JumpTableSize=NumberOfChoices*2,
     <<JumpTable:JumpTableSize/binary,
      ErrorJump:16/little-unsigned-integer,
@@ -728,30 +728,30 @@ parse_attr(<<?tAttrChoose:8/little-unsigned-integer,
                    {jump_table,JumpTable},
                    {error_jump,ErrorJump}],{return,none}}},R2};
 parse_attr(<<?tAttrSkip:8/little-unsigned-integer,
-	    Skip:16/little-unsigned-integer,
-	    R/binary>>)->
+            Skip:16/little-unsigned-integer,
+            R/binary>>)->
     {{attributes,{tAttrSkip,skip_attribute,[{skip,Skip+1}],{return,none}}},R};
 parse_attr(<<?tAttrSum:8/little-unsigned-integer,
-	    _NotUsed:16/little-unsigned-integer,
-	    R/binary>>)->
+            _NotUsed:16/little-unsigned-integer,
+            R/binary>>)->
     {{attributes,{tAttrSum,sum_attribute,[],{return,none}}},R};
 parse_attr(<<?tAttrAssign:8/little-unsigned-integer,
-	    _NotUsed:16/little-unsigned-integer,
-	    R/binary>>)->
+            _NotUsed:16/little-unsigned-integer,
+            R/binary>>)->
     {{attributes,{tAttrAssign,assign_attribute,[],{return,none}}},R};
 parse_attr(<<?tAttrSpace:8/little-unsigned-integer,
-	    SpecCharType:8/little-unsigned-integer,
-	    NoOfSpecChars:8/little-unsigned-integer,
-	    R/binary>>)->
+            SpecCharType:8/little-unsigned-integer,
+            NoOfSpecChars:8/little-unsigned-integer,
+            R/binary>>)->
     Type=case SpecCharType of
-	     ?attr_SC_SPACES1   -> space;
-	     ?attr_SC_CARRIAGE1 -> carriage_return;
-	     ?attr_SC_SPACES2   -> space;
-	     ?attr_SC_CARRIAGE2 -> carriage_return;
-	     ?attr_SC_SPACES3   -> space;
-	     ?attr_SC_CARRIAGE3 -> carriage_return;
-	     ?attr_SC_SPACES4   -> space
-	 end,
+             ?attr_SC_SPACES1   -> space;
+             ?attr_SC_CARRIAGE1 -> carriage_return;
+             ?attr_SC_SPACES2   -> space;
+             ?attr_SC_CARRIAGE2 -> carriage_return;
+             ?attr_SC_SPACES3   -> space;
+             ?attr_SC_CARRIAGE3 -> carriage_return;
+             ?attr_SC_SPACES4   -> space
+         end,
     {{attributes,{tAttrSpace,special_character,[{char,Type},
                                                 {no_of_chars,NoOfSpecChars}],
                   {return,none}}},R};

@@ -25,9 +25,9 @@
 %%%                                                                     %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 post_process_tables(Tables) ->
-%% Excel has a number of built in formats
+    % Excel has a number of built in formats
     {ok,ok}=add_built_in_formats(Tables),
-    filefilters:dump(Tables),
+    % filefilters:dump(Tables),
     type_formats(Tables),
     fix_up_externalrefs(Tables),
     fix_up_names(Tables),

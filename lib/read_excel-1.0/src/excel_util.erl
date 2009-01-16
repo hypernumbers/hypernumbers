@@ -40,6 +40,8 @@ get_utf8({[{'uni16-8',String}],_B,_C})->
     xmerl_ucs:to_utf8(binary_to_list(String));
 get_utf8({[{'uni16-16',String}],_B,_C})->
     xmerl_ucs:to_utf8(xmerl_ucs:from_utf16le(binary_to_list(String)));
+get_utf8({[{richtext,_},{'uni16-16',String}],_,_}) ->
+    xmerl_ucs:to_utf8(xmerl_ucs:from_utf16le(binary_to_list(String)));
 get_utf8({[{richtext,_},{'uni16-8',String}],_,_}) ->
     xmerl_ucs:to_utf8(binary_to_list(String)).
 
@@ -49,10 +51,10 @@ get_bound_sheet(Bin,_Tables)->
      SheetType:8/little-unsigned-integer,
      Name/binary>>=Bin,
     SheetName=excel_util:parse_CRS_Uni16(Name),
-%% The Sheetnames are the names of all the worksheets in the workbook
-%% The order in which the Sheetnames appear in this function is determined
-%% by the zero-ordered Sheetindex. In other words the names appear here
-%% in the order of the sheets left to right in the tab bar of Excel
+    % The Sheetnames are the names of all the worksheets in the workbook
+    % The order in which the Sheetnames appear in this function is determined
+    % by the zero-ordered Sheetindex. In other words the names appear here
+    % in the order of the sheets left to right in the tab bar of Excel
     {SheetBOF,Visibility,SheetType,Name,SheetName}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -63,9 +65,9 @@ get_bound_sheet(Bin,_Tables)->
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 parse_CRS_RK(RKBin)->
-%% Section 2.5.5 of excelfileformats.pdf V1.40
-%% There is a bit mask applied but it is against the reassembled
-%% number and not the first digits of the little endian stream!
+    % Section 2.5.5 of excelfileformats.pdf V1.40
+    % There is a bit mask applied but it is against the reassembled
+    % number and not the first digits of the little endian stream!
     <<Rem:6,Type:1,Shift:1,Rest:24>>=RKBin,
     % Rebuild the number
     Num2 = case Type of
@@ -357,7 +359,7 @@ lookup_string(Tables,SSTIndex)->
 get_integer(Bin) ->
     <<Type:1,_Rest:31>>=Bin,
     case Type of
-        1 -> %% Rest is a 30 bit binary in ones complement
+        1 -> % Rest is a 30 bit binary in ones complement
             -1*ones_complement(shift_left2(Bin))+1;
         0 -> shift_left2(Bin)
     end.
@@ -423,9 +425,9 @@ flatpack([H|T],Acc)    -> flatpack(T,[H|Acc]).
 
 flatpack2(List) -> flatpack2(List,99).
 
-flatpack2(List,0) -> List;
-flatpack2(List,N) -> {ok,Return,N2}=regexp:gsub(List,"__","_"),
-                     flatpack2(Return,N2).
+flatpack2(List,0)  -> List;
+flatpack2(List,_N) -> {ok,Return,N2}=regexp:gsub(List,"__","_"),
+                      flatpack2(Return,N2).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

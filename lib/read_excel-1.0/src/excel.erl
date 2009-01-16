@@ -44,9 +44,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 read_excel(Directory,SAT,SSAT,SectorSize,ShortSectorSize,
            _MinStreamSize,{{SubLoc,SubSID},SubStreams},FileIn,Tables)->
-%% Bear in mind that if the location is short stream the 'SID' returned
-%% is actually an SSID!
-%% io:format("~n~nNow going to parse the Excel Workbook only!~n"),
+    % Bear in mind that if the location is short stream the 'SID' returned
+    % is actually an SSID!
+    % io:format("~n~nNow going to parse the Excel Workbook only!~n"),
     {Location,SID}=get_workbook_SID(Directory),
     Bin=case Location of
             normal_stream -> get_normal_stream(SID,Directory,SAT,SectorSize,
@@ -54,51 +54,51 @@ read_excel(Directory,SAT,SSAT,SectorSize,ShortSectorSize,
             short_stream  -> get_short_stream(SID,Directory,SAT,SSAT,SectorSize,
                                               ShortSectorSize,FileIn)
         end,
-%% Now parsing the Excel components of the file
-%%
-%% To understand what is going on here you need to read Section 4.1.2 of
-%% excelfileformatV1-40.pdf Basically we first read the 'Workbook Globals
-%% SubStream' and the all the 'Sheet SubStreams'
-%%
-%% The 'Workbook Globals Substream' contains things that are 'file wide':
-%% * string
-%% * tables
-%% * formats
-%% * fonts
-%% * styles
-%% * etc, etc
-%% as described in Section 4.2.5 of excelfileformatV1-40.pdf
-%%
-%% The 'Sheet Substreams' constist of things on a particular Excel tab as
-%% described in Section 4.2.5 of excelfileformatV1-40.pdf
-%%
+    % Now parsing the Excel components of the file
+    %
+    % To understand what is going on here you need to read Section 4.1.2 of
+    % excelfileformatV1-40.pdf Basically we first read the 'Workbook Globals
+    % SubStream' and the all the 'Sheet SubStreams'
+    %
+    % The 'Workbook Globals Substream' contains things that are 'file wide':
+    % * string
+    % * tables
+    % * formats
+    % * fonts
+    % * styles
+    %* etc, etc
+    % as described in Section 4.2.5 of excelfileformatV1-40.pdf
+    %
+    % The 'Sheet Substreams' constist of things on a particular Excel tab as
+    % described in Section 4.2.5 of excelfileformatV1-40.pdf
+    %
 
-%% First parse the 'Workbook Globals SubStream'
+    % First parse the 'Workbook Globals SubStream'
     CurrentFormula="There is no current Formula yet!",
     parse_bin(Bin,{'utf-8',list_to_binary("Workbook Globals SubStream")},
               CurrentFormula,Tables),
-%% Now parse all the 'Sheet Substeams'
+    % Now parse all the 'Sheet Substeams'
     [parse_substream(SubSID,SubLoc,X,Directory,SAT,SSAT,SectorSize,
                      ShortSectorSize,FileIn,Tables) || X <- SubStreams],
-%% Now that the complete file is read reverse_compile the token stream
-%%
+    % Now that the complete file is read reverse_compile the token stream
+    %
     excel_post_process:post_process_tables(Tables).
 
 parse_substream(SubSID,Location,SubStream,Directory,SAT,SSAT,SectorSize,
                 ShortSectorSize,FileIn,Tables)->
     {{[{Type,NameBin}],_,_},Offset}=SubStream,
-%% Name=binary_to_list(NameBin),
-%% io:format("Now parsing stream ~p~n",[Name]),
+    % Name=binary_to_list(NameBin),
+    % io:format("Now parsing stream ~p~n",[Name]),
     Bin=case Location of
             normal_stream -> get_normal_stream(SubSID,Directory,SAT,SectorSize,
                                                FileIn);
             short_stream  -> get_short_stream(SubSID,Directory,SAT,SSAT,
                                               SectorSize,ShortSectorSize,FileIn)
         end,
-%% Because we are reading a substream we want to chop off the
-%% binary up to the offset
+    % Because we are reading a substream we want to chop off the
+    % binary up to the offset
     <<_Discard:Offset/binary,Rest/binary>>=Bin,
-%% pass in the actual name of the substream
+    % pass in the actual name of the substream
     CurrentFormula="There is no current Formula yet!",
     parse_bin(Rest,{Type,NameBin},CurrentFormula,Tables).
 
@@ -110,10 +110,10 @@ parse_bin(Bin,SubStreamName,CurrentFormula,Tables)->
     Name=binary_to_list(NameBin),
     case Identifier of
         ?EOF ->
-%% io:format("workstream ~p read!~n",[Name]),
+            % io:format("workstream ~p read!~n",[Name]),
             ok;
         ?SST ->
-%% io:format("In excel:parse_bin Name is ~p~n",[Name]),
+            % io:format("In excel:parse_bin Name is ~p~n",[Name]),
             {ok,BinList,Rest2}=get_single_SST(Bin),
             {ok,NewCurrentFormula}=excel_records:parse_rec(Identifier,BinList,
                                                            Name,CurrentFormula,
@@ -121,9 +121,9 @@ parse_bin(Bin,SubStreamName,CurrentFormula,Tables)->
             parse_bin(Rest2,SubStreamName,NewCurrentFormula,Tables);
         _Other ->
             <<Record:RecordSize/binary,Rest3/binary>>=Rest,
-%% Bodge=excel_records:bodge(Record),
-%% bits:log("Record is "++integer_to_list(Other)),
-%% bits:log("Record is "++Bodge),
+            % Bodge=excel_records:bodge(Record),
+            % bits:log("Record is "++integer_to_list(Other)),
+            % bits:log("Record is "++Bodge),
             {ok,NewCurrentFormula}=excel_records:parse_rec(Identifier,Record,
                                                            Name,CurrentFormula,
                                                            Tables),
@@ -147,8 +147,8 @@ get_single_SST(Bin,Residuum)->
         ?CONTINUE -> <<RecordSize:16/little-unsigned-integer,Rest2/binary>>=Rest,
                      <<Record:RecordSize/binary,Rest3/binary>>=Rest2,
                      get_single_SST(Rest3,[Record|Residuum]);
-%% the EXTSST record is simply an index for fast lookup
-%% on the SST record so we just chuck it...
+        % the EXTSST record is simply an index for fast lookup
+        % on the SST record so we just chuck it...
         ?EXTSST   -> <<RecordSize:16/little-unsigned-integer,Rest2/binary>>=Rest,
                      <<_Record:RecordSize/binary,Rest3/binary>>=Rest2,
                      {ok,lists:reverse(Residuum),Rest3}
@@ -161,15 +161,15 @@ get_single_SST(Bin,Residuum)->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 get_file_structure(ParsedDirectory,SAT,SSAT,SectorSize,ShortSectorSize,
                    _MinStreamSize,Tables,FileIn)->
-%% Remember that if the stream is a short stream the SID in the directory
-%% is actually an SSID!
+    % Remember that if the stream is a short stream the SID in the directory
+    % is actually an SSID!
     {Location,SID}=get_workbook_SID(ParsedDirectory),
     Bin=case Location of
             normal_stream ->
                 get_normal_stream(SID,ParsedDirectory,SAT,SectorSize,FileIn);
             short_stream ->
-%% First thing we are going to do is get the
-%% normal stream that contains the short stream
+                % First thing we are going to do is get the
+                % normal stream that contains the short stream
                 {_,SID2}=excel:get_named_SID(ParsedDirectory,?ROOT_ENTRY),
                 Bin2=get_normal_stream(SID2,ParsedDirectory,SAT,
                                        SectorSize,FileIn),
@@ -179,9 +179,9 @@ get_file_structure(ParsedDirectory,SAT,SSAT,SectorSize,ShortSectorSize,
     {{Location,SID},get_bound_list(Bin,Tables)}.
 
 get_workbook_SID(ParsedDirectory)->
-%% In Excel this SID is called 'Workbook' in the files written by
-%% whatever wrote the test files uses 'Book' so we need to look for
-%% both of them
+    % In Excel this SID is called 'Workbook' in the files written by
+    % whatever wrote the test files uses 'Book' so we need to look for
+    % both of them
     Response=excel:get_named_SID(ParsedDirectory,?EXCEL_WKBK1),
     case Response of
         {error,_Err} -> {ok,Ret}=excel:get_named_SID(ParsedDirectory,?EXCEL_WKBK2),
@@ -206,9 +206,9 @@ get_normal_stream(SID,_ParsedDirectory,SAT,SectorSize,FileIn)->
 
 get_short_stream(SSID,ParsedDirectory,SAT,SSAT,SectorSize,ShortSectorSize,
                  FileIn)->
-%% First thing we are going to do is get the
-%% normal stream that contains the short stream
-%% might have a problem here too
+    % First thing we are going to do is get the
+    % normal stream that contains the short stream
+    % might have a problem here too
     {_,RootSID}=excel:get_named_SID(ParsedDirectory,?ROOT_ENTRY),
     Bin=get_normal_stream(RootSID,ParsedDirectory,SAT,SectorSize,FileIn),
     SSIDs=filefilters:get_SIDs(SSAT,SSID),
@@ -229,7 +229,7 @@ get_bound_list(Bin,Residuum,Tables)->
      RecordSize:16/little-unsigned-integer,Rest/binary>>=Bin,
     case Identifier of
         ?EOF ->
-%%io:format("workstream read!~n"),
+            % io:format("workstream read!~n"),
             Residuum;
         ?BOUNDSHEET ->
             <<Record:RecordSize/binary,Rest2/binary>>=Rest,
@@ -250,7 +250,7 @@ get_storage(FileHandle,Position,SIDs,SectorSize)->
 get_storage(_FileHandle,_Position,[],_SectorSize,Residuum)->
     list_to_binary(lists:reverse(Residuum));
 get_storage(FileHandle,Position,SIDs,SectorSize,Residuum)->
-%% Check if we are have read the whole stream
+    % Check if we are have read the whole stream
     Bin=read_storage_stream(FileHandle,SIDs,SectorSize,Position,SectorSize),
     [_H|T]=SIDs,
     NewResiduum=[Bin|Residuum],
@@ -264,15 +264,15 @@ get_short_bin(_Bin,[],_SectorSize,Residuum)->
 get_short_bin(Bin,[0|T],SectorSize,Residuum) ->
     Size=SectorSize*8,
     <<Seg:Size/integer,_Rest/binary>>=Bin,
-%% remember - you are not cutting down the binary!
-%% which is why we dont pass 'Rest' on but send 'Bin' on again
+    % remember - you are not cutting down the binary!
+    % which is why we dont pass 'Rest' on but send 'Bin' on again
     get_short_bin(Bin,T,SectorSize,[<<Seg:Size>>|Residuum]);
 get_short_bin(Bin,[H|T],SectorSize,Residuum) ->
     Position=H*SectorSize*8,
     Size=SectorSize*8,
     <<_Skip:Position,Seg:Size/integer,_Rest/binary>>=Bin,
-%% remember - you are not cutting down the binary!
-%% which is why we dont pass 'Rest' on but send 'Bin' on again
+    % remember - you are not cutting down the binary!
+    % which is why we dont pass 'Rest' on but send 'Bin' on again
     get_short_bin(Bin,T,SectorSize,[<<Seg:Size>>|Residuum]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -288,18 +288,18 @@ read_storage_stream(FileHandle,SIDList,SectorSize,Position,Size)->
     BytesLeft=SectorSize-BytesOffset,
     if
         BytesLeft < Size ->
-%% need to do a double read
+            % need to do a double read
             FirstTruePosition=StartSID*SectorSize+?HEADER_SIZE+BytesOffset,
             file:position(FileHandle,FirstTruePosition),
             {ok,Bin1}=file:read(FileHandle,BytesLeft),
-%% now read the rest from the next Sector
+            % now read the rest from the next Sector
             SecondSID=lists:nth(StartSIDNumber+1,SIDList),
             SecondTruePosition=SecondSID*SectorSize+?HEADER_SIZE,
             file:position(FileHandle,SecondTruePosition),
             {ok,Bin2}=file:read(FileHandle,Size-BytesLeft),
             Bin=list_to_binary([Bin1,Bin2]);
         true->
-%% can do a single read
+            % can do a single read
             FirstTruePosition=StartSID*SectorSize+?HEADER_SIZE+BytesOffset,
             file:position(FileHandle,FirstTruePosition),
             {ok,Bin}=file:read(FileHandle,Size)
