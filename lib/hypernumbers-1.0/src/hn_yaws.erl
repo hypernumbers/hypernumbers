@@ -20,7 +20,6 @@
 %% @spec out(Arg) -> YawsReturn.
 %% @doc Yaws handler for all incoming HTTP requests
 out(Arg) ->
-
     Url      = yaws_api:request_url(Arg),
     FileName = Arg#arg.docroot++Url#url.path,
     %% Serve static files, can move to a different server later
@@ -41,7 +40,7 @@ out(Arg) ->
 
 %% @spec do_request(Arg,Url) -> {ok,Responce}
 %% @doc handle incoming requests
-do_request(Arg,Url) ->
+do_request(Arg, Url) ->
     
     RV = fun({X,undefined}) -> X;
             (Else)          -> Else
@@ -90,15 +89,15 @@ do_request(Arg,Url) ->
     
     {ok,Return}.
 
-req('GET',[],_,no_access,#ref{ref={page,"/"}}) ->
+req('GET', [], _, no_access, #ref{ref={page,"/"}}) ->
     {return,{page,"/html/login.html"}};
-req('GET',[],_,no_access,_Ref)  ->
+req('GET', [], _, no_access, _Ref)  ->
     {return,{status,503}};
 req('GET',[],_,require_token,#ref{ref={page,"/"}}) ->
     {return,{page,"/html/token.html"}};
 req('GET',[],_,require_token,_Page)  ->
     {return,{status,503}};
-req('GET',[],[],_,#ref{ref={page,"/"},path=[]}) ->
+req('GET',[],[],_,#ref{ref={page,"/"},path=["admin"]}) ->
     {return,{page,"/html/admin.html"}};
 req('GET',[],["save"],_,Ref=#ref{ref={page,"/"},path=Path}) ->
     F = fun(X) ->
@@ -118,13 +117,13 @@ req('GET',[],["save"],_,Ref=#ref{ref={page,"/"},path=Path}) ->
       {content,"text/xml",to_xml_string(Xml)}]};
 
 req('GET',[],[],_,Ref=#ref{ref={page,"/"}}) ->
-    F = case hn_db:get_item_val(Ref#ref{name=gui}) of
-            []    -> "index";
-            Else  -> Else
-        end,
-    {return,{page,"/html/"++F++".html"}};
+    HTML = case hn_db:get_item_val(Ref#ref{name=gui}) of
+               []    -> "/html/index.html";
+               Else  -> "/apps/"++Else++".html"
+           end,
+    {return,{page,HTML}};
 req('GET',[],[{"gui",GUI}],_,#ref{ref={page,"/"}}) ->
-    {return,?NOCACHE++[{page,"/html/"++GUI++".html"}]};
+    {return,?NOCACHE++[{page,"/apps/"++GUI++".html"}]};
 
 req('GET',[],["new"],_,Ref=#ref{site=Site,ref={page,"/"}}) ->
     Tpl = case hn_db:get_item_val(Ref#ref{name='__template'}) of
@@ -405,6 +404,8 @@ get_last_index(Site,Path,RowCol) ->
 %% Takes an unfiltered list of spriki records, extracts the path
 %% they are from and constructs a tree
 create_pages_tree(List) ->
+
+    %%?INFO("~p",[dh_tree:create(path_list(List,[]))]),
 
     TmpTrees = lists:filter(
                  fun([]) -> false; (_) -> true end,
