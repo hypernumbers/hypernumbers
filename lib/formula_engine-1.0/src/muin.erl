@@ -124,19 +124,6 @@ plain_eval([Func | Args]) when ?is_fn(Func) ->
 plain_eval(Value) ->
     Value.
 
-let_transform([name, N, P], [name, N, P], Repl)          -> Repl;
-let_transform(NameNode, [Fn|Args], Repl) when ?is_fn(Fn) -> [Fn|[let_transform(NameNode, X, Repl) || X <- Args]];
-let_transform(_NameNode, Literal, _Repl)                 -> Literal.
-
-offset([ref, C, R, P], Rows, Cols, 1, 1) ->
-    Dr = toidx(R)+Rows,
-    Dc = toidx(C)+Cols,
-    [ref, Dc, Dr, P];
-offset([ref, R, C, P], Rows, Cols, H, W) ->
-    [':',
-     {ref, toidx(C)+Cols, toidx(R)+Rows, P, ""},
-     {ref, toidx(C)+Cols+W, toidx(R)+Rows+H, P, ""}].
-
 %% @doc Used for direct manipulations on the AST (think Lisp macros).
 %% E.g. OFFSET is done here because it needs to splice results directly back
 %% into the AST.
@@ -174,21 +161,38 @@ preproc([indirect, Arg]) ->
         false ->
             {reeval, ?ERRVAL_VAL}
     end;
-preproc([offset, Ref, Rows, Cols]) ->
-    {R, {H, W}} = case Ref of % calculate height & width of ref & return topleft cell in range if ref is a range.
-                      [':', {ref, R1, C1, P}, {ref, R2, C2, _}] ->
-                          {[ref, R1, C1, P], {toidx(C2)-toidx(C1)+1, toidx(R2)-toidx(C2)+1}};
-                      _ ->
-                          {Ref, {1, 1}}
-                  end,
-    preproc([offset, R, Rows, Cols, H, W]);
-preproc([offset, Ref, Rows, Cols, H, W]) ->
-    %% TODO: Check args for correctness.
+%% OFFSET(Range, Rows, Cols) -- what if range is constructed with INDIRECT though...?
+preproc([offset, _Base = [':', {ref, R1, C1, P}, {ref, R2, C2, _}], Rows, Cols]) ->
+    H = toidx(C2)-toidx(C1)+1,
+    W = toidx(R2)-toidx(R1)+1,
+    preproc([offset, [ref, R1, C1, P], Rows, Cols, H, W]);
+%% OFFSET(Cellref, Rows, Cols)
+preproc([offset, Base, Rows, Cols]) ->
+    preproc([offset, Base, Rows, Cols, 1, 1]);
+preproc([offset, _Base = [ref, C, R, P], Rows, Cols, H, W]) ->
     RULES = [ban_strings, ban_bools, ban_dates, ban_blanks],
-    Evald  = map(fun muin:eval/1, [Rows, Cols, H, W]),
-    [Rows2, Cols2, H2, W2] = map(fun(X) -> ?number(X, RULES) end, Evald),
-    {reeval, offset(Ref, Rows2, Cols2, H2, W2)};
+    %% eval expressions, then try to cast them.
+    [Rows2, Cols2, H2, W2] = ?numbers(map(fun muin:eval/1, [Rows, Cols, H, W]), RULES),
 
+    Dr = toidx(R)+Rows2,
+    Dc = toidx(C)+Cols2,
+
+    Res =
+        if
+            Dr < 1 -> ?ERRVAL_REF;
+            Dc < 1 -> ?ERRVAL_REF;
+            H2 < 1 -> ?ERRVAL_VAL;
+            W2 < 1 -> ?ERRVAL_VAL;
+            true ->
+                if H2 == 1 andalso W2 == 1 ->
+                        [ref, Dc, Dr, P];
+                   true ->
+                        [':', {ref, Dc, Dr, P, ""}, {ref, Dc+W2, Dr+H2, P, ""}]
+                end
+        end,
+    
+    {reeval, Res};
+    
 %% TODO: Move queries out.
 preproc(['query', Arg]) ->
     Toks = string:tokens(Arg, "/"),
@@ -628,7 +632,6 @@ do_cell(RelPath, Rowidx, Colidx) ->
 %% saves the dependencies (linking it to current cell), and returns
 %% the value to the caller (to continue the evaluation of the formula).
 get_value_and_link(FetchFun) ->
-
     {Value, RefTree, Errs, Refs} = FetchFun(),
 
     ?IF(member({?msite, ?mpath, ?mx, ?my}, RefTree),
@@ -669,3 +672,9 @@ get_pages_under(Pathcomps) ->
                     [],
                     Res),
     hslists:uniq(Starexp).
+
+%% @doc AST transformation for LET function.
+
+let_transform([name, N, P], [name, N, P], Repl)          -> Repl;
+let_transform(NameNode, [Fn|Args], Repl) when ?is_fn(Fn) -> [Fn|[let_transform(NameNode, X, Repl) || X <- Args]];
+let_transform(_NameNode, Literal, _Repl)                 -> Literal.
