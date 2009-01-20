@@ -50,18 +50,12 @@ iseven([V1]) ->
 isodd([Num]) ->
     not(iseven([Num])).
 
-%% Returns the result TRUE if value refers to a logical value; otherwise returns
-%% FALSE.
+%% Returns true only for booleans or arrays where element (1,1) is a boolean.
+%% (Returns false for ranges regardless of what's in them.)
 
-%% COMPATIBILITY NOTES:
-%% Returns false for ranges, even if they contain logical values. -- YES.
-%% Returns true for cells when they contain logical values. -- YES.
-%% Returns true for arrays that contain logical values. -- NOT YET.
-%% TODO: Above.
-islogical([true]) ->
-    true;
-islogical(_) ->
-    false.
+islogical([B]) when is_boolean(B) -> true;
+islogical(A) when ?is_array(A)    -> is_boolean(area_util:at(1, 1, A)).
+islogical(_)                      -> false.
 
 isna([{error, na}]) ->
     true;
