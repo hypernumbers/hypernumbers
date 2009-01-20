@@ -1,6 +1,13 @@
 %%% @doc Utility functions common to arrays and ranges.
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 
+%%% TODO:
+%%% * may well be worth switching to a list-of-tuples representation
+%%%   (i.e. [{Y, X, Term}]) -- will allow for fast column selection,
+%%%   speed up at() and apply_each()/apply_each_with_pos().
+%%%   may want to cache width/height as well:
+%%%     {Tag, Width, Height, [ {Y, X, Term} ]}
+
 -module(area_util).
 -export([apply_each/2, width/1, height/1, at/3, make_array/2, to_list/1, col/2, row/2]).
 -compile(export_all).
