@@ -54,7 +54,7 @@ isodd([Num]) ->
 %% (Returns false for ranges regardless of what's in them.)
 
 islogical([B]) when is_boolean(B) -> true;
-islogical(A) when ?is_array(A)    -> is_boolean(area_util:at(1, 1, A)).
+islogical(A) when ?is_array(A)    -> is_boolean(area_util:at(1, 1, A));
 islogical(_)                      -> false.
 
 isna([{error, na}]) ->
