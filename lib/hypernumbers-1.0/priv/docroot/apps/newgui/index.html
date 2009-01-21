@@ -12,12 +12,12 @@
 
         <script src="/apps/newgui/jquery.js"></script>
         <script src="/apps/newgui/jquery.mousewheel.js"></script>
-        <script src="/apps/newgui//hn.grid.js"></script>
+        <script src="/apps/newgui/hn.grid.js"></script>
 
         <script type="text/javascript">
           $(function()
-          {      
-          var spreadsheet = new SpreadSheet("hn");
+          {  
+             new HN.SpreadSheet("hn");
           });
         </script>
 
@@ -32,11 +32,22 @@
       <input type="text" id="formula"/>
     </div>
     <div class="sheetwrapper">
-      <div id="cells"></div>
       <div id="corner"></div>
       <div id="columns"></div>
       <div id="rows"></div>
-      <div id="data"><div id="scroller"></div></div>
+      <div id="data">
+        <div id="scrollbar-right">
+          <div id="up">↑</div>
+          <div id="right-bar"></div>
+          <div id="down">↓</div>
+        </div>
+        <div id="scrollbar-bottom">
+          <div id="left">←</div>
+          <div id="bottom-bar"></div>
+          <div id="right">→</div>
+        </div>
+        <div id="scroller"></div>
+      </div>
     </div>
   </div>
 </body>

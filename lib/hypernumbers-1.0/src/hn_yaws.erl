@@ -22,6 +22,7 @@
 out(Arg) ->
     Url      = yaws_api:request_url(Arg),
     FileName = Arg#arg.docroot++Url#url.path,
+
     %% Serve static files, can move to a different server later
     case filelib:is_file(FileName) and not filelib:is_dir(FileName) of
         true  ->

@@ -65,29 +65,78 @@ body
 ******************************************************************************/
 #data
 {
-  overflow:         scroll;
+  position: relative;
+  overflow:         hidden;
+}
+
+#scroller
+{
+  width:10000px;
+  height:10000px; 
+  position:relative;
+  overflow:hidden;
+}
+
+#scrollbar-right
+{
+  height:100%;
+  width:18px;
+  background:lightgrey;
+  position:absolute;
+  right:0px;
+  top:0px;
+  z-index:99;
+}
+#left,#bottom-bar { position:absolute; }
+
+#right,#left,#up,#down
+{ 
+  width:      18px;
+  height:     18px;
+  background: grey;
+  cursor:     pointer;
+}
+
+#right
+{
+  position:absolute;
+  right:20px;  
+}
+
+#down
+{  
+  position:absolute;
+  bottom:20px;
+}
+
+#scrollbar-bottom
+{
+  height:18px;
+  width:100%;
+  background:lightgrey;
+  position:absolute;
+  left:0px;
+  bottom:0px;
+  z-index:100;
 }
 
 #cells
 {
   position:absolute;
-  top:68px;
-  left:25px;
-  height:2000px;
-  width:2000px;
-  z-index: -1;
+  top:0px;
+  height:20000px;
+  width:20000px;
 }
 
-.cell
-{ 
+.cell 
+{  
   border:1px solid #FFF;
   border-bottom:1px solid #ddd;
   border-right:1px solid #ddd;
   overflow:hidden;
+  font:10px Arial, sans-serif;
   float:left;
-  font: 10px "Helvetica Neue", sans-serif;
 }
-
 
 /******************************************************************************
 	    ROWS
@@ -181,22 +230,22 @@ body
     border-right:   1px solid #FFF;
 }
 
-#left {
-    background-image:  url('../img/text_align_left.png'); }
+#left-tool {
+    background-image:  url('/img/text_align_left.png'); }
 #center {
-    background-image:  url('../img/text_align_center.png'); }
-#right {
-    background-image:  url('../img/text_align_right.png'); }
+    background-image:  url('/img/text_align_center.png'); }
+#right-tool {
+    background-image:  url('/img/text_align_right.png'); }
 #justify {
-    background-image:  url('../img/text_align_justify.png'); }
+    background-image:  url('/img/text_align_justify.png'); }
 #bold {
-    background-image:  url('../img/text_bold.png'); }
+    background-image:  url('/img/text_bold.png'); }
 #italic {
-    background-image:  url('../img/text_italic.png'); }
+    background-image:  url('/img/text_italic.png'); }
 #underl {
-    background-image:  url('../img/text_underline.png'); }
+    background-image:  url('/img/text_underline.png'); }
 #strike {
-    background-image:  url('../img/text_strikethrough.png'); }
+    background-image:  url('/img/text_strikethrough.png'); }
 
 /******************************************************************************
 		HACKS

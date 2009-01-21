@@ -184,7 +184,8 @@ write_cell(Addr, Value, Formula, Parents, DepTree) ->
               ok
       end,
       Parents),
-    #index{row=Row,column=Col}=Index,
+
+    %#index{row=Row,column=Col}=Index,
     hn_db:mark_dirty(Index,cell),    
     ok.
 
