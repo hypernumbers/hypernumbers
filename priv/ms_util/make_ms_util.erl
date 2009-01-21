@@ -41,26 +41,35 @@ mk2(Name,N) -> "no_of_fields("++atom_to_list(Name)++") -> "++
 
 %% mk/1 builds an error line
 mk(Name) -> "get_index("++atom_to_list(Name)++",F) -> "++
-		"exit({error,\"Record: "++atom_to_list(Name)++
+		"exit({error, \"Record: "++atom_to_list(Name)++
 		" has no field called \"++atom_to_list(F)});\n".
 
 mk(Name,Field,N) -> 
-    "get_index("++atom_to_list(Name)++","++
-	atom_to_list(Field)++")-> "++integer_to_list(N)++";\n".
+    "get_index("++atom_to_list(Name)++", '"++
+	atom_to_list(Field)++"')-> "++integer_to_list(N)++";\n".
 
 top_and_tail(Acc1,Acc2)->
     Top="%% This module automatically generated - do not edit\n"++
-	"\n"++
-	"%%% This module provides utilities for use in building\n"++
-	"%%% match specifications from records\n"++
-	"\n"++
-	"-module("++?MODULENAME++").\n"++
-	"\n"++
-	"-export([get_index/2,no_of_fields/1]).\n"++
-	"\n",
-    Tail1="no_of_fields(Other) -> exit({error,\"Invalid Record Name: \""++
+        "\n"++
+        "%%% This module provides utilities for use in building\n"++
+        "%%% match specifications from records\n"++
+        "\n"++
+        "-module("++?MODULENAME++").\n"++
+        "\n"++
+        "-export([get_index/2, no_of_fields/1, is_in_record/2]).\n"++
+        "\n"++
+        "is_in_record(Record, Field) ->\n"++
+        "    Return = try get_index(Record, Field)\n"++
+        "             catch\n"++
+        "                exit : _ -> false\n"++
+        "                end,\n"++
+        "    case Return of\n"++
+        "      false -> false;\n"++
+        "      _     -> true\n"++
+        "    end.\n\n",
+    Tail1="no_of_fields(Other) -> exit({error, \"Invalid Record Name: \""++
 	"++Other}).\n\n\n",
-    Tail2="get_index(Record,_Field) -> exit({error,\""++
+    Tail2="get_index(Record,_Field) -> exit({error, \""++
 	"Invalid Record Name: \"++Record}).\n",
     Top++lists:flatten(Acc1)++Tail1++lists:flatten(Acc2)++Tail2.
 

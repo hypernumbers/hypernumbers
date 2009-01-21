@@ -35,7 +35,7 @@ post_process_tables(Tables) ->
     convert_dates(Tables),
     fix_up_formats(Tables),
     create_array_formulae(Tables),
-    % filefilters:dump(Tables),
+    filefilters:dump(Tables),
     ok.
 
 %% This function takes the raw format data and turns into the apppriate format
@@ -57,12 +57,12 @@ fix_up_formats(Tables) ->
     % to set them
     Fun1 = fun(X, _Acc)->
                    {CellRef, [{xf_index, XFIndex}, _]} = X,
-                   {ok, ok} = get_formatting(CellRef, XFIndex, Tables)
+                   {ok, ok} = set_formats(CellRef, XFIndex, Tables)
            end,
     ets:foldl(Fun1, [], CellId),
     Fun2 = fun(X, _Acc)->
                    {CellRef, [{xf_index, XFIndex}]} = X,
-                   {ok, ok} = get_formatting(CellRef, XFIndex, Tables)
+                   {ok, ok} = set_formats(CellRef, XFIndex, Tables)
            end,
     ets:foldl(Fun2, [], Tmp_BlanksId).
 
@@ -272,7 +272,7 @@ get_css(CSSList, [H|T], Acc) ->
         {value, Attr} -> get_css(CSSList, T, [Attr | Acc])
     end.
 
-get_formatting(CellRef,XFIndex,Tables) ->
+set_formats(CellRef,XFIndex,Tables) ->
     {value, {tmp_xf, XFId}}           = ?k(tmp_xf,      1, Tables),
     {value, {tmp_formats, FormatsId}} = ?k(tmp_formats, 1, Tables),
     {value, {tmp_colours, ColoursId}} = ?k(tmp_colours, 1, Tables),
@@ -442,24 +442,24 @@ get_formatting(CellRef,XFIndex,Tables) ->
         [] -> ok;
         _  -> ?write(Tables, formats, [CellRef, Format])
     end,
-    case BackgroundCSS of
-        [] -> ok;
-        _  -> ?write(Tables, css, [CellRef, BackgroundCSS])
+    List1 = case BackgroundCSS of
+                [] -> ok;
+                _  -> [BackgroundCSS]
+            end,
+    List2 = case FontCSS of
+                [] -> List1;
+                _  -> lists:append([List1, FontCSS])
     end,
-    % write out each font, text and border CSS'es seperately
-    Fun = fun(X) -> ?write(Tables, css, [CellRef, X]) end,
-    case FontCSS of
-        [] -> ok;
-        _  -> lists:foreach(Fun, FontCSS)
+    List3 = case TextCSS of
+                [] -> List2;
+                _  -> lists:append([List2, TextCSS])
     end,
-    case TextCSS of
-        [] -> ok;
-        _  -> lists:foreach(Fun, TextCSS)
+    List4 = case BorderCSS of
+                [] -> ok;
+                _  -> lists:append([List3, BorderCSS])
     end,
-    case BorderCSS of
-        [] -> ok;
-        _  -> lists:foreach(Fun, BorderCSS)
-    end,
+    StyleRecord = ms_util:make_record(style, List4),
+    ?write(Tables, css, [CellRef, StyleRecord]),
     {ok, ok}.
 
 %% Excel has a number of built in number formats

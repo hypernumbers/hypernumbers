@@ -76,13 +76,14 @@ xml_to_val(Else)                  -> Else.
 
 %% Turn a hn_item record into its xml <ref> display
 item_to_xml(#hn_item{addr=A,val=V}) ->
-    
+
     Type = atom_to_list(element(1,A#ref.ref)),
     Str  = hn_util:ref_to_str(A#ref.ref),
     
     Value = case A#ref.name of
                 value    -> to_xml(V);
                 rawvalue -> to_xml(V);
+                style    -> to_xml(V);
                 _Else    -> to_val(V)
     end,
     

@@ -15,13 +15,13 @@
 -define(HN_URL1,   "http://127.0.0.1:9000").
 -define(HN_URL2,   "http://127.0.0.1:9001").
 
--record( index,
-         {
-           site,
-           path,
-           column,
-           row
-          }).
+-record(index,
+        {
+          site,
+          path,
+          column,
+          row
+         }).
 
 -record(ref,
         {
@@ -51,12 +51,12 @@
 %%
 %% the 'version' field is used to check that the page structures versions
 %% are aligned and that one site is in synch with another
--record( details_from,
-         {
-           proxy_URL   = [],
-           biccie      = [],
-           version
-          }).
+-record(details_from,
+        {
+          proxy_URL   = [],
+          biccie      = [],
+          version
+         }).
 
 %% the details_to record is used by a site that has to notify another one
 % of a change in a hypernumber. These details are passed to authenticate
@@ -78,66 +78,106 @@
           format
          }).
 
--record( hn_item,
-         {
-           addr        = #ref{},
-           val         = []
-          }).
+-record(hn_item,
+        {
+          addr        = #ref{},
+          val         = []
+         }).
 
--record( dirty_cell,
-         {
-           index       = #index{},
-           timestamp   = now()
-          }).
+-record(dirty_cell,
+        {
+          index       = #index{},
+          timestamp   = now()
+         }).
 
--record( dirty_hypernumber,
-         {
-           index       = #index{},
-           timestamp   = now()
-          }).
+-record(dirty_hypernumber,
+        {
+          index       = #index{},
+          timestamp   = now()
+         }).
 
--record( local_cell_link,   %% Link 2 cells on the same sheet together
-         {
-           parent      = #index{},
-           child       = #index{}
-          }).
+-record(local_cell_link,   %% Link 2 cells on the same sheet together
+        {
+          parent      = #index{},
+          child       = #index{}
+         }).
 
--record( remote_cell_link,  %% Link a hypernumber with a cell,
-         {                           %% is used to link both incoming and outgoing
-           parent      = #index{}, %% hypernumbers
-           child       = #index{},
-           type        = null      %% incoming or outgoing
-          }).
+-record(remote_cell_link,  %% Link a hypernumber with a cell,
+        {                           %% is used to link both incoming and outgoing
+          parent      = #index{}, %% hypernumbers
+          child       = #index{},
+          type        = null      %% incoming or outgoing
+         }).
 
--record( outgoing_hn,
-         {
-           index       = {[],#index{}},
-           biccie      = [],       %% A shared token
-           url         = [],
-           version     = 0         %% Version for structural updates
-          }).
+-record(outgoing_hn,
+        {
+          index       = {[],#index{}},
+          biccie      = [],       %% A shared token
+          url         = [],
+          version     = 0         %% Version for structural updates
+         }).
 
--record( incoming_hn,
-         {
-           remote     = #index{},  %% The address of the number
-           value,
-           deptree     = [],       %% Cells use in this numbers calculation
-           biccie      = [],       %% A shared token
-           version     = 0         %% Version for structural updates
-          }).
+-record(incoming_hn,
+        {
+          remote     = #index{},  %% The address of the number
+          value,
+          deptree     = [],       %% Cells use in this numbers calculation
+          biccie      = [],       %% A shared token
+          version     = 0         %% Version for structural updates
+         }).
 
--record( hn_user,
-         {
-           name        = [],
-           password    = [],
-           authtoken   = null,
-           created     = calendar:local_time()
-          }).
+-record(hn_user,
+        {
+          name        = [],
+          password    = [],
+          authtoken   = null,
+          created     = calendar:local_time()
+         }).
 
--record( template,
-         {
-           name        = [],
-           temp_path   = [],
-           gui         = index,
-           form        = null
-          }).
+-record(template,
+        {
+          name        = [],
+          temp_path   = [],
+          gui         = index,
+          form        = null
+         }).
+
+
+%% style is the container tuple for the table styles
+-record(style,
+        {
+          'border-right'        = [],
+          'border-left'         = [],
+          'border-top'          = [],
+          'border-bottom'       = [],
+          'border-color'        = [],
+          'border-right-style'  = [],
+          'border-left-style'   = [],
+          'border-top-style'    = [],
+          'border-bottom-style' = [],
+          color                 = [],
+          'vertical-align'      = [],
+          'background-color'    = [],
+          'font-weight'         = [],
+          'font-size'           = [],
+          'font-family'         = [],
+          'font-style'          = [],
+          'text-decoration'     = [],
+          'text-shadow'         = [],
+          'font-stretch'        = [],
+          'text-align'          = []
+         }).        
+
+-record(styles,
+        {
+          ref   = #ref{},
+          index = 0,
+          style = #style{}
+         }).
+
+%% this builds the counters for the style table
+-record(style_counters,
+        {
+          ref,
+          integer
+         }).

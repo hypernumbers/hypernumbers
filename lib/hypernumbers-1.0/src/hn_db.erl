@@ -43,6 +43,10 @@
          delete_cells/1,
          clear_cells/1]).
 
+%% API for file import only
+%% writes a whole style in a oner - not on a per attribute basis
+-export([write_style_IMPORT/2]).
+
 %% server-side drag'n'drop
 -export([drag_n_drop/2,
          copy_n_paste/2,
@@ -63,15 +67,17 @@ create()->
     ok = mnesia:delete_schema([node()]),
     ok = mnesia:create_schema([node()]),
     mnesia:start(),
-    ?create(hn_item,           set,Storage),
-    ?create(remote_cell_link,  bag,Storage),
-    ?create(local_cell_link,   bag,Storage),
-    ?create(hn_user,           set,Storage),
-    ?create(dirty_cell,        set,Storage),
-    ?create(dirty_hypernumber, set,Storage),
-    ?create(incoming_hn,       set,Storage),
-    ?create(outgoing_hn,       set,Storage),
-    ?create(template,          set,Storage),
+    ?create(hn_item,           set, Storage),
+    ?create(remote_cell_link,  bag, Storage),
+    ?create(local_cell_link,   bag, Storage),
+    ?create(hn_user,           set, Storage),
+    ?create(dirty_cell,        set, Storage),
+    ?create(dirty_hypernumber, set, Storage),
+    ?create(incoming_hn,       set, Storage),
+    ?create(outgoing_hn,       set, Storage),
+    ?create(template,          set, Storage),
+    ?create(styles,            bag, Storage),
+    ?create(style_counters,    set, Storage),
     hn_users:create("admin","admin"),
     hn_users:create("user","user"),
     ok.
@@ -80,10 +86,100 @@ create()->
 %% @doc  Adds an attribute to a reference addressed by Ref
 write_item(Addr,Val) when is_record(Addr,ref) ->
     Item = #hn_item{addr=Addr, val=Val},
-    Fun  = fun()-> mnesia:write(Item) end,
-    ok = ?mn_ac(async_dirty,Fun),
+    #ref{name=Name} = Addr,
+    % NOTE the attribute 'overwrite-color' isn't in this case statement
+    % it would APPEAR to be a CSS style, but it actually isn't
+    % 
+    case ms_util2:is_in_record(style, Name) of
+        true  -> process_styles(Addr#ref{name = style}, {Name, Val});
+        false -> Fun  =
+                     fun()-> mnesia:write(Item)
+                     end,
+                 ok = ?mn_ac(async_dirty,Fun),
+                 spawn(fun() -> notify_remote(Item) end)
+    end,
+    ok.
+
+%% @spec process_styles(Addr, Val) -> ok
+%% @doc takes the attribute setting and then updates the style that pertains
+%% to the cell and possibly the style table itself
+process_styles(Addr, {Name, Val}) ->
+    % First up read the current style
+    Fun1 = fun() ->
+                   Match = #hn_item{addr = Addr, _ = '_'},
+                   mnesia:match_object(hn_item, Match, read)
+           end,
+    CurrentStyle = mnesia:activity(async_dirty, Fun1),
+    NewStyleIdx = case CurrentStyle of
+                      []      -> get_style(Addr, Name, Val);
+                      [Style] -> get_style(Addr, Style, Name, Val)
+                  end,
+    Item = #hn_item{addr = Addr#ref{name = style}, val = NewStyleIdx},
+
+    Fun2  =
+        fun()->
+                mnesia:write(Item)
+        end,
+    ok = ?mn_ac(async_dirty,Fun2),
+    Ref = Addr#ref{ref = {page, "/"}},
+
     spawn(fun() -> notify_remote(Item) end),
     ok.
+
+get_style(Addr, Name, Val) ->
+    NoOfFields = ms_util2:no_of_fields(style),
+    Index = ms_util2:get_index(style, Name),
+    Style = make_tuple(style, NoOfFields, Index, Val),
+    % Now write the style
+    write_style(Addr, Style).
+
+get_style(Addr, Style, Name, Val) ->
+    % use the index of the style to read the style
+    #hn_item{addr = Ref, val = StyleIdx} = Style,
+    Fun = fun() ->
+                  Match = #styles{ref = Ref#ref{ref = {page, "/"}},
+                                  index = StyleIdx, _ = '_'},
+                  mnesia:match_object(styles, Match, read)
+          end,
+    Return = mnesia:activity(async_dirty, Fun),
+    [#styles{style = CurrentStyle}] = Return,
+    Index = ms_util2:get_index(style, Name),
+    Style2 = tuple_to_list(CurrentStyle),
+    {Start, [_H | End]} = lists:split(Index, Style2),
+    NewStyle = list_to_tuple(lists:append([Start, [Val], End])),
+    write_style(Addr, NewStyle).
+
+%% write_style will write a style if it doesn't exist and then
+%% return an index pointing to it
+%% 
+%% If the style already exists it just returns the index
+write_style(Addr, Style) ->
+    Ref = Addr#ref{ref = {page, "/"}, name = style, auth = []},
+    Fun1 = fun() ->
+                   Match = #styles{ref = Ref, style = Style, _ = '_'},
+                   mnesia:match_object(styles, Match, read)
+           end,
+    case mnesia:activity(async_dirty, Fun1) of
+        []              -> write_style2(Addr, Style);
+        [ExistingStyle] -> #styles{index = NewIndex} = ExistingStyle,
+                           NewIndex
+    end.
+
+write_style2(Addr, Style) ->
+    Ref = Addr#ref{ref = {page, "/"}, name = style, auth = []},
+    NewIndex = mnesia:dirty_update_counter(style_counters, Ref, 1),
+    Fun = fun() ->
+                  mnesia:write(#styles{ref = Ref, index = NewIndex, style = Style})
+          end,
+    ok = ?mn_ac(async_dirty, Fun),
+    NewIndex.
+
+make_tuple(Style, Counter, Index, Val) ->
+    make_tuple(Style, Counter, Index, Val, []).
+
+make_tuple(S, 0, _I, _V, Acc)     -> list_to_tuple([S|Acc]);
+make_tuple(S, I, I, V, Acc )      -> make_tuple(S, I -1 , I, V, [V | Acc]);
+make_tuple(S, Counter, I, V, Acc) -> make_tuple(S, Counter - 1, I, V, [[] | Acc]).
 
 %% @spec get_item(Ref) -> ListofItems
 %% @doc  Returns the list of attributes that are contained within 
@@ -777,6 +873,23 @@ notify_remove(#hn_item{addr=#ref{site=Site,path=Path,ref=Ref,name=Name}}) ->
     Msg = ?FORMAT("delete ~p ~p",[Name,hn_util:ref_to_str(Ref)]),
     gen_server:call(remoting_reg,{change,Site,Path,Msg},?TIMEOUT),
     ok.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                                            %%
+%% write_style_IMPORT for file import API                                     %%
+%%                                                                            %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+write_style_IMPORT(Addr, Style) ->
+    % first write the Style
+    StyleIndex = write_style(Addr, Style),
+    % now write the style index for the address
+    Ref = Addr#ref{name = style},
+    Item = #hn_item{addr = Ref, val = StyleIndex},
+    Fun  =
+        fun()->
+                mnesia:write(Item)
+        end,
+    ok = ?mn_ac(async_dirty,Fun).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                            %%

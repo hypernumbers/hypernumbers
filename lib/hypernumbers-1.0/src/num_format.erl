@@ -23,12 +23,8 @@
 
 %% TODO migrate this to t_conv?
 %% tconv:to_f don't work if X is already a float...
-conv_to_float(X) when is_float(X) -> 
-	io:format("in num_format.yrl:conv_to_float X is already float~n"),
-	X;
-conv_to_float(X)                  -> 
-	io:format("in num_format.yrl:conv_to_float X is not float~n"),
-    tconv:to_f(X).
+conv_to_float(X) when is_float(X) -> X;
+conv_to_float(X)                  -> tconv:to_f(X).
 
 %%
 %% 'Proper' functions

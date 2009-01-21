@@ -98,9 +98,8 @@ import_xls(Name) ->
     ?INFO("Start Recalculating: ~p", [Name]),
     _Return1=gen_server:cast(dirty_cell, {setstate, active}),
     _Return2=gen_server:call(dirty_cell, flush, infinity),
+
     % Now fire in the CSS and formats
-    % WriteFormat = fun(
-    % 
     WriteCSS = fun(X) ->
                        {{{sheet, SheetName}, {row_index, Row}, {col_index, Col}}, CSSItem} = X,
                        Sheet = excel_util:esc_tab_name(SheetName),
@@ -108,20 +107,14 @@ import_xls(Name) ->
                        Ref = rc_to_a1(Row,Col),
                        Url = string:to_lower("http://127.0.0.1:9000" ++ Path ++ Ref),
                        {ok, RefRec} = hn_util:parse_url(Url),
-                       {ok, ok} = write_css(CSSItem, RefRec, Url)
+                       #ref{path = Path2} = RefRec,
+                       Addr = #ref{site = "http://127.0.0.1:9000", path = Path2},
+                       hn_db:write_style_IMPORT(Addr, CSSItem)
                end,
     lists:foreach(WriteCSS, CSS),
     loop(),
     ?INFO("End Import: ~p", [Name]),
     ok.
-
-write_css([], _RefRec, _Url) -> {ok, ok};
-write_css([H | T], RefRec, Url) ->
-    {Attr, Val} = H,
-    Val2 = flatpack(Val),
-    RefRec2 = RefRec#ref{name=Attr},
-    hn_main:set_attribute(RefRec2, Val2),
-    write_css(T, RefRec, Url).
 
 flatpack(List) -> flatpack(List, []).
 

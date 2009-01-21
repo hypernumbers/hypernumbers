@@ -14,11 +14,15 @@
          get_path/0,
          get_page_url/0,
          get_last_segment/1,
-         add_days/2]).
+         add_days/2,
+         davie/2]).
 
 -export([sendsms/2]).
 
 -export([get_username/0]).
+
+davie(A, B) ->
+     A* B +100.
 
 get_username() -> Return=get(username),
                   case Return of

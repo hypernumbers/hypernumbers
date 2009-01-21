@@ -61,12 +61,12 @@ cheat() ->
 %%    load_page_defaults(Site,RootPath,SubPage,N-1).
 
 cheat(Example) ->
-    bits:clear_db(),
+    hypernumbers_app:clean_start(),
     demo("http://127.0.0.1:9000/",code:priv_dir(hypernumbers)++"/demo_pages/"++
          Example++"/").
 
 cheat(Site,Example) ->
-    bits:clear_db(),
+    hypernumbers_app:clean_start(),
     demo(Site,code:priv_dir(hypernumbers)++"/demo_pages/"++Example++"/").
 
 %% Read std_funs and produce a workable

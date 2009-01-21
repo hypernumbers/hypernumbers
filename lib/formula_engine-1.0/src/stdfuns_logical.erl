@@ -40,7 +40,6 @@
 '>'([A, B]) -> muin_checks:die_on_errval([A]),
                muin_checks:die_on_errval([B]),
                [A1, B1] = ?numbers([A, B], [cast_dates]),
-               io:format("A1 is ~p B1 is ~p~n", [A1, B1]),
                '>1'(A1, B1).
 
 '>1'(N, N) -> false;
@@ -61,6 +60,8 @@
 '>1'(false, _)                                    -> true;
 '>1'(_, true)                                     -> false;
 '>1'(_, false)                                    -> false;
+'>1'("",0)                                        -> true;
+'>1'(0,"")                                        -> false;
 '>1'(A, N) when ?is_area(A) andalso N > 0         -> true;
 '>1'(A, N) when ?is_area(A) andalso N =< 0        -> false;
 '>1'(blank, N) when is_number(N)                  -> '>1'(0, N);
@@ -95,6 +96,7 @@
 'if'([Test, TrueExpr, FalseExpr]) ->
     V = muin:eval(Test),
     B = ?bool(V, [cast_strings, cast_numbers, cast_blanks, ban_dates]),
+    io:format("In if V is ~p B is ~p~n", [V, B]),
     ?COND(B, muin:eval(TrueExpr), muin:eval(FalseExpr)).
 
 iferror([Test, TrueExpr, FalseExpr]) ->

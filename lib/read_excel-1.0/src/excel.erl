@@ -113,7 +113,7 @@ parse_bin(Bin,SubStreamName,CurrentFormula,Tables)->
             % io:format("workstream ~p read!~n",[Name]),
             ok;
         ?SST ->
-            % io:format("In excel:parse_bin Name is ~p~n",[Name]),
+            io:format("In excel:parse_bin Name is ~p~n",[Name]),
             {ok,BinList,Rest2}=get_single_SST(Bin),
             {ok,NewCurrentFormula}=excel_records:parse_rec(Identifier,BinList,
                                                            Name,CurrentFormula,
@@ -121,9 +121,7 @@ parse_bin(Bin,SubStreamName,CurrentFormula,Tables)->
             parse_bin(Rest2,SubStreamName,NewCurrentFormula,Tables);
         _Other ->
             <<Record:RecordSize/binary,Rest3/binary>>=Rest,
-            % Bodge=excel_records:bodge(Record),
-            % bits:log("Record is "++integer_to_list(Other)),
-            % bits:log("Record is "++Bodge),
+            % io:format("in excel:parse_bin Identifier is ~p~n", [Identifier]),
             {ok,NewCurrentFormula}=excel_records:parse_rec(Identifier,Record,
                                                            Name,CurrentFormula,
                                                            Tables),

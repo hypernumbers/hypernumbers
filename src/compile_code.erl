@@ -6,11 +6,11 @@
 %% unless included here
 -define(NO_WARNINGS,
         ["xfl_lexer.erl", "russian_lexer.erl",
-	 "french_lexer.erl", "german_lexer.erl",
+         "french_lexer.erl", "german_lexer.erl",
          "italian_lexer.erl", "spanish_lexer.erl",
          "portuguese_lexer.erl", "superlex.erl", 
-	 "num_format_lexer.erl","cond_lexer.erl",
-        "url_query_lexer.erl"]).
+         "num_format_lexer.erl","cond_lexer.erl",
+         "url_query_lexer.erl"]).
 
 %% Directories containg source files
 -define(DIRS,
@@ -21,10 +21,43 @@
 
 -define(EXTRA_ERL_FILES, ["src/generate_tests.erl"]).
 
+
 start() ->
     
-    get_rel_file(),
+    Dir = get_root(),
     
+    io:fwrite("~nStarting the compilation~n~n", []),
+    io:format("Dir is ~p~n", [Dir]),
+    code:add_pathz(Dir ++ "/lib/eunit/ebin"),
+
+    % First set up the include file
+    Inc_list = [{i, Dir ++ "/include"},
+                {i, Dir ++ "/lib/eunit/include"},
+                {i, Dir ++ "/lib/read_excel-1.0/include"},
+                {i, Dir ++ "/lib/hypernumbers-1.0/include"},
+                {i, Dir ++ "/lib/yaws-1.76/include"},
+                {i, code:lib_dir(xmerl)++"/include"}],
+
+    % List of {ErlangFile, OutputDirectory} tuples.
+    Fun = fun(X) ->
+                  Fun2 = fun(Y) -> {Y, Dir ++ X ++ "ebin"}
+                         end,
+                  lists:map(Fun2,filelib:wildcard(Dir ++ X ++ "src/*.erl"))
+          end,
+    Dirs = lists:flatten(lists:map(Fun, ?DIRS)),
+
+    Fun3 = fun(X) ->
+                   {Dir++X,Dir++"ebin"}
+           end,
+    
+    Extra = lists:map(Fun3, ?EXTRA_ERL_FILES),
+
+    compile_funcs(Dirs++Extra, Inc_list).
+
+get_root() ->
+    
+    get_rel_file(),
+
     [_File, _Ebin | Rest] =
         lists:reverse(string:tokens(code:which(compile_code), "/")),
 
@@ -32,48 +65,22 @@ start() ->
               {win32,_} -> "";
               _         -> "/"
           end,
-    
-    App_rt_dir = Pre++string:join(lists:reverse(Rest),"/")++"/",
 
-    io:fwrite("~nStarting the compilation~n~n", []),
-    code:add_pathz(App_rt_dir ++ "/lib/eunit/ebin"),
-
-    %% First set up the include file
-    Inc_list = [{i, App_rt_dir ++ "/include"},
-                {i, App_rt_dir ++ "/lib/eunit/include"},
-                {i, App_rt_dir ++ "/lib/read_excel-1.0/include"},
-                {i, App_rt_dir ++ "/lib/hypernumbers-1.0/include"},
-                {i, App_rt_dir ++ "/lib/yaws-1.76/include"},
-                {i, code:lib_dir(xmerl)++"/include"}],
-
-    %% List of {ErlangFile, OutputDirectory} tuples.
-    Dirs = lists:flatten(lists:map(fun(X) ->
-                                           lists:map(fun(Y) -> {Y, App_rt_dir ++ X ++ "ebin"} end,
-                                                     filelib:wildcard(App_rt_dir ++ X ++ "src/*.erl"))
-                                   end,
-                                   ?DIRS)),
-    
-    Extra = lists:map(
-              fun(X) ->
-                      {App_rt_dir++X,App_rt_dir++"ebin"}
-              end,
-              ?EXTRA_ERL_FILES),
-    
-    compile_funcs(Dirs++Extra, Inc_list).
+    Pre++string:join(lists:reverse(Rest),"/")++"/".
 
 compile_funcs(List, Inc_list) ->
     New_list = [{X, [debug_info, {outdir, Y} | Inc_list]} || {X, Y} <- List],
     comp_lists(New_list,ok).
 
 comp_lists([{File, Opt}|T], OldStatus) ->
-
+    
     Append = case lists:member(filename:basename(File), ?NO_WARNINGS) of
                  true  -> [report_errors];
                  false -> [report_errors,report_warnings]
              end,
     Options = lists:append(Opt,Append),
-
-    %% Ensure output directory exists.
+    
+    % Ensure output directory exists.
     [debug_info, {outdir, Dir} | _] = Options,
     filelib:ensure_dir(Dir ++ "/"),
 
@@ -89,9 +96,9 @@ comp_lists([{File, Opt}|T], OldStatus) ->
                             comp_lists(T, error)
                     end
            end,
-    
+
     case uptodate(File, Dir) of
-	false -> Comp();
+        false -> Comp();
         _     -> comp_lists(T, OldStatus)
     end;
 comp_lists([], Status) ->
@@ -102,11 +109,11 @@ comp_lists([], Status) ->
 %% any included .hrl files
 uptodate(File, Dir) ->
 
-    %% Find the beam corresponding to this erl file.
+    % Find the beam corresponding to this erl file.
     Beam = Dir ++"/"++ filename:basename(File,".erl") ++ ".beam",
-    
+
     case beam_lib:chunks(Beam,[abstract_code]) of
-        {error,_,_} -> %% beam doesnt exist, recompile
+        {error,_,_} -> % beam doesn't exist, recompile
             false;
 
         {ok,{_,[{abstract_code,{_,AC}}]}} ->
@@ -120,15 +127,15 @@ uptodate(File, Dir) ->
                 end,
             G = fun({attribute,_Num,file,{Path,_}}) -> Path end,
             H = fun(Path) -> filelib:last_modified(Path) end,
-            
+
             Includes = lists:map(G,lists:filter(F,AC)),
             SrcFiles = [File|Includes],  
             Latest = lists:max(lists:map(H,SrcFiles)),
 
-            %% if the beam is newer than the last change to any
-            %% of the source files, dont need to compile
+            % if the beam is newer than the last change to any
+            % of the source files, don't need to compile
             filelib:last_modified(Beam) > Latest
-        end.
+    end.
 
 get_vsn(Module) ->
     AppFile = code:lib_dir(Module)++"/ebin/"++atom_to_list(Module)++".app",
@@ -137,7 +144,7 @@ get_vsn(Module) ->
     Vsn.
 
 get_rel_file() ->
-    
+
     F = lists:append(["{release, {\"hypernumbers\",\"1.0\"}, ",
                       "{erts,\"",erlang:system_info(version),"\"},"
                       "[{kernel,\"",get_vsn(kernel),"\"},",
@@ -156,3 +163,4 @@ get_rel_file() ->
     file:write_file("hypernumbers.rel",F),
     systools:make_script("hypernumbers",
                          [local,{path,["../lib/*/ebin","."]}]).
+

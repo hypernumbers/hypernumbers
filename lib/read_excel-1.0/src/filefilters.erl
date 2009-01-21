@@ -361,15 +361,15 @@ test_DEBUG()->
 dump([])-> io:format("All tables dumped~n");
 dump([{Table,Tid}|T])->
     case Table of
-        cell           -> dump2({Table,Tid});
-        % array_formulae -> dump2({Table,Tid});
-        % formats        -> dump2({Table,Tid});
-        % names          -> dump2({Table,Tid}); 
-        % css            -> dump2({Table,Tid});
-        % lacunaue       -> dump2({Table,Tid});
-        % misc           -> dump2({Table,Tid});
+        % cell             -> dump2({Table,Tid});
+        % array_formulae   -> dump2({Table,Tid});
+        % formats          -> dump2({Table,Tid});
+        % names            -> dump2({Table,Tid}); 
+         css              -> dump2({Table,Tid});
+        % lacunaue         -> dump2({Table,Tid});
+        % misc             -> dump2({Table,Tid});
         % warnings         -> dump3({Table,Tid}); % has a bodge in it!
-        tmp_cell       -> dump2({Table,Tid});
+        % tmp_cell         -> dump2({Table,Tid});
         % tmp_xf           -> dump2({Table,Tid});
         % tmp_colours      -> dump2({Table,Tid});
         % tmp_names        -> dump2({Table,Tid});

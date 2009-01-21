@@ -194,7 +194,7 @@ set_cell_rawvalue(Addr,Value) ->
     {erlang,{_Type,Output}} = format:get_src(Format),
     {ok,{Color,V}}=format:run_format(Value,Output),
     hn_db:write_item(Addr#ref{name=value},V),
-    hn_db:write_item(Addr#ref{name=color},atom_to_list(Color)),
+    hn_db:write_item(Addr#ref{name='overwrite-color'},atom_to_list(Color)),
     ok.
 
 %%%-----------------------------------------------------------------

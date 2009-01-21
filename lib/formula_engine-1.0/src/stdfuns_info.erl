@@ -47,8 +47,7 @@ iseven([V1]) ->
     Num = ?number(V1, [cast_strings, cast_bools, cast_dates]),
     (trunc(Num) div 2) * 2 == trunc(Num).
 
-isodd([Num]) ->
-    not(iseven([Num])).
+isodd([Num]) -> not(iseven([Num])).
 
 %% Returns true only for booleans or arrays where element (1,1) is a boolean.
 %% (Returns false for ranges regardless of what's in them.)
@@ -57,25 +56,20 @@ islogical([B]) when is_boolean(B) -> true;
 islogical(A) when ?is_array(A)    -> is_boolean(area_util:at(1, 1, A));
 islogical(_)                      -> false.
 
-isna([{error, na}]) ->
-    true;
-isna(_) ->
-    false.
+isna([{error, na}]) -> true;
+isna(_)             -> false.
+
+isnontext([X]) -> case istext([X]) of
+                      true  -> false;
+                      false -> true
+                  end.
+
+isnumber([X]) when is_number(X) -> true;
+isnumber([_])                  -> false.
 
 
-%% TODO:
-isnontext([_]) ->
-    true.
-
-
-isnumber([Num]) when is_number(Num) ->
-    true;
-isnumber(_) ->
-    false.
-
-%% TODO:
-istext([_]) ->
-    false. %% complement(fun isnontext/1)
+istext([X]) when ?is_string(X) -> true;  %% complement(fun isnontext/1)
+istext([_])               -> false.
 
 %% TODO: dates.
 n([Num]) when is_number(Num) ->

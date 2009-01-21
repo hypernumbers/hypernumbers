@@ -126,7 +126,6 @@
 %%% Operators ~~~~~
 '+'([{datetime, D, T}, V2]) when is_number(V2) -> '+'([V2, {datetime, D, T}]);
 '+'([V1, {datetime, D, T}]) when is_number(V1) ->
-    io:format("in '+' D is ~p T is ~p V1 is ~p~n", [D, T, V1]),
     Days = erlang:trunc(V1),
     Secs = V1 - Days,
     OldDays = calendar:date_to_gregorian_days(D),
@@ -134,10 +133,8 @@
     {datetime, calendar:gregorian_days_to_date(OldDays + Days),
      calendar:seconds_to_time(OldSecs + Secs)};
 '+'([V1, V2]) ->
-    io:format(" in '+' V1 is ~p V2 is ~p~n", [V1, V2]),
     [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
-    io:format(" in '+' Num1 is ~p Num2 is ~p~n", [Num1, Num2]),
-     Num1+Num2.
+    Num1+Num2.
 
 %% note that there is an operation =date - number
 %% but no = number - date
@@ -450,6 +447,7 @@ combin([V1, V2]) ->
 
 even([V1]) ->
     Num = ?number(V1, ?default_rules),
+    io:format("In stdfuns_math:even V1 is ~p Num is ~p~n", [V1, Num]),
     even1(Num).
 even1(Num) when ?is_multiple(Num, 2) ->
     Num;
@@ -499,8 +497,7 @@ trunc([V1, V2]) ->
 
 %%% Special numbers ~~~~~
 
-pi([]) ->
-    math:pi().
+pi([]) -> math:pi().
 
 sqrtpi([V1]) ->
     Num = ?number(V1, ?default_rules),
@@ -666,6 +663,7 @@ sinh([V]) ->
 
 cosh([V]) ->
     Num = ?number(V, ?default_rules),
+    ?ensure(Num < 711, ?ERR_NUM),
     math:cosh(Num).
 
 tanh([V]) ->
