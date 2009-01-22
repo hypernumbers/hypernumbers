@@ -76,7 +76,7 @@ Op =:= multiply;     Op =:= concatenate ->
 %% Pop two off the stack and the build an operator set backwards
 %% ie second first and first second...
 rev_comp(I,[{intersect,_Token}|T],TokArr,[First,Second|Rest],Tbl) ->
-    rev_comp(I,T,TokArr,[{string,to_str(Second)++" "++to_str(First)}|Rest],Tbl);
+    rev_comp(I,T,TokArr,[{string,to_str(Second)++"^^"++to_str(First)}|Rest],Tbl);
 
 %% tList
 rev_comp(I,[{list,{tList,[{op_type,binary}],{return,reference}}}|T],TokArr,
@@ -326,8 +326,6 @@ rev_comp(Index,[{name_xref,{tNameX,
                         "..!"++EscSheet++"!"++"@"++LocalName;
                     {skipped, add_ins} ->
                         % First get all the externames with the EXBindex of EXBIdx
-                        % get the cell name
-                        {{sheet,S}, {row_index, R}, {col_index, C}} = Index,
                         % now get the sheet name
                         {value,{_TableName,Tid}}=lists:keysearch(tmp_externnames,1,Tbl),
                         ExtNameList = ets:lookup(Tid, {extbook_index, EXBIdx}), 
@@ -353,11 +351,12 @@ rev_comp(Index,[{name_xref,{tNameX,
                                                      ExtName, FileName]),
                                 excel_util:append(Tbl, warnings, lists:flatten(Str)),
                                 "#REF!";
-                            [{_I, [{skipped, Reason}, _]}] ->
+                            [{_I, [{skipped, _Reason}, _]}] ->
                                 Str = io_lib:format("Cell ~s on page ~s has a "++
                                                     "reference to the function "++
                                                     "~s which is not implemented",
                                                     [test_util:rc_to_a1(R,C), S, ExtName]),
+                                excel_util:append(Tbl, warnings, lists:flatten(Str)),
                                 "#REF!"
                         end
                 end
@@ -406,7 +405,7 @@ rev_comp(_Index,Form,TokArr,_Stack,_Tbl) ->
 %%% Internal functions                                                      %%%
 %%%                                                                         %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-get_extname([{_SBIdx, [{ext_index, NameIdex}, {name, Name}]} | _T], NameIdx) -> Name;
+get_extname([{_SBIdx, [{ext_index, NameIdx}, {name, Name}]} | _T], NameIdx) -> Name;
 get_extname([_H | T], NameIdx) -> get_extname(T, NameIdx).
 
 
@@ -426,9 +425,9 @@ get_col(Col,TopCol,ColType)->
 get_sheet_ref(Index,Tbl)->
     Record1=?read(Tbl,tmp_extsheets,Index),
     case Record1 of
-        [{_,[{extbook_index,EXBIdx},{firstsheet,?EXTERNALBOOK_REF_ERROR},{lastsheet,_}]}] ->
+        [{_,[{extbook_index,_EXBIdx},{firstsheet,?EXTERNALBOOK_REF_ERROR},{lastsheet,_}]}] ->
             "#REF";
-        [{_,[{extbook_index,EXBIdx},{firstsheet,?EXTERNALBOOK},{lastsheet,_}]}] ->
+        [{_,[{extbook_index,_EXBIdx},{firstsheet,?EXTERNALBOOK},{lastsheet,_}]}] ->
             exit("cant use get_sheet_ref to get a sheet for a non-local reference");
         [{_,[{extbook_index,EXBIdx},{firstsheet,FS},{lastsheet,FS}]}]->
             get_ref(EXBIdx,FS,Tbl);
