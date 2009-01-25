@@ -1,0 +1,12 @@
+@author Gordon Guthrie gordon@hypernumbers.com
+@copyright Hypernumbers Ltd
+@version 1.0
+@title Hypernumbers
+
+@doc The hypernumbers application is a portmanteau application for hypernumbers.
+
+It contains four major components:
+<ul><li>the dirty supervisor which watches out for cells and hypernumbers that have been marked dirty</li>
+<li>the remoting supervisor which keeps track of all GUI's and the view of the hypernumber world they are looking at and which pushes out change notifications to them</li>
+<li>the random number server - this provides a common source of random numbers - with a salt taken from the config file (mixed with entropy). (The native Erlang random function is generated on a per-process basis)</li>
+<li>the process which reads the config file</li></ul>
