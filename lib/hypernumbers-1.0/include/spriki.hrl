@@ -162,9 +162,9 @@
           'font-size'           = [],
           'font-family'         = [],
           'font-style'          = [],
+          'font-stretch'        = [],
           'text-decoration'     = [],
           'text-shadow'         = [],
-          'font-stretch'        = [],
           'text-align'          = []
          }).        
 
