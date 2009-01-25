@@ -27,7 +27,6 @@ start() ->
     Dir = get_root(),
     
     io:fwrite("~nStarting the compilation~n~n", []),
-    io:format("Dir is ~p~n", [Dir]),
     code:add_pathz(Dir ++ "/lib/eunit/ebin"),
 
     % First set up the include file
