@@ -1,0 +1,13 @@
+@author Gordon Guthrie gordon@hypernumbers.com
+@copyright Hypernumbers Ltd
+@version 1.0
+@title read_excel
+
+@doc read_excel is an application that read a .xls file (Excel 97-2003 native file format).
+
+A read_excel server handles the workers that read native excel files.
+
+NOTE: think that the ets tables are stored on a per-process basis and that we can run multiple instances of this at the same time.
+
+The public interface for this module is poorly implemented. At the moment it is 
+<code>filefilters:read/2</code> or <code>filefilters:read/3</code> but needs to be sorted out...
