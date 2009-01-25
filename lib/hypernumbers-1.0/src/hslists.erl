@@ -1,6 +1,6 @@
 %%% @doc List functions? MOAR!!
 %%% @author Hasan Veldstra <hasan@12monkeys.co.uk> [http://12monkeys.co.uk]
-%%% @license Distributed under the same license as Erlang.
+% %% @license Distributed under the same license as Erlang.
 
 -module(hslists).
 -import(lists, [all/2, append/1, duplicate/2, flatten/1, foldl/3, foreach/2,
@@ -144,8 +144,8 @@ drop(L, N) when N < 0 ->
 cartesian_product(L1, L2) ->
     [{X, Y} || X <- L1, Y <- L2].
 
-%% @doc map over a deep list maintaining its structure. @end
-%% Nicked from Yaws by Claes Wikström <klacke@hyber.org>
+%% @doc map over a deep list maintaining its structure.
+%% Nicked from Yaws by Claes Wikström klacke at hyber.org
 deepmap(Fun, [H|T]) when list(H) ->
     [deepmap(Fun, H) | deepmap(Fun, T)];
 deepmap(Fun, [H|T]) ->

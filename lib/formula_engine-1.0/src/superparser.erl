@@ -1,5 +1,5 @@
 %%% @doc Pre-processes incoming data.
-%%% <hasan@hypernumbers.com>
+%%% @author hasan@hypernumbers.com
 
 -module(superparser).
 

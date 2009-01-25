@@ -21,7 +21,7 @@
          get_pages_under/1,
          value_to_cell/2]).
 
-%% @spec set_attribute(Ref, Val) -> ok.
+%% @spec set_attribute(Ref, Val) -> ok
 %% @doc set an attribute on a reference, if the attribute name
 %%      is formula / format, then processed
 set_attribute(Ref = #ref{name=formula},Val) -> 
@@ -38,7 +38,7 @@ set_attribute(Ref = #ref{name=format}, Val) ->
 set_attribute(Ref,Val) ->
     hn_db:write_item(Ref,Val).
 
-%% @spec set_cell(Addr, Val) -> ok.
+%% @spec set_cell(Addr, Val) -> ok
 %% @doc process_formula
 set_cell(Addr, Val) ->
     case hn_db:get_item_val(Addr#ref{name = '__shared'}) of
@@ -383,14 +383,14 @@ to_index(#ref{site=Site,path=Path,ref={cell,{X,Y}}}) ->
 index_to_ref(_I = #index{site = Site, path = Path, column = Col, row = Row}) ->
     #ref{site = Site, path = Path, ref = {cell, {Col, Row}}}.
 
-%% @doc Make a #muin_rti record out of a ref record & a flag that specifies 
+%% @doc Make a #muin_rti record out of a ref record and a flag that specifies 
 %% whether to run formula in an array context.
 ref_to_rti(#ref{site = Site, path = Path, ref = {cell, {Col, Row}}}, ArrayContext) when is_boolean(ArrayContext) ->
     #muin_rti{site = Site, path = Path, col = Col, row = Row, array_context = ArrayContext};
 ref_to_rti(#ref{site = Site, path = Path, ref = {range, {Col, Row, _, _}}}, ArrayContext) when is_boolean(ArrayContext) ->
     #muin_rti{site = Site, path = Path, col = Col, row = Row, array_context = ArrayContext}.
 
-%% @doc Convert Parents & DependencyTree tuples as returned by Muin into SimpleXML.
+%% @doc Convert Parents and DependencyTree tuples as returned by Muin into SimpleXML.
 muin_link_to_simplexml({Type, {S, P, X1, Y1}}) ->
     Url = hn_util:index_to_url({index, S, P, X1, Y1}),
     {url, [{type, Type}], [Url]}.

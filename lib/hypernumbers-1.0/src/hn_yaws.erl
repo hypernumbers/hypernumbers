@@ -17,7 +17,7 @@
 
 -record(upload, {fd,filename, last}).
 
-%% @spec out(Arg) -> YawsReturn.
+%% @spec out(Arg) -> YawsReturn
 %% @doc Yaws handler for all incoming HTTP requests
 out(Arg) ->
     Url      = yaws_api:request_url(Arg),

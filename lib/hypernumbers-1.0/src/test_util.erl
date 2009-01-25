@@ -44,7 +44,7 @@ read_reader_record({{{sheet, SheetName}, {row_index, Row}, {col_index, Col}}, Va
 read_reader_record({{{sheet, SheetName}, {firstrow, Fr}, {firstcol, Fc}, {lastrow, Lr}, {lastcol, Lc}}, Fla}) ->
     {SheetName, {{Fr, Fc}, {Lr, Lc}}, Fla}.
 
-%% @doc Convert row & column pair to A1-style ref.
+%% @doc Convert row and column pair to A1-style ref
 %% @spec rc_to_a1(Row :: integer(), Col :: integer()) -> string()
 rc_to_a1(Row, Col) ->
     tconv:to_b26(Col + 1) ++ tconv:to_s(Row + 1).

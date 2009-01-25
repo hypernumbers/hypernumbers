@@ -50,7 +50,7 @@ start(_Type, _Args) ->
 stop(_State) -> 
     ok.
 
-%% @spec is_fresh_start() -> true | false
+%% @spec is_fresh_startup() -> true | false
 %% @doc  does database already exist + 
 %%       is readable on disk
 is_fresh_startup() ->
@@ -112,7 +112,7 @@ create_sconf({IP,Port,_Domains}) ->
            listen = IP,
            docroot = code:lib_dir(hypernumbers)++"/priv/docroot"}.
 
-%% @spec set_def_perms(Hosts) -> ok
+%% @spec set_def_perms() -> ok
 %% @doc  Set the default permissions on each domain
 set_def_perms() ->
     Hosts = gen_server:call(hn_config,{get,hosts}),
@@ -130,7 +130,7 @@ set_def_perms([{{I1,I2,I3,I4},Port,Domains}|T])->
     lists:map(fun set_perms/1, [Url|lists:map(F,Domains)]),
     set_def_perms(T).
 
-%% @spec start_link() -> Return
+%% @spec set_perms(Domains) -> Return
 %% @doc  Supervisor call back
 set_perms(Domains) ->
     

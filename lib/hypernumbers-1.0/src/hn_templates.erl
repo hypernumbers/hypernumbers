@@ -39,7 +39,7 @@
 write_def(TemplateName,RootURL,GUI,Form) ->
     hn_db:write_template(TemplateName,RootURL,GUI,Form).
 
-%% @spec get_next(Ref,TemplateName) -> NewName
+%% @spec get_next(Ref,TemplateName, UserName) -> NewName
 %% @doc gets the next valid page name
 get_next(Ref,TemplateName,UserName) ->
     {ok,Template}=hn_db:read_template(TemplateName),
@@ -47,7 +47,7 @@ get_next(Ref,TemplateName,UserName) ->
     Return=new_path(Ref,TemplatePath,UserName),
     Return.
 
-%% @spec get_next(Ref,Path) -> NewName
+%% @spec get_next2(Ref,Path,User) -> NewName
 %% @doc gets the next valid page name
 get_next2(Ref,Path,User) ->
     new_path(Ref,Path,User).

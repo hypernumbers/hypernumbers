@@ -133,7 +133,7 @@ networkdays1(Start, End, Holidays) ->
                    end,
                    0, Start, End).
 
-%% TODO: Potential for confusion if user & server are in different timezones, e.g.
+%% TODO: Potential for confusion if user and server are in different timezones, e.g.
 %% a Japanese user on a Californian server...
 today([]) ->
     {Date, _Time} = calendar:now_to_universal_time(erlang:now()),

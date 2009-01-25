@@ -45,7 +45,7 @@ flatten_ranges([Hd|Tl]) ->
 flatten_ranges(A) ->
     flatten_ranges([A]).
 
-%% @docc Replaces both array and range objects with values they contain.
+%% @doc Replaces both array and range objects with values they contain.
 flatten_areas([Hd|Tl]) ->
     flatten_areas(Hd, Tl, [], fun(X) -> ?is_area(X) end);
 flatten_areas(A) ->
@@ -102,7 +102,7 @@ collect_date(V, Rules) ->
 %%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 %%% TODO: Rewrite this.
-%%% Instead of working rule-by-rule, go value-by-value & die on the first encountered error value.
+%%% Instead of working rule-by-rule, go value-by-value and die on the first encountered error value.
 %%% Checking for error values after everything has been [attempted to be] cast works but is not
 %%% efficient.
 %%% Clients of the interface aren't affected by these changes so the quick fix is ok for now.

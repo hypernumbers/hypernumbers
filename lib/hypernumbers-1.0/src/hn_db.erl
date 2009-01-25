@@ -222,7 +222,7 @@ get_ref_from_name(Name) ->
     Items = ?mn_ac(ets,Fun),
     [X#hn_item.addr || X <- Items].
 
-%% @spec get_item_inherited(Ref) -> {ok,Value}
+%% @spec get_item_inherited(Ref,Default) -> {ok,Value}
 %% @doc  searches the tree for the first occurence of a value
 %%       stored at Ref, if not found return default
 get_item_inherited(Addr = #ref{ref={RefType,_}}, Default) ->
@@ -569,7 +569,7 @@ register_hn(To,From,Bic,Proxy,Url) ->
 	ok.
 
 
-%% @spec delete_cells(#ref) -> ok
+%% @spec delete_cells(Ref) -> ok Ref = #ref{}
 %% @doc deletes the value of a cell (but not any formatting information)
 delete_cells(Ref = #ref{ref = {range, {X, Y, X, Y}}}) ->
     delete_cells(Ref =#ref{ref = {cell, {X, Y}}});
@@ -594,7 +594,7 @@ delete_cells(Ref = #ref{ref = {cell, {X, Y}}}) ->
       Data
      ).
 
-%% @spec clear_cells(#ref) -> {ok, ok}
+%% @spec clear_cells(Ref) -> {ok, ok} Ref = #ref{}
 %% @doc clears the values and all the formats of a cell
 clear_cells(Ref = #ref{ref = {range, {X, Y, X, Y}}}) ->
     clear_cells(Ref =#ref{ref = {cell, {X, Y}}});
@@ -897,7 +897,7 @@ write_style_IMPORT(Addr, Style) ->
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% @spec cut_n_paste(From, To) -> ok;
+%% @spec cut_n_paste(From, To) -> ok
 %% @doc copies the formula and formats from a cell or range and 
 %% pastes them to the destination  then deletes the original
 %% (the difference between drag'n'drop
@@ -911,7 +911,7 @@ cut_n_paste(From, To) ->
     end,
     delete_cells(From).
 
-%% @spec copy_n_paste(From, To) -> ok;
+%% @spec copy_n_paste(From, To) -> ok
 %% @doc copies the formula and formats from a cell or range and 
 %% pastes them to the destination (the difference between drag'n'drop
 %% and copy/cut'n'paste is that drag'n'drop increments)
@@ -959,7 +959,7 @@ is_valid_c_n_p(#ref{ref = {range, {FX1, FY1, FX2, FY2}}}, #ref{ref = {range, {TX
 %% Product 1           Product 2, Product 3,... 
 %% 1 Product           2 Product, 3 Product
 
-%% @spec drag_n_drop(From, To) -> ok;
+%% @spec drag_n_drop(From, To) -> ok
 %% @doc takes the formula and formats from a cell and drag_n_drops 
 %% them over a destination (the difference between drag'n'drop
 %% and copy/cut'n'paste is that drag'n'drop increments)

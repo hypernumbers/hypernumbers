@@ -46,13 +46,13 @@ function build
     if [ $# -lt 1 ] 
     then
         echo "==============================="
-        echo "      COMPILING STARLING      "
+        echo "      Compiling Starling       "
         echo "==============================="
         cd ./lib/starling/
         rake
         cd ../../
         echo "==============================="
-        echo " GENERATING LEXERS AND PARSERS "
+        echo " Generating Lexers And Parsers "
         echo "==============================="
         cd ./priv/muin/
         erlc generate.erl
@@ -61,18 +61,25 @@ function build
     fi
 
     echo "==============================="
-    echo "       COMPILING COMPILER      "
+    echo "       Compiling Compiler      "
     echo "==============================="
     erlc -o ebin src/compile_code.erl
     echo "==============================="
-    echo "      GENERATING MS_UTIL       "
+    echo "     Building Documentation    "
+    echo "==============================="
+    erlc -o ebin src/make_edoc.erl
+    cd ./ebin
+    erl -noshell -s make_edoc build -s init stop
+    cd ../
+    echo "==============================="
+    echo "      Generating ms_util       "
     echo "==============================="
     HN_DIR="lib/hypernumbers-1.0"
     erlc -o $HN_DIR/ebin -I $HN_DIR/include priv/ms_util/make_ms_util.erl
     erl -pa $HN_DIR/ebin -noshell -s make_ms_util make -s init stop
     mv ms_util2.erl $HN_DIR/src
     echo "==============================="
-    echo "            BUILDING           "
+    echo "            Compiling          "
     echo "==============================="
     cd ebin
     erl -pa ebin -noshell -s compile_code -s init stop

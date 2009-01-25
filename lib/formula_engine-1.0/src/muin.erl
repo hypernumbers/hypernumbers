@@ -70,7 +70,7 @@ run_code(Pcode, #muin_rti{site=Site, path=Path,
 
 %%% PRIVATE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-%% @spec compile(string(), {integer(), integer()})
+%% @spec compile(Fla, {Col, Row}) -> something Fla = string(), Col = integer(), Row = integer()
 %% @doc Compiles a formula against a cell.
 compile(Fla, {Col, Row}) ->
     case parse(Fla, {Col, Row}) of
