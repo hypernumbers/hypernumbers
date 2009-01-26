@@ -1,9 +1,9 @@
 %%%-------------------------------------------------------------------
 %%% File     filefilters.erl
 %%% @author  Gordon Guthrie gordon@hypernumbers.com
-%%% @doc     runs Microsoft Office filters.
+%%% @doc     This module runs Microsoft Office filters.
 %%% 
-%%%          This module reads the Microsoft Compound File format which
+%%%          It reads the Microsoft Compound File format which
 %%%          describes the 'physical' layout of all Microsoft Office
 %%%          compound file format documents. It reads the basic structure
 %%%          of the file and the passes them over to the module 
@@ -40,7 +40,7 @@ read(excel,FileIn,Fun)->
 
 %% @spec read(excel, FileName) -> term()
 %% @doc as per read/3 except the default Fun is applied 
-%% which is just excel_util:dump/1
+%% which is just {@link excel_util:dump/1}
 read(excel,FileIn)->
     Fun= fun(X) -> io:format("About to dump tables~n"),
                    excel_util:dump(X)

@@ -1,11 +1,11 @@
 %%%-------------------------------------------------------------------
-%%% File        : excel_rev_comp.erl
-%%% Author      : Gordon Guthrie <gordon@hypernumbers.com>
-%%% Description : the reverse compiler for the Excel RPN token stream
-%%%               that turns the internal representation of an Excel
-%%%               formula back into the original form that the user
-%%%               entered into the cell
-%%%
+%%% File    excel_rev_comp.erl
+%%% @author Gordon Guthrie <gordon@hypernumbers.com>
+%%% @doc     This is the reverse compiler for the Excel RPN token
+%%%          stream that turns the internal representation of an Excel
+%%%          formula back into the original form that the user
+%%%          entered into the cell
+%%% @end
 %%% Created     : 11th Jan 2008 by Gordon Guthrie
 %%%-------------------------------------------------------------------
 -module(excel_rev_comp).

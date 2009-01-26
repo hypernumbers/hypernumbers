@@ -1,8 +1,11 @@
 %%%-------------------------------------------------------------------
-%%% File        : excel_records.erl
-%%% Author      : Gordon Guthrie <gordonguthrie@gg-laptop>
-%%% Description : parses the Excel Records
+%%% File    excel_records.erl
+%%% @author Gordon Guthrie <gordon@hypernumbers.com>
+%%% @doc     This module parses the Excel records.
+%%% 
+%%%          It calls excel_tokens when it gets a formula record
 %%%
+%%% @end
 %%% Created     : 11 January 2008
 %%%-------------------------------------------------------------------
 -module(excel_records).

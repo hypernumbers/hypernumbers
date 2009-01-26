@@ -1,8 +1,9 @@
 %%%-------------------------------------------------------------------
-%%% File        : excel_util.erl
-%%% Author      : Gordon Guthrie <gordonguthrie@gg-laptop>
-%%% Description : parses the specific Excel components of a file
-%%%
+%%% File    excel_util.erl
+%%% @author Gordon Guthrie <gordon@hypernumbers.com>
+%%% @doc    Utility module of common functions
+%%% 
+%%% @end
 %%% Created     : 26 July 2007 by Gordon Guthrie
 %%%-------------------------------------------------------------------
 -module(excel_util).
@@ -493,9 +494,12 @@ flatpack2(List,_N) -> {ok,Return,N2}=regexp:gsub(List,"__","_"),
 %%% (ie these wrapper functions make otherwise private functions exported)   %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% @hidden
 parse_CRS_RK_TESTING(Value) -> parse_CRS_RK(Value).
+%% @hidden
 shift_left2_TESTING(Bin)    -> shift_left2(Bin).
 
+%% @hidden
 bodge_DEBUG(Bin)->
     Len=length(binary_to_list(Bin)),
     bodge(Bin,Len,[]).

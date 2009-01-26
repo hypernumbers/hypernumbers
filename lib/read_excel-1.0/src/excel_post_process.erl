@@ -1,7 +1,11 @@
 %%%-------------------------------------------------------------------
 %%% @author    Gordon Guthrie gordon@hypernumbers.com
 %%% @copyright (C) 2008, hypernumbers.com
-%%% @doc       post-processes tables read from Excel files
+%%% @doc       This module post-processes tables read from Excel 
+%%%            files. Excel functions are stored in a Reverse-Polish
+%%%            Notation (RPN) token stream and the primary task of
+%%%            this module is to revese compile that  which it does 
+%%%            by calling {@link excel_rev_comp}.
 %%%
 %%% @end
 %%% Created :  20 Nov 2008 by gordon@hypernumbers.com

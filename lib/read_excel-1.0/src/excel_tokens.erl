@@ -1,9 +1,10 @@
 %%%-------------------------------------------------------------------
-%%% File        : excel_tokens.erl
-%%% Author      : Gordon Guthrie <gordon@hypernumberftAs.com>
-%%% Description : parses the RPN tokens what Excel uses to store
-%%%               the formulae in cells
+%%% File    excel_tokens.erl
+%%% @author Gordon Guthrie <gordon@hypernumberftAs.com>
+%%% @doc    This module parses the RPN tokens what Excel uses to store
+%%%         the formulae in cells
 %%%
+%%% @end
 %%% Created     : 11th Jan 2008 by Gordon Guthrie
 %%%-------------------------------------------------------------------
 -module(excel_tokens).
