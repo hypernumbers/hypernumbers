@@ -1,13 +1,46 @@
-@author Gordon Guthrie gordon@hypernumbers.com
+@author Gordon Guthrie <gordon@hypernumbers.com>
 @copyright Hypernumbers Ltd
 @version 1.0
 @title read_excel
 
-@doc read_excel is an application that read a .xls file (Excel 97-2003 native file format).
+@doc read_excel is an application that reads a .xls file (Excel 97-2003 native file format).
 
 A read_excel server handles the workers that read native excel files.
 
 NOTE: think that the ets tables are stored on a per-process basis and that we can run multiple instances of this at the same time.
 
-The public interface for this module is poorly implemented. At the moment it is 
-<code>filefilters:read/2</code> or <code>filefilters:read/3</code> but needs to be sorted out...
+The public interface for this module is poorly implemented. At the moment it is {@link filefilters:read/2} or {@link filefilters:read/3} but needs to be sorted out...
+
+<img src="./diagram1.png" />
+
+To start with this module look up the function {@link filefilters}. To understand how it reads excel files go straight to {@link excel}.
+
+This module makes extensive use of header files to provide readable descriptions of numerical constants used by the various Microsoft file and record formats. These take the form of descriptive macros. The various include files defining them are heavily annotated with refernce to the specification documents from OpenOffice and use the same names as those specs wherever possible. (Sometimes OpenOffice changes the name of a constant between documentation releases - bastards!). <b>Always check carefully which exact version of the documentation is referenced at any point.</b>
+
+<ul>
+<li>the Microsoft Compound File Format information is <a href="../include/microsoftcompoundfileformat.hrl">here</a></li>
+</ul>
+
+Excel records are described in these header files:
+<ul>
+<li>details of the excel record delimiters are <a href="../include/microsoftbiff.hrl">here</a></li>
+<li>delimiters used in the Excel File Header to mark which stream contains the Excel sheet data is <a href="../include/excel_structure.hrl">here</a></li>
+<li>macros used in definition of individual records (ie for each excel record delimiter there MAY be a set of defintions in this file) <a href="../include/excel_records.hrl">here</a></li>
+<li>there are common substructure definitions used in many different records which are described <a href="../include/excel_com_rec_subs.hrl">here</a></li>
+<li>some tokens that refer to the structure of a particular sheet in an Excel workbook are defined <a href="../include/excel_supbook.hrl">here</a></li>
+</ul>
+
+Excel Formula records contain Excel functions are as Reverse-Polish Notation (RPN) token streams. This next set of header file describes those token streams:
+<ul>
+<li>yer bog standard basic tokens <a href="../include/excel_base_tokens.hrl">here</a></li>
+<li>the Excel tokens cast types (area, value or reference) statically by making each function call to a particular version of a function. The various different token sets (classified tokens) are described <a href="../include/excel_classified_tokens.hrl">here</a></li>
+<li>sometimes the RPN token stream has to refer to an array which it processes on execution. That array is stored as an array stream after the RPN token stream - constants describing that array can be found <a href="../include/excel_array_elements.hrl">here</a></li>
+<li> some RPN tokens have 'attributes'. Attribute delimiters are described <a href="../include/excel_attributes.hrl">here</a> and <a href="../include/excel_attributes.hrl">here</a></li>
+<li>some tokens can refer to external entities - described <a href="../include/excel_externname.hrl">here</a></li>
+<li>built-in Excel functions are specified by constants listed <a href="../include/excel_functions.hrl">here</a></li>
+</ul>
+
+In addition:
+<ul>
+<li>a variety of error definitions are stored <a href="../include/excel_errors.hrl">here</a></li>
+</ul>

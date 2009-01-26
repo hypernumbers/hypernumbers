@@ -1,16 +1,18 @@
 %%%-------------------------------------------------------------------
-%%% File        : excel.erl
-%%% Author      : Gordon Guthrie <gordonguthrie@gg-laptop>
-%%% Description : parses the specific Excel components of a file
+%%% File    excel.erl
+%%% @author Gordon Guthrie <gordon@hypernumbers.com>
+%%% @doc    This module parses the specific Excel components of
+%%%         a file. The structure of this process is shown 
+%%%         schematically below:
+%%%         
+%%%         <img src="./diagram2.png" />
 %%%
+%%% @end
 %%% Created     :  6 Apr 2007 by Gordon Guthrie <gordonguthrie@gg-laptop>
 %%%-------------------------------------------------------------------
 -module(excel).
 
 -export([read_excel/9,get_file_structure/8]).
-
-%% Prolly should be in excel_util
--export([get_named_SID/2]).
 
 -include("microsoftcompoundfileformat.hrl").
 -include("microsoftbiff.hrl").
@@ -42,6 +44,7 @@
 %%% Functions to read the whole file                                    %%%
 %%%                                                                     %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% @doc this is the interface for reading and Excel 97-2003 file
 read_excel(Directory,SAT,SSAT,SectorSize,ShortSectorSize,
            _MinStreamSize,{{SubLoc,SubSID},SubStreams},FileIn,Tables)->
     % Bear in mind that if the location is short stream the 'SID' returned
@@ -157,6 +160,7 @@ get_single_SST(Bin,Residuum)->
 %%% Functions to read the structure of the file                         %%%
 %%%                                                                     %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% @doc this should really be in excel_util
 get_file_structure(ParsedDirectory,SAT,SSAT,SectorSize,ShortSectorSize,
                    _MinStreamSize,Tables,FileIn)->
     % Remember that if the stream is a short stream the SID in the directory
@@ -168,10 +172,10 @@ get_file_structure(ParsedDirectory,SAT,SSAT,SectorSize,ShortSectorSize,
             short_stream ->
                 % First thing we are going to do is get the
                 % normal stream that contains the short stream
-                {_,SID2}=excel:get_named_SID(ParsedDirectory,?ROOT_ENTRY),
+                {_,SID2}=get_named_SID(ParsedDirectory,?ROOT_ENTRY),
                 Bin2=get_normal_stream(SID2,ParsedDirectory,SAT,
                                        SectorSize,FileIn),
-                SSIDs=filefilters:get_SIDs(SSAT,SID),
+                SSIDs=excel_util:get_SIDs(SSAT,SID),
                 get_short_bin(Bin2,SSIDs,ShortSectorSize)
         end,
     {{Location,SID},get_bound_list(Bin,Tables)}.
@@ -180,9 +184,9 @@ get_workbook_SID(ParsedDirectory)->
     % In Excel this SID is called 'Workbook' in the files written by
     % whatever wrote the test files uses 'Book' so we need to look for
     % both of them
-    Response=excel:get_named_SID(ParsedDirectory,?EXCEL_WKBK1),
+    Response=get_named_SID(ParsedDirectory,?EXCEL_WKBK1),
     case Response of
-        {error,_Err} -> {ok,Ret}=excel:get_named_SID(ParsedDirectory,?EXCEL_WKBK2),
+        {error,_Err} -> {ok,Ret}=get_named_SID(ParsedDirectory,?EXCEL_WKBK2),
                         Ret;
         {ok,Ret2}   -> Ret2
     end.
@@ -199,7 +203,7 @@ get_named_SID(Directory,Name)->
     end.
 
 get_normal_stream(SID,_ParsedDirectory,SAT,SectorSize,FileIn)->
-    SIDs=filefilters:get_SIDs(SAT,SID),
+    SIDs=excel_util:get_SIDs(SAT,SID),
     get_stream(SAT,SIDs,SectorSize,FileIn).
 
 get_short_stream(SSID,ParsedDirectory,SAT,SSAT,SectorSize,ShortSectorSize,
@@ -207,9 +211,9 @@ get_short_stream(SSID,ParsedDirectory,SAT,SSAT,SectorSize,ShortSectorSize,
     % First thing we are going to do is get the
     % normal stream that contains the short stream
     % might have a problem here too
-    {_,RootSID}=excel:get_named_SID(ParsedDirectory,?ROOT_ENTRY),
+    {_,RootSID}=get_named_SID(ParsedDirectory,?ROOT_ENTRY),
     Bin=get_normal_stream(RootSID,ParsedDirectory,SAT,SectorSize,FileIn),
-    SSIDs=filefilters:get_SIDs(SSAT,SSID),
+    SSIDs=excel_util:get_SIDs(SSAT,SSID),
     get_short_bin(Bin,SSIDs,ShortSectorSize).
 
 get_stream(_SAT,SIDs,SectorSize,FileIn)->

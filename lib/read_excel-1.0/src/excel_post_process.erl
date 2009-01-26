@@ -27,7 +27,7 @@
 post_process_tables(Tables) ->
     % Excel has a number of built in formats
     {ok,ok}=add_built_in_formats(Tables),
-    % filefilters:dump(Tables),
+    % excel_util:dump(Tables),
     type_formats(Tables),
     fix_up_externalrefs(Tables),
     fix_up_names(Tables),
@@ -35,7 +35,7 @@ post_process_tables(Tables) ->
     convert_dates(Tables),
     fix_up_formats(Tables),
     create_array_formulae(Tables),
-    filefilters:dump(Tables),
+    excel_util:dump(Tables),
     ok.
 
 %% This function takes the raw format data and turns into the apppriate format

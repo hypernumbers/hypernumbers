@@ -22,11 +22,14 @@
          read_shared/2,
          get_length/2,
          append_sheetname/2,
-         esc_tab_name/1]).
+         esc_tab_name/1,
+         get_SIDs/2,
+         dump/1]).
 
 %%% Debugging exports
 -export([parse_CRS_RK_TESTING/1,shift_left2_TESTING/1]).
--export([bodge_DEBUG/1]).
+-export([bodge_DEBUG/1,
+        dump_DEBUG/1]).
 
 %%% Include file for eunit testing
 -include_lib("eunit/include/eunit.hrl").
@@ -35,6 +38,59 @@
 -include("microsoftcompoundfileformat.hrl").
 -include("microsoftbiff.hrl").
 -include("excel_com_rec_subs.hrl").
+
+%% @hidden
+dump_DEBUG(Tables)        -> dump(Tables).
+
+dump([])-> io:format("All tables dumped~n");
+dump([{Table,Tid}|T])->
+    case Table of
+        % cell             -> dump2({Table,Tid});
+        % array_formulae   -> dump2({Table,Tid});
+        % formats          -> dump2({Table,Tid});
+        % names            -> dump2({Table,Tid}); 
+         css              -> dump2({Table,Tid});
+        % lacunaue         -> dump2({Table,Tid});
+        % misc             -> dump2({Table,Tid});
+        % warnings         -> dump3({Table,Tid}); % has a bodge in it!
+        % tmp_cell         -> dump2({Table,Tid});
+        % tmp_xf           -> dump2({Table,Tid});
+        % tmp_colours      -> dump2({Table,Tid});
+        % tmp_names        -> dump2({Table,Tid});
+        % tmp_extsheets    -> dump2({Table,Tid});
+        % tmp_externalbook -> dump2({Table,Tid});
+        % tmp_externnames  -> dump2({Table,Tid});
+        _       -> io:format("skipping Table ~p in filefilters:dump~n",[Table])
+    end,
+    dump(T).
+
+dump2({Table,Tid}) ->
+    io:format("~nDumping table: ~p~n",[Table]),
+    Fun = fun(X,_Y) -> io:format("~p: ~p~n",[Table,X]) end,
+    ets:foldl(Fun,[],Tid).
+
+dump3({Table,Tid}) ->
+    io:format("~nDumping table: ~p~n",[Table]),
+    Fun = fun({I,X},_Y) -> io:format("~p: ~p ~p~n",[Table, I, bodge(X)]) end,
+    ets:foldl(Fun,[],Tid).
+
+%% Make Microsoft URL's printable
+%% TODO: fix me (duh!)
+bodge(List) -> bodge(List, []).
+
+bodge([], Acc)                  -> lists:reverse(Acc);
+bodge([H | T], Acc) when H < 32 -> bodge(T, Acc);
+bodge([H | T], Acc)             -> bodge(T, [H | Acc]).
+
+get_SIDs(ParsedSAT,SID)->
+    get_SIDs(ParsedSAT,SID,[]).
+
+get_SIDs(_ParsedSAT,?END_OF_CHAIN_SID,Residuum)->
+    lists:reverse(Residuum);
+get_SIDs(ParsedSAT,SID,Residuum)->
+    {value,{SID,Value}} = lists:keysearch(SID,1,ParsedSAT),
+    NewResiduum=[SID|Residuum],
+    get_SIDs(ParsedSAT,Value,NewResiduum).
 
 get_utf8({[{'uni16-8',String}],_B,_C})->
     xmerl_ucs:to_utf8(binary_to_list(String));

@@ -1,22 +1,26 @@
 %%%-------------------------------------------------------------------
-%%% File        : filefilters.erl
-%%% Author      : Gordon Guthrie <gordonguthrie@gg-laptop>
-%%% Description : runs Microsoft Office filters
-%%%
-%%% Created     :  4 Apr 2007 by Gordon Guthrie <gordonguthrie@gg-laptop>
+%%% File     filefilters.erl
+%%% @author  Gordon Guthrie gordon@hypernumbers.com
+%%% @doc     runs Microsoft Office filters.
+%%% 
+%%%          This module reads the Microsoft Compound File format which
+%%%          describes the 'physical' layout of all Microsoft Office
+%%%          compound file format documents. It reads the basic structure
+%%%          of the file and the passes them over to the module 
+%%%          @link{excel} with a call to @link{excel:read_excel/3}
+%%% @end
+%%% Created     :  4 Apr 2007 by Gordon Guthrie
 %%%-------------------------------------------------------------------
 -module(filefilters).
 
 %%% Exports
--export([read/3,read/2,filter_file/1,get_SIDs/2]).
+-export([read/3,
+         read/2]).
 
 %%% Debugging exports - not for proper use
 -export([test_DEBUG/0,
          create_ets_DEBUG/0,
-         delete_ets_DEBUG/1,
-         dump_DEBUG/1]).
-
--export([dump/1]).
+         delete_ets_DEBUG/1]).
 
 -include("spriki.hrl").
 -include("microsoftcompoundfileformat.hrl").
@@ -27,12 +31,19 @@
 %%% Functions for filtering the files                                        %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% @spec read(excel, PathAndFileName, Fun) -> term()
+%% Fun = fun()
+%% @doc The filename is read and converted to a set of ets tables. The Fun is then
+%% applied to those ets tables
 read(excel,FileIn,Fun)->
     read_excel(excel,FileIn,Fun).
 
+%% @spec read(excel, FileName) -> term()
+%% @doc as per read/3 except the default Fun is applied 
+%% which is just excel_util:dump/1
 read(excel,FileIn)->
     Fun= fun(X) -> io:format("About to dump tables~n"),
-                   dump(X)
+                   excel_util:dump(X)
          end,
     read_excel(excel,FileIn,Fun).
 
@@ -44,7 +55,7 @@ read_excel(excel,FileIn,Fun)->
     SubStreams=excel:get_file_structure(ParsedDirectory,ParsedSAT,ParsedSSAT,
                                         SectorSize,ShortSectorSize,
                                         MinStreamSize,Tables,FileIn),
-    print_structure(FileIn,ParsedDirectory,SubStreams),
+    % print_structure(FileIn,ParsedDirectory,SubStreams),
     excel:read_excel(ParsedDirectory,ParsedSAT,ParsedSSAT,
                      SectorSize,ShortSectorSize,
                      MinStreamSize,SubStreams,FileIn,Tables),
@@ -113,7 +124,7 @@ read_compound_file_header(<<?BIFF8_MAGIC_NUMBER:64/little-signed-integer,
 
     % Moving onto the Directory as per Section 7.1 of
     % http://sc.openoffice.org/compdocfileformat.pdf
-    DirectorySIDs=get_SIDs(ParsedSAT,DirectoryFirstSID),
+    DirectorySIDs=excel_util:get_SIDs(ParsedSAT,DirectoryFirstSID),
     RawDirectory=read_sectors(DirectorySIDs,SectorSize,FileIn),
     ParsedDirectory=parse_Directory(list_to_binary(RawDirectory),
                                     MinStreamSize),
@@ -136,16 +147,6 @@ read_MSAT(0,?END_OF_CHAIN_SID,BulkMSAT)->
     get_sectors(BulkMSAT);
 read_MSAT(_FirstSectorMSAT_SID,_NoOfMSATSectors,_BulkMSAT)->
     ok.
-
-get_SIDs(ParsedSAT,SID)->
-    get_SIDs(ParsedSAT,SID,[]).
-
-get_SIDs(_ParsedSAT,?END_OF_CHAIN_SID,Residuum)->
-    lists:reverse(Residuum);
-get_SIDs(ParsedSAT,SID,Residuum)->
-    {value,{SID,Value}} = lists:keysearch(SID,1,ParsedSAT),
-    NewResiduum=[SID|Residuum],
-    get_SIDs(ParsedSAT,Value,NewResiduum).
 
 get_sectors(BulkMSAT)->
     get_sectors(BulkMSAT,[]).
@@ -247,22 +248,22 @@ parse_Directory(Other,_MinStreamSize,Other2)->
               "is ~p Other2 is ~p "++
               "Oh, shit!~n",[Other,Other2]).
 
-print_structure(_FileIn,_Directory,{SubLocation,_SubStreams})->
-    % This function will bork as soon as it is handed a substream name
-    % that has a Asian or Rich Text Name - but as it is fed by
-    % output that is internal to Excel I think it will still continue
-    % to come in unicode16-8 format (suck'n'see fella)
-    {_SubLoc,_SID}=SubLocation,
-    %    io:format("~nThe structure of the Microsoft Coumpound Document Object ~p "++
-    %              "is:~n",[FileIn]),
-    %    List=[{lists:keysearch('bodge_name',1,X),lists:keysearch(location,1,X)}
-    %    || {_,X} <- Directory],
-    %    [io:format("* stream ~p is in ~p~n",
-    %         [BodgeName,Location]) || {{_,{_,BodgeName}},
-    %                   {_,{_,Location}}} <- List],
-    %    io:format("the substreams in ~p are:~n",[SubLoc]),
-    %    [io:format("* substream: ~p~n",[X]) || {[{_,X}],_} <- SubStreams],
-    ok.
+% print_structure(FileIn, Directory, {SubLocation, SubStreams})->
+%    % This function will bork as soon as it is handed a substream name
+%    % that has a Asian or Rich Text Name - but as it is fed by
+%    % output that is internal to Excel I think it will still continue
+%    % to come in unicode16-8 format (suck'n'see fella)
+%    {SubLoc, _SID} = SubLocation,
+%    io:format("~nThe structure of the Microsoft Coumpound Document Object ~p "++
+%                  "is:~n", [FileIn]),
+%    List = [{lists:keysearch('bodge_name',1,X), lists:keysearch(location, 1, X)}
+%              || {_ , X} <- Directory],
+%    [io:format("* stream ~p is in ~p~n",
+%                   [BodgeName, Location]) || {{_, {_, BodgeName}},
+%                                       {_, {_, Location}}} <- List],
+%    io:format("the substreams in ~p are:~n", [SubLoc]),
+%    [io:format("* substream: ~p~n",[X]) || {[{_ , X}],_} <- SubStreams],
+%    ok.
 
 delete_ets([])    -> ok;
 delete_ets([{_TableName,Tid}|T]) -> ets:delete(Tid),
@@ -324,11 +325,13 @@ bodge_string(<<Char:16/little-signed-integer,Rest/binary>>,
 %%% Debugging functions                                                      %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%% @hidden
 create_ets_DEBUG()        -> create_ets().
-delete_ets_DEBUG(Tables)  -> delete_ets(Tables).
-dump_DEBUG(Tables)        -> dump(Tables).
 
+%% @hidden
+delete_ets_DEBUG(Tables)  -> delete_ets(Tables).
+
+%% @hidden
 test_DEBUG()->
     % File="minitest.xls",
     % File="e_gnumeric_operators_add.xls",
@@ -357,46 +360,6 @@ test_DEBUG()->
               [FileRoot,File]),
     read(excel,FileRoot++"/"++File),
     io:format("~s processed~n",[File]).
-
-dump([])-> io:format("All tables dumped~n");
-dump([{Table,Tid}|T])->
-    case Table of
-        % cell             -> dump2({Table,Tid});
-        % array_formulae   -> dump2({Table,Tid});
-        % formats          -> dump2({Table,Tid});
-        % names            -> dump2({Table,Tid}); 
-         css              -> dump2({Table,Tid});
-        % lacunaue         -> dump2({Table,Tid});
-        % misc             -> dump2({Table,Tid});
-        % warnings         -> dump3({Table,Tid}); % has a bodge in it!
-        % tmp_cell         -> dump2({Table,Tid});
-        % tmp_xf           -> dump2({Table,Tid});
-        % tmp_colours      -> dump2({Table,Tid});
-        % tmp_names        -> dump2({Table,Tid});
-        % tmp_extsheets    -> dump2({Table,Tid});
-        % tmp_externalbook -> dump2({Table,Tid});
-        % tmp_externnames  -> dump2({Table,Tid});
-        _       -> io:format("skipping Table ~p in filefilters:dump~n",[Table])
-    end,
-    dump(T).
-
-dump2({Table,Tid}) ->
-    io:format("~nDumping table: ~p~n",[Table]),
-    Fun = fun(X,_Y) -> io:format("~p: ~p~n",[Table,X]) end,
-    ets:foldl(Fun,[],Tid).
-
-dump3({Table,Tid}) ->
-    io:format("~nDumping table: ~p~n",[Table]),
-    Fun = fun({I,X},_Y) -> io:format("~p: ~p ~p~n",[Table, I, bodge(X)]) end,
-    ets:foldl(Fun,[],Tid).
-
-%% Make Microsoft URL's printable
-%% TODO: fix me (duh!)
-bodge(List) -> bodge(List, []).
-
-bodge([], Acc)                  -> lists:reverse(Acc);
-bodge([H | T], Acc) when H < 32 -> bodge(T, Acc);
-bodge([H | T], Acc)             -> bodge(T, [H | Acc]).
 
 %% this function creates the default palette as per Section 5.74.2 and 
 %%  5.74.3 of excelfileformatV1-42.pdf
