@@ -1,4 +1,5 @@
-%%% @doc    This module handles the number/text formatting for a cell
+%%% @doc    This module handles the number/text formatting for a cell.
+%%% 
 %%%         Created the 11th March 2008
 %%% @author Gordon Guthrie <gordon@hypernumbers.com>
 -module(format).
@@ -63,6 +64,7 @@ run_format(X,Src)->
 %%%                                                                           %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%% @hidden
 %%% @doc Run-time interface not an API - this function should *NOT*
 %%% be programmed against
 %%% @end
@@ -73,6 +75,7 @@ format(X,{date, Format})                   -> tconv:to_s(X);
 format(X,{number,Format})                  -> format_num(X,Format);
 format(X,{text,Format})                    -> format(X,Format,[]).
 
+%%% @hidden
 %%% @doc run-time interface not an API - this function should *NOT*
 %%% be programmed against
 %%% @end

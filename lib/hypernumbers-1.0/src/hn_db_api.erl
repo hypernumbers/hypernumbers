@@ -69,8 +69,8 @@
 %% 
 %% The <code>#ref{}</code> can be one of the following types:
 %% <ul><li>row</li>
-%% <li>colum</li>
-%% <li>page (TODO)</li></ul>
+%% <li>colum</li></ul>
+%% @todo insert page
 insert(#ref{ref = {R, _}} = Ref) when R == row orelse R == column  ->
     Disp = case R of
                row -> vertical;
@@ -110,10 +110,12 @@ delete(#ref{ref = {R, _}} = Ref) when R == column orelse R == row ->
 
 %% @spec delete(Ref :: #ref{}, Type) -> ok Type = [contents | all | horizontal | vertical]
 %% @doc deletes the value of a cell (but not any formatting information)
-%% TODO:
-%% * keep the cell formulae/values but delete all the formatting
-%% * delete the attachment of a style to a cell/range
-%% * delete an individual attribute of a cell/range
+%% @todo
+%% <ul>
+%% <li>keep the cell formulae/values but delete all the formatting</li>
+%% <li>delete the attachment of a style to a cell/range</li>
+%% <li>delete an individual attribute of a cell/range</li>
+%% </ul>
 %% this clause deletes a cell or range and closes up the rest of them
 %% if Disp is Horizontal it moves cells right-to-left to close the gap
 %% if Disp is vertical is moves cells bottom-to-top to close the gap
@@ -185,8 +187,7 @@ delete(Ref = #ref{ref = {cell, _}}, all) ->
 %% <ul><li>cell</li>
 %% <li>row</li>
 %% <li>colum</li>
-%% <li>range</li>
-%% <li>page (TODO)</li></ul>
+%% <li>range</li></ul>
 %% 
 %% If a range is to be cut'n'pasted to a range then one of the following criteria MUST
 %% true:
@@ -196,6 +197,8 @@ delete(Ref = #ref{ref = {cell, _}}, all) ->
 %% <b>to</b> range</li>
 %% <li>the <b>from</b> must be one cell wide and the same height as the
 %% <b>to</b> range</li></ul> 
+%% 
+%% @todo cut'n'paste a page
 cut_n_paste(From, To) ->
     % _ supresses a warning
     _ = case is_valid_c_n_p(From, To) of
@@ -215,8 +218,8 @@ cut_n_paste(From, To) ->
 %% <ul><li>cell</li>
 %% <li>row</li>
 %% <li>colum</li>
-%% <li>range</li>
-%% <li>page (TODO)</li></ul>
+%% <li>range</li></ul>
+%% @todo copy'n'paste a page
 copy_n_paste(From, To) ->
     case is_valid_c_n_p(From, To) of
         {ok, single_cell}    -> copy_cut_drag_n_paste_drop(From, To, false);

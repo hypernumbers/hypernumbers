@@ -348,7 +348,7 @@ expected4(Expected, Got) ->
     end.
 
 %% @doc Read XLS file.
-%% TODO: this should be part of the reader - clients should not need to
+%% @TODO: this should be part of the reader - clients should not need to
 %% decipher the collection of ETS tables dumped on them.
 readxls(Fn) ->
     filefilters:read(excel, Fn, fun decipher_ets_tables/1).
@@ -460,7 +460,7 @@ make_string({Y, M, D}, {H, Mn, S}) -> integer_to_list(Y)++"/"++
                                            pad(integer_to_list(Mn))++":"++
                                            pad(integer_to_list(S)).
 
-%% TODO: Some of these conversion need to be done inside the reader itself.
+%% @TODO: Some of these conversion need to be done inside the reader itself.
 conv_for_post(Val) ->
     case Val of
         {_, boolean, true}        -> "true";
@@ -507,7 +507,7 @@ transform_reader_output(O) ->
 
 %% Input: list of {key, id} pairs where key is an ETS table holding info
 %% about some part of the XLS file.
-%% TODO: formats, names, styles.
+%% @TODO: formats, names, styles.
 decipher_ets_tables(Tids) ->
     %
     % First get the formulae/string data

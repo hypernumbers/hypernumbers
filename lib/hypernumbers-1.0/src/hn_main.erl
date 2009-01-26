@@ -53,7 +53,7 @@ value_to_cell(Addr, Val) ->
             Rti = ref_to_rti(Addr, false),
             case muin:run_formula(Fla, Rti) of
                 {error, _Error} -> 
-                    % TODO, notify clients
+                    % @TODO, notify clients
                     ok;       
                 {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
                     Parxml = map(fun muin_link_to_simplexml/1, Parents),
@@ -215,7 +215,7 @@ apply_range(Addr,Fun,Args) ->
                            end,lists:seq(X1,X2));
         {cell,{_X,_Y}} ->
             apply(Fun,[Addr,Args])
-%% TODO : Add row / col / page?
+%% @TODO : Add row / col / page?
     end.
 
 %%%-----------------------------------------------------------------
@@ -311,7 +311,7 @@ recalc_cell(Index) ->
         _ ->
             Pcode = hn_db:get_item_val(Addr#ref{name = '__ast'}),
             Rti = ref_to_rti(Addr, false),
-            %TODO Save Dependancy tree
+            % @TODO Save Dependancy tree
             case muin:run_code(Pcode, Rti) of
                 {ok, {_, Val, _, _, _}}  -> 
                     set_cell_rawvalue(Addr,Val),

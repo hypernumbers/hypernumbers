@@ -13,11 +13,13 @@
 %% @doc  Application callback
 start(_Type, _Args) ->
     
-    %% TODO this test is buggy - the schema is always on disc 
+    %% @TODO this test is buggy - the schema is always on disc 
     %%      but invididual tables can be:
-    %%      * ram_copies
-    %%      * disc_copies
-    %%      * disc_only_copies
+    %%      <ul>
+    %%      <li>ram_copies</li>
+    %%      <li>disc_copies</li>
+    %%      <li>disc_only_copies</li>
+    %%      </ul>
     case mnesia:table_info(schema, storage_type) of
         ram_copies -> 
             mnesia:change_table_copy_type(schema, node(), disc_copies);

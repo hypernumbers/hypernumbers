@@ -1,7 +1,7 @@
 %%%-------------------------------------------------------------------
 %%% @author Gordon Guthrie <gordon@hypernumbers.com>
 %%% @copyright (C) 2009, hypernumbers.com
-%%% @doc This is the helper function for num_format.yrl
+%%% @doc This is the helper function for num_format.yrl.
 %%%
 %%% @end
 %%% Created :  5 Jan 2009 by Gordon Guthrie
@@ -21,7 +21,7 @@
          strip/1         
         ]).
 
-%% TODO migrate this to t_conv?
+%% @TODO migrate this to t_conv?
 %% tconv:to_f don't work if X is already a float...
 conv_to_float(X) when is_float(X) -> X;
 conv_to_float(X)                  -> tconv:to_f(X).
@@ -254,7 +254,7 @@ remove_semicolons([[semicolon]|T],Acc) -> remove_semicolons(T,Acc);
 remove_semicolons([H|T],Acc)           -> remove_semicolons(T,[H|Acc]).
 
 verify_listX(A) ->
-    % TODO I think some of these clauses are hooky!
+    % @TODO I think some of the clauses in verify_list are hooky!
 	verify_list(A).
 
 verify_list([[A]]    )            -> A;

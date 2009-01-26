@@ -61,7 +61,7 @@ do_request(Arg, Url) ->
                [] ->
                    anonymous;
                [UserId,_AuthToken] ->
-                   %% TODO Verify Token
+                   %% @TODO Verify Token
                    UserId
            end,
     
@@ -269,7 +269,7 @@ req('POST',{delete,[],Recurse},_Attr,_User,Ref = #ref{ref={page,"/"}}) ->
     {ok,{success,[],[]}};
 
 req('POST',{delete,[],Data},_Vars,_User,Ref) ->
-    % TODO when the API is set up this function should be swapped out for
+    % @TODO when the API is set up this function should be swapped out for
     % hn_db:delete_cells()
     lists:map
       (
@@ -329,7 +329,7 @@ req('POST',Data,["import"],_User,_Page) ->
                 {ok,_Stuff} = hn_import:hn_xml("/tmp/"++Data)
         end,
     F(),
-    %TODO: GET RID OF  - should also import permissions
+    % @TODO: GET RID OF  - should also import permissions
     hypernumbers_app:set_def_perms(),
     {ok,{success,[],[]}};
 

@@ -201,7 +201,7 @@ make_paths(List) when is_list(List) ->
 %% Now strip the last ',' off
     string:strip(NewList2,right,$,).
 
-%% TODO: Remove and fix all code that uses this function to use tconv:to_b26().
+%% @TODO: Remove and fix all code that uses this function to use tconv:to_b26().
 make_b26(Int) when is_integer(Int) ->
     tconv:to_b26(Int).
 

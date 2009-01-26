@@ -49,7 +49,7 @@ handle_call({unregister},From,State) ->
 handle_call({change,Site,Path,Msg},_From,State) ->
     F = fun(Z) ->
                 case Z of                    
-                    %% TODO : Ignoring site for now to work
+                    %% @TODO : Ignoring site for now to work
                     %% behind reverse proxy
                     {_Site,Path,Pid} -> 
                         Pid ! {msg,Msg};

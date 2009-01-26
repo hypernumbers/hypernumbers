@@ -79,7 +79,7 @@ delete_list(List) -> delete_list(List, contents).
 %%  <li><code>all</code> - deletes the contents, formats, styles 
 %%  and attributes (but not the cell itself)</li></ul>
 %%  
-%%  TODO - put in stuff about formats, styles or attributes only - not sure where...
+%%  @TODO put in stuff about formats, styles or attributes only - not sure where...
 delete_cell(Ref, contents) ->
       Data = [{formula, [], []},
             {rawvalue, [],[]},
@@ -93,7 +93,7 @@ delete_cell(Ref, contents) ->
     lists:map
       (
       fun({Attr,[],[]}) ->
-              % TODO fix the call to hn_db:remove
+              % @TODO fix the call to hn_db:remove
               hn_db:remove_item(Ref#ref{name=Attr})
       end,
       Data
@@ -151,7 +151,7 @@ shift_links2([#local_cell_link{child = Child, parent = Parent} | T], Offset) ->
     io:format("in shift_links2 Child is ~p~nParent is ~p~n", [Child, Parent]),
     shift_links2(T, Offset).
 
-%% TODO
+%% @TODO write shift_hypernumbers
 shift_hypernumbers(Ref, Offset) ->
     io:format("hn_db_util:shift_hypernumbers needs to be written!~n"),
     {ok, ok}.
