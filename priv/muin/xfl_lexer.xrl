@@ -1,7 +1,7 @@
-%%% @doc    Lexer for Muin's formula language.
+%%% @doc    Lexer for XFL.
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 
-%%% input is expected in upper case (function names &c).
+%%% NB: input must be in upper case (everything apart from string literals).
 
 Definitions.
 
@@ -101,6 +101,7 @@ Rules.
 &  : {token, {'&'}}.
 \% : {token, {'%'}}.
 \: : {token, {':'}}.
+\^\^ : {token, {'^^'}}.
 
 %% Newline signifies end of input.
 \n : {end_token, {'$end'}}.
@@ -116,6 +117,11 @@ Erlang code.
 -define(mx, get(mx)).
 -define(my, get(my)).
 
+%%% @type coord() = {Row :: pos_integer(), Column :: pos_integer()}
+%%% @type tokens() = [{atom(), any()}]
+
+%% @spec lex(Input :: string(), Cell :: coord()) -> tokens()
+%% @doc  Lex a string relative to some cell.
 lex(Input, {Mx, My}) ->
     put(mx, Mx),
     put(my, My),
@@ -126,7 +132,15 @@ lex(Input, {Mx, My}) ->
             lexer_error
     end.
 
-%% Lexing functions used in tests.
+%% @spec debang(string()) -> string()
+%% @doc Replace all !s with /s in a string. (Used to normalize references.)
+debang(Ssref) ->
+    {ok, Newssref, _} = regexp:gsub(Ssref, "!", "/"),
+    Newssref.
+
+%%% private ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+%% @doc Lexing functions to be used in tests ONLY.
 tlex(Input) ->
     ?ifmatch(string(Input),
              {ok, [{_Type, Val}], _},
@@ -201,11 +215,6 @@ getxy(Cellref0) ->
                         string:to_lower(Cellref)),
     Rowstr = lists:nthtail(length(Colname), Cellref),
     {tconv:to_i(Colname), tconv:to_i(Rowstr)}.
-
-%% Replaces all !s with /s in a same-site ref.
-debang(Ssref) ->
-    {ok, Newssref, _} = regexp:gsub(Ssref, "!", "/"),
-    Newssref.
 
 %% Splits same-site ref into path to page and cellref.
 split_ssref(Ssref) ->
