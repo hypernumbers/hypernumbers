@@ -16,7 +16,7 @@ Terminals
 atom name
 '=' '<>' '>' '<' '>=' '<='
 '+' '-' '*' '/' '^'
-'&' '%' ':'
+'&' '%' ':' '^^'
 int float bool str
 ref
 errval
@@ -38,6 +38,7 @@ Left     500 '^'.
 Left     600 '%'.
 Unary    700 Uminus.
 Nonassoc 800 ':'.
+Nonassoc     900 '^^'.
 
 %%% production rules
 
@@ -70,6 +71,7 @@ Uminus -> '-' E  : [negate, '$2'].
 E      -> Uplus  : '$1'.
 Uplus  -> '+' E  : '$2'.
 
+E -> E '^^' E : ['^^', '$1', '$3'].
 
 %%% ranges
 
@@ -95,7 +97,7 @@ E -> ref ':' Funcall : [':', '$1', '$3'].
 
 %%% parenthesized expressions.
 
-E -> '(' E ')' : '$2'.
+E -> '(' E ')' : '$2'.    
 
 %%% funcalls
 
