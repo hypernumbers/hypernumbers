@@ -64,7 +64,6 @@ function build
     echo "       Compiling Compiler      "
     echo "==============================="
     erlc -o ebin src/compile_code.erl
-    cd ../
     echo "==============================="
     echo "      Generating ms_util       "
     echo "==============================="
