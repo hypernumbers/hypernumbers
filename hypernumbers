@@ -64,12 +64,6 @@ function build
     echo "       Compiling Compiler      "
     echo "==============================="
     erlc -o ebin src/compile_code.erl
-    echo "==============================="
-    echo "     Building Documentation    "
-    echo "==============================="
-    erlc -o ebin src/make_edoc.erl
-    cd ./ebin
-    erl -noshell -s make_edoc build -s init stop
     cd ../
     echo "==============================="
     echo "      Generating ms_util       "
@@ -118,6 +112,16 @@ function gen_tests
         -s init stop
 }
 
+function docs
+{
+    echo "==============================="
+    echo "     Building Documentation    "
+    echo "==============================="
+    erlc -o ebin src/make_edoc.erl
+    cd ./ebin
+    erl -noshell -s make_edoc build -s init stop
+}
+
 function test
 {
     if [ $# -lt 1 ] 
@@ -159,6 +163,7 @@ function stop
 case $1 in 
     start) start;;
     stop)  stop;;
+    docs) docs;;
     build) build $2;;    
     gen_tests) gen_tests;;
     test)  test $2;;
