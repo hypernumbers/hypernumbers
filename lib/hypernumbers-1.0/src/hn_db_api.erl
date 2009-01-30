@@ -21,6 +21,14 @@
 %-define(mn_dl,mnesia:delete).
 %-define(mn_dlo,mnesia:delete_object).
 
+%% record_info isnt available at runtime
+-define(create(Name,Type,Storage),
+        fun() ->
+                Attr = [{attributes, record_info(fields, Name)},
+                        {type,Type},{Storage, [node()]}],
+                {atomic,ok} = mnesia:create_table(Name, Attr)
+        end()).
+
 -export([
          % write_attribute/2,
          % write_permission/2,
@@ -64,71 +72,80 @@
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% @spec insert(Ref :: #ref{}) -> ok
+%% @spec insert(RefX :: #refX{}) -> ok
 %% @doc inserts a column,a row or page
 %% 
-%% The <code>#ref{}</code> can be one of the following types:
+%% The <code>#refX{}</code> can be one of the following types:
 %% <ul><li>row</li>
 %% <li>colum</li></ul>
 %% @todo insert page
-insert(#ref{ref = {R, _}} = Ref) when R == row orelse R == column  ->
+insert(#refX{obj = {R, _}} = RefX) when R == row orelse R == column  ->
     Disp = case R of
                row -> vertical;
                column -> horizontal
            end,
     Fun =
         fun() ->
-                hn_db_wu:shift(Ref, Disp, insert)
+                hn_db_wu:shift(RefX, Disp, insert)
         end,
     mnesia:activity(transaction, Fun).
 
-%% @spec insert(Ref :: #ref{}, Type) -> ok Type = [horizontal | vertical]
+%% @spec insert(RefX :: #refX{}, Type) -> ok Type = [horizontal | vertical]
 %% @doc inserts a cell or range
 %% 
-%% The <code>#ref{}</code> can be one of the following types:
+%% The <code>#refX{}</code> can be one of the following types:
 %% <ul><li>cell</li>
 %% <li>range</li></ul>
-insert(#ref{ref = {R, _}} = Ref, Disp) when R == cell orelse R == range ->
+insert(#refX{obj = {R, _}} = RefX, Disp) when R == cell orelse R == range ->
     Fun =
         fun() ->
-                hn_db_wu:shift(Ref, Disp, insert)
+                hn_db_wu:shift(RefX, Disp, insert)
         end,
     mnesia:activity(transaction, Fun).
 
-%% @spec delete(Ref :: #ref{}) -> ok
+%% @spec delete(Ref :: #refX{}) -> ok
 %% @doc deletes a column or a row
-delete(#ref{ref = {R, _}} = Ref) when R == column orelse R == row ->
+delete(#refX{obj = {R, _}} = RefX) when R == column orelse R == row ->
     Disp = case R of
-               row -> vertical;
+               row    -> vertical;
                column -> horizontal
            end,
     Fun =
         fun() ->
-                hn_db_wu:shift(Ref, Disp, delete)
+                hn_db_wu:shift(RefX, Disp, delete)
         end,
     mnesia:activity(transaction, Fun).
 
-%% @spec delete(Ref :: #ref{}, Type) -> ok Type = [contents | all | horizontal | vertical]
-%% @doc deletes the value of a cell (but not any formatting information)
+%% @spec delete(RefX :: #refX{}, Type) -> ok Type = [contents | all | horizontal | vertical]
+%% @doc deletes the value (but not any formatting information) of
+%% <ul>
+%% <li>a cell</li>
+%% <li>a row</li>
+%% <li>a column</li>
+%% <li>a range</li>
+%% </ul>
+%% 
+%% This clause deletes a cell or range and closes up the rest of them
+%% if Disp is Horizontal it moves cells right-to-left to close the gap
+%% if Disp is vertical is moves cells bottom-to-top to close the gap
+%% 
 %% @todo
 %% <ul>
 %% <li>keep the cell formulae/values but delete all the formatting</li>
 %% <li>delete the attachment of a style to a cell/range</li>
 %% <li>delete an individual attribute of a cell/range</li>
+%% <li>delete a page/a page with sub-pages</li>
 %% </ul>
-%% this clause deletes a cell or range and closes up the rest of them
-%% if Disp is Horizontal it moves cells right-to-left to close the gap
-%% if Disp is vertical is moves cells bottom-to-top to close the gap
-delete(#ref{ref = {R, _}} = Ref, horizontal) when R == cell orelse R == range ->
+delete(#refX{obj = {R, _}} = RefX, horizontal) when R == cell orelse R == range ->
     Fun =
         fun() ->
-                hn_db_wu:shift(Ref, horizontal, delete)
+                hn_db_wu:shift(RefX, horizontal, delete)
         end,
     mnesia:activity(transaction, Fun);
-delete(#ref{ref = {R, _}} = Ref, vertical) when R == cell orelse R == range ->
+delete(#refX{obj = {R, _}} = RefX, vertical) when R == cell orelse R == range ->
     Fun =
         fun() ->
-                hn_db_wu:shift(Ref, vertical, delete)
+                hn_db_wu:shift(RefX, vertical, delete)
         end,
     mnesia:activity(transaction, Fun);
 %%
@@ -141,33 +158,33 @@ delete(#ref{ref = {R, _}} = Ref, vertical) when R == cell orelse R == range ->
 %% * styles
 %% * user-defined attributes
 %% * etc, etc
-delete(#ref{ref = {range, {X1, Y1, X2, Y2}} = Ref}, contents) ->
-    List = range_to_list(Ref, X1, Y1, X2, Y2),
+delete(#refX{obj = {range, _} = RefX}, contents) ->
+    List = hn_util:range_to_list(RefX),
     Fun =
         fun() ->
                 hn_db_wu:delete_list(List, contents)
         end,
     mnesia:activity(transaction, Fun);
-delete(#ref{ref = {cell, _}} = Ref, contents) ->
+delete(#refX{obj = {cell, _}} = RefX, contents) ->
     Fun =
         fun() ->
-                hn_db_wu:delete_cell(Ref, contents)
+                hn_db_wu:delete_cell(RefX, contents)
         end,
     mnesia:activity(transaction, Fun);
 %%
 %% these clauses delete everything from a cell or range but
 %% don't delete the cell or range itself
-delete(Ref = #ref{ref = {range, {X1, Y1, X2, Y2}}}, all) ->
-    List = range_to_list(Ref, X1, Y1, X2, Y2),
+delete(#refX{obj = {range, _}} = RefX, all) ->
+    List = hn_util:range_to_list(RefX),
     Fun =
         fun() ->
                 hn_db_wu:delete_list(List, all)
         end,
     mnesia:activity(transaction, Fun);
-delete(Ref = #ref{ref = {cell, _}}, all) ->
+delete(RefX = #refX{obj = {cell, _}} = RefX, all) ->
     Fun =
         fun() ->
-                hn_db_wu:delete_cell(Ref, all)
+                hn_db_wu:delete_cell(RefX, all)
         end,
     mnesia:activity(transaction, Fun).
 
@@ -177,50 +194,65 @@ delete(Ref = #ref{ref = {cell, _}}, all) ->
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% @spec cut_n_paste(From :: #ref{}, To :: #ref{}) -> ok
+%% @spec cut_n_paste(From :: #refX{}, To :: #refX{}) -> ok
 %% @doc copies the formula and formats from a cell or range and 
 %% pastes them to the destination then deletes the original
 %% (the difference between drag'n'drop
 %% and copy/cut'n'paste is that drag'n'drop increments)
 %% 
-%% Either <code>#ref{}</code> can be one of the following types:
-%% <ul><li>cell</li>
+%% Either <code>#refX{}</code> can be one of the following types:
+%% <ul>
+%% <li>cell</li>
 %% <li>row</li>
 %% <li>colum</li>
-%% <li>range</li></ul>
+%% <li>range</li>
+%% </ul>
 %% 
 %% If a range is to be cut'n'pasted to a range then one of the following criteria MUST
 %% true:
-%% <ul><li>the <b>from</b> range must be the same dimensions as the 
+%% <ul>
+%% <li>the <b>from</b> range must be the same dimensions as the 
 %% <b>to</b> range</li>
 %% <li>the <b>from</b> range must be one cell high and the same width as the 
 %% <b>to</b> range</li>
 %% <li>the <b>from</b> must be one cell wide and the same height as the
-%% <b>to</b> range</li></ul> 
+%% <b>to</b> range</li>
+%% </ul> 
 %% 
 %% @todo cut'n'paste a page
-cut_n_paste(From, To) ->
-    % _ supresses a warning
-    _ = case is_valid_c_n_p(From, To) of
-            {ok, single_cell}    -> copy_cut_drag_n_paste_drop(From, To, false);
-            {ok, 'onto self'}    -> {ok, ok};
-            {ok, cell_to_range}  -> copy_cut_drag_n_paste_drop2(From, To, false);
-            {ok, range_to_range} -> exit("erk!")
-        end,
-    delete(From, contents).
+cut_n_paste(From, To) when is_record(From, refX), is_record(To, refX) ->
+    Fun = fun() ->
+                  CellList = case is_valid_c_n_p(From, To) of
+                                 {ok, single_cell}    -> ok;
+                                 {ok, 'onto self'}    -> [];
+                                 {ok, cell_to_range}  -> copy_cut_drag_n_paste_drop2(From, To, false);
+                                 {ok, range_to_range} -> exit("erk!")
+                             end,
+                  % TODO should write CellList out n'est pas
+                  delete(From, contents)
+          end,
+    mnesia:activity(transaction, Fun).
+%    % _ supresses a warning
+%    _ = case is_valid_c_n_p(From, To) of
+%            {ok, single_cell}    -> copy_cut_drag_n_paste_drop(From, To, false);
+%            {ok, 'onto self'}    -> {ok, ok};
+%            {ok, cell_to_range}  -> copy_cut_drag_n_paste_drop2(From, To, false);
+%            {ok, range_to_range} -> exit("erk!")
+%        end,
+%    delete(From, contents).
 
-%% @spec copy_n_paste(From :: #ref{}, To :: #ref{}) -> ok
+%% @spec copy_n_paste(From :: #refX{}, To :: #refX{}) -> ok
 %% @doc copies the formula and formats from a cell or range and 
 %% pastes them to the destination (the difference between drag'n'drop
 %% and copy/cut'n'paste is that drag'n'drop increments)
 %% 
-%% Either <code>#ref{}</code> can be one of the following types:
+%% Either <code>#refX{}</code> can be one of the following types:
 %% <ul><li>cell</li>
 %% <li>row</li>
 %% <li>colum</li>
 %% <li>range</li></ul>
 %% @todo copy'n'paste a page
-copy_n_paste(From, To) ->
+copy_n_paste(From, To) when is_record(From, refX), is_record(To, refX) ->
     case is_valid_c_n_p(From, To) of
         {ok, single_cell}    -> copy_cut_drag_n_paste_drop(From, To, false);
         {ok, 'onto self'}    -> {ok, ok};
@@ -228,7 +260,7 @@ copy_n_paste(From, To) ->
         {ok, range_to_range} -> exit("erk!")
     end.
 
-%% @spec drag_n_drop(From :: #ref{}, To :: #ref{}) -> ok
+%% @spec drag_n_drop(From :: #refX{}, To :: #refX{}) -> ok
 %% @doc takes the formula and formats from a cell and drag_n_drops 
 %% them over a destination (the difference between drag'n'drop
 %% and copy/cut'n'paste is that drag'n'drop increments)
@@ -275,7 +307,7 @@ copy_n_paste(From, To) ->
 %% 
 %% <code>1 Product               2 Product, 3 Product</code>
 %% 
-%% Either <code>#ref{}</code> can be one of the following types:
+%% Either <code>#refX{}</code> can be one of the following types:
 %% <ul><li>cell</li>
 %% <li>row</li>
 %% <li>colum</li>
@@ -289,7 +321,7 @@ copy_n_paste(From, To) ->
 %% <b>to</b> range</li>
 %% <li>the <b>from</b> must be the same height as the
 %% <b>to</b> range</li></ul> 
-drag_n_drop(From, To) ->
+drag_n_drop(From, To) when is_record(From, refX), is_record(To, refX) ->
     case is_valid_d_n_d(From, To) of
         {ok, single_cell, Incr}   -> copy_cut_drag_n_paste_drop(From, To, Incr);
         {ok, 'onto self', _Incr}  -> {ok, ok};
@@ -305,37 +337,37 @@ drag_n_drop(From, To) ->
 %% this can only be true for a vertical or horizontal drag (returning 'y' and 'x')
 %% or is otherwise false
 %% cell to cell drag'n'drop
-is_valid_d_n_d(#ref{ref = {cell, A}}, #ref{ref = {cell, A}}) ->
+is_valid_d_n_d(#refX{obj = {cell, A}}, #refX{obj = {cell, A}}) ->
     {ok, 'onto self', false};
-is_valid_d_n_d(#ref{ref = {cell, {X, _Y1}}}, #ref{ref = {cell, {X, _Y2}}}) ->
+is_valid_d_n_d(#refX{obj = {cell, {X, _Y1}}}, #refX{obj = {cell, {X, _Y2}}}) ->
     {ok, single_cell, y};
-is_valid_d_n_d(#ref{ref = {cell, {_X1, Y}}}, #ref{ref = {cell, {_X2, Y}}}) ->
+is_valid_d_n_d(#refX{obj = {cell, {_X1, Y}}}, #refX{obj = {cell, {_X2, Y}}}) ->
     {ok, single_cell, x};
-is_valid_d_n_d(#ref{ref = {cell, _}}, #ref{ref = {cell, _}}) ->
+is_valid_d_n_d(#refX{obj = {cell, _}}, #refX{obj = {cell, _}}) ->
     {ok, single_cell, false};
 %% cell to range drag'n'drop
-is_valid_d_n_d(#ref{ref = {cell, _}}, #ref{ref = {range, {TX, _TY1, TX, _TY2}}}) ->
+is_valid_d_n_d(#refX{obj = {cell, _}}, #refX{obj = {range, {TX, _TY1, TX, _TY2}}}) ->
     {ok, cell_to_range, y};
-is_valid_d_n_d(#ref{ref = {cell, _}}, #ref{ref = {range, {_TX1, TY, _TX2, TY}}}) ->
+is_valid_d_n_d(#refX{obj = {cell, _}}, #refX{obj = {range, {_TX1, TY, _TX2, TY}}}) ->
     {ok, cell_to_range, x};
-is_valid_d_n_d(#ref{ref = {cell, _}}, #ref{ref = {range, _}}) ->
+is_valid_d_n_d(#refX{obj = {cell, _}}, #refX{obj = {range, _}}) ->
     {ok, cell_to_range, false};
 %% range to range drag'n'drop
-is_valid_d_n_d(#ref{ref = {range, Range}}, #ref{ref = {range, Range}}) ->
+is_valid_d_n_d(#refX{obj = {range, Range}}, #refX{obj = {range, Range}}) ->
     {ok, 'onto self', false};
-is_valid_d_n_d(#ref{ref = {range, {FX, FY1, FX, FY2}}}, #ref{ref = {range, TRange}}) ->
+is_valid_d_n_d(#refX{obj = {range, {FX, FY1, FX, FY2}}}, #refX{obj = {range, TRange}}) ->
     {_TX1, TY1, _TX2, TY2} = TRange,
     case ((TY2 - TY1) - (FY2 - FY1)) of
         0    -> {ok, col_range_to_range};
         true -> {error, "target range is not the same height as the source range"}
     end;
-is_valid_d_n_d(#ref{ref = {range, {FX1, FY, FX2, FY}}}, #ref{ref = {range, TRange}}) ->
+is_valid_d_n_d(#refX{obj = {range, {FX1, FY, FX2, FY}}}, #refX{obj = {range, TRange}}) ->
     {TX1, _TY1, TX2, _TY2} = TRange,
     case ((TX2 - TX1) - (FX2 - FX1)) of
         0    -> {ok, row_range_to_range};
         true -> {error, "target range is not the same width as the source range"}
     end;
-is_valid_d_n_d(#ref{ref = {range, _}}, #ref{ref = {range, _}}) ->
+is_valid_d_n_d(#refX{obj = {range, _}}, #refX{obj = {range, _}}) ->
     {error, "from range is invalid"};
 is_valid_d_n_d(_, _) -> {error, "not valid either"}.
 
@@ -350,21 +382,23 @@ fl([{_, {ref, _, _, _, '__ast', _}, _}| T], A, B)            -> fl(T, A, B);
 fl([{_, {ref, _, _, _, formula, _}, F}| T], A, B)            -> fl(T, [F | A], B);
 fl([H | T], A, B)                                            -> fl(T, A, [H | B]).
 
-copy_cut_drag_n_paste_drop(From, To, Incr) ->
+copy_cut_drag_n_paste_drop(From, To, Incr) when is_record(From, refX),
+                                                is_record(To, refX) ->
     FromList = hn_db:get_item(From),
     {Contents, FilteredList} = filter_for_drag_n_drop(FromList),
     Output = case Contents of
                  [Contents2] -> superparser:process(Contents2);
                  []          -> ""
              end,
-    #ref{ref = {cell, {FX, FY}}} = From,
-    #ref{ref = {cell, {TX, TY}}} = To,
+    #refX{obj = {cell, {FX, FY}}} = From,
+    #refX{obj = {cell, {TX, TY}}} = To,
     case Output of
         {formula, Formula} ->
             {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {FX, FY}),
             NewToks = offset(Toks, (TX - FX), (TY - FY)),
             NewFormula = make_formula(NewToks),
-            hn_main:set_cell(To#ref{name=formula}, NewFormula);
+            % hn_main:set_cell(To#refX{name=formula}, NewFormula); % Fix Me!
+            exit("Fix me!");
         [{Type, V},  _A, _F] ->
             V2 = case Incr of
                      false ->
@@ -379,7 +413,8 @@ copy_cut_drag_n_paste_drop(From, To, Incr) ->
                              _        -> tconv:to_s(V)
                          end
                  end,
-            hn_main:set_cell(To#ref{name=formula}, V2);
+            exit("Fix me 2!");
+            % hn_main:set_cell(To#refX{name=formula}, V2); % Fix me!
         []  -> delete(To, all)
     end,
     % You want to copy the attributes AFTER setting the value
@@ -389,17 +424,17 @@ copy_cut_drag_n_paste_drop(From, To, Incr) ->
     {ok, ok} = hn_db_wu:copy_attributes(FilteredList, To),
     ok.
 
-copy_cut_drag_n_paste_drop2(From, To, Incr) ->
-    #ref{ref = {range, {X1, Y1, X2, Y2}}} = To,
-    List = range_to_list(To, X1, Y1, X2, Y2),
+copy_cut_drag_n_paste_drop2(From, To, Incr) when is_record(From, refX),
+                                                 is_record(To, refX) ->
+    List = hn_util:range_to_list(To),
     lists:map(fun(X) -> copy_cut_drag_n_paste_drop(From, X, Incr) end, List).
 
-is_valid_c_n_p(#ref{ref = {cell, _}}, #ref{ref = {cell, _}})  ->
+is_valid_c_n_p(#refX{obj = {cell, _}}, #refX{obj = {cell, _}})  ->
     {ok, single_cell};
-is_valid_c_n_p(#ref{ref = {cell, _}}, #ref{ref = {range, _}}) ->
+is_valid_c_n_p(#refX{obj = {cell, _}}, #refX{obj = {range, _}}) ->
     {ok, cell_to_range};
-is_valid_c_n_p(#ref{ref = {range, {FX1, FY1, FX2, FY2}}},
-               #ref{ref = {range, {TX1, TY1, TX2, TY2}}}) ->
+is_valid_c_n_p(#refX{obj = {range, {FX1, FY1, FX2, FY2}}},
+               #refX{obj = {range, {TX1, TY1, TX2, TY2}}}) ->
     % two ranges for copy'n'paste (and cut'n'paste) must be the same shape
     X = TX2 - TX1,
     Y = TY2 - TY1,
@@ -408,19 +443,7 @@ is_valid_c_n_p(#ref{ref = {range, {FX1, FY1, FX2, FY2}}},
         _Other -> exit(invalid_range)
     end.
 
-rectify_range(X1, Y1, X2, Y2) ->
-    % in case the range is passed in arsey-backwards
-    {X1a, X2a} = if
-                     X1 < X2 -> {X1, X2};
-                     true    -> {X2, X1}
-                 end,
-    {Y1a, Y2a} = if
-                     Y1 < Y2 -> {Y1, Y2};
-                     true    -> {Y2, Y1}
-                 end,
-    {X1a, Y1a, X2a, Y2a}.
-
-shift(Ref, Disp, Type)->
+shift(RefX, Disp, _Type) when is_record(RefX, refX) ->
     % single mnesia transaction
     % 
     % The process is:
@@ -432,11 +455,11 @@ shift(Ref, Disp, Type)->
     % Need to do funny stuff with remote hypernumbers...
 
     % io:format("in shift Ref is ~p Disp is ~p Type is ~p~n", [Ref, Disp, Type]),
-    #ref{site = Site, path = Path, ref = {Range, R}} = Ref,
+    #refX{site = Site, path = Path, obj = {Range, R}} = RefX,
 
     % get the 'ShiftedCells'
-    Ref2 = Ref#ref{ref = {cell, {'$1', '$2'}}, name = '_', auth  = '_'},
-    Head = ms_util:make_ms(hn_item, [{addr, Ref2}]),
+    RefX2 = RefX#refX{obj = {cell, {'$1', '$2'}},  auth  = '_'},
+    Head = ms_util:make_ms(hn_item, [{addr, RefX2}]),
     % Cond selects the cells to be 'adjusted' and Offset 
     % determines how they are to be 'adjusted'
     {Cond, Offset}
@@ -532,18 +555,6 @@ mk_f([{H} | T], Acc)                 -> mk_f(T, [atom_to_list(H) | Acc]).
 diff( FX, _FY,  TX, _TY, x) -> TX - FX;
 diff(_FX,  FY, _TX,  TY, y) -> TY - FY.
 
-range_to_list(Ref, X1, Y1, X2, Y2) ->
-    {X1a, Y1a, X2a, Y2a} = rectify_range(X1, Y1, X2, Y2),
-    range_to_list(Ref, X1a, X1a, Y1a, X2a, Y2a, []).
-
-range_to_list(Ref, _Reset, X, Y, X, Y, Acc) -> [Ref#ref{ref = {cell, {X, Y}}} | Acc];
-range_to_list(Ref, Reset, X2, Y1, X2, Y2, Acc) ->
-    range_to_list(Ref, Reset, Reset, Y1+1, X2, Y2,
-                  [Ref#ref{ref = {cell, {X2, Y1}}} | Acc]);
-range_to_list(Ref, Reset, X1, Y1, X2, Y2, Acc) ->
-    range_to_list(Ref, Reset, X1 + 1, Y1, X2, Y2,
-                  [Ref#ref{ref = {cell, {X1, Y1}}} | Acc]).
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                            %%
 %% Debugging interfaces                                                       %%
@@ -578,7 +589,7 @@ delete_cell_contents_DEBUG(Path) ->
 
 %% @hidden
 clear_cells_DEBUG(Site, Path) ->
-    Target = #ref{site = Site, path = Path, ref = {range, {1, 1, 30, 30}}},
+    Target = #refX{site = Site, path = Path, obj = {range, {1, 1, 30, 30}}},
     delete(Target, all).
 
 %% @hidden
@@ -931,24 +942,25 @@ copy_DEBUG2(FunName) ->
 
 insert_delete(Fun, Path, Target) ->
     Site = "http://127.0.0.1:9000",
-    Ref = #ref{site = Site, path = Path, ref = Target},
+    Ref = #refX{site = Site, path = Path, obj = Target},
     erlang:apply(?MODULE, list_to_atom(Fun), [Ref]).
 
 insert_delete(Fun, Path, Target, Type) ->
     Site = "http://127.0.0.1:9000",
-    Ref = #ref{site = Site, path = Path, ref = Target},
+    Ref = #refX{site = Site, path = Path, obj= Target},
     erlang:apply(?MODULE, list_to_atom(Fun), [Ref, Type]).
 
 cut_n_drag_n_copy_n_drop_n_paste(Path, From, To) ->
     Site = "http://127.0.0.1:9000",
-    From1 = #ref{site =  Site, path = Path, ref = From},
-    To1 = #ref{site =  Site, path = Path, ref = To},
+    From1 = #refX{site =  Site, path = Path, obj = From},
+    To1   = #refX{site =  Site, path = Path, obj = To},
     erlang:apply(?MODULE, list_to_atom(Path), [From1, To1]).
 
 %% choose the site to write to
 write_value(Site, Path, Value, {X, Y}, Attributes) ->
-    Cell = #ref{site = Site, path = Path, ref = {cell, {X, Y}}},
-    hn_main:set_cell(Cell#ref{name=formula}, Value),
+    Cell = #refX{site = Site, path = Path, obj = {cell, {X, Y}}},
+    exit("Fix me 3!"),
+    % hn_main:set_cell(Cell#refX{name = formula}, Value), % Fix me!
     write_attributes(Attributes, {X, Y}, Cell).
 
 %% just write to the default
@@ -972,18 +984,18 @@ write_attributes([Attr | T], {X, Y}, Cell) ->
 
 colour(Path, {X, Y}, Colour) ->
     Site = "http://127.0.0.1:9000",
-    Cell = #ref{site = Site, path = Path, ref = {cell, {X, Y}}},
+    Cell = #refX{site = Site, path = Path, obj = {cell, {X, Y}}},
     write_attributes([{colour, Colour}], {X, Y}, Cell).
 
 make_thin(Path, X) ->
     Site = "http://127.0.0.1:9000",
-    Ref = #ref{site = Site, path = Path, ref = {column, X}, name = width},
-    hn_main:set_attribute(Ref, "20").
+    % RefX = #refX{site = Site, path = Path, ob = {column, X}, name = width},
+    hn_main:set_attribute("RefX", "20").
 
 make_thick(Path, X) ->
     Site = "http://127.0.0.1:9000",
-    Ref = #ref{site = Site, path = Path, ref = {column, X}, name = width},
-    hn_main:set_attribute(Ref, "200").
+    % RefX = #refX{site = Site, path = Path, obj = {column, X}, name = width},
+    hn_main:set_attribute("RefX", "200").
 
 write_data(Path) ->
     Site = "http://127.0.0.1:9000",
