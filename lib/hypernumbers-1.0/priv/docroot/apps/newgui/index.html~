@@ -6,11 +6,24 @@
 
         <title>JQuery.Spreadsheet UI</title>
 
+        <script type="text/javascript" src="/js/jquery.js"></script>
+
+        <script type="text/javascript" src="/js/jquery.mousewheel.js"></script>
+        <script type="text/javascript" src="/js/jquery.textbox.js"></script>
+        <script type="text/javascript" src="/js/new.jquery.spreadsheet.js"></script>
+
         <style type="text/css">
-            @import "/apps/newgui/hn.grid.css";
+       
+            @import "/css/new.jquery.spreadsheet.css";
+
         </style>
 
-        <script src="/apps/newgui/hn.grid.js"></script>
+        <script type="text/javascript">
+          $(function()
+          {      
+          var spreadsheet = new SpreadSheet("hn");
+          });
+        </script>
 
     </head>
 
@@ -23,29 +36,13 @@
       <input type="text" id="formula"/>
     </div>
     <div class="sheetwrapper">
+      <div id="cells"></div>
       <div id="corner"></div>
       <div id="columns"></div>
       <div id="rows"></div>
-      <div id="data">
-        <div id="scroller"></div>
-        <div id="scrollbar-right">
-          <div id="up">↑</div>
-          <div id="right-bar"></div>
-          <div id="down">↓</div>
-        </div>
-        <div id="scrollbar-bottom">
-          <div id="left">←</div>
-          <div id="bottom-bar"></div>
-          <div id="right">→</div>
-        </div>
-      </div>
+      <div id="data"><div id="scroller"></div></div>
     </div>
   </div>
 </body>
-
-<script type="text/javascript">
-  new HN.SpreadSheet("hn");
-</script>
-
   
 </html>
