@@ -462,7 +462,7 @@ set_formats(CellRef,XFIndex,Tables) ->
                 [] -> ok;
                 _  -> lists:append([List3, BorderCSS])
     end,
-    StyleRecord = ms_util:make_record(style, List4),
+    StyleRecord = ms_util:make_record(magic_style, List4),
     ?write(Tables, css, [CellRef, StyleRecord]),
     {ok, ok}.
 
