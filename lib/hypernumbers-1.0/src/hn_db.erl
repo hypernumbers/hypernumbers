@@ -77,8 +77,8 @@ write_item(Addr,Val) when is_record(Addr,ref) ->
     % NOTE the attribute 'overwrite-color' isn't in this case statement 
     % it would APPEAR to be a CSS style, but it actually isn't 
     %  
-    case ms_util2:is_in_record(style, Name) of 
-        true  -> process_styles(Addr#ref{name = style}, {Name, Val}); 
+    case ms_util2:is_in_record(magic_style, Name) of 
+        true  -> process_styles(Addr#ref{name = magic_style}, {Name, Val}); 
         false -> Fun  = 
                      fun()-> mnesia:write(Item) 
                      end, 
@@ -687,9 +687,9 @@ notify_remove(#hn_item{addr=#ref{site=Site,path=Path,ref=Ref,name=Name}}) ->
     ok.
 
 get_style(Addr, Name, Val) -> 
-    NoOfFields = ms_util2:no_of_fields(style), 
-    Index = ms_util2:get_index(style, Name), 
-    Style = make_tuple(style, NoOfFields, Index, Val), 
+    NoOfFields = ms_util2:no_of_fields(magic_style), 
+    Index = ms_util2:get_index(magic_style, Name), 
+    Style = make_tuple(magic_style, NoOfFields, Index, Val), 
     % Now write the style 
     write_style(Addr, Style). 
 
@@ -702,8 +702,8 @@ get_style(Addr, Style, Name, Val) ->
                   mnesia:match_object(styles, Match, read) 
           end, 
     Return = mnesia:activity(async_dirty, Fun), 
-    [#styles{style = CurrentStyle}] = Return, 
-    Index = ms_util2:get_index(style, Name), 
+    [#styles{magic_style = CurrentStyle}] = Return, 
+    Index = ms_util2:get_index(magic_style, Name), 
     Style2 = tuple_to_list(CurrentStyle), 
     {Start, [_H | End]} = lists:split(Index, Style2), 
     NewStyle = list_to_tuple(lists:append([Start, [Val], End])), 
@@ -715,7 +715,7 @@ get_style(Addr, Style, Name, Val) ->
 write_style(Addr, Style) -> 
     Ref = Addr#ref{ref = {page, "/"}, name = style, auth = []}, 
     Fun1 = fun() -> 
-                   Match = #styles{ref = Ref, style = Style, _ = '_'}, 
+                   Match = #styles{ref = Ref, magic_style = Style, _ = '_'}, 
                    mnesia:match_object(styles, Match, read) 
            end, 
     case mnesia:activity(async_dirty, Fun1) of 
@@ -728,7 +728,8 @@ write_style2(Addr, Style) ->
     Ref = Addr#ref{ref = {page, "/"}, name = style, auth = []}, 
     NewIndex = mnesia:dirty_update_counter(style_counters, Ref, 1), 
     Fun = fun() -> 
-                  mnesia:write(#styles{ref = Ref, index = NewIndex, style = Style}) 
+                  mnesia:write(#styles{ref = Ref, index = NewIndex,
+                                       magic_style = Style}) 
           end, 
     ok = ?mn_ac(async_dirty, Fun), 
     NewIndex. 
