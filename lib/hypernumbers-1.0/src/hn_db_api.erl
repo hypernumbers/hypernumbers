@@ -30,14 +30,14 @@
         end()).
 
 -export([
-         % write_attribute/2,
+         write_attributes/2,
+         write_last/1,
          % write_permission/2,
          % write_style/2,
-         % write_cell/2,
          % read_attribute/1,
          % read_rawvalue/1,
          % read_value/1,
-         % read/1,
+         read/1,
          % read_page/1,
          % read_style/1,
          % read_permissions/1,
@@ -71,6 +71,85 @@
 %% API Interfaces                                                             %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% @spec write_attributes(RefX :: #refX{}, List) -> {ok, ok} 
+%% List = [{Key, Value}]
+%% Key = atom()
+%% Value = term()
+%% @doc writes out all the attributes in the list to the RefX which can be
+%% one of:
+%% <ul>
+%% <li>a cell</li>
+%% <li>a range</li>
+%% </ul>
+write_attributes(RefX, List) when is_record(RefX, refX), is_list(List) ->
+    Fun = fun() ->
+                  [hn_db_wu:write_attr(RefX, X) || X <- List]
+          end,
+    mnesia:activity(Fun).
+
+%% @spec write_last(List) -> {ok, ok}
+%% List = [{#refX{}, Val}]
+%% Val = [list() | float() | integer()]
+%% @doc takes a list of #refX{}'s all of which must be either a:
+%% <ul>
+%% <li>column</li>
+%% <li>row</li>
+%% </ul>
+%% They must also be on the same page
+%% It will write the values to the last row/column as if they were
+%% 'formula' attributes
+write_last(List) when is_list(List) ->
+    io:format("in hn_db_api:write_last List is ~p~n", [List]),
+    [{#refX{site = S, path = P, obj = O} = RefX, _} | T] = List,
+    Fun =
+        fun() ->
+                io:format("in Fun~n"),
+                {LastCol, LastRow} = hn_db_wu:get_last(RefX),
+                % Add 1 to because we are adding data 'as the last row'
+                % (or column) ie one more than the current last row/column
+                {Type, Pos} = case O of
+                                  {row, _}    -> {row,    LastRow + 1};
+                                  {column, _} -> {column, LastCol + 1}
+                              end,
+                % now convert the column or row references to cell references
+                
+                % The matches in the Fun ensure that all the cells are the same
+                % page and are row or column references as appropriate 
+                Fun1 =
+                    fun({#refX{site = S, path = P, obj = {Type, Idx}}, Val})  ->
+                            io:format("in Fun1~n"),
+                               Obj = case Type of
+                                         row    -> {cell, {Pos, Idx}};
+                                         column -> {cell, {Idx, Pos}}
+                                     end,
+                            RefX2 = #refX{site = S, path = P, obj = Obj},
+                            io:format("in hn_db_api:write_last RefX2 is ~p~n",
+                                      [RefX2]),
+                            hn_db_wu:write_attr(RefX2, {formula, Val})
+                    end,
+                [Fun1(X) || X <- List]
+        end,
+    Return = mnesia:activity(transaction, Fun),
+    io:format("mnesia returned with ~p~n", [Return]),
+    {ok, ok}.
+
+%% @spec read(#refX{}) -> [{#refX{}, {Key, Value}}]
+%% Key = atom()
+%% Value = term()
+%% @doc read takes a refererence which can be one of a:
+%% <ul>
+%% <li>cell</li>
+%% <li>range</li>
+%% <li>column</li>
+%% <li>row</li>
+%% <li>page</li>
+%% </ul>
+read(RefX) when is_record(RefX, refX) ->
+    io:format("in hn_db_api:read RefX is ~p~n", [RefX]),
+    Fun = fun() ->
+                  hn_db_wu:read_attrs(RefX)
+          end,
+    mnesia:activity(transaction, Fun).
 
 %% @spec insert(RefX :: #refX{}) -> ok
 %% @doc inserts a column,a row or page
@@ -90,7 +169,8 @@ insert(#refX{obj = {R, _}} = RefX) when R == row orelse R == column  ->
         end,
     mnesia:activity(transaction, Fun).
 
-%% @spec insert(RefX :: #refX{}, Type) -> ok Type = [horizontal | vertical]
+%% @spec insert(RefX :: #refX{}, Type) -> ok 
+%% Type = [horizontal | vertical]
 %% @doc inserts a cell or range
 %% 
 %% The <code>#refX{}</code> can be one of the following types:
@@ -116,7 +196,8 @@ delete(#refX{obj = {R, _}} = RefX) when R == column orelse R == row ->
         end,
     mnesia:activity(transaction, Fun).
 
-%% @spec delete(RefX :: #refX{}, Type) -> ok Type = [contents | all | horizontal | vertical]
+%% @spec delete(RefX :: #refX{}, Type) -> ok
+%% Type = [contents | all | horizontal | vertical]
 %% @doc deletes the value (but not any formatting information) of
 %% <ul>
 %% <li>a cell</li>
@@ -333,9 +414,9 @@ drag_n_drop(From, To) when is_record(From, refX), is_record(To, refX) ->
 %% Internal Functions                                                         %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% the last parameter returned is whether dates and integers should be incremented
-%% this can only be true for a vertical or horizontal drag (returning 'y' and 'x')
-%% or is otherwise false
+%% the last parameter returned is whether dates and integers should be 
+%% incremented this can only be true for a vertical or horizontal drag
+%% (returning 'y' and 'x') or is otherwise false
 %% cell to cell drag'n'drop
 is_valid_d_n_d(#refX{obj = {cell, A}}, #refX{obj = {cell, A}}) ->
     {ok, 'onto self', false};
