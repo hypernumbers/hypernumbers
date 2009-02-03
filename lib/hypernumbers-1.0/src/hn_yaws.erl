@@ -1,6 +1,15 @@
-%% @author Dale Harvey
-%% @copyright 2008 Hypernumbers Ltd
-%% @doc Handle Hypernumbers HTTP requests
+%%% @author Dale Harvey
+%%% @copyright 2008 Hypernumbers Ltd
+%%% @doc Handle Hypernumbers HTTP requests
+%%% @ TODO we use atoms for keys in {key, value} pairs of attributes
+%%% which is then used in atom_to_list for checking if they are private.
+%%% This is a memory leak! See also hn_db_wu.erl.erl
+%%% Also we should sanity check user input in this module - what I am
+%%% thinking about is user-provided ranges which we ought to use
+%%% hn_util:rectify_range on from the get-go, eg:
+%%% {range, {99, 99, 1, 1}} rectifies to {range, {1, 1, 99, 99}}
+%%% 'cos we assume that the range is top-left/bottom-right in hunnerds
+%%% of algorithms (can never spell that word!)
 
 -module(hn_yaws).
 
