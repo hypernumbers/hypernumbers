@@ -29,23 +29,20 @@
                 {atomic,ok} = mnesia:create_table(Name, Attr)
         end()).
 
+-export([get_tiles_DEBUG/0]). % Debugging
+
 -export([
          write_attributes/2,
          write_last/1,
          % write_permission/2,
          % write_style/2,
-         % read_attribute/1,
-         % read_rawvalue/1,
-         % read_value/1,
+         read_attributes/2,
          read/1,
-         % read_page/1,
          % read_style/1,
          % read_permissions/1,
-         % updates
          % update_style/2,
-         % recalculate_cell/1,
-         % recalculate_range/1,
-         % reformat_cell/1,
+         recalculate/1,
+         reformat/1,
          drag_n_drop/2,
          copy_n_paste/2,
          cut_n_paste/2,
@@ -53,7 +50,9 @@
          insert/1,
          insert/2,
          delete/1,
-         delete/2
+         delete/2,
+         clear/1,
+         clear/2
          % delete_permission/1,
          % delete_style/1
         ]).
@@ -85,7 +84,7 @@ write_attributes(RefX, List) when is_record(RefX, refX), is_list(List) ->
     Fun = fun() ->
                   [hn_db_wu:write_attr(RefX, X) || X <- List]
           end,
-    mnesia:activity(Fun).
+    mnesia:activity(transaction, Fun).
 
 %% @spec write_last(List) -> {ok, ok}
 %% List = [{#refX{}, Val}]
@@ -112,16 +111,16 @@ write_last(List) when is_list(List) ->
                                   {column, _} -> {column, LastCol + 1}
                               end,
                 % now convert the column or row references to cell references
-                
+
                 % The matches in the Fun ensure that all the cells are the same
                 % page and are row or column references as appropriate 
                 Fun1 =
                     fun({#refX{site = S, path = P, obj = {Type, Idx}}, Val})  ->
                             io:format("in Fun1~n"),
-                               Obj = case Type of
-                                         row    -> {cell, {Pos, Idx}};
-                                         column -> {cell, {Idx, Pos}}
-                                     end,
+                            Obj = case Type of
+                                      row    -> {cell, {Pos, Idx}};
+                                      column -> {cell, {Idx, Pos}}
+                                  end,
                             RefX2 = #refX{site = S, path = P, obj = Obj},
                             io:format("in hn_db_api:write_last RefX2 is ~p~n",
                                       [RefX2]),
@@ -132,6 +131,25 @@ write_last(List) when is_list(List) ->
     Return = mnesia:activity(transaction, Fun),
     io:format("mnesia returned with ~p~n", [Return]),
     {ok, ok}.
+
+%% @spec read_attributes(#refX{}, AttrList) -> {#refX{}, Val}
+%% AttrList = [atom()]
+%% Val = term()
+%% @doc Given a reference and the name of an attribute, returns the reference
+%% and the value of that attribute. The reference can point to a:
+%% <ul>
+%% <li>cell</li>
+%% <li>range</li>
+%% <li>column</li>
+%% <li>row</li>
+%% <li>page</li>
+%% </ul>
+read_attributes(RefX, AttrList) when is_record(RefX, refX),
+                                     is_list(AttrList) ->
+    Fun = fun() ->
+                  hn_db_wu:read_attrs(RefX, AttrList)
+          end,
+    mnesia:activity(transaction, Fun).
 
 %% @spec read(#refX{}) -> [{#refX{}, {Key, Value}}]
 %% Key = atom()
@@ -148,6 +166,40 @@ read(RefX) when is_record(RefX, refX) ->
     io:format("in hn_db_api:read RefX is ~p~n", [RefX]),
     Fun = fun() ->
                   hn_db_wu:read_attrs(RefX)
+          end,
+    mnesia:activity(transaction, Fun).
+
+%% @spec recalculate(#refX{}) -> {ok, ok}
+%% @doc recalculates the cells refered to (and all cells that depend on them)
+%% The reference can be to a:
+%% <ul>
+%% <li>cell</li>
+%% <li>range</li>
+%% <li>column</li>
+%% <li>row</li>
+%% <li>page</li>
+%% </ul>
+recalculate(RefX) when is_record(RefX, refX) ->
+    Fun = fun() ->
+                  Cells = hn_db_wu:read_attrs(RefX, [formula]),
+                  [hn_db_wu:write_attr(X, Y) || {X, Y} <- Cells]
+          end,
+    mnesia:activity(transaction, Fun).
+
+%% @spec reformat(#refX{}) -> {ok, ok}
+%% @doc reformats the cells refered to (and all cells that depend on them)
+%% The reference can be to a:
+%% <ul>
+%% <li>cell</li>
+%% <li>range</li>
+%% <li>column</li>
+%% <li>row</li>
+%% <li>page</li>
+%% </ul>
+reformat(RefX) when is_record(RefX, refX) ->
+    Fun = fun() ->
+                  Cells = hn_db_wu:read_attrs(RefX, [format]),
+                  [hn_db_wu:write_attr(X, Y) || {X, Y} <- Cells]
           end,
     mnesia:activity(transaction, Fun).
 
@@ -184,7 +236,7 @@ insert(#refX{obj = {R, _}} = RefX, Disp) when R == cell orelse R == range ->
     mnesia:activity(transaction, Fun).
 
 %% @spec delete(Ref :: #refX{}) -> ok
-%% @doc deletes a column or a row
+%% @doc deletes a column or a row or a page
 delete(#refX{obj = {R, _}} = RefX) when R == column orelse R == row ->
     Disp = case R of
                row    -> vertical;
@@ -194,29 +246,27 @@ delete(#refX{obj = {R, _}} = RefX) when R == column orelse R == row ->
         fun() ->
                 hn_db_wu:shift(RefX, Disp, delete)
         end,
+    mnesia:activity(transaction, Fun);
+delete(#refX{obj = {page, _}} = RefX) ->
+    Fun = fun() ->
+                  hn_db_wu:delete(RefX)
+          end,
     mnesia:activity(transaction, Fun).
 
 %% @spec delete(RefX :: #refX{}, Type) -> ok
 %% Type = [contents | all | horizontal | vertical]
-%% @doc deletes the value (but not any formatting information) of
+%% @doc deletes a
 %% <ul>
-%% <li>a cell</li>
-%% <li>a row</li>
-%% <li>a column</li>
-%% <li>a range</li>
+%% <li>cell</li>
+%% <li>row</li>
+%% <li>column</li>
+%% <li>range</li>
 %% </ul>
 %% 
-%% This clause deletes a cell or range and closes up the rest of them
-%% if Disp is Horizontal it moves cells right-to-left to close the gap
-%% if Disp is vertical is moves cells bottom-to-top to close the gap
-%% 
-%% @todo
-%% <ul>
-%% <li>keep the cell formulae/values but delete all the formatting</li>
-%% <li>delete the attachment of a style to a cell/range</li>
-%% <li>delete an individual attribute of a cell/range</li>
-%% <li>delete a page/a page with sub-pages</li>
-%% </ul>
+%% For all refs except those to a page this function deletes the cells
+%% and closes up the rest of them. If Disp is Horizontal it moves 
+%% cells right-to-left to close the gap. If Disp is vertical is moves
+%% cells bottom-to-top to close the gap
 delete(#refX{obj = {R, _}} = RefX, horizontal) when R == cell orelse R == range ->
     Fun =
         fun() ->
@@ -228,44 +278,36 @@ delete(#refX{obj = {R, _}} = RefX, vertical) when R == cell orelse R == range ->
         fun() ->
                 hn_db_wu:shift(RefX, vertical, delete)
         end,
-    mnesia:activity(transaction, Fun);
-%%
-%% These clauses delete the contents of the cell or range
-%% but don't delete the cell or range itself, ie
-%% * formula
-%% * values
-%% but not the other attributes of the cell or range
-%% * format
-%% * styles
-%% * user-defined attributes
-%% * etc, etc
-delete(#refX{obj = {range, _} = RefX}, contents) ->
+    mnesia:activity(transaction, Fun).
+
+%% @spec clear(#refX{}) -> ok
+%% @doc same as clear(RefX, all).
+clear(RefX) when is_record(RefX, refX) ->
+    clear(RefX, all).
+
+%% @spec clear(#refX{}, Type) -> ok
+%% Type = [contents | style | all]
+%% @doc This function clears the contents of the cell or range
+%% (but doesn't delete the cell or range itself), ie
+%% If Type  = 'content' it clears:
+%% <ul>
+%% <li>formula</li>
+%% <li>values</li>
+%% </ul>
+%% If Type = 'style' it clears the style.
+%% If Type = 'all' it clears both style and content.
+%% It doesn't clear other/user-defined attributes of the cell or range
+clear(#refX{obj = {range, _} = RefX}, Type) ->
     List = hn_util:range_to_list(RefX),
     Fun =
         fun() ->
-                hn_db_wu:delete_list(List, contents)
+                hn_db_wu:delete_list(List, Type)
         end,
     mnesia:activity(transaction, Fun);
-delete(#refX{obj = {cell, _}} = RefX, contents) ->
+clear(#refX{obj = {cell, _}} = RefX, Type) ->
     Fun =
         fun() ->
-                hn_db_wu:delete_cell(RefX, contents)
-        end,
-    mnesia:activity(transaction, Fun);
-%%
-%% these clauses delete everything from a cell or range but
-%% don't delete the cell or range itself
-delete(#refX{obj = {range, _}} = RefX, all) ->
-    List = hn_util:range_to_list(RefX),
-    Fun =
-        fun() ->
-                hn_db_wu:delete_list(List, all)
-        end,
-    mnesia:activity(transaction, Fun);
-delete(RefX = #refX{obj = {cell, _}} = RefX, all) ->
-    Fun =
-        fun() ->
-                hn_db_wu:delete_cell(RefX, all)
+                hn_db_wu:delete_cell(RefX, Type)
         end,
     mnesia:activity(transaction, Fun).
 
@@ -306,21 +348,13 @@ cut_n_paste(From, To) when is_record(From, refX), is_record(To, refX) ->
                   CellList = case is_valid_c_n_p(From, To) of
                                  {ok, single_cell}    -> ok;
                                  {ok, 'onto self'}    -> [];
-                                 {ok, cell_to_range}  -> copy_cut_drag_n_paste_drop2(From, To, false);
+                                 {ok, cell_to_range}  -> copy2(From, To, false);
                                  {ok, range_to_range} -> exit("erk!")
                              end,
                   % TODO should write CellList out n'est pas
-                  delete(From, contents)
+                  hn_db_wu:clear_cells(From, contents)
           end,
     mnesia:activity(transaction, Fun).
-%    % _ supresses a warning
-%    _ = case is_valid_c_n_p(From, To) of
-%            {ok, single_cell}    -> copy_cut_drag_n_paste_drop(From, To, false);
-%            {ok, 'onto self'}    -> {ok, ok};
-%            {ok, cell_to_range}  -> copy_cut_drag_n_paste_drop2(From, To, false);
-%            {ok, range_to_range} -> exit("erk!")
-%        end,
-%    delete(From, contents).
 
 %% @spec copy_n_paste(From :: #refX{}, To :: #refX{}) -> ok
 %% @doc copies the formula and formats from a cell or range and 
@@ -335,10 +369,12 @@ cut_n_paste(From, To) when is_record(From, refX), is_record(To, refX) ->
 %% @todo copy'n'paste a page
 copy_n_paste(From, To) when is_record(From, refX), is_record(To, refX) ->
     case is_valid_c_n_p(From, To) of
-        {ok, single_cell}    -> copy_cut_drag_n_paste_drop(From, To, false);
+        {ok, single_cell}    -> copy(From, To, false);
         {ok, 'onto self'}    -> {ok, ok};
-        {ok, cell_to_range}  -> copy_cut_drag_n_paste_drop2(From, To, false);
-        {ok, range_to_range} -> exit("erk!")
+        {ok, cell_to_range}  -> copy2(From, To, false);
+        {ok, range_to_cell}  -> To2 = cell_to_range(To),
+                                copy3(From, To2, false);
+        {ok, range_to_range} -> copy3(From, To, false)
     end.
 
 %% @spec drag_n_drop(From :: #refX{}, To :: #refX{}) -> ok
@@ -404,9 +440,9 @@ copy_n_paste(From, To) when is_record(From, refX), is_record(To, refX) ->
 %% <b>to</b> range</li></ul> 
 drag_n_drop(From, To) when is_record(From, refX), is_record(To, refX) ->
     case is_valid_d_n_d(From, To) of
-        {ok, single_cell, Incr}   -> copy_cut_drag_n_paste_drop(From, To, Incr);
+        {ok, single_cell, Incr}   -> copy(From, To, Incr);
         {ok, 'onto self', _Incr}  -> {ok, ok};
-        {ok, cell_to_range, Incr} -> copy_cut_drag_n_paste_drop2(From, To, Incr)
+        {ok, cell_to_range, Incr} -> copy2(From, To, Incr)
     end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -414,6 +450,9 @@ drag_n_drop(From, To) when is_record(From, refX), is_record(To, refX) ->
 %% Internal Functions                                                         %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+cell_to_range(#refX{obj = {cell, {X, Y}}} = RefX) ->
+    RefX#refX{obj = {range, {X, Y, X, Y}}}.      
+
 %% the last parameter returned is whether dates and integers should be 
 %% incremented this can only be true for a vertical or horizontal drag
 %% (returning 'y' and 'x') or is otherwise false
@@ -463,8 +502,8 @@ fl([{_, {ref, _, _, _, '__ast', _}, _}| T], A, B)            -> fl(T, A, B);
 fl([{_, {ref, _, _, _, formula, _}, F}| T], A, B)            -> fl(T, [F | A], B);
 fl([H | T], A, B)                                            -> fl(T, A, [H | B]).
 
-copy_cut_drag_n_paste_drop(From, To, Incr) when is_record(From, refX),
-                                                is_record(To, refX) ->
+%% cell to cell
+copy(From, To, Incr) when is_record(From, refX), is_record(To, refX) ->
     FromList = hn_db:get_item(From),
     {Contents, FilteredList} = filter_for_drag_n_drop(FromList),
     Output = case Contents of
@@ -478,8 +517,7 @@ copy_cut_drag_n_paste_drop(From, To, Incr) when is_record(From, refX),
             {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {FX, FY}),
             NewToks = offset(Toks, (TX - FX), (TY - FY)),
             NewFormula = make_formula(NewToks),
-            % hn_main:set_cell(To#refX{name=formula}, NewFormula); % Fix Me!
-            exit("Fix me!");
+            {ok, ok} = hn_db_wu:write_attr(To, {formula, NewFormula});
         [{Type, V},  _A, _F] ->
             V2 = case Incr of
                      false ->
@@ -494,8 +532,7 @@ copy_cut_drag_n_paste_drop(From, To, Incr) when is_record(From, refX),
                              _        -> tconv:to_s(V)
                          end
                  end,
-            exit("Fix me 2!");
-            % hn_main:set_cell(To#refX{name=formula}, V2); % Fix me!
+            {ok, ok} = hn_db_wu:write_attr(To, {formula, V2});
         []  -> delete(To, all)
     end,
     % You want to copy the attributes AFTER setting the value
@@ -505,24 +542,105 @@ copy_cut_drag_n_paste_drop(From, To, Incr) when is_record(From, refX),
     {ok, ok} = hn_db_wu:copy_attributes(FilteredList, To),
     ok.
 
-copy_cut_drag_n_paste_drop2(From, To, Incr) when is_record(From, refX),
-                                                 is_record(To, refX) ->
+%% cell to range
+copy2(From, To, Incr) when is_record(From, refX), is_record(To, refX) ->
     List = hn_util:range_to_list(To),
-    lists:map(fun(X) -> copy_cut_drag_n_paste_drop(From, X, Incr) end, List).
+    lists:map(fun(X) -> copy(From, X, Incr) end, List).
+
+%% range to range
+copy3(From, To, Incr) when is_record(From, refX), is_record(To, refX) ->
+    % range to range copies are 'tiled'
+    TileList = get_tiles(From, To).
+
+get_tiles(#refX{obj = {range, {FX1, FY1, FX2, FY2}}} = From,
+          #refX{obj = {range, {TX1, TY1, TX2, TY2}}} = To) -> 
+    % this is a bit messy. Excel does the following things:
+    % * if both ranges are congruent - 1 tile
+    % * if the To range is smaller than the From range it writes the whole
+    %   From range as a block into the range whose top left is the same
+    %   as the To range - 1 tile
+    % * if the To range is an exact multipe of the from range it
+    %   tiles it
+    % * if the To range is one column wide and a the height is a multiple 
+    %   of the From range then it tiles the From range vertically
+    % * if the To range is one row high and the width is a multiple
+    %   of the From range then it tiles the From range horizontally
+    % * if the To range is not one of the above it writes the whole
+    %   block into the range whose top left is the same as the To range
+    FWidth  = FX2 - FX1 + 1,
+    FHeight = FY2 - FY1 + 1,
+    TWidth  = TX2 - TX1 + 1,
+    THeight = TY2 - TY1 + 1,
+    WidthMultiple = TWidth/FWidth - erlang:trunc(TWidth/FWidth),
+    WTile = case WidthMultiple of
+                0.0 -> erlang:trunc(TWidth/FWidth);
+                _   -> 1 
+            end,
+    HeightMultiple = THeight/FHeight - erlang:trunc(THeight/FHeight),
+    HTile = case HeightMultiple of
+                0.0 -> erlang:trunc(THeight/FHeight);
+                _   -> 1 
+            end,
+    io:format("in get_tiles~n-From is ~p~n-To is ~p~n", [From, To]),
+    io:format("in get_tiles FWidth is ~p FHeight is ~p TWidth is ~p THeight is ~p~n",
+              [FWidth, FHeight, TWidth, THeight]),
+    io:format("in get_tiles~nWidthMultiple is ~p~n-HeightMultiple is ~p~n",
+              [WidthMultiple, HeightMultiple]),
+    io:format("in get_tiles~n-WTile is ~p~n-HTile is ~p~n", [WTile, HTile]),
+    Return = get_tiles2(To, FWidth, FHeight, {WTile, HTile}),
+    io:format("in get_tiles Return is ~p~n", [Return]),
+    Return.
+
+get_tiles2(Ref, Width, Height, {WTile, HTile}) ->
+    get_tiles2(Ref, Width, Height, {1, 1}, {WTile, HTile}, []).
+
+%% has a special terminator for the single tile case
+%% the algorith relies on you zigzagging over the body of the kirk:
+%% * down the first column, increment the column, reset the row
+%% * down the next column
+%% * etc, etc,
+%% which can't happen if you have 1 column and 1 row
+get_tiles2(RefX, W, H, {WT, FT}, {WT, FT}, Acc) ->
+    #refX{obj = {range, {X, Y, _, _}}} = RefX,
+    SX = X + (WT - 1) * W,
+    SY = Y + (FT - 1) * H,
+    EX = SX + (W - 1),
+    EY = SY + (H - 1),
+    io:format("in get_tiles2 (1) SX is ~p SY is ~p EX is ~p EY is ~p~n",
+              [SX, SY, EX, EY]),
+    NewAcc = RefX#refX{obj = {range, {SX, SY, EX, EY}}},
+    [NewAcc | Acc];
+%get_tiles2(RefX, W, H, {WT, FT}, {WT, FT}, Acc) ->
+%    Acc;
+get_tiles2(RefX, W, H, {WT, M},  {WT, FT}, Acc) ->
+    #refX{obj = {range, {X, Y, _, _}}} = RefX,
+    SX = X + (WT - 1) * W,
+    SY = Y + (M - 1) * H,
+    EX = SX + (W - 1),
+    EY = SY + (H - 1),
+    io:format("in get_tiles2 (2) SX is ~p SY is ~p EX is ~p EY is ~p~n",
+              [SX, SY, EX, EY]),
+    NewAcc = RefX#refX{obj = {range, {SX, SY, EX, EY}}},
+    get_tiles2(RefX, W, H, {1, M + 1}, {WT, FT}, [NewAcc | Acc]);
+get_tiles2(RefX, W, H, {N, M},  {WT, FT}, Acc)  ->
+    #refX{obj = {range, {X, Y, _, _}}} = RefX,
+    SX = X + (N - 1) * W,
+    SY = Y + (M - 1) * H,
+    EX = SX + (W - 1),
+    EY = SY + (H - 1),
+    io:format("in get_tiles2 (3) SX is ~p SY is ~p EX is ~p EY is ~p~n",
+              [SX, SY, EX, EY]),
+    NewAcc = RefX#refX{obj = {range, {SX, SY, EX, EY}}},
+    get_tiles2(RefX, W, H, {N + 1, M}, {WT, FT}, [NewAcc | Acc]).
 
 is_valid_c_n_p(#refX{obj = {cell, _}}, #refX{obj = {cell, _}})  ->
     {ok, single_cell};
 is_valid_c_n_p(#refX{obj = {cell, _}}, #refX{obj = {range, _}}) ->
     {ok, cell_to_range};
-is_valid_c_n_p(#refX{obj = {range, {FX1, FY1, FX2, FY2}}},
-               #refX{obj = {range, {TX1, TY1, TX2, TY2}}}) ->
-    % two ranges for copy'n'paste (and cut'n'paste) must be the same shape
-    X = TX2 - TX1,
-    Y = TY2 - TY1,
-    case {FX2 - FX1, FY2 - FY1} of
-        {X, Y} -> {ok, range_to_range};
-        _Other -> exit(invalid_range)
-    end.
+is_valid_c_n_p(#refX{obj = {range, _}}, #refX{obj = {cell, _}}) ->
+    {ok, range_to_cell};
+is_valid_c_n_p(#refX{obj = {range, _}}, #refX{obj = {range, _}}) ->
+    {ok, range_to_range}.
 
 shift(RefX, Disp, _Type) when is_record(RefX, refX) ->
     % single mnesia transaction
@@ -1113,3 +1231,31 @@ write_data(Site, Path) ->
     write_value(Site, Path, "Y", {25, 1}, []),
     write_value(Site, Path, "Z", {26, 1}, []).
 
+get_tiles_DEBUG() ->
+    F1 = #refX{obj = {range, {1, 1, 2, 2}}},
+    F2 = #refX{obj = {range, {1, 1, 3, 3}}},
+    T1 = #refX{obj = {range, {1, 1, 3, 3}}},
+    T2 = #refX{obj = {range, {1, 1, 6, 6}}},
+    T3 = #refX{obj = {range, {1, 1, 3, 6}}},
+    T4 = #refX{obj = {range, {1, 1, 6, 3}}},
+
+    T5 = #refX{obj = {range, {1, 1, 1, 3}}},
+    T6 = #refX{obj = {range, {1, 3, 3, 3}}},
+    T7 = #refX{obj = {range, {2, 3, 4, 7}}},
+    T8 = #refX{obj = {range, {1, 1, 1, 1}}},
+
+    get_tiles(F1, T8),
+    io:format("**********************************~n"),
+    get_tiles(F2, T8),
+    io:format("**********************************~n"),
+    get_tiles(F2, T1),
+    io:format("**********************************~n"),   
+    get_tiles(F2, T2),
+    io:format("**********************************~n"),   
+    get_tiles(F2, T3),
+    io:format("**********************************~n"),   
+    get_tiles(F2, T4),  
+    io:format("**********************************~n"),   
+    get_tiles(F2, T7).    
+    
+    

@@ -52,8 +52,8 @@
          read_attrs/1,       % tested
          read_attrs/2,       % tested
          read_inherited/3,
-         delete_cells/1,
-         delete_cells/2,
+         clear_cells/1,
+         clear_cells/2,
          delete_attrs/2,
          shift_cells/2,
          copy_attributes/2,
@@ -335,18 +335,18 @@ shift_cells(RefX, Offset) ->
     {ok, ok} = shift_hypernumbers(RefX, Offset),
     {ok, ok}.
 
-%% @spec delete_cells(#refX{}) -> {ok, ok}
+%% @spec clear_cells(#refX{}) -> {ok, ok}
 %% @doc deletes the contents (formula/value) and the formats and attributes
 %% of a cell (but doesn't delete the cell itself)
 %%  
-%% The same as delete_cells(RefX, contents).
-delete_cells(RefX) when is_record(RefX, refX) ->
-    io:format("in delete_cells RefX is ~p~n", [RefX]),
-    delete_cells(RefX, contents).
+%% The same as clear_cells(RefX, contents).
+clear_cells(RefX) when is_record(RefX, refX) ->
+    io:format("in clear_cells RefX is ~p~n", [RefX]),
+    clear_cells(RefX, contents).
 
-%% @spec delete_cells(#refX{}, Type) -> {ok, ok} 
-%% Type = [contents | all]
-%% @doc deletes a cell or cells - behaviour depends on the value of type
+%% @spec clear_cells(#refX{}, Type) -> {ok, ok} 
+%% Type = [contents | style | all]
+%% @doc clears a cell or cells - behaviour depends on the value of type
 %% <ul>
 %% <li><code>contents</code> - deletes the formula/value but not the attributes
 %% or formats (or the cell itself)</li>
@@ -365,15 +365,19 @@ delete_cells(RefX) when is_record(RefX, refX) ->
 %% @TODO put in stuff about formats, styles or attributes only - not sure where...
 %% Also this is a naive page delete - iterates over all cells on a page and
 %% deletes them
-delete_cells(RefX, all) when is_record(RefX, refX)->
+clear_cells(RefX, all) when is_record(RefX, refX)->
     List1 = read_attrs(RefX),
     List2 = [#hn_item{addr = refX_to_ref(X, Key), val = Val} || {X, {Key, Val}} <- List1],
     delete_recs(List2);
-delete_cells(RefX, contents) when is_record(RefX, refX) ->
+clear_cells(RefX, style) when is_record(RefX, refX) ->
+    List1 = read_attrs(RefX, style),
+    io:format("in clear_cells for style List1 is ~p~n", [List1]),
+    List2 = [#hn_item{addr = refX_to_ref(X, Key), val = Val} || {X, {Key, Val}} <- List1],
+    delete_recs(List2);    
+clear_cells(RefX, contents) when is_record(RefX, refX) ->
     List1 = read_attrs(RefX),
     List2 = get_content_attrs(List1),
     List3 = [#hn_item{addr = refX_to_ref(X, Key), val = Val} || {X, {Key, Val}} <- List2],
-    io:format("List1 is ~p~nList2 is ~p~nList3 is ~p~n", [List1, List2, List3]),
     delete_recs(List3).
 
 %% @spec delete_attrs(RefX :: #refX{}, Key) -> {ok, ok}
