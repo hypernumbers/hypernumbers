@@ -22,12 +22,15 @@
          in_range/2,
          to_xml/1,
          ref_to_index/1,
+         range_to_list/1,
+         rectify_range/4,
          
          % HTTP Utils
          req/1,
          post/2,
          post/3,
          parse_url/1,
+         parse_vars/1,
          
          % List Utils
          add_uniq/2,
@@ -40,14 +43,92 @@
          bin_to_hexstr/1,
          hexstr_to_bin/1,
          get_req_type/1,
-         list_to_path/1
+         list_to_path/1,
+
+         % Just some record conversion utilities
+         refX_to_ref/2,
+         ref_to_refX/2,
+         from_hn_item/1,
+         refX_from_index/1,
+         index_from_refX/1,
+         index_from_ref/1
     ]).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%                                                                          %%%
+%%% These functions convert to and from #refX, #ref, #hn_item                %%%
+%%% and #indexrecords                                                        %%%
+%%%                                                                          %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+refX_to_ref(RefX, Name) ->
+    #refX{site = S, path = P, obj = R, auth = A} = RefX,
+    #ref{site = S, path = P, ref = R, name = Name, auth = A}.
+
+ref_to_refX(Ref, Val) ->
+    #ref{site = S, path = P, ref = R, name = Key, auth = A} = Ref,
+    RefX = #refX{site = S, path = P, obj = R, auth = A},
+    {RefX, {Key, Val}}.
+
+from_hn_item(List) -> from_hn_item(List, []).
+
+from_hn_item([], Acc)      -> Acc;
+from_hn_item([H | T], Acc) -> #hn_item{addr = Ref, val = V} = H, 
+                              NewAcc = ref_to_refX(Ref, V),
+                              from_hn_item(T, [NewAcc | Acc]).
+
+refX_from_index(#index{site = S, path = P, column = X, row = Y}) ->
+    #refX{site = S, path = P, obj = {cell, {X, Y}}}.
+
+index_from_refX(#refX{site = S, path = P, obj = {cell, {X, Y}}}) ->
+    #index{site = S, path = P, column = X, row = Y}.
+
+index_from_ref(#ref{site = S, path = P, ref = {cell, {X, Y}}}) ->
+    #index{site = S, path = P, column = X, row = Y}.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%                                                                          %%%
 %%% HyperNumbers Utils                                                       %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+rectify_range(X1, Y1, X2, Y2) ->
+    % in case the range is passed in arsey-backwards
+    {X1a, X2a} = if
+                     X1 < X2 -> {X1, X2};
+                     true    -> {X2, X1}
+                 end,
+    {Y1a, Y2a} = if
+                     Y1 < Y2 -> {Y1, Y2};
+                     true    -> {Y2, Y1}
+                 end,
+    {X1a, Y1a, X2a, Y2a}.
+
+%% This is a bit of a mess - range_to_list1 works for #refs{},
+%% and range_to_list2 works for #refX{}'s
+range_to_list(#ref{ref = {range, {X1, Y1, X2, Y2}}} = Ref) ->
+    {X1a, Y1a, X2a, Y2a} = rectify_range(X1, Y1, X2, Y2),
+    range_to_list1(Ref, X1a, X1a, Y1a, X2a, Y2a, []);
+range_to_list(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
+    {X1a, Y1a, X2a, Y2a} = rectify_range(X1, Y1, X2, Y2),
+    range_to_list2(RefX, X1a, X1a, Y1a, X2a, Y2a, []).
+
+range_to_list1(Ref, _Reset, X, Y, X, Y, Acc) -> [Ref#ref{ref = {cell, {X, Y}}} | Acc];
+range_to_list1(Ref, Reset, X2, Y1, X2, Y2, Acc) ->
+    range_to_list1(Ref, Reset, Reset, Y1 + 1, X2, Y2,
+                  [Ref#ref{ref = {cell, {X2, Y1}}} | Acc]);
+range_to_list1(Ref, Reset, X1, Y1, X2, Y2, Acc) ->
+    range_to_list1(Ref, Reset, X1 + 1, Y1, X2, Y2,
+                  [Ref#ref{ref = {cell, {X1, Y1}}} | Acc]).
+
+range_to_list2(RefX, _Reset, X, Y, X, Y, Acc) -> [RefX#refX{obj = {cell, {X, Y}}} | Acc];
+range_to_list2(RefX, Reset, X2, Y1, X2, Y2, Acc) ->
+    range_to_list2(RefX, Reset, Reset, Y1 + 1, X2, Y2,
+                  [RefX#refX{obj = {cell, {X2, Y1}}} | Acc]);
+range_to_list2(RefX, Reset, X1, Y1, X2, Y2, Acc) ->
+    range_to_list2(RefX, Reset, X1 + 1, Y1, X2, Y2,
+                  [RefX#refX{obj = {cell, {X1, Y1}}} | Acc]).
+
 index_to_url(#index{site=Site,path=Path,column=X,row=Y}) ->
     lists:append([Site, list_to_path(Path), tconv:to_b26(X), text(Y)]).
 

@@ -40,6 +40,8 @@ set_attribute(Ref,Val) ->
 
 %% @spec set_cell(Addr, Val) -> ok
 %% @doc process_formula
+%% @todo this is a bug isn't it - hn_db:get_item will never
+%% return 'true', innit?
 set_cell(Addr, Val) ->
     case hn_db:get_item_val(Addr#ref{name = '__shared'}) of
         true -> throw({error, cant_change_part_of_array});
@@ -52,7 +54,7 @@ value_to_cell(Addr, Val) ->
         {formula, Fla} ->
             Rti = ref_to_rti(Addr, false),
             case muin:run_formula(Fla, Rti) of
-                {error, _Error} -> 
+                {error, Error} ->
                     % @TODO, notify clients
                     ok;       
                 {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
