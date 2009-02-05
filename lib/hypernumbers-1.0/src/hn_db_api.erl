@@ -8,7 +8,29 @@
 %%%            
 %%%            mnesia MUST NOT be called from any function in
 %%%            this module.
-%%%
+%%%            
+%%%            It makes extensive use of #refX{} records which can
+%%%            exist in the the following flavours:
+%%%            <ul>
+%%%            <li>cell</li>
+%%%            <li>range</li>
+%%%            <li>column</li>
+%%%            <li>row</li>
+%%%            <li>page</li>
+%%%            </ul>
+%%%            These flavours are distingished by the obj attributes
+%%%            which are:
+%%%            <ul>
+%%%            <li>{cell, {X, Y}}</li>
+%%%            <li>{range, {X1, Y1, X2, Y2}}</li>
+%%%            <li>{column, {X1, X2}}</li>
+%%%            <li>{row, {Y1, Y2}}</li>
+%%%            <li>{page, "/"}</li>
+%%%            </ul>
+%%% 
+%%% %%% @TODO should we have a subpages #refX egt {subpages, "/"}
+%%% which would alllow you to specify operations like delete and copy
+%%% on whole subtrees?
 %%% @end
 %%% Created : 24 Jan 2009 by gordon@hypernumbers.com
 %%%-------------------------------------------------------------------
@@ -99,17 +121,17 @@ write_attributes(RefX, List) when is_record(RefX, refX), is_list(List) ->
 %% It will write the values to the last row/column as if they were
 %% 'formula' attributes
 write_last(List) when is_list(List) ->
-    io:format("in hn_db_api:write_last List is ~p~n", [List]),
     [{#refX{site = S, path = P, obj = O} = RefX, _} | T] = List,
     Fun =
         fun() ->
-                io:format("in Fun~n"),
                 {LastCol, LastRow} = hn_db_wu:get_last(RefX),
                 % Add 1 to because we are adding data 'as the last row'
                 % (or column) ie one more than the current last row/column
                 {Type, Pos} = case O of
-                                  {row, _}    -> {row,    LastRow + 1};
-                                  {column, _} -> {column, LastCol + 1}
+                                  {row, _}    -> Y = LastRow + 1, 
+                                                 {row, {Y, Y}};
+                                  {column, _} -> X = LastCol + 1,
+                                                 {column, {X, X}}
                               end,
                 % now convert the column or row references to cell references
 
@@ -117,14 +139,11 @@ write_last(List) when is_list(List) ->
                 % page and are row or column references as appropriate 
                 Fun1 =
                     fun({#refX{site = S, path = P, obj = {Type, Idx}}, Val})  ->
-                            io:format("in Fun1~n"),
                             Obj = case Type of
                                       row    -> {cell, {Pos, Idx}};
                                       column -> {cell, {Idx, Pos}}
                                   end,
                             RefX2 = #refX{site = S, path = P, obj = Obj},
-                            io:format("in hn_db_api:write_last RefX2 is ~p~n",
-                                      [RefX2]),
                             hn_db_wu:write_attr(RefX2, {formula, Val})
                     end,
                 [Fun1(X) || X <- List]
@@ -225,18 +244,16 @@ reformat(RefX) when is_record(RefX, refX) ->
 %% @doc inserts a column,a row or page
 %% 
 %% The <code>#refX{}</code> can be one of the following types:
-%% <ul><li>row</li>
-%% <li>colum</li></ul>
+%% <ul>
+%% <li>row</li>
+%% <li>column</li>
+%% </ul>
 %% @todo insert page
-insert(#refX{obj = {R, _}} = RefX) when R == row orelse R == column  ->
-    Disp = case R of
-               row -> vertical;
-               column -> horizontal
-           end,
-    Fun =
-        fun() ->
-                hn_db_wu:shift(RefX, Disp, insert)
-        end,
+insert(#refX{obj = {column, X}} = RefX)  ->
+        Fun = fun() ->
+                      % hn_db_wu:shift_cell(RefX, Disp, insert)
+                      Return = 1 + 1
+              end,
     mnesia:activity(transaction, Fun).
 
 %% @spec insert(RefX :: #refX{}, Type) -> ok 
@@ -244,13 +261,15 @@ insert(#refX{obj = {R, _}} = RefX) when R == row orelse R == column  ->
 %% @doc inserts a cell or range
 %% 
 %% The <code>#refX{}</code> can be one of the following types:
-%% <ul><li>cell</li>
-%% <li>range</li></ul>
+%% <ul>
+%% <li>cell</li>
+%% <li>range</li>
+%% </ul>
 insert(#refX{obj = {R, _}} = RefX, Disp) when R == cell orelse R == range ->
-    Fun =
-        fun() ->
-                hn_db_wu:shift(RefX, Disp, insert)
-        end,
+    Fun = fun() ->
+                  % hn_db_wu:shift_cell(RefX, Disp, insert)
+                  Return = 1 + 1
+          end,
     mnesia:activity(transaction, Fun).
 
 %% @spec delete(Ref :: #refX{}) -> ok
@@ -260,10 +279,10 @@ delete(#refX{obj = {R, _}} = RefX) when R == column orelse R == row ->
                row    -> vertical;
                column -> horizontal
            end,
-    Fun =
-        fun() ->
-                hn_db_wu:shift(RefX, Disp, delete)
-        end,
+    Fun = fun() ->
+                  % hn_db_wu:shift_cell(RefX, Disp, delete)
+                  Return = 1 + 1
+          end,
     mnesia:activity(transaction, Fun);
 delete(#refX{obj = {page, _}} = RefX) ->
     Fun = fun() ->
@@ -288,13 +307,13 @@ delete(#refX{obj = {page, _}} = RefX) ->
 delete(#refX{obj = {R, _}} = RefX, horizontal) when R == cell orelse R == range ->
     Fun =
         fun() ->
-                hn_db_wu:shift(RefX, horizontal, delete)
+                hn_db_wu:shift_cell(RefX, horizontal, delete)
         end,
     mnesia:activity(transaction, Fun);
 delete(#refX{obj = {R, _}} = RefX, vertical) when R == cell orelse R == range ->
     Fun =
         fun() ->
-                hn_db_wu:shift(RefX, vertical, delete)
+                hn_db_wu:shift_cell(RefX, vertical, delete)
         end,
     mnesia:activity(transaction, Fun).
 
@@ -668,7 +687,7 @@ shift(RefX, Disp, _Type) when is_record(RefX, refX) ->
     Fun1 = fun() -> ?mn_sl(hn_item, [{Head, Cond, Body}]) end,
     ShiftedCells = ?mn_ac(transaction, Fun1),
     % now shift the cells
-    Fun2 = fun() -> hn_db_wu:shift(ShiftedCells, Offset) end,
+    Fun2 = fun() -> hn_db_wu:shift_cell(ShiftedCells, Offset) end,
     {ok, ok} = ?mn_ac(transaction, Fun2),
     {ok, ok}.
 
@@ -700,12 +719,12 @@ insert_DEBUG(Ref, Type) -> insert(Ref, Type).
 
 %% @hidden
 copy_DEBUG() ->
-%    io:format("in copy_DEBUG going into drag'n'drop (2)~n"),
-%    copy_DEBUG2("drag_n_drop"),
-%    io:format("in copy_DEBUG going into copy'n'paste (2)~n"),
-%    copy_DEBUG2("copy_n_paste"),
-%    io:format("in copy_DEBUG going into cut'n'paste (2)~n"),
-%    copy_DEBUG2("cut_n_paste"),
+    io:format("in copy_DEBUG going into drag'n'drop (2)~n"),
+    copy_DEBUG2("drag_n_drop"),
+    io:format("in copy_DEBUG going into copy'n'paste (2)~n"),
+    copy_DEBUG2("copy_n_paste"),
+    io:format("in copy_DEBUG going into cut'n'paste (2)~n"),
+    copy_DEBUG2("cut_n_paste"),
     io:format("in copy_DEBUG going into copy'n'paste (3)~n"),
     copy_DEBUG3("copy_n_paste"),
     io:format("in copy_DEBUG going into cut'n'paste (3)~n"),
@@ -877,8 +896,8 @@ insert_delete_DEBUG2(FunName) ->
 
     insert_delete(FunName, FunName2, {cell, {1, 5}}, vertical),
     %    % insert_delete(FunName, FunName2, {cell, {1, 5}}, horizontal),
-    %    % insert_delete(FunName, FunName2, {row, 12}),
-    %    % insert_delete(FunName, FunName2, {column, 3}),
+    %    % insert_delete(FunName, FunName2, {row, {12, 12}}),
+    %    % insert_delete(FunName, FunName2, {column, {3, 3}}),
     %    % insert_delete(FunName, FunName2, {range, {6, 16, 7, 18}}, vertical),
     %    % insert_delete(FunName, FunName2, {range, {11, 16, 13, 18}}, vertical),
 
@@ -1230,8 +1249,8 @@ read_styles_DEBUG() ->
     RefX3 = #refX{site = Site, path = Path, obj = {cell, {2, 1}}},
     RefX4 = #refX{site = Site, path = Path, obj = {cell, {2, 2}}},
 
-    RefX5 = #refX{site = Site, path = Path, obj = {column, 2}},
-    RefX6 = #refX{site = Site, path = Path, obj = {row, 2}},
+    RefX5 = #refX{site = Site, path = Path, obj = {column, {2, 2}}},
+    RefX6 = #refX{site = Site, path = Path, obj = {row, {2, 2}}},
     RefX7 = #refX{site = Site, path = Path, obj = {range,{1, 1, 2, 2}}},
     RefX8 = #refX{site = Site, path = Path, obj = {page, "/"}},
 
@@ -1297,7 +1316,7 @@ colour(Path, {X, Y}, Colour) ->
 
 make_high(Path, X) ->
     Site = "http://127.0.0.1:9000",
-    RefX = #refX{site = Site, path = Path, obj = {row, X}},
+    RefX = #refX{site = Site, path = Path, obj = {row, {X, X}}},
     Val = {height, "30"},
     Fun = fun() ->
                   hn_db_wu:write_attr(RefX, Val)
@@ -1306,7 +1325,7 @@ make_high(Path, X) ->
 
 make_thin(Path, X) ->
     Site = "http://127.0.0.1:9000",
-    RefX = #refX{site = Site, path = Path, obj = {column, X}},
+    RefX = #refX{site = Site, path = Path, obj = {column, {X, X}}},
     Val = {width, "30"},
     Fun = fun() ->
                   hn_db_wu:write_attr(RefX, Val)
@@ -1315,7 +1334,7 @@ make_thin(Path, X) ->
 
 make_thick(Path, X) ->
     Site = "http://127.0.0.1:9000",
-    RefX = #refX{site = Site, path = Path, obj = {column, X}},
+    RefX = #refX{site = Site, path = Path, obj = {column, {X, X}}},
     Val = {width, "200"},
     Fun = fun() ->
                   hn_db_wu:write_attr(RefX, Val)

@@ -130,7 +130,7 @@ range_to_list2(RefX, Reset, X1, Y1, X2, Y2, Acc) ->
                   [RefX#refX{obj = {cell, {X1, Y1}}} | Acc]).
 
 index_to_url(#index{site=Site,path=Path,column=X,row=Y}) ->
-    lists:append([Site, list_to_path(Path), tconv:to_b26(X), text(Y)]).
+    lists:append([Site, list_to_path(Path),tconv:to_b26(X), text(Y)]).
 
 list_to_path([])   -> "/";
 list_to_path(Path) -> "/" ++ string:join(Path, "/") ++ "/".
@@ -138,12 +138,14 @@ list_to_path(Path) -> "/" ++ string:join(Path, "/") ++ "/".
 ref_to_index(#ref{site=Site,path=Path,ref={cell,{X,Y}}}) ->
     #index{site=Site,path=Path,column=X,row=Y}.
 
-ref_to_str({page,Path})  -> Path;   
-ref_to_str({cell,{X,Y}}) -> tconv:to_b26(X)++text(Y);
-ref_to_str({row,Y})      -> text(Y);
-ref_to_str({column,X})   -> tconv:to_b26(X);
-ref_to_str({range,{X1,Y1,X2,Y2}}) ->
-    tconv:to_b26(X1)++text(Y1)++":"++tconv:to_b26(X2)++text(Y2).
+ref_to_str({page,Path})           -> Path;   
+ref_to_str({cell,{X,Y}})          -> tconv:to_b26(X)++text(Y);
+ref_to_str({row,{Y,Y}})           -> text(Y);
+ref_to_str({row,{Y1,Y2}})         -> text(Y1)++":"++text(Y2);
+ref_to_str({column,{X,X}})        -> tconv:to_b26(X);
+ref_to_str({column,{X1,X2}})      -> tconv:to_b26(X1)++":"++tconv:to_b26(X2);
+ref_to_str({range,{X1,Y1,X2,Y2}}) -> tconv:to_b26(X1)++text(Y1)++":"++
+                                         tconv:to_b26(X2)++text(Y2).
 
 
 xml_to_val({bool,[],[true]})      -> true;

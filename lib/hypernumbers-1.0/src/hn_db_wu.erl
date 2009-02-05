@@ -217,19 +217,14 @@ read_cells_raw(#refX{obj = {cell, _}} = RefX) ->
     Match = ms_util:make_ms(hn_item, [{addr, MatchRef}]),
     hn_util:from_hn_item(mnesia:match_object(hn_item, Match, read));
 read_cells_raw(#refX{obj = {range, _}} = RefX) ->
-    Range = hn_util:list_from_range(RefX),
-    % now just get all the cells
-    lists:flatten([read_cells_raw(X) || X <- Range]);
-read_cells_raw(#refX{obj = {column, X}} = RefX) ->
-    #refX{site = S, path = P} = RefX,
-    MatchRef = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, {cell, {X, '_'}}}]),
-    Match = ms_util:make_ms(hn_item, [{addr, MatchRef}]),
-    hn_util:from_hn_item(mnesia:match_object(hn_item, Match, read));
-read_cells_raw(#refX{obj = {row, Y}} = RefX) ->
-    #refX{site = S, path = P} = RefX,
-    MatchRef = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, {cell, {'_', Y}}}]),
-    Match = ms_util:make_ms(hn_item, [{addr, MatchRef}]),
-    hn_util:from_hn_item(mnesia:match_object(hn_item, Match, read));
+    MatchRef = make_range_match(RefX, []),
+    hn_util:from_hn_item(mnesia:select(hn_item, [MatchRef]));
+read_cells_raw(#refX{obj = {column, {X1, X2}}} = RefX) ->
+    MatchRef = make_column_match(RefX, []),
+    hn_util:from_hn_item(mnesia:select(hn_item, [MatchRef]));
+read_cells_raw(#refX{obj = {row, {Y1, Y2}}} = RefX) ->
+    MatchRef = make_row_match(RefX, []),
+    hn_util:from_hn_item(mnesia:select(hn_item, [MatchRef]));
 read_cells_raw(#refX{obj = {page, _}} = RefX) ->
     #refX{site = S, path = P} = RefX,
     MatchRef = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, {cell, {'_', '_'}}}]),
@@ -282,48 +277,14 @@ read_attrs(RefX) when is_record(RefX, refX) ->
 %% <li>page</li>
 %% </ul>
 read_attrs(#refX{obj = {range, _}} = RefX, AttrList) when is_list(AttrList) ->
-    #refX{site = S, path = P, obj = {range, {X1, Y1, X2, Y2}}, auth = A} = RefX,
-    {MinX, MaxX} = if
-                       X1 >= X2 -> {X2, X1};
-                       X1 <  X2 -> {X1, X2}
-                   end,
-    {MinY, MaxY} = if
-                       Y1 >= Y2 -> {Y2, Y1};
-                       Y1 <  Y2 -> {Y1, Y2}
-                   end,
-    Ref = {cell, {'$1', '$2'}},
-    Match = case AttrList of
-                [] -> ms_util:make_ms(ref, [{site, S}, {path , P}, {auth, A},
-                                            {ref , Ref}]);
-                _  -> ms_util:make_ms(ref, [{site, S}, {path , P}, {auth, A},
-                                            {ref , Ref}, {name, '$3'}])
-            end,
-    Match2 = ms_util:make_ms(hn_item, [{addr, Match}, {val, '_'}]),
-    % build a conditional for selecting cells
-    % also need to build a cond for the attributes
-    Ret = make_or(AttrList, '$3'),
-    Cond = case Ret of
-                [] -> [{'and' , {'>=', '$1', MinX }, {'=<', '$1', MaxX},
-                        {'>=', '$2', MinY}, {'=<', '$2', MaxY}}];
-                [X] -> [{'and', {'and' , {'>=', '$1', MinX }, {'=<', '$1', MaxX},
-                                 {'>=', '$2', MinY}, {'=<', '$2', MaxY}}, X}]
-            end,
-    Body = ['$_'],
-    MatchRef = {Match2, Cond, Body},
-
-    %% because this function calculates its own conditional don't go
-    %% to read_attrs2/2
+    MatchRef = make_range_match(RefX, AttrList),
     hn_util:from_hn_item(mnesia:select(hn_item, [MatchRef]));
-read_attrs(#refX{obj = {column, X}} = RefX, AttrList) when is_list(AttrList) ->
-    #refX{site = S, path = P} = RefX,
-    R = {cell, {X, '_'}},
-    MatchRef = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, R}, {name, '$1'}]),
-    read_attrs2(MatchRef, AttrList);
-read_attrs(#refX{obj = {row, Y}} = RefX, AttrList) when is_list(AttrList) ->
-    #refX{site = S, path = P} = RefX,
-    R = {cell, {'_', Y}},
-    MatchRef = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, R}, {name, '$1'}]),
-    read_attrs2(MatchRef, AttrList);
+read_attrs(#refX{obj = {column, {X1, X2}}} = RefX, AttrList) when is_list(AttrList) ->
+    MatchRef = make_column_match(RefX, AttrList),
+    hn_util:from_hn_item(mnesia:select(hn_item, [MatchRef]));
+read_attrs(#refX{obj = {row, {Y1, Y2}}} = RefX, AttrList) when is_list(AttrList) ->
+    MatchRef = make_row_match(RefX, AttrList),
+    hn_util:from_hn_item(mnesia:select(hn_item, [MatchRef]));
 read_attrs(#refX{obj = {cell, _}} = RefX, AttrList) when is_list(AttrList) ->
     #refX{site = S, path = P, obj= R} = RefX,
     MatchRef = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, R}, {name, '$1'}]),
@@ -340,7 +301,6 @@ read_attrs(#refX{obj = {page, _}} = RefX, AttrList) when is_list(AttrList) ->
 %% that offset is valid of course - ie the cell can't be made negative - mebbies
 %% it should be).
 %% 
-%% @todo shift this from an hn_item to a ref calling parameter
 shift_cell(From, To) when is_record(From, refX), is_record(To, refX) ->
     io:format("in shift_cell (2) From is ~p To  is ~p~n", [From, To]),
     {ok, ok} = shift_cell2(From, To),
@@ -491,7 +451,7 @@ copy_cell(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, Incr)
     {ok, ok} = copy_attrs(From, To, AttrList),
     {ok, ok}.
 
-%% @spec copy_attrs({From :: #refX{}, To :: #refX{}, AttrList) -> {ok, ok}
+%% @spec copy_attrs(From :: #refX{}, To :: #refX{}, AttrList) -> {ok, ok}
 %% AttrList = [atom()]
 %% @doc This function copies all the attributes listed from the From #ref{} to
 %% the To ref{}.
@@ -512,6 +472,87 @@ copy_attrs(#refX{obj = {cell, _}} = From, #refX{obj = {range, _}} = To, [H | T])
 %%% Internal funtions                                                        %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+make_range_match(RefX, AttrList) ->
+    #refX{site = S, path = P, obj = Range, auth = A} = RefX,
+    {range, {X1, Y1, X2, Y2}} = Range,
+    {MinX, MaxX} = if
+                       X1 >= X2 -> {X2, X1};
+                       X1 <  X2 -> {X1, X2}
+                   end,
+    {MinY, MaxY} = if
+                       Y1 >= Y2 -> {Y2, Y1};
+                       Y1 <  Y2 -> {Y1, Y2}
+                   end,
+    Ref = {cell, {'$1', '$2'}},
+    Match = case AttrList of
+                [] -> ms_util:make_ms(ref, [{site, S}, {path , P}, {auth, A},
+                                            {ref , Ref}]);
+                _  -> ms_util:make_ms(ref, [{site, S}, {path , P}, {auth, A},
+                                            {ref , Ref}, {name, '$3'}])
+            end,
+    Match2 = ms_util:make_ms(hn_item, [{addr, Match}, {val, '_'}]),
+    % build a conditional for selecting cells
+    % also need to build a cond for the attributes
+    Ret = make_or(AttrList, '$3'),
+    Cond = case Ret of
+               [] -> [{'and' , {'>=', '$1', MinX }, {'=<', '$1', MaxX},
+                       {'>=', '$2', MinY}, {'=<', '$2', MaxY}}];
+               [X] -> [{'and', {'and' , {'>=', '$1', MinX }, {'=<', '$1', MaxX},
+                                {'>=', '$2', MinY}, {'=<', '$2', MaxY}}, X}]
+           end,
+    Body = ['$_'],
+    {Match2, Cond, Body}.
+
+make_column_match(RefX, AttrList) ->
+    #refX{site = S, path = P, obj = Col, auth = A} = RefX,
+    {column, {X1, X2}} = Col,
+    {MinX, MaxX} = if
+                       X1 >= X2 -> {X2, X1};
+                       X1 <  X2 -> {X1, X2}
+                   end,
+    Ref = {cell, {'$1', '_'}},
+    Match = case AttrList of
+                [] -> ms_util:make_ms(ref, [{site, S}, {path , P}, {auth, A},
+                                            {ref , Ref}]);
+                _  -> ms_util:make_ms(ref, [{site, S}, {path , P}, {auth, A},
+                                            {ref , Ref}, {name, '$3'}])
+            end,
+    Match2 = ms_util:make_ms(hn_item, [{addr, Match}, {val, '_'}]),
+    % build a conditional for selecting cells
+    % also need to build a cond for the attributes
+    Ret = make_or(AttrList, '$3'),
+    Cond = case Ret of
+               [] -> [{'>=', '$1', MinX }, {'=<', '$1', MaxX}];
+               [C] -> [{'and', {'>=', '$1', MinX }, {'=<', '$1', MaxX}, C}]
+           end,
+    Body = ['$_'],
+    {Match2, Cond, Body}.
+
+make_row_match(RefX, AttrList) ->
+    #refX{site = S, path = P, obj = Row, auth = A} = RefX,
+    {row, {Y1, Y2}} = Row,
+    {MinY, MaxY} = if
+                       Y1 >= Y2 -> {Y2, Y1};
+                       Y1 <  Y2 -> {Y1, Y2}
+                   end,
+    Ref = {cell, {'_', '$1'}},
+    Match = case AttrList of
+                [] -> ms_util:make_ms(ref, [{site, S}, {path , P}, {auth, A},
+                                            {ref , Ref}]);
+                _  -> ms_util:make_ms(ref, [{site, S}, {path , P}, {auth, A},
+                                            {ref , Ref}, {name, '$3'}])
+            end,
+    Match2 = ms_util:make_ms(hn_item, [{addr, Match}, {val, '_'}]),
+    % build a conditional for selecting cells
+    % also need to build a cond for the attributes
+    Ret = make_or(AttrList, '$3'),
+    Cond = case Ret of
+               [] -> [{'>=', '$1', MinY }, {'=<', '$1', MaxY}];
+               [C] -> [{'and', {'>=', '$1', MinY }, {'=<', '$1', MaxY}, C}]
+           end,
+    Body = ['$_'],
+    {Match2, Cond, Body}.
+
 get_attr_keys(List)  -> get_attr_keys(List, []).
 
 get_attr_keys([], Acc)                       -> Acc;
@@ -961,17 +1002,17 @@ traverse(range, Addr = #ref{ref = {cell, _}}) ->
     {row_col, V};
 
 traverse(row_col, Addr = #ref{ref = {cell, {_X, Y}}}) ->
-    {column, match_ref(Addr#ref{ref = {row, Y}})};
+    {column, match_ref(Addr#ref{ref = {row, {Y, Y}}})};
 
 traverse(row, Addr = #ref{ref = {row, _}}) ->
     {page, match_ref(Addr)};
 traverse(row, Addr = #ref{ref = {cell, {_X, Y}}}) ->
-    {page, match_ref(Addr#ref{ref = {row, Y}})};
+    {page, match_ref(Addr#ref{ref = {row, {Y, Y}}})};
 
 traverse(column, Addr = #ref{ref = {column, _}}) ->
     {page, match_ref(Addr)};
 traverse(column, Addr = #ref{ref = {cell, {X, _Y}}}) ->
-    {page, match_ref(Addr#ref{ref= {column, X}})};
+    {page, match_ref(Addr#ref{ref= {column, {X, X}}})};
 
 traverse(page, Addr = #ref{path=[]}) ->
     {last, match_ref(Addr#ref{ref = {page,"/"}})};
