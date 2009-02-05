@@ -41,6 +41,9 @@
 %%% 
 %%% Also there is the port bodge function - need to handle port correctly
 %%%
+%%% And also when a new style is written for a page it should notify the
+%%% viewing pages to update themselves or the style stuff won't work...
+%%%
 %%% @end
 %%% Created : 24 Jan 2009 by gordon@hypernumbers.com
 %%%-------------------------------------------------------------------
@@ -57,7 +60,7 @@
          clear_cells/2,
          delete_attrs/2,
          shift_cell/2,
-         copy_cells/3,
+         copy_cell/3,
          copy_attrs/3,
          get_last/1]).
 
@@ -402,7 +405,7 @@ clear_cells(RefX) when is_record(RefX, refX) ->
 %% Also this is a naive page delete - iterates over all cells on a page and
 %% deletes them
 clear_cells(RefX, all) when is_record(RefX, refX)->
-    List1 = read_attrs(RefX),    
+    List1 = read_attrs(RefX),
     List2 = [#hn_item{addr = hn_util:refX_to_ref(X, Key), val = Val}
              || {X, {Key, Val}} <- List1],
     delete_recs(List2);
@@ -424,35 +427,44 @@ clear_cells(RefX, contents) when is_record(RefX, refX) ->
 %% of a cell (but doesn't delete the cell itself)
 delete_attrs(RefX, Key) ->
     Ref = hn_util:refX_to_ref(RefX, Key),
-    mnesia:delete({hn_item, Ref}),
-    Record = #hn_item{addr = Ref, val = "not important"},
-    spawn(fun() -> notify_remote(Record, delete) end),
-    {ok, ok}.
+    case ms_util2:is_in_record(magic_style, Key) of 
+        true  -> delete_style_attr(RefX, Key);
+        false -> mnesia:delete({hn_item, Ref}),
+                 Record = #hn_item{addr = Ref, val = "not important"},
+                 spawn(fun() -> notify_remote(Record, delete) end),
+                 {ok, ok}
+    end.
 
-copy_cells(From, To, Incr) when is_record(From, refX), is_record(To, refX) ->
+%% @spec copy_cell(From :: #refX{}, To ::#refX{}, Incr) -> {ok, ok}
+%% Incr = [false | horizonal | vertical]
+%% @doc copys cells from a ref to a ref
+copy_cell(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, Incr)
+  when is_record(From, refX), is_record(To, refX) ->
     % io:format("in hn_db_wu:copy_cells From is ~p To is ~p Incr is ~p~n",
-    %          [From, To, Incr]),
+    %           [From, To, Incr]),
     FromList = read_cells_raw(From),
     % io:format("in hn_db_wu:copy_cells FromList is ~p~n", [FromList]),
     {Contents, FilteredList} = filter_for_drag_n_drop(FromList),
     % io:format("in hn_db_wu:copy_cells Contents is ~p FilteredList is ~p~n",
-    %          [Contents, FilteredList]),
+    %           [Contents, FilteredList]),
     Output = case Contents of
                  [Contents2] -> superparser:process(Contents2);
                  []          -> ""
              end,
     #refX{obj = {cell, {FX, FY}}} = From,
     #refX{obj = {cell, {TX, TY}}} = To,
+    % io:format("in hn_db_wu:copy_cells Output is ~p~n", [Output]),
     case Output of
         {formula, Formula} ->
-            % io:format("in hn_db_wu:copy_cells Formula is ~p~n", [Formula]),
             {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {FX, FY}),
             NewToks = offset(Toks, (TX - FX), (TY - FY)),
             NewFormula = make_formula(NewToks),
+            % io:format("in hn_db_wu:copy_cells~nFormula is ~p~n-NewFormula is ~p~n",
+            %          [Formula, NewFormula]),
             {ok, ok} = write_attr(To, {formula, NewFormula});
         [{Type, V},  _A, _F] ->
             % io:format("in hn_db_wu:copy_cells Type is ~p V is ~p~n",
-            %          [Type, V]),
+            %           [Type, V]),
             V2 = case Incr of
                      false ->
                          tconv:to_s(V);
@@ -477,7 +489,7 @@ copy_cells(From, To, Incr) when is_record(From, refX), is_record(To, refX) ->
     % you want to carry that forward.
     AttrList = get_attr_keys(FilteredList),
     {ok, ok} = copy_attrs(From, To, AttrList),
-    ok.
+    {ok, ok}.
 
 %% @spec copy_attrs({From :: #refX{}, To :: #refX{}, AttrList) -> {ok, ok}
 %% AttrList = [atom()]
@@ -514,8 +526,8 @@ make_cell(false, X, XOffset, true, Y, _YOffset) ->
 make_cell(true, X, _XOffset, true, Y, _YOffset)  -> 
     [$$]++tconv:to_b26(X)++[$$]++tconv:to_s(Y).
 
-diff( FX, _FY,  TX, _TY, x) -> TX - FX;
-diff(_FX,  FY, _TX,  TY, y) -> TY - FY.
+diff( FX, _FY,  TX, _TY, horizontal) -> TX - FX;
+diff(_FX,  FY, _TX,  TY, vertical) -> TY - FY.
 
 make_formula(Toks) -> mk_f(Toks, []).
 
@@ -555,14 +567,14 @@ offset([H | T], XOffset, YOffset, Acc) ->
 
 filter_for_drag_n_drop(List) -> fl(List, [], []).
 
-fl([], A, B)                                                 -> {A, B};
-fl([{_, {ref, _, _, _, value, _}, _}| T], A, B)              -> fl(T, A, B);
-fl([{_, {ref, _, _, _, rawvalue, _}, _}| T], A, B)           -> fl(T, A, B);
-fl([{_, {ref, _, _, _, parents, _}, _}| T], A, B)            -> fl(T, A, B);
-fl([{_, {ref, _, _, _, 'dependancy-tree', _}, _}| T], A, B)  -> fl(T, A, B);
-fl([{_, {ref, _, _, _, '__ast', _}, _}| T], A, B)            -> fl(T, A, B);
-fl([{_, {ref, _, _, _, formula, _}, F}| T], A, B)            -> fl(T, [F | A], B);
-fl([H | T], A, B)                                            -> fl(T, A, [H | B]).
+fl([], A, B)                                -> {A, B};
+fl([{_, {value, _}}  | T], A, B)            -> fl(T, A, B);
+fl([{_, {rawvalue, _}}| T], A, B)           -> fl(T, A, B);
+fl([{_, {parents, _}} | T], A, B)           -> fl(T, A, B);
+fl([{_, {'dependancy-tree', _}}| T], A, B)  -> fl(T, A, B);
+fl([{_, {'__ast', _}} | T], A, B)           -> fl(T, A, B);
+fl([{_, {formula, V}}| T], A, B)            -> fl(T, [V | A], B);
+fl([H | T], A, B)                           -> fl(T, A, [H | B]).
 
 mark_cell_dirty(Index) ->
     % Make a list of cells hypernumbers + direct
@@ -1007,6 +1019,16 @@ make_or([], _, Acc)       -> case length(Acc) of
                              end;
 make_or([H | T], PH, Acc) -> make_or(T, PH, [{'==', H, PH} | Acc]).
 
+delete_style_attr(RefX, Key) ->
+    Ref = hn_util:refX_to_ref(RefX, style),
+    Match = ms_util:make_ms(hn_item, [{addr, Ref}]),
+    CurrentStyle = mnesia:match_object(hn_item, Match, read),
+    NewStyleIdx = get_style(RefX, CurrentStyle, Key, []),
+    io:format("in delete_style_attr~n-CurrentStyle is ~p~n-NewStyleIdx is ~p~n",
+              [CurrentStyle, NewStyleIdx]),
+    write_style_idx(RefX, NewStyleIdx).    
+
+%% this function is called when a new attribute is set for a style
 process_styles(RefX, {Name, Val}) ->
     % First up read the current style 
     Ref = hn_util:refX_to_ref(RefX, Name),
@@ -1016,10 +1038,9 @@ process_styles(RefX, {Name, Val}) ->
                       []      -> get_style(RefX, Name, Val); 
                       [Style] -> get_style(RefX, Style, Name, Val) 
                   end,
+    write_style_idx(RefX, NewStyleIdx).
 
-    %% this is gonnae fail sez I!
-    %% spawning a notification that is not an hn_item record...
-    io:format("in hn_db_wu:process_styles - needs to be fixed!~n"),
+write_style_idx(RefX, NewStyleIdx) when is_record(RefX, refX) ->
     Ref2 = hn_util:refX_to_ref(RefX, style),
     Record = #hn_item{addr = Ref2, val = NewStyleIdx},
     mnesia:write(Record),
@@ -1033,6 +1054,7 @@ get_style(RefX, Name, Val) ->
     % Now write the style 
     write_style(RefX, Style). 
 
+% edits a style
 get_style(RefX, Style, Name, Val) -> 
     % use the index of the style to read the style
     Ref = hn_util:refX_to_ref(RefX, style), 
@@ -1065,6 +1087,8 @@ write_style2(RefX, Style) ->
     % Ref is a cell reference - a page reference is needed
     Ref2 = Ref#ref{ref = {page, "/"}},
     NewIndex = mnesia:dirty_update_counter(style_counters, Ref2, 1), 
+    %% should spawn a notification that there is a new style
+    io:format("in hn_db_wu:write_style2- needs to be fixed!~n"),
     mnesia:write(#styles{ref = Ref2, index = NewIndex, magic_style = Style}),
     NewIndex. 
 

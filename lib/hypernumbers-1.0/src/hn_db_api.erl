@@ -18,7 +18,7 @@
 
 -define(mn_ac,mnesia:activity).
 -define(mn_sl,mnesia:select).
--define(copy, hn_db_wu:copy_cells).
+-define(copy, hn_db_wu:copy_cell).
 
 %% record_info isnt available at runtime
 -define(create(Name,Type,Storage),
@@ -64,7 +64,6 @@
          clear_TEST/0]).
 
 -export([get_tiles_DEBUG/0,
-         copy3_DEBUG/0,
          read_styles_DEBUG/0]). % Debugging
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -357,15 +356,9 @@ clear(RefX, Type) when is_record(RefX, refX) ->
 %% @todo cut'n'paste a page
 cut_n_paste(From, To) when is_record(From, refX), is_record(To, refX) ->
     Fun = fun() ->
-                  CellList = case is_valid_c_n_p(From, To) of
-                                 {ok, single_cell}    -> ok;
-                                 {ok, 'onto self'}    -> [];
-                                 {ok, cell_to_range}  -> copy2(From, To, false);
-                                 {ok, range_to_range} -> exit("erk!")
-                             end,
-                  % TODO should write CellList out n'est pas?
-                  hn_db_wu:clear_cells(From, contents)
-          end,
+                  {ok, ok} = copy_n_paste2(From, To),
+                  {ok, ok} = hn_db_wu:clear_cells(From, all)
+           end,
     mnesia:activity(transaction, Fun).
 
 %% @spec copy_n_paste(From :: #refX{}, To :: #refX{}) -> ok
@@ -381,14 +374,7 @@ cut_n_paste(From, To) when is_record(From, refX), is_record(To, refX) ->
 %% @todo copy'n'paste a page
 copy_n_paste(From, To) when is_record(From, refX), is_record(To, refX) ->
     Fun = fun() ->
-                  case is_valid_c_n_p(From, To) of
-                      {ok, single_cell}    -> ?copy(From, To, false);
-                      {ok, 'onto self'}    -> {ok, ok};
-                      {ok, cell_to_range}  -> copy2(From, To, false);
-                      {ok, range_to_cell}  -> To2 = cell_to_range(To),
-                                              copy3(From, To2, false);
-                      {ok, range_to_range} -> copy3(From, To, false)
-                  end
+                  {ok, ok} = copy_n_paste2(From, To)
           end,
     mnesia:activity(transaction, Fun).
 
@@ -468,6 +454,16 @@ drag_n_drop(From, To) when is_record(From, refX), is_record(To, refX) ->
 %% Internal Functions                                                         %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+copy_n_paste2(From, To) ->
+    case is_valid_c_n_p(From, To) of
+        {ok, single_cell}    -> hn_db_wu:copy_cell(From, To, false);
+        {ok, 'onto self'}    -> {ok, ok};
+        {ok, cell_to_range}  -> copy2(From, To, false);
+        {ok, range_to_cell}  -> To2 = cell_to_range(To),
+                                copy3(From, To2, false);
+        {ok, range_to_range} -> copy3(From, To, false)
+    end.
+
 cell_to_range(#refX{obj = {cell, {X, Y}}} = RefX) ->
     RefX#refX{obj = {range, {X, Y, X, Y}}}.      
 
@@ -478,16 +474,16 @@ cell_to_range(#refX{obj = {cell, {X, Y}}} = RefX) ->
 is_valid_d_n_d(#refX{obj = {cell, A}}, #refX{obj = {cell, A}}) ->
     {ok, 'onto self', false};
 is_valid_d_n_d(#refX{obj = {cell, {X, _Y1}}}, #refX{obj = {cell, {X, _Y2}}}) ->
-    {ok, single_cell, y};
+    {ok, single_cell, vertical};
 is_valid_d_n_d(#refX{obj = {cell, {_X1, Y}}}, #refX{obj = {cell, {_X2, Y}}}) ->
-    {ok, single_cell, x};
+    {ok, single_cell, horizontal};
 is_valid_d_n_d(#refX{obj = {cell, _}}, #refX{obj = {cell, _}}) ->
     {ok, single_cell, false};
 %% cell to range drag'n'drop
 is_valid_d_n_d(#refX{obj = {cell, _}}, #refX{obj = {range, {TX, _TY1, TX, _TY2}}}) ->
-    {ok, cell_to_range, y};
+    {ok, cell_to_range, vertical};
 is_valid_d_n_d(#refX{obj = {cell, _}}, #refX{obj = {range, {_TX1, TY, _TX2, TY}}}) ->
-    {ok, cell_to_range, x};
+    {ok, cell_to_range, horizontal};
 is_valid_d_n_d(#refX{obj = {cell, _}}, #refX{obj = {range, _}}) ->
     {ok, cell_to_range, false};
 %% range to range drag'n'drop
@@ -512,7 +508,8 @@ is_valid_d_n_d(_, _) -> {error, "not valid either"}.
 %% cell to range
 copy2(From, To, Incr) when is_record(From, refX), is_record(To, refX) ->
     List = hn_util:range_to_list(To),
-    lists:map(fun(X) -> ?copy(From, X, Incr) end, List).
+    lists:map(fun(X) -> ?copy(From, X, Incr) end, List),
+    {ok, ok}.
 
 %% range to range
 copy3(From, To, Incr) when is_record(From, refX), is_record(To, refX) ->
@@ -520,21 +517,20 @@ copy3(From, To, Incr) when is_record(From, refX), is_record(To, refX) ->
     TileList = get_tiles(From, To),
     copy3a(From, TileList, Incr).
 
-copy3a(From, [], Incr)      -> {ok, ok};
-copy3a(From, [H | T], Incr) -> io:format("in copy3a with H of ~p~n", [H]),
-                               FromRange = hn_util:range_to_list(From),
+copy3a(_From, [], Incr)     -> {ok, ok};
+copy3a(From, [H | T], Incr) -> FromRange = hn_util:range_to_list(From),
                                ToRange = hn_util:range_to_list(H),
-                               io:format("FromRange is ~p~nToRange is ~p~n",
-                                         [FromRange, ToRange]),
                                {ok, ok} = copy3b(FromRange, ToRange, Incr),
                                copy3a(From, T, Incr).
 
+copy3b([], [], _Incr) -> {ok, ok};
 copy3b([FH | FT], [TH | TT], Incr) ->
-    % hn_db_wu:shift_cell(
-    {ok, ok}.
+    {ok, ok} = hn_db_wu:copy_cell(FH, TH, Incr),
+    copy3b(FT, TT, Incr).
 
-get_tiles(#refX{obj = {range, {FX1, FY1, FX2, FY2}}} = From,
-          #refX{obj = {range, {TX1, TY1, TX2, TY2}}} = To) -> 
+get_tiles(#refX{obj = {range, {X1F, Y1F, X2F, Y2F}}} = From,
+          #refX{obj = {range, {X1T, Y1T, X2T, Y2T}}} = To) ->
+    
     % this is a bit messy. Excel does the following things:
     % * if both ranges are congruent - 1 tile
     % * if the To range is smaller than the From range it writes the whole
@@ -548,20 +544,25 @@ get_tiles(#refX{obj = {range, {FX1, FY1, FX2, FY2}}} = From,
     %   of the From range then it tiles the From range horizontally
     % * if the To range is not one of the above it writes the whole
     %   block into the range whose top left is the same as the To range
+    %   
+    %   First up rectify the ranges
+    {FX1, FY1, FX2, FY2} = hn_util:rectify_range(X1F, Y1F, X2F, Y2F),
+    {TX1, TY1, TX2, TY2} = hn_util:rectify_range(X1T, Y1T, X2T, Y2T),
     FWidth  = FX2 - FX1 + 1,
     FHeight = FY2 - FY1 + 1,
     TWidth  = TX2 - TX1 + 1,
     THeight = TY2 - TY1 + 1,
     WidthMultiple = TWidth/FWidth - erlang:trunc(TWidth/FWidth),
-    WTile = case WidthMultiple of
-                0.0 -> erlang:trunc(TWidth/FWidth);
-                _   -> 1 
-            end,
     HeightMultiple = THeight/FHeight - erlang:trunc(THeight/FHeight),
-    HTile = case HeightMultiple of
-                0.0 -> erlang:trunc(THeight/FHeight);
-                _   -> 1 
-            end,
+    % if the to range is an exact multiple of the From range in both
+    % dimensions then tile it, otherwise just copy the From range into
+    % a range of the same size whose top left cell is that of the To range
+    % capice?
+    {WTile, HTile} = case {WidthMultiple, HeightMultiple} of
+                         {0.0, 0.0} -> {erlang:trunc(TWidth/FWidth),
+                                        erlang:trunc(THeight/FHeight)} ;
+                         _          -> {1, 1} 
+                     end,
     get_tiles2(To, FWidth, FHeight, {WTile, HTile}).
 
 get_tiles2(Ref, Width, Height, {WTile, HTile}) ->
@@ -581,8 +582,6 @@ get_tiles2(RefX, W, H, {WT, FT}, {WT, FT}, Acc) ->
     EY = SY + (H - 1),
     NewAcc = RefX#refX{obj = {range, {SX, SY, EX, EY}}},
     [NewAcc | Acc];
-%get_tiles2(RefX, W, H, {WT, FT}, {WT, FT}, Acc) ->
-%    Acc;
 get_tiles2(RefX, W, H, {WT, M},  {WT, FT}, Acc) ->
     #refX{obj = {range, {X, Y, _, _}}} = RefX,
     SX = X + (WT - 1) * W,
@@ -678,9 +677,14 @@ shift(RefX, Disp, _Type) when is_record(RefX, refX) ->
 %% Debugging interfaces                                                       %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% @hidden
 clear_TEST() ->
     Site = "http://127.0.0.1:9000",
     Path = ["test"],
+    write_value(Path, "integer below", {1, 2}, [bold]),
+    write_value(Path, "1", {1, 3}, [{colour, "yellow"}]),
+    colour(Path, {1, 4}, "cyan"),
+    test_util:wait(100),
     clear_cells_DEBUG(Site, Path).
 
 %% @hidden
@@ -696,12 +700,16 @@ insert_DEBUG(Ref, Type) -> insert(Ref, Type).
 
 %% @hidden
 copy_DEBUG() ->
-    io:format("in copy_DEBUG going into drag'n'drop~n"),
-    copy_DEBUG2("drag_n_drop"),
-    io:format("in copy_DEBUG going into copy'n'paste~n"),
-    copy_DEBUG2("copy_n_paste"),
-    io:format("in copy_DEBUG going into cut'n'paste~n"),
-    copy_DEBUG2("cut_n_paste").
+%    io:format("in copy_DEBUG going into drag'n'drop (2)~n"),
+%    copy_DEBUG2("drag_n_drop"),
+%    io:format("in copy_DEBUG going into copy'n'paste (2)~n"),
+%    copy_DEBUG2("copy_n_paste"),
+%    io:format("in copy_DEBUG going into cut'n'paste (2)~n"),
+%    copy_DEBUG2("cut_n_paste"),
+    io:format("in copy_DEBUG going into copy'n'paste (3)~n"),
+    copy_DEBUG3("copy_n_paste"),
+    io:format("in copy_DEBUG going into cut'n'paste (3)~n"),
+    copy_DEBUG3("cut_n_paste").
 
 %% @hidden
 delete_cell_contents_DEBUG(Site, Path) ->
@@ -876,6 +884,111 @@ insert_delete_DEBUG2(FunName) ->
 
     ok.
 
+copy_DEBUG3(FunName) ->
+
+    FunName2 = [FunName, "for_ranges"],
+
+    clear_cells_DEBUG(FunName2),
+
+    test_util:wait(100),
+
+    write_value(FunName2, FunName++" - ranges", {1, 1}, [bold, underline]),
+
+    make_high(FunName2, 1),
+
+    write_value(FunName2, "From Range", {1, 2}, [bold]),
+    write_value(FunName2, "a", {1, 3}, [{colour, "yellow"}]),
+    write_value(FunName2, "b", {1, 4}, [{colour, "yellow"}]),
+    write_value(FunName2, "c", {1, 5}, [{colour, "yellow"}]),
+    write_value(FunName2, "d", {2, 3}, [{colour, "yellow"}]),
+    write_value(FunName2, "e", {2, 4}, [{colour, "yellow"}]),
+    write_value(FunName2, "f", {2, 5}, [{colour, "yellow"}]),
+    write_value(FunName2, "g", {3, 3}, [{colour, "yellow"}]),
+    write_value(FunName2, "h", {3, 4}, [{colour, "yellow"}]),
+    write_value(FunName2, "i", {3, 5}, [{colour, "yellow"}]),
+
+    write_value(FunName2, "To Range (the same size)", {1, 7}, [bold]),
+    make_high(FunName2, 7),
+
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {range, {1, 3, 3, 5}},
+                                     {range, {1, 8, 3, 10}}),
+
+    write_value(FunName2, "From", {5, 2}, [bold]),
+
+    write_value(FunName2, "aa", {5, 3}, [{colour, "yellow"}]),
+    write_value(FunName2, "bb", {5, 4}, [{colour, "yellow"}]),
+    write_value(FunName2, "cc", {5, 5}, [{colour, "yellow"}]),
+    write_value(FunName2, "dd", {6, 3}, [{colour, "yellow"}]),
+    write_value(FunName2, "ee", {6, 4}, [{colour, "yellow"}]),
+    write_value(FunName2, "ff", {6, 5}, [{colour, "yellow"}]),
+    write_value(FunName2, "gg", {7, 3}, [{colour, "yellow"}]),
+    write_value(FunName2, "hh", {7, 4}, [{colour, "yellow"}]),
+    write_value(FunName2, "ii", {7, 5}, [{colour, "yellow"}]),
+
+    write_value(FunName2, "To Range (smaller)", {5, 7}, [bold]),
+
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {range, {5, 3, 7, 5}},
+                                     {range, {5, 8, 6, 9}}),
+
+    write_value(FunName2, "From", {9, 2}, [bold]),
+
+    write_value(FunName2, "aaa", {9, 3}, [{colour, "yellow"}]),
+    write_value(FunName2, "bbb", {9, 4}, [{colour, "yellow"}]),
+    write_value(FunName2, "ccc", {9, 5}, [{colour, "yellow"}]),
+    write_value(FunName2, "ddd", {10, 3}, [{colour, "yellow"}]),
+    write_value(FunName2, "eee", {10, 4}, [{colour, "yellow"}]),
+    write_value(FunName2, "fff", {10, 5}, [{colour, "yellow"}]),
+    write_value(FunName2, "ggg", {11, 3}, [{colour, "yellow"}]),
+    write_value(FunName2, "hhh", {11, 4}, [{colour, "yellow"}]),
+    write_value(FunName2, "iii", {11, 5}, [{colour, "yellow"}]),
+
+    write_value(FunName2, "To Cell", {9, 7}, [bold]),
+
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {range, {9, 3, 12, 5}},
+                                     {cell, {9, 8}}),
+
+    write_value(FunName2, "From Range", {1, 12}, [bold]),
+    write_value(FunName2, "aaaa", {1, 13}, [{colour, "yellow"}]),
+    write_value(FunName2, "bbbb", {1, 14}, [{colour, "yellow"}]),
+    write_value(FunName2, "cccc", {2, 13}, [{colour, "yellow"}]),
+    write_value(FunName2, "dddd", {2, 14}, [{colour, "yellow"}]),
+
+    write_value(FunName2, "To Vertical Tiles", {1, 16}, [bold]),
+    make_high(FunName2, 16),
+
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {range, {1,13, 2, 14}},
+                                     {range, {1, 17, 2, 22}}),
+
+    write_value(FunName2, "From Range", {4, 12}, [bold]),
+    write_value(FunName2, "A", {4, 13}, [{colour, "yellow"}]),
+    write_value(FunName2, "B", {4, 14}, [{colour, "yellow"}]),
+    write_value(FunName2, "C", {5, 13}, [{colour, "yellow"}]),
+    write_value(FunName2, "D", {5, 14}, [{colour, "yellow"}]),
+
+    write_value(FunName2, "To Horizontal Tiles", {4, 16}, [bold]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {range, {4, 13, 5, 14}},
+                                     {range, {4, 17, 7, 18}}),
+
+    write_value(FunName2, "From Range", {9, 12}, [bold]),
+    write_value(FunName2, "AA", {9, 13}, [{colour, "yellow"}]),
+    write_value(FunName2, "BB", {9, 14}, [{colour, "yellow"}]),
+    write_value(FunName2, "CC", {10, 13}, [{colour, "yellow"}]),
+    write_value(FunName2, "DD", {10, 14}, [{colour, "yellow"}]),
+
+    write_value(FunName2, "To Tiles", {9, 16}, [bold]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {range, {9, 13, 10, 14}},
+                                     {range, {9, 17, 12, 20}}),
+    
+    write_value(FunName2, "From Range", {14, 12}, [bold]),
+    write_value(FunName2, "AAA", {14, 13}, [{colour, "yellow"}]),
+    write_value(FunName2, "BBB", {14, 14}, [{colour, "yellow"}]),
+    write_value(FunName2, "CCC", {15, 13}, [{colour, "yellow"}]),
+    write_value(FunName2, "DDD", {15, 14}, [{colour, "yellow"}]),
+
+    write_value(FunName2, "Non-Tiling Range", {14, 16}, [bold]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {range, {14, 13, 15, 14}},
+                                     {range, {14, 17, 16, 16}}).
+
 copy_DEBUG2(FunName) ->
 
     FunName2 = [FunName],
@@ -912,6 +1025,10 @@ copy_DEBUG2(FunName) ->
     cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {1, 15}}, {cell, {1, 16}}),
     colour(FunName2, {1, 15}, "cyan"),
 
+    make_thick(FunName2, 1),
+    make_thick(FunName2, 2),
+    make_high(FunName2, 1),
+    
     % cell to cell across
     write_value(FunName2, "integer beside", {2, 2}, [bold]),
     write_value(FunName2, "1", {2, 3}, [{colour, "yellow"}]),
@@ -940,7 +1057,7 @@ copy_DEBUG2(FunName) ->
 
     make_thin(FunName2, 4),
 
-    write_value(FunName2, "Drag'n'Drop - cell to down 'thin' range", {5, 1}, [bold, underline]),
+    write_value(FunName2, FunName++" - cell to down 'thin' range", {5, 1}, [bold, underline]),
 
     % cell to range down
     write_value(FunName2, "integer below", {5, 2}, [bold]),
@@ -968,7 +1085,10 @@ copy_DEBUG2(FunName) ->
     cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {5, 15}}, {range, {5, 16, 5, 17}}),
     colour(FunName2, {5, 15}, "cyan"),
 
-    write_value(FunName2, "Drag'n'Drop - cell to across 'thin' range", {7, 1}, [bold, underline]),
+    write_value(FunName2, FunName++" - cell to across 'thin' range", {7, 1}, [bold, underline]),
+
+    make_thick(FunName2, 5),
+    make_thick(FunName2, 6),
 
     % cell to range down
     write_value(FunName2, "integer beside", {7, 2}, [bold]),
@@ -996,10 +1116,13 @@ copy_DEBUG2(FunName) ->
     cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {7, 15}}, {range, {7, 16,  8, 16}}),
     colour(FunName2, {7, 15}, "cyan"),
 
+    make_thick(FunName2, 7),
+    make_thick(FunName2, 8),
+
     make_thin(FunName2, 9),
 
     % cell to 'thick' ranges don't increment even if they are drag'n'drop
-    write_value(FunName2, "Drag'n'Drop - cell to 'thick' range", {10,1}, [bold, underline]),
+    write_value(FunName2, FunName++" - cell to 'thick' range", {10,1}, [bold, underline]),
 
     write_value(FunName2, "integer", {10,2}, [bold]),
     write_value(FunName2, "1", {10,3}, [{colour, "yellow"}]),
@@ -1011,6 +1134,8 @@ copy_DEBUG2(FunName) ->
     write_value(FunName2, "1", {10,12}, [{colour, "yellow"}]),
     cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {10,12}}, {range, {10, 20, 11, 13}}),
     colour(FunName2, {10,3}, "cyan"),
+
+    make_thick(FunName2, 10),
 
     make_thin(FunName2, 12),
 
@@ -1038,6 +1163,8 @@ copy_DEBUG2(FunName) ->
     colour(FunName2, {14, 6}, "orange"),
     colour(FunName2, {14, 7}, "orange"),
 
+    make_thick(FunName2, 13),
+
     make_thin(FunName2, 15),
 
     % some formula stuff
@@ -1059,7 +1186,64 @@ copy_DEBUG2(FunName) ->
     write_value(FunName2, "fix row and col formula below", {16,17}, [bold]),
     write_value(FunName2, "=$m$3+n3", {16, 18}, [{colour, "yellow"}]),
     cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {16, 18}}, {range, {16, 19, 17, 21}}),
-    colour(FunName2, {16, 18}, "cyan").
+    colour(FunName2, {16, 18}, "cyan"),
+
+    make_thick(FunName2, 16).
+
+get_tiles_DEBUG() ->
+    F1 = #refX{obj = {range, {1, 1, 2, 2}}},
+    F2 = #refX{obj = {range, {1, 1, 3, 3}}},
+    T1 = #refX{obj = {range, {1, 1, 3, 3}}},
+    T2 = #refX{obj = {range, {1, 1, 6, 6}}},
+    T3 = #refX{obj = {range, {1, 1, 3, 6}}},
+    T4 = #refX{obj = {range, {1, 1, 6, 3}}},
+
+    T5 = #refX{obj = {range, {1, 1, 1, 3}}},
+    T6 = #refX{obj = {range, {1, 3, 3, 3}}},
+    T7 = #refX{obj = {range, {2, 3, 4, 7}}},
+    T8 = #refX{obj = {range, {1, 1, 1, 1}}},
+
+    get_tiles(F1, T8),
+    io:format("**********************************~n"),
+    get_tiles(F2, T8),
+    io:format("**********************************~n"),
+    get_tiles(F2, T1),
+    io:format("**********************************~n"),   
+    get_tiles(F2, T2),
+    io:format("**********************************~n"),   
+    get_tiles(F2, T3),
+    io:format("**********************************~n"),   
+    get_tiles(F2, T4),  
+    io:format("**********************************~n"),   
+    get_tiles(F2, T7).    
+
+read_styles_DEBUG() ->
+    Site = "http://blah.com",
+    Path = ["some", "path"],
+    write_value(Site, Path, "1", {1, 1}, []),
+    write_value(Site, Path, "bob", {1, 2}, []),
+    write_value(Site, Path, "true", {2, 1}, []),
+    write_value(Site, Path, "1/1/09", {2, 2}, []),
+
+    RefX1 = #refX{site = Site, path = Path, obj = {cell, {1, 1}}},
+    RefX2 = #refX{site = Site, path = Path, obj = {cell, {1, 2}}},
+    RefX3 = #refX{site = Site, path = Path, obj = {cell, {2, 1}}},
+    RefX4 = #refX{site = Site, path = Path, obj = {cell, {2, 2}}},
+
+    RefX5 = #refX{site = Site, path = Path, obj = {column, 2}},
+    RefX6 = #refX{site = Site, path = Path, obj = {row, 2}},
+    RefX7 = #refX{site = Site, path = Path, obj = {range,{1, 1, 2, 2}}},
+    RefX8 = #refX{site = Site, path = Path, obj = {page, "/"}},
+
+    List = [RefX1, RefX2, RefX3, RefX4, RefX5, RefX6, RefX7, RefX8],
+    [io:format("read_styles returns ~p~n", [read_styles_DEBUG2(X)]) || X <- List].
+
+read_styles_DEBUG2(X) ->
+    io:format("reading styles for ~p~n", [X]),
+    Fun = fun() ->
+                  hn_db_wu:read_styles(X)
+          end,
+    mnesia:activity(transaction, Fun).
 
 insert_delete(Fun, Path, Target) ->
     Site = "http://127.0.0.1:9000",
@@ -1081,32 +1265,40 @@ cut_n_drag_n_copy_n_drop_n_paste(Fun, Path, From, To) ->
 write_value(Site, Path, Value, {X, Y}, Attributes) ->
 %% wont work for bold and stuff anymore...
     RefX = #refX{site = Site, path = Path, obj = {cell, {X, Y}}},
-    write_attributes(RefX, [{formula, Value}]).
+    write_attributes(RefX, [{formula, Value}]),
+    write_attr_DEBUG(RefX, Attributes).
 
 %% just write to the default
 write_value(Path, Value, {X, Y}, Attributes) ->
     Site = "http://127.0.0.1:9000",
     write_value(Site, Path, Value, {X, Y}, Attributes).
 
-write_attr_DEBUG([], _, _) -> ok;
-write_attr_DEBUG([Attr | T], {X, Y}, Cell) ->
-    {Name, V} = case Attr of
-                    bold              -> {'font-weight', "bold"};
-                    underline         -> {'text-decoration', "underline"};
-                    center            -> {'font-align', "center"};
-                    {colour, Colour}  -> {'background-color', Colour};
-                    thin              -> {width, 30};
-                    thick             -> {width, 200}
-                end,
-    Addr = Cell#ref{name=Name},
-    exit("fix me!"),
-    hn_main:set_attribute(Addr, V),
-    write_attr_DEBUG(T, {X, Y}, Cell).
+write_attr_DEBUG(_RefX, []) -> ok;
+write_attr_DEBUG(RefX, [Attr | T]) ->
+    Attr2 = case Attr of
+                bold              -> {'font-weight', "bold"};
+                underline         -> {'text-decoration', "underline"};
+                center            -> {'font-align', "center"};
+                {colour, Colour}  -> {'background-color', Colour};
+                thin              -> {width, "30"};
+                thick             -> {width, "200"}
+            end,
+    write_attributes(RefX, [Attr2]),
+    write_attr_DEBUG(RefX, T).
 
 colour(Path, {X, Y}, Colour) ->
     Site = "http://127.0.0.1:9000",
     RefX = #refX{site = Site, path = Path, obj = {cell, {X, Y}}},
     Val = {'background-color', Colour},
+    Fun = fun() ->
+                  hn_db_wu:write_attr(RefX, Val)
+          end,
+    mnesia:activity(transaction, Fun).
+
+make_high(Path, X) ->
+    Site = "http://127.0.0.1:9000",
+    RefX = #refX{site = Site, path = Path, obj = {row, X}},
+    Val = {height, "30"},
     Fun = fun() ->
                   hn_db_wu:write_attr(RefX, Val)
           end,
@@ -1164,65 +1356,4 @@ write_data(Site, Path) ->
     write_value(Site, Path, "X", {24, 1}, []),
     write_value(Site, Path, "Y", {25, 1}, []),
     write_value(Site, Path, "Z", {26, 1}, []).
-
-get_tiles_DEBUG() ->
-    F1 = #refX{obj = {range, {1, 1, 2, 2}}},
-    F2 = #refX{obj = {range, {1, 1, 3, 3}}},
-    T1 = #refX{obj = {range, {1, 1, 3, 3}}},
-    T2 = #refX{obj = {range, {1, 1, 6, 6}}},
-    T3 = #refX{obj = {range, {1, 1, 3, 6}}},
-    T4 = #refX{obj = {range, {1, 1, 6, 3}}},
-
-    T5 = #refX{obj = {range, {1, 1, 1, 3}}},
-    T6 = #refX{obj = {range, {1, 3, 3, 3}}},
-    T7 = #refX{obj = {range, {2, 3, 4, 7}}},
-    T8 = #refX{obj = {range, {1, 1, 1, 1}}},
-
-    get_tiles(F1, T8),
-    io:format("**********************************~n"),
-    get_tiles(F2, T8),
-    io:format("**********************************~n"),
-    get_tiles(F2, T1),
-    io:format("**********************************~n"),   
-    get_tiles(F2, T2),
-    io:format("**********************************~n"),   
-    get_tiles(F2, T3),
-    io:format("**********************************~n"),   
-    get_tiles(F2, T4),  
-    io:format("**********************************~n"),   
-    get_tiles(F2, T7).    
-
-copy3_DEBUG() ->
-    From = #refX{obj = {range, {1, 1, 2, 2}}},
-    To = #refX{obj = {range, {1, 1, 6, 8}}},
-    copy3(From, To, true).
-
-read_styles_DEBUG() ->
-    Site = "http://blah.com",
-    Path = ["some", "path"],
-    write_value(Site, Path, "1", {1, 1}, []),
-    write_value(Site, Path, "bob", {1, 2}, []),
-    write_value(Site, Path, "true", {2, 1}, []),
-    write_value(Site, Path, "1/1/09", {2, 2}, []),
-
-    RefX1 = #refX{site = Site, path = Path, obj = {cell, {1, 1}}},
-    RefX2 = #refX{site = Site, path = Path, obj = {cell, {1, 2}}},
-    RefX3 = #refX{site = Site, path = Path, obj = {cell, {2, 1}}},
-    RefX4 = #refX{site = Site, path = Path, obj = {cell, {2, 2}}},
-
-    RefX5 = #refX{site = Site, path = Path, obj = {column, 2}},
-    RefX6 = #refX{site = Site, path = Path, obj = {row, 2}},
-    RefX7 = #refX{site = Site, path = Path, obj = {range,{1, 1, 2, 2}}},
-    RefX8 = #refX{site = Site, path = Path, obj = {page, "/"}},
-
-    List = [RefX1, RefX2, RefX3, RefX4, RefX5, RefX6, RefX7, RefX8],
-    [io:format("read_styles returns ~p~n", [read_styles_DEBUG2(X)]) || X <- List].
-
-read_styles_DEBUG2(X) ->
-    io:format("reading styles for ~p~n", [X]),
-    Fun = fun() ->
-                  hn_db_wu:read_styles(X)
-          end,
-    mnesia:activity(transaction, Fun).
-
 
