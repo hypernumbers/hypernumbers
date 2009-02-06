@@ -163,20 +163,27 @@ lit({_Type, Data})      -> Data.
 lit({_Type, Data}, Fun) -> Fun(Data).
 
 %% operator function calls
-op(Arg1, {Op}, Arg2) -> [Op, Arg1, Arg2].
-
+op(Arg1, {Op}, Arg2) -> [Op, Arg1, Arg2]; % used by production rule actions.
+op(Arg1, Op, Arg2)   -> [Op, Arg1, Arg2]. % used by helpers.
+    
 %%% special cases for division / path separator ambiguity:
+%% (what a crap sandwich)
 
 special_div(Ref1 = {ref, _, _, _, _}, Ref2 = {ref, _, _, "/", _}) ->
     Ref22 = setelement(4, Ref2, "."), % the cell is on current page, NOT root.
-    op(hslists:init(tuple_to_list(Ref1)),
-       {'/'},
-       hslists:init(tuple_to_list(Ref22)));
+    op(hslists:init(tuple_to_list(Ref1)), '/', hslists:init(tuple_to_list(Ref22)));
 special_div(E, Ref = {ref, _, _, "/", _}) ->
     Ref2 = setelement(4, Ref, "."), 
-    op(E, {'/'}, hslists:init(tuple_to_list(Ref2)));
-special_div(E, _Ref = {ssnumref, Str}) -> % Str is something like "/59"
-    op(E, {'/'}, list_to_integer(tl(Str))).
+    op(E, '/', hslists:init(tuple_to_list(Ref2)));
+special_div(E, _Ref = {ssnumref, Str}) ->
+    %% Str is something like "/2/3/4"
+    %% it is guaranteed to be cleanly separated by "/"s (no whitespace) because
+    %% otherwise ssnumref would not match in the lexer.
+    Toks = string:tokens(Str, "/"),
+    %% convert ssnumref to a division node for the AST.
+    _DivNode = foldl(fun(N, Acc) -> op(Acc, '/', tconv:to_num(N)) end,
+                     E,
+                     Toks). % will always have at least two elements in Toks.
 
 %% token + list of args -> function call for AST.
 func(Tuple, Args) -> [func_name(Tuple)] ++ Args.
