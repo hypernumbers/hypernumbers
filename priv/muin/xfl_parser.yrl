@@ -38,7 +38,7 @@ Left     500 '^'.
 Left     600 '%'.
 Unary    700 Uminus.
 Nonassoc 800 ':'.
-Nonassoc     900 '^^'.
+Left     900 '^^'.
 
 %%% production rules
 
