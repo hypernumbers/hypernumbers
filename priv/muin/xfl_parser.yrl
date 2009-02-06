@@ -198,6 +198,43 @@ to_native_list(Ary) ->
 postproc(Ast) ->
     Ast.
 
+%%% UNIT TESTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+%% @doc Parsing function for tests.
+
+parse_test(Str) ->
+    Coord = {10, 20},
+    {ok, Toks} = xfl_lexer:lex(Str, Coord),
+    {ok, Ast} = xfl_parser:parse(Toks),
+    Ast.
+
+-define(P(Str, ExpectedAst), ?_assert(parse_test(Str) == ExpectedAst)).
+
+-include_lib("eunit/include/eunit.hrl").
+
+%%% intersections (range overlap really)
+
+intersection_test_() ->
+    [
+     ?P("A1:B10 ^^ A1:A5",
+        ['^^',
+         [':', {ref,{col,-9},{row,-9},"./","A1"}, {ref,{col,-8},{row,0},"./","B10"}],
+         [':', {ref,{col,-9},{row,-9},"./","A1"}, {ref,{col,-9},{row,-5},"./","A5"}]]),
+
+     ?P("@YEAR ^^ @SALESMAN",
+        ['^^',[name,"year","./"],[name,"salesperson","./"]]),
+
+     ?P("/bla/foo/bar/A1:B10 ^^ A1:A5",
+        ['^^',
+         [':', {ref,{col,-9},{row,-9},"/bla/foo/bar/","A1"}, {ref,{col,-8},{row,0},"./","B10"}],
+         [':', {ref,{col,-9},{row,-9},"./","A1"}, {ref,{col,-9},{row,-5},"./","A5"}]]),
+     
+     ?P("/salesdata/@YEAR ^^ @SALESMAN",
+        ['^^',
+         [name,"@YEAR","/salesdata/"],
+         [name,"salesman","./"]])        
+    ].
+
 %% -define(CURRENT_CELL, {10, 10}).
 %% -define(TESTS,
 %%         [
