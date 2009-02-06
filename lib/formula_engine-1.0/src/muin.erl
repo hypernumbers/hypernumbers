@@ -94,11 +94,6 @@ eval(Node = [Func|Args]) when ?is_fn(Func) ->
             end;
         {reeval, Newnode} ->
             eval(Newnode);
-        {get_urls,Urls} ->
-            Site=get(site),
-            Fun=fun([_A,_B,_C,D]) -> "{"++Site++D++"}" end,
-            List=lists:map(Fun,Urls),
-            lists:flatten(hslists:intersperse(",",List));
         [Func2|Args2] ->
             CallArgs = [eval(X) || X <- Args2],
             call(Func2, CallArgs)
@@ -188,7 +183,8 @@ preproc([offset, _Base = [ref, C, R, P], Rows, Cols, H, W]) ->
                 end
         end,
     
-    {reeval, Res}.
+    {reeval, Res};
+preproc(_Node) -> false.
 
 funcall(choose, [A|Vs]) when ?is_area(A) ->
     Flatvs = muin_collect:flatten_arrays([A]),
