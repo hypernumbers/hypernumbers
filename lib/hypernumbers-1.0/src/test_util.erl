@@ -92,12 +92,12 @@ import_xls(Name) ->
              end,
     
     ?INFO("Start Posting: ~p", [Name]),
-    gen_server:cast(dirty_cell,  {setstate, passive}),
+    % gen_server:cast(dirty_cell,  {setstate, passive}),
     lists:foreach(Dopost, Lits),
     lists:foreach(Dopost, Flas),
     ?INFO("Start Recalculating: ~p", [Name]),
-    _Return1=gen_server:cast(dirty_cell, {setstate, active}),
-    _Return2=gen_server:call(dirty_cell, flush, infinity),
+    % _Return1=gen_server:cast(dirty_cell, {setstate, active}),
+    % _Return2=gen_server:call(dirty_cell, flush, infinity),
 
     % Now fire in the CSS and formats
     WriteCSS = fun(X) ->
