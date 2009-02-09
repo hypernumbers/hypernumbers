@@ -57,17 +57,21 @@ rev_comp(I,[{expr_formula_range,{tExp,[Sheet,Row,Col], {return,none}}}|T],
 %% tTbl
 %% used in what-if tables and stuff - not implemented yet!    
 
-%% tAdd tSub tMul tDiv tPower tConcat tLT tLE tEQ tGE tGT tNE tIsect
+%% tAdd tSub tDiv tMul tPower tConcat tLT tLE tEQ tGE tGT tNE tIsect
 %% Pop two off the stack and the build an operator set backwards
 %% ie second first and first second...
-rev_comp(I,[{Op,_Token}|T],TokArr,Stack,Tbl) when
-Op =:= addition ;    Op =:= subtraction;
-Op =:= divide ;      Op =:= power;
-Op =:= less_than;    Op =:= less_than_or_equal;
-Op =:= equals;       Op =:= greater_than_or_equal;
-Op =:= greater_than; Op =:= not_equal;
-Op =:= multiply;     Op =:= concatenate ->
-
+rev_comp(I,[{Op,_Token}|T],TokArr,Stack,Tbl) when Op =:= addition ;
+                                                  Op =:= subtraction;
+                                                  Op =:= power;
+                                                  Op =:= less_than;
+                                                  Op =:= less_than_or_equal;
+                                                  Op =:= equals;
+                                                  Op =:= greater_than_or_equal;
+                                                  Op =:= greater_than;
+                                                  Op =:= not_equal;
+                                                  Op =:= divide;
+                                                  Op =:= multiply;
+                                                  Op =:= concatenate ->
     {Spaces1,[First|Rest]}  = popSpaces(Stack),
     {Spaces2,[Second|Last]} = popSpaces(Rest),
     rev_comp(I,T,TokArr,[{Second,Spaces1,Op,Spaces2,First}|Last],Tbl);
@@ -532,7 +536,7 @@ read_token_array(N,<<?ErrorArrayEl:8/little-unsigned-integer,
 to_str(addition)              -> "+";
 to_str(subtraction)           -> "-";
 to_str(multiply)              -> "*";
-to_str(divide)                -> "/";
+to_str(divide)                -> " / ";
 to_str(power)                 -> "^";
 to_str(concatenate)           -> "&";
 to_str(less_than)             -> "<";
