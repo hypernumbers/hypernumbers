@@ -39,7 +39,7 @@ post_process_tables(Tables) ->
     convert_dates(Tables),
     fix_up_formats(Tables),
     create_array_formulae(Tables),
-    excel_util:dump(Tables),
+    % excel_util:dump(Tables),
     ok.
 
 %% This function takes the raw format data and turns into the apppriate format
