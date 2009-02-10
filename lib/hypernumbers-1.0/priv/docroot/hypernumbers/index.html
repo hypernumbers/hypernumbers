@@ -9,14 +9,11 @@
     <style type="text/css">
       @import "/hypernumbers/hn.sheet.css";
     </style>
-    
-    <script src="/hypernumbers/hn.sheet.js"></script>
-    
+
   </head>
-  
   <body>
     
-    <table cellspacing="0" cellpadding="0">
+    <table cellspacing="0" cellpadding="0" id="hn">
       <tr>
         <td id="header">
           <h1><a href="">Hypernumbers</a></h1>
@@ -26,29 +23,153 @@
         </td>
       </tr>
       <tr>
+        <td height="22px">
+          <div>
+            <ul id="menu">
+              <li><a>File</a>
+                <ul>
+        	      <li id="browse"><a>Browse</a>
+                    <ul><li><a>stuff</a></li></ul>
+                  </li>
+        	      <li><a href="?save">Save</a></li>
+        	      <li><a id="m_import">Import Spreadsheet</a></li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+      <tr>
         <td id="toolbar">
-          <select>
-            <option>Normal</option>
-            <option>Serif</option>
-            <option>Monospace</option>
-          </select>
-          <select>
-           <option>10px</option>
-            <option>12px</option>
-            <option>14px</option>
-          </select>
+          <div class="expand fonts">
+            <span>Font</span>
+            <div>
+              <a>Normal</a>
+              <a class="serif">Serif</a>
+              <a class="monospace">Monospace</a>
+            </div>
+          </div>
+
+          <div class="expand fonts">
+            <span>11px</span>
+            <div>
+              <a class="size-8">8px</a>
+              <a class="size-11">11px</a>
+              <a class="size-12">12px</a>
+              <a class="size-16">16px</a>
+              <a class="size-20">20px</a>
+            </div>
+          </div>
+
           <a class="separator"></a>
-          <a title="Left Align" alt="Left Align" id="left-text" class="left"></a>
-          <a title="Center align" alt="Center align" id="center"></a>
-          <a title="Right align" alt="Right align" id="right-text"></a>
-          <a title="Justify" alt="Justify" id="justify"></a>
+
+          <div class="expand fonts">
+            <span>Format</span>
+            <div id="formats">
+              <a>Plain</a>
+              <hr />
+              <a>100 <span class="desc">(rounded)</span></a>
+              <a>100.00 <span class="desc">(2 decimals)</span></a>
+              <a><span class="red">100</span><span class="desc">(rounded)</span></a>
+              <hr />
+              <a>(100) <span class="desc">(financial)</span></a>
+              <a>(100.00) <span class="desc">(financial)</span></a>
+              <hr />
+              <a>£100 <span class="desc">(currency)</span></a>
+              <a>£100.00 <span class="desc">(currency)</span></a>
+              <a><span class="red">£100</span>
+                <span class="desc">(currency)</span></a>
+              <hr />
+              <a>10% <span class="desc">(percentage)</span></a>
+              <a>10.12% <span class="desc">(percentage)</span></a>
+              <hr />
+              <a>03/02/2009 <span class="desc">(date)</span></a>
+              <a>14:49:00 <span class="desc">(time)</span></a>
+              <a>03/02/2009 14:49:00 <span class="desc">(datetime)</span></a>
+            </div>
+          </div>
+
           <a class="separator"></a>
-          <a title="Bold" alt="Bold" id="bold"></a>
-          <a title="Italic" alt="Italic" id="italic"></a>
-          <a title="Underline" alt="Underline" id="underl"></a>
-          <a title="Strikethough" alt="Strikethough" id="strike"></a>
+          
+          <div class="expand">
+            <span><a id="left-head" class="icon"></a></span>
+            <div>
+              <a title="Left align" id="left-text" class="toolbar-item"></a>
+              <a title="Center align" id="center" class="toolbar-item"></a>
+              <a title="Right align" id="right-text" class="toolbar-item"></a>
+              <a title="Justify" id="justify" class="toolbar-item"></a>
+            </div>
+          </div>
           <a class="separator"></a>
-          <a title="Format Cells" alt="Format Cells" id="format"></a>
+          <a title="Bold" id="bold" class="toolbar-item"></a>
+          <a title="Italic" id="italic" class="toolbar-item"></a>
+          <a title="Underline" id="underl" class="toolbar-item"></a>
+          <a title="Strikethough" id="strike" class="toolbar-item"></a>
+          <a class="separator"></a>
+          <div class="expand">
+            <span><a id="border-head" class="icon"></a></span>
+            <div>
+              <a id="border-surround" class="toolbar-item"></a>
+              <a id="border-inside" class="toolbar-item"></a>
+              <a id="border-none" class="toolbar-item"></a>
+              <a id="border-all" class="toolbar-item"></a><br />
+              <a id="border-left" class="toolbar-item"></a>
+              <a id="border-top" class="toolbar-item"></a>
+              <a id="border-right" class="toolbar-item"></a>
+              <a id="border-bottom" class="toolbar-item"></a>
+            </div>
+          </div>
+          <a class="separator"></a>          
+          <div class="expand">
+            <span><a id="bgcolor-head" class="icon"></a></span>
+            <div>
+              <a id="color-000000" class="color"></a>
+              <a id="color-FFFFFF" class="color"></a>
+              <a id="color-FF0000" class="color"></a>
+              <a id="color-00FF00" class="color"></a>
+              <a id="color-0000FF" class="color"></a><br />
+              <a id="color-FFFF00" class="color"></a>
+              <a id="color-FF00FF" class="color"></a>
+              <a id="color-00FFFF" class="color"></a>
+              <a id="color-800000" class="color"></a>
+              <a id="color-008000" class="color"></a><br />
+              <a id="color-000080" class="color"></a>
+              <a id="color-000000" class="color"></a>
+              <a id="color-808000" class="color"></a>
+              <a id="color-800080" class="color"></a>
+              <a id="color-008080" class="color"></a><br />
+              <a id="color-C0C0C0" class="color"></a>
+              <a id="color-808080" class="color"></a>
+              <a id="color-9999FF" class="color"></a>
+              <a id="color-993366" class="color"></a>
+              <a id="color-FFFFCC" class="color"></a>
+            </div>
+          </div>
+          <div class="expand">
+            <span><a id="fontcolor-head" class="icon"></a></span>
+            <div>
+              <a id="color-000000" class="color"></a>
+              <a id="color-FFFFFF" class="color"></a>
+              <a id="color-FF0000" class="color"></a>
+              <a id="color-00FF00" class="color"></a>
+              <a id="color-0000FF" class="color"></a><br />
+              <a id="color-FFFF00" class="color"></a>
+              <a id="color-FF00FF" class="color"></a>
+              <a id="color-00FFFF" class="color"></a>
+              <a id="color-800000" class="color"></a>
+              <a id="color-008000" class="color"></a><br />
+              <a id="color-000080" class="color"></a>
+              <a id="color-000000" class="color"></a>
+              <a id="color-808000" class="color"></a>
+              <a id="color-800080" class="color"></a>
+              <a id="color-008080" class="color"></a><br />
+              <a id="color-C0C0C0" class="color"></a>
+              <a id="color-808080" class="color"></a>
+              <a id="color-9999FF" class="color"></a>
+              <a id="color-993366" class="color"></a>
+              <a id="color-FFFFCC" class="color"></a>
+            </div>
+          </div>
         </td>
       </tr>
       <tr>
@@ -68,7 +189,7 @@
         <td>
           <table cellspacing="0" cellpadding="0">
             <tr height="20px">
-              <td width="25px" id="corner"></td>
+              <td id="corner"></td>
               <td colspan="2">
                 <div style="position:relative;top:-10px;">
                   <div style="position:absolute;" id="columns"></div>
@@ -83,7 +204,13 @@
               </td>
               <td height="100%">
                 <div style="position:relative;height:100%;overflow:hidden;">
-                  <div id="scroller"></div>
+                  <div id="scroller">
+                    <div id="selection">
+                      <textarea id="input"></textarea>
+                      <div id="current"></div>
+                      <div id="dragged"></div>
+                    </div>
+                  </div>
                 </div>
               </td>
               <td width="15px">
@@ -125,7 +252,12 @@
       </tr>
     </table>
   </body>
-  
+
+  <script src="/hypernumbers/jquery-1.3.1.min.js"></script>
+  <script src="/hypernumbers/jquery.filemenu.js"></script>
+  <script src="/hypernumbers/hn.sheet.js"></script>
+  <script src="/hypernumbers/hn.layout.js"></script>
+      
   <script type="text/javascript">
     new HN.SpreadSheet("hn");
   </script>

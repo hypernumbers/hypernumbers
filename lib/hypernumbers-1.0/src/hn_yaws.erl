@@ -74,16 +74,13 @@ do_request(Arg, Url) ->
                    UserId
            end,
     
-    %% Dodgy expenses system stuff
-    put(username,User),
-    
     {ok,Access} = case hn_users:get_permissions(User,Ref) of
-                      {ok,{protected_read,Token}}  -> {ok,read};
+                      {ok,{protected_read, Token}} -> {ok,read};
                       {ok,{protected_write,Token}} -> {ok,write};
                       {ok,{_Write,_Tok}}           -> {ok,require_token};
                       Else                         -> Else
                   end,
-
+    
     Return = case req(Method,PostData,Vars,Access,Ref) of
                  {return,Data} ->
                      Data;
@@ -133,7 +130,7 @@ req('GET',[],[],_,Ref=#ref{ref={page,"/"}}) ->
            end,
     {return,{page,HTML}};
 req('GET',[],[{"gui",GUI}],_,#ref{ref={page,"/"}}) ->
-    {return,?NOCACHE++[{page,"/apps/"++GUI++".html"}]};
+    {return,?NOCACHE++[{page,"/"++GUI++".html"}]};
 
 req('GET',[],["new"],_,Ref=#ref{site=Site,ref={page,"/"}}) ->
     Tpl = case hn_db:get_item_val(Ref#ref{name='__template'}) of

@@ -3,6 +3,7 @@
 -export([create/2,delete/1,login/2,exists/1,gen_authtoken/2,
         get_permissions/2]).
 
+-include("hypernumbers.hrl").
 -include("yaws_api.hrl").
 -include("spriki.hrl").
 

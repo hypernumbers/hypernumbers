@@ -313,10 +313,13 @@ add_uniq(List,Item) ->
 %%--------------------------------------------------------------------
 %% Function:    trim/2
 %%--------------------------------------------------------------------
-trim(String) -> strip_ws(lists:reverse(strip_ws(lists:reverse(String)))).
+trim(String) -> 
+    strip_ws(lists:reverse(strip_ws(lists:reverse(String)))).
 
-strip_ws([H|Rest]) when H == 10; H == 13; H == 32 -> strip_ws(Rest);
-strip_ws(String) -> String.
+strip_ws([H|Rest]) when H == 10; H == 13; H == 32 -> 
+    strip_ws(Rest);
+strip_ws(String) -> 
+    String.
 
 %%--------------------------------------------------------------------
 %% Function:    is_alpha/1

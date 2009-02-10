@@ -1,25 +1,21 @@
-#menu 
-{ 
-  font:         13px sans-serif; 
+#menu { 
+  font:         11px sans-serif; 
   height:       22px;
   background:   #F1EEE9;
 }
 
-#menu li 
-{ 
+#menu li { 
   list-style:   none; 
   float:        left; 
 }    
 
-#menu li li 
-{
+#menu li li {
   float:        none; 
   display:      block; 
   position:     relative;
 }
 
-#menu ul 
-{ 
+#menu ul { 
   display:      none; 
   position:     absolute;  
   border:       1px solid; 
@@ -28,14 +24,12 @@
   background:   #F1EEE9; 
 }
 
-#menu ul ul 
-{ 
+#menu ul ul { 
   left:         100%; 
   top:          0; 
 } 
 
-#menu a 
-{
+#menu a {
   position:     relative;
   display:      block; 
   background:   #F1EEE9;
@@ -46,32 +40,27 @@
   color:        #000;
 }
 
-#menu li ul li .padded 
-{
+#menu li ul li .padded {
   padding-left:  24px;
 }
 
-#menu li ul li a 
-{ 
+#menu li ul li a { 
   background:   #f8f7f6;       
   padding:      3px 18px 3px 3px; 
   z-index:      200;
 }
 
-#menu .hover 
-{ 
+#menu .hover { 
   background:   #ffc47e; 
 }  
 
-#menu li.seperator 
-{ 
+#menu li.seperator { 
   height:       0px; 
   border-top:   1px solid #CCC; 
   margin:       3px 0px;      
 }
 
-#menu div.input
-{
+#menu div.input {
   position:     relative;
   padding:      2px;
   width:        16px;
@@ -80,19 +69,16 @@
   z-index:      500;
 }
 
-#menu .icon
-{
+#menu .icon {
   background-repeat: no-repeat;
   background-position:3px 3px; 
 }
 
-#menu .arrow
-{
+#menu .arrow {
   display:      none;
 }
 
-#menu ul li .arrow 
-{ 
+#menu ul li .arrow { 
   display:block;
   position:absolute;
   height:16px;

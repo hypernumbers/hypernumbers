@@ -22,14 +22,18 @@ body
   font:    11px Arial,"Helvetica Neue", sans-serif;
 }
 
-table
-{  
+table {  
   width:100%;
   height:100%;
 }
 
 input { 
   background:#FFF; 
+}
+
+ul,li { 
+ margin:0px;
+ padding:0px;
 }
 
 #header { 
@@ -46,17 +50,15 @@ input {
   margin:     0px 20px 0px 5px;
 }
 
-
 #navigation li { 
-    text-align: center;
-    cursor:     pointer;
-    display:    block;
-    width:      50px;
-    padding:    3px 13px 3px 13px;
-    background: #666;
-    color:      white;
+  text-align: center;
+  cursor:     pointer;
+  display:    block;
+  width:      50px;
+  padding:    3px 13px 3px 13px;
+  background: #666;
+  color:      white;
 }
-
 
 #header h1 { 
   display:block;
@@ -92,12 +94,13 @@ input {
   height:18px;
   width:28px;
   border-style:outset;
-  border-width:0 1px;
+  border-width:0px 1px;
   background: #DDDDDD;
 }
 
 #corner {
   height:19px;
+  width:25px;
   border-bottom:  1px solid #aaa;
   border-right:   1px solid #aaa;
   background:     #ddd;
@@ -185,52 +188,15 @@ input {
 #bottom-bar.active { background: url(sprite-x.png) 0px -30px; }
 #right-bar.active  { background: url(sprite-y.png) -28px 0px; }
 
-/******************************************************************************
-	    ROWS
-******************************************************************************/
 #rows
 { 
     width:26px;
-    height:100%;
-    background:     #ddd;    
-    overflow:       hidden;
 }
 
-#rows div
-{
-    padding:        3px 3px 0px 0px;
-    border-bottom:  1px solid #aaa;
-    border-right:   1px solid #aaa;
-    overflow:       hidden;
-    text-align:     right;
-    background:     #ddd;    
-    font-size:      9px;
-    vertical-align: top;
-    font: 9px "Helvetica Neue", sans-serif;
-}
-
-/******************************************************************************
-	    COLUMNS
-******************************************************************************/
 #columns
 {
     height:         20px;
-    overflow:       hidden;
-    background:     #ddd;    
-    position:       relative;
-    width:	        4000px;
-}
-
-#columns div
-{
-    padding:        5px 0px; 
-    float:	        left;
-    border-bottom:  1px solid #aaa;
-    border-right:   1px solid #aaa;
-    height:         9px;
-    text-align:     center;
-    background:     #ddd;    
-    font: 9px "Helvetica Neue", sans-serif;
+    z-index:-99;
 }
 
 /******************************************************************************
@@ -245,13 +211,84 @@ input {
     border-top:     1px solid #ddd;
 }
 
+#toolbar .expand { 
+  background: url(down.png) no-repeat right 2px;
+  cursor:pointer;
+  padding:2px 16px 2px 3px;
+  margin: 2px;
+  height: 16px;
+  border: 1px solid transparent;
+  float:  left;
+}
+
+#toolbar .fonts a { 
+  display:block;
+  padding:2px 5px;
+}
+
+#toolbar .fonts a:hover { 
+  background:#DDD;
+}
+
+#toolbar .expand > div { 
+  z-index:9999;
+  background:white;
+  border: 1px solid #999;
+  position:absolute;
+  top:auto;
+  display:none;
+  padding:4px 0px;
+}
+
+#toolbar .expand:hover, #toolbar .expand.active {
+  border: 1px solid #BBB;
+  background-color:#fff;
+}
+
+#toolbar a.separator
+{
+    cursor:         default;
+    margin:         3px;
+    padding:        0px;
+    height:         18px;
+  float:left;
+    width:          0px !important;
+    border-left:    1px solid #999;
+    border-right:   1px solid #FFF;
+}
+
+#toolbar hr { background-color:#999; height:1px; border:0px; }
+
+#formats {  width:180px;  }
+
+.serif { font:11px serif; }
+.monospace { font:11px monospace; }
+
+.size-8  { font-size:8px; }
+.size-11 { font-size:11px; }
+.size-12 { font-size:12px; }
+.size-16 { font-size:16px; }
+.size-20 { font-size:20px; }
+
+.desc { font-size: 8px; position:absolute; right:4px; }
+
+.red { color:red; }
+
 #toolbar select
 { 
   margin:2px;
   float: left;
 }
 
-#toolbar a 
+#toolbar .icon { 
+  background-image: url(sprite.png);
+  cursor:     pointer;
+  display:    block;
+  height:     16px;
+  width:      16px;
+}
+
+#toolbar a.toolbar-item
 {
   background-image: url(sprite.png);
   float:      left;
@@ -264,22 +301,52 @@ input {
   width:      16px;
 }
 
-#toolbar a:hover
+#toolbar a.toolbar-item:hover
 {
-    border:         1px solid #BBB;
+    border: 1px solid #BBB;
     background-color:#fff;
 }
 
-#toolbar a.separator
+#toolbar a.color
 {
-    cursor:         default;
-    margin:         3px;
-    padding:        0px;
-    height:         18px;
-    width:          0px !important;
-    border-left:    1px solid #999;
-    border-right:   1px solid #FFF;
+  float:      left;
+  cursor:     pointer;
+  border:     1px solid #AAAAAA;
+  margin:     2px;
+  display:    block;
+  height:     10px;
+  width:      10px;
 }
+
+#toolbar a.color:hover {
+  border:     1px solid #666;
+}
+
+#color-000000 { background:#000000; }
+#color-FFFFFF { background:#FFFFFF; }
+#color-FF0000 { background:#FF0000; }
+#color-00FF00 { background:#00FF00; }
+#color-0000FF { background:#0000FF; }
+#color-FFFF00 { background:#FFFF00; }
+#color-FF00FF { background:#FF00FF; }
+#color-00FFFF { background:#00FFFF; }
+#color-800000 { background:#800000; }
+#color-008000 { background:#008000; }
+#color-000080 { background:#000080; }
+#color-808000 { background:#808000; }
+#color-800080 { background:#800080; }
+#color-008080 { background:#008080; }
+#color-C0C0C0 { background:#C0C0C0; }
+#color-808080 { background:#808080; }
+#color-9999FF { background:#9999FF; }
+#color-993366 { background:#993366; }
+#color-FFFFCC { background:#FFFFCC; }
+
+
+#left-head { background-position: -2px -63px; }
+#border-head { background-position: -68px -85px; }
+#bgcolor-head { background-position: -68px -63px; }
+#fontcolor-head { background-position: -46px -107px; }
 
 #left-text  { background-position:  -0px -61px; }
 #center     { background-position:  -0px -83px; }
@@ -290,3 +357,129 @@ input {
 #underl     { background-position:  -0px -105px; }
 #strike     { background-position:  -22px -105px; }
 #format     { background-position:  -44px -105px; }
+
+#border-surround  { background-position:  -66px -83px; }
+#border-inside    { background-position:  -88px -61px; }
+#border-none      { background-position:  -66px -105px; }
+#border-all       { background-position:  -88px -83px; }
+#border-left      { background-position:  -110px -83px; }
+#border-top       { background-position:  -88px -105px; }
+#border-right     { background-position:  -110px -105px; }
+#border-bottom    { background-position:  -110px -61px; }
+
+#menu { 
+  font:         11px sans-serif; 
+  height:       22px;
+  background:   #FFFFFF;
+}
+
+#menu li { 
+  list-style:   none; 
+  float:        left; 
+}    
+
+#menu li li {
+  float:        none; 
+  display:      block; 
+  position:     relative;
+}
+
+#menu ul { 
+  display:      none; 
+  position:     absolute;  
+  border:       1px solid; 
+  border-color: #DDD #AAA #AAA #DDD;  
+  padding:      3px 0px; 
+  background:   #FFFFFF; 
+  z-index:99999;
+}
+
+#menu ul ul { 
+  left:         100%; 
+  top:          0; 
+} 
+
+#menu a {
+  position:     relative;
+  display:      block; 
+  background:   #FFFFFF;
+  cursor:       pointer; 
+  padding:      4px 10px; 
+  z-index:      100;
+  text-decoration:none;
+  color:        #000;
+}
+
+#menu li ul li .padded {
+  padding-left:  24px;
+}
+
+#menu li ul li a { 
+  background:   #f8f7f6;       
+  padding:      3px 18px 3px 3px; 
+  z-index:      200;
+}
+
+#menu .hover { 
+  background:   #ffc47e; 
+}  
+
+#menu li.seperator { 
+  height:       0px; 
+  border-top:   1px solid #CCC; 
+  margin:       3px 0px;      
+}
+
+#menu div.input {
+  position:     relative;
+  padding:      2px;
+  width:        16px;
+  height:       16px;
+  float:        left;
+  z-index:      500;
+}
+
+#menu .icon {
+  background-repeat: no-repeat;
+  background-position:3px 3px; 
+}
+
+#menu .arrow {
+  display:      none;
+}
+
+#menu ul li .arrow { 
+  display:block;
+  position:absolute;
+  height:16px;
+  width:16px;
+  background:url(../img/arrow.png);
+  top:3px;
+  right:0px;
+}
+
+#selection { 
+  display:none;
+  position:absolute;
+  background:green;
+  border:2px solid blue;
+  z-index:99999;
+}
+
+#selection textarea { 
+  position:absolute;
+  display:none;
+}
+
+#current { 
+  position:absolute;
+  background:#FFF;
+  z-index:900;
+}
+
+#dragged { 
+  position:absolute;
+  background:blue;
+  opacity:0.5;
+  z-index:800;  
+}
