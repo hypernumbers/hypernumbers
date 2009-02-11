@@ -850,14 +850,14 @@ macro_to_string(199) -> "DCOUNTA";
 %%  the lookup file appears to contain 'not enought' records to make
 %%  this work (ie 9 not 10)
 macro_to_string(204) -> "USDOLLAR";
-macro_to_string(205) -> "FINDB";
-macro_to_string(206) -> "SEARCHB";
-macro_to_string(207) -> "REPLACEB";
-macro_to_string(208) -> "LEFTB";
-macro_to_string(209) -> "RIGHTB";
+macro_to_string(205) -> "FIND";  % used to be FINDB but we can use FIND on Unicode
+macro_to_string(206) -> "SEARCH"; % used to be SEARCHB but we can use SEARCH on Unicode
+macro_to_string(207) -> "REPLACE"; % used to be REPLACEB but we can use REPLACE on Unicode
+macro_to_string(208) -> "LEFT"; % used to be LEFTB but we can use LEFT on Unicode
+macro_to_string(209) -> "RIGHT"; % used to be RIGHTB but we can use RIGHT on Unicode
 %%  210=MIDB,LENB,ROUNDUP,ROUNDDOWN,ASC,DBCS,RANK,,,ADDRESS
-macro_to_string(210) -> "MIDB";
-macro_to_string(211) -> "LENB";
+macro_to_string(210) -> "MID"; % used to be MIDB but we can use MID on Unicode
+macro_to_string(211) -> "LEN"; % used to be LENB but we can use LEN on Unicode
 macro_to_string(212) -> "ROUNDUP";
 macro_to_string(213) -> "ROUNDDOWN";
 macro_to_string(214) -> "ASC";
@@ -889,7 +889,7 @@ macro_to_string(252) -> "FREQUENCY";
 macro_to_string(255) -> "FUNCTIONDOESNTEXIST";
 %%  260=SPELLING.CHECK,ERROR.TYPE,APP.TITLE,WINDOW.TITLE,SAVE.TOOLBAR,
 %%      ENABLE.TOOL,PRESS.TOOL,REGISTER.ID,GET.WORKBOOK,AVEDEV
-macro_to_string(261) -> "ERRORTYPE";
+macro_to_string(261) -> "ERROR.TYPE";
 macro_to_string(269) -> "AVEDEV";
 %%  270=BETADIST,GAMMALN,BETAINV,BINOMDIST,CHIDIST,CHIINV,COMBIN,
 %%      CONFIDENCE,CRITBINOM,EVEN
