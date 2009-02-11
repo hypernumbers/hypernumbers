@@ -89,10 +89,6 @@ function start
         -hn_config $CONFIG \
         -hn_log $LOG_DIR \
         -mnesia dir "\"$MNESIA_DIR\""
-
-    #erl -setcookie $COOKIE \
-    #    -sname $NODE-debug@$HOST \
-    #    -remsh $NODE@$HOST
        
 }
 
@@ -119,6 +115,23 @@ function docs
     erlc -o ebin src/make_edoc.erl
     cd ./ebin
     erl -noshell -s make_edoc build -s init stop
+}
+
+function xref
+{
+    erlc -o ebin src/xref_analysis.erl
+    cd ./ebin
+    erl -s xref_analysis analyse $ROOT/lib
+}
+
+function statsvn
+{
+    svn log -v --xml > ./logs/statsvn/svn.log
+    cd ./logs/statsvn
+    java -Xms512m -Xmx1024m -jar ../../priv/statsvn/statsvn.jar \
+         ./svn.log ../../\
+         -exclude tests/**:lib/eunit/**:lib/yaws-1.76/**:lib/mochi-1.0/**:**/*.java:**/*.jar:testroot/**
+             
 }
 
 function test
@@ -160,10 +173,12 @@ function stop
 }
 
 case $1 in 
-    start) start;;
-    stop)  stop;;
-    docs) docs;;
-    build) build $2;;    
+    start)     start;;
+    stop)      stop;;
+    docs)      docs;;
+    build)     build $2;;
+    xref)      xref;;
+    statsvn)   statsvn;;
     gen_tests) gen_tests;;
-    test)  test $2;;
+    test)      test $2;;
 esac
