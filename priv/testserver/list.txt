@@ -78,6 +78,7 @@ c_exp.xls
 c_expondist.xls
 c_fact.xls
 c_find.xls
+c_findb.xls
 c_fixed.xls
 c_floor.xls
 c_frequency.xls
@@ -95,7 +96,9 @@ c_isnumber.xls
 c_istext.xls
 c_large.xls
 c_left.xls
+c_leftb.xls
 c_len.xls
+c_lenb.xls
 c_ln.xls
 c_log.xls
 c_log10.xls
@@ -117,8 +120,11 @@ c_month.xls
 c_n.xls
 c_na.xls
 c_not.xls
+c_right.xls
+c_rightb.xls
 c_roman.xls
 c_search.xls
+c_searchb.xls
 c_second.xls
 c_sign.xls
 c_sin.xls
@@ -229,7 +235,6 @@ g_devsq.xls
 g_dollar.xls
 g_expondist.xls
 g_fdist.xls
-g_findb.xls
 g_finv.xls
 g_fisher.xls
 g_fisherinv.xls
@@ -246,13 +251,9 @@ g_ipmt.xls
 g_irr.xls
 g_ispmt.xls
 g_kurt.xls
-g_leftb.xls
-g_lenb.xls
 g_linest.xls
 g_normdist.xls
 g_pearson.xls
-g_rightb.xls
-g_searchb.xls
 g_slope.xls
 g_today.xls
 g_trend.xls
