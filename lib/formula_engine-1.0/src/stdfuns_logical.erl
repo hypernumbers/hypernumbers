@@ -73,7 +73,6 @@
 '<'([A, B]) -> muin_checks:die_on_errval([A]),
                muin_checks:die_on_errval([B]),
                [A1, B1] = ?numbers([A, B], [cast_dates]),
-               io:format("A1 is ~p B1 is ~p~n", [A1, B1]),
                '>1'(B1, A1).
 
 '<='(Args = [_, _]) -> '='(Args) orelse '<'(Args).
@@ -93,10 +92,13 @@
     Bools = ?bools(Flatvs, [cast_strings, cast_numbers, cast_blanks, cast_dates]),
     any(fun(X) -> X == true end, Bools).
 
+'if'([Test, TrueExpr]) ->
+    V = muin:eval(Test),
+    B = ?bool(V, [cast_strings, cast_numbers, cast_blanks, ban_dates]),
+    ?COND(B, muin:eval(TrueExpr), false);    
 'if'([Test, TrueExpr, FalseExpr]) ->
     V = muin:eval(Test),
     B = ?bool(V, [cast_strings, cast_numbers, cast_blanks, ban_dates]),
-    io:format("In if V is ~p B is ~p~n", [V, B]),
     ?COND(B, muin:eval(TrueExpr), muin:eval(FalseExpr)).
 
 iferror([Test, TrueExpr, FalseExpr]) ->
