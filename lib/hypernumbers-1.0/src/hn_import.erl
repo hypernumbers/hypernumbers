@@ -19,12 +19,12 @@ hn_xml(FileName) ->
     [$/|Rest] = lists:reverse(Domain),
     NDomain   = lists:reverse(Rest),
  
-    {ok,Ref} = hn_util:parse_url(Domain),
-    NPages = hn_main:get_pages_under(Ref#ref.path),
-    Del = fun(X) ->
-                  hn_db:remove_item(Ref#ref{ref='_',path=X})
-          end,
-    lists:map(Del,NPages),
+    %%{ok,Ref} = hn_util:parse_url(Domain),
+    %%NPages = hn_main:get_pages_under(Ref#ref.path),
+    %%Del = fun(X) ->
+    %%              hn_db:remove_item(Ref#ref{ref='_',path=X})
+    %%      end,
+    %%lists:map(Del,NPages),
     
     F = fun({page,[{path,Path}],[Attr]}) ->
                 misc_util:do_import(NDomain++Path,Attr)

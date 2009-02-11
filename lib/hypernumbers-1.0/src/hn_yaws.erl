@@ -106,12 +106,13 @@ req('GET',[],_,require_token,_Page)  ->
     {return,{status,503}};
 req('GET',[],[],_,#ref{ref={page,"/"},path=["admin"]}) ->
     {return,{page,"/html/admin.html"}};
+
 req('GET',[],["save"],_,Ref=#ref{ref={page,"/"},path=Path}) ->
     F = fun(X) ->
                 {page,[{path,hn_util:list_to_path(X)}],
                  [get_page_attributes(Ref#ref{path=Path++X})]}
         end,
-    Pages = lists:map(F,hn_main:get_pages_under(Path)),
+    Pages = lists:map(F,[[]]),
     Xml = {root,[{domain,Ref#ref.site++hn_util:list_to_path(Path)}],Pages},
     Name = case Path of
                []   -> "hypernumbers";
@@ -159,7 +160,7 @@ req('GET',[],["port"],_,_Ref) ->
     Port = gen_server:call(hn_config,{get,remoting_port}),
     {ok,{port,[],[integer_to_list(Port)]}};
 
-req('GET',[],["attr"],_,Ref) ->
+req('GET',[],["attr"|_],_,Ref) ->
     Attr = get_page_attributes(Ref),
     {ok,Attr};
 

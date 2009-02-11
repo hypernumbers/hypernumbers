@@ -259,8 +259,8 @@ parse_url(Url) when is_record(Url,url) ->
              path=Path,
              ref={RefType,RefVal}}}.
 
-get_req_type([{"format","json"}|_]) -> {ok.json};
-get_req_type([{"format","xml"}|_])  -> {ok.xml};
+get_req_type([{"format","json"}|_]) -> {ok,json};
+get_req_type([{"format","xml"}|_])  -> {ok,xml};
 get_req_type([])                    -> {ok,xml};
 get_req_type([_N|Tail])             -> get_req_type(Tail).
 

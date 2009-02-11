@@ -30,7 +30,7 @@ gen_test(Path,Tpl,Src) ->
     A = case filelib:is_file(ActionFile) of
             true ->
                 compile:file(ActionFile,[{outdir,ActDir}]),
-                "basic_test_actions:run(),";
+                ActDir++Name++"_actions:run(),";
             false -> 
                 ""
         end,
