@@ -24,6 +24,7 @@ b_multiple_sheets.xls
 b_nested_functions.xls
 b_plus_and_sum_are_different.xls
 b_quadratic_equations.xls
+b_rich_text_format.xls
 b_saved_in_r1c1_style.xls
 b_shared_formulae.xls
 b_simple.xls
