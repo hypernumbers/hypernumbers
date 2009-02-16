@@ -416,7 +416,8 @@ cmp(G,E) ->
              true   -> true;
              false  -> false;
              _Other -> case lists:member(E, ['#NULL!', '#DIV/0!', '#VALUE!',
-                                             '#REF!', '#NAME?', '#NUM!', '#N/A']) of
+                                             '#REF!', '#NAME?', '#NUM!',
+                                             '#N/A']) of
                            true    -> E;
                            _Other2 -> case tconv:to_num(E) of
                                           N when is_number(N) -> N;
@@ -425,9 +426,13 @@ cmp(G,E) ->
                        end
          end,
     G2 = conv_from_get(G),
-    if is_float(G2) andalso is_float(E2) ->
+    if
+        is_float(G2) andalso is_float(E2) ->
             float_cmp(G2, E2, 5);
-       true -> E2 == G2
+        is_integer(G2) andalso is_float(E2) ->
+            % sometimes large integers appear as (exponented) floats from excel...
+            float_cmp(G2, E2, 5);
+        true -> E2 == G2
     end.
 
 conv_from_get("true")  -> true;
