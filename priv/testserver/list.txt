@@ -30,8 +30,10 @@ b_shared_formulae.xls
 b_simple.xls
 b_simple_arrays_and_ranges.xls
 b_special_chars_in_text.xls
+b_string_table_overflow.xls
 b_sum_with_one_arg.xls
 b_superparser_errors.xls
+b_unicode_string_continuation.xls
 b_variable_arg_list.xls
 b_wierd_failures.xls
 b_wierd_formats.xls
