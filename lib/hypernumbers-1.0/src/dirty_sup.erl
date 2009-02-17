@@ -1,3 +1,5 @@
+%%% @private
+
 -module(dirty_sup).
 -include("spriki.hrl").
 

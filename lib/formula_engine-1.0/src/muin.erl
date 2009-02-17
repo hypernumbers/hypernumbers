@@ -163,7 +163,7 @@ preproc([offset, Base, Rows, Cols]) ->
     preproc([offset, Base, Rows, Cols, 1, 1]);
 preproc([offset, _Base = [ref, C, R, P], Rows, Cols, H, W]) ->
     RULES = [ban_strings, ban_bools, ban_dates, ban_blanks],
-    %% eval expressions, then try to cast them.
+    % eval expressions, then try to cast them.
     [Rows2, Cols2, H2, W2] = ?numbers(map(fun muin:eval/1, [Rows, Cols, H, W]), RULES),
 
     Dr = toidx(R)+Rows2,
@@ -346,8 +346,8 @@ loop_transform([Fn|Args]) when ?is_fn(Fn) ->
 
 %% Try the userdef module first, then Ruby, Gnumeric, R, whatever.
 userdef_call(Fname, Args) ->
-%% changed to apply because using the construction userdef:Fname failed
-%% to work after hot code load (Gordon Guthrie 2008_09_08)
+    % changed to apply because using the construction userdef:Fname failed
+    % to work after hot code load (Gordon Guthrie 2008_09_08)
     case (catch apply(userdef,Fname,Args)) of
         {'EXIT', {undef, _}} -> ?ERR_NAME;
         Val                  -> Val

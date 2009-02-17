@@ -1,6 +1,7 @@
 %%% @doc List functions? MOAR!!
 %%% @author Hasan Veldstra <hasan@12monkeys.co.uk> [http://12monkeys.co.uk]
 % %% @license Distributed under the same license as Erlang.
+%%% @todo documentation needs to be updated
 
 -module(hslists).
 -import(lists, [all/2, append/1, duplicate/2, flatten/1, foldl/3, foreach/2,

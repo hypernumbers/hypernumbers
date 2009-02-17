@@ -1,6 +1,7 @@
 %%% Compile an Excel string function to an Erlang fun object.
 %%% E.g. "> 5" ==> #fun(X) -> X > 5 end.
 %%% <hasan@hypernumbers.com>
+%%% @private
 
 -module(string_funs).
 -export([make/1]).

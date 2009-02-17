@@ -1,5 +1,12 @@
 %%% @doc    This module handles the number/text formatting for a cell.
 %%% 
+%%%         It does 2 things:
+%%%         <ul>
+%%%         <li>takes an Excel compatible format description and compiles 
+%%%         it to Erlang source code capable of being eval'ed</li>
+%%%         <li>executes the formatting source code against a value</li>
+%%%         </ul>
+%%% 
 %%%         Created the 11th March 2008
 %%% @author Gordon Guthrie <gordon@hypernumbers.com>
 -module(format).

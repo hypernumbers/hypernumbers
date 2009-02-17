@@ -4,6 +4,7 @@
 %%% Description : 
 %%%
 %%% Created : 17 August 2008 by Gordon Guthrie <gordonguthrie@localhost>
+%%% @private
 %%%-------------------------------------------------------------------
 -module(random_srv).
 

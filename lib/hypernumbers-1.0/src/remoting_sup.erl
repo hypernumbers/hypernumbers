@@ -1,7 +1,9 @@
 %%%-------------------------------------------------------------------
-%%% File        : remoting_sup.erl
-%%% Author      : Gordon Guthrie
-%%% Description : supervisor for the remoting server
+%%% File       remoting_sup.erl
+%%% @author    Gordon Guthrie
+%%% @doc       supervisor for the remoting server
+%%% @copyright Hypernumbers Ltd
+%%% @private
 %%%
 %%% Created     : 6th Feb 2007 by gordonguthrie@backawinner.gg
 %%%-------------------------------------------------------------------

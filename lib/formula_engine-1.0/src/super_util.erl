@@ -7,6 +7,7 @@
 %%%
 %%% @end
 %%% Created :  5 Jan 2009 by Gordon Guthrie
+%%% @private
 %%%-------------------------------------------------------------------
 -module(super_util).
 

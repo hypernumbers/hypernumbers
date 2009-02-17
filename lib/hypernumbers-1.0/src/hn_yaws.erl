@@ -1,15 +1,18 @@
 %%% @author Dale Harvey
 %%% @copyright 2008 Hypernumbers Ltd
 %%% @doc Handle Hypernumbers HTTP requests
-%%% @ TODO we use atoms for keys in {key, value} pairs of attributes
+%%% @TODO 
+%%% <ul>
+%%% <li>we use atoms for keys in {key, value} pairs of attributes
 %%% which is then used in atom_to_list for checking if they are private.
-%%% This is a memory leak! See also hn_db_wu.erl.erl
-%%% Also we should sanity check user input in this module - what I am
+%%% This is a memory leak! See also hn_db_wu.erl.erl</li>
+%%% <li>Also we should sanity check user input in this module - what I am
 %%% thinking about is user-provided ranges which we ought to use
 %%% hn_util:rectify_range on from the get-go, eg:
 %%% {range, {99, 99, 1, 1}} rectifies to {range, {1, 1, 99, 99}}
 %%% 'cos we assume that the range is top-left/bottom-right in hunnerds
-%%% of algorithms (can never spell that word!)
+%%% of algorithms (can never spell that word!)</li>
+%%% </ul>
 
 -module(hn_yaws).
 
@@ -288,9 +291,10 @@ req('POST',{delete,[],Data},_Vars,_User,Ref) ->
     {ok,{success,[],[]}};
 
 req('POST',{unregister,[],[{biccie,[],[_Bic]},{url,[],[Url]}]},_Attr,_User,Ref) ->
+    {ok, Child} = hn_util:parse_url(Url),
     hn_db:del_remote_link(#remote_cell_link{
         parent = hn_util:ref_to_index(Ref),
-        child  = hn_util:ref_to_index(hn_util:parse_url(Url)),
+        child  = hn_util:ref_to_index(Child),
         type   = outgoing }),
 
     {ok,{success,[],[]}};
@@ -298,10 +302,9 @@ req('POST',{unregister,[],[{biccie,[],[_Bic]},{url,[],[Url]}]},_Attr,_User,Ref) 
 req('POST',{register,[],[{biccie,[],[Bic]},{proxy,[],[Proxy]},{url,[],[Reg]}]},_Attr,_User,Ref) ->
     {ok,RegRef}=hn_util:parse_url(Reg),
     hn_db:register_hn(
-      hn_util:ref_to_index(Ref),
-      hn_util:ref_to_index(RegRef),
-      Bic, Proxy, Reg),
-    {ok,{success,[],[]}};
+                  hn_util:ref_to_index(Ref),
+                  hn_util:ref_to_index(RegRef),
+      Bic, Proxy, Reg);
 
 req('POST',{notify,[],Data},_Attr,_User,Ref) ->
     case lists:keysearch(type,1,Data) of

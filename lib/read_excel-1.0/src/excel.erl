@@ -116,7 +116,6 @@ parse_bin(Bin,SubStreamName,CurrentFormula,Tables)->
             % io:format("workstream ~p read!~n",[Name]),
             ok;
         ?SST ->
-            io:format("In excel:parse_bin Name is ~p~n",[Name]),
             {ok,BinList,Rest2}=get_single_SST(Bin),
             {ok,NewCurrentFormula}=excel_records:parse_rec(Identifier,BinList,
                                                            Name,CurrentFormula,

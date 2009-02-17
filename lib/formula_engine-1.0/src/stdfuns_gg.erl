@@ -1,5 +1,7 @@
 %%% @author Gordon Guthrie <gordon@hypernumbers.com>
-%%% @doc Date functions.
+%%% @doc various odds and sods
+%%% @todo should be broken up and redistributed into proper functions
+%%% @private
 
 -module(stdfuns_gg).
 -export([harmean/1,

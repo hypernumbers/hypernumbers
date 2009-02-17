@@ -1,5 +1,6 @@
-%% @author Dale Harvey <dale@hypernumbers.com>
-%% @copyright Hypernumbers Ltd.
+%%% @author Dale Harvey <dale@hypernumbers.com>
+%%% @copyright Hypernumbers Ltd.
+%%% @TODO better documentation - what this supervisor is used for, etc, etc
 -module(hypernumbers_sup).
 -behaviour(supervisor).
 

@@ -1,6 +1,6 @@
-%%% @doc Excel-compatible text functions.
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 
+%%% @doc Excel-compatible text functions.
 %%% INCOMPATIBILITY NOTES:
 %%%
 %%% 1. CHAR in Excel works with Windows ANSI or Mac character sets depending on
@@ -11,10 +11,12 @@
 %%%
 %%% Perhaps we can provide compatibility functions, like CHARWIN/CHARMAC and
 %%% CODEWIN / CODEMAC, or maybe let our CHAR and CODE work as their namesakes
-%%% on Windows Excel, and also have CHARMAC, CODEMAC, and CODEU and CHARU functions.
-%%%
-%%% In iWork Numbers CODE and CHAR work with Unicode, and there are no compatibility
+%%% on Windows Excel, and also have CHARMAC, CODEMAC, and CODEU and CHARU 
 %%% functions.
+%%%
+%%% In iWork Numbers CODE and CHAR work with Unicode, and there are no 
+%%% compatibility functions.
+%%% @private
 
 -module(stdfuns_text).
 -compile(export_all).
@@ -59,25 +61,18 @@
 -define(default_str_rules, [cast_numbers, cast_bools,
                             cast_blanks, cast_dates]).
 
-search([FindText,WithinText])->
-    NewFind=lower(?string(FindText,?default_str_rules)),
-    NewWithin=lower(?string(WithinText,?default_str_rules)),
-    io:format("in stdfuns_text:search NewFind is ~p NewWithin is ~p~n",[NewFind,NewWithin]),
-    RegExp=wild_to_rgx(NewFind),
-    case regexp:match(NewWithin,RegExp) of
-        {match,Start,_Length} -> Start;
-        nomatch               -> ?ERR_VAL
-    end;
-search([FindText,WithinText,StartPoint])->
-    NewFind=?string(FindText,?default_str_rules),
-    NewWithin=?string(WithinText,?default_str_rules),
-    NewStart=?int(StartPoint,?default_num_rules),
-    RegExp=wild_to_rgx(NewFind),
-    io:format("in stdfuns_text:search NewFind is ~p NewWithin is ~p~n",[NewFind,NewWithin]),
-    {_Start,End}=lists:split(NewStart-1,NewWithin),
-    case regexp:match(End,RegExp) of
-        {match,Start,_Length} -> Start+NewStart-1;
-        nomatch               -> ?ERR_VAL
+search([FindText, WithinText])-> search([FindText, WithinText, 1]);
+search([FindText, WithinText, StartPoint])->
+    NewFind = ?string(FindText, ?default_str_rules),
+    NewWithin = ?string(WithinText, ?default_str_rules),
+    NewStart = ?int(StartPoint, ?default_num_rules),
+    ?ensure(NewStart >= 1, ?ERR_VAL),
+    ?ensure(NewStart =< length(NewWithin), ?ERR_VAL),
+    RegExp = wild_to_rgx(NewFind),
+    {_Start, End} = lists:split(NewStart-1, NewWithin),
+    case regexp:match(End, RegExp) of
+        {match,Start, _Length} -> Start + NewStart - 1;
+        nomatch                -> ?ERR_VAL
     end.
 
 replace([Str,Start,Replace,InsertStr]) ->
@@ -118,7 +113,7 @@ len([Str]) ->
 
 mid([Str, Start, Len]) ->
     NewStr=?string(Str,?default_str_rules),
-    NewStart=?int(Start,?default_num_rules),
+    NewStart=erlang:trunc(?int(Start,?default_num_rules)),
     ?ensure(NewStart >0, ?ERR_VAL),
     NewLen=?int(Len,?default_num_rules),
     ?ensure(NewLen >0, ?ERR_VAL),
@@ -185,28 +180,42 @@ code([Str]) ->
     xmerl_ucs:from_utf8(string:substr(Str, 1)).
 
 find([SubStr, Str]) ->
-    NewSubStr=?string(SubStr,?default_str_rules),
-    NewStr=?string(Str,?default_str_rules),
-    find([NewSubStr, NewStr, 1]);
+    io:format("in here....~n"),
+    find([SubStr, Str, 1]);
 find([SubStr, Str, Start]) ->
+    io:format("in find SubStr is ~p Str is ~p Start is ~p~n",
+              [SubStr, Str, Start]),
     NewSubStr=?string(SubStr,?default_str_rules),
+    io:format("Got to 1~n"),
     NewStr=?string(Str,?default_str_rules),
-    NewStart=?number(Start,?default_num_rules),
-    SearchStr = string:substr(NewStr, NewStart,
-                              string:len(NewStr) - NewStart + 1), %% Slice from Start to end
-    Idx = string:str(SearchStr, NewSubStr),
-    case Idx + (string:len(NewStr) - (string:len(NewStr) - NewStart + 1)) of
-        0     -> ?ERR_VAL;
-        Other -> Other
+    io:format("Got to 2~n"),
+    % this is the problem "3" don't cast to 3 - cos muin_collect for numbers
+    % users erlang:is_number (mebbies...)
+    NewStart2=?number(Start,?default_num_rules),
+    io:format("Got to here NewStart2 is ~p~n", [NewStart2]),
+    NewStart=erlang:trunc(?number(Start,?default_num_rules)),
+    io:format("in find NewSubStr is ~p NewStr is ~p NewStart is ~p~n",
+              [NewSubStr, NewStr, NewStart]),
+    case NewSubStr of
+        [] -> 1; %an empty string always matches the first character
+        _  -> ?ensure(NewStart >= 1, ?ERR_VAL),
+              ?ensure(NewStart =< length(Str), ?ERR_VAL),
+              SearchStr = string:substr(NewStr, NewStart,
+                                        string:len(NewStr) - NewStart + 1),
+              Idx = string:str(SearchStr, NewSubStr),
+              case Idx + (string:len(NewStr) - (string:len(NewStr) -
+                                                NewStart + 1)) of
+                  0     -> ?ERR_VAL;
+                  Other -> Other
+              end
     end.
-            
 
 left([Str])->
     NewStr=?string(Str,?default_str_rules),
     [lists:nth(1,NewStr)];
 left([Str, Len]) ->
     NewStr=?string(Str,?default_str_rules),
-    NewLen=?int(Len,?default_num_rules),
+    NewLen=erlang:trunc(?int(Len,?default_num_rules)),
     ?ensure(NewLen >= 0,?ERR_VAL),
     string:substr(NewStr, 1, NewLen).
 
@@ -216,7 +225,7 @@ right([Str])->
     [lists:nth(Len,NewStr)];
 right([Str, Len]) ->
     NewStr=?string(Str,?default_str_rules),
-    NewLen=?int(Len,?default_num_rules),
+    NewLen=erlang:trunc(?int(Len,?default_num_rules)),
     ?ensure(NewLen >= 0,?ERR_VAL),
     TotalLen=length(NewStr),
     if
@@ -260,14 +269,11 @@ substitute([Text,OldText,NewText]) ->
     Text2=?string(Text,?default_str_rules),
     OldText2=?string(OldText,?default_str_rules),
     NewText2=?string(NewText,?default_str_rules),
-    io:format("in stdfuns_text:substitute Text2 is ~p OldText2 is ~p NewText2 is~p~n",
-              [Text2,OldText2,NewText2]),
     OldText3=esc_rgx(OldText2),
-    io:format("in stdfuns_text:substitute OldText3 is~p~n",[OldText3]),
-        case regexp:gsub(Text2, OldText3, NewText2) of
-            {ok, Res, _Repcnt} -> Res;
-            nomatch            -> Text2
-        end;
+    case regexp:gsub(Text2, OldText3, NewText2) of
+        {ok, Res, _Repcnt} -> Res;
+        nomatch            -> Text2
+    end;
 substitute([Text,OldText,NewText,N]) ->
     Text2=?string(Text,?default_str_rules),
     OldText2=?string(OldText,?default_str_rules),
@@ -286,7 +292,6 @@ text([Value, Format]) ->
     {ok, {_Color, Fmtdstr}} = format:run_format(Value, Output),
     Fmtdstr.
 
-
 %%% ----------------- %%%
 %%% Private functions %%%
 %%% ----------------- %%%
@@ -303,7 +308,7 @@ commify(L, _, Acc) ->
 wild_to_rgx(Str) -> wild_to_rgx(Str,[]).
 
 %% converts Excel wild cards into Erlang RegExps
-wild_to_rgx([],Acc)        -> lists:reverse(Acc);
+wild_to_rgx([],Acc)        -> lists:flatten(lists:reverse(Acc));
 wild_to_rgx([$~,$*|T],Acc) -> wild_to_rgx(T,[$*,"\\"|Acc]);   % escape Excel wild card
 wild_to_rgx([$~,$?|T],Acc) -> wild_to_rgx(T,[$?,"\\"|Acc]);   % escape Excel wild card
 wild_to_rgx(["\\"|T],Acc)  -> wild_to_rgx(T,["\\","\\"|Acc]); % escape Erlang RegExp

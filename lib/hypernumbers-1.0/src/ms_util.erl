@@ -1,12 +1,13 @@
 %%%-------------------------------------------------------------------
-%%% File        : ms_util.erl
-%%% Author      : Gordon Guthrie gordon@hypernumbers.com
-%%% Description : this is the match spec utilities module
-%%%               it works closely with ms_util2.erl which is
-%%%               the generated module that 'introspects'
-%%%               the record structures of myheader.hrl
-%%%
+%%% file        ms_util.erl
+%%% @author     Gordon Guthrie gordon@hypernumbers.com
+%%% @doc        this is the match spec utilities module
+%%%             it works closely with ms_util2.erl which is
+%%%             the generated module that 'introspects'
+%%%             the record structures of myheader.hrl
+%%% @end
 %%% Created     :  3 Sep 2008 by Gordon Guthrie 
+%%% @private
 %%%-------------------------------------------------------------------
 -module(ms_util).
 

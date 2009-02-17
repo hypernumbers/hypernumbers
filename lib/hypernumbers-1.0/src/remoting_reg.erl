@@ -1,9 +1,11 @@
 %%%-----------------------------------------------------------------------------
-%%% File        : remoting_reg.erl
-%%% Author      : Gordon Guthrie 
-%%% Description : remoting_reg handles registration from Flex remoting 
+%%% File        remoting_reg.erl
+%%% @author     Gordon Guthrie 
+%%% @doc        remoting_reg handles registration from Flex remoting
+%%% @copyright  Hypernumbers Ltd
 %%%
 %%% Created     : 6 Feb 2007 by gordonguthrie@backawinner.gg
+%%% @private
 %%%-----------------------------------------------------------------------------
 -module(remoting_reg).
 

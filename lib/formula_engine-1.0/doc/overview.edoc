@@ -1,0 +1,13 @@
+@author Gordon Guthrie gordon@hypernumbers.com
+@copyright Hypernumbers Ltd
+@version 1.0
+@title Hypernumbers
+
+@doc the formula_engine is the core of the hypernumbers server - handling formulae.
+
+@todo
+<ul>
+<li>more documentation to be written</li>
+<li>proper documentation for standard functions</li>
+<li>stdfuns_gg.erl to be broken up and its components moved into 'the right place'</li>
+</ul>

@@ -1,3 +1,4 @@
+%%% @private
 -module(test_util).
 
 -export([expected/2,

@@ -44,3 +44,5 @@ In addition:
 <ul>
 <li>a variety of error definitions are stored <a href="../include/excel_errors.hrl">here</a></li>
 </ul>
+
+@todo this document doesn't adequately describe how continuation records are handled - indeed continuation record handling is actually borked in general

@@ -1,6 +1,7 @@
-%% Type conversion functions.
-%% <hasan@hypernumbers.com>
-%% <gordon@hypernumbers.com>
+%%% Type conversion functions.
+%%% <hasan@hypernumbers.com>
+%%% <gordon@hypernumbers.com>
+%%% @private
 
 -module(tconv).
 -export([to_b26/1,

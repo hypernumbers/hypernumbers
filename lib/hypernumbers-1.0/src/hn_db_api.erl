@@ -41,14 +41,7 @@
 -define(mn_ac,mnesia:activity).
 -define(mn_sl,mnesia:select).
 -define(copy, hn_db_wu:copy_cell).
-
-%% record_info isnt available at runtime
--define(create(Name,Type,Storage),
-        fun() ->
-                Attr = [{attributes, record_info(fields, Name)},
-                        {type,Type},{Storage, [node()]}],
-                {atomic,ok} = mnesia:create_table(Name, Attr)
-        end()).
+-define(counter, mnesia:dirty_update_counter).
 
 -export([
          write_attributes/2,
@@ -86,7 +79,8 @@
          clear_TEST/0]).
 
 -export([get_tiles_DEBUG/0,
-         read_styles_DEBUG/0]). % Debugging
+         read_styles_DEBUG/0,
+         hn_DEBUG/0]). % Debugging
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                            %%
@@ -105,7 +99,7 @@
 %% </ul>
 write_attributes(RefX, List) when is_record(RefX, refX), is_list(List) ->
     Fun = fun() ->
-                  [hn_db_wu:write_attr(RefX, X) || X <- List]
+                  [{ok, ok} = hn_db_wu:write_attr(RefX, X) || X <- List]
           end,
     mnesia:activity(transaction, Fun).
 
@@ -124,7 +118,9 @@ write_last(List) when is_list(List) ->
     [{#refX{site = S, path = P, obj = O} = RefX, _} | T] = List,
     Fun =
         fun() ->
-                {LastCol, LastRow} = hn_db_wu:get_last(RefX),
+                {LastColumnRefX, LastRowRefX} = hn_db_wu:get_last_refs(RefX),
+                #refX{obj = {cell, {LastCol, _}}} = LastColumnRefX,
+                #refX{obj = {cell, {_, LastRow}}} = LastRowRefX,
                 % Add 1 to because we are adding data 'as the last row'
                 % (or column) ie one more than the current last row/column
                 {Type, Pos} = case O of
@@ -183,7 +179,6 @@ read_attributes(RefX, AttrList) when is_record(RefX, refX),
 %% <li>page</li>
 %% </ul>
 read(RefX) when is_record(RefX, refX) ->
-    io:format("in hn_db_api:read RefX is ~p~n", [RefX]),
     Fun = fun() ->
                   hn_db_wu:read_attrs(RefX)
           end,
@@ -241,20 +236,34 @@ reformat(RefX) when is_record(RefX, refX) ->
     mnesia:activity(transaction, Fun).
 
 %% @spec insert(RefX :: #refX{}) -> ok
-%% @doc inserts a column,a row or page
-%% 
+%% @doc inserts a single column or a row
 %% The <code>#refX{}</code> can be one of the following types:
 %% <ul>
 %% <li>row</li>
 %% <li>column</li>
 %% </ul>
-%% @todo insert page
-insert(#refX{obj = {column, X}} = RefX)  ->
-        Fun = fun() ->
-                      % hn_db_wu:shift_cell(RefX, Disp, insert)
-                      Return = 1 + 1
-              end,
-    mnesia:activity(transaction, Fun).
+insert(#refX{obj = {column, {X1, X2}}} = RefX)  ->
+    Fun = fun() ->
+                  {ok, ok} = write_page_vsn(RefX, {insert, column}),
+                  RefXs = hn_db_wu:get_refs_right(RefX),
+                  % shift doesn't commute so it is up to us to sort
+                  % the cells
+                  RefXs2 = sort(RefXs, 'right-to-left'),
+                  [hn_db_wu:shift_cell(F, offset(F, {0, 1})) || F <- RefXs2]
+          end,
+    mnesia:activity(transaction, Fun);
+insert(#refX{obj = {row, {Y1, Y2}}} = RefX)  ->
+    Fun = fun() ->
+                  {ok, ok} = write_page_vsn(RefX, {insert, row}),
+                  RefXs = hn_db_wu:get_refs_below(RefX),
+                  % shift doesn't commute so it is up to us to sort
+                  % the cells
+                  RefXs2 = sort(RefXs, 'bottom-to-top'),
+                  [hn_db_wu:shift_cell(F, offset(F, {1, 0})) || F <- RefXs2]
+          end,
+    mnesia:activity(transaction, Fun);
+insert(#refX{obj = R} = RefX) when R == cell orelse R == range  ->
+    insert(RefX, vertical).
 
 %% @spec insert(RefX :: #refX{}, Type) -> ok 
 %% Type = [horizontal | vertical]
@@ -267,21 +276,27 @@ insert(#refX{obj = {column, X}} = RefX)  ->
 %% </ul>
 insert(#refX{obj = {R, _}} = RefX, Disp) when R == cell orelse R == range ->
     Fun = fun() ->
-                  % hn_db_wu:shift_cell(RefX, Disp, insert)
-                  Return = 1 + 1
+                  {ok, ok} = write_page_vsn(RefX, {insert, Disp}),
+                  RefXs = hn_db_wu:get_refs_below(RefX),
+                  % shift doesn't commute so it is up to us to sort
+                  % the cells
+                  RefXs2 = sort(RefXs, 'bottom-to-top'),
+                  [hn_db_wu:shift_cell(F, offset(F, {0,1})) || F <- RefXs2]
           end,
     mnesia:activity(transaction, Fun).
 
 %% @spec delete(Ref :: #refX{}) -> ok
 %% @doc deletes a column or a row or a page
+%% @todo this is all bollocks - should be row, column then cell/range as 
+%% per insert/2
 delete(#refX{obj = {R, _}} = RefX) when R == column orelse R == row ->
     Disp = case R of
                row    -> vertical;
                column -> horizontal
            end,
     Fun = fun() ->
-                  % hn_db_wu:shift_cell(RefX, Disp, delete)
-                  Return = 1 + 1
+                  {ok, ok} = write_page_vsn(RefX, {delete, Disp}),
+                  hn_db_wu:shift_cell(RefX, Disp, delete)
           end,
     mnesia:activity(transaction, Fun);
 delete(#refX{obj = {page, _}} = RefX) ->
@@ -307,12 +322,14 @@ delete(#refX{obj = {page, _}} = RefX) ->
 delete(#refX{obj = {R, _}} = RefX, horizontal) when R == cell orelse R == range ->
     Fun =
         fun() ->
+                {ok, ok} = write_page_vsn(RefX, {delete, horizontal}),
                 hn_db_wu:shift_cell(RefX, horizontal, delete)
         end,
     mnesia:activity(transaction, Fun);
 delete(#refX{obj = {R, _}} = RefX, vertical) when R == cell orelse R == range ->
     Fun =
         fun() ->
+                {ok, ok} = write_page_vsn(RefX, {delete, vertical}),
                 hn_db_wu:shift_cell(RefX, vertical, delete)
         end,
     mnesia:activity(transaction, Fun).
@@ -377,7 +394,7 @@ cut_n_paste(From, To) when is_record(From, refX), is_record(To, refX) ->
     Fun = fun() ->
                   {ok, ok} = copy_n_paste2(From, To),
                   {ok, ok} = hn_db_wu:clear_cells(From, all)
-           end,
+          end,
     mnesia:activity(transaction, Fun).
 
 %% @spec copy_n_paste(From :: #refX{}, To :: #refX{}) -> ok
@@ -473,6 +490,37 @@ drag_n_drop(From, To) when is_record(From, refX), is_record(To, refX) ->
 %% Internal Functions                                                         %%
 %%                                                                            %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+write_page_vsn(RefX, Action) ->
+    PageRefX = #refX{obj = {page, "/"}},
+    NewVsn = ?counter(page_vsn_counters, PageRefX, 1),
+    io:format(" in hn_db_api:insert NewVsn is ~p~n", [NewVsn]),
+    Record = #page_vsn{page_refX = PageRefX, action = Action,
+                       action_refX = RefX, version = NewVsn},
+    ok = mnesia:write(Record),
+   {ok, ok}.
+
+offset(#refX{obj = {cell, {X, Y}}} = RefX, {XO, YO}) ->
+    RefX#refX{obj = {cell, {X + XO, Y + YO}}}.
+
+sort(List, 'bottom-to-top') ->
+    Fun = fun(#refX{obj = {cell, {_XA, YA}}} = A,
+              #refX{obj = {cell, {_XB, YB}}} = B) ->
+                  if
+                      (YA - YB)  > 0 -> true;
+                      (YA - YB) =< 0 -> false
+                  end
+          end,
+    lists:sort(Fun, List);
+sort(List, 'right-to-left') ->
+    Fun = fun(#refX{obj = {cell, {XA, _YA}}} = A,
+              #refX{obj = {cell, {XB, _YB}}} = B) ->
+                  if
+                      (XA - XB)  > 0 -> true;
+                      (XA - XB) =< 0 -> false
+                  end
+          end,
+    lists:sort(Fun, List).
+
 copy_n_paste2(From, To) ->
     case is_valid_c_n_p(From, To) of
         {ok, single_cell}    -> hn_db_wu:copy_cell(From, To, false);
@@ -549,7 +597,7 @@ copy3b([FH | FT], [TH | TT], Incr) ->
 
 get_tiles(#refX{obj = {range, {X1F, Y1F, X2F, Y2F}}} = From,
           #refX{obj = {range, {X1T, Y1T, X2T, Y2T}}} = To) ->
-    
+
     % this is a bit messy. Excel does the following things:
     % * if both ranges are congruent - 1 tile
     % * if the To range is smaller than the From range it writes the whole
@@ -627,69 +675,69 @@ is_valid_c_n_p(#refX{obj = {range, _}}, #refX{obj = {cell, _}}) ->
 is_valid_c_n_p(#refX{obj = {range, _}}, #refX{obj = {range, _}}) ->
     {ok, range_to_range}.
 
-shift(RefX, Disp, _Type) when is_record(RefX, refX) ->
-    % single mnesia transaction
-    % 
-    % The process is:
-    % * get all the cells which will be displaced
-    %  * for each cell (in a transaction)
-    %    * delete
-    %    * rewrite it
-    %    * save it
-    % Need to do funny stuff with remote hypernumbers...
+%shift(RefX, Disp, _Type) when is_record(RefX, refX) ->
+%    % single mnesia transaction
+%    % 
+%    % The process is:
+%    % * get all the cells which will be displaced
+%    %  * for each cell (in a transaction)
+%    %    * delete
+%    %    * rewrite it
+%    %    * save it
+%    % Need to do funny stuff with remote hypernumbers...
 
-    % io:format("in shift Ref is ~p Disp is ~p Type is ~p~n", [Ref, Disp, Type]),
-    #refX{site = Site, path = Path, obj = {Range, R}} = RefX,
+%    % io:format("in shift Ref is ~p Disp is ~p Type is ~p~n", [Ref, Disp, Type]),
+%    #refX{site = Site, path = Path, obj = {Range, R}} = RefX,
 
-    % get the 'ShiftedCells'
-    RefX2 = RefX#refX{obj = {cell, {'$1', '$2'}},  auth  = '_'},
-    Head = ms_util:make_ms(hn_item, [{addr, RefX2}]),
-    % Cond selects the cells to be 'adjusted' and Offset 
-    % determines how they are to be 'adjusted'
-    {Cond, Offset}
-        = case Range of
-              row   ->
-                  A = [{'>', '$1', R}],
-                  B = {0, -1},
-                  {A, B};
-              col   ->
-                  A = [{'>', '$2', R}],
-                  B = {-1, 0},
-                  {A, B};
-              cell  ->
-                  {X, Y} = R,
-                  case Disp of
-                      horizontal ->
-                          A = [{'and', {'>',  '$1', Y}, {'==', '$2', X}}],
-                          B = {-1, 0},
-                          {A, B};
-                      vertical   ->
-                          A = [{'and', {'==', '$1', X}, {'>',  '$2', Y}}],
-                          B = {0, -1},
-                          {A, B}
-                  end;
-              range ->
-                  {X1, Y1, X2, Y2} = R,
-                  case Disp of
-                      horizontal ->
-                          A = [{'and', {'>=', '$1', Y1}, {'==', '$2', X1}}],
-                          B = [{'and', {'=<', '$1', Y2}, {'==', '$2', X2}}],
-                          C = {0, Y1 - Y2}, % should be negative!
-                          {[{'and', A, B}], C};
-                      vertical   ->
-                          A = [{'and', {'==', '$1', X1}, {'>=', '$2', Y1}}],
-                          B = [{'and', {'==', '$1', X2}, {'=<', '$2', Y2}}],
-                          C = {0, X1 - X2}, % should be negative!
-                          {[{'and', A, B}], C}                         
-                  end
-          end,
-    Body = ['$_'],
-    Fun1 = fun() -> ?mn_sl(hn_item, [{Head, Cond, Body}]) end,
-    ShiftedCells = ?mn_ac(transaction, Fun1),
-    % now shift the cells
-    Fun2 = fun() -> hn_db_wu:shift_cell(ShiftedCells, Offset) end,
-    {ok, ok} = ?mn_ac(transaction, Fun2),
-    {ok, ok}.
+%    % get the 'ShiftedCells'
+%    RefX2 = RefX#refX{obj = {cell, {'$1', '$2'}},  auth  = '_'},
+%    Head = ms_util:make_ms(hn_item, [{addr, RefX2}]),
+%    % Cond selects the cells to be 'adjusted' and Offset 
+%    % determines how they are to be 'adjusted'
+%    {Cond, Offset}
+%        = case Range of
+%              row   ->
+%                  A = [{'>', '$1', R}],
+%                  B = {0, -1},
+%                  {A, B};
+%              col   ->
+%                  A = [{'>', '$2', R}],
+%                  B = {-1, 0},
+%                  {A, B};
+%              cell  ->
+%                  {X, Y} = R,
+%                  case Disp of
+%                      horizontal ->
+%                          A = [{'and', {'>',  '$1', Y}, {'==', '$2', X}}],
+%                          B = {-1, 0},
+%                          {A, B};
+%                      vertical   ->
+%                          A = [{'and', {'==', '$1', X}, {'>',  '$2', Y}}],
+%                          B = {0, -1},
+%                          {A, B}
+%                  end;
+%              range ->
+%                  {X1, Y1, X2, Y2} = R,
+%                  case Disp of
+%                      horizontal ->
+%                          A = [{'and', {'>=', '$1', Y1}, {'==', '$2', X1}}],
+%                          B = [{'and', {'=<', '$1', Y2}, {'==', '$2', X2}}],
+%                          C = {0, Y1 - Y2}, % should be negative!
+%                          {[{'and', A, B}], C};
+%                      vertical   ->
+%                          A = [{'and', {'==', '$1', X1}, {'>=', '$2', Y1}}],
+%                          B = [{'and', {'==', '$1', X2}, {'=<', '$2', Y2}}],
+%                          C = {0, X1 - X2}, % should be negative!
+%                          {[{'and', A, B}], C}                         
+%                  end
+%          end,
+%    Body = ['$_'],
+%    Fun1 = fun() -> ?mn_sl(hn_item, [{Head, Cond, Body}]) end,
+%    ShiftedCells = ?mn_ac(transaction, Fun1),
+%    % now shift the cells
+%    Fun2 = fun() -> hn_db_wu:shift_cell(ShiftedCells, Offset) end,
+%    {ok, ok} = ?mn_ac(transaction, Fun2),
+%    {ok, ok}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%                                                                            %%
@@ -700,11 +748,33 @@ shift(RefX, Disp, _Type) when is_record(RefX, refX) ->
 clear_TEST() ->
     Site = "http://127.0.0.1:9000",
     Path = ["test"],
+
+    write_data("http://il_ballo.dev:9000",["data"]),
+    write_data(["data2"]),
+
     write_value(Path, "integer below", {1, 2}, [bold]),
     write_value(Path, "1", {1, 3}, [{colour, "yellow"}]),
-    colour(Path, {1, 4}, "cyan"),
+
+    write_value(Path, "local ref below", {1, 5}, [bold]),
+    write_value(Path, "=../data2/b1", {1, 6}, [{colour, "yellow"}]),
+
+    write_value(Path, "remote ref below", {1, 8}, [bold]),
+    write_value(Path, "=hn(\"http://il_ballo.dev:9000/data/E1?hypernumber\")",
+                {1, 9}, [{colour, "yellow"}]),
+
+    make_thick(Path, 1),
+
     test_util:wait(100),
-    clear_cells_DEBUG(Site, Path).
+
+    % rewrite the same formula
+    write_value(Path, "=hn(\"http://il_ballo.dev:9000/data/E1?hypernumber\")",
+                 {1, 9}, [{colour, "yellow"}]),
+
+    % clear the remote hyperlink
+    % clear_cells(Site, Path, {1, 9}),
+    
+    % clear_cells_DEBUG(Site, Path),
+    ok.
 
 %% @hidden
 insert_delete_DEBUG() ->
@@ -757,457 +827,489 @@ clear_cells_DEBUG(Path) ->
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 insert_delete_DEBUG2(FunName) ->
 
-    FunName2 = [FunName],
+    Path = [FunName],
 
-    clear_cells_DEBUG(FunName2),
+    io:format("Clearing the cells...~n"),
 
-    write_value(FunName2, FunName, {1, 1}, [bold, underline, center]),
+    clear_cells_DEBUG(Path),
+    clear_cells_DEBUG([FunName | "data"]),
+    clear_cells_DEBUG("http://il_ballo.dev:9000", [FunName, "data"]),
 
-    write_value(FunName2, "before: "++FunName, {3, 1}, [bold, underline, center]),
-    colour(FunName2, {3, 1}, "grey"),
+    test_util:wait(20),
 
-    % cell stuff first
-    write_value(FunName2, "Cell "++FunName++" (down)", {1, 3}, [bold, underline, center]),
-    write_value(FunName2, "=./data/A1", {1, 4}, []),
-    write_value(FunName2, FunName++" a cell here", {1, 5}, []),
-    write_value(FunName2, "=./data/B1", {1, 6}, []),
-    write_value(FunName2, "=hn(\"http://il_ballo.dev/data/C1?hypernumbers\")", {1, 7}, []),
-    colour(FunName2, {1, 4}, "orange"),
-    colour(FunName2, {1, 5}, "orange"),
-    colour(FunName2, {1, 6}, "orange"),
-    colour(FunName2, {1, 7}, "orange"),
-
-    %    write_value(FunName2, "Cell "++FunName++" (right)", {1, 9}, [bold, underline, center]),
-    %    write_value(FunName2, FunName++" a cell here", {1, 10}, []),
-    %    write_value(FunName2, "=./data/A1", {2, 10}, []),
-    %    colour(FunName2, {1, 10}, "orange"),
-    %    colour(FunName2, {2, 10}, "orange"),
-
-    make_thick(FunName2, 1),
-
-    %    write_value(FunName2, "Row "++FunName++" (right)", {1, 12}, [bold, underline, center]),
-    %    write_value(FunName2, FunName++" a row here", {1, 13}, []),
-    %    write_value(FunName2, "=./data/A1", {1, 14}, []),
-    %    colour(FunName2, {1, 13}, "orange"),
-    %    colour(FunName2, {1, 14}, "orange"),
-
-    make_thin(FunName2, 2),
-
-    %    write_value(FunName2, FunName++" Column Here", {3, 3}, [bold, underline, center]),
-
-    %    make_thick(FunName2, 3),
-
-    %    make_thin(FunName2, 4),
-
-    %    make_thick(FunName2, 5),
-
-    %    write_value(FunName2, "Range "++FunName++" (down)", {5, 14}, [bold, underline, center]),
-    %    write_value(FunName2, "=./data/A1", {5, 15}, []),
-    %    write_value(FunName2, "=./data/B1", {5, 16}, []),
-    %    write_value(FunName2, "=./data/C1", {5, 17}, []),
-    %    write_value(FunName2, "=./data/D1", {5, 18}, []),
-    %    colour(FunName2, {5, 15}, "orange"),
-    %    colour(FunName2, {5, 16}, "orange"),
-    %    colour(FunName2, {5, 17}, "orange"),
-    %    colour(FunName2, {5, 18}, "orange"),
-
-    %    write_value(FunName2, "=./data/E1", {6, 15}, []),
-    %    write_value(FunName2, "=./data/F1", {6, 16}, []),
-    %    write_value(FunName2, "=./data/G1", {6, 17}, []),
-    %    write_value(FunName2, "=./data/H1", {6, 18}, []),
-    %    colour(FunName2, {6, 15}, "orange"),
-    %    colour(FunName2, {6, 16}, "yellow"),
-    %    colour(FunName2, {6, 17}, "yellow"),
-    %    colour(FunName2, {6, 18}, "orange"),
-
-    %    write_value(FunName2, "=./data/I1", {7, 15}, []),
-    %    write_value(FunName2, "=./data/J1", {7, 16}, []),
-    %    write_value(FunName2, "=./data/K1", {7, 17}, []),
-    %    write_value(FunName2, "=./data/L1", {7, 18}, []),
-    %    colour(FunName2, {7, 15}, "orange"),
-    %    colour(FunName2, {7, 16}, "yellow"),
-    %    colour(FunName2, {7, 17}, "yellow"),
-    %    colour(FunName2, {7, 18}, "orange"),
-
-    %    write_value(FunName2, "=./data/M1", {8, 15}, []),
-    %    write_value(FunName2, "=./data/N1", {8, 16}, []),
-    %    write_value(FunName2, "=./data/O1", {8, 17}, []),
-    %    write_value(FunName2, "=./data/P1", {8, 18}, []),
-    %    colour(FunName2, {8, 15}, "orange"),
-    %    colour(FunName2, {8, 16}, "orange"),
-    %    colour(FunName2, {8, 17}, "orange"),
-    %    colour(FunName2, {8, 18}, "orange"),
-
-    %    make_thin(FunName2, 9),
-
-    %    write_value(FunName2, "Range "++FunName++" (right)", {10, 14}, [bold, underline, center]),
-    %    write_value(FunName2, "A", {10, 15}, []),
-    %    write_value(FunName2, "B", {10, 16}, []),
-    %    write_value(FunName2, "C", {10, 17}, []),
-    %    write_value(FunName2, "D", {10, 18}, []),
-    %    colour(FunName2, {10, 15}, "orange"),
-    %    colour(FunName2, {10, 16}, "orange"),
-    %    colour(FunName2, {10, 17}, "orange"),
-    %    colour(FunName2, {10, 18}, "orange"),
-
-    %    write_value(FunName2, "E", {11, 15}, []),
-    %    write_value(FunName2, "F", {11, 16}, []),
-    %    write_value(FunName2, "G", {11, 17}, []),
-    %    write_value(FunName2, "H", {11, 18}, []),
-    %    colour(FunName2, {11, 15}, "orange"),
-    %    colour(FunName2, {11, 16}, "yellow"),
-    %    colour(FunName2, {11, 17}, "yellow"),
-    %    colour(FunName2, {11, 18}, "orange"),
-
-    %    write_value(FunName2, "I", {12, 15}, []),
-    %    write_value(FunName2, "J", {12, 16}, []),
-    %    write_value(FunName2, "K", {12, 17}, []),
-    %    write_value(FunName2, "L", {12, 18}, []),
-    %    colour(FunName2, {12, 15}, "orange"),
-    %    colour(FunName2, {12, 16}, "yellow"),
-    %    colour(FunName2, {12, 17}, "yellow"),
-    %    colour(FunName2, {12, 18}, "orange"),
-
-    %    write_value(FunName2, "M", {13, 15}, []),
-    %    write_value(FunName2, "N", {13, 16}, []),
-    %    write_value(FunName2, "O", {13, 17}, []),
-    %    write_value(FunName2, "P", {13, 18}, []),
-    %    colour(FunName2, {13, 15}, "orange"),
-    %    colour(FunName2, {13, 16}, "orange"),
-    %    colour(FunName2, {13, 17}, "orange"),
-    %    colour(FunName2, {13, 18}, "orange"),
-
-    %    make_thick(FunName2, 10),
-
-    %
-    % Now set up the various bits of data
-    % 
+    % Now set up the various bits of data that is used to mark the 
+    % insert tests
+    io:format("writing out data...~n"),
     write_data([FunName,"data"]),
     write_data("http://il_ballo.dev:9000",[FunName,"data"]),
 
-    %
-    % Now do the inserts and deletes
-    % 
-    io:format("'bout to wait...~n"),
-    test_util:wait(100),
-    io:format("'done waitin...~n"),
-    write_value(FunName2, "after: "++FunName, {3, 1}, [bold, underline, center]),
-    colour(FunName2, {3, 1}, "red"),
+    % now write out the data and perform the tests
+    write_value(Path, FunName, {1, 1}, [bold, underline, center]),
 
-    insert_delete(FunName, FunName2, {cell, {1, 5}}, vertical),
-    %    % insert_delete(FunName, FunName2, {cell, {1, 5}}, horizontal),
-    %    % insert_delete(FunName, FunName2, {row, {12, 12}}),
-    %    % insert_delete(FunName, FunName2, {column, {3, 3}}),
-    %    % insert_delete(FunName, FunName2, {range, {6, 16, 7, 18}}, vertical),
-    %    % insert_delete(FunName, FunName2, {range, {11, 16, 13, 18}}, vertical),
+    write_value(Path, "before: "++FunName, {3, 1}, [bold, underline, center]),
+    colour(Path, {3, 1}, "grey"),
+
+    % cell stuff first
+    write_value(Path, "Cell "++FunName++" (down)", {1, 3},
+                [bold, underline, center]),
+
+    write_value(Path, "=./data/A1", {1, 4}, []),
+
+    write_value(Path, FunName++" a cell here", {1, 5}, []),
+    write_value(Path, "=./data/B1", {1, 6}, []),
+    write_value(Path, "=hn(\"http://il_ballo.dev:9000/insert/data/C1?hypernumber\")", {1, 7}, []),
+    colour(Path, {1, 4}, "orange"),
+    colour(Path, {1, 5}, "orange"),
+    colour(Path, {1, 6}, "orange"),
+    colour(Path, {1, 7}, "orange"),
+
+    io:format("Insert a cell...~n"),
+
+    insert_delete(FunName, Path, {cell, {1, 5}}, vertical),
+
+    %    write_value(Path, "Cell "++FunName++" (right)", {1, 9}, [bold, underline, center]),
+    %    write_value(Path, FunName++" a cell here", {1, 10}, []),
+    %    write_value(Path, "=./data/A1", {2, 10}, []),
+    %    colour(Path, {1, 10}, "orange"),
+    %    colour(Path, {2, 10}, "orange"),
+
+    make_thick(Path, 1),
+
+    %    write_value(Path, "Row "++FunName++" (right)", {1, 12}, [bold, underline, center]),
+    %    write_value(Path, FunName++" a row here", {1, 13}, []),
+    %    write_value(Path, "=./data/A1", {1, 14}, []),
+    %    colour(Path, {1, 13}, "orange"),
+    %    colour(Path, {1, 14}, "orange"),
+
+    %    make_thin(Path, 2),
+
+    %    write_value(Path, FunName++" Column Here", {3, 3}, [bold, underline, center]),
+
+    %    make_thick(Path, 3),
+
+    %    make_thin(Path, 4),
+
+    %    make_thick(Path, 5),
+
+    %    write_value(Path, "Range "++FunName++" (down)", {5, 14}, [bold, underline, center]),
+    %    write_value(Path, "=./data/A1", {5, 15}, []),
+    %    write_value(Path, "=./data/B1", {5, 16}, []),
+    %    write_value(Path, "=./data/C1", {5, 17}, []),
+    %    write_value(Path, "=./data/D1", {5, 18}, []),
+    %    colour(Path, {5, 15}, "orange"),
+    %    colour(Path, {5, 16}, "orange"),
+    %    colour(Path, {5, 17}, "orange"),
+    %    colour(Path, {5, 18}, "orange"),
+
+    %    write_value(Path, "=./data/E1", {6, 15}, []),
+    %    write_value(Path, "=./data/F1", {6, 16}, []),
+    %    write_value(Path, "=./data/G1", {6, 17}, []),
+    %    write_value(Path, "=./data/H1", {6, 18}, []),
+    %    colour(Path, {6, 15}, "orange"),
+    %    colour(Path, {6, 16}, "yellow"),
+    %    colour(Path, {6, 17}, "yellow"),
+    %    colour(Path, {6, 18}, "orange"),
+
+    %    write_value(Path, "=./data/I1", {7, 15}, []),
+    %    write_value(Path, "=./data/J1", {7, 16}, []),
+    %    write_value(Path, "=./data/K1", {7, 17}, []),
+    %    write_value(Path, "=./data/L1", {7, 18}, []),
+    %    colour(Path, {7, 15}, "orange"),
+    %    colour(Path, {7, 16}, "yellow"),
+    %    colour(Path, {7, 17}, "yellow"),
+    %    colour(Path, {7, 18}, "orange"),
+
+    %    write_value(Path, "=./data/M1", {8, 15}, []),
+    %    write_value(Path, "=./data/N1", {8, 16}, []),
+    %    write_value(Path, "=./data/O1", {8, 17}, []),
+    %    write_value(Path, "=./data/P1", {8, 18}, []),
+    %    colour(Path, {8, 15}, "orange"),
+    %    colour(Path, {8, 16}, "orange"),
+    %    colour(Path, {8, 17}, "orange"),
+    %    colour(Path, {8, 18}, "orange"),
+
+    %    make_thin(Path, 9),
+
+    %    write_value(Path, "Range "++FunName++" (right)", {10, 14}, [bold, underline, center]),
+    %    write_value(Path, "A", {10, 15}, []),
+    %    write_value(Path, "B", {10, 16}, []),
+    %    write_value(Path, "C", {10, 17}, []),
+    %    write_value(Path, "D", {10, 18}, []),
+    %    colour(Path, {10, 15}, "orange"),
+    %    colour(Path, {10, 16}, "orange"),
+    %    colour(Path, {10, 17}, "orange"),
+    %    colour(Path, {10, 18}, "orange"),
+
+    %    write_value(Path, "E", {11, 15}, []),
+    %    write_value(Path, "F", {11, 16}, []),
+    %    write_value(Path, "G", {11, 17}, []),
+    %    write_value(Path, "H", {11, 18}, []),
+    %    colour(Path, {11, 15}, "orange"),
+    %    colour(Path, {11, 16}, "yellow"),
+    %    colour(Path, {11, 17}, "yellow"),
+    %    colour(Path, {11, 18}, "orange"),
+
+    %    write_value(Path, "I", {12, 15}, []),
+    %    write_value(Path, "J", {12, 16}, []),
+    %    write_value(Path, "K", {12, 17}, []),
+    %    write_value(Path, "L", {12, 18}, []),
+    %    colour(Path, {12, 15}, "orange"),
+    %    colour(Path, {12, 16}, "yellow"),
+    %    colour(Path, {12, 17}, "yellow"),
+    %    colour(Path, {12, 18}, "orange"),
+
+    %    write_value(Path, "M", {13, 15}, []),
+    %    write_value(Path, "N", {13, 16}, []),
+    %    write_value(Path, "O", {13, 17}, []),
+    %    write_value(Path, "P", {13, 18}, []),
+    %    colour(Path, {13, 15}, "orange"),
+    %    colour(Path, {13, 16}, "orange"),
+    %    colour(Path, {13, 17}, "orange"),
+    %    colour(Path, {13, 18}, "orange"),
+
+    %    make_thick(Path, 10),
+
+    % Now do the inserts and deletes
+
+    %    io:format("'bout to wait...~n"),
+    %    test_util:wait(100),
+    %    io:format("'done waitin...~n"),
+    %    write_value(Path, "after: "++FunName, {3, 1}, [bold, underline, center]),
+    %    colour(Path, {3, 1}, "red"),
+
+    %    io:format("At the end...~n"),
+
+    %    insert_delete(FunName, Path, {cell, {1, 5}}, vertical),
+    % insert_delete(FunName, Path, {cell, {1, 5}}, horizontal),
+    % insert_delete(FunName, Path, {row, {12, 12}}),
+    % insert_delete(FunName, Path, {column, {3, 3}}),
+    % insert_delete(FunName, Path, {range, {6, 16, 7, 18}}, vertical),
+    % insert_delete(FunName, Path, {range, {11, 16, 13, 18}}, vertical),
 
     ok.
 
 copy_DEBUG3(FunName) ->
 
-    FunName2 = [FunName, "for_ranges"],
+    Path = [FunName, "for_ranges"],
 
-    clear_cells_DEBUG(FunName2),
+    clear_cells_DEBUG(Path),
 
     test_util:wait(100),
 
-    write_value(FunName2, FunName++" - ranges", {1, 1}, [bold, underline]),
+    write_value(Path, FunName++" - ranges", {1, 1}, [bold, underline]),
 
-    make_high(FunName2, 1),
+    make_high(Path, 1),
 
-    write_value(FunName2, "From Range", {1, 2}, [bold]),
-    write_value(FunName2, "a", {1, 3}, [{colour, "yellow"}]),
-    write_value(FunName2, "b", {1, 4}, [{colour, "yellow"}]),
-    write_value(FunName2, "c", {1, 5}, [{colour, "yellow"}]),
-    write_value(FunName2, "d", {2, 3}, [{colour, "yellow"}]),
-    write_value(FunName2, "e", {2, 4}, [{colour, "yellow"}]),
-    write_value(FunName2, "f", {2, 5}, [{colour, "yellow"}]),
-    write_value(FunName2, "g", {3, 3}, [{colour, "yellow"}]),
-    write_value(FunName2, "h", {3, 4}, [{colour, "yellow"}]),
-    write_value(FunName2, "i", {3, 5}, [{colour, "yellow"}]),
+    write_value(Path, "From Range", {1, 2}, [bold]),
+    write_value(Path, "a", {1, 3}, [{colour, "yellow"}]),
+    write_value(Path, "b", {1, 4}, [{colour, "yellow"}]),
+    write_value(Path, "c", {1, 5}, [{colour, "yellow"}]),
+    write_value(Path, "d", {2, 3}, [{colour, "yellow"}]),
+    write_value(Path, "e", {2, 4}, [{colour, "yellow"}]),
+    write_value(Path, "f", {2, 5}, [{colour, "yellow"}]),
+    write_value(Path, "g", {3, 3}, [{colour, "yellow"}]),
+    write_value(Path, "h", {3, 4}, [{colour, "yellow"}]),
+    write_value(Path, "i", {3, 5}, [{colour, "yellow"}]),
 
-    write_value(FunName2, "To Range (the same size)", {1, 7}, [bold]),
-    make_high(FunName2, 7),
+    write_value(Path, "To Range (the same size)", {1, 7}, [bold]),
+    make_high(Path, 7),
 
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {range, {1, 3, 3, 5}},
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {range, {1, 3, 3, 5}},
                                      {range, {1, 8, 3, 10}}),
 
-    write_value(FunName2, "From", {5, 2}, [bold]),
+    write_value(Path, "From", {5, 2}, [bold]),
 
-    write_value(FunName2, "aa", {5, 3}, [{colour, "yellow"}]),
-    write_value(FunName2, "bb", {5, 4}, [{colour, "yellow"}]),
-    write_value(FunName2, "cc", {5, 5}, [{colour, "yellow"}]),
-    write_value(FunName2, "dd", {6, 3}, [{colour, "yellow"}]),
-    write_value(FunName2, "ee", {6, 4}, [{colour, "yellow"}]),
-    write_value(FunName2, "ff", {6, 5}, [{colour, "yellow"}]),
-    write_value(FunName2, "gg", {7, 3}, [{colour, "yellow"}]),
-    write_value(FunName2, "hh", {7, 4}, [{colour, "yellow"}]),
-    write_value(FunName2, "ii", {7, 5}, [{colour, "yellow"}]),
+    write_value(Path, "aa", {5, 3}, [{colour, "yellow"}]),
+    write_value(Path, "bb", {5, 4}, [{colour, "yellow"}]),
+    write_value(Path, "cc", {5, 5}, [{colour, "yellow"}]),
+    write_value(Path, "dd", {6, 3}, [{colour, "yellow"}]),
+    write_value(Path, "ee", {6, 4}, [{colour, "yellow"}]),
+    write_value(Path, "ff", {6, 5}, [{colour, "yellow"}]),
+    write_value(Path, "gg", {7, 3}, [{colour, "yellow"}]),
+    write_value(Path, "hh", {7, 4}, [{colour, "yellow"}]),
+    write_value(Path, "ii", {7, 5}, [{colour, "yellow"}]),
 
-    write_value(FunName2, "To Range (smaller)", {5, 7}, [bold]),
+    write_value(Path, "To Range (smaller)", {5, 7}, [bold]),
 
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {range, {5, 3, 7, 5}},
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {range, {5, 3, 7, 5}},
                                      {range, {5, 8, 6, 9}}),
 
-    write_value(FunName2, "From", {9, 2}, [bold]),
+    write_value(Path, "From", {9, 2}, [bold]),
 
-    write_value(FunName2, "aaa", {9, 3}, [{colour, "yellow"}]),
-    write_value(FunName2, "bbb", {9, 4}, [{colour, "yellow"}]),
-    write_value(FunName2, "ccc", {9, 5}, [{colour, "yellow"}]),
-    write_value(FunName2, "ddd", {10, 3}, [{colour, "yellow"}]),
-    write_value(FunName2, "eee", {10, 4}, [{colour, "yellow"}]),
-    write_value(FunName2, "fff", {10, 5}, [{colour, "yellow"}]),
-    write_value(FunName2, "ggg", {11, 3}, [{colour, "yellow"}]),
-    write_value(FunName2, "hhh", {11, 4}, [{colour, "yellow"}]),
-    write_value(FunName2, "iii", {11, 5}, [{colour, "yellow"}]),
+    write_value(Path, "aaa", {9, 3}, [{colour, "yellow"}]),
+    write_value(Path, "bbb", {9, 4}, [{colour, "yellow"}]),
+    write_value(Path, "ccc", {9, 5}, [{colour, "yellow"}]),
+    write_value(Path, "ddd", {10, 3}, [{colour, "yellow"}]),
+    write_value(Path, "eee", {10, 4}, [{colour, "yellow"}]),
+    write_value(Path, "fff", {10, 5}, [{colour, "yellow"}]),
+    write_value(Path, "ggg", {11, 3}, [{colour, "yellow"}]),
+    write_value(Path, "hhh", {11, 4}, [{colour, "yellow"}]),
+    write_value(Path, "iii", {11, 5}, [{colour, "yellow"}]),
 
-    write_value(FunName2, "To Cell", {9, 7}, [bold]),
+    write_value(Path, "To Cell", {9, 7}, [bold]),
 
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {range, {9, 3, 12, 5}},
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {range, {9, 3, 12, 5}},
                                      {cell, {9, 8}}),
 
-    write_value(FunName2, "From Range", {1, 12}, [bold]),
-    write_value(FunName2, "aaaa", {1, 13}, [{colour, "yellow"}]),
-    write_value(FunName2, "bbbb", {1, 14}, [{colour, "yellow"}]),
-    write_value(FunName2, "cccc", {2, 13}, [{colour, "yellow"}]),
-    write_value(FunName2, "dddd", {2, 14}, [{colour, "yellow"}]),
+    write_value(Path, "From Range", {1, 12}, [bold]),
+    write_value(Path, "aaaa", {1, 13}, [{colour, "yellow"}]),
+    write_value(Path, "bbbb", {1, 14}, [{colour, "yellow"}]),
+    write_value(Path, "cccc", {2, 13}, [{colour, "yellow"}]),
+    write_value(Path, "dddd", {2, 14}, [{colour, "yellow"}]),
 
-    write_value(FunName2, "To Vertical Tiles", {1, 16}, [bold]),
-    make_high(FunName2, 16),
+    write_value(Path, "To Vertical Tiles", {1, 16}, [bold]),
+    make_high(Path, 16),
 
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {range, {1,13, 2, 14}},
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {range, {1,13, 2, 14}},
                                      {range, {1, 17, 2, 22}}),
 
-    write_value(FunName2, "From Range", {4, 12}, [bold]),
-    write_value(FunName2, "A", {4, 13}, [{colour, "yellow"}]),
-    write_value(FunName2, "B", {4, 14}, [{colour, "yellow"}]),
-    write_value(FunName2, "C", {5, 13}, [{colour, "yellow"}]),
-    write_value(FunName2, "D", {5, 14}, [{colour, "yellow"}]),
+    write_value(Path, "From Range", {4, 12}, [bold]),
+    write_value(Path, "A", {4, 13}, [{colour, "yellow"}]),
+    write_value(Path, "B", {4, 14}, [{colour, "yellow"}]),
+    write_value(Path, "C", {5, 13}, [{colour, "yellow"}]),
+    write_value(Path, "D", {5, 14}, [{colour, "yellow"}]),
 
-    write_value(FunName2, "To Horizontal Tiles", {4, 16}, [bold]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {range, {4, 13, 5, 14}},
+    write_value(Path, "To Horizontal Tiles", {4, 16}, [bold]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {range, {4, 13, 5, 14}},
                                      {range, {4, 17, 7, 18}}),
 
-    write_value(FunName2, "From Range", {9, 12}, [bold]),
-    write_value(FunName2, "AA", {9, 13}, [{colour, "yellow"}]),
-    write_value(FunName2, "BB", {9, 14}, [{colour, "yellow"}]),
-    write_value(FunName2, "CC", {10, 13}, [{colour, "yellow"}]),
-    write_value(FunName2, "DD", {10, 14}, [{colour, "yellow"}]),
+    write_value(Path, "From Range", {9, 12}, [bold]),
+    write_value(Path, "AA", {9, 13}, [{colour, "yellow"}]),
+    write_value(Path, "BB", {9, 14}, [{colour, "yellow"}]),
+    write_value(Path, "CC", {10, 13}, [{colour, "yellow"}]),
+    write_value(Path, "DD", {10, 14}, [{colour, "yellow"}]),
 
-    write_value(FunName2, "To Tiles", {9, 16}, [bold]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {range, {9, 13, 10, 14}},
+    write_value(Path, "To Tiles", {9, 16}, [bold]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {range, {9, 13, 10, 14}},
                                      {range, {9, 17, 12, 20}}),
-    
-    write_value(FunName2, "From Range", {14, 12}, [bold]),
-    write_value(FunName2, "AAA", {14, 13}, [{colour, "yellow"}]),
-    write_value(FunName2, "BBB", {14, 14}, [{colour, "yellow"}]),
-    write_value(FunName2, "CCC", {15, 13}, [{colour, "yellow"}]),
-    write_value(FunName2, "DDD", {15, 14}, [{colour, "yellow"}]),
 
-    write_value(FunName2, "Non-Tiling Range", {14, 16}, [bold]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {range, {14, 13, 15, 14}},
+    write_value(Path, "From Range", {14, 12}, [bold]),
+    write_value(Path, "AAA", {14, 13}, [{colour, "yellow"}]),
+    write_value(Path, "BBB", {14, 14}, [{colour, "yellow"}]),
+    write_value(Path, "CCC", {15, 13}, [{colour, "yellow"}]),
+    write_value(Path, "DDD", {15, 14}, [{colour, "yellow"}]),
+
+    write_value(Path, "Non-Tiling Range", {14, 16}, [bold]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {range, {14, 13, 15, 14}},
                                      {range, {14, 17, 16, 16}}).
 
 copy_DEBUG2(FunName) ->
 
-    FunName2 = [FunName],
+    Path = [FunName],
 
-    clear_cells_DEBUG(FunName2),
+    clear_cells_DEBUG(Path),
 
     test_util:wait(100),
 
-    write_value(FunName2, FunName++" - cell to cell", {1, 1}, [bold, underline]),
+    write_value(Path, FunName++" - cell to cell", {1, 1}, [bold, underline]),
 
     % cell to cell drop down
-    write_value(FunName2, "integer below", {1, 2}, [bold]),
-    write_value(FunName2, "1", {1, 3}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {1, 3}}, {cell, {1, 4}}),
-    colour(FunName2, {1, 3}, "cyan"),
+    write_value(Path, "integer below", {1, 2}, [bold]),
+    write_value(Path, "1", {1, 3}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {1, 3}}, {cell, {1, 4}}),
+    colour(Path, {1, 3}, "cyan"),
 
-    write_value(FunName2, "float below", {1, 5}, [bold]),
-    write_value(FunName2, "1.1", {1, 6}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {1, 6}}, {cell, {1, 7}}),
-    colour(FunName2, {1, 6}, "cyan"),
+    write_value(Path, "float below", {1, 5}, [bold]),
+    write_value(Path, "1.1", {1, 6}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {1, 6}}, {cell, {1, 7}}),
+    colour(Path, {1, 6}, "cyan"),
 
-    write_value(FunName2, "string below", {1, 8}, [bold]),
-    write_value(FunName2, "hey!", {1, 9}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {1, 9}}, {cell, {1, 10}}),
-    colour(FunName2, {1, 9}, "cyan"),
+    write_value(Path, "string below", {1, 8}, [bold]),
+    write_value(Path, "hey!", {1, 9}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {1, 9}}, {cell, {1, 10}}),
+    colour(Path, {1, 9}, "cyan"),
 
-    write_value(FunName2, "date below", {1, 11}, [bold]),
-    write_value(FunName2, "1/2/3 4:5:6", {1, 12}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {1, 12}}, {cell, {1, 13}}),
-    colour(FunName2, {1, 12}, "cyan"),
+    write_value(Path, "date below", {1, 11}, [bold]),
+    write_value(Path, "1/2/3 4:5:6", {1, 12}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {1, 12}}, {cell, {1, 13}}),
+    colour(Path, {1, 12}, "cyan"),
 
-    write_value(FunName2, "boolean below", {1, 14}, [bold]),
-    write_value(FunName2, "true", {1, 15}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {1, 15}}, {cell, {1, 16}}),
-    colour(FunName2, {1, 15}, "cyan"),
+    write_value(Path, "boolean below", {1, 14}, [bold]),
+    write_value(Path, "true", {1, 15}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {1, 15}}, {cell, {1, 16}}),
+    colour(Path, {1, 15}, "cyan"),
 
-    make_thick(FunName2, 1),
-    make_thick(FunName2, 2),
-    make_high(FunName2, 1),
-    
+    make_thick(Path, 1),
+    make_thick(Path, 2),
+    make_high(Path, 1),
+
     % cell to cell across
-    write_value(FunName2, "integer beside", {2, 2}, [bold]),
-    write_value(FunName2, "1", {2, 3}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {2, 3}}, {cell, {3, 3}}),
-    colour(FunName2, {2, 3}, "cyan"),
+    write_value(Path, "integer beside", {2, 2}, [bold]),
+    write_value(Path, "1", {2, 3}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {2, 3}}, {cell, {3, 3}}),
+    colour(Path, {2, 3}, "cyan"),
 
-    write_value(FunName2, "float beside", {2, 5}, [bold]),
-    write_value(FunName2, "1.1", {2, 6}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {2, 6}}, {cell, {3, 6}}),
-    colour(FunName2, {2, 6}, "cyan"),
+    write_value(Path, "float beside", {2, 5}, [bold]),
+    write_value(Path, "1.1", {2, 6}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {2, 6}}, {cell, {3, 6}}),
+    colour(Path, {2, 6}, "cyan"),
 
-    write_value(FunName2, "string beside", {2, 8}, [bold]),
-    write_value(FunName2, "hey!", {2, 9}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {2, 9}}, {cell, {3, 9}}),
-    colour(FunName2, {2, 9}, "cyan"),
+    write_value(Path, "string beside", {2, 8}, [bold]),
+    write_value(Path, "hey!", {2, 9}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {2, 9}}, {cell, {3, 9}}),
+    colour(Path, {2, 9}, "cyan"),
 
-    write_value(FunName2, "date beside", {2, 11}, [bold]),
-    write_value(FunName2, "1/2/3 4:5:6", {2, 12}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {2, 12}}, {cell, {3, 12}}),
-    colour(FunName2, {2, 12}, "cyan"),
+    write_value(Path, "date beside", {2, 11}, [bold]),
+    write_value(Path, "1/2/3 4:5:6", {2, 12}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {2, 12}}, {cell, {3, 12}}),
+    colour(Path, {2, 12}, "cyan"),
 
-    write_value(FunName2, "boolean beside", {2, 14}, [bold]),
-    write_value(FunName2, "true", {2, 15}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {2, 15}}, {cell, {3, 15}}),
-    colour(FunName2, {2, 15}, "cyan"),
+    write_value(Path, "boolean beside", {2, 14}, [bold]),
+    write_value(Path, "true", {2, 15}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {2, 15}}, {cell, {3, 15}}),
+    colour(Path, {2, 15}, "cyan"),
 
-    make_thin(FunName2, 4),
+    make_thin(Path, 4),
 
-    write_value(FunName2, FunName++" - cell to down 'thin' range", {5, 1}, [bold, underline]),
-
-    % cell to range down
-    write_value(FunName2, "integer below", {5, 2}, [bold]),
-    write_value(FunName2, "1", {5, 3}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {5, 3}}, {range, {5, 4, 5, 5}}),
-    colour(FunName2, {5, 3}, "cyan"),
-
-    write_value(FunName2, "float below", {6, 5}, [bold]),
-    write_value(FunName2, "1.1", {6, 6}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {6, 6}}, {range, {6, 7, 6, 8}}),
-    colour(FunName2, {6, 6}, "cyan"),
-
-    write_value(FunName2, "string below", {5, 8}, [bold]),
-    write_value(FunName2, "hey!", {5, 9}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {5, 9}}, {range, {5, 10, 5, 11}}),
-    colour(FunName2, {5, 9}, "cyan"),
-
-    write_value(FunName2, "date below", {6, 11}, [bold]),
-    write_value(FunName2, "1/2/3 4:5:6", {6, 12}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {6, 12}}, {range, {6, 13, 6, 14}}),
-    colour(FunName2, {6, 12}, "cyan"),
-
-    write_value(FunName2, "boolean below", {5, 14}, [bold]),
-    write_value(FunName2, "true", {5, 15}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {5, 15}}, {range, {5, 16, 5, 17}}),
-    colour(FunName2, {5, 15}, "cyan"),
-
-    write_value(FunName2, FunName++" - cell to across 'thin' range", {7, 1}, [bold, underline]),
-
-    make_thick(FunName2, 5),
-    make_thick(FunName2, 6),
+    write_value(Path, FunName++" - cell to down 'thin' range", {5, 1}, [bold, underline]),
 
     % cell to range down
-    write_value(FunName2, "integer beside", {7, 2}, [bold]),
-    write_value(FunName2, "1", {7, 3}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {7, 3}}, {range, {7, 4, 8, 4}}),
-    colour(FunName2, {7, 3}, "cyan"),
+    write_value(Path, "integer below", {5, 2}, [bold]),
+    write_value(Path, "1", {5, 3}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {5, 3}}, {range, {5, 4, 5, 5}}),
+    colour(Path, {5, 3}, "cyan"),
 
-    write_value(FunName2, "float beside", {7, 5}, [bold]),
-    write_value(FunName2, "1.1", {7, 6}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {7, 6}}, {range, {7, 7, 8, 7}}),
-    colour(FunName2, {7, 6}, "cyan"),
+    write_value(Path, "float below", {6, 5}, [bold]),
+    write_value(Path, "1.1", {6, 6}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {6, 6}}, {range, {6, 7, 6, 8}}),
+    colour(Path, {6, 6}, "cyan"),
 
-    write_value(FunName2, "string beside", {7, 8}, [bold]),
-    write_value(FunName2, "hey!", {7, 9}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {7, 9}}, {range, {7, 10, 8, 10}}),
-    colour(FunName2, {7, 9}, "cyan"),
+    write_value(Path, "string below", {5, 8}, [bold]),
+    write_value(Path, "hey!", {5, 9}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {5, 9}}, {range, {5, 10, 5, 11}}),
+    colour(Path, {5, 9}, "cyan"),
 
-    write_value(FunName2, "date beside", {7, 11}, [bold]),
-    write_value(FunName2, "1/2/3 4:5:6", {7, 12}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {7, 12}}, {range, {7, 13, 8, 13}}),
-    colour(FunName2, {7, 12}, "cyan"),
+    write_value(Path, "date below", {6, 11}, [bold]),
+    write_value(Path, "1/2/3 4:5:6", {6, 12}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {6, 12}}, {range, {6, 13, 6, 14}}),
+    colour(Path, {6, 12}, "cyan"),
 
-    write_value(FunName2, "boolean beside", {7, 14}, [bold]),
-    write_value(FunName2, "true", {7, 15}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {7, 15}}, {range, {7, 16,  8, 16}}),
-    colour(FunName2, {7, 15}, "cyan"),
+    write_value(Path, "boolean below", {5, 14}, [bold]),
+    write_value(Path, "true", {5, 15}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {5, 15}}, {range, {5, 16, 5, 17}}),
+    colour(Path, {5, 15}, "cyan"),
 
-    make_thick(FunName2, 7),
-    make_thick(FunName2, 8),
+    write_value(Path, FunName++" - cell to across 'thin' range", {7, 1}, [bold, underline]),
 
-    make_thin(FunName2, 9),
+    make_thick(Path, 5),
+    make_thick(Path, 6),
+
+    % cell to range down
+    write_value(Path, "integer beside", {7, 2}, [bold]),
+    write_value(Path, "1", {7, 3}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {7, 3}}, {range, {7, 4, 8, 4}}),
+    colour(Path, {7, 3}, "cyan"),
+
+    write_value(Path, "float beside", {7, 5}, [bold]),
+    write_value(Path, "1.1", {7, 6}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {7, 6}}, {range, {7, 7, 8, 7}}),
+    colour(Path, {7, 6}, "cyan"),
+
+    write_value(Path, "string beside", {7, 8}, [bold]),
+    write_value(Path, "hey!", {7, 9}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {7, 9}}, {range, {7, 10, 8, 10}}),
+    colour(Path, {7, 9}, "cyan"),
+
+    write_value(Path, "date beside", {7, 11}, [bold]),
+    write_value(Path, "1/2/3 4:5:6", {7, 12}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {7, 12}}, {range, {7, 13, 8, 13}}),
+    colour(Path, {7, 12}, "cyan"),
+
+    write_value(Path, "boolean beside", {7, 14}, [bold]),
+    write_value(Path, "true", {7, 15}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {7, 15}}, {range, {7, 16,  8, 16}}),
+    colour(Path, {7, 15}, "cyan"),
+
+    make_thick(Path, 7),
+    make_thick(Path, 8),
+
+    make_thin(Path, 9),
 
     % cell to 'thick' ranges don't increment even if they are drag'n'drop
-    write_value(FunName2, FunName++" - cell to 'thick' range", {10,1}, [bold, underline]),
+    write_value(Path, FunName++" - cell to 'thick' range", {10,1}, [bold, underline]),
 
-    write_value(FunName2, "integer", {10,2}, [bold]),
-    write_value(FunName2, "1", {10,3}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {10,3}}, {range, {10,4, 11, 10}}),
-    colour(FunName2, {10,3}, "cyan"),
+    write_value(Path, "integer", {10,2}, [bold]),
+    write_value(Path, "1", {10,3}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {10,3}},
+                                     {range, {10,4, 11, 10}}),
+    colour(Path, {10,3}, "cyan"),
 
     % same as above but arsey backwards range
-    write_value(FunName2, "testing inverted range", {10,11}, [bold]),
-    write_value(FunName2, "1", {10,12}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {10,12}}, {range, {10, 20, 11, 13}}),
-    colour(FunName2, {10,3}, "cyan"),
+    write_value(Path, "testing inverted range", {10,11}, [bold]),
+    write_value(Path, "1", {10,12}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {10,12}},
+                                     {range, {10, 20, 11, 13}}),
+    colour(Path, {10,3}, "cyan"),
 
-    make_thick(FunName2, 10),
+    make_thick(Path, 10),
 
-    make_thin(FunName2, 12),
+    make_thin(Path, 12),
 
     % set up formula data
-    write_value(FunName2, "data for formula", {13,2}, [bold]),
-    colour(FunName2, {13, 2}, "yellow"),
-    write_value(FunName2, "1", {13, 3}, []),
-    write_value(FunName2, "22", {13, 4}, []),
-    write_value(FunName2, "333", {13, 5}, []),
-    write_value(FunName2, "4444", {13, 6}, []),
-    write_value(FunName2, "5555", {13, 7}, []),
-    write_value(FunName2, "11111", {14, 3}, []),
-    write_value(FunName2, "222222", {14, 4}, []),
-    write_value(FunName2, "333333", {14, 5}, []),
-    write_value(FunName2, "4444444", {14, 6}, []),
-    write_value(FunName2, "55555555", {14, 7}, []),
-    colour(FunName2, {13, 3}, "orange"),
-    colour(FunName2, {13, 4}, "orange"),
-    colour(FunName2, {13, 5}, "orange"),
-    colour(FunName2, {13, 6}, "orange"),
-    colour(FunName2, {13, 7}, "orange"),
-    colour(FunName2, {14, 3}, "orange"),
-    colour(FunName2, {14, 4}, "orange"),
-    colour(FunName2, {14, 5}, "orange"),
-    colour(FunName2, {14, 6}, "orange"),
-    colour(FunName2, {14, 7}, "orange"),
+    write_value(Path, "data for formula", {13,2}, [bold]),
+    colour(Path, {13, 2}, "yellow"),
+    write_value(Path, "1", {13, 3}, []),
+    write_value(Path, "22", {13, 4}, []),
+    write_value(Path, "333", {13, 5}, []),
+    write_value(Path, "4444", {13, 6}, []),
+    write_value(Path, "5555", {13, 7}, []),
+    write_value(Path, "11111", {14, 3}, []),
+    write_value(Path, "222222", {14, 4}, []),
+    write_value(Path, "333333", {14, 5}, []),
+    write_value(Path, "4444444", {14, 6}, []),
+    write_value(Path, "55555555", {14, 7}, []),
+    colour(Path, {13, 3}, "orange"),
+    colour(Path, {13, 4}, "orange"),
+    colour(Path, {13, 5}, "orange"),
+    colour(Path, {13, 6}, "orange"),
+    colour(Path, {13, 7}, "orange"),
+    colour(Path, {14, 3}, "orange"),
+    colour(Path, {14, 4}, "orange"),
+    colour(Path, {14, 5}, "orange"),
+    colour(Path, {14, 6}, "orange"),
+    colour(Path, {14, 7}, "orange"),
 
-    make_thick(FunName2, 13),
+    make_thick(Path, 13),
 
-    make_thin(FunName2, 15),
+    make_thin(Path, 15),
 
     % some formula stuff
-    write_value(FunName2, "formula below", {16, 2}, [bold]),
-    write_value(FunName2, "=m3+n3", {16, 3}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {16, 3}}, {range, {16, 4, 17, 6}}),
-    colour(FunName2, {16, 3}, "cyan"),
+    write_value(Path, "formula below", {16, 2}, [bold]),
+    write_value(Path, "=m3+n3", {16, 3}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {16, 3}},
+                                     {range, {16, 4, 17, 6}}),
+    colour(Path, {16, 3}, "cyan"),
 
-    write_value(FunName2, "fix col formula below", {16, 7}, [bold]),
-    write_value(FunName2, "=$m3+n3", {16, 8}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {16, 8}}, {range, {16, 9, 17, 11}}),
-    colour(FunName2, {16, 8}, "cyan"),
+    write_value(Path, "fix col formula below", {16, 7}, [bold]),
+    write_value(Path, "=$m3+n3", {16, 8}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {16, 8}},
+                                     {range, {16, 9, 17, 11}}),
+    colour(Path, {16, 8}, "cyan"),
 
-    write_value(FunName2, "fix row formula below", {16, 12}, [bold]),
-    write_value(FunName2, "=m$3+n3", {16, 13}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {16, 13}}, {range, {16, 14, 17, 16}}),
-    colour(FunName2, {16, 13}, "cyan"),
+    write_value(Path, "fix row formula below", {16, 12}, [bold]),
+    write_value(Path, "=m$3+n3", {16, 13}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {16, 13}},
+                                     {range, {16, 14, 17, 16}}),
+    colour(Path, {16, 13}, "cyan"),
 
-    write_value(FunName2, "fix row and col formula below", {16,17}, [bold]),
-    write_value(FunName2, "=$m$3+n3", {16, 18}, [{colour, "yellow"}]),
-    cut_n_drag_n_copy_n_drop_n_paste(FunName, FunName2, {cell, {16, 18}}, {range, {16, 19, 17, 21}}),
-    colour(FunName2, {16, 18}, "cyan"),
+    write_value(Path, "fix row and col formula below", {16,17}, [bold]),
+    write_value(Path, "=$m$3+n3", {16, 18}, [{colour, "yellow"}]),
+    cut_n_drag_n_copy_n_drop_n_paste(FunName, Path, {cell, {16, 18}},
+                                     {range, {16, 19, 17, 21}}),
+    colour(Path, {16, 18}, "cyan"),
 
-    make_thick(FunName2, 16).
+    make_thick(Path, 16).
+
+hn_DEBUG() ->
+    Path = ["hypernumbers"],
+    Site1 = "http://il_ballo.dev:9000",
+    Path1 = ["data"],
+    clear_cells_DEBUG(Path),
+    clear_cells_DEBUG(Site1, Path1),
+    write_data(Site1, Path1),
+
+    write_value(Path,"=hn(\"http://il_ballo.dev:9000/data/A1?hypernumber\")",
+                {1, 1}, []).
 
 get_tiles_DEBUG() ->
     F1 = #refX{obj = {range, {1, 1, 2, 2}}},
@@ -1282,7 +1384,6 @@ cut_n_drag_n_copy_n_drop_n_paste(Fun, Path, From, To) ->
 
 %% choose the site to write to
 write_value(Site, Path, Value, {X, Y}, Attributes) ->
-%% wont work for bold and stuff anymore...
     RefX = #refX{site = Site, path = Path, obj = {cell, {X, Y}}},
     write_attributes(RefX, [{formula, Value}]),
     write_attr_DEBUG(RefX, Attributes).
@@ -1346,33 +1447,35 @@ write_data(Path) ->
     write_data(Site, Path).
 
 write_data(Site, Path) ->
-    io:format("in write_data Site is ~p Path is ~p~n", [Site, Path]),
-    clear_cells_DEBUG(Path),
+    clear_cells_DEBUG(Site, Path),
     % writes out sample data for hyperlinks
     write_value(Site, Path, "A", {1, 1}, []),
     write_value(Site, Path, "B", {2, 1}, []),
     write_value(Site, Path, "C", {3, 1}, []),
     write_value(Site, Path, "D", {4, 1}, []),
     write_value(Site, Path, "E", {5, 1}, []),
-    write_value(Site, Path, "F", {6, 1}, []),
-    write_value(Site, Path, "G", {7, 1}, []),
-    write_value(Site, Path, "H", {8, 1}, []),
-    write_value(Site, Path, "I", {9, 1}, []),
-    write_value(Site, Path, "J", {10, 1}, []),
-    write_value(Site, Path, "K", {11, 1}, []),
-    write_value(Site, Path, "L", {12, 1}, []),
-    write_value(Site, Path, "M", {13, 1}, []),
-    write_value(Site, Path, "N", {14, 1}, []),
-    write_value(Site, Path, "O", {15, 1}, []),
-    write_value(Site, Path, "P", {16, 1}, []),
-    write_value(Site, Path, "Q", {17, 1}, []),
-    write_value(Site, Path, "R", {18, 1}, []),
-    write_value(Site, Path, "S", {19, 1}, []),
-    write_value(Site, Path, "T", {20, 1}, []),
-    write_value(Site, Path, "U", {21, 1}, []),
-    write_value(Site, Path, "V", {22, 1}, []),
-    write_value(Site, Path, "W", {23, 1}, []),
-    write_value(Site, Path, "X", {24, 1}, []),
-    write_value(Site, Path, "Y", {25, 1}, []),
-    write_value(Site, Path, "Z", {26, 1}, []).
+    write_value(Site, Path, "F", {6, 1}, []).
+%    write_value(Site, Path, "G", {7, 1}, []),
+%    write_value(Site, Path, "H", {8, 1}, []),
+%    write_value(Site, Path, "I", {9, 1}, []),
+%    write_value(Site, Path, "J", {10, 1}, []),
+%    write_value(Site, Path, "K", {11, 1}, []),
+%    write_value(Site, Path, "L", {12, 1}, []),
+%    write_value(Site, Path, "M", {13, 1}, []),
+%    write_value(Site, Path, "N", {14, 1}, []),
+%    write_value(Site, Path, "O", {15, 1}, []),
+%    write_value(Site, Path, "P", {16, 1}, []),
+%    write_value(Site, Path, "Q", {17, 1}, []),
+%    write_value(Site, Path, "R", {18, 1}, []),
+%    write_value(Site, Path, "S", {19, 1}, []),
+%    write_value(Site, Path, "T", {20, 1}, []),
+%    write_value(Site, Path, "U", {21, 1}, []),
+%    write_value(Site, Path, "V", {22, 1}, []),
+%    write_value(Site, Path, "W", {23, 1}, []),
+%    write_value(Site, Path, "X", {24, 1}, []),
+%    write_value(Site, Path, "Y", {25, 1}, []),
+%    write_value(Site, Path, "Z", {26, 1}, []).
 
+clear_cells(Site, Path, {X, Y}) ->
+    Target = #refX{site = Site, path = Path, obj = {cell, {X, Y}}},
+    clear(Target, all).    

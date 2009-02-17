@@ -1,5 +1,6 @@
-%% @author Dale Harvey <dale@hypernumbers.com>
-%% @copyright Hypernumbers Ltd.
+%%% @author Dale Harvey <dale@hypernumbers.com>
+%%% @copyright Hypernumbers Ltd.
+%%% @TODO write a proper module description
 -module(dirty_srv).
 -behaviour(gen_server).
 
@@ -119,7 +120,7 @@ trigger_recalc(Rec,Type) ->
     % Logging code                                                      %
     % #index{path=Path,row=Row,column=Col}=Index,                       %
     % Str=string:join(Path,"/")++" Row "++integer_to_list(Row)++" Col " %
-    %    ++integer_to_list(Col),                                        %
+    %     ++integer_to_list(Col),                                        %
     % bits:log(Str),                                                    %
     % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     ok = mnesia:dirty_delete({Type, Index}),

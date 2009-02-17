@@ -1,5 +1,6 @@
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 %%% @doc Various utility functions used by the formula engine.
+%%% @private
 
 -module(muin_util).
 -export([array_at/3,

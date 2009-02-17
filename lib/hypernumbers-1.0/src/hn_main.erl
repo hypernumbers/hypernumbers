@@ -1,5 +1,6 @@
-%% @author Dale Harvey <dale@hypernumbers.com>
-%% @copyright Hypernumbers Ltd.
+%%% @author Dale Harvey <dale@hypernumbers.com>
+%%% @copyright Hypernumbers Ltd.
+%%% @private
 -module(hn_main).
 
 -include("hypernumbers.hrl").
@@ -54,7 +55,7 @@ value_to_cell(Addr, Val) ->
         {formula, Fla} ->
             Rti = ref_to_rti(Addr, false),
             case muin:run_formula(Fla, Rti) of
-                {error, Error} ->
+                {error, _Error} ->
                     % @TODO, notify clients
                     ok;       
                 {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
@@ -259,9 +260,9 @@ get_cell_info(Site, TmpPath, X, Y) ->
 %%% Description : 
 %%%-----------------------------------------------------------------
 get_hypernumber(TSite,TPath,TX,TY,URL,FSite,FPath,FX,FY) ->
-
-    NewTPath = lists:filter(fun(X) -> not(X == $/) end, TPath),   
-    NewFPath = lists:filter(fun(X) -> not(X == $/) end, FPath),   
+    
+    NewTPath = lists:filter(fun(X) -> not(X == $/) end, TPath),
+    NewFPath = lists:filter(fun(X) -> not(X == $/) end, FPath),
 
     To = #index{site=FSite,path=NewFPath,column=FX,row=FY},
 

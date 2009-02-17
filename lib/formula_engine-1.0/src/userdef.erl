@@ -1,3 +1,4 @@
+%%% @private
 -module(userdef).
 
 -include("spriki.hrl").

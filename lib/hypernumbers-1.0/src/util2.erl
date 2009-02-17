@@ -1,9 +1,11 @@
 %%%-----------------------------------------------------------------------------
-%%% File        : util2.erl
-%%% Author      : Gordon Guthrie <gordonguthrie@vixo.com>
-%%% Description :
+%%% File       util2.erl
+%%% @author    Gordon Guthrie <gordonguthrie@vixo.com>
+%%% @doc
+%%% @copyright Hypernumbers Ltd
+%%% @private
 %%%
-%%% Created     : 22 Nov 2006 by Gordon Guthrie <gordonguthrie@vixo.com>
+%%% Created    22 Nov 2006 by Gordon Guthrie <gordonguthrie@vixo.com>
 %%%-----------------------------------------------------------------------------
 -module(util2).
 
@@ -59,8 +61,7 @@ get_timestamp()->
 get_biccie() ->
 %% This is the code that generates a cookie in Yaws-1.70
 %% nicked from the module yaws_session_server.erl
-    io:format("in util2:get_biccie check that this is really random!~n"),
-    N = random:uniform(16#ffffffffffffffff), %% 64 bits
+    N = gen_server:call(random_srv,{random, int, 16#ffffffffffffffff}),
     atom_to_list(node()) ++ [$-|integer_to_list(N)].
 
 remove_auth(Site)->

@@ -2,6 +2,7 @@
 %%% CELL, INFO, and ISREF are implemented in the evaluator because they need
 %%% higher-level information.
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
+%%% @private
 
 -module(stdfuns_info).
 -export([error_type/1, iserr/1, iserror/1, iseven/1, islogical/1, isna/1,

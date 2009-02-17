@@ -2,38 +2,41 @@
 %%% @author    Gordon Guthrie
 %%% @copyright (C) 2009, Hypernumbers.com
 %%% @doc       This is a util function for hn_db containing only functions
-%%%            that MUST be called from within an mnesia transactions
+%%%            that MUST be called from within an mnesia transactransactionstions
 %%%            
-%%%            Functions fall into two categories:
+%%%            <h3>Functional Categories</h3>
+%%%            
+%%%            These functions fall into 2 types:
 %%%            <ul>
-%%%            <li>those that are commutative operations</li>
-%%%            <li>those that are non-commutative</li>
+%%%            <li>structural queries that returns #refs{}</li>
+%%%            <li>cell queries that operate on cells</li>
 %%%            </ul>
 %%%            
-%%%            Commmutative operations have results that are 
-%%%            of the order in which they are applied.
+%%%            <h4>Structural Queries</h4>
 %%%            
-%%%            For instance <code>delete cell a1</code> followed
-%%%            by <code>delete cell a2</code> is the same as
-%%%            <code>delete cell a2</code> followed
-%%%            by <code>delete cell a1</code>. <code>delete</code>
-%%%            is communatative.
-%%%            
-%%%            Contrast this with <code>shift cell a2 to a1</code>
-%%%            followed by <code>shift cell a3 to a2</code>. This
-%%%            does not commute.
-%%%            
-%%%            Commutative functions can be executed 2 ways in this
-%%%            module:
+%%%            Structural queries have the following characteristics:
 %%%            <ul>
-%%%            <li>function_cell(Args, ...) - operates on a cell</li>
-%%%            <li>function_list(Args, ...) - operators on a list of cells</li>
+%%%            <li>they are all 'read' queries - they do not impact the
+%%%            structure of the database</li>
+%%%            <li>they all have the word ref in their function name</li>
 %%%            </ul>
 %%%            
-%%%            By contrast non-commutative functions are only exposed as:
+%%%            The all return lists of #refX{}'s
+%%%            
+%%%            <h4>Cell Queries</h4>
+%%%            
+%%%            Cell queries come in 4 distinct flavours:
 %%%            <ul>
-%%%            <li>function_cell(Args, ...)</li>
+%%%            <li>create/write</li>
+%%%            <li>read</li>
+%%%            <li>update</li>
+%%%            <li>delete</li>
 %%%            </ul>
+%%%            
+%%%            The reads return lists of tuples containing #refX{} and 
+%%%            {Key, Value} pairs.
+%%%            
+%%%            The others return {ok, ok}
 %%% 
 %%% @ TODO we use atoms for keys in {key, value} pairs of attributes
 %%% which is then used in atom_to_list for checking if they are private.
@@ -43,12 +46,17 @@
 %%%
 %%% And also when a new style is written for a page it should notify the
 %%% viewing pages to update themselves or the style stuff won't work...
+%%% 
+%%% And the registration of a new hypernumber is not robust (what if the remote
+%%% server is not available at registration time? there is no retry function, etc
+%%% etc)
 %%%
 %%% @end
 %%% Created : 24 Jan 2009 by gordon@hypernumbers.com
 %%%-------------------------------------------------------------------
 -module(hn_db_wu).
 
+%% Cell Query Exports
 -export([write_attr/2,       % tested
          read_cells/1,       % tested
          read_cells_raw/1,
@@ -61,14 +69,24 @@
          delete_attrs/2,
          shift_cell/2,
          copy_cell/3,
-         copy_attrs/3,
-         get_last/1]).
+         copy_attrs/3]).
+
+%% Structural Query Exports
+-export([get_last_refs/1,
+         get_refs_below/1,
+         get_refs_right/1]).
 
 %% These functions are exposed for the dirty_srv to use
 -export([read_local_parents/1,
-         read_remote_parents/1]).
+         read_local_children/1,
+         read_remote_parents/1,
+         read_remote_children/1]).
+
+%% Debugging
+-export([dump/0]).
 
 -define(to_xml_str, simplexml:to_xml_string).
+-define(to_refX, hn_util:refX_from_index).
 
 -include("spriki.hrl").
 -include("handy_macros.hrl").
@@ -80,46 +98,106 @@
 %%% Exported functions                                                       %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% @spec get_last(#refX{}) -> {LastColumn, LastRow}
-%% LastRow = integer()
-%% @doc takes a refX{} and gets the value of the last populated row
-%% The refX{} can be refer to a:
+%% @spec get_refs_below(#ref{}) -> [#ref{}]
+%% @doc gets all the refs below a given reference. The reference passed in can
+%% be one of the following, a:
 %% <ul>
 %% <li>cell</li>
 %% <li>range</li>
 %% <li>row</li>
+%% </ul>
+get_refs_below(#refX{obj = {cell, {X, Y}}} = RefX) ->
+    get_refs_below2(RefX, X, X, Y);
+get_refs_below(#refX{obj = {row, {Y1, Y2}}} = RefX) ->
+    % rectify the row range in case they are reversed...
+    YY = ?COND(Y1 > Y2, Y1, Y2),
+    #refX{site = S, path = P} = RefX,
+    Obj = {cell, {'_', '$1'}},
+    MatchRef = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, Obj}]),
+    Cond = [{'>', '$1', YY}],
+    Body = ['$_'],
+    get_match_refs([{MatchRef, Cond, Body}]);
+get_refs_below(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
+    % rectify the ranges in case they are reversed...
+    YY = ?COND(Y1 > Y2, Y1, Y2),
+    {XX1, XX2} = ?COND(X1 > X1, {X2, X1}, {X1, X2}),
+    get_refs_below2(RefX, XX1, XX2, YY).
+
+%% @spec get_refs_right(#ref{}) -> [#ref{}]
+%% @doc gets all the refs to the right of a given reference. The reference passed
+%% in can be one of the following, a:
+%% <ul>
+%% <li>cell</li>
+%% <li>range</li>
 %% <li>column</li>
+%% </ul>
+get_refs_right(#refX{obj = {cell, {X, Y}}} = RefX) ->
+    get_refs_right2(RefX, X, Y, Y);
+get_refs_right(#refX{obj = {column, {X1, X2}}} = RefX) ->
+    % rectify the row range in case they are reversed...
+    XX = ?COND(X1 > X2, X1, X2),
+    #refX{site = S, path = P} = RefX,
+    Obj = {cell, {'$1', '_'}},
+    MatchRef = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, Obj}]),
+    Cond = [{'>', '$1', XX}],
+    Body = ['$_'],
+    get_match_refs([{MatchRef, Cond, Body}]);
+get_refs_right(#refX{obj = {range, {X1, Y1, X2, Y2}}} = RefX) ->
+    % rectify the ranges in case they are reversed...
+    XX = ?COND(X1 > X2, X1, X2),
+    {YY1, YY2} = ?COND(Y1 > Y1, {Y2, Y1}, {Y1, Y2}),
+    get_refs_right2(RefX, XX, YY1, YY2).
+
+%% @spec get_last_refs(#refX{}) -> {LastColumnRef, LastRowRef}
+%% LastColumnRef = #refX{}
+%% LastColumnRef = #refX{}
+%% @doc takes a refX{} and gets the value of the last populated row
+%% The refX{} can be refer to a:
+%% <ul>
 %% <li>page</li>
 %% </ul>
 %% @TODO this may have a race condition if two people try
 %% and get the last row/column at the same time...
-get_last(#refX{site = S, path = P} = RefX) ->
-    io:format("In get_last RefX is ~p~n", [RefX]),
+get_last_refs(#refX{site = S, path = P} = RefX) ->
     RefX2 = #refX{site = S, path = P, obj = {page, "/"}},
     Cells = read_cells(RefX2),
-    Fun = fun({R, _}, {MaxX, MaxY}) ->
+    Fun = fun({R, _}, {MaxRefX, MaxRefY}) ->
                   #refX{obj = {cell, {X, Y}}} = R,
-                  NewX = ?COND(MaxX > X, MaxX, X),
-                  NewY = ?COND(MaxY > Y, MaxY, Y),
+                  #refX{obj = {cell, {MaxX, _}}} = MaxRefX,
+                  #refX{obj = {cell, {_, MaxY}}} = MaxRefY,
+                  NewX = ?COND(MaxX > X, MaxRefX, X),
+                  NewY = ?COND(MaxY > Y, MaxRefY, Y),
                   {NewX, NewY}
-          end,                  
-    lists:foldl(Fun, {0, 0}, Cells).
-    
+          end,
+    Zero = #refX{site = S, path = P, obj = {cell, {0, 0}}},
+    lists:foldl(Fun, {Zero, Zero}, Cells).
+
 %% @spec read_remote_parents(RefX :: #refX{}) -> [#refX{}]
 %% @doc this returns the remote parents of a reference. The reference can only
 %% be to a cell and not a range, column, row or page
 %% 
 %% This fn is called read_remote_parents because it consists of all the
 %% remote links where the current RefX is the child
-read_remote_parents(#refX{obj = {cell, _}} = RefX) when is_record(RefX, refX) ->
+read_remote_parents(#refX{obj = {cell, _}} = RefX) ->
     #refX{site = S, path = P, obj = {cell, {X, Y}}} = RefX,
     Index = #index{site = S, path = P, column = X, row = Y},
-    Match = ms_util:make_ms(remote_cell_link, [{child, Index}]),
+    Match = ms_util:make_ms(remote_cell_link, [{child, Index}, {type, incoming}]),
     Links = mnesia:match_object(remote_cell_link, Match, read),
-    Return = get_parents(Links),
-    % io:format("in read_remote_parents Links is ~p~nReturn is ~p~n",
-    %          [Links, Return]),
-    Return.
+    get_remote_parents(Links).
+
+%% @spec read_remote_children(RefX :: #refX{}) -> [#refX{}]
+%% @doc this returns the remote children of a reference. The reference can only
+%% be to a cell and not a range, column, row or page
+%% 
+%% This fn is called read_remote_children because it consists of all the
+%% remote links where the current RefX is the parent
+read_remote_children(#refX{obj = {cell, _}} = RefX) ->
+    #refX{site = S, path = P, obj = {cell, {X, Y}}} = RefX,
+    Index = #index{site = S, path = P, column = X, row = Y},
+    Match = ms_util:make_ms(remote_cell_link, [{parent, Index},
+                                               {type, incoming}]),
+    Links = mnesia:match_object(remote_cell_link, Match, read),
+    get_remote_children(Links).
 
 %% @spec read_local_parents(RefX :: #refX{}) -> [#refX{}]
 %% @doc this returns the local parents of a reference. The reference can only
@@ -127,12 +205,25 @@ read_remote_parents(#refX{obj = {cell, _}} = RefX) when is_record(RefX, refX) ->
 %% 
 %% This fn is called read_local_parents because it consists of all the
 %% local links where the current RefX is the child
-read_local_parents(#refX{obj = {cell, _}} = RefX) when is_record(RefX, refX) ->
+read_local_parents(#refX{obj = {cell, _}} = RefX)  ->
     #refX{site = S, path = P, obj = {cell, {X, Y}}} = RefX,
     Index = #index{site = S, path = P, column = X, row = Y},
     Match = ms_util:make_ms(local_cell_link, [{child, Index}]),
     Links = mnesia:match_object(local_cell_link, Match, read),
-    get_parents(Links).
+    get_local_parents(Links).
+
+%% @spec read_local_children(RefX :: #refX{}) -> [#refX{}]
+%% @doc this returns the local children of a reference. The reference can only
+%% be to a cell and not a range, column, row or page
+%% 
+%% This fn is called read_local_children because it consists of all the
+%% local links where the current RefX is the parent
+read_local_children(#refX{obj = {cell, _}} = RefX) ->
+    #refX{site = S, path = P, obj = {cell, {X, Y}}} = RefX,
+    Index = #index{site = S, path = P, column = X, row = Y},
+    Match = ms_util:make_ms(local_cell_link, [{parent, Index}]),
+    Links = mnesia:match_object(local_cell_link, Match, read),
+    get_local_children(Links).
 
 %% @spec write_attr(RefX :: #refX{}, {Key, Value}) -> {ok, ok}
 %% Key = atom()
@@ -152,10 +243,9 @@ read_local_parents(#refX{obj = {cell, _}} = RefX) when is_record(RefX, refX) ->
 %% This clause deals with a formula
 write_attr(#refX{obj = {cell, _}} = RefX, {formula, _} = Attr) ->
     % first check that the formula is not part of a shared array
-    {_Key, Val} = Attr,
     case read_attrs(RefX, ['__shared']) of
         [_X] -> throw({error, cant_change_part_of_array});
-        []   -> write_attr2(RefX, Val)
+        []   -> write_attr2(RefX, Attr)
     end;
 write_attr(#refX{obj = {cell, _}} = RefX, {Key, Val} = Attr) ->
     % NOTE the attribute 'overwrite-color' isn't in a magic style and shouldn't be
@@ -165,7 +255,7 @@ write_attr(#refX{obj = {cell, _}} = RefX, {Key, Val} = Attr) ->
                  % notify any registered front ends
                  Record = #hn_item{addr = Ref, val = Val},
                  mnesia:write(Record),
-                 spawn(fun() -> notify_remote(Record, change) end)
+                 spawn(fun() -> tell_front_end(Record, change) end)
     end, 
     {ok, ok};
 write_attr(#refX{obj = {range, _}} = RefX, Attr) ->
@@ -178,7 +268,7 @@ write_attr(RefX, {Key, Val} = Attr) when is_record(RefX, refX) ->
     Ref = hn_util:refX_to_ref(RefX, Key),
     Record = #hn_item{addr = Ref, val = Val},
     ok = mnesia:write(Record),
-    spawn(fun() -> notify_remote(Record, change) end),
+    spawn(fun() -> tell_front_end(Record, change) end),
     {ok, ok}.
 
 %% @spec read_cells(#refX{}) -> [{#refX{}, {Key, Value}}]
@@ -227,9 +317,10 @@ read_cells_raw(#refX{obj = {row, {Y1, Y2}}} = RefX) ->
     hn_util:from_hn_item(mnesia:select(hn_item, [MatchRef]));
 read_cells_raw(#refX{obj = {page, _}} = RefX) ->
     #refX{site = S, path = P} = RefX,
-    MatchRef = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, {cell, {'_', '_'}}}]),
+    MatchRef = ms_util:make_ms(ref, [{site, S}, {path, P},
+                                     {ref, {cell, {'_', '_'}}}]),
     Match = ms_util:make_ms(hn_item, [{addr, MatchRef}]),
-    hn_util:from_hn_item(mnesia:match_object(hn_item, Match, read)).                 
+    hn_util:from_hn_item(mnesia:match_object(hn_item, Match, read)).
 
 %% @spec read_inherited(#refX{}, Key, Default) -> {ok, Value}
 %% Key = atom()
@@ -276,23 +367,30 @@ read_attrs(RefX) when is_record(RefX, refX) ->
 %% <li>row</li>
 %% <li>page</li>
 %% </ul>
-read_attrs(#refX{obj = {range, _}} = RefX, AttrList) when is_list(AttrList) ->
+read_attrs(#refX{obj = {range, _}} = RefX, AttrList)
+  when is_list(AttrList) ->
     MatchRef = make_range_match(RefX, AttrList),
     hn_util:from_hn_item(mnesia:select(hn_item, [MatchRef]));
-read_attrs(#refX{obj = {column, {X1, X2}}} = RefX, AttrList) when is_list(AttrList) ->
+read_attrs(#refX{obj = {column, {X1, X2}}} = RefX, AttrList)
+  when is_list(AttrList) ->
     MatchRef = make_column_match(RefX, AttrList),
     hn_util:from_hn_item(mnesia:select(hn_item, [MatchRef]));
-read_attrs(#refX{obj = {row, {Y1, Y2}}} = RefX, AttrList) when is_list(AttrList) ->
+read_attrs(#refX{obj = {row, {Y1, Y2}}} = RefX, AttrList)
+  when is_list(AttrList) ->
     MatchRef = make_row_match(RefX, AttrList),
     hn_util:from_hn_item(mnesia:select(hn_item, [MatchRef]));
-read_attrs(#refX{obj = {cell, _}} = RefX, AttrList) when is_list(AttrList) ->
+read_attrs(#refX{obj = {cell, _}} = RefX, AttrList)
+  when is_list(AttrList) ->
     #refX{site = S, path = P, obj= R} = RefX,
-    MatchRef = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, R}, {name, '$1'}]),
+    MatchRef = ms_util:make_ms(ref, [{site, S}, {path, P},
+                                     {ref, R}, {name, '$1'}]),
     read_attrs2(MatchRef, AttrList);
-read_attrs(#refX{obj = {page, _}} = RefX, AttrList) when is_list(AttrList) ->
+read_attrs(#refX{obj = {page, _}} = RefX, AttrList)
+  when is_list(AttrList) ->
     #refX{site = S, path = P} = RefX,
     R = {cell, {'_', '_'}},
-    MatchRef = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, R}, {name, '$1'}]),
+    MatchRef = ms_util:make_ms(ref, [{site, S}, {path, P},
+                                     {ref, R}, {name, '$1'}]),
     read_attrs2(MatchRef, AttrList).
 
 %% @spec shift_cell(RefX :: #refX{}, Offset :: {X :: integer(), 
@@ -300,12 +398,12 @@ read_attrs(#refX{obj = {page, _}} = RefX, AttrList) when is_list(AttrList) ->
 %% @doc shift_cells takes a cell and shifts it by the offset - provided
 %% that offset is valid of course - ie the cell can't be made negative - mebbies
 %% it should be).
-%% 
 shift_cell(From, To) when is_record(From, refX), is_record(To, refX) ->
-    io:format("in shift_cell (2) From is ~p To  is ~p~n", [From, To]),
     {ok, ok} = shift_cell2(From, To),
     {ok, ok} = shift_links(From, To),
+    {ok, ok} = shift_dirty_cells(From, To),
     {ok, ok} = shift_hypernumbers(From, To),
+    {ok, ok} = shift_dirty_hypernumbers(From, To),
     {ok, ok}.
 
 %% @spec read_styles(#refX{}) -> [Style]
@@ -361,14 +459,19 @@ clear_cells(RefX) when is_record(RefX, refX) ->
 %% <li>page</li>
 %% </ul>
 %%  
-%% @TODO put in stuff about formats, styles or attributes only - not sure where...
-%% Also this is a naive page delete - iterates over all cells on a page and
-%% deletes them
+%% @TODO make proper clears - need to remove links and stuff
+%% and also notify remote hypernumbers that the value has cleared
 clear_cells(RefX, all) when is_record(RefX, refX)->
+    % first get all attributes to be deleted
     List1 = read_attrs(RefX),
-    List2 = [#hn_item{addr = hn_util:refX_to_ref(X, Key), val = Val}
+    % now get a list of the cells from the attribute list
+    % and delete all their links
+    List2 = get_refXs(List1),
+    [{ok, ok} = delete_links(X) || X <- List2],
+    % now delete all the attributes
+    List3 = [#hn_item{addr = hn_util:refX_to_ref(X, Key), val = Val}
              || {X, {Key, Val}} <- List1],
-    delete_recs(List2);
+    delete_recs(List3);
 clear_cells(RefX, style) when is_record(RefX, refX) ->
     List1 = read_attrs(RefX, style),
     List2 = [#hn_item{addr = hn_util:refX_to_ref(X, Key), val = Val}
@@ -376,10 +479,15 @@ clear_cells(RefX, style) when is_record(RefX, refX) ->
     delete_recs(List2);    
 clear_cells(RefX, contents) when is_record(RefX, refX) ->
     List1 = read_attrs(RefX),
-    List2 = get_content_attrs(List1),
-    List3 = [#hn_item{addr = hn_util:refX_to_ref(X, Key), val = Val}
-             || {X, {Key, Val}} <- List2],
-    delete_recs(List3).
+    % now get a list of the cells from the attribute list
+    % and delete all their links
+    List2 = get_refXs(List1),
+    [{ok, ok} = delete_links(X) || X <- List2],
+    % now delete all the attributes
+    List3 = get_content_attrs(List1),
+    List4 = [#hn_item{addr = hn_util:refX_to_ref(X, Key), val = Val}
+             || {X, {Key, Val}} <- List3],
+    delete_recs(List4).
 
 %% @spec delete_attrs(RefX :: #refX{}, Key) -> {ok, ok}
 %% Key = atom()
@@ -391,7 +499,7 @@ delete_attrs(RefX, Key) ->
         true  -> delete_style_attr(RefX, Key);
         false -> mnesia:delete({hn_item, Ref}),
                  Record = #hn_item{addr = Ref, val = "not important"},
-                 spawn(fun() -> notify_remote(Record, delete) end),
+                 spawn(fun() -> tell_front_end(Record, delete) end),
                  {ok, ok}
     end.
 
@@ -400,31 +508,21 @@ delete_attrs(RefX, Key) ->
 %% @doc copys cells from a ref to a ref
 copy_cell(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, Incr)
   when is_record(From, refX), is_record(To, refX) ->
-    % io:format("in hn_db_wu:copy_cells From is ~p To is ~p Incr is ~p~n",
-    %           [From, To, Incr]),
     FromList = read_cells_raw(From),
-    % io:format("in hn_db_wu:copy_cells FromList is ~p~n", [FromList]),
     {Contents, FilteredList} = filter_for_drag_n_drop(FromList),
-    % io:format("in hn_db_wu:copy_cells Contents is ~p FilteredList is ~p~n",
-    %           [Contents, FilteredList]),
     Output = case Contents of
                  [Contents2] -> superparser:process(Contents2);
                  []          -> ""
              end,
     #refX{obj = {cell, {FX, FY}}} = From,
     #refX{obj = {cell, {TX, TY}}} = To,
-    % io:format("in hn_db_wu:copy_cells Output is ~p~n", [Output]),
     case Output of
         {formula, Formula} ->
             {ok, Toks} = xfl_lexer:lex(super_util:upcase(Formula), {FX, FY}),
             NewToks = offset(Toks, (TX - FX), (TY - FY)),
             NewFormula = make_formula(NewToks),
-            % io:format("in hn_db_wu:copy_cells~nFormula is ~p~n-NewFormula is ~p~n",
-            %          [Formula, NewFormula]),
             {ok, ok} = write_attr(To, {formula, NewFormula});
         [{Type, V},  _A, _F] ->
-            % io:format("in hn_db_wu:copy_cells Type is ~p V is ~p~n",
-            %           [Type, V]),
             V2 = case Incr of
                      false ->
                          tconv:to_s(V);
@@ -438,7 +536,6 @@ copy_cell(#refX{obj = {cell, _}} = From, #refX{obj = {cell, _}} = To, Incr)
                              _        -> tconv:to_s(V)
                          end
                  end,
-            % io:format("in hn_db_wu:copy_cells V2 is ~p~n", [V2]),
             {ok, ok} = write_attr(To, {formula, V2});
         []  ->
             {ok, ok} = clear_cells(To, all)
@@ -472,6 +569,100 @@ copy_attrs(#refX{obj = {cell, _}} = From, #refX{obj = {range, _}} = To, [H | T])
 %%% Internal funtions                                                        %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+update_rem_parents(RefX, OldParents, NewParents) when is_record(RefX, refX) ->
+    {Del, Write} = split_parents(OldParents, NewParents),
+    % first delete all the records on the delete list
+    % and unregister them (probably should be done in a gen server!)
+    Fun1 = fun(X) ->
+                   P = hn_util:index_from_refX(X),
+                   C = hn_util:index_from_refX(RefX),
+                   Rec = #remote_cell_link{parent = P, child = C,
+                                          type = incoming},
+                  {ok, ok} = delete_recs(Rec),
+                  {ok, ok} = unregister_hypernumber(RefX, X)
+          end,
+    [{ok, ok} = Fun1(X) || X <- Del],
+    % now write all the records on the write list
+    Fun2 = fun(X) ->
+                   P = hn_util:index_from_refX(X),
+                   C = hn_util:index_from_refX(RefX),
+                   Rec = #remote_cell_link{parent = P, child = C,
+                                           type = incoming},
+                   ok = mnesia:write(Rec)
+           end,
+    [ok = Fun2(X) || X <- Write],
+    {ok, ok}.
+ 
+unregister_hypernumber(Local, Remote)
+  when is_record(Local, refX), is_record(Remote, refX) ->
+    exit("Fix me up first, I'm shagged!"),
+    %% nick bits from hn_db:del_remote_link for incoming...
+    #refX{site = S, path = P} = Remote,
+    Server = S ++ hn_util:list_to_path(P),
+    Cell = hn_util:refX_to_index(Local),
+    % Now read the 'outgoing_hn' table
+    % {ok, [OutgoingList]} = 
+    Version = hn_util:text(Remote#outgoing_hn.version + 1),
+    error_logger:error_msg("in hn_db:notify_hypernumber *WARNING* "++
+                           "notify_hypernumber not using "++
+                           "version number ~p - ie it aint working - yet :(",
+                           [Version]),
+
+    Actions = simplexml:to_xml_string(
+                {notify,[],[
+                            {biccie,      [],[Remote#outgoing_hn.biccie]},
+                            {cell,        [],[hn_util:index_to_url(Cell)]},
+                            {type,        [],["change"]},
+                            {value,       [], "bodge"},
+                            {version,     [],["1"]}
+                           ]}),
+
+    hn_util:post(Server,Actions,"text/xml"),
+    {ok, ok}.
+
+get_refXs(List) -> get_refXs(List, []).
+
+get_refXs([], Acc)      -> hslists:uniq(Acc);
+get_refXs([{RefX, _} | T], Acc) -> get_refXs(T, [RefX | Acc]).
+
+delete_links(RefX) ->
+    {ok, ok} = delete_local_parents(RefX),
+    {ok, ok} = delete_remote_parents(RefX),
+    {ok, ok}.
+
+get_refs_below2(RefX, MinX, MaxX, Y) ->
+    #refX{site = S, path = P} = RefX,
+    Obj = {cell, {'$1', '$2'}},
+    Match = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, Obj}]),
+    MatchRef = ms_util:make_ms(hn_item, [{addr, Match}, {val, '_'}]),
+    Cond = case MinX of
+               MaxX -> [{'and', {'>', '$2', Y}, {'==', '$1', MinX}}];
+               _    -> [{'and', {'>', '$2', Y}, {'>=', '$1', MinX},
+                         {'=<', '$1', MaxX}}]
+           end,
+    Body = ['$_'],
+    get_match_refs({MatchRef, Cond, Body}).
+
+get_refs_right2(RefX, X, MinY, MaxY) ->
+    #refX{site = S, path = P} = RefX,
+    Obj = {cell, {'$1', '$2'}},
+    Match = ms_util:make_ms(ref, [{site, S}, {path, P}, {ref, Obj}]),
+    MatchRef = ms_util:make_ms(hn_item, [{addr, Match}, {val, '_'}]),
+    Cond = case MinY of
+               MaxY -> [{'and', {'>', '$1', X}, {'==', '$2', MinY}}];
+               _    -> [{'and', {'>', '$1', X}, {'>=', '$2', MinY},
+                         {'=<', '$2', MaxY}}]
+           end,
+    Body = ['$_'],
+    get_match_refs({MatchRef, Cond, Body}).
+
+get_match_refs(MatchRef) ->
+    Return = hn_util:from_hn_item(mnesia:select(hn_item, [MatchRef])),
+    % now extract the RefX's
+    Fun = fun({X, {_Key, _Value}}, Acc) -> [X | Acc] end,
+    Return1 = lists:foldl(Fun, [], Return),
+    hslists:uniq(Return1).
+
 make_range_match(RefX, AttrList) ->
     #refX{site = S, path = P, obj = Range, auth = A} = RefX,
     {range, {X1, Y1, X2, Y2}} = Range,
@@ -495,7 +686,7 @@ make_range_match(RefX, AttrList) ->
     % also need to build a cond for the attributes
     Ret = make_or(AttrList, '$3'),
     Cond = case Ret of
-               [] -> [{'and' , {'>=', '$1', MinX }, {'=<', '$1', MaxX},
+               [] -> [{'and', {'>=', '$1', MinX }, {'=<', '$1', MaxX},
                        {'>=', '$2', MinY}, {'=<', '$2', MaxY}}];
                [X] -> [{'and', {'and' , {'>=', '$1', MinX }, {'=<', '$1', MaxX},
                                 {'>=', '$2', MinY}, {'=<', '$2', MaxY}}, X}]
@@ -623,7 +814,7 @@ mark_cell_dirty(Index) ->
 
     % first up local
     RefX = hn_util:refX_from_index(Index),
-    Local = read_local_parents(RefX),
+    Local = read_local_children(RefX),
     % now wildcards (must be fixed!)
     NIndex = Index#index{path=lists:reverse(Index#index.path)},
     Queries = dyn_parents(NIndex,[],[]),
@@ -631,10 +822,10 @@ mark_cell_dirty(Index) ->
     Local2 = lists:append(Local, Queries),
     
     % now read hypernumbers
-    Remote = read_remote_parents(RefX),
-
+    Remote = read_remote_children(RefX),
+    
     % Now write the local children to dirty_cell
-    Fun = fun(X) -> 
+    Fun = fun(X) ->
                   % only write the dirty cell if 
                   % it doesnt already exist
                   Match = ms_util:make_ms(dirty_cell, [{index, X}]),
@@ -649,22 +840,26 @@ mark_cell_dirty(Index) ->
     % get the new value first
     Val = read_attrs(RefX, [rawvalue]),
     Notify = fun(X) ->
-                     notify_remote_change(X, Val)
+                     notify_hypernumber(X, Val)
              end,        
     _Return2 = lists:foreach(Notify, Remote),
     ok.
 
-notify_remote_change(Hn,Value) ->
-    {Server,Cell} = Hn#outgoing_hn.index,
-    Version = hn_util:text(Hn#outgoing_hn.version + 1),
-    error_logger:error_msg("in hn_db:notify_remote_change *WARNING* "++
-                           "notify remote change not using "++
+notify_hypernumber(Remote, [{RefX, {Key, Value}}]) ->
+    #refX{site = S, path = P} = Remote,
+    Server = S ++ hn_util:list_to_path(P),
+    Cell = hn_util:refX_to_index(RefX),
+    % Now read the 'outgoing_hn' table
+    % {ok, [OutgoingList]} = 
+    Version = hn_util:text(Remote#outgoing_hn.version + 1),
+    error_logger:error_msg("in hn_db:notify_hypernumber *WARNING* "++
+                           "notify_hypernumber not using "++
                            "version number ~p - ie it aint working - yet :(",
                            [Version]),
 
     Actions = simplexml:to_xml_string(
                 {notify,[],[
-                            {biccie,      [],[Hn#outgoing_hn.biccie]},
+                            {biccie,      [],[Remote#outgoing_hn.biccie]},
                             {cell,        [],[hn_util:index_to_url(Cell)]},
                             {type,        [],["change"]},
                             {value,       [],hn_util:to_xml(Value)},
@@ -686,65 +881,86 @@ dyn_parents(Index = #index{path=[H|T]},Results,Acc) ->
 
 get_par(Index,Path) ->
     % This used to be an ets read of mnesia - so I suspect
-    % it will be a lot slower - buy hey!
+    % it will be a lot slower - but hey!
     El = {local_cell_link,Index#index{path=Path},'_'},
     mnesia:match_object(El).
 
-get_parents(List) -> get_p(List, []).
+get_local_parents(List) -> get_l_p(List, []).
 
-get_p([], Acc) -> Acc;
-get_p([#local_cell_link{parent = P} | T], Acc) -> get_p(T, [P | Acc]).
+get_l_p([], Acc) -> Acc;
+get_l_p([#local_cell_link{parent = P} | T], Acc) ->
+    get_l_p(T, [?to_refX(P) | Acc]).
 
-delete_remote_parents(List) ->
-    case List of
-        [] -> {ok, ok};
-        _  -> io:format("write delete_remote_parents in hn_db_wu.erl~n"),
-              {ok, ok}
-    end.
+get_local_children(List) -> get_l_c(List, []).
 
-delete_local_parents([]) -> {ok, ok};
-delete_local_parents([H | T]) -> 
-    Match = ms_util:make_ms(local_cell_link, [{child, H}]), 
+get_l_c([], Acc) -> Acc;
+get_l_c([#local_cell_link{child = C} | T], Acc) ->
+    get_l_c(T, [?to_refX(C) | Acc]).
+
+get_remote_parents(List) -> get_r_p(List, []).
+
+get_r_p([], Acc) -> Acc;
+get_r_p([#remote_cell_link{parent = P} | T], Acc) ->
+    get_r_p(T, [?to_refX(P) | Acc]).
+
+get_remote_children(List) -> get_r_c(List, []).
+
+get_r_c([], Acc) -> Acc;
+get_r_c([#remote_cell_link{child = C} | T], Acc) ->
+    get_r_c(T, [?to_refX(C) | Acc]).
+
+delete_remote_parents(RefX) when is_record(RefX, refX) ->
+    Index = hn_util:index_from_refX(RefX),
+    Match = ms_util:make_ms(remote_cell_link, [{child, Index}, {type, incoming}]), 
+    Parents = mnesia:match_object(remote_cell_link, Match, read),
+    % unregister the hypernumbers
+    Fun = fun(X) ->
+                  #remote_cell_link{parent = P, child = C, type = incoming} = X,
+                  Remote = hn_util:refX_from_index(P),
+                  Local = hn_util:refX_from_index(C),
+                  unregister_hypernumber(Local, Remote)
+          end,
+    [{ok, ok} = Fun(X) || X <- Parents],
+    delete_recs(Parents).
+
+delete_local_parents(RefX)  when is_record(RefX, refX)->
+    Index = hn_util:index_from_refX(RefX),
+    Match = ms_util:make_ms(local_cell_link, [{child, Index}]),
     Parents = mnesia:match_object(local_cell_link, Match, read),
-    delete_recs(Parents),
-    delete_local_parents(T).
+    delete_recs(Parents).
 
 write_local_parents(Child, List) ->
     Child2 = hn_util:index_from_refX(Child),
     Fun = fun(C, P) ->
-                  {url, _, [Url]} = P,
-                  {ok, Ref} = hn_util:parse_url(Url),
-                  #ref{site = S} = Ref,
-                  S2 = port_bodge(S),
-                  Ref2 = Ref#ref{site = S2},
-                  Index = hn_util:index_from_ref(Ref2),
+                  Index = hn_util:index_from_refX(P),
                   mnesia:write(#local_cell_link{child = C, parent = Index})
           end,
-    [ok = Fun(Child2, X) || X <- List]. 
+    [ok = Fun(Child2, X) || X <- List],
+    {ok, ok}.
 
-write_remote_parents(Child, List) ->
-    Child2 = hn_util:index_from_refX(Child),
-    Fun = fun(C, P) ->
-                  {url, _, [Url]} = P,
-                  {ok, Ref} = hn_util:parse_url(Url),
-                  #ref{site = S} = Ref,
-                  S2 = port_bodge(S),
-                  Ref2 = Ref#ref{site = S2},
-                  I = hn_util:index_from_ref(Ref2),
-                  T = incoming,
-                  Record = #remote_cell_link{child = C, parent = I, type = T},
-                  mnesia:write(Record)
-          end,
-    [ok = Fun(Child2, X) || X <- List]. 
-
-port_bodge(String) -> [Proto, Site | _T] = string:tokens(String, ":"),
-                      Proto ++ ":" ++Site.
+%write_remote_parents(Child, List) ->
+%    io:format("in hn_db_wu:write_remote_parents~n-Child is ~p~n-List is ~p~n",
+%              [Child, List]),
+%    % this function does a few things
+%    % * it writes the table 'remote_cell_link' to indicate that there is a
+%    %   remote parent
+%    %   NOTE: muin will have already have called the function that registers
+%    %   and gets the hypernumber
+%    Child2 = hn_util:index_from_refX(Child),
+%    Fun = fun(C, P) ->
+%                  I = hn_util:index_from_refX(P),
+%                  T = incoming,
+%                  Record = #remote_cell_link{child = C, parent = I, type = T},
+%                  mnesia:write(Record)
+%          end,
+%    [ok = Fun(Child2, X) || X <- List],
+%    {ok, ok}.
 
 delete_recs([]) ->
     {ok, ok};
 delete_recs([H | T]) when is_record(H, hn_item) ->
     ok = mnesia:delete_object(H),
-    spawn(fun() -> notify_remote(H, delete) end),
+    spawn(fun() -> tell_front_end(H, delete) end),
     delete_recs(T);
 delete_recs([H | T]) ->
     ok = mnesia:delete_object(H),
@@ -776,38 +992,68 @@ read_attrs2(MatchRef, AttrList) ->
 
 shift_cell2(From, To) ->
     % Rewrite the shifted cell
-    Offset = {3, 4},
-    Addr = 2,
-    {XO, YO} = Offset,
-    #hn_item{addr = Ref, val = Val} = Addr,
-    #ref{ref = {cell, {X, Y}}} = Ref,
-    Ref2 = Ref#ref{ref = {cell, {X + XO, Y + YO}}},
-    % now write it
-    ok = hn_main:set_attribute(Ref2, Val),
+    Attrs = read_cells_raw(From),
+    % First write the new cell
+    #refX{obj = CT} = To,
+    Fun = fun({RefX, {Key, Value}}) ->
+                  To2 = RefX#refX{obj = CT},
+                  Addr = hn_util:refX_to_ref(RefX, Key),
+                  Record = #hn_item{addr = Addr, val = Value},
+                  mnesia:write(Record),
+                  spawn(fun() -> tell_front_end(Record, change) end),
+                  ok
+          end,
+    [ok = Fun(X) || X <- Attrs],
+    % Now delete the old one...
+    {ok, ok} = clear_cells(From, all),
     {ok, ok}.
 
-shift_links(Addr, Offset) ->
+shift_links(From, To) ->
     % Now rewrite the cells that link to this cell
-    % {XO, YO} = Offset,
-    #hn_item{addr = Ref} = Addr,
-    % #ref{ref = {cell, {X, Y}}} = Ref,
-    Index = hn_util:ref_to_index(Ref),
-    Head = ms_util:make_ms(local_cell_link, [{parent, Index}]),
+    Offset = get_offset(From, To),
+    Index = hn_util:refX_to_index(From),
+    Head = ms_util:make_ms(local_cell_link, [{child, Index}]),
     LinkedCells = mnesia:select(local_cell_link, [{Head, [], ['$_']}]),
-    io:format("LinkedCells are ~p~n", [LinkedCells]),
     shift_links2(LinkedCells, Offset).
+
+shift_dirty_cells(From, To) ->
+    io:format("******************************~n"),
+    io:format("*                            *~n"),
+    io:format("* Write shift_dirty_cell     *~n"),
+    io:format("*                            *~n"),
+    io:format("******************************~n"),
+    {ok, ok}.
+
+shift_dirty_hypernumbers(From, To) ->
+    io:format("**********************************~n"),
+    io:format("*                                *~n"),
+    io:format("* Write shift_dirty_hypernumbers *~n"),
+    io:format("*                                *~n"),
+    io:format("**********************************~n"),
+    {ok, ok}.
 
 shift_links2([], _Offset) -> {ok, ok};
 shift_links2([#local_cell_link{child = Child, parent = Parent} | T], Offset) ->
-    io:format("in shift_links2 Child is ~p~nParent is ~p~n", [Child, Parent]),
+    io:format("******************************~n"),
+    io:format("*                            *~n"),
+    io:format("* Write shift_links2         *~n"),
+    io:format("*                            *~n"),
+    io:format("******************************~n"),
     shift_links2(T, Offset).
 
 %% @TODO write shift_hypernumbers
 shift_hypernumbers(_Ref, _Offset) ->
-    io:format("hn_db_wu:shift_hypernumbers needs to be written!~n"),
+    io:format("******************************~n"),
+    io:format("*                            *~n"),
+    io:format("* Write shift_hypernumbers   *~n"),
+    io:format("*                            *~n"),
+    io:format("******************************~n"),
     {ok, ok}.
 
-write_attr2(RefX, Val) ->
+get_offset(#refX{obj = {cell, {FX, FY}}}, #refX{obj = {cell, {TX, TY}}}) ->
+    {TX - FX, TY - FY}.
+
+write_attr2(RefX, {formula, Val}) ->
     case superparser:process(Val) of
         {formula, Fla}        -> write_formula1(RefX, Val, Fla);
         [NewVal, Align, Frmt] -> write_formula2(RefX, Val, NewVal, Align, Frmt)
@@ -817,7 +1063,8 @@ write_formula1(RefX, Val, Fla) ->
     Ref = hn_util:refX_to_ref(RefX, Val),
     Rti = ref_to_rti(Ref, false),
     case muin:run_formula(Fla, Rti) of
-        {error, _Error} ->
+        {error, Error} ->
+            io:format("in hn_db_wu:write_formula1 Error is ~p~n", [Error]),
             % @TODO, notify clients
             {ok, ok};       
         {ok, {Pcode, Res, Deptree, Parents, Recompile}} ->
@@ -831,7 +1078,6 @@ write_formula1(RefX, Val, Fla) ->
     end.
 
 write_formula2(RefX, OrigVal, {Type, Value}, {'text-align', Align}, Format) ->
-    % @TODO fix me - write out the alignment
     {ok, ok} = write_attr(RefX, {'text-align', Align}),
     % write out the format (if any)
     case Format of
@@ -868,9 +1114,6 @@ write_default_alignment(RefX, _Res)  ->
     write_attr(RefX, {'text-align' ,"center"}).
 
 write_cell(RefX, Value, Formula, Parents, DepTree) ->
-    % io:format("in write_cell~n-RefX is ~p~nValue is ~p~nFormula is ~p~n"++
-    %          "Parents is ~p~nDepTree is ~p~n", [RefX, Value, Formula,
-    %                                             Parents, DepTree]),
     % This function writes a cell out with all the trimings
     % 
     % The term 'old' refers to the values of these attributes for this
@@ -905,10 +1148,9 @@ write_cell(RefX, Value, Formula, Parents, DepTree) ->
     {NewLocPs, NewRemotePs} = split_local_remote(Parents),
 
     % write the formula
-
     Record = #hn_item{addr = Ref, val = Formula},
     ok = mnesia:write(Record),
-    spawn(fun() -> notify_remote(Record, change) end),
+    spawn(fun() -> tell_front_end(Record, change) end),
 
     % now write the rawvalue, etc, etc
     {ok, ok} = write_rawvalue(RefX, Value),
@@ -922,22 +1164,20 @@ write_cell(RefX, Value, Formula, Parents, DepTree) ->
     Set(RefX, {'dependancy-tree', {xml, DepTree}}),
 
     % now do the local parents
-    OldLocPs = read_local_parents(RefX),
-    {DelLocPs, WriteLocPs} = split_parents(OldLocPs, NewLocPs),
-    delete_local_parents(DelLocPs),
-    write_local_parents(RefX, WriteLocPs),
+    {ok, ok} = delete_local_parents(RefX),
+    {ok, ok} = write_local_parents(RefX, NewLocPs),
 
     % now do the remote parents
+    % this is a bit messier - if a cell is being updated to change a
+    % formula I don't want to first delete the old link (and trigger
+    % an UNREGISTRATION of the hypernumbers) and then REWRITE the
+    % same remote linke and trigger a REGISTRATION so I first read the links
     OldRemotePs = read_remote_parents(RefX),
-    % io:format("OldRemotePs is ~p~n", [OldRemotePs]),
-    {DelRemotePs, WriteRemotePs} = split_parents(OldRemotePs, NewRemotePs),
-    % io:format("DelRemotesPs are ~p~n WriteRemotePs are ~p~n",
-    %          [DelRemotePs, WriteRemotePs]),
-    delete_remote_parents(DelRemotePs),
-    write_remote_parents(RefX, WriteRemotePs),
+    {ok, ok} = update_rem_parents(RefX, OldRemotePs, NewRemotePs),
 
     % @TODO remove hn_db thangs
     mark_cell_dirty(Index),
+
     {ok, ok}.
 
 split_parents(Old, New) -> sp_ps(lists:sort(Old), lists:sort(New), {[],[]}).
@@ -954,25 +1194,27 @@ sp_ps([H | T], New, {D, W}) -> sp_ps(T, New, {[H | D], W}).
 split_local_remote(List) -> sp_lr(List, {[], []}).
 
 sp_lr([], Acc) -> Acc;
-sp_lr([{_, [{_, "local"}], _} = P | T], {A1, A2})  -> sp_lr(T, {[P | A1], A2});
-sp_lr([{_, [{_, "remote"}], _} = P | T], {A1, A2}) -> sp_lr(T, {A1, [P | A2]}).
+sp_lr([{_, [{_, "local"}], _} = P | T], {A, B})  -> P2 = hn_util:url_to_refX(P),
+                                                      sp_lr(T, {[P2 | A], B});
+sp_lr([{_, [{_, "remote"}], _} = P | T], {A, B}) -> P2 = hn_util:url_to_refX(P),
+                                                      sp_lr(T, {A, [P2 | B]}).
 
 write_rawvalue(RefX, Value) ->
     Ref = hn_util:refX_to_ref(RefX, rawvalue),
     Record1 = #hn_item{addr = Ref, val = Value},
     mnesia:write(Record1),
-    spawn(fun() -> notify_remote(Record1, change) end),
+    spawn(fun() -> tell_front_end(Record1, change) end),
     {ok, Format} = read_inherited(RefX, format, "General"),
     {erlang, {_Type, Output}} = format:get_src(Format),
     {ok, {Color, V}}=format:run_format(Value,Output),
     Ref1 = hn_util:refX_to_ref(RefX, value),
     Record2 = #hn_item{addr = Ref1, val = V},
     mnesia:write(Record2),
-    spawn(fun() -> notify_remote(Record2, change) end),
+    spawn(fun() -> tell_front_end(Record2, change) end),
     Ref2 = hn_util:refX_to_ref(RefX, 'overwrite-color'),
     Record3 = #hn_item{addr = Ref2, val = atom_to_list(Color)},
     mnesia:write(Record3),
-    spawn(fun() -> notify_remote(Record3, change) end),
+    spawn(fun() -> tell_front_end(Record3, change) end),
     {ok, ok}.
 
 return_first(RefType, Addr) ->
@@ -1065,8 +1307,6 @@ delete_style_attr(RefX, Key) ->
     Match = ms_util:make_ms(hn_item, [{addr, Ref}]),
     CurrentStyle = mnesia:match_object(hn_item, Match, read),
     NewStyleIdx = get_style(RefX, CurrentStyle, Key, []),
-    io:format("in delete_style_attr~n-CurrentStyle is ~p~n-NewStyleIdx is ~p~n",
-              [CurrentStyle, NewStyleIdx]),
     write_style_idx(RefX, NewStyleIdx).    
 
 %% this function is called when a new attribute is set for a style
@@ -1085,7 +1325,7 @@ write_style_idx(RefX, NewStyleIdx) when is_record(RefX, refX) ->
     Ref2 = hn_util:refX_to_ref(RefX, style),
     Record = #hn_item{addr = Ref2, val = NewStyleIdx},
     mnesia:write(Record),
-    spawn(fun() -> notify_remote(Record, change) end),
+    spawn(fun() -> tell_front_end(Record, change) end),
     {ok, ok}.
 
 get_style(RefX, Name, Val) ->
@@ -1128,15 +1368,15 @@ write_style2(RefX, Style) ->
     % Ref is a cell reference - a page reference is needed
     Ref2 = Ref#ref{ref = {page, "/"}},
     NewIndex = mnesia:dirty_update_counter(style_counters, Ref2, 1), 
-    %% should spawn a notification that there is a new style
+    % should spawn a notification that there is a new style
     io:format("in hn_db_wu:write_style2- needs to be fixed!~n"),
     mnesia:write(#styles{ref = Ref2, index = NewIndex, magic_style = Style}),
     NewIndex. 
 
-%% @spec notify_remote(Item, Type) -> ok
+%% @spec tell_front_end(Item, Type) -> ok
 %% Type = [change | delete]
-%% @doc  Adds an attribute to a reference addressed by Ref
-notify_remote(Item, Type) when is_record(Item, hn_item) ->
+%% @doc calls the remoting server and tells is that something has changed
+tell_front_end(Item, Type) when is_record(Item, hn_item) ->
     #hn_item{addr = #ref{site = S, path = P, ref = R, name = N}} = Item,
     case atom_to_list(N) of
         [$_, $_|_R]  -> ok; % names of form '__name' are not notified to front-end
@@ -1170,4 +1410,12 @@ extract_values(List) -> extract_values2(List, []).
 
 extract_values2([], Acc) -> Acc;
 extract_values2([{_R, {_K, V}}| T], Acc)  -> extract_values2(T, [V | Acc]).
+
+dump() ->
+    RefX = #refX{site = "http://127.0.0.1:9000", path = ["insert", "data"],
+                 obj = {cell, {1, 1}}},
+    Attrs = read_attrs(RefX, [rawvalue]),
+    io:format("in dump Attrs are ~p~n", [Attrs]),
+    {ok, ok}.
+
 

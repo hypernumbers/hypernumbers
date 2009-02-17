@@ -2,6 +2,7 @@
 %% @copyright Yariv Sadan 2006-2007
 %%
 %% @doc  Smerl: Simple Metaprogramming for Erlang
+%% @private
 %%
 %%  Smerl is an Erlang library
 %%  that simplifies the creation and manipulation of Erlang modules in

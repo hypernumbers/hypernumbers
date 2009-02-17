@@ -1,12 +1,12 @@
-%%% Stats functions.
 %%% <hasan@hypernumbers.com>
 
+%%% @doc Statistical functions
 %%% IMPORTANT NOTES:
 %%%
 %%% In CHIDIST(X, DegreesOfFreedom) in Excel DegreesOfFreedom is capped at
 %%% 10^10. We're doing that too (for now anyway).
 %%%
-%%%
+%%% @private
 
 -module(stdfuns_stats).
 
@@ -82,6 +82,7 @@
          %%slope/1,
          small/1,
          standardize/1,
+         standardise/1,
          stdev/1,
          stdeva/1,
          stdevp/1,
@@ -105,9 +106,12 @@
 
 avedev(Vs) ->
     Flatvs = ?flatten_all(Vs),
-    Nums = Nums = ?numbers(Flatvs, [cast_strings, cast_bools, ignore_blanks, ban_dates]),
-    ?ensure_nonzero(length(Nums)),
-    avedev1(Nums).
+    % Special case - all empty parameters throws a #NUM! error not a #VALUE!
+    case muin_util:attempt(?DEFER(?numbers(Flatvs,[cast_strings, cast_bools,
+                                                   ignore_blanks, ban_dates]))) of
+        {ok, Nums} -> avedev1(Nums);
+        {error, _} -> ?ERR_NUM
+    end.
 avedev1(Nums) ->
     Avg = average(Nums),
     Deviation = foldl(fun(X, Acc) -> Acc + erlang:abs(Avg - X) end, 0, Nums),
@@ -143,10 +147,14 @@ binomdist([V1, V2, V3, V4]) ->
     ?ensure(Succprob =< 1, ?ERR_NUM),
     binomdist1(Succn, Trials, trunc(Succprob * 100), Cumul).
 binomdist1(Ns, Nt, Ps, false) ->
+    io:format("In binomddist1 (false) Ns is ~p Nt is ~p Ps is ~p~n",
+              [Ns, Nt, Ps]), 
     stdfuns_math:combin([Ps, Nt]) * math:pow(Ps, Ns) * math:pow((1 - Ps),
                                                                 (Nt - Ns));
 %% TODO: Rewrite to tail-recursive.
 binomdist1(Ns, Nt, Ps, true) ->
+    io:format("In binomddist1 (true) Ns is ~p Nt is ~p Ps is ~p~n",
+              [Ns, Nt, Ps]), 
     binomdist1(Ns, Nt, Ps, false) + binomdist1(Ns - 1, Nt, Ps, true).
 
 chidist([V1, V2]) ->
@@ -429,6 +437,9 @@ small([V1, V2]) ->
     small1(Nums, K).
 small1(Nums, K) ->
     nth(K, sort(Nums)).
+
+% Yup, Excel silently recognises both spelling variants
+standardise(L) -> standardize(L).
 
 standardize(Arg = [_, _, _]) ->
     [Num, Mean, Stdev] = ?numbers(Arg, ?default_rules),

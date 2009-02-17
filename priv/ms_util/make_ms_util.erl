@@ -53,6 +53,7 @@ top_and_tail(Acc1,Acc2)->
         "\n"++
         "%%% This module provides utilities for use in building\n"++
         "%%% match specifications from records\n"++
+        "%%% @private"++
         "\n"++
         "-module("++?MODULENAME++").\n"++
         "\n"++

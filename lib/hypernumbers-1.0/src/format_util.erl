@@ -3,6 +3,7 @@
 %%%         Created the 11th March 2008
 %%%         Cut out the 31st August 2008
 %%% @author Gordon Guthrie <gordon@hypernumbers.com>
+%%% @private
 -module(format_util).
 
 %% Standard Interfaces
@@ -18,9 +19,8 @@
 	 get_short_dayname/1
 	]).
 
-
-clock_12(Hour) when (Hour > 12) -> Hour-12;
-clock_12(Hour)                   -> Hour.
+clock_12(Hour) when is_integer(Hour), (Hour > 12), (Hour =< 24) -> Hour-12;
+clock_12(Hour) when is_integer(Hour), (Hour > 0), (Hour =< 12)  -> Hour.
 
 pad_year(A) ->
     case length(A) of

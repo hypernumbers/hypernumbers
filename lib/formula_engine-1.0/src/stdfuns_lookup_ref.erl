@@ -1,5 +1,6 @@
 %%% @doc Lookup and reference functions.
 %%% @author <hasan@hypernumbers.com>
+%%% @private
 
 -module(stdfuns_lookup_ref).
 -export([address/1, index/1]).

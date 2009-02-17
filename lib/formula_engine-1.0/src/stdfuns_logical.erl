@@ -1,5 +1,6 @@
 %%% @doc Built-in logical functions.
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
+%%% @private
 
 -module(stdfuns_logical).
 -include("handy_macros.hrl").
@@ -101,5 +102,6 @@
     B = ?bool(V, [cast_strings, cast_numbers, cast_blanks, ban_dates]),
     ?COND(B, muin:eval(TrueExpr), muin:eval(FalseExpr)).
 
+%% @TODO write a test suite for iferror which is not an Excel 97 function
 iferror([Test, TrueExpr, FalseExpr]) ->
     'if'([stdfuns_info:iserror([muin:eval(Test)]), TrueExpr, FalseExpr]).

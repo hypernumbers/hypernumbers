@@ -1,7 +1,6 @@
-%%% @doc Built-in math functions.
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 
-
+%%% @doc Built-in math functions.
 %%% IMPORTANT NOTES:
 %%% ================
 %%%
@@ -22,6 +21,7 @@
 %%%
 %%%   3. Our SUBTOTAL does not care about hidden values. SUBTOTAL(1, A1:A5),
 %%%      and SUBTOTAL(101, A1:A5) will do the same thing.
+%%% @private
 
 -module(stdfuns_math).
 
@@ -311,12 +311,19 @@ munit([V]) ->
                                   Empty).
 
 minverse([L]) ->
-    ?IF(not(is_list(L)), ?ERR_VAL),
+    io:format("in minverse L is ~p~n", [L]),
+    %?IF(not(is_list(L)), ?ERR_VAL),
+    io:format("Got to 1~n"),
     ?ensure_numbers(flatten(L)),
+    io:format("Got to 2~n"),
     Mx = matrix:new(L),
+    io:format("Got to 3~n"),
     ?IF(not(matrix:is_square(Mx)), ?ERR_VAL),
+    io:format("Got to 4~n"),
     ?IF(matrix:det(Mx) == 0, ?ERR_NUM),
+    io:format("Got to 5~n"),
     {matrix, _, _, NewL} = matrix:invert(Mx),
+    io:format("Got to 6~n"),
     NewL.
 
 mmult([L1, L2]) ->

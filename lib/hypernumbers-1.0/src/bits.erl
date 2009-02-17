@@ -1,4 +1,9 @@
-
+%%%-------------------------------------------------------------------
+%%% @author    Gordon Guthrie
+%%% @copyright (C) 2009, Hypernumbers.com
+%%% @doc       This module really shouldn't be here - it is a scratch
+%%%            debugging module (hence the name!).
+%%% @private
 -module(bits).
 -export([ run_formula/1, log/1]).
 

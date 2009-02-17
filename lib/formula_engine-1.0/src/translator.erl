@@ -1,3 +1,4 @@
+%%% @private
 -module(translator).
 -include("handy_macros.hrl").
 -export([do/1]).

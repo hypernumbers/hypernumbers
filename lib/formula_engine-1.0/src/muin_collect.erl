@@ -48,6 +48,8 @@ flatten_ranges(A) ->
 %% @doc Replaces both array and range objects with values they contain.
 flatten_areas([Hd|Tl]) ->
     flatten_areas(Hd, Tl, [], fun(X) -> ?is_area(X) end);
+flatten_areas([]) ->
+    [];
 flatten_areas(A) ->
     flatten_areas([A]).
 

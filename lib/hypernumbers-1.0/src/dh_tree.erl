@@ -1,5 +1,6 @@
-%% @author Dale Harvey <dale@hypernumbers.com>
-%% @copyright Hypernumbers Ltd.
+%%% @author Dale Harvey <dale@hypernumbers.com>
+%%% @copyright Hypernumbers Ltd.
+%%% @TODO write a module descriptor for this module
 -module(dh_tree).
 
 -include("hypernumbers.hrl").

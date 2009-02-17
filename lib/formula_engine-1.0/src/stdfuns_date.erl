@@ -1,10 +1,26 @@
 %%% @author Hasan Veldstra <hasan@hypernumbers.com>
 %%% @doc Date functions.
+%%% @private
 
 -module(stdfuns_date).
--export([date/1, datedif/1, datevalue/1, day/1, month/1, year/1, edate/1, eomonth/1,
-         networkdays/1, today/1, weekday/1, weeknum/1, hour/1, minute/1, second/1,
-         now/1, timevalue/1]).
+-export([date/1,
+         dateh/1,
+         datedif/1,
+         datevalue/1,
+         day/1,
+         month/1,
+         year/1,
+         edate/1,
+         eomonth/1,
+         networkdays/1,
+         today/1,
+         weekday/1,
+         weeknum/1,
+         hour/1,
+         minute/1,
+         second/1,
+         now/1,
+         timevalue/1]).
 
 -include("typechecks.hrl").
 -include("handy_macros.hrl").
@@ -12,10 +28,58 @@
 
 -define(cast_all, [cast_strings, cast_bools, cast_blanks, cast_numbers]). %% FIXME: This is NOT the right thing to do.
 
-date(Arg = [_, _, _]) ->
-    [Year, Month, Day] = ?numbers(Arg, ?cast_all),
-    #datetime{date = {Year, Month, Day}}.
+-define(last_day, calendar:last_day_of_the_month).
 
+date(Arg = [_, _, _]) ->
+    [Year, Month, Day] = ?ints(Arg, ?cast_all),
+    io:format("Arg is ~p~nY/M/D is ~p ~p ~p~n",[Arg, Year, Month, Day]),
+    if
+        Year <  1900  -> dateh([Year+1900,Month,Day]);
+        Year >= 1900  -> dateh([Year,Month,Day])
+    end.
+
+dateh([Y, M, D]) when (M =< 0) ->
+    Diff = abs(M) rem 12,
+    Offset = (abs(M) - Diff)/12,
+    NewYear = erlang:trunc(Y - Offset - 1),
+    NewMonth = 12 - Diff,
+    io:format("in dateh (1) In  Y/M/D is ~p ~p ~p~n", [Y, M, D]),
+    io:format("in dateh (1) Out Y/M/D is ~p ~p ~p~n", [NewYear, NewMonth, D]),
+    dateh([NewYear, NewMonth, D]);
+dateh([Y, M, D]) when (M > 12) ->
+    Diff = M rem 12,
+    Offset = erlang:trunc((M - Diff)/12),
+    NewYear = Y + Offset,
+    NewMonth = Diff,
+    io:format("in dateh (2) In  Y/M/D is ~p ~p ~p~n", [Y, M, D]),
+    io:format("in dateh (2) Out Y/M/D is ~p ~p ~p~n", [NewYear, NewMonth, D]),
+    dateh([NewYear, NewMonth, D]);
+dateh([Y, M, D]) when (D =< 0) ->
+    NewMonth = M - 1, 
+    LastDay2 =  ?last_day(Y, NewMonth),
+    NewDay = LastDay2 + D,
+    io:format("in dateh (3) In  Y/M/D is ~p ~p ~p~n", [Y, M, D]),
+    io:format("in dateh (3) Out Y/M/D is ~p ~p ~p~n", [Y, NewMonth, NewDay]),
+    dateh([Y, NewMonth, NewDay]);
+dateh([Y, M, D]) ->
+    % this is a key one - we don't know if D is too big (yet):
+    % * 30 is too big if it is February
+    % * 30 is small enough if it is January
+    LastDay = ?last_day(Y, M),
+    if
+        (D > LastDay)  -> NewMonth = M + 1,
+                          NewDay = D - LastDay,
+                          io:format("in dateh (4a) In  Y/M/D is ~p ~p ~p~n",
+                                   [Y, M, D]),
+                          io:format("in dateh (4a) Out Y/M/D is ~p ~p ~p~n",
+                                   [Y, NewMonth, NewDay]),
+                          dateh([Y, NewMonth, NewDay]);
+        (D =< LastDay) -> io:format("in dateh (4b) Exiting with  Y/M/D is ~p ~p ~p~n",
+                                    [Y, M, D]),
+                          #datetime{date = {Y, M, D}}
+    end.
+
+%% @TODO what is this function for? Not an Excel function - ask Hasan...
 datedif([V1, V2, V3]) ->
     [Start, End] = ?dates([V1, V2], ?cast_all),
     ?ensure(muin_date:gt(End, Start), ?ERR_NUM),
@@ -82,9 +146,12 @@ month([Dt]) ->
     muin_date:month(Dt).
 
 year([Dt]) ->
+    io:format("In year Dt is ~p~n", [Dt]),
     ?edate(Dt),
     muin_date:year(Dt).
 
+%% @todo there is not test suite for this function because it is not an 
+%% Excel 97 one
 edate([V1, V2]) ->
     Start = ?date(V1, ?cast_all),
     Months = ?int(V2, ?cast_all),
@@ -95,6 +162,8 @@ edate1(Start, Months) ->
     Modelta = Months - (Yrdelta * 12),
     Start#datetime{date = {Startyr + Yrdelta, Startmo + Modelta, Startday}}.
 
+%% @todo there is not test suite for this function because it is not an 
+%% Excel 97 one
 eomonth([V1, V2]) ->
     Start = ?date(V1, ?cast_all),
     Months = ?int(V2, ?cast_all),
@@ -106,7 +175,10 @@ eomonth1(Start, Months) ->
     Lastday = calendar:last_day_of_the_month(Tyr, Tmo),
     Tdate#datetime{date = {Tyr, Tmo, Lastday}}.
 
-%% TODO: Can provide lists of holidays here for convenience, e.g.
+%% @todo there is not test suite for this function because it is not an 
+%% Excel 97 one
+%% 
+%% Also caan provide lists of holidays here for convenience, e.g.
 %% "GB" -> British holidays, "RUS" -> Russian holidays etc.
 networkdays([V1, V2]) ->
     networkdays([V1, V2, []]);
@@ -123,7 +195,8 @@ networkdays1(Start, End, Holidays) ->
                                6 -> Acc; % Saturday
                                7 -> Acc; % Sunday
                                _ ->      % Check if the date falls on holiday
-                                   %% FIXME: Will break on #datetimes with the same date
+                                   %% FIXME: Will break on #datetimes with 
+                                   %% the same date
                                    %% but different time fields.
                                    case member(X, Holidays) of
                                        true -> Acc;
@@ -133,7 +206,8 @@ networkdays1(Start, End, Holidays) ->
                    end,
                    0, Start, End).
 
-%% TODO: Potential for confusion if user and server are in different timezones, e.g.
+%% @TODO: Potential for confusion if user and server are in 
+%% different timezones, e.g.
 %% a Japanese user on a Californian server...
 today([]) ->
     {Date, _Time} = calendar:now_to_universal_time(erlang:now()),
@@ -157,6 +231,8 @@ weekday1(Dt, 2) ->
 weekday1(Dt, 3) ->
     calendar:day_of_the_week(Dt#datetime.date) - 1.
 
+%% @todo there is not test suite for this function because it is not an 
+%% Excel 97 one
 weeknum([V1]) ->
     weeknum([V1, 1]);
 weeknum([V1, V2]) ->

@@ -1,11 +1,12 @@
-%% @doc This #module is generated using LEEX and is not written by hand
-%% 
-%% THIS IS A PRE-RELEASE OF LEEX - RELEASED ONLY BECAUSE MANY PEOPLE
-%% WANTED IT - THE OFFICIAL RELEASE WILL PROVIDE A DIFFERENT INCOMPATIBLE
-%% AND BETTER INTERFACE - BE WARNED
-%% PLEASE REPORT ALL BUGS TO THE AUTHOR.
-%% 
-%% @copyright Hypernumbers Ltd
+%%% @doc This #module is generated using LEEX and is not written by hand
+%%% 
+%%% THIS IS A PRE-RELEASE OF LEEX - RELEASED ONLY BECAUSE MANY PEOPLE
+%%% WANTED IT - THE OFFICIAL RELEASE WILL PROVIDE A DIFFERENT INCOMPATIBLE
+%%% AND BETTER INTERFACE - BE WARNED
+%%% PLEASE REPORT ALL BUGS TO THE AUTHOR.
+%%% 
+%%% @copyright Hypernumbers Ltd
+%%% @private
 
 ##module
 

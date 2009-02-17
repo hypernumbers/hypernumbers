@@ -1,7 +1,8 @@
-%% @author    Dale Harvey <dale@hypernumbers.com>
-%% @copyright Hypernumbers Ltd.
-%% @doc       Stores user configurations for rest of the 
-%%            application
+%%% @author    Dale Harvey <dale@hypernumbers.com>
+%%% @copyright Hypernumbers Ltd.
+%%% @doc       Stores user configurations for rest of the 
+%%%            application
+%%% @private
 -module(hn_config).
 
 -behaviour(gen_server).

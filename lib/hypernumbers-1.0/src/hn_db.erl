@@ -47,24 +47,26 @@
 %% @spec create() -> ok
 %% @doc  Creates the database for hypernumbers
 create()->
-%% Seems sensible to keep this restricted
-%% to disc_copies for now
+    % Seems sensible to keep this restricted
+    % to disc_copies for now
     Storage = disc_copies,
     application:stop(mnesia),
     ok = mnesia:delete_schema([node()]),
     ok = mnesia:create_schema([node()]),
     mnesia:start(),
-    ?create(hn_item,           set,Storage),
-    ?create(remote_cell_link,  bag,Storage),
-    ?create(local_cell_link,   bag,Storage),
-    ?create(hn_user,           set,Storage),
-    ?create(dirty_cell,        set,Storage),
-    ?create(dirty_hypernumber, set,Storage),
-    ?create(incoming_hn,       set,Storage),
-    ?create(outgoing_hn,       set,Storage),
-    ?create(template,          set,Storage),
+    ?create(hn_item,           set, Storage),
+    ?create(remote_cell_link,  bag, Storage),
+    ?create(local_cell_link,   bag, Storage),
+    ?create(hn_user,           set, Storage),
+    ?create(dirty_cell,        set, Storage),
+    ?create(dirty_hypernumber, set, Storage),
+    ?create(incoming_hn,       set, Storage),
+    ?create(outgoing_hn,       set, Storage),
+    ?create(template,          set, Storage),
     ?create(styles,            bag, Storage), 
-    ?create(style_counters,    set, Storage), 
+    ?create(style_counters,    set, Storage),
+    ?create(page_vsn,          bag, Storage),
+    ?create(page_vsn_counters, set, Storage),
     hn_users:create("admin","admin"),
     hn_users:create("user","user"),
     ok.
@@ -301,17 +303,19 @@ write_remote_link(Parent,Child,Type) ->
                 ParentRef = #ref{
                   site=Parent#index.site,
                   path=Parent#index.path,
-                  ref= {cell,{Parent#index.column,Parent#index.row}},
+                  ref = {cell,{Parent#index.column,Parent#index.row}},
                   name = children},
-
+                
                 Children = [{url,[{type,"remote"}],[hn_util:index_to_url(Child)]}
                             | get_item_val(ParentRef)],
-
+                
                 hn_db:write_item(ParentRef,{xml,Children}),
-
-                Link = #remote_cell_link{parent=Parent,child=Child,type=Type},
-                case mnesia:match_object(Link) of
+                Match = ms_util:make_ms(remote_cell_link,[{parent, Parent},
+                                                          {child, Child},{type, Type}]),
+                case mnesia:match_object(Match) of 
                     [] ->
+                        Link = #remote_cell_link{parent = Parent,
+                                                 child = Child, type =  Type},
                         mnesia:write(Link),
                         [Hn] = mnesia:read({incoming_hn,Parent}),
                         {ok,{register,Hn}};
@@ -319,9 +323,8 @@ write_remote_link(Parent,Child,Type) ->
                         {ok,link_exists}
                 end
         end,
-
     {ok,Link} = ?mn_ac(transaction,F),
-
+    
     case Link of
         {register,Hn} ->            
             Url   = hn_util:index_to_url(Child),
@@ -336,7 +339,7 @@ write_remote_link(Parent,Child,Type) ->
             PUrl = hn_util:index_to_url(Parent),
             hn_util:post(PUrl++"?hypernumber",Actions,"text/xml"),
             ok;
-
+        
         _-> ok
     end.
 
@@ -413,13 +416,15 @@ mark_dirty(Index,cell) ->
     _Return2=lists:foreach(Notify,Remote),
     ok;
 mark_dirty(Index,hypernumber) ->
+
     Fun1 = fun() ->
-                   Rem = #remote_cell_link{parent=Index,
-                                           type=incoming,_='_'},
-                   Links = mnesia:match_object(Rem),
+                   Match = ms_util:make_ms(remote_cell_link, [{parent, Index},
+                                                            {type, incoming}]),
+                   Links = mnesia:match_object(Match),
                    {ok,Links}
            end,
     {ok,Local} = ?mn_ac(transaction,Fun1),
+
     Fun2 = fun(X) ->
                    #remote_cell_link{child=Index2}=X,
                    Fun3 = fun() -> mnesia:write(#dirty_cell{index=Index2}) end,
@@ -429,15 +434,15 @@ mark_dirty(Index,hypernumber) ->
     ok.
 
 %% @spec update_hn(From,Bic,Val,Version) -> ok
-%% @doc  Recieve an update to the value of a hypernumber
+%% @doc  Receive an update to the value of a hypernumber
 update_hn(From,Bic,Val,_Version)->
+
     F = fun() ->
                 {ok,ParsedFrom}=hn_util:parse_url(From),
                 Index = hn_util:ref_to_index(ParsedFrom),
-                Rec   = #incoming_hn{ remote = Index, biccie = Bic, _='_'},
+                Rec   = #incoming_hn{remote = Index, biccie = Bic, _='_'},
                 [Obj] = mnesia:match_object(Rec),
-
-                mnesia:write(Obj#incoming_hn{value=hn_util:xml_to_val(Val)}),
+                ok = mnesia:write(Obj#incoming_hn{value=hn_util:xml_to_val(Val)}),
                 ok = mark_dirty(Index,hypernumber)
         end,
     ok = ?mn_ac(transaction,F),
@@ -446,19 +451,31 @@ update_hn(From,Bic,Val,_Version)->
 %% @spec get_hn(Url,From,To) -> ok
 %% @doc  Get the value of a hypernumber, from local table 
 %%       or remote site
-get_hn(Url,_From,To)->
-    F = fun() -> do_get_hn(Url,To) end,
-    List = ?mn_ac(transaction,F),
-    List.
+%% @TODO - this needs to be robistified - retry if there is server failure etc
+%% Also need to properly set up the proxy for use in this - should come from the 
+%% config gile...
+get_hn(Url, From, To)->
+    F = fun() -> do_get_hn(Url, From, To) end,
+    List = ?mn_ac(transaction,F).
 
-do_get_hn(Url,To)->
+do_get_hn(Url, From, To)->
     case mnesia:read({incoming_hn,To}) of
         [Hn] ->
             Hn;
         []->
-            case http:request(get,{Url,[]},[],[]) of
-                {ok,{{_V,200,_R},_H,Xml}} ->
+            Biccie = util2:get_biccie(),
+            #index{site = S, path = P} = From,
+            Proxy = S ++"/"++ string:join(P,"/")++"/",
+            FromUrl = hn_util:index_to_url(From),
+            Actions = simplexml:to_xml_string(
+                        {register,[],[
+                                      {biccie,[], [Biccie]},
+                                      {proxy, [], [Proxy]},
+                                      {url,   [], [FromUrl]}
+                                     ]}),
 
+            case  http:request(post,{Url,[],"text/xml",Actions},[],[]) of
+                {ok,{{_V,200,_R},_H,Xml}} ->
                     {hypernumber,[],[
                                      {value,[],              [Val]},
                                      {'dependancy-tree',[],  Tree}]
@@ -468,7 +485,7 @@ do_get_hn(Url,To)->
                       value   = hn_util:xml_to_val(Val),
                       deptree = Tree,
                       remote  = To,
-                      biccie  = util2:get_biccie()},
+                      biccie  = Biccie},
 
                     mnesia:write(HNumber),
                     HNumber;
@@ -478,9 +495,11 @@ do_get_hn(Url,To)->
             end
     end.
 
-%% @spec register_hn(To,From,Bic,Proxy,Url) -> ok
+%% @spec register_hn(To,From,Bic,Proxy,Url) -> Val
+%% Val = list()
 %% @doc  Receive registration for a hypernumber
 register_hn(To,From,Bic,Proxy,Url) ->
+
     F = fun()->
                 Link = #remote_cell_link{
                   parent=To,
@@ -492,12 +511,23 @@ register_hn(To,From,Bic,Proxy,Url) ->
                   biccie = Bic,
                   url    = Url},
 
-                mnesia:write(Link),
-                mnesia:write(Hn),
-                ok
+                ok = mnesia:write(Link),
+                ok = mnesia:write(Hn),
+                #index{site = S, path = P, column = X, row = Y} = To,
+                Ref = #ref{site = S, path = P, ref = {cell, {X, Y}}, name = formula},
+                Value = case get_item_val(Ref) of
+                          [] -> [{blank,[],[]}];
+                          Tmp -> hn_util:to_xml(Tmp)
+                      end,
+                DepTree = case hn_db:get_item_val(Ref#ref{name='dependancy-tree'}) of
+                              {xml,Tree} -> Tree;
+                              []         -> []
+                          end,
+                {ok,{hypernumber,[],[{value,[], Value},
+                                     {'dependancy-tree',[], DepTree}]}}
         end,
-    _Ok = ?mn_ac(transaction,F),
-	ok.
+    Val = ?mn_ac(transaction,F),
+	Val.
 
 get_par(Index,Path) ->
     El = {local_cell_link,Index#index{path=Path},'_'},
@@ -545,7 +575,7 @@ notify_remote_change(Hn,Value) ->
     Version = hn_util:text(Hn#outgoing_hn.version + 1),
     error_logger:error_msg("in hn_db:notify_remote_change *WARNING* "++
                            "notify remote change not using "++
-                           "version number ~p - ie it aint working - yet :(",
+                           "version number ~p - ie it aint working - yet :(~n",
                            [Version]),
 
     Actions = simplexml:to_xml_string(

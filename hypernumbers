@@ -117,11 +117,19 @@ function docs
     erl -noshell -s make_edoc build -s init stop
 }
 
-function xref
+function analysis
 {
-    erlc -o ebin src/xref_analysis.erl
+    erlc -o ebin src/analysis.erl
     cd ./ebin
-    erl -s xref_analysis analyse $ROOT/lib
+    # erl -s analysis run $ROOT/lib
+    erl -s analysis debug
+}
+
+function visualise
+{
+    cd ./priv/test_visualiser/
+    ruby visualise_tests.rb
+    cd ../../
 }
 
 function statsvn
@@ -177,8 +185,9 @@ case $1 in
     stop)      stop;;
     docs)      docs;;
     build)     build $2;;
-    xref)      xref;;
+    analysis)  analysis;;
     statsvn)   statsvn;;
+    visualise) visualise;;
     gen_tests) gen_tests;;
     test)      test $2;;
 esac

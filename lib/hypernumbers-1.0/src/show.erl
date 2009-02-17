@@ -4,6 +4,7 @@
 %%% Description : This function just throws html only pages (bodge)
 %%%
 %%% Created     : 10 Nov 2006 by Gordon Guthrie <gordonguthrie@vixo.com>
+%%% @private
 %%%-----------------------------------------------------------------------------
 -module(show).
 

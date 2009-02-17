@@ -1,3 +1,4 @@
+%%% @private
 -module(userdef_rb).
 -compile(export_all).
 

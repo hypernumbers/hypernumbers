@@ -1,5 +1,6 @@
-%% @author Dale Harvey <dale@hypernumbers.com>
-%% @copyright Hypernumbers Ltd.
+%%% @author Dale Harvey <dale@hypernumbers.com>
+%%% @copyright Hypernumbers Ltd.
+%%% @todo improve documentation
 -module(simplexml).
 
 -export([ 

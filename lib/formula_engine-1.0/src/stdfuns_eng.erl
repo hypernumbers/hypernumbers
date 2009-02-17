@@ -1,5 +1,6 @@
 %%% Engineering functions.
 %%% <hasan@hypernumbers.com>
+%%% @private
 
 -module(stdfuns_eng).
 

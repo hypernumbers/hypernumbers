@@ -4,6 +4,7 @@
 %%% All functions are like pipes with filters. Good arguments simply flow
 %%% through (sometimes getting "cleaned up" in the process), and bad arguments
 %%% clog them up, i.e. an error is thrown.
+%%% @private
 
 -module(muin_checks).
 -compile(export_all).

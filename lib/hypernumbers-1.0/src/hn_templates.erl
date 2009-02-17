@@ -1,9 +1,10 @@
 %%%-------------------------------------------------------------------
-%%% File        : hn_templates.erl
-%%% Author      : Gordon Guthrie <gordon@hypernumbers.com>
-%%% Description : This module deals with templates
-%%%
-%%% Created     : 30 Aug 2008 by Gordon Guthrie
+%%% File        hn_templates.erl
+%%% @author     Gordon Guthrie <gordon@hypernumbers.com>
+%%% @doc        This module deals with templates
+%%% @copyright  Hypernumbers Ltd
+%%% Created     30 Aug 2008 by Gordon Guthrie
+%%% @TODO       proper documentation and specifications
 %%%-------------------------------------------------------------------
 -module(hn_templates).
 

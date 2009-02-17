@@ -1,7 +1,8 @@
-%% @doc Main Hypernumbers Internal API
-%% 
-%% Needs to be designed / cleaned up but needed it
-%% for the alpha
+%%% @doc Main Hypernumbers Internal API
+%%% 
+%%% Needs to be designed / cleaned up but needed it
+%%% for the alpha
+%%% @TODO needs to be documented properly and specs need to be done properly
 
 -module(hn).
 -author("Dale Harvey <dale@hypernumbers.com>").

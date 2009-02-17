@@ -1,7 +1,9 @@
 %%%-------------------------------------------------------------------
-%%% File    : remoting_soc.erl
-%%% Author  : Dale Harvey
-%%% Description : 
+%%% File       remoting_soc.erl
+%%% @author    Dale Harvey
+%%% @doc
+%%% @copyright Hypernumbers Ltd
+%%% @private
 %%%
 %%% Created :  6 Dec 2007
 %%%-------------------------------------------------------------------

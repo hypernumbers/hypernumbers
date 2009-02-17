@@ -1,7 +1,9 @@
 %-----------------------------------------------------------------------------
-%%% File        : hn_util.erl
-%%% Author      : Dale Harvey
-%%% Description : Utilities for hypernumbers application
+%%% File        hn_util.erl
+%%% @author     Dale Harvey
+%%% @doc        Utilities for hypernumbers application
+%%% @private
+%%% @copyright Hypernumbers Ltd
 %%%-----------------------------------------------------------------------------
 -module(hn_util).
 
@@ -22,6 +24,7 @@
          in_range/2,
          to_xml/1,
          ref_to_index/1,
+         refX_to_index/1,
          range_to_list/1,
          rectify_range/4,
          
@@ -51,7 +54,8 @@
          from_hn_item/1,
          refX_from_index/1,
          index_from_refX/1,
-         index_from_ref/1
+         index_from_ref/1,
+         url_to_refX/1
     ]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -60,7 +64,11 @@
 %%% and #indexrecords                                                        %%%
 %%%                                                                          %%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+url_to_refX({url, [{type, _}], [Url]}) ->
+    {ok, Ref} = parse_url(Url),
+    {RefX, _} = ref_to_refX(Ref, "to be chucked away"),
+    RefX.
+    
 refX_to_ref(RefX, Name) ->
     #refX{site = S, path = P, obj = R, auth = A} = RefX,
     #ref{site = S, path = P, ref = R, name = Name, auth = A}.
@@ -135,8 +143,11 @@ index_to_url(#index{site=Site,path=Path,column=X,row=Y}) ->
 list_to_path([])   -> "/";
 list_to_path(Path) -> "/" ++ string:join(Path, "/") ++ "/".
 
-ref_to_index(#ref{site=Site,path=Path,ref={cell,{X,Y}}}) ->
-    #index{site=Site,path=Path,column=X,row=Y}.
+ref_to_index(#ref{site = S, path = P, ref= {cell, {X, Y}}}) ->
+    #index{site = S, path = P, column = X, row = Y}.
+
+refX_to_index(#refX{site = S, path = P, obj = {cell, {X, Y}}}) ->
+    #index{site = S, path = P, column = X, row = Y}.
 
 ref_to_str({page,Path})           -> Path;   
 ref_to_str({cell,{X,Y}})          -> tconv:to_b26(X)++text(Y);

@@ -1,5 +1,6 @@
 %%% Financial functions.
 %%% <hasan@hypernumbers.com>
+%%% @private
 
 -module(stdfuns_financial).
 
@@ -155,6 +156,6 @@ secant(Pa, Ppa, Px, Ppx, Fun, I) ->
        ?else   -> secant(Ca, Pa, Xn, Px, Fun, I+1)
     end.
             
-%% Calculate ƒ(X) given Pmt for current iteration of one of the arguments.
+%% Calculate ?(X) given Pmt for current iteration of one of the arguments.
 xn(Pmt, Rate, Nper, Pv, Fv, Partype) ->
     Pv*math:pow(1+Rate, Nper) + Pmt*(1+Rate*Partype)*(math:pow(1+Rate, Nper)-1)/Rate+Fv.

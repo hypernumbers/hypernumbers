@@ -1,3 +1,4 @@
+%%% @private
 -module(misc_util).
 
 -export([stdfuns_export_xml/0,

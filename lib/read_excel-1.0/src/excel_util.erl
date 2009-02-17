@@ -180,24 +180,29 @@ parse_CRS_Uni16(Bin,IndexSize)->
      NFlags:8/little-unsigned-integer,
      Rest/binary>>=Bin,
     {LenStr,Encoding,BinLen1,
-     {RICH_TEXT,LenRichText,_LenRichTextIdx},
-     {ASIAN,LenAsian,_LenAsianIdx},Rest3}=get_bits_CRS_Uni16(Len,IndexSize,Rest,NFlags),
+     {RICH_TEXT,LenRichText,LenRichTextIdx},
+     {ASIAN,LenAsian,LenAsianIdx},Rest3}=get_bits_CRS_Uni16(Len,IndexSize,Rest,NFlags),
+    % io:format("in parse_CRS_Uni16~n-LenStr is ~p~n-Encoding is ~p~n-BinLen1 is ~p~n-"++
+    %          "LenRichText is ~p~n-LenRichTextIdx is ~p~n-LenAsian is ~p~n-"++
+    %          "LenAsianIdx is ~p~n",
+    %          [LenStr,Encoding,BinLen1,LenRichText,LenRichTextIdx,LenAsian,
+    %           LenAsianIdx]),
     BinLen2=erlang:size(Bin),
+    BinLen3=erlang:size(Rest3),
+    io:format("in parse_CRS_Uni16 BinLen2 is ~p BinLen3 is ~p LenStr is ~p~n",
+              [BinLen2, BinLen3, LenStr]),
     % Now we need to parse the rest of the binary
     <<String:LenStr/binary,Rest4/binary>>=Rest3,
     List1=[{Encoding,String}],
     case RICH_TEXT of
-        match    ->
-            <<RichText:LenRichText/binary,Rest5/binary>>=Rest4,
-            List2=[{richtext,RichText}|List1];
-        no_match ->
-            Rest5=Rest4,
-            List2=List1
+        match    -> <<RichText:LenRichText/binary,Rest5/binary>>=Rest4,
+                    List2=[{richtext,RichText}|List1];
+        no_match -> Rest5=Rest4,
+                    List2=List1
     end,
     case ASIAN of
-        match    ->
-            <<Asian:LenAsian/binary>>=Rest5,
-            List3=[{asian,Asian}|List2];
+        match    -> <<Asian:LenAsian/binary>>=Rest5,
+                    List3=[{asian,Asian}|List2];
         no_match -> List3=List2
     end,
     {List3,BinLen1,BinLen2}.
@@ -213,22 +218,18 @@ get_bits_CRS_Uni16(Len,IndexSize,Bin,NFlags)->
     {ok,ASIAN}    =check_flags(NFlags,?CRS_UNI16_ASIAN),
     {ok,RICH_TEXT}=check_flags(NFlags,?CRS_UNI16_RICH_TEXT),
     case RICH_TEXT of
-        match ->
-            <<LenRichText:16/little-unsigned-integer,Rest2/binary>>=Bin,
-            LenRichTextIdx=2;
-        no_match ->
-            Rest2=Bin,
-            LenRichText=0,
-            LenRichTextIdx=0
+        match    -> <<LenRichText:16/little-unsigned-integer,Rest2/binary>>=Bin,
+                    LenRichTextIdx=2;
+        no_match -> Rest2=Bin,
+                    LenRichText=0,
+                    LenRichTextIdx=0
     end,
     case ASIAN of
-        match ->
-            <<LenAsian:16/little-unsigned-integer,Rest3/binary>>=Rest2,
-            LenAsianIdx=4;
-        no_match ->
-            Rest3=Rest2,
-            LenAsian=0,
-            LenAsianIdx=0
+        match    -> <<LenAsian:16/little-unsigned-integer,Rest3/binary>>=Rest2,
+                    LenAsianIdx=4;
+        no_match -> Rest3=Rest2,
+                    LenAsian=0,
+                    LenAsianIdx=0
     end,
     % We now have info to calculate the length of the binary
     {LenStr,Encoding} = case UNCOMP of
