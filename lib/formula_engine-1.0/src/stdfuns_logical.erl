@@ -9,7 +9,8 @@
 -export(['='/1, '<>'/1, '<'/1, '>'/1, '<='/1, '>='/1]).
 -export(['and'/1, 'if'/1, iferror/1, 'not'/1, 'or'/1]).
 
--define(default_rules_bools, [cast_numbers, cast_strings, cast_blanks, cast_dates]).
+-define(default_rules_bools, [cast_numbers, cast_strings,
+                              cast_blanks, cast_dates]).
 
 '='([A, B]) -> muin_checks:die_on_errval([A]),
                muin_checks:die_on_errval([B]),
@@ -52,24 +53,25 @@
 '>1'(S1, S2) when ?is_string(S1) andalso ?is_string(S2) ->
     if hd(S1) > hd(S2) -> true;  % compare alphabetically first
        hd(S1) < hd(S2) -> false;
-       true            -> stdfuns_text:len([S1]) > stdfuns_text:len([S2]) % otherwise compare on length
+       % otherwise compare on length
+       true            -> stdfuns_text:len([S1]) > stdfuns_text:len([S2]) 
     end;
-'>1'(true, false)                                 -> true;
-'>1'(false, true)                                 -> false;
-'>1'(false, blank)                                -> false;
-'>1'(true, _)                                     -> true; 
-'>1'(false, _)                                    -> true;
-'>1'(_, true)                                     -> false;
-'>1'(_, false)                                    -> false;
-'>1'("",0)                                        -> true;
-'>1'(0,"")                                        -> false;
-'>1'(A, N) when ?is_area(A) andalso N > 0         -> true;
-'>1'(A, N) when ?is_area(A) andalso N =< 0        -> false;
-'>1'(blank, N) when is_number(N)                  -> '>1'(0, N);
-'>1'(N, blank) when is_number(N)                  -> '>1'(N, 0);
-'>1'(blank, S) when ?is_string(S)                 -> false;
-'>1'(S, blank) when ?is_string(S)                 -> true;
-'>1'(blank, blank)                                -> false.
+'>1'(true, false)                          -> true;
+'>1'(false, true)                          -> false;
+'>1'(false, blank)                         -> false;
+'>1'(true, _)                              -> true; 
+'>1'(false, _)                             -> true;
+'>1'(_, true)                              -> false;
+'>1'(_, false)                             -> false;
+'>1'("",0)                                 -> true;
+'>1'(0,"")                                 -> false;
+'>1'(A, N) when ?is_area(A) andalso N > 0  -> true;
+'>1'(A, N) when ?is_area(A) andalso N =< 0 -> false;
+'>1'(blank, N) when is_number(N)           -> '>1'(0, N);
+'>1'(N, blank) when is_number(N)           -> '>1'(N, 0);
+'>1'(blank, S) when ?is_string(S)          -> false;
+'>1'(S, blank) when ?is_string(S)          -> true;
+'>1'(blank, blank)                         -> false.
 
 '<'([A, B]) -> muin_checks:die_on_errval([A]),
                muin_checks:die_on_errval([B]),
@@ -82,7 +84,9 @@
 
 'and'(Vs) ->
     Flatvs = ?flatten_all(Vs),
-    Bools = ?bools(Flatvs, [cast_strings, cast_numbers, cast_blanks, cast_dates]),
+    ?ensure(Flatvs =/= [blank], ?ERR_VAL),
+    Bools = ?bools(Flatvs, [cast_strings, cast_numbers,
+                            ignore_blanks, cast_dates]),
     all(fun(X) -> X =/= false end, Bools).
 
 'not'([V]) ->
@@ -90,7 +94,9 @@
 
 'or'(Vs) ->
     Flatvs = ?flatten_all(Vs),
-    Bools = ?bools(Flatvs, [cast_strings, cast_numbers, cast_blanks, cast_dates]),
+    ?ensure(Flatvs =/= [blank], ?ERR_VAL),
+    Bools = ?bools(Flatvs, [cast_strings, cast_numbers,
+                            cast_blanks, cast_dates]),
     any(fun(X) -> X == true end, Bools).
 
 'if'([Test, TrueExpr]) ->
