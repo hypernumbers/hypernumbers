@@ -181,7 +181,7 @@
 %% this builds the counters for the style table
 -record(style_counters,
         {
-          ref,
+          ref = #ref{},
           integer
          }).
 
@@ -198,3 +198,20 @@
           obj         = null,
           auth        = []
          }).
+
+%% this record holds the version of a page
+-record(page_vsn,
+        {
+          page_refX    = #refX{},
+          action,
+          action_refX  = #refX{},
+          version = 0
+         }).
+
+%% this builds the counters for the page versions
+-record(page_vsn_counters,
+        {
+          refX = #refX{},
+          integer
+         }).
+
