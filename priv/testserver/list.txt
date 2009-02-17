@@ -124,6 +124,7 @@ c_month.xls
 c_n.xls
 c_na.xls
 c_not.xls
+c_or.xls
 c_right.xls
 c_rightb.xls
 c_roman.xls
