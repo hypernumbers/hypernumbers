@@ -15,6 +15,7 @@
 
 -define(default_rules, [cast_strings, cast_bools, cast_blanks, cast_dates]).
 
+%% @todo non-Excel 97 function - needs a test suite
 delta([V1, V2]) ->
     [Num1, Num2] = ?numbers([V1, V2], ?default_rules),
     ?COND(Num1 == Num2, 1, 0).
@@ -22,6 +23,11 @@ delta([V1, V2]) ->
 gestep([V1]) ->
     gestep([V1, 0]);
 gestep([V1, V2]) ->
-    [Num, Step] = ?numbers([V1, V2], ?default_rules),
+    % gestep is wierd - it evaluates back to front for the purpose 
+    % of throwing errors so reverse the arguements in the cast
+    [Step, Num] = ?numbers([V2, V1], [cast_strings, ban_bools,
+                                       cast_blanks, cast_dates]),
+    io:format("in gestep~n-V1 is ~p~n-V2 is ~p~n-Num is ~p~n-Step is ~p~n",
+              [V1, V2, Num, Step]),
     ?COND(Num >= Step, 1, 0).
     
