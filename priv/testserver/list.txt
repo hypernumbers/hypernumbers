@@ -91,6 +91,7 @@ c_hour.xls
 c_if.xls
 c_index.xls
 c_indirect.xls
+c_isblank.xls
 c_iserr.xls
 c_iserror.xls
 c_islogical.xls
