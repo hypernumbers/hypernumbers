@@ -5,22 +5,37 @@
 %%% @private
 
 -module(stdfuns_info).
--export([error_type/1, iserr/1, iserror/1, iseven/1, islogical/1, isna/1,
-         isnontext/1, isnumber/1, isodd/1, istext/1, n/1, na/0, type/1,
-         isblank/1, isnonblank/1, info/1]).
--export([rows/1, columns/1]).
+-export([errortype/1,
+         iserr/1,
+         iserror/1,
+         iseven/1,
+         islogical/1,
+         isna/1,
+         isnontext/1,
+         isnumber/1,
+         isodd/1,
+         istext/1,
+         n/1,
+         na/1,
+         type/1,
+         isblank/1,
+         isnonblank/1,
+         info/1]).
+
+-export([rows/1,
+         columns/1]).
 
 -include("handy_macros.hrl").
 -include("typechecks.hrl").
 
-error_type([?ERRVAL_NULL]) -> 1;
-error_type([?ERRVAL_DIV])  -> 2;
-error_type([?ERRVAL_VAL])  -> 3;
-error_type([?ERRVAL_REF])  -> 4;
-error_type([?ERRVAL_NAME]) -> 5;
-error_type([?ERRVAL_NUM])  -> 6;
-error_type([?ERRVAL_NA])   -> 7;
-error_type(_)              -> ?ERR_NA.
+errortype([?ERRVAL_NULL]) -> 1;
+errortype([?ERRVAL_DIV])  -> 2;
+errortype([?ERRVAL_VAL])  -> 3;
+errortype([?ERRVAL_REF])  -> 4;
+errortype([?ERRVAL_NAME]) -> 5;
+errortype([?ERRVAL_NUM])  -> 6;
+errortype([?ERRVAL_NA])   -> 7;
+errortype(_)              -> ?ERR_NA.
 
 %% Returns the logical value TRUE if value refers to any error value except
 %% #N/A; otherwise it returns FALSE.
@@ -44,10 +59,12 @@ iserror(_)              -> false.
 
 %% Returns TRUE if number is even, or FALSE if number is odd.
 %% The number is truncated, so ISEVEN(2.5) is true.
+%% @todo needs a test case written because it is not an Excel 97 function
 iseven([V1]) ->
     Num = ?number(V1, [cast_strings, cast_bools, cast_dates]),
     (trunc(Num) div 2) * 2 == trunc(Num).
 
+%% @todo needs a test case written because it is not an Excel 97 function
 isodd([Num]) -> not(iseven([Num])).
 
 %% Returns true only for booleans or arrays where element (1,1) is a boolean.
@@ -57,8 +74,9 @@ islogical([B]) when is_boolean(B) -> true;
 islogical(A) when ?is_array(A)    -> is_boolean(area_util:at(1, 1, A));
 islogical(_)                      -> false.
 
-isna([{error, na}]) -> true;
-isna(_)             -> false.
+isna([{errval, '#N/A'}]) -> true;
+isna(X)                  -> io:format("in stdfuns_info:isna X is ~p~n", [X]),
+                            false.
 
 isnontext([X]) -> case istext([X]) of
                       true  -> false;
@@ -70,22 +88,18 @@ isnumber([_])                  -> false.
 
 
 istext([X]) when ?is_string(X) -> true;  %% complement(fun isnontext/1)
-istext([_])               -> false.
+istext([_])                    -> false.
 
 %% TODO: dates.
-n([Num]) when is_number(Num) ->
-    Num;
-n([true]) ->
-    1;
-n([false]) ->
-    0;
-n([{error, X}]) ->
-    {error, X};
-n(_) ->
-    0.
+n([Num]) when is_number(Num) -> Num;
+n([true])                    -> 1;
+n([false])                   -> 0;
+n([{errval, X}])             -> {errval, X};
+n([{datetime, Y, D}])        -> {datetime, Y, D};
+n(X)                         -> io:format("in n X is ~p~n", [X]),
+                                0.
     
-na() ->
-    {error, na}.
+na([]) -> {errval, '#N/A'}.
 
 %% ~~~~~ INCOMPATIBILITY NOTE:
 %% TYPE(A1:B10) in Excel = 16, in Hypernumbers it's 64.
@@ -98,23 +112,19 @@ type([{errval, _X}])         -> 16;
 type([blank])                -> 1;
 type(_)                      -> 0.
 
-isblank([blank]) ->
-    true;
-isblank(Vs) ->
-    Flatvs = ?flatten_all(Vs),
-    all(fun muin_collect:is_blank/1, Flatvs).
+isblank([blank]) -> true;
+isblank(Vs)      -> Flatvs = ?flatten_all(Vs),
+                    all(fun muin_collect:is_blank/1, Flatvs).
 
-isnonblank(Vs) ->
-    Flatvs = ?flatten_all(Vs),
-    all(fun(X) -> not(muin_collect:is_blank(X)) end, Flatvs).
+%% @todo needs a test case written because it is not an Excel 97 function
+isnonblank(Vs) -> Flatvs = ?flatten_all(Vs),
+                  all(fun(X) -> not(muin_collect:is_blank(X)) end, Flatvs).
 
-info(["site"]) ->
-    get(site);
-info(["path"]) ->
-    case "/" ++ string:join(get(path), "/") ++ "/" of
-        "//" -> "/";
-        V    -> V
-    end.
+info(["site"]) -> get(site);
+info(["path"]) -> case "/" ++ string:join(get(path), "/") ++ "/" of
+                      "//" -> "/";
+                      V    -> V
+                  end.
 
 rows([A]) when ?is_area(A) -> area_util:height(A);
 rows([_])                  -> 1;
